@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gestao-db
+    environment:
+      POSTGRES_DB: calendario
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./gestao-paroquia/docker/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d calendario" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sonar:
+    image: sonarqube:community
+    container_name: gestao-sonar
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+    healthcheck:
+      test: [ "CMD-SHELL", "exit 0" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  builder:
+    build:
+      context: ./gestao-paroquia
+      dockerfile: ../Dockerfile.builder
+    container_name: gestao-builder
+    depends_on:
+      db:
+        condition: service_healthy
+      sonar:
+        condition: service_healthy
+    volumes:
+      - shared_volume:/shared
+      - ./gestao-paroquia:/workspace
+      - /workspace/app/build
+      - gradle_cache:/root/.gradle
+    environment:
+      - SONAR_HOST_URL=http://sonar:9000
+
+  api:
+    build:
+      context: ./gestao-paroquia
+      dockerfile: ../Dockerfile.api
+    container_name: gestao-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      builder:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    volumes:
+      - shared_volume:/app
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/calendario
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - PORT=8080
+      - APP_CORS_ALLOWED_ORIGINS=http://localhost:3000
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  db-seeder:
+    image: postgres:16-alpine
+    container_name: gestao-db-seeder
+    environment:
+      - PGPASSWORD=password
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - ./gestao-paroquia/docker/seed-data.sql:/seed-data.sql
+    command: psql -h db -U postgres -d calendario -f /seed-data.sql
+
+  ui:
+    build:
+      context: ./gestao-paroquia-ui
+      dockerfile: ../Dockerfile.ui
+    container_name: gestao-ui
+    working_dir: /app
+    volumes:
+      - ./gestao-paroquia-ui:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080/api/v1
+    depends_on:
+      api:
+        condition: service_started
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: gestao-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+  sonar_data:
+  sonar_extensions:
+  sonar_logs:
+  shared_volume:
+  gradle_cache:

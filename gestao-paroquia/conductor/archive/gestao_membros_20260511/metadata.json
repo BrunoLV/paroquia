@@ -1,0 +1,8 @@
+{
+  "track_id": "gestao_membros_20260511",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-11T13:00:00Z",
+  "updated_at": "2026-05-11T13:00:00Z",
+  "description": "Implementação do módulo de Gestão de Membros (Fiéis/Paroquianos), permitindo o cadastro de pessoas físicas, histórico sacramental base e vínculo com organizações paroquiais."
+}

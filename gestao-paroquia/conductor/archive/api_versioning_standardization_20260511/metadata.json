@@ -1,0 +1,8 @@
+{
+  "track_id": "api_versioning_standardization_20260511",
+  "type": "refactoring",
+  "status": "new",
+  "created_at": "2026-05-11T12:00:00Z",
+  "updated_at": "2026-05-11T12:00:00Z",
+  "description": "Padronização da estrutura de pacotes da API do módulo calendário para incluir o sufixo v1."
+}

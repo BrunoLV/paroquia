@@ -1,0 +1,16 @@
+{
+	"folders": [
+	        {
+		        "path": "."
+		},
+		{
+			"path": "gestao-paroquia"
+		},
+		{
+			"path": "gestao-paroquia-ui"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}

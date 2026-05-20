@@ -1,0 +1,15 @@
+- [Home](/)
+- [Getting Started](getting-started.md)
+- [Architecture](architecture.md)
+
+- Domains
+  - [Aprovação](domains/aprovacao.md)
+  - [Calendário](domains/calendario.md)
+  - [Governança](domains/governanca.md)
+  - [IAM](domains/iam.md)
+  - [Local](domains/local.md)
+  - [Membro](domains/membro.md)
+  - [Observabilidade](domains/observabilidade.md)
+  - [Organização](domains/organizacao.md)
+  - [Projeto](domains/projeto.md)
+  - [Support](domains/support.md)

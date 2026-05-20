@@ -1,0 +1,132 @@
+package br.com.nsfatima.gestao.calendario.infrastructure.scheduling;
+
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoRecorrenciaEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
+import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Job that runs on January 1st to generate EventoEntity instances for all recurring rules.
+ */
+@Component
+public class YearlyRecurrenceGeneratorJob {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(YearlyRecurrenceGeneratorJob.class);
+
+    private final EventoRecorrenciaJpaRepository recurrenceRepository;
+    private final EventoJpaRepository eventRepository;
+    private final JobLockJpaRepository lockRepository;
+
+    public YearlyRecurrenceGeneratorJob(
+            EventoRecorrenciaJpaRepository recurrenceRepository,
+            EventoJpaRepository eventRepository,
+            JobLockJpaRepository lockRepository) {
+        this.recurrenceRepository = recurrenceRepository;
+        this.eventRepository = eventRepository;
+        this.lockRepository = lockRepository;
+    }
+
+    /**
+     * Executes the generation for the current year. Runs on Jan 1st at 01:00 AM.
+     */
+    @Scheduled(cron = "0 0 1 1 1 *")
+    @Transactional
+    public void execute() {
+        Instant now = Instant.now();
+        if (!lockRepository.acquireLock("YEARLY_RECURRENCE_GENERATOR", now.plus(Duration.ofHours(1)), now)) {
+            LOGGER.info("Yearly recurrence generation already running or locked by another instance.");
+            return;
+        }
+
+        try {
+            int year = LocalDate.now(ZoneOffset.UTC).getYear();
+            executeForYear(year);
+        } finally {
+            lockRepository.releaseLock("YEARLY_RECURRENCE_GENERATOR");
+        }
+    }
+
+    /**
+     * Generates instances for a specific year.
+     * 
+     * Usage Example:
+     * job.executeForYear(2026);
+     */
+    @Transactional
+    public void executeForYear(int year) {
+        LOGGER.info("Starting yearly recurrence generation for year {}", year);
+        List<EventoRecorrenciaEntity> rules = recurrenceRepository.findAll();
+
+        for (EventoRecorrenciaEntity rule : rules) {
+            processRule(rule, year);
+        }
+        LOGGER.info("Finished yearly recurrence generation for year {}", year);
+    }
+
+    private void processRule(EventoRecorrenciaEntity ruleEntity, int year) {
+        eventRepository.findById(ruleEntity.getEventoBaseId()).ifPresent(baseEvent -> {
+            LocalDate startOfYear = LocalDate.of(year, 1, 1);
+            LocalDate endOfYear = LocalDate.of(year, 12, 31);
+
+            List<LocalDate> dates = ruleEntity.getRegra().gerarDatas(startOfYear, endOfYear);
+            
+            for (LocalDate date : dates) {
+                generateInstance(baseEvent, date, ruleEntity);
+            }
+        });
+    }
+
+    private void generateInstance(EventoEntity baseEvent, LocalDate date, EventoRecorrenciaEntity ruleEntity) {
+        Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
+        
+        // Map date to original time
+        Instant baseDateStart = baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+        Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
+        
+        Instant startUtc = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
+        Instant endUtc = startUtc.plus(duration);
+
+        // Simple de-duplication check: title and start time
+        boolean exists = eventRepository.findAllWithFilters(
+                startUtc, true,
+                startUtc, true,
+                baseEvent.getOrganizacaoResponsavelId(), true,
+                null, false,
+                null, false,
+                null, false,
+                null, false,
+                Pageable.unpaged())
+                .getContent().stream()
+                .anyMatch(e -> e.getTitulo().equals(baseEvent.getTitulo()) && e.getInicioUtc().equals(startUtc));
+
+        if (exists) {
+            LOGGER.debug("Instance for {} at {} already exists, skipping", baseEvent.getTitulo(), startUtc);
+            return;
+        }
+
+        EventoEntity instance = new EventoEntity();
+        instance.setId(UUID.randomUUID());
+        instance.setTitulo(baseEvent.getTitulo());
+        instance.setDescricao(baseEvent.getDescricao());
+        instance.setOrganizacaoResponsavelId(baseEvent.getOrganizacaoResponsavelId());
+        instance.setStatus(baseEvent.getStatus());
+        instance.setInicioUtc(startUtc);
+        instance.setFimUtc(endUtc);
+        instance.setRecorrenciaId(ruleEntity.getId());
+        
+        eventRepository.save(instance);
+    }
+}

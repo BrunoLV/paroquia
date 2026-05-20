@@ -1,0 +1,1 @@
+ALTER TABLE calendario.locais ADD COLUMN version BIGINT NOT NULL DEFAULT 0;

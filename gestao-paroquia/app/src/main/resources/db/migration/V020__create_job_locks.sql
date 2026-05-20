@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS calendario.job_locks (
+    name VARCHAR(128) PRIMARY KEY,
+    locked_until TIMESTAMP WITH TIME ZONE NOT NULL,
+    locked_at TIMESTAMP WITH TIME ZONE NOT NULL
+);

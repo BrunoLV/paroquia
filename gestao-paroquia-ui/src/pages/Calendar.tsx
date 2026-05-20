@@ -1,0 +1,1016 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  CircularProgress,
+  IconButton,
+  Alert,
+  Chip,
+  Fab,
+  Tooltip,
+  AppBar,
+  Toolbar,
+  Card,
+  CardContent,
+} from '@mui/material';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Add as AddIcon,
+  CalendarMonth as CalendarIcon,
+  FormatListBulleted as ListIcon,
+  Refresh as RefreshIcon,
+  Logout as LogoutIcon,
+  Event as EventIcon,
+  Business as BusinessIcon,
+  Schedule as ScheduleIcon,
+  Description as DescriptionIcon,
+} from '@mui/icons-material';
+import { useAuth } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import apiClient from '../api/client';
+
+// Types representing backend entities
+interface Evento {
+  id: string;
+  titulo: string;
+  descricao: string;
+  categoria: string;
+  organizacaoResponsavelId: string;
+  projetoId: string | null;
+  nomeProjeto: string | null;
+  inicio: string; // ISO date-time string
+  fim: string; // ISO date-time string
+  status: string;
+  conflictState: string | null;
+  conflictReason: string | null;
+}
+
+interface Organizacao {
+  id: string;
+  nome: string;
+  tipo: string;
+  contato: string | null;
+  ativo: boolean;
+}
+
+interface CalendarDay {
+  date: Date;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+}
+
+const CATEGORIES = [
+  'PASTORAL',
+  'SOCIAL',
+  'LITURGICO',
+  'ADMINISTRATIVO',
+  'SACRAMENTAL',
+  'FORMATIVO',
+  'ASSISTENCIAL',
+];
+
+const STATUSES = ['RASCUNHO', 'CONFIRMADO', 'ADICIONADO_EXTRA', 'CANCELADO'];
+
+const getCategoryColor = (category: string) => {
+  switch (category) {
+    case 'PASTORAL':
+      return { bg: '#e8f5e9', text: '#2e7d32', border: '#4caf50' };
+    case 'SOCIAL':
+      return { bg: '#fff3e0', text: '#e65100', border: '#ff9800' };
+    case 'LITURGICO':
+      return { bg: '#f3e5f5', text: '#7b1fa2', border: '#9c27b0' };
+    case 'ADMINISTRATIVO':
+      return { bg: '#eceff1', text: '#37474f', border: '#607d8b' };
+    case 'SACRAMENTAL':
+      return { bg: '#e1f5fe', text: '#0277bd', border: '#03a9f4' };
+    case 'FORMATIVO':
+      return { bg: '#fce4ec', text: '#c2185b', border: '#e91e63' };
+    case 'ASSISTENCIAL':
+      return { bg: '#e0f7fa', text: '#00838f', border: '#00bcd4' };
+    default:
+      return { bg: '#f5f5f5', text: '#616161', border: '#9e9e9e' };
+  }
+};
+
+const getStatusColor = (status: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
+  switch (status) {
+    case 'CONFIRMADO':
+      return 'success';
+    case 'ADICIONADO_EXTRA':
+      return 'secondary';
+    case 'RASCUNHO':
+      return 'warning';
+    case 'CANCELADO':
+      return 'error';
+    default:
+      return 'default';
+  }
+};
+
+const isSameDay = (d1: Date, d2: Date) => {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+};
+
+const Calendar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Calendar view states
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<'month' | 'agenda'>('month');
+  const [events, setEvents] = useState<Evento[]>([]);
+  const [organizations, setOrganizations] = useState<Organizacao[]>([]);
+
+  // Filtering states
+  const [selectedOrgFilter, setSelectedOrgFilter] = useState<string>('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
+
+  // Status/loading states
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  // Modal details states
+  const [selectedEvent, setSelectedEvent] = useState<Evento | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  // Modal creation states
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [newCategory, setNewCategory] = useState('PASTORAL');
+  const [newOrgId, setNewOrgId] = useState('');
+  const [newStartDate, setNewStartDate] = useState('');
+  const [newEndDate, setNewEndDate] = useState('');
+  const [newStatus, setNewStatus] = useState('CONFIRMADO');
+  const [newJustification, setNewJustification] = useState('');
+  const [formError, setFormError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get current year and month
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+
+  // Generate calendar days for monthly grid
+  const calendarDays = useMemo(() => {
+    const days: CalendarDay[] = [];
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const startDayOfWeek = firstDay.getDay(); // 0 (Sun) to 6 (Sat)
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+
+    // Fill days from previous month
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const d = new Date(currentYear, currentMonth - 1, prevMonthDays - i);
+      days.push({
+        date: d,
+        isCurrentMonth: false,
+        isToday: isSameDay(d, new Date()),
+      });
+    }
+
+    // Fill current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const d = new Date(currentYear, currentMonth, i);
+      days.push({
+        date: d,
+        isCurrentMonth: true,
+        isToday: isSameDay(d, new Date()),
+      });
+    }
+
+    // Fill days from next month to complete the 6 weeks (42 cells) grid
+    const totalCells = 42;
+    const remainingCells = totalCells - days.length;
+    for (let i = 1; i <= remainingCells; i++) {
+      const d = new Date(currentYear, currentMonth + 1, i);
+      days.push({
+        date: d,
+        isCurrentMonth: false,
+        isToday: isSameDay(d, new Date()),
+      });
+    }
+
+    return days;
+  }, [currentYear, currentMonth]);
+
+  // Fetch events and organizations
+  const fetchData = async () => {
+    setIsLoading(true);
+    setErrorMsg('');
+    try {
+      // Calculate start and end of current visible month grid
+      const startOfGrid = calendarDays[0].date;
+      const endOfGrid = calendarDays[calendarDays.length - 1].date;
+
+      // Prepare request parameters for event filters
+      const params: Record<string, any> = {
+        dataInicio: startOfGrid.toISOString(),
+        dataFim: endOfGrid.toISOString(),
+        size: 200, // retrieve up to 200 events for full grid density
+      };
+
+      if (selectedOrgFilter) {
+        params.organizacaoId = selectedOrgFilter;
+      }
+      if (selectedCategoryFilter) {
+        params.categoria = selectedCategoryFilter;
+      }
+
+      // Fetch events
+      const eventsRes = await apiClient.get<any>('/eventos', { params });
+      
+      // Handle page response format
+      if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
+        setEvents(eventsRes.data.content);
+      } else if (Array.isArray(eventsRes.data)) {
+        setEvents(eventsRes.data);
+      } else {
+        setEvents([]);
+      }
+
+      // Fetch organizations list (only if empty)
+      if (organizations.length === 0) {
+        const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
+        if (Array.isArray(orgsRes.data)) {
+          setOrganizations(orgsRes.data);
+          // Set first active org as default for form
+          const activeOrgs = orgsRes.data.filter((o) => o.ativo);
+          if (activeOrgs.length > 0) {
+            setNewOrgId(activeOrgs[0].id);
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error('Error fetching data:', err);
+      setErrorMsg('Não foi possível carregar as informações do calendário.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDate, selectedOrgFilter, selectedCategoryFilter]);
+
+  // Navigation handlers
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
+  };
+
+  const handleToday = () => {
+    setCurrentDate(new Date());
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  // Open Event details dialog
+  const handleOpenDetails = (event: Evento) => {
+    setSelectedEvent(event);
+    setIsDetailsOpen(true);
+  };
+
+  // Open Event creation dialog with optional prefilled date
+  const handleOpenCreate = (prefilledDate?: Date) => {
+    setFormError('');
+    setNewTitle('');
+    setNewDesc('');
+    setNewCategory('PASTORAL');
+    setNewStatus('CONFIRMADO');
+    setNewJustification('');
+
+    // Default dates
+    const start = prefilledDate ? new Date(prefilledDate) : new Date();
+    start.setHours(9, 0, 0, 0);
+    const end = new Date(start);
+    end.setHours(10, 0, 0, 0);
+
+    // Format for datetime-local input: YYYY-MM-DDTHH:MM
+    const formatLocalDate = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const date = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${date}T${hours}:${mins}`;
+    };
+
+    setNewStartDate(formatLocalDate(start));
+    setNewEndDate(formatLocalDate(end));
+
+    if (organizations.length > 0 && !newOrgId) {
+      const activeOrgs = organizations.filter((o) => o.ativo);
+      if (activeOrgs.length > 0) {
+        setNewOrgId(activeOrgs[0].id);
+      } else {
+        setNewOrgId(organizations[0].id);
+      }
+    }
+
+    setIsCreateOpen(true);
+  };
+
+  // Handle new event submission
+  const handleCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!newTitle.trim()) {
+      setFormError('O título é obrigatório.');
+      return;
+    }
+    if (!newOrgId) {
+      setFormError('A organização responsável é obrigatória.');
+      return;
+    }
+    if (!newStartDate || !newEndDate) {
+      setFormError('As datas de início e fim são obrigatórias.');
+      return;
+    }
+
+    const start = new Date(newStartDate);
+    const end = new Date(newEndDate);
+
+    if (end <= start) {
+      setFormError('A data de término deve ser posterior à data de início.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const requestData = {
+        titulo: newTitle,
+        descricao: newDesc,
+        categoria: newCategory,
+        organizacaoResponsavelId: newOrgId,
+        projetoId: null,
+        inicio: start.toISOString(),
+        fim: end.toISOString(),
+        status: newStatus,
+        adicionadoExtraJustificativa: newJustification || null,
+        participantes: [],
+      };
+
+      // Generate a simple unique idempotency key for the request headers
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+      await apiClient.post('/eventos', requestData, {
+        headers: {
+          'Idempotency-Key': idempotencyKey,
+        },
+      });
+
+      setSuccessMsg('Evento criado com sucesso!');
+      setIsCreateOpen(false);
+      fetchData();
+
+      // Clear success message after 4s
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (err: any) {
+      console.error('Create event error:', err);
+      const errMsg =
+        err.response?.data?.message ||
+        'Erro ao criar evento. Verifique as regras de negócio.';
+      setFormError(errMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Map events to their dates for quick lookup
+  const getEventsForDay = (day: Date) => {
+    return events.filter((event) => {
+      const eventStart = new Date(event.inicio);
+      return isSameDay(eventStart, day);
+    });
+  };
+
+  // Month name mapping
+  const monthNames = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
+
+  // Helper to find organization name by ID
+  const getOrgName = (orgId: string) => {
+    const org = organizations.find((o) => o.id === orgId);
+    return org ? org.nome : 'Organização Paroquial';
+  };
+
+  // Filtered upcoming events list (for Agenda/List View)
+  const agendaEvents = useMemo(() => {
+    return [...events]
+      .filter((e) => new Date(e.inicio) >= calendarDays[0].date)
+      .sort((a, b) => new Date(a.inicio).getTime() - new Date(b.inicio).getTime());
+  }, [events, calendarDays]);
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#f4f6f8' }}>
+      {/* App Bar / Navigation Header */}
+      <AppBar position="static" color="primary" sx={{ mb: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+        <Toolbar>
+          <EventIcon sx={{ mr: 2 }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600, letterSpacing: '0.5px' }}>
+            Paróquia Nossa Senhora de Fátima
+          </Typography>
+          {user && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500 }}>
+                Olá, {user.name} ({user.roles.includes('ADMIN') ? 'Administrador' : 'Usuário'})
+              </Typography>
+              <IconButton color="inherit" onClick={handleLogout} title="Sair do sistema">
+                <LogoutIcon />
+              </IconButton>
+            </Box>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="xl" sx={{ pb: 6 }}>
+        {/* Alerts */}
+        {successMsg && (
+          <Alert severity="success" sx={{ mb: 3, borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+            {successMsg}
+          </Alert>
+        )}
+        {errorMsg && (
+          <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+            {errorMsg}
+          </Alert>
+        )}
+
+        {/* Toolbar / Controls Card */}
+        <Card sx={{ mb: 4, borderRadius: '16px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)', overflow: 'visible' }}>
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            <Grid container spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              {/* Month Navigation */}
+              <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconButton onClick={handlePrevMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
+                  <ChevronLeft />
+                </IconButton>
+                <Typography variant="h5" sx={{ minWidth: 160, textAlign: 'center', fontWeight: 600, color: '#37474f' }}>
+                  {monthNames[currentMonth]} {currentYear}
+                </Typography>
+                <IconButton onClick={handleNextMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
+                  <ChevronRight />
+                </IconButton>
+                <Button variant="outlined" onClick={handleToday} sx={{ ml: 1, textTransform: 'none', borderRadius: '8px' }}>
+                  Hoje
+                </Button>
+              </Grid>
+
+              {/* Filtering Controls */}
+              <Grid size={{ xs: 12, sm: 8, md: 5 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <FormControl size="small" sx={{ minWidth: 160, flexGrow: 1 }}>
+                  <InputLabel id="org-filter-label">Organização</InputLabel>
+                  <Select
+                    labelId="org-filter-label"
+                    value={selectedOrgFilter}
+                    label="Organização"
+                    onChange={(e) => setSelectedOrgFilter(e.target.value)}
+                    sx={{ borderRadius: '8px' }}
+                  >
+                    <MenuItem value="">
+                      <em>Todas</em>
+                    </MenuItem>
+                    {organizations.map((org) => (
+                      <MenuItem key={org.id} value={org.id}>
+                        {org.nome}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl size="small" sx={{ minWidth: 140, flexGrow: 1 }}>
+                  <InputLabel id="cat-filter-label">Categoria</InputLabel>
+                  <Select
+                    labelId="cat-filter-label"
+                    value={selectedCategoryFilter}
+                    label="Categoria"
+                    onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                    sx={{ borderRadius: '8px' }}
+                  >
+                    <MenuItem value="">
+                      <em>Todas</em>
+                    </MenuItem>
+                    {CATEGORIES.map((cat) => (
+                      <MenuItem key={cat} value={cat}>
+                        {cat}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <IconButton onClick={fetchData} disabled={isLoading} title="Recarregar calendário" sx={{ border: '1px solid #e0e0e0' }}>
+                  {isLoading ? <CircularProgress size={24} /> : <RefreshIcon />}
+                </IconButton>
+              </Grid>
+
+              {/* View Toggle & New Event */}
+              <Grid size={{ xs: 12, sm: 4, md: 3 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, gap: 1 }}>
+                <Box sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', display: 'flex' }}>
+                  <IconButton
+                    color={viewMode === 'month' ? 'primary' : 'default'}
+                    onClick={() => setViewMode('month')}
+                    sx={{ borderRadius: 0, bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
+                    title="Visualização Mensal"
+                  >
+                    <CalendarIcon />
+                  </IconButton>
+                  <IconButton
+                    color={viewMode === 'agenda' ? 'primary' : 'default'}
+                    onClick={() => setViewMode('agenda')}
+                    sx={{ borderRadius: 0, bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
+                    title="Visualização em Agenda"
+                  >
+                    <ListIcon />
+                  </IconButton>
+                </Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={() => handleOpenCreate()}
+                  sx={{ borderRadius: '8px', textTransform: 'none', px: 2, fontWeight: 500 }}
+                >
+                  Novo Evento
+                </Button>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+
+        {/* View Content */}
+        {viewMode === 'month' ? (
+          /* Monthly Grid View */
+          <Paper elevation={2} sx={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 25px rgba(0,0,0,0.04)' }}>
+            {/* Days of week header */}
+            <Grid container columns={7} sx={{ bgcolor: '#eceff1', borderBottom: '1px solid #cfd8dc', textAlign: 'center', py: 1.5 }}>
+              {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
+                <Grid size={{ xs: 1 }} key={day}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#455a64' }}>
+                    {day}
+                  </Typography>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Calendar Grid Cells */}
+            <Grid container columns={7}>
+              {calendarDays.map(({ date, isCurrentMonth, isToday }, idx) => {
+                const dayEvents = getEventsForDay(date);
+                return (
+                  <Grid
+                    size={{ xs: 1 }}
+                    key={idx}
+                    onClick={() => handleOpenCreate(date)}
+                    sx={{
+                      minHeight: 130,
+                      borderRight: '1px solid #e0e0e0',
+                      borderBottom: '1px solid #e0e0e0',
+                      bgcolor: isToday ? '#f1f8e9' : isCurrentMonth ? 'white' : '#fafafa',
+                      p: 1,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      position: 'relative',
+                      '&:hover': {
+                        bgcolor: isToday ? '#e8f5e9' : '#f5f5f5',
+                        '& .add-day-btn': { opacity: 1 },
+                      },
+                    }}
+                  >
+                    {/* Day number and indicator */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: isToday ? 700 : 500,
+                          color: isToday ? '#2e7d32' : isCurrentMonth ? '#37474f' : '#b0bec5',
+                          bgcolor: isToday ? '#c8e6c9' : 'transparent',
+                          borderRadius: '50%',
+                          width: 24,
+                          height: 24,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {date.getDate()}
+                      </Typography>
+                      {/* Plus icon on hover */}
+                      <AddIcon
+                        className="add-day-btn"
+                        color="action"
+                        sx={{
+                          fontSize: '1rem',
+                          opacity: 0,
+                          transition: 'opacity 0.2s',
+                          '&:hover': { color: '#2e7d32' },
+                        }}
+                      />
+                    </Box>
+
+                    {/* Events list in the day cell */}
+                    <Box sx={{ height: 90, overflowY: 'auto', pr: 0.5 }}>
+                      {dayEvents.map((evt) => {
+                        const styleColors = getCategoryColor(evt.categoria);
+                        return (
+                          <Box
+                            key={evt.id}
+                            onClick={(e) => {
+                              e.stopPropagation(); // prevent opening create modal
+                              handleOpenDetails(evt);
+                            }}
+                            sx={{
+                              bgcolor: styleColors.bg,
+                              color: styleColors.text,
+                              borderLeft: `3px solid ${styleColors.border}`,
+                              borderRadius: '4px',
+                              px: 1,
+                              py: 0.5,
+                              mb: 0.5,
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              transition: 'all 0.2s',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                              '&:hover': {
+                                filter: 'brightness(0.93)',
+                                transform: 'translateX(2px)',
+                              },
+                            }}
+                            title={evt.titulo}
+                          >
+                            {evt.titulo}
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Paper>
+        ) : (
+          /* Agenda / List View */
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {agendaEvents.length === 0 ? (
+              <Paper sx={{ p: 4, textAlign: 'center', borderRadius: '16px', color: 'text.secondary' }}>
+                <CalendarIcon sx={{ fontSize: 48, color: '#cfd8dc', mb: 2 }} />
+                <Typography variant="h6">Nenhum evento agendado para o período visível.</Typography>
+              </Paper>
+            ) : (
+              agendaEvents.map((evt) => {
+                const styleColors = getCategoryColor(evt.categoria);
+                const start = new Date(evt.inicio);
+                const end = new Date(evt.fim);
+
+                return (
+                  <Card
+                    key={evt.id}
+                    onClick={() => handleOpenDetails(evt)}
+                    sx={{
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                      borderLeft: `5px solid ${styleColors.border}`,
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
+                      <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+                        {/* Event Date badge */}
+                        <Grid size={{ xs: 12, sm: 2, md: 1.5 }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#37474f', lineHeight: 1 }}>
+                            {start.getDate()}
+                          </Typography>
+                          <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#78909c', mt: 0.5 }}>
+                            {monthNames[start.getMonth()].substring(0, 3)}
+                          </Typography>
+                        </Grid>
+
+                        {/* Title, description & badges */}
+                        <Grid size={{ xs: 12, sm: 7, md: 8 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#263238' }}>
+                            {evt.titulo}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
+                            {evt.descricao || 'Sem descrição.'}
+                          </Typography>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Chip size="small" label={evt.categoria} sx={{ bgcolor: styleColors.bg, color: styleColors.text, fontWeight: 600 }} />
+                            <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
+                            <Chip size="small" label={evt.status} color={getStatusColor(evt.status)} sx={{ fontWeight: 600 }} />
+                          </Box>
+                        </Grid>
+
+                        {/* Event time range */}
+                        <Grid size={{ xs: 12, sm: 3, md: 2.5 }} sx={{ textAlign: { sm: 'right' } }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, gap: 0.5, color: 'text.secondary' }}>
+                            <ScheduleIcon sx={{ fontSize: 18 }} />
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} -{' '}
+                              {end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
+          </Box>
+        )}
+      </Container>
+
+      {/* Details Dialog Modal */}
+      <Dialog open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
+        {selectedEvent && (
+          <>
+            <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+              Detalhes do Evento
+              <Chip label={selectedEvent.status} color={getStatusColor(selectedEvent.status)} size="small" sx={{ fontWeight: 600 }} />
+            </DialogTitle>
+            <DialogContent sx={{ pt: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {/* Title */}
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a237e', mb: 1 }}>
+                    {selectedEvent.titulo}
+                  </Typography>
+                  <Chip
+                    label={selectedEvent.categoria}
+                    sx={{
+                      bgcolor: getCategoryColor(selectedEvent.categoria).bg,
+                      color: getCategoryColor(selectedEvent.categoria).text,
+                      fontWeight: 600,
+                    }}
+                  />
+                </Box>
+
+                {/* Date & Time */}
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <ScheduleIcon color="action" />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      Horário
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                      {new Date(selectedEvent.inicio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} às{' '}
+                      {new Date(selectedEvent.fim).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Organization */}
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <BusinessIcon color="action" />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      Organização Responsável
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                      {getOrgName(selectedEvent.organizacaoResponsavelId)}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Description */}
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                  <DescriptionIcon color="action" sx={{ mt: 0.3 }} />
+                  <Box sx={{ width: '100%' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
+                      Descrição
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#546e7a', whiteSpace: 'pre-wrap', bgcolor: '#fafafa', p: 1.5, borderRadius: '8px', border: '1px solid #eceff1' }}>
+                      {selectedEvent.descricao || 'Nenhuma descrição fornecida.'}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Project */}
+                {selectedEvent.nomeProjeto && (
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      Projeto:
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                      {selectedEvent.nomeProjeto}
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* Extra Justification */}
+                {selectedEvent.conflictReason && (
+                  <Alert severity="warning" sx={{ borderRadius: '8px' }}>
+                    Conflito detectado: {selectedEvent.conflictReason}
+                  </Alert>
+                )}
+              </Box>
+            </DialogContent>
+            <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
+              <Button onClick={() => setIsDetailsOpen(false)} color="primary" sx={{ fontWeight: 600 }}>
+                Fechar
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
+      {/* Create Dialog Modal */}
+      <Dialog open={isCreateOpen} onClose={() => !isSubmitting && setIsCreateOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
+        <form onSubmit={handleCreateSubmit}>
+          <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+            Criar Novo Evento
+          </DialogTitle>
+          <DialogContent sx={{ pt: 3 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+              {formError && (
+                <Alert severity="error" sx={{ borderRadius: '8px' }}>
+                  {formError}
+                </Alert>
+              )}
+
+              <TextField
+                required
+                label="Título do Evento"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                fullWidth
+                disabled={isSubmitting}
+                size="small"
+                slotProps={{ htmlInput: { maxLength: 160 } }}
+              />
+
+              <TextField
+                label="Descrição"
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+                multiline
+                rows={3}
+                fullWidth
+                disabled={isSubmitting}
+                size="small"
+                slotProps={{ htmlInput: { maxLength: 4000 } }}
+              />
+
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="new-cat-label">Categoria</InputLabel>
+                    <Select
+                      labelId="new-cat-label"
+                      value={newCategory}
+                      label="Categoria"
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      disabled={isSubmitting}
+                    >
+                      {CATEGORIES.map((cat) => (
+                        <MenuItem key={cat} value={cat}>
+                          {cat}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="new-status-label">Status</InputLabel>
+                    <Select
+                      labelId="new-status-label"
+                      value={newStatus}
+                      label="Status"
+                      onChange={(e) => setNewStatus(e.target.value)}
+                      disabled={isSubmitting}
+                    >
+                      {STATUSES.map((st) => (
+                        <MenuItem key={st} value={st}>
+                          {st}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+
+              <FormControl fullWidth size="small" required>
+                <InputLabel id="new-org-label">Organização Responsável</InputLabel>
+                <Select
+                  labelId="new-org-label"
+                  value={newOrgId}
+                  label="Organização Responsável"
+                  onChange={(e) => setNewOrgId(e.target.value)}
+                  disabled={isSubmitting}
+                >
+                  {organizations
+                    .filter((org) => org.ativo)
+                    .map((org) => (
+                      <MenuItem key={org.id} value={org.id}>
+                        {org.nome}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    required
+                    label="Data e Hora de Início"
+                    type="datetime-local"
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value)}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    fullWidth
+                    disabled={isSubmitting}
+                    size="small"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    required
+                    label="Data e Hora de Término"
+                    type="datetime-local"
+                    value={newEndDate}
+                    onChange={(e) => setNewEndDate(e.target.value)}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    fullWidth
+                    disabled={isSubmitting}
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+
+              <TextField
+                label="Justificativa Extra (Opcional)"
+                value={newJustification}
+                onChange={(e) => setNewJustification(e.target.value)}
+                placeholder="Preencha caso seja um agendamento extraordinário"
+                fullWidth
+                disabled={isSubmitting}
+                size="small"
+                slotProps={{ htmlInput: { maxLength: 4000 } }}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
+            <Button onClick={() => setIsCreateOpen(false)} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600 }}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ fontWeight: 600, borderRadius: '8px' }}>
+              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Criar Evento'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default Calendar;

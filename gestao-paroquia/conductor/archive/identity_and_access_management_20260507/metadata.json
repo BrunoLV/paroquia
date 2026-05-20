@@ -1,0 +1,8 @@
+{
+  "id": "identity_and_access_management_20260507",
+  "title": "Identity and Access Management (IAM) API",
+  "description": "Implement management endpoints for users and organization memberships to support RBAC.",
+  "status": "proposed",
+  "created_at": "2026-05-07",
+  "author": "Gemini CLI"
+}

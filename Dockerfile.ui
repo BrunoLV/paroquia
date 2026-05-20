@@ -1,0 +1,19 @@
+FROM node:24-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy application source (though it will be overridden by volume in compose)
+COPY . .
+
+# Set env for hot-reload support in Docker
+ENV WDS_SOCKET_PORT=0
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

@@ -1,0 +1,38 @@
+# Monorepo Root .gitignore
+
+# IDEs and System files
+.vscode/
+.idea/
+*.swp
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Java / Gradle (gestao-paroquia)
+gestao-paroquia/.gradle/
+gestao-paroquia/build/
+gestao-paroquia/bin/
+gestao-paroquia/*.jar
+gestao-paroquia/*.class
+
+# Node / React (gestao-paroquia-ui)
+gestao-paroquia-ui/node_modules/
+gestao-paroquia-ui/build/
+gestao-paroquia-ui/coverage/
+gestao-paroquia-ui/.pnp
+gestao-paroquia-ui/.pnp.js
+gestao-paroquia-ui/npm-debug.log*
+gestao-paroquia-ui/yarn-debug.log*
+gestao-paroquia-ui/yarn-error.log*
+
+# Environment and Secrets
+*.env
+*.env.local
+*.env.*.local
+
+# General patterns (recursive)
+node_modules/
+build/
+.gradle/
+target/
+*.log

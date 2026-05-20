@@ -1,0 +1,8 @@
+{
+  "track_id": "calendario_modularization_20260509",
+  "type": "refactoring",
+  "status": "new",
+  "created_at": "2026-05-09T12:00:00Z",
+  "updated_at": "2026-05-09T12:00:00Z",
+  "description": "Refatoração e extração de subdomínios do módulo calendario para módulos independentes (Observabilidade, Governança, Projeto, Aprovação) visando maior coesão."
+}
