@@ -7,6 +7,10 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class GetUsuarioUseCase {
 
@@ -24,7 +28,12 @@ public class GetUsuarioUseCase {
      */
     public UsuarioResponse execute(UUID id) {
         return usuarioRepository.findById(id)
-                .map(u -> new UsuarioResponse(u.getId(), u.getUsername(), u.isEnabled()))
+                .map(u -> new UsuarioResponse(
+                        u.getId(),
+                        u.getUsername(),
+                        u.isEnabled(),
+                        u.getRoles() == null ? List.of()
+                                : Arrays.stream(u.getRoles().split(",")).map(String::trim).collect(Collectors.toList())))
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
     }
 }

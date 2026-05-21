@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Autenticação", description = "Endpoints para sessão e perfil do usuário logado")
@@ -19,7 +22,7 @@ public class AuthController {
     /**
      * Identifica o usuário atualmente autenticado na sessão para fornecer dados de perfil e permissões.
      * 
-     * Exemplo: GET /api/v1/auth/me -> 200 OK { "id": "...", "username": "...", "enabled": true }
+     * Exemplo: GET /api/v1/auth/me -> 200 OK { "id": "...", "username": "...", "enabled": true, "roles": ["ADMIN"] }
      */
     public UsuarioResponse me(@AuthenticationPrincipal UsuarioDetails userDetails) {
         if (userDetails == null) {
@@ -28,6 +31,9 @@ public class AuthController {
         return new UsuarioResponse(
                 userDetails.getUsuarioId(),
                 userDetails.getUsername(),
-                userDetails.isEnabled());
+                userDetails.isEnabled(),
+                userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()));
     }
 }

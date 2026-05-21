@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
@@ -62,7 +64,10 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
         if (principal instanceof UsuarioDetails usuarioDetails) {
             objectMapper.writeValue(response.getOutputStream(), Map.of(
                     "usuarioId", usuarioDetails.getUsuarioId(),
-                    "username", usuarioDetails.getUsername()));
+                    "username", usuarioDetails.getUsername(),
+                    "roles", usuarioDetails.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.toList())));
             return;
         }
 
