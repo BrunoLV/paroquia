@@ -3,11 +3,11 @@
 ## Phase 1: UI Permission Logic
 - [x] Task: Write failing tests for a utility function (e.g., `canManageEvent`) that determines if a user can edit/cancel an event based on their roles and the event's organization. 2f8521e
 - [x] Task: Implement the `canManageEvent` utility function to match the backend's authorization rules. 2f8521e
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: UI Permission Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: UI Permission Logic' (Protocol in workflow.md) 2f8521e
 
 ## Phase 2: Adapting EventRegistrationModal for Editing
-- [ ] Task: Write failing tests for `EventRegistrationModal` to ensure it correctly handles an 'edit mode' (e.g., pre-filling data, changing modal title to "Editar Evento").
-- [ ] Task: Update `EventRegistrationModal` to accept an optional existing event object and populate its initial state accordingly.
+- [x] Task: Write failing tests for `EventRegistrationModal` to ensure it correctly handles an 'edit mode' (e.g., pre-filling data, changing modal title to "Editar Evento"). 0ad4a56
+- [x] Task: Update `EventRegistrationModal` to accept an optional existing event object and populate its initial state accordingly. 0ad4a56
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Adapting EventRegistrationModal for Editing' (Protocol in workflow.md)
 
 ## Phase 3: Cancellation Flow
