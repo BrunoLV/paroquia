@@ -6,7 +6,6 @@ import {
   Button,
   Paper,
   Grid,
-  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -19,8 +18,6 @@ import {
   IconButton,
   Alert,
   Chip,
-  Fab,
-  Tooltip,
   AppBar,
   Toolbar,
   Card,
@@ -42,6 +39,7 @@ import {
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
+import EventRegistrationModal from '../components/EventRegistrationModal';
 
 // Types representing backend entities
 interface Evento {
@@ -82,8 +80,6 @@ const CATEGORIES = [
   'FORMATIVO',
   'ASSISTENCIAL',
 ];
-
-const STATUSES = ['RASCUNHO', 'CONFIRMADO', 'ADICIONADO_EXTRA', 'CANCELADO'];
 
 const getCategoryColor = (category: string) => {
   switch (category) {
@@ -154,14 +150,7 @@ const Calendar = () => {
 
   // Modal creation states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newDesc, setNewDesc] = useState('');
-  const [newCategory, setNewCategory] = useState('PASTORAL');
-  const [newOrgId, setNewOrgId] = useState('');
-  const [newStartDate, setNewStartDate] = useState('');
-  const [newEndDate, setNewEndDate] = useState('');
-  const [newStatus, setNewStatus] = useState('CONFIRMADO');
-  const [newJustification, setNewJustification] = useState('');
+  const [createInitialDate, setCreateInitialDate] = useState<Date | undefined>(undefined);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -252,11 +241,6 @@ const Calendar = () => {
         const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
         if (Array.isArray(orgsRes.data)) {
           setOrganizations(orgsRes.data);
-          // Set first active org as default for form
-          const activeOrgs = orgsRes.data.filter((o) => o.ativo);
-          if (activeOrgs.length > 0) {
-            setNewOrgId(activeOrgs[0].id);
-          }
         }
       }
     } catch (err: any) {
@@ -299,81 +283,18 @@ const Calendar = () => {
   // Open Event creation dialog with optional prefilled date
   const handleOpenCreate = (prefilledDate?: Date) => {
     setFormError('');
-    setNewTitle('');
-    setNewDesc('');
-    setNewCategory('PASTORAL');
-    setNewStatus('CONFIRMADO');
-    setNewJustification('');
-
-    // Default dates
-    const start = prefilledDate ? new Date(prefilledDate) : new Date();
-    start.setHours(9, 0, 0, 0);
-    const end = new Date(start);
-    end.setHours(10, 0, 0, 0);
-
-    // Format for datetime-local input: YYYY-MM-DDTHH:MM
-    const formatLocalDate = (d: Date) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const date = String(d.getDate()).padStart(2, '0');
-      const hours = String(d.getHours()).padStart(2, '0');
-      const mins = String(d.getMinutes()).padStart(2, '0');
-      return `${year}-${month}-${date}T${hours}:${mins}`;
-    };
-
-    setNewStartDate(formatLocalDate(start));
-    setNewEndDate(formatLocalDate(end));
-
-    if (organizations.length > 0 && !newOrgId) {
-      const activeOrgs = organizations.filter((o) => o.ativo);
-      if (activeOrgs.length > 0) {
-        setNewOrgId(activeOrgs[0].id);
-      } else {
-        setNewOrgId(organizations[0].id);
-      }
-    }
-
+    setCreateInitialDate(prefilledDate);
     setIsCreateOpen(true);
   };
 
   // Handle new event submission
-  const handleCreateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateSubmit = async (data: any) => {
     setFormError('');
-
-    if (!newTitle.trim()) {
-      setFormError('O título é obrigatório.');
-      return;
-    }
-    if (!newOrgId) {
-      setFormError('A organização responsável é obrigatória.');
-      return;
-    }
-    if (!newStartDate || !newEndDate) {
-      setFormError('As datas de início e fim são obrigatórias.');
-      return;
-    }
-
-    const start = new Date(newStartDate);
-    const end = new Date(newEndDate);
-
-    if (end <= start) {
-      setFormError('A data de término deve ser posterior à data de início.');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const requestData = {
-        titulo: newTitle,
-        descricao: newDesc,
-        categoria: newCategory,
-        organizacaoResponsavelId: newOrgId,
+        ...data,
         projetoId: null,
-        inicio: start.toISOString(),
-        fim: end.toISOString(),
-        status: newStatus,
-        adicionadoExtraJustificativa: newJustification || null,
         participantes: [],
       };
 
@@ -863,152 +784,16 @@ const Calendar = () => {
         )}
       </Dialog>
 
-      {/* Create Dialog Modal */}
-      <Dialog open={isCreateOpen} onClose={() => !isSubmitting && setIsCreateOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
-        <form onSubmit={handleCreateSubmit}>
-          <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
-            Criar Novo Evento
-          </DialogTitle>
-          <DialogContent sx={{ pt: 3 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-              {formError && (
-                <Alert severity="error" sx={{ borderRadius: '8px' }}>
-                  {formError}
-                </Alert>
-              )}
-
-              <TextField
-                required
-                label="Título do Evento"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                fullWidth
-                disabled={isSubmitting}
-                size="small"
-                slotProps={{ htmlInput: { maxLength: 160 } }}
-              />
-
-              <TextField
-                label="Descrição"
-                value={newDesc}
-                onChange={(e) => setNewDesc(e.target.value)}
-                multiline
-                rows={3}
-                fullWidth
-                disabled={isSubmitting}
-                size="small"
-                slotProps={{ htmlInput: { maxLength: 4000 } }}
-              />
-
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 6 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel id="new-cat-label">Categoria</InputLabel>
-                    <Select
-                      labelId="new-cat-label"
-                      value={newCategory}
-                      label="Categoria"
-                      onChange={(e) => setNewCategory(e.target.value)}
-                      disabled={isSubmitting}
-                    >
-                      {CATEGORIES.map((cat) => (
-                        <MenuItem key={cat} value={cat}>
-                          {cat}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid size={{ xs: 6 }}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel id="new-status-label">Status</InputLabel>
-                    <Select
-                      labelId="new-status-label"
-                      value={newStatus}
-                      label="Status"
-                      onChange={(e) => setNewStatus(e.target.value)}
-                      disabled={isSubmitting}
-                    >
-                      {STATUSES.map((st) => (
-                        <MenuItem key={st} value={st}>
-                          {st}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-
-              <FormControl fullWidth size="small" required>
-                <InputLabel id="new-org-label">Organização Responsável</InputLabel>
-                <Select
-                  labelId="new-org-label"
-                  value={newOrgId}
-                  label="Organização Responsável"
-                  onChange={(e) => setNewOrgId(e.target.value)}
-                  disabled={isSubmitting}
-                >
-                  {organizations
-                    .filter((org) => org.ativo)
-                    .map((org) => (
-                      <MenuItem key={org.id} value={org.id}>
-                        {org.nome}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 6 }}>
-                  <TextField
-                    required
-                    label="Data e Hora de Início"
-                    type="datetime-local"
-                    value={newStartDate}
-                    onChange={(e) => setNewStartDate(e.target.value)}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    fullWidth
-                    disabled={isSubmitting}
-                    size="small"
-                  />
-                </Grid>
-                <Grid size={{ xs: 6 }}>
-                  <TextField
-                    required
-                    label="Data e Hora de Término"
-                    type="datetime-local"
-                    value={newEndDate}
-                    onChange={(e) => setNewEndDate(e.target.value)}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    fullWidth
-                    disabled={isSubmitting}
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-
-              <TextField
-                label="Justificativa Extra (Opcional)"
-                value={newJustification}
-                onChange={(e) => setNewJustification(e.target.value)}
-                placeholder="Preencha caso seja um agendamento extraordinário"
-                fullWidth
-                disabled={isSubmitting}
-                size="small"
-                slotProps={{ htmlInput: { maxLength: 4000 } }}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
-            <Button onClick={() => setIsCreateOpen(false)} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600 }}>
-              Cancelar
-            </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ fontWeight: 600, borderRadius: '8px' }}>
-              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Criar Evento'}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      {/* Create Dialog Modal Component */}
+      <EventRegistrationModal
+        open={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onSubmit={handleCreateSubmit}
+        isSubmitting={isSubmitting}
+        organizations={organizations.filter(org => org.ativo)}
+        initialDate={createInitialDate}
+        error={formError}
+      />
     </Box>
   );
 };
