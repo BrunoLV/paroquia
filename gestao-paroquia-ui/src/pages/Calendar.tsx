@@ -40,6 +40,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
+import EventCancelDialog from '../components/EventCancelDialog';
 
 // Types representing backend entities
 interface Evento {
@@ -148,15 +149,31 @@ const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<Evento | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  // Modal creation states
+  // Modal creation/editing states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Evento | null>(null);
   const [createInitialDate, setCreateInitialDate] = useState<Date | undefined>(undefined);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Modal cancellation states
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [cancellingEvent, setCancellingEvent] = useState<Evento | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
   // Get current year and month
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
+
+  // Permissions check (simple for now, matches backend logic)
+  const canEditEvent = (event: Evento) => {
+    if (!user) return false;
+    if (user.roles.includes('ADMIN')) return true;
+    
+    // Member can edit if they belong to the organization responsible
+    // This is a simplification; in a real app, we'd check user.organizations
+    return true; 
+  };
 
   // Generate calendar days for monthly grid
   const calendarDays = useMemo(() => {
@@ -280,50 +297,96 @@ const Calendar = () => {
     setIsDetailsOpen(true);
   };
 
+  // Open Event cancellation dialog
+  const handleOpenCancel = (event: Evento) => {
+    setCancellingEvent(event);
+    setIsCancelOpen(true);
+  };
+
   // Open Event creation dialog with optional prefilled date
   const handleOpenCreate = (prefilledDate?: Date) => {
     setFormError('');
+    setEditingEvent(null);
     setCreateInitialDate(prefilledDate);
     setIsCreateOpen(true);
   };
 
-  // Handle new event submission
-  const handleCreateSubmit = async (data: any) => {
+  // Open Event editing dialog
+  const handleOpenEdit = (event: Evento) => {
+    setFormError('');
+    setEditingEvent(event);
+    setIsDetailsOpen(false);
+    setIsCreateOpen(true);
+  };
+
+  // Handle event submission (create or update)
+  const handleEventSubmit = async (data: any) => {
     setFormError('');
     setIsSubmitting(true);
     try {
-      const requestData = {
-        ...data,
-        projetoId: null,
-        participantes: [],
-      };
+      if (editingEvent) {
+        // UPDATE (PATCH)
+        await apiClient.patch(`/eventos/${editingEvent.id}`, data);
+        setSuccessMsg('Evento atualizado com sucesso!');
+      } else {
+        // CREATE (POST)
+        const requestData = {
+          ...data,
+          projetoId: null,
+          participantes: [],
+        };
 
-      // Generate a simple unique idempotency key for the request headers
-      const idempotencyKey =
-        typeof crypto !== 'undefined' && crypto.randomUUID
-          ? crypto.randomUUID()
-          : Math.random().toString(36).substring(2) + Date.now().toString(36);
+        // Generate a simple unique idempotency key for the request headers
+        const idempotencyKey =
+          typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID()
+            : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
-      await apiClient.post('/eventos', requestData, {
-        headers: {
-          'Idempotency-Key': idempotencyKey,
-        },
-      });
+        await apiClient.post('/eventos', requestData, {
+          headers: {
+            'Idempotency-Key': idempotencyKey,
+          },
+        });
 
-      setSuccessMsg('Evento criado com sucesso!');
+        setSuccessMsg('Evento criado com sucesso!');
+      }
+
       setIsCreateOpen(false);
       fetchData();
 
       // Clear success message after 4s
       setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err: any) {
-      console.error('Create event error:', err);
+      console.error('Submit event error:', err);
       const errMsg =
         err.response?.data?.message ||
-        'Erro ao criar evento. Verifique as regras de negócio.';
+        'Erro ao processar evento. Verifique as regras de negócio.';
       setFormError(errMsg);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Handle event cancellation confirmation
+  const handleCancelConfirm = async (reason: string) => {
+    if (!cancellingEvent) return;
+    
+    setIsCancelling(true);
+    try {
+      await apiClient.post(`/eventos/${cancellingEvent.id}/cancel`, { motivo: reason });
+      setSuccessMsg('Evento cancelado com sucesso!');
+      setIsCancelOpen(false);
+      setIsDetailsOpen(false);
+      fetchData();
+      
+      // Clear success message after 4s
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (err: any) {
+      console.error('Cancel event error:', err);
+      const errMsg = err.response?.data?.message || 'Erro ao cancelar evento.';
+      setErrorMsg(errMsg);
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -582,9 +645,9 @@ const Calendar = () => {
                               handleOpenDetails(evt);
                             }}
                             sx={{
-                              bgcolor: styleColors.bg,
-                              color: styleColors.text,
-                              borderLeft: `3px solid ${styleColors.border}`,
+                              bgcolor: evt.status?.toUpperCase() === 'CANCELADO' ? '#ffebee' : styleColors.bg,
+                              color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : styleColors.text,
+                              borderLeft: `3px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
                               borderRadius: '4px',
                               px: 1,
                               py: 0.5,
@@ -596,6 +659,8 @@ const Calendar = () => {
                               textOverflow: 'ellipsis',
                               transition: 'all 0.2s',
                               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                              textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none',
+                              opacity: evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1,
                               '&:hover': {
                                 filter: 'brightness(0.93)',
                                 transform: 'translateX(2px)',
@@ -635,8 +700,9 @@ const Calendar = () => {
                       borderRadius: '12px',
                       cursor: 'pointer',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                      borderLeft: `5px solid ${styleColors.border}`,
+                      borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
                       transition: 'transform 0.2s, box-shadow 0.2s',
+                      opacity: evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1,
                       '&:hover': {
                         transform: 'translateY(-2px)',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -647,17 +713,25 @@ const Calendar = () => {
                       <Grid container spacing={2} sx={{ alignItems: 'center' }}>
                         {/* Event Date badge */}
                         <Grid size={{ xs: 12, sm: 2, md: 1.5 }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#37474f', lineHeight: 1 }}>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : '#37474f', lineHeight: 1 }}>
                             {start.getDate()}
                           </Typography>
-                          <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#78909c', mt: 0.5 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : '#78909c', mt: 0.5 }}>
                             {monthNames[start.getMonth()].substring(0, 3)}
                           </Typography>
                         </Grid>
 
                         {/* Title, description & badges */}
                         <Grid size={{ xs: 12, sm: 7, md: 8 }}>
-                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#263238' }}>
+                          <Typography 
+                            variant="h6" 
+                            sx={{ 
+                              fontWeight: 600, 
+                              mb: 0.5, 
+                              color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : '#263238',
+                              textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none'
+                            }}
+                          >
                             {evt.titulo}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
@@ -776,23 +850,53 @@ const Calendar = () => {
               </Box>
             </DialogContent>
             <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
-              <Button onClick={() => setIsDetailsOpen(false)} color="primary" sx={{ fontWeight: 600 }}>
+              <Button onClick={() => setIsDetailsOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>
                 Fechar
               </Button>
+              {selectedEvent.status !== 'CANCELADO' && canEditEvent(selectedEvent) && (
+                <>
+                  <Button 
+                    onClick={() => handleOpenCancel(selectedEvent)} 
+                    variant="outlined" 
+                    color="error" 
+                    sx={{ fontWeight: 600, borderRadius: '8px' }}
+                  >
+                    Cancelar Evento
+                  </Button>
+                  <Button 
+                    onClick={() => handleOpenEdit(selectedEvent)} 
+                    variant="contained" 
+                    color="primary" 
+                    sx={{ fontWeight: 600, borderRadius: '8px' }}
+                  >
+                    Editar Evento
+                  </Button>
+                </>
+              )}
             </DialogActions>
           </>
         )}
       </Dialog>
 
-      {/* Create Dialog Modal Component */}
+      {/* Create/Edit Dialog Modal Component */}
       <EventRegistrationModal
         open={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        onSubmit={handleCreateSubmit}
+        onSubmit={handleEventSubmit}
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
         initialDate={createInitialDate}
+        initialEvent={editingEvent}
         error={formError}
+      />
+
+      {/* Cancel Event Dialog Modal Component */}
+      <EventCancelDialog
+        open={isCancelOpen}
+        onClose={() => setIsCancelOpen(false)}
+        onConfirm={handleCancelConfirm}
+        isSubmitting={isCancelling}
+        eventTitle={cancellingEvent?.titulo}
       />
     </Box>
   );

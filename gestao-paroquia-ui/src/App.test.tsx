@@ -13,6 +13,6 @@ test('renders Gestão Paróquia heading', async () => {
     render(<App />);
   });
 
-  const headerElement = screen.getByText(/Gestão Paróquia/i);
+  const headerElement = screen.getByText(/Gestão Paroquial/i);
   expect(headerElement).toBeInTheDocument();
 });
