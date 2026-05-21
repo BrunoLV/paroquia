@@ -1,0 +1,4 @@
+Task: Frontend AuthContext Updates
+Summary: Updated User interface to include organizations. Refactored AuthProvider to correctly parse and store organization data from backend during login and session recovery. Added unit tests to verify the new state.
+Files: gestao-paroquia-ui/src/auth/AuthContext.tsx, gestao-paroquia-ui/src/auth/AuthContext.test.tsx
+Why: To make the user's organization context available globally in the UI for permission and data filtering logic.
