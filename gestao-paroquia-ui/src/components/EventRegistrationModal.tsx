@@ -32,6 +32,18 @@ interface Organizacao {
   nome: string;
 }
 
+interface Evento {
+  id: string;
+  titulo: string;
+  descricao: string;
+  categoria: string;
+  organizacaoResponsavelId: string;
+  inicio: string;
+  fim: string;
+  status: string;
+  adicionadoExtraJustificativa?: string | null;
+}
+
 interface EventRegistrationModalProps {
   open: boolean;
   onClose: () => void;
@@ -39,6 +51,7 @@ interface EventRegistrationModalProps {
   isSubmitting?: boolean;
   organizations: Organizacao[];
   initialDate?: Date;
+  initialEvent?: Evento | null;
   error?: string;
 }
 
@@ -49,6 +62,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   isSubmitting = false,
   organizations = [],
   initialDate,
+  initialEvent,
   error,
 }) => {
   const [title, setTitle] = useState('');
@@ -60,41 +74,53 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [status, setStatus] = useState('CONFIRMADO');
   const [justification, setJustification] = useState('');
 
-  // Reset form or set initial values when modal opens
+  const formatLocalDate = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const date = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${date}T${hours}:${mins}`;
+  };
+
+  const formatIsoToLocal = (isoString: string) => {
+    if (!isoString) return '';
+    return formatLocalDate(new Date(isoString));
+  };
+
+  // Reset form or set initial values when modal opens or initialEvent changes
   useEffect(() => {
     if (open) {
-      setTitle('');
-      setDescription('');
-      setCategory('PASTORAL');
-      setStatus('CONFIRMADO');
-      setJustification('');
-      
-      const start = initialDate ? new Date(initialDate) : new Date();
-      start.setHours(9, 0, 0, 0);
-      const end = new Date(start);
-      end.setHours(10, 0, 0, 0);
+      if (initialEvent) {
+        setTitle(initialEvent.titulo || '');
+        setDescription(initialEvent.descricao || '');
+        setCategory(initialEvent.categoria || 'PASTORAL');
+        setOrgId(initialEvent.organizacaoResponsavelId || '');
+        setStartDate(formatIsoToLocal(initialEvent.inicio));
+        setEndDate(formatIsoToLocal(initialEvent.fim));
+        setStatus(initialEvent.status || 'CONFIRMADO');
+        setJustification(initialEvent.adicionadoExtraJustificativa || '');
+      } else {
+        setTitle('');
+        setDescription('');
+        setCategory('PASTORAL');
+        setStatus('CONFIRMADO');
+        setJustification('');
+        
+        const start = initialDate ? new Date(initialDate) : new Date();
+        start.setHours(9, 0, 0, 0);
+        const end = new Date(start);
+        end.setHours(10, 0, 0, 0);
 
-      const formatLocalDate = (d: Date) => {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const date = String(d.getDate()).padStart(2, '0');
-        const hours = String(d.getHours()).padStart(2, '0');
-        const mins = String(d.getMinutes()).padStart(2, '0');
-        return `${year}-${month}-${date}T${hours}:${mins}`;
-      };
+        setStartDate(formatLocalDate(start));
+        setEndDate(formatLocalDate(end));
 
-      setStartDate(formatLocalDate(start));
-      setEndDate(formatLocalDate(end));
-
-      if (organizations.length > 0) {
-        setOrgId(organizations[0].id);
+        if (organizations.length > 0) {
+          setOrgId(organizations[0].id);
+        }
       }
     }
-  }, [open, initialDate, organizations]);
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
+  }, [open, initialDate, initialEvent, organizations]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +140,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
       <form onSubmit={handleFormSubmit}>
         <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
-          Criar Novo Evento
+          {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
@@ -249,7 +275,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             Cancelar
           </Button>
           <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ fontWeight: 600, borderRadius: '8px' }}>
-            Criar Evento
+            {initialEvent ? 'Salvar Alterações' : 'Criar Evento'}
           </Button>
         </DialogActions>
       </form>
