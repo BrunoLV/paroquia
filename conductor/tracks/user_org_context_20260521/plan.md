@@ -1,13 +1,13 @@
 # Implementation Plan: User Organization Context in Session
 
-## Phase 1: Backend API Update
+## Phase 1: Backend API Update [checkpoint: 6f8dbc7]
 - [x] Task: Update the `Usuario` and `UsuarioResponseDTO` models in `gestao-paroquia` to include a list of `Organizacao` associations. f2c9270
 - [x] Task: Update the `/auth/me` endpoint logic to fetch and map the user's organizations into the response payload. f2c9270
 - [x] Task: Write/update unit and integration tests in the backend to ensure the organizations are returned correctly for authenticated users. f2c9270
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend API Update' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend API Update' (Protocol in workflow.md) 6f8dbc7
 
 ## Phase 2: Frontend AuthContext Updates
-- [ ] Task: Update the `User` interface in `gestao-paroquia-ui/src/auth/AuthContext.tsx` to include an `organizations` array.
+- [~] Task: Update the `User` interface in `gestao-paroquia-ui/src/auth/AuthContext.tsx` to include an `organizations` array.
 - [ ] Task: Update the login and session restoration logic in `AuthContext` to correctly parse and store the organizations from the backend response.
 - [ ] Task: Update frontend unit tests for `AuthContext` to verify the new organization state.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend AuthContext Updates' (Protocol in workflow.md)
