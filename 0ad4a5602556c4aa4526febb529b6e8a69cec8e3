@@ -1,0 +1,9 @@
+Task: Update EventRegistrationModal to accept an optional existing event object and populate its initial state accordingly.
+Summary:
+- Modified EventRegistrationModal to accept an initialEvent prop.
+- Added logic to pre-fill form fields and change the title/submit button label when an event is provided.
+- Added a test case to verify correct rendering in edit mode.
+Files:
+- gestao-paroquia-ui/src/components/EventRegistrationModal.tsx
+- gestao-paroquia-ui/src/components/EventRegistrationModal.test.tsx
+Why: To support editing existing events as part of the CRUD functionality.
