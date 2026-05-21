@@ -1,0 +1,8 @@
+{
+  "track_id": "event_editing_cancellation_20260520",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-20T18:00:00Z",
+  "updated_at": "2026-05-20T18:00:00Z",
+  "description": "necessário criar na ui a possibilidade de edição e cancelamento do evento conforme regras já estabelicidas na api"
+}
