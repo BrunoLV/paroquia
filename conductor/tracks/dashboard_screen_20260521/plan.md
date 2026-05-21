@@ -1,11 +1,11 @@
 # Implementation Plan: Dashboard Screen
 
-## Phase 1: Routing and Navigation Updates
+## Phase 1: Routing and Navigation Updates [checkpoint: 25f1914]
 - [x] Task: Write failing tests for App routing and Login redirection to verify they point to `/dashboard`. c8b0089
 - [x] Task: Update `App.tsx` routes to include `/dashboard` and redirect `/` to `/dashboard`. c8b0089
 - [x] Task: Update `Login.tsx` to redirect the user to `/dashboard` upon successful authentication instead of `/calendar`. c8b0089
 - [x] Task: Update the main application layout/sidebar to include a navigation link for the Dashboard and ensure the Calendar link points to `/calendar`. c8b0089
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Routing and Navigation Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Routing and Navigation Updates' (Protocol in workflow.md) 25f1914
 
 ## Phase 2: Dashboard Skeleton and Layout
 - [ ] Task: Write failing tests for a new `Dashboard.tsx` page to ensure it renders without crashing and contains the expected grid layout for widgets.
