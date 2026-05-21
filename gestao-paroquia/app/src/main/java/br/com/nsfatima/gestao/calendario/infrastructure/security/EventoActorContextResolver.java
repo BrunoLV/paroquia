@@ -32,6 +32,18 @@ public class EventoActorContextResolver {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof UsuarioDetails usuarioDetails) {
+            boolean isAdmin = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (isAdmin) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelOrganizacional.PAROCO.storedValue(),
+                        TipoOrganizacao.CLERO.name(),
+                        null,
+                        usuarioDetails.getUsuarioId());
+            }
+
             ExternalMembershipReader.Membership membership = usuarioDetails.getMemberships().stream()
                     .filter(m -> authorizationPolicy.isRoleAllowed(m.organizationType(), m.role()))
                     .findFirst()
