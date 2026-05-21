@@ -1,0 +1,6 @@
+Task: Write failing test for EventRegistrationModal rendering and open/close behavior.
+Summary: Created a new EventRegistrationModal component and its corresponding test file. Verified that the modal correctly renders and handles the close action.
+Files:
+- gestao-paroquia-ui/src/components/EventRegistrationModal.tsx
+- gestao-paroquia-ui/src/components/EventRegistrationModal.test.tsx
+Why: Foundation for the event registration feature, following TDD.
