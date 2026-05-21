@@ -3,7 +3,11 @@ import { Paper, Typography, Button, Stack } from '@mui/material';
 import { Add as AddIcon, CalendarMonth as CalendarIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-const QuickActions = () => {
+interface QuickActionsProps {
+  onNewEvent?: () => void;
+}
+
+const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
   const navigate = useNavigate();
 
   return (
@@ -17,7 +21,7 @@ const QuickActions = () => {
           fullWidth
           startIcon={<AddIcon />}
           sx={{ borderRadius: '8px', textTransform: 'none', py: 1 }}
-          onClick={() => navigate('/calendar')} // Temporarily navigating to calendar
+          onClick={onNewEvent}
         >
           Novo Evento
         </Button>
