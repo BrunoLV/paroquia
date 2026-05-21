@@ -1,0 +1,5 @@
+Task: Implement Calendar integration to pass tests.
+Summary: Refactored Calendar.tsx to use the new EventRegistrationModal component. Removed over 200 lines of redundant code (form state and inline dialog) from the Calendar page. Verified integration with existing tests.
+Files:
+- gestao-paroquia-ui/src/pages/Calendar.tsx
+Why: Improving code maintainability by separating concerns and centralizing event registration logic.
