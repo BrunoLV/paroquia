@@ -6,8 +6,7 @@ import theme from './theme';
 import { QueryProvider } from './api/QueryProvider';
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
-import Login from './pages/Login';
-import Calendar from './pages/Calendar';
+import AppRoutes from './AppRoutes';
 import './App.css';
 
 function App() {
@@ -17,19 +16,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/calendar"
-                element={
-                  <ProtectedRoute>
-                    <Calendar />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/dashboard" element={<Navigate to="/calendar" replace />} />
-              <Route path="/" element={<Navigate to="/calendar" replace />} />
-            </Routes>
+            <AppRoutes />
           </BrowserRouter>
         </ThemeProvider>
       </AuthProvider>

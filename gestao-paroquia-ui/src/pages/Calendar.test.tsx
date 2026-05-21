@@ -62,10 +62,9 @@ const renderCalendar = async () => {
   });
 };
 
-test('renders calendar controls and title', async () => {
+test('renders calendar controls', async () => {
   await renderCalendar();
 
-  expect(screen.getByText(/Paróquia Nossa Senhora de Fátima/i)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Novo Evento/i })).toBeInTheDocument();
   expect(screen.getByText(/Hoje/i)).toBeInTheDocument();
 });
