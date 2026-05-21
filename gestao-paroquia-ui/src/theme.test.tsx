@@ -15,7 +15,7 @@ test('theme should have custom primary color', () => {
     </ThemeProvider>
   );
   const colorElement = screen.getByTestId('primary-color');
-  expect(colorElement.textContent).toBe('#2e7d32');
+  expect(colorElement.textContent).toBe('#1A237E');
 });
 
 
