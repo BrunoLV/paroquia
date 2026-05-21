@@ -1,8 +1,8 @@
 # Implementation Plan: Event Editing and Cancellation UI
 
 ## Phase 1: UI Permission Logic
-- [ ] Task: Write failing tests for a utility function (e.g., `canManageEvent`) that determines if a user can edit/cancel an event based on their roles and the event's organization.
-- [ ] Task: Implement the `canManageEvent` utility function to match the backend's authorization rules.
+- [x] Task: Write failing tests for a utility function (e.g., `canManageEvent`) that determines if a user can edit/cancel an event based on their roles and the event's organization. 2f8521e
+- [x] Task: Implement the `canManageEvent` utility function to match the backend's authorization rules. 2f8521e
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: UI Permission Logic' (Protocol in workflow.md)
 
 ## Phase 2: Adapting EventRegistrationModal for Editing
