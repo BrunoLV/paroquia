@@ -8,15 +8,15 @@
 ## Phase 2: Adapting EventRegistrationModal for Editing
 - [x] Task: Write failing tests for `EventRegistrationModal` to ensure it correctly handles an 'edit mode' (e.g., pre-filling data, changing modal title to "Editar Evento"). 0ad4a56
 - [x] Task: Update `EventRegistrationModal` to accept an optional existing event object and populate its initial state accordingly. 0ad4a56
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Adapting EventRegistrationModal for Editing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Adapting EventRegistrationModal for Editing' (Protocol in workflow.md) 34bf9f8
 
 ## Phase 3: Cancellation Flow
-- [ ] Task: Write failing tests for a new `EventCancelDialog` component, ensuring the reason field is mandatory.
-- [ ] Task: Implement the `EventCancelDialog` component using Material UI Dialog.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Cancellation Flow' (Protocol in workflow.md)
+- [x] Task: Write failing tests for a new `EventCancelDialog` component, ensuring the reason field is mandatory. 34bf9f8
+- [x] Task: Implement the `EventCancelDialog` component using Material UI Dialog. 34bf9f8
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Cancellation Flow' (Protocol in workflow.md) 34bf9f8
 
 ## Phase 4: Calendar Integration and API Calls
-- [ ] Task: Write failing tests for the Calendar page to verify that Edit/Cancel buttons are conditionally rendered in the Details Modal based on permissions.
-- [ ] Task: Update the Calendar page to integrate the 'edit mode' of the `EventRegistrationModal` and handle the `PATCH` API call.
-- [ ] Task: Update the Calendar page to integrate the `EventCancelDialog` and handle the `POST /{eventoId}/cancel` API call.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Calendar Integration and API Calls' (Protocol in workflow.md)
+- [x] Task: Write failing tests for the Calendar page to verify that Edit/Cancel buttons are conditionally rendered in the Details Modal based on permissions. 34bf9f8
+- [x] Task: Update the Calendar page to integrate the 'edit mode' of the `EventRegistrationModal` and handle the `PATCH` API call. 34bf9f8
+- [x] Task: Update the Calendar page to integrate the `EventCancelDialog` and handle the `POST /{eventoId}/cancel` API call. 34bf9f8
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Calendar Integration and API Calls' (Protocol in workflow.md) 34bf9f8
