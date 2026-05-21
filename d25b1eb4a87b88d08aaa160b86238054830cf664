@@ -1,0 +1,5 @@
+Task: Implement EventRegistrationModal using Material UI Dialog to pass tests.
+Summary: Fully implemented the basic form fields (Title, Description, Category, Organization, Start/End Dates) in the EventRegistrationModal component. Refactored state management to be local to the component.
+Files:
+- gestao-paroquia-ui/src/components/EventRegistrationModal.tsx
+Why: Migrating form logic from Calendar to a dedicated component for better maintainability and to prepare for advanced features.
