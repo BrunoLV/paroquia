@@ -3,8 +3,8 @@
 ## Phase 1: Setup and Basic Modal UI
 - [x] Task: Write failing test for `EventRegistrationModal` rendering and open/close behavior. f468a7f
 - [x] Task: Implement `EventRegistrationModal` using Material UI Dialog to pass tests. d25b1eb
-- [ ] Task: Write failing test for Calendar view integrating the 'New Event' button and modal state.
-- [ ] Task: Implement Calendar integration to pass tests.
+- [x] Task: Write failing test for Calendar view integrating the 'New Event' button and modal state. ba6d950
+- [x] Task: Implement Calendar integration to pass tests. ba6d950
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup and Basic Modal UI' (Protocol in workflow.md)
 
 ## Phase 2: Form Structure and Basic Info
