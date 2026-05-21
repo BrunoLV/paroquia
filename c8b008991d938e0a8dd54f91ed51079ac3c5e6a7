@@ -1,0 +1,4 @@
+Task: Routing and Navigation Updates
+Summary: Implemented /dashboard route, root redirection, and extracted a common Layout component with navigation buttons.
+Files: src/App.tsx, src/AppRoutes.tsx, src/pages/Login.tsx, src/pages/Calendar.tsx, src/components/Layout.tsx, src/pages/Dashboard.tsx, src/routing.test.tsx
+Why: To establish the foundational routing for the new dashboard and ensure consistent navigation across the app.
