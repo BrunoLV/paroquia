@@ -65,8 +65,8 @@ const Dashboard = () => {
         setEvents(eventsRes.data);
       }
 
-      if (Array.isArray(orgsRes.data)) {
-        setOrganizations(orgsRes.data);
+      if (orgsRes.data && Array.isArray(orgsRes.data)) {
+        setOrganizations(orgsRes.data.filter(org => org.ativo));
       }
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
@@ -148,7 +148,7 @@ const Dashboard = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateEvent}
         isSubmitting={isSubmitting}
-        organizations={organizations.filter(org => org.ativo)}
+        organizations={organizations}
         error={modalError}
       />
     </Box>
