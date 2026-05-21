@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,6 +12,7 @@ import {
   Select,
   MenuItem,
   Grid,
+  Alert,
 } from '@mui/material';
 
 const CATEGORIES = [
@@ -23,6 +24,8 @@ const CATEGORIES = [
   'FORMATIVO',
   'ASSISTENCIAL',
 ];
+
+const STATUSES = ['RASCUNHO', 'CONFIRMADO', 'ADICIONADO_EXTRA', 'CANCELADO'];
 
 interface Organizacao {
   id: string;
@@ -36,6 +39,7 @@ interface EventRegistrationModalProps {
   isSubmitting?: boolean;
   organizations: Organizacao[];
   initialDate?: Date;
+  error?: string;
 }
 
 const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
@@ -44,6 +48,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   onSubmit,
   isSubmitting = false,
   organizations = [],
+  initialDate,
+  error,
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -51,6 +57,44 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [orgId, setOrgId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [status, setStatus] = useState('CONFIRMADO');
+  const [justification, setJustification] = useState('');
+
+  // Reset form or set initial values when modal opens
+  useEffect(() => {
+    if (open) {
+      setTitle('');
+      setDescription('');
+      setCategory('PASTORAL');
+      setStatus('CONFIRMADO');
+      setJustification('');
+      
+      const start = initialDate ? new Date(initialDate) : new Date();
+      start.setHours(9, 0, 0, 0);
+      const end = new Date(start);
+      end.setHours(10, 0, 0, 0);
+
+      const formatLocalDate = (d: Date) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const date = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const mins = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${date}T${hours}:${mins}`;
+      };
+
+      setStartDate(formatLocalDate(start));
+      setEndDate(formatLocalDate(end));
+
+      if (organizations.length > 0) {
+        setOrgId(organizations[0].id);
+      }
+    }
+  }, [open, initialDate, organizations]);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,17 +105,25 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       organizacaoResponsavelId: orgId,
       inicio: startDate ? new Date(startDate).toISOString() : '',
       fim: endDate ? new Date(endDate).toISOString() : '',
+      status,
+      adicionadoExtraJustificativa: justification || null,
     });
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
+    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
       <form onSubmit={handleFormSubmit}>
         <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
           Criar Novo Evento
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            {error && (
+              <Alert severity="error" sx={{ borderRadius: '8px' }}>
+                {error}
+              </Alert>
+            )}
+            
             <TextField
               required
               label="Título do Evento"
@@ -115,24 +167,41 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small" required>
-                  <InputLabel id="new-org-label">Organização Responsável</InputLabel>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="new-status-label">Status</InputLabel>
                   <Select
-                    labelId="new-org-label"
-                    value={orgId}
-                    label="Organização Responsável"
-                    onChange={(e) => setOrgId(e.target.value)}
+                    labelId="new-status-label"
+                    value={status}
+                    label="Status"
+                    onChange={(e) => setStatus(e.target.value)}
                     disabled={isSubmitting}
                   >
-                    {organizations.map((org) => (
-                      <MenuItem key={org.id} value={org.id}>
-                        {org.nome}
+                    {STATUSES.map((st) => (
+                      <MenuItem key={st} value={st}>
+                        {st}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
             </Grid>
+
+            <FormControl fullWidth size="small" required>
+              <InputLabel id="new-org-label">Organização Responsável</InputLabel>
+              <Select
+                labelId="new-org-label"
+                value={orgId}
+                label="Organização Responsável"
+                onChange={(e) => setOrgId(e.target.value)}
+                disabled={isSubmitting}
+              >
+                {organizations.map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
@@ -162,6 +231,17 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 />
               </Grid>
             </Grid>
+
+            <TextField
+              label="Justificativa Extra (Opcional)"
+              value={justification}
+              onChange={(e) => setJustification(e.target.value)}
+              placeholder="Preencha caso seja um agendamento extraordinário"
+              fullWidth
+              disabled={isSubmitting}
+              size="small"
+              slotProps={{ htmlInput: { maxLength: 4000 } }}
+            />
           </Box>
         </DialogContent>
         <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>

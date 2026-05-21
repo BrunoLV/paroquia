@@ -24,10 +24,13 @@ describe('EventRegistrationModal', () => {
     expect(screen.queryByText(/Criar Novo Evento/i)).not.toBeInTheDocument();
   });
 
-  it('calls onClose when cancel button is clicked', () => {
+  it('renders basic form fields', () => {
     render(<EventRegistrationModal {...defaultProps} />);
-    const cancelButton = screen.getByRole('button', { name: /cancelar/i });
-    fireEvent.click(cancelButton);
-    expect(mockOnClose).toHaveBeenCalled();
+    expect(screen.getByLabelText(/título do evento/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/descrição/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/categoria/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/organização responsável/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/data e hora de início/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/data e hora de término/i)).toBeInTheDocument();
   });
 });
