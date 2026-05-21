@@ -7,14 +7,14 @@
 - [x] Task: Update the main application layout/sidebar to include a navigation link for the Dashboard and ensure the Calendar link points to `/calendar`. c8b0089
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Routing and Navigation Updates' (Protocol in workflow.md) 25f1914
 
-## Phase 2: Dashboard Skeleton and Layout
+## Phase 2: Dashboard Skeleton and Layout [checkpoint: a4560d1]
 - [x] Task: Write failing tests for a new `Dashboard.tsx` page to ensure it renders without crashing and contains the expected grid layout for widgets. 9de7f73
 - [x] Task: Create the `Dashboard.tsx` page component using Material UI Grid/Stack to define the layout areas for Summary Cards, Quick Actions, Upcoming Events, and Pending Approvals. 9de7f73
 - [x] Task: Create basic placeholder/mock components for each of the dashboard widgets to establish the visual structure. 9de7f73
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Dashboard Skeleton and Layout' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Dashboard Skeleton and Layout' (Protocol in workflow.md) a4560d1
 
 ## Phase 3: Component Implementation and Data Integration
-- [ ] Task: Write failing tests for the dashboard widgets, verifying they display data correctly when provided with mock API responses.
+- [~] Task: Write failing tests for the dashboard widgets, verifying they display data correctly when provided with mock API responses.
 - [ ] Task: Implement the "Quick Actions" widget to provide navigation buttons (e.g., to the "New Event" modal).
 - [ ] Task: Implement the "Upcoming Events" widget to fetch and display the user's immediate schedule using the existing `apiClient`.
 - [ ] Task: Implement the "Summary Cards" and "Pending Approvals" widgets (using mock data or simplified endpoints if specific aggregation endpoints don't exist yet).
