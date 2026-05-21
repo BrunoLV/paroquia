@@ -6,14 +6,14 @@
 - [x] Task: Write/update unit and integration tests in the backend to ensure the organizations are returned correctly for authenticated users. f2c9270
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend API Update' (Protocol in workflow.md) 6f8dbc7
 
-## Phase 2: Frontend AuthContext Updates
+## Phase 2: Frontend AuthContext Updates [checkpoint: 3a61267]
 - [x] Task: Update the `User` interface in `gestao-paroquia-ui/src/auth/AuthContext.tsx` to include an `organizations` array. be0ef88
 - [x] Task: Update the login and session restoration logic in `AuthContext` to correctly parse and store the organizations from the backend response. 2c46799
 - [x] Task: Update frontend unit tests for `AuthContext` to verify the new organization state. 2c46799
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend AuthContext Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend AuthContext Updates' (Protocol in workflow.md) 3a61267
 
 ## Phase 3: UI Form Restrictions
-- [ ] Task: Update the `EventRegistrationModal` component to filter the available organizations in the "Responsible Organization" dropdown. If the user is not an `ADMIN`, only display the organizations present in `user.organizations`.
+- [~] Task: Update the `EventRegistrationModal` component to filter the available organizations in the "Responsible Organization" dropdown. If the user is not an `ADMIN`, only display the organizations present in `user.organizations`.
 - [ ] Task: Update the unit tests for `EventRegistrationModal` to verify the dropdown options restrict correctly based on the user's roles and organizations.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Form Restrictions' (Protocol in workflow.md)
 
