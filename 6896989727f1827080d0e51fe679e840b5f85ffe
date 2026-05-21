@@ -1,0 +1,5 @@
+Task: Write/update tests in theme.test.tsx to verify the new theme colors.
+Summary: Updated the test to expect the new #1A237E color value.
+Files:
+- gestao-paroquia-ui/src/theme.test.tsx
+Why: To ensure the test suite reflects the new visual identity requirements.
