@@ -1,0 +1,5 @@
+Task: Update the Material UI theme.ts file to define the new Primary (Marian Blue) and Secondary (Gold/Yellow) color palettes.
+Summary: Updated theme.ts with #1A237E (Marian Blue) as primary and #FFB300 (Gold) as secondary.
+Files:
+- gestao-paroquia-ui/src/theme.ts
+Why: Aligning the application's visual identity with the 'Nossa Senhora de Fátima' parish theme.
