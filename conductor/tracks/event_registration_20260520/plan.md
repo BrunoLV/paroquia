@@ -1,7 +1,7 @@
 # Implementation Plan: Event Registration Screen
 
 ## Phase 1: Setup and Basic Modal UI
-- [ ] Task: Write failing test for `EventRegistrationModal` rendering and open/close behavior.
+- [x] Task: Write failing test for `EventRegistrationModal` rendering and open/close behavior. f468a7f
 - [ ] Task: Implement `EventRegistrationModal` using Material UI Dialog to pass tests.
 - [ ] Task: Write failing test for Calendar view integrating the 'New Event' button and modal state.
 - [ ] Task: Implement Calendar integration to pass tests.
