@@ -9,3 +9,8 @@
 
 - [x] **Track: Criar tela de dashboard do sistema. Será a tela inicial do sistema após login. Atualmente é tela de calendario, mas agora será a tela de dashboard. A Tela de Calendario será acessada normalmente via menu.**
 *Link: [./archive/dashboard_screen_20260521/](./archive/dashboard_screen_20260521/)*
+
+---
+
+- [ ] **Track: No login o sistema deve ter carregado as organizações as quais o usuario logado faz parte para que as informações sejam carregadas corretamente. Ponto importante que ADMIN pode ver tudo e fazer tudo no sistema assim como as demais ROLES que possuem esse permissionamento. Para as demais é necessário que o organização seja carregada na sessão também para que as regras de permissão e apresentação nas telas sejam devidamente respeitadas.**
+*Link: [./tracks/user_org_context_20260521/](./tracks/user_org_context_20260521/)*
