@@ -1,11 +1,20 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import apiClient from '../api/client';
 
+interface Organization {
+  id: string;
+  nome: string;
+  tipo: string;
+  contato: string | null;
+  ativo: boolean;
+}
+
 interface User {
   id: string;
   username: string;
   name: string;
   roles: string[];
+  organizations: Organization[];
 }
 
 interface AuthResponse {
@@ -35,7 +44,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             id: data.id || data.usuarioId || '',
             username: data.username || '',
             name: data.name || data.username || '',
-            roles: data.roles || []
+            roles: data.roles || [],
+            organizations: data.organizations || []
           };
           setUser(currentUser);
           localStorage.setItem('user', JSON.stringify(currentUser));
@@ -62,13 +72,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       let newUser: User;
 
       if (responseData && responseData.user) {
-        newUser = responseData.user;
+        newUser = {
+          ...responseData.user,
+          organizations: responseData.user.organizations || []
+        };
       } else {
         newUser = {
           id: responseData.usuarioId || responseData.id || '',
           username: responseData.username || '',
           name: responseData.name || responseData.username || '',
-          roles: responseData.roles || []
+          roles: responseData.roles || [],
+          organizations: responseData.organizations || []
         };
       }
 
