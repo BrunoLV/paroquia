@@ -1,0 +1,4 @@
+Task: Dashboard Skeleton and Layout
+Summary: Created Dashboard.tsx with a grid layout and extracted SummaryCards, QuickActions, UpcomingEvents, and PendingApprovals into component placeholders.
+Files: src/pages/Dashboard.tsx, src/pages/Dashboard.test.tsx, src/components/dashboard/*.tsx
+Why: To establish the visual structure of the dashboard before data integration.
