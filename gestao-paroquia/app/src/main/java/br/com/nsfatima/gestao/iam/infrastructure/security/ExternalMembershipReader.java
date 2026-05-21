@@ -24,11 +24,13 @@ public class ExternalMembershipReader {
     public List<Membership> findActiveMemberships(UUID userId) {
         return jdbcTemplate.query(
                 """
-                        SELECT organizacao_id, tipo_organizacao, papel
-                        FROM calendario.membros_organizacao
-                        WHERE usuario_id = ?
-                          AND ativo = TRUE
-                        ORDER BY tipo_organizacao, papel, organizacao_id
+                        SELECT m.organizacao_id, m.tipo_organizacao, m.papel, o.nome as organizacao_nome, o.contato as organizacao_contato, o.ativo as organizacao_ativo
+                        FROM calendario.membros_organizacao m
+                        JOIN calendario.organizacoes o ON o.id = m.organizacao_id
+                        WHERE m.usuario_id = ?
+                          AND m.ativo = TRUE
+                          AND o.ativo = TRUE
+                        ORDER BY m.tipo_organizacao, m.papel, m.organizacao_id
                         """,
                 this::mapMembership,
                 userId);
@@ -48,11 +50,25 @@ public class ExternalMembershipReader {
     private Membership mapMembership(ResultSet rs, int rowNum) throws SQLException {
         return new Membership(
                 UUID.fromString(rs.getString("organizacao_id")),
+                rs.getString("organizacao_nome"),
                 rs.getString("tipo_organizacao"),
+                rs.getString("organizacao_contato"),
+                rs.getBoolean("organizacao_ativo"),
                 rs.getString("papel"));
     }
 
-    public record Membership(UUID organizationId, String organizationType, String role) {
+    public record Membership(
+            UUID organizationId,
+            String organizationName,
+            String organizationType,
+            String organizationContact,
+            boolean organizationActive,
+            String role) {
+
+        public Membership(UUID organizationId, String organizationType, String role) {
+            this(organizationId, "Organizacao", organizationType, null, true, role);
+        }
+
         public String authority() {
             return "ROLE_" + normalize(organizationType) + "_" + normalize(role);
         }
