@@ -1,0 +1,8 @@
+{
+  "track_id": "dashboard_screen_20260521",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-21T00:00:00Z",
+  "updated_at": "2026-05-21T00:00:00Z",
+  "description": "Criar tela de dashboard do sistema. Será a tela inicial do sistema após login. Atualmente é tela de calendario, mas agora será a tela de dashboard. A Tela de Calendario será acessada normalmente via menu."
+}
