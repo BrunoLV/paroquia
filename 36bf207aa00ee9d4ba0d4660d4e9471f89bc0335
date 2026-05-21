@@ -1,0 +1,3 @@
+Bug Fix: Organizations Loading
+Summary: Fixed logic in Dashboard.tsx to correctly handle API response and state assignment for organizations, ensuring they appear in the registration modal.
+Commit: 36bf207
