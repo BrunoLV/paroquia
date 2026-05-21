@@ -32,13 +32,10 @@ public class EventoActorContextResolver {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof UsuarioDetails usuarioDetails) {
-            ExternalMembershipReader.Membership membership = usuarioDetails.primaryMembership()
-                    .orElseThrow(() -> new AccessDeniedException(
-                            "Authenticated user has no active organizational membership"));
-
-            if (!authorizationPolicy.isRoleAllowed(membership.organizationType(), membership.role())) {
-                throw new RoleScopeInvalidException("Role is incompatible with organization type");
-            }
+            ExternalMembershipReader.Membership membership = usuarioDetails.getMemberships().stream()
+                    .filter(m -> authorizationPolicy.isRoleAllowed(m.organizationType(), m.role()))
+                    .findFirst()
+                    .orElseThrow(() -> new RoleScopeInvalidException("Role is incompatible with organization type"));
 
             return new EventoActorContext(
                     authentication.getName(),
