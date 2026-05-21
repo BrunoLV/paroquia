@@ -1,9 +1,9 @@
 # Implementation Plan: Visual Theme Customization
 
 ## Phase 1: Core Theme Palette Configuration
-- [ ] Task: Update the Material UI `theme.ts` file to define the new Primary (Marian Blue) and Secondary (Gold/Yellow) color palettes.
-- [ ] Task: Write/update tests in `theme.test.tsx` to verify the new theme colors are correctly applied to the MUI Theme object.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Theme Palette Configuration' (Protocol in workflow.md)
+- [x] Task: Update the Material UI `theme.ts` file to define the new Primary (Marian Blue) and Secondary (Gold/Yellow) color palettes. f16d9a3
+- [x] Task: Write/update tests in `theme.test.tsx` to verify the new theme colors are correctly applied to the MUI Theme object. 6896989
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Core Theme Palette Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Visual Assets and Branding
 - [ ] Task: Update `public/index.html` to reflect the parish name in the `<title>` tag and meta description.
