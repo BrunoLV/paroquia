@@ -1,0 +1,16 @@
+Task: Update the Calendar.tsx page to restrict the organization filter dropdown to the user's accessible organizations.
+Task: Update data fetching logic in Calendar.tsx (which also affects Dashboard widgets) to implicitly filter by the user's organizations if they are not an ADMIN and no specific filter is selected.
+Task: Update relevant frontend tests to ensure the filtering logic works as expected.
+
+Summary of changes:
+- Updated Calendar.tsx to use a filtered list of organizations for the filter dropdown.
+- Updated fetchData in Calendar.tsx to send 'organizacaoIds' as an array and apply implicit filtering for non-ADMIN users.
+- Updated Dashboard.tsx to apply similar implicit filtering for the upcoming events list.
+- Added test cases in Calendar.test.tsx and Dashboard.test.tsx to verify the filtering logic.
+- Fixed a bug where fetchData in Calendar.tsx wasn't re-running when the user context loaded.
+
+Files modified:
+- gestao-paroquia-ui/src/pages/Calendar.tsx
+- gestao-paroquia-ui/src/pages/Calendar.test.tsx
+- gestao-paroquia-ui/src/pages/Dashboard.tsx
+- gestao-paroquia-ui/src/pages/Dashboard.test.tsx
