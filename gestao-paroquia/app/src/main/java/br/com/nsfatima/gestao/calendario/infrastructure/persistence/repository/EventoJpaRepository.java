@@ -30,7 +30,7 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
             left join e.envolvidos ee
             where (:hasInicioUtc = false or e.inicioUtc >= :inicioUtc)
               and (:hasFimUtc = false or e.fimUtc <= :fimUtc)
-              and (:hasOrganizacaoId = false or e.organizacaoResponsavelId = :organizacaoId)
+              and (:hasOrganizacaoIds = false or e.organizacaoResponsavelId in :organizacaoIds)
               and (:hasProjetoId = false or e.projetoId = :projetoId)
               and (:hasEnvolvidoId = false or (e.organizacaoResponsavelId = :envolvidoId or ee.organizacaoId = :envolvidoId))
               and (:hasCategorias = false or e.categoria in :categorias)
@@ -41,8 +41,8 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
             @Param("hasInicioUtc") boolean hasInicioUtc,
             @Param("fimUtc") Instant fimUtc,
             @Param("hasFimUtc") boolean hasFimUtc,
-            @Param("organizacaoId") UUID organizacaoId,
-            @Param("hasOrganizacaoId") boolean hasOrganizacaoId,
+            @Param("organizacaoIds") List<UUID> organizacaoIds,
+            @Param("hasOrganizacaoIds") boolean hasOrganizacaoIds,
             @Param("projetoId") UUID projetoId,
             @Param("hasProjetoId") boolean hasProjetoId,
             @Param("envolvidoId") UUID envolvidoId,

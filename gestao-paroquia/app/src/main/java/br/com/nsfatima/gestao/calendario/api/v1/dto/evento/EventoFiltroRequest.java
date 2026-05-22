@@ -19,8 +19,8 @@ public record EventoFiltroRequest(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         Instant dataFim,
         
-        @Parameter(description = "Filtrar por organização responsável")
-        UUID organizacaoId,
+        @Parameter(description = "Filtrar por organizações responsáveis")
+        List<UUID> organizacaoIds,
         
         @Parameter(description = "Filtrar por projeto")
         UUID projetoId,

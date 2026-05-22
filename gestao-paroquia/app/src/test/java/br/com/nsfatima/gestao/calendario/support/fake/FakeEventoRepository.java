@@ -45,7 +45,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
     public Page<EventoEntity> findAllWithFilters(
             Instant inicioUtc, boolean hasInicioUtc,
             Instant fimUtc, boolean hasFimUtc,
-            UUID organizacaoId, boolean hasOrganizacaoId,
+            List<UUID> organizacaoIds, boolean hasOrganizacaoIds,
             UUID projetoId, boolean hasProjetoId,
             UUID envolvidoId, boolean hasEnvolvidoId,
             List<String> categorias, boolean hasCategorias,
@@ -54,7 +54,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
         List<EventoEntity> filtered = storage.stream()
                 .filter(e -> (!hasInicioUtc || !e.getInicioUtc().isBefore(inicioUtc)) &&
                              (!hasFimUtc || !e.getInicioUtc().isAfter(fimUtc)) &&
-                             (!hasOrganizacaoId || e.getOrganizacaoResponsavelId().equals(organizacaoId)) &&
+                             (!hasOrganizacaoIds || organizacaoIds.contains(e.getOrganizacaoResponsavelId())) &&
                              (!hasProjetoId || projetoId.equals(e.getProjetoId())) &&
                              (!hasEnvolvidoId || e.getOrganizacaoResponsavelId().equals(envolvidoId)) && // Simplified for fake
                              (!hasCategorias || categorias.contains(e.getCategoria())) &&

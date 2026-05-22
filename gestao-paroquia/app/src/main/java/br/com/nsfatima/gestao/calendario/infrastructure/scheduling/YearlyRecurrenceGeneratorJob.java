@@ -103,7 +103,7 @@ public class YearlyRecurrenceGeneratorJob {
         boolean exists = eventRepository.findAllWithFilters(
                 startUtc, true,
                 startUtc, true,
-                baseEvent.getOrganizacaoResponsavelId(), true,
+                List.of(baseEvent.getOrganizacaoResponsavelId()), true,
                 null, false,
                 null, false,
                 null, false,
