@@ -13,9 +13,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend AuthContext Updates' (Protocol in workflow.md) 3a61267
 
 ## Phase 3: UI Form Restrictions
-- [~] Task: Update the `EventRegistrationModal` component to filter the available organizations in the "Responsible Organization" dropdown. If the user is not an `ADMIN`, only display the organizations present in `user.organizations`.
-- [ ] Task: Update the unit tests for `EventRegistrationModal` to verify the dropdown options restrict correctly based on the user's roles and organizations.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Form Restrictions' (Protocol in workflow.md)
+- [x] Task: Update the `EventRegistrationModal` component to filter the available organizations in the "Responsible Organization" dropdown. If the user is not an `ADMIN`, only display the organizations present in `user.organizations`. 0cf9e60
+- [x] Task: Update the unit tests for `EventRegistrationModal` to verify the dropdown options restrict correctly based on the user's roles and organizations. 0cf9e60
+- [~] Task: Conductor - User Manual Verification 'Phase 3: UI Form Restrictions' (Protocol in workflow.md)
 
 ## Phase 4: UI Filters and Dashboard Data
 - [ ] Task: Update the `Calendar.tsx` page to restrict the organization filter dropdown to the user's accessible organizations.
