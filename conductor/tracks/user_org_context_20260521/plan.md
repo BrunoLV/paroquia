@@ -18,8 +18,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: UI Form Restrictions' (Protocol in workflow.md) 95dc30a
 - [x] Bug Fix: Fixed empty organization list in Dashboard modal. cfaf9b5
 
-## Phase 4: UI Filters and Dashboard Data
+## Phase 4: UI Filters and Dashboard Data [checkpoint: eb2c8b1]
 - [x] Task: Update the `Calendar.tsx` page to restrict the organization filter dropdown to the user's accessible organizations. cc37947
 - [x] Task: Update data fetching logic in `Calendar.tsx` (which also affects Dashboard widgets) to implicitly filter by the user's organizations if they are not an `ADMIN` and no specific filter is selected. cc37947
 - [x] Task: Update relevant frontend tests to ensure the filtering logic works as expected. cc37947
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Filters and Dashboard Data' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: UI Filters and Dashboard Data' (Protocol in workflow.md) eb2c8b1
