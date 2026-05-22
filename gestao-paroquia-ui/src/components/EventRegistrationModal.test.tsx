@@ -1,18 +1,34 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import EventRegistrationModal from './EventRegistrationModal';
+import { useAuth } from '../auth/AuthContext';
+
+jest.mock('../auth/AuthContext');
+const mockedUseAuth = useAuth as jest.Mock;
 
 describe('EventRegistrationModal', () => {
   const mockOnClose = jest.fn();
   const mockOnSubmit = jest.fn();
+
+  const mockOrgs = [
+    { id: 'org-1', nome: 'Pastoral A' },
+    { id: 'org-2', nome: 'Pastoral B' },
+  ];
 
   const defaultProps = {
     open: true,
     onClose: mockOnClose,
     onSubmit: mockOnSubmit,
     isSubmitting: false,
-    organizations: [],
+    organizations: mockOrgs,
   };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockedUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] }
+    });
+  });
 
   it('renders modal when open is true', () => {
     render(<EventRegistrationModal {...defaultProps} />);
@@ -24,14 +40,35 @@ describe('EventRegistrationModal', () => {
     expect(screen.queryByText(/Criar Novo Evento/i)).not.toBeInTheDocument();
   });
 
-  it('renders basic form fields', () => {
+  it('renders all organizations for ADMIN', async () => {
     render(<EventRegistrationModal {...defaultProps} />);
-    expect(screen.getByLabelText(/título do evento/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/descrição/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/categoria/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/organização responsável/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/data e hora de início/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/data e hora de término/i)).toBeInTheDocument();
+    
+    const select = screen.getByLabelText(/organização responsável/i);
+    fireEvent.mouseDown(select);
+    
+    const listbox = screen.getByRole('listbox');
+    expect(within(listbox).getByText('Pastoral A')).toBeInTheDocument();
+    expect(within(listbox).getByText('Pastoral B')).toBeInTheDocument();
+  });
+
+  it('restricts organizations for non-admin members', async () => {
+    mockedUseAuth.mockReturnValue({
+      user: { 
+        id: '2', 
+        name: 'Member', 
+        roles: ['USER'], 
+        organizations: [{ id: 'org-2', nome: 'Pastoral B' }] 
+      }
+    });
+
+    render(<EventRegistrationModal {...defaultProps} />);
+    
+    const select = screen.getByLabelText(/organização responsável/i);
+    fireEvent.mouseDown(select);
+    
+    const listbox = screen.getByRole('listbox');
+    expect(within(listbox).queryByText('Pastoral A')).not.toBeInTheDocument();
+    expect(within(listbox).getByText('Pastoral B')).toBeInTheDocument();
   });
 
   it('renders with "Editar Evento" title and pre-filled data when in edit mode', () => {

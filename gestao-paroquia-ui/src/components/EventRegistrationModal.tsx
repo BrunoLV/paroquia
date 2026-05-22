@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -14,6 +14,7 @@ import {
   Grid,
   Alert,
 } from '@mui/material';
+import { useAuth } from '../auth/AuthContext';
 
 const CATEGORIES = [
   'PASTORAL',
@@ -65,6 +66,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   initialEvent,
   error,
 }) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('PASTORAL');
@@ -73,6 +75,14 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState('CONFIRMADO');
   const [justification, setJustification] = useState('');
+
+  const filteredOrganizations = useMemo(() => {
+    if (!user) return [];
+    if (user.roles.includes('ADMIN')) return organizations;
+    
+    const userOrgIds = user.organizations.map(org => org.id);
+    return organizations.filter(org => userOrgIds.includes(org.id));
+  }, [user, organizations]);
 
   const formatLocalDate = (d: Date) => {
     const year = d.getFullYear();
@@ -115,12 +125,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setStartDate(formatLocalDate(start));
         setEndDate(formatLocalDate(end));
 
-        if (organizations.length > 0) {
-          setOrgId(organizations[0].id);
+        if (filteredOrganizations.length > 0) {
+          setOrgId(filteredOrganizations[0].id);
         }
       }
     }
-  }, [open, initialDate, initialEvent, organizations]);
+  }, [open, initialDate, initialEvent, filteredOrganizations]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,7 +231,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 onChange={(e) => setOrgId(e.target.value)}
                 disabled={isSubmitting}
               >
-                {organizations.map((org) => (
+                {filteredOrganizations.map((org) => (
                   <MenuItem key={org.id} value={org.id}>
                     {org.nome}
                   </MenuItem>
