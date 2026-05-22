@@ -47,17 +47,14 @@ const Dashboard = () => {
       const nextMonth = new Date();
       nextMonth.setDate(now.getDate() + 30);
 
-      const [eventsRes, orgsRes] = await Promise.all([
-        apiClient.get<any>('/eventos', {
-          params: {
-            dataInicio: now.toISOString(),
-            dataFim: nextMonth.toISOString(),
-            size: 5,
-            sort: 'inicio,asc'
-          }
-        }),
-        apiClient.get<Organizacao[]>('/organizacoes')
-      ]);
+      const eventsRes = await apiClient.get<any>('/eventos', {
+        params: {
+          dataInicio: now.toISOString(),
+          dataFim: nextMonth.toISOString(),
+          size: 5,
+          sort: 'inicio,asc'
+        }
+      });
 
       if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
         setEvents(eventsRes.data.content);
@@ -65,8 +62,10 @@ const Dashboard = () => {
         setEvents(eventsRes.data);
       }
 
+      // Fetch organizations list
+      const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
       if (orgsRes.data && Array.isArray(orgsRes.data)) {
-        setOrganizations(orgsRes.data.filter(org => org.ativo));
+        setOrganizations(orgsRes.data);
       }
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
@@ -148,7 +147,7 @@ const Dashboard = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateEvent}
         isSubmitting={isSubmitting}
-        organizations={organizations}
+        organizations={organizations.filter(org => org.ativo)}
         error={modalError}
       />
     </Box>
