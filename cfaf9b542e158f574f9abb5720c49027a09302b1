@@ -1,0 +1,4 @@
+Bug Fix: Dashboard Modal Organizations
+Summary: Fixed an issue where organizations were not appearing in the 'New Event' modal when opened from the Dashboard. Synchronized data fetching logic with Calendar.tsx and updated unit tests to verify proper organization filtering and display in the modal for both Admin and Member roles.
+Files: src/pages/Dashboard.tsx, src/pages/Dashboard.test.tsx
+Commit: cfaf9b5
