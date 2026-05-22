@@ -1,0 +1,4 @@
+Task: UI Form Restrictions
+Summary: Updated EventRegistrationModal to filter 'Responsible Organization' options based on the logged-in user's roles and memberships. Admins see all organizations, while others only see their associated ones. Updated unit tests to verify these restrictions.
+Files: gestao-paroquia-ui/src/components/EventRegistrationModal.tsx, gestao-paroquia-ui/src/components/EventRegistrationModal.test.tsx
+Why: To ensure users only create events on behalf of organizations they actually belong to, maintaining data integrity and following security requirements.
