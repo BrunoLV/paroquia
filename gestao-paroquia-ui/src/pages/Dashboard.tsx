@@ -13,6 +13,7 @@ import QuickActions from '../components/dashboard/QuickActions';
 import PendingApprovals from '../components/dashboard/PendingApprovals';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
+import { useAuth } from '../auth/AuthContext';
 
 interface Evento {
   id: string;
@@ -28,6 +29,7 @@ interface Organizacao {
 }
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,12 +49,28 @@ const Dashboard = () => {
       const nextMonth = new Date();
       nextMonth.setDate(now.getDate() + 30);
 
+      const params: any = {
+        dataInicio: now.toISOString(),
+        dataFim: nextMonth.toISOString(),
+        size: 5,
+        sort: 'inicio,asc'
+      };
+
+      if (user && !user.roles.includes('ADMIN')) {
+        const userOrgIds = user.organizations.map(org => org.id);
+        if (userOrgIds.length > 0) {
+          params.organizacaoIds = userOrgIds;
+        } else {
+          setEvents([]);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const eventsRes = await apiClient.get<any>('/eventos', {
-        params: {
-          dataInicio: now.toISOString(),
-          dataFim: nextMonth.toISOString(),
-          size: 5,
-          sort: 'inicio,asc'
+        params,
+        paramsSerializer: {
+          indexes: null
         }
       });
 
@@ -77,7 +95,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const handleCreateEvent = async (data: any) => {
     setModalError('');

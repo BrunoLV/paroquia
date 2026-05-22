@@ -164,8 +164,7 @@ const Calendar = () => {
     if (user.roles.includes('ADMIN')) return true;
     
     // Member can edit if they belong to the organization responsible
-    // This is a simplification; in a real app, we'd check user.organizations
-    return true; 
+    return user.organizations.some(org => org.id === event.organizacaoResponsavelId);
   };
 
   // Generate calendar days for monthly grid
@@ -211,6 +210,15 @@ const Calendar = () => {
     return days;
   }, [currentYear, currentMonth]);
 
+  // Restrict organizations based on user role
+  const filteredOrganizations = useMemo(() => {
+    if (!user) return [];
+    if (user.roles.includes('ADMIN')) return organizations;
+    
+    const userOrgIds = user.organizations.map(org => org.id);
+    return organizations.filter(org => userOrgIds.includes(org.id));
+  }, [user, organizations]);
+
   // Fetch events and organizations
   const fetchData = async () => {
     setIsLoading(true);
@@ -227,15 +235,34 @@ const Calendar = () => {
         size: 200, // retrieve up to 200 events for full grid density
       };
 
+      // Apply organization filter
       if (selectedOrgFilter) {
-        params.organizacaoId = selectedOrgFilter;
+        params.organizacaoIds = [selectedOrgFilter];
+      } else if (user && !user.roles.includes('ADMIN')) {
+        // Implicitly filter by user's organizations if none selected and not ADMIN
+        const userOrgIds = user.organizations.map(org => org.id);
+        if (userOrgIds.length > 0) {
+          params.organizacaoIds = userOrgIds;
+        } else {
+          // If user has no organizations and is not ADMIN, they shouldn't see events
+          setEvents([]);
+          setIsLoading(false);
+          return;
+        }
       }
+
       if (selectedCategoryFilter) {
         params.categoria = selectedCategoryFilter;
       }
 
       // Fetch events
-      const eventsRes = await apiClient.get<any>('/eventos', { params });
+      const eventsRes = await apiClient.get<any>('/eventos', { 
+        params,
+        // Ensure arrays are serialized as organizacaoIds=id1&organizacaoIds=id2
+        paramsSerializer: {
+          indexes: null
+        }
+      });
       
       // Handle page response format
       if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
@@ -264,7 +291,7 @@ const Calendar = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDate, selectedOrgFilter, selectedCategoryFilter]);
+  }, [user, currentDate, selectedOrgFilter, selectedCategoryFilter]);
 
   // Navigation handlers
   const handlePrevMonth = () => {
@@ -463,7 +490,7 @@ const Calendar = () => {
                   <MenuItem value="">
                     <em>Todas</em>
                   </MenuItem>
-                  {organizations.map((org) => (
+                  {filteredOrganizations.map((org) => (
                     <MenuItem key={org.id} value={org.id}>
                       {org.nome}
                     </MenuItem>

@@ -35,10 +35,10 @@ const mockEvents = [
 ];
 
 // Helper wrapper to render the calendar with mocks
-const renderCalendar = async () => {
+const renderCalendar = async (user = mockUser) => {
   mockedApiClient.get.mockImplementation((url) => {
     if (url === '/auth/me') {
-      return Promise.resolve({ data: mockUser });
+      return Promise.resolve({ data: user });
     }
     if (url === '/organizacoes') {
       return Promise.resolve({ data: mockOrgs });
@@ -75,12 +75,46 @@ test('loads events and displays them in the monthly grid', async () => {
   // It should request the events endpoint
   expect(mockedApiClient.get).toHaveBeenCalledWith(
     '/eventos',
-    expect.any(Object)
+    expect.objectContaining({
+      params: expect.objectContaining({
+        size: 200,
+      }),
+    })
   );
 
   // It should display the mock event title on the screen
   const eventPills = screen.getAllByText(/Missa Paroquial/i);
   expect(eventPills.length).toBeGreaterThan(0);
+});
+
+test('restricts organization filter and events for non-ADMIN users', async () => {
+  const nonAdminUser = { 
+    id: '2', 
+    name: 'Member User', 
+    username: 'member', 
+    roles: ['MEMBER'], 
+    organizations: [mockOrgs[0]] 
+  };
+  
+  await renderCalendar(nonAdminUser);
+
+  // It should request events with implicit organization filter
+  expect(mockedApiClient.get).toHaveBeenCalledWith(
+    '/eventos',
+    expect.objectContaining({
+      params: expect.objectContaining({
+        organizacaoIds: [mockOrgs[0].id]
+      })
+    })
+  );
+
+  // Open organization filter dropdown
+  const orgFilter = screen.getByLabelText(/Organização/i);
+  fireEvent.mouseDown(orgFilter);
+
+  // Should see "Todas" and only the user's organization "Pastoral da Juventude"
+  expect(screen.getByText('Pastoral da Juventude')).toBeInTheDocument();
+  expect(screen.queryByText('Pastoral da Comunicação')).not.toBeInTheDocument();
 });
 
 test('can switch to agenda list view', async () => {

@@ -79,6 +79,26 @@ describe('Dashboard Page', () => {
     expect(within(listbox).queryByText('Pastoral B')).not.toBeInTheDocument();
   });
 
+  test('implicitly filters events for non-ADMIN users', async () => {
+    const memberUser = { 
+      id: '2', 
+      name: 'Member', 
+      roles: ['USER'], 
+      organizations: [{ id: 'org-1', nome: 'Pastoral A', ativo: true }] 
+    };
+    await renderDashboard(memberUser);
+
+    // Verify events call included the organization filter
+    expect(mockedApiClient.get).toHaveBeenCalledWith(
+      '/eventos',
+      expect.objectContaining({
+        params: expect.objectContaining({
+          organizacaoIds: ['org-1']
+        })
+      })
+    );
+  });
+
   test('renders error message on fetch failure', async () => {
     mockedApiClient.get.mockImplementation((url) => {
       if (url === '/auth/me') return Promise.resolve({ data: { id: '1', roles: ['ADMIN'], organizations: [] } });
