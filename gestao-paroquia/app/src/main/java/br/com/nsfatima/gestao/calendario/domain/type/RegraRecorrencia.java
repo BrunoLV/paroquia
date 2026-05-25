@@ -28,7 +28,9 @@ public record RegraRecorrencia(
         LocalDate atual = inicio;
         LocalDate dataFimReal = dataLimite != null && dataLimite.isBefore(fim) ? dataLimite : fim;
 
-        if ("SEMANAL".equalsIgnoreCase(frequencia)) {
+        if ("DIARIA".equalsIgnoreCase(frequencia)) {
+            gerarDatasDiarias(datas, atual, dataFimReal);
+        } else if ("SEMANAL".equalsIgnoreCase(frequencia)) {
             gerarDatasSemanais(datas, atual, dataFimReal);
         } else if ("MENSAL".equalsIgnoreCase(frequencia)) {
             gerarDatasMensais(datas, atual, dataFimReal, inicio);
@@ -37,7 +39,19 @@ public record RegraRecorrencia(
         }
 
         datas.sort(LocalDate::compareTo);
+
+        if (numeroOcorrencias != null && datas.size() > numeroOcorrencias) {
+            return datas.subList(0, numeroOcorrencias);
+        }
+
         return datas;
+    }
+
+    private void gerarDatasDiarias(List<LocalDate> datas, LocalDate atual, LocalDate dataFimReal) {
+        while (!atual.isAfter(dataFimReal)) {
+            datas.add(atual);
+            atual = atual.plusDays(intervalo);
+        }
     }
 
     private void gerarDatasSemanais(List<LocalDate> datas, LocalDate atual, LocalDate dataFimReal) {
