@@ -50,6 +50,7 @@ class CreateEventoApprovalSnapshotImmutabilityIntegrationTest {
                                 null,
                                 null,
                                 null,
+                                null,
                                 null);
 
                 String originalJson = approvalActionPayloadMapper.toJson(payload);
@@ -93,6 +94,7 @@ class CreateEventoApprovalSnapshotImmutabilityIntegrationTest {
                                 null,
                                 Instant.parse("2027-11-02T10:00:00Z"),
                                 Instant.parse("2027-11-02T11:00:00Z"),
+                                null,
                                 null,
                                 null,
                                 null,

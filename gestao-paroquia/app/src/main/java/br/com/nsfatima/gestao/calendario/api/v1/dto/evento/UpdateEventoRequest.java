@@ -45,7 +45,10 @@ public record UpdateEventoRequest(
         EventoEditScope editScope,
 
         @Schema(description = "ID do projeto ao qual o evento pertence")
-        UUID projetoId) {
+        UUID projetoId,
+
+        @Schema(description = "ID do local onde o evento ocorrerá")
+        UUID localId) {
 
         public boolean isEmptyPayload() {
 
@@ -59,10 +62,11 @@ public record UpdateEventoRequest(
                 && canceladoMotivo == null
                 && organizacaoResponsavelId == null
                 && participantes == null
-                && projetoId == null;
+                && projetoId == null
+                && localId == null;
     }
 
     public boolean changesSensitiveFields() {
-        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO || projetoId != null;
+        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO || projetoId != null || localId != null;
     }
 }

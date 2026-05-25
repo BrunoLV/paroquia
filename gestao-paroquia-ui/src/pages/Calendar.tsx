@@ -228,58 +228,67 @@ const Calendar = () => {
       const startOfGrid = calendarDays[0].date;
       const endOfGrid = calendarDays[calendarDays.length - 1].date;
 
-      // Prepare request parameters for event filters
-      const params: Record<string, any> = {
-        dataInicio: startOfGrid.toISOString(),
-        dataFim: endOfGrid.toISOString(),
-        size: 200, // retrieve up to 200 events for full grid density
+      const fetchEvents = async () => {
+        // Prepare request parameters for event filters
+        const params: Record<string, any> = {
+          dataInicio: startOfGrid.toISOString(),
+          dataFim: endOfGrid.toISOString(),
+          size: 200, // retrieve up to 200 events for full grid density
+        };
+
+        // Apply organization filter
+        if (selectedOrgFilter) {
+          params.organizacaoIds = [selectedOrgFilter];
+        } else if (user && !user.roles.includes('ADMIN')) {
+          // Implicitly filter by user's organizations if none selected and not ADMIN
+          const userOrgIds = user.organizations.map(org => org.id);
+          if (userOrgIds.length > 0) {
+            params.organizacaoIds = userOrgIds;
+          } else {
+            // If user has no organizations and is not ADMIN, they shouldn't see events
+            setEvents([]);
+            return;
+          }
+        }
+
+        if (selectedCategoryFilter) {
+          params.categoria = selectedCategoryFilter;
+        }
+
+        // Fetch events
+        const eventsRes = await apiClient.get<any>('/eventos', { 
+          params,
+          // Ensure arrays are serialized as organizacaoIds=id1&organizacaoIds=id2
+          paramsSerializer: {
+            indexes: null
+          }
+        });
+        
+        // Handle page response format
+        if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
+          setEvents(eventsRes.data.content);
+        } else if (Array.isArray(eventsRes.data)) {
+          setEvents(eventsRes.data);
+        } else {
+          setEvents([]);
+        }
       };
 
-      // Apply organization filter
-      if (selectedOrgFilter) {
-        params.organizacaoIds = [selectedOrgFilter];
-      } else if (user && !user.roles.includes('ADMIN')) {
-        // Implicitly filter by user's organizations if none selected and not ADMIN
-        const userOrgIds = user.organizations.map(org => org.id);
-        if (userOrgIds.length > 0) {
-          params.organizacaoIds = userOrgIds;
-        } else {
-          // If user has no organizations and is not ADMIN, they shouldn't see events
-          setEvents([]);
-          setIsLoading(false);
-          return;
+      const fetchOrgs = async () => {
+        // Fetch organizations list (only if empty)
+        if (organizations.length === 0) {
+          try {
+            const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
+            if (Array.isArray(orgsRes.data)) {
+              setOrganizations(orgsRes.data);
+            }
+          } catch (err) {
+            console.error('Error fetching organizations:', err);
+          }
         }
-      }
+      };
 
-      if (selectedCategoryFilter) {
-        params.categoria = selectedCategoryFilter;
-      }
-
-      // Fetch events
-      const eventsRes = await apiClient.get<any>('/eventos', { 
-        params,
-        // Ensure arrays are serialized as organizacaoIds=id1&organizacaoIds=id2
-        paramsSerializer: {
-          indexes: null
-        }
-      });
-      
-      // Handle page response format
-      if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
-        setEvents(eventsRes.data.content);
-      } else if (Array.isArray(eventsRes.data)) {
-        setEvents(eventsRes.data);
-      } else {
-        setEvents([]);
-      }
-
-      // Fetch organizations list (only if empty)
-      if (organizations.length === 0) {
-        const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
-        if (Array.isArray(orgsRes.data)) {
-          setOrganizations(orgsRes.data);
-        }
-      }
+      await Promise.all([fetchEvents(), fetchOrgs()]);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       setErrorMsg('Não foi possível carregar as informações do calendário.');

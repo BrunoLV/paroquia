@@ -17,10 +17,6 @@ interface User {
   organizations: Organization[];
 }
 
-interface AuthResponse {
-  user: User;
-}
-
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<void>;

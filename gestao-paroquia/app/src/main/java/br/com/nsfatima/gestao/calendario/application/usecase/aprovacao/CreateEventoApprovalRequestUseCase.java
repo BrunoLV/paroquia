@@ -87,6 +87,7 @@ public class CreateEventoApprovalRequestUseCase {
                 request.adicionadoExtraJustificativa(),
                 null, // canceladoMotivo
                 null, // motivo
-                request.participantes());
+                request.participantes(),
+                request.localId());
     }
 }

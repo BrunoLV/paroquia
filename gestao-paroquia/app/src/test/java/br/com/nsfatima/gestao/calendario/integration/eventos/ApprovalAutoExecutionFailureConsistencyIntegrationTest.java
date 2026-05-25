@@ -61,6 +61,7 @@ class ApprovalAutoExecutionFailureConsistencyIntegrationTest {
                                 null,
                                 null,
                                 null,
+                                null,
                                 null);
 
                 AprovacaoEntity approval = new AprovacaoEntity();
@@ -133,6 +134,7 @@ class ApprovalAutoExecutionFailureConsistencyIntegrationTest {
                                 null,
                                 Instant.parse("2027-06-15T10:00:00Z"),
                                 Instant.parse("2027-06-15T11:00:00Z"),
+                                null,
                                 null,
                                 null,
                                 null,

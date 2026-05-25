@@ -29,6 +29,9 @@ public record CreateEventoRequest(
         @Schema(description = "ID do projeto ao qual o evento pertence")
         UUID projetoId,
 
+        @Schema(description = "ID do local onde o evento ocorrerá")
+        UUID localId,
+
         @Schema(description = "Data e hora de início do evento (UTC)")
         @NotNull Instant inicio,
 

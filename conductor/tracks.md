@@ -17,5 +17,5 @@
 
 ---
 
-- [ ] **Track: Implementar o model de cadastro de Evento com o restante dos campos existentes no modelo de dados conforme regras já estabelecidas no backend.**
+- [~] **Track: Implementar o model de cadastro de Evento com o restante dos campos existentes no modelo de dados conforme regras já estabelecidas no backend.**
 *Link: [./tracks/expand_event_model_20260523/](./tracks/expand_event_model_20260523/)*

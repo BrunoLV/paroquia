@@ -28,6 +28,20 @@ const CATEGORIES = [
 
 const STATUSES = ['RASCUNHO', 'CONFIRMADO', 'ADICIONADO_EXTRA', 'CANCELADO'];
 
+const formatLocalDate = (d: Date) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const date = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const mins = String(d.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${date}T${hours}:${mins}`;
+};
+
+const formatIsoToLocal = (isoString: string) => {
+  if (!isoString) return '';
+  return formatLocalDate(new Date(isoString));
+};
+
 interface Organizacao {
   id: string;
   nome: string;
@@ -83,20 +97,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     const userOrgIds = user.organizations.map(org => org.id);
     return organizations.filter(org => userOrgIds.includes(org.id));
   }, [user, organizations]);
-
-  const formatLocalDate = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const date = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const mins = String(d.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${date}T${hours}:${mins}`;
-  };
-
-  const formatIsoToLocal = (isoString: string) => {
-    if (!isoString) return '';
-    return formatLocalDate(new Date(isoString));
-  };
 
   // Reset form or set initial values when modal opens or initialEvent changes
   useEffect(() => {

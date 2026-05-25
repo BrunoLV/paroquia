@@ -269,6 +269,6 @@ public class UpdateEventoUseCase {
     public UpdateEventoRequest restoreFromApprovalPayload(ApprovalActionPayload payload) {
         return new UpdateEventoRequest(payload.titulo(), payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
                 payload.status(), payload.adicionadoExtraJustificativa(), payload.canceladoMotivo(),
-                payload.organizacaoResponsavelId(), payload.participantes(), null, payload.projetoId());
+                payload.organizacaoResponsavelId(), payload.participantes(), null, payload.projetoId(), payload.localId());
     }
 }

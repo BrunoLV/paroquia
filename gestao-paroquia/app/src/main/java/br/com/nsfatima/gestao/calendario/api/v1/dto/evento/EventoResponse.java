@@ -16,6 +16,7 @@ public record EventoResponse(
         Instant inicio,
         Instant fim,
         EventoStatusResponse status,
+        UUID localId,
         String conflictState,
         String conflictReason) {
 }

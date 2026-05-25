@@ -91,6 +91,7 @@ public class UpdateEventoApprovalRequestUseCase {
                 request.adicionadoExtraJustificativa(),
                 request.canceladoMotivo(),
                 null, // motivo
-                request.participantes());
+                request.participantes(),
+                request.localId());
     }
 }

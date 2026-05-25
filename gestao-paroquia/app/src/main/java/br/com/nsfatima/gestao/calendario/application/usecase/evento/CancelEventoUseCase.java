@@ -175,7 +175,7 @@ public class CancelEventoUseCase {
         aprovacao.setMotivoCancelamentoSnapshot(request.motivo());
         aprovacao.setActionPayloadJson(payloadMapper.toJson(new ApprovalActionPayload(
                 null, evento.getId(), null, null, null, null, null, null, null, null, 
-                null, null, request.motivo() != null ? request.motivo() : "", null)));
+                null, null, request.motivo() != null ? request.motivo() : "", null, null)));
         aprovacao.setCorrelationId(evento.getId().toString());
         aprovacaoJpaRepository.save(aprovacao);
 

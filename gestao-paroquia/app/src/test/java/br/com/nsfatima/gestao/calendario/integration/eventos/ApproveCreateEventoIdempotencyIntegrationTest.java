@@ -56,6 +56,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
                                 null,
                                 null,
                                 null,
+                                null,
                                 null);
 
                 AprovacaoEntity aprovacao = new AprovacaoEntity();

@@ -49,7 +49,7 @@ class ApprovalRefinementIntegrationTest {
         ApprovalActionPayload payload = new ApprovalActionPayload(
                 null, aprovacao.getEventoId(), "Exp", "Desc", null, UUID.fromString(ORG_ID),
                 null, Instant.now().minusSeconds(3600), Instant.now().minusSeconds(1800),
-                null, null, null, null, null);
+                null, null, null, null, null, null);
         aprovacao.setActionPayloadJson(payloadMapper.toJson(payload));
         aprovacaoRepository.save(aprovacao);
 

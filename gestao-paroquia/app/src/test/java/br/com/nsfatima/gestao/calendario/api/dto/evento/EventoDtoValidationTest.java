@@ -36,6 +36,7 @@ class EventoDtoValidationTest {
                 null,
                 UUID.randomUUID(),
                 null,
+                null,
                 Instant.now(),
                 Instant.now().plusSeconds(3600),
                 EventoStatusInput.RASCUNHO,
@@ -57,6 +58,7 @@ class EventoDtoValidationTest {
                 longDescription,
                 null,
                 UUID.randomUUID(),
+                null,
                 null,
                 Instant.now(),
                 Instant.now().plusSeconds(3600),
@@ -85,6 +87,7 @@ class EventoDtoValidationTest {
                 UUID.randomUUID(),
                 null,
                 null,
+                null,
                 null
         );
 
@@ -109,6 +112,7 @@ class EventoDtoValidationTest {
                 UUID.randomUUID(),
                 null,
                 null,
+                null,
                 null
         );
 
@@ -126,6 +130,7 @@ class EventoDtoValidationTest {
                 "Descricao",
                 null,
                 UUID.randomUUID(),
+                null,
                 null,
                 now.plusSeconds(3600),
                 now,

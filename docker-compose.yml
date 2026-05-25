@@ -30,7 +30,6 @@ services:
     volumes:
       - shared_volume:/shared
       - ./gestao-paroquia:/workspace
-      - /workspace/app/build
       - gradle_cache:/root/.gradle
 
   api:

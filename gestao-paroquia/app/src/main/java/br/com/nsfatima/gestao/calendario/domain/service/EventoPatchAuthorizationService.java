@@ -14,7 +14,10 @@ public class EventoPatchAuthorizationService {
 
     private static final Set<PapelOrganizacional> ORG_EDITOR_ROLES = Set.of(
             PapelOrganizacional.COORDENADOR,
-            PapelOrganizacional.VICE_COORDENADOR);
+            PapelOrganizacional.VICE_COORDENADOR,
+            PapelOrganizacional.PAROCO,
+            PapelOrganizacional.VIGARIO,
+            PapelOrganizacional.PADRE);
     private static final Set<PapelOrganizacional> ORG_CREATOR_ROLES = Set.of(
             PapelOrganizacional.COORDENADOR,
             PapelOrganizacional.VICE_COORDENADOR,

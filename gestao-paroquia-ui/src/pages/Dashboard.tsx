@@ -44,47 +44,56 @@ const Dashboard = () => {
     setIsLoading(true);
     setError('');
     try {
-      // Fetch upcoming events (next 30 days)
-      const now = new Date();
-      const nextMonth = new Date();
-      nextMonth.setDate(now.getDate() + 30);
-
-      const params: any = {
-        dataInicio: now.toISOString(),
-        dataFim: nextMonth.toISOString(),
-        size: 5,
-        sort: 'inicio,asc'
+      // Fetch organizations list independently
+      const fetchOrgs = async () => {
+        try {
+          const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
+          if (orgsRes.data && Array.isArray(orgsRes.data)) {
+            setOrganizations(orgsRes.data);
+          }
+        } catch (err) {
+          console.error('Error fetching organizations:', err);
+        }
       };
 
-      if (user && !user.roles.includes('ADMIN')) {
-        const userOrgIds = user.organizations.map(org => org.id);
-        if (userOrgIds.length > 0) {
-          params.organizacaoIds = userOrgIds;
-        } else {
-          setEvents([]);
-          setIsLoading(false);
-          return;
+      // Fetch upcoming events (next 30 days)
+      const fetchEvents = async () => {
+        const now = new Date();
+        const nextMonth = new Date();
+        nextMonth.setDate(now.getDate() + 30);
+
+        const params: any = {
+          dataInicio: now.toISOString(),
+          dataFim: nextMonth.toISOString(),
+          size: 5,
+          sort: 'inicioUtc,asc' // Corrected field name to match backend Entity property
+        };
+
+        if (user && !user.roles.includes('ADMIN')) {
+          const userOrgIds = user.organizations.map(org => org.id);
+          if (userOrgIds.length > 0) {
+            params.organizacaoIds = userOrgIds;
+          } else {
+            setEvents([]);
+            return;
+          }
         }
-      }
 
-      const eventsRes = await apiClient.get<any>('/eventos', {
-        params,
-        paramsSerializer: {
-          indexes: null
+        const eventsRes = await apiClient.get<any>('/eventos', {
+          params,
+          paramsSerializer: {
+            indexes: null
+          }
+        });
+
+        if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
+          setEvents(eventsRes.data.content);
+        } else if (Array.isArray(eventsRes.data)) {
+          setEvents(eventsRes.data);
         }
-      });
+      };
 
-      if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
-        setEvents(eventsRes.data.content);
-      } else if (Array.isArray(eventsRes.data)) {
-        setEvents(eventsRes.data);
-      }
-
-      // Fetch organizations list
-      const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
-      if (orgsRes.data && Array.isArray(orgsRes.data)) {
-        setOrganizations(orgsRes.data);
-      }
+      await Promise.all([fetchOrgs(), fetchEvents()]);
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
       setError('Não foi possível carregar os dados do dashboard.');

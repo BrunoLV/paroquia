@@ -55,6 +55,7 @@ class RejectCreateEventoIntegrationTest {
                                 null,
                                 null,
                                 null,
+                                null,
                                 null);
 
                 AprovacaoEntity aprovacao = new AprovacaoEntity();

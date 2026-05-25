@@ -20,5 +20,6 @@ public record ApprovalActionPayload(
         String adicionadoExtraJustificativa,
         String canceladoMotivo,
         String motivo,
-        List<UUID> participantes) {
+        List<UUID> participantes,
+        UUID localId) {
 }

@@ -1,9 +1,9 @@
 # Implementation Plan: Expand Event Registration Model
 
 ## Phase 1: Backend API Validation and Updates
-- [ ] Task: Check backend `CreateEventoRequest`, `UpdateEventoRequest`, and `EventoResponse` DTOs. If `localId` is missing, write failing unit tests for the use cases to expect it.
-- [ ] Task: Update the backend DTOs, Mappers, and Entity logic to properly accept, save, and return `localId`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend API Validation and Updates' (Protocol in workflow.md)
+- [x] Task: Check backend `CreateEventoRequest`, `UpdateEventoRequest`, and `EventoResponse` DTOs. If `localId` is missing, write failing unit tests for the use cases to expect it. a6ca5cd
+- [x] Task: Update the backend DTOs, Mappers, and Entity logic to properly accept, save, and return `localId`. b8e1f2a
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend API Validation and Updates' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Data Fetching Setup
 - [ ] Task: Write failing tests for the UI components to verify they attempt to fetch data from `/api/v1/locais` and `/api/v1/projetos`.
