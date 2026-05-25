@@ -10,6 +10,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnum
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +60,14 @@ public class EventoMapper {
                     .orElse(null);
         }
 
+        List<UUID> participantes = List.of();
+        if (entity.getEnvolvidos() != null) {
+            participantes = entity.getEnvolvidos().stream()
+                    .filter(e -> e.getPapelParticipacao() == PapelEnvolvido.APOIO)
+                    .map(EventoEnvolvidoEntity::getOrganizacaoId)
+                    .toList();
+        }
+
         return new EventoResponse(
                 entity.getId(),
                 entity.getTitulo(),
@@ -69,6 +80,7 @@ public class EventoMapper {
                 entity.getFimUtc(),
                 status,
                 entity.getLocalId(),
+                participantes,
                 entity.getConflictState(),
                 entity.getConflictReason());
     }

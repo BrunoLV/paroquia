@@ -22,5 +22,5 @@
 
 ---
 
-- [ ] **Track: Corrigir bugs no modal de edição e exibição de detalhes do evento relacionados aos campos recém-adicionados (local, projeto, participantes).**
+- [~] **Track: Corrigir bugs no modal de edição e exibição de detalhes do evento relacionados aos campos recém-adicionados (local, projeto, participantes).**
 *Link: [./tracks/fix_event_modals_20260524/](./tracks/fix_event_modals_20260524/)*

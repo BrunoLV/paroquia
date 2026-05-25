@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayload;
@@ -11,16 +12,19 @@ import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,6 +41,7 @@ public class CreateEventoUseCase {
 
     private final EventoDomainService domainService;
     private final EventoJpaRepository repository;
+    private final EventoEnvolvidoJpaRepository involvementRepository;
     private final EventoMapper mapper;
     private final EventoIdempotencyService idempotencyService;
     private final EventoAuditPublisher auditPublisher;
@@ -44,6 +49,7 @@ public class CreateEventoUseCase {
     private final EventoPatchAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
     private final CreateEventoApprovalRequestUseCase approvalRequestUseCase;
+    private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
     private final ProjetoVincularPolicy projetoVincularPolicy;
     private final CalendarLockPolicy calendarLockPolicy;
     private final CacheManager cacheManager;
@@ -51,6 +57,7 @@ public class CreateEventoUseCase {
     public CreateEventoUseCase(
             EventoDomainService domainService,
             EventoJpaRepository repository,
+            EventoEnvolvidoJpaRepository involvementRepository,
             EventoMapper mapper,
             EventoIdempotencyService idempotencyService,
             EventoAuditPublisher auditPublisher,
@@ -58,11 +65,13 @@ public class CreateEventoUseCase {
             EventoPatchAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
             CreateEventoApprovalRequestUseCase approvalRequestUseCase,
+            UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
             ProjetoVincularPolicy projetoVincularPolicy,
             CalendarLockPolicy calendarLockPolicy,
             CacheManager cacheManager) {
         this.domainService = domainService;
         this.repository = repository;
+        this.involvementRepository = involvementRepository;
         this.mapper = mapper;
         this.idempotencyService = idempotencyService;
         this.auditPublisher = auditPublisher;
@@ -70,6 +79,7 @@ public class CreateEventoUseCase {
         this.authorizationService = authorizationService;
         this.actorContextResolver = actorContextResolver;
         this.approvalRequestUseCase = approvalRequestUseCase;
+        this.updateEnvolvidosUseCase = updateEnvolvidosUseCase;
         this.projetoVincularPolicy = projetoVincularPolicy;
         this.calendarLockPolicy = calendarLockPolicy;
         this.cacheManager = cacheManager;
@@ -147,6 +157,19 @@ public class CreateEventoUseCase {
         entity.setConflictReason(domainService.resolveConflictReason(hasOverlap));
 
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
+
+        if (request.participantes() != null && !request.participantes().isEmpty()) {
+            List<EventoEnvolvidoInput> envolvidos = request.participantes().stream()
+                    .map(id -> new EventoEnvolvidoInput(id, PapelEnvolvido.APOIO))
+                    .toList();
+            updateEnvolvidosUseCase.execute(saved.getId(), envolvidos);
+        }
+
+        // Manually fetch involvement to ensure response is complete
+        List<br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity> involvement = 
+                involvementRepository.findByEventoId(saved.getId());
+        saved.setEnvolvidos(involvement);
+
         return mapper.toResponse(saved);
     }
 
