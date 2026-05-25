@@ -78,14 +78,30 @@ describe('EventRegistrationModal', () => {
       descricao: 'Descrição Existente',
       categoria: 'SOCIAL',
       organizacaoResponsavelId: 'org-1',
+      projetoId: 'proj-1',
+      nomeProjeto: 'Projeto 1',
+      localId: 'loc-1',
       inicio: '2026-05-20T10:00:00Z',
       fim: '2026-05-20T12:00:00Z',
       status: 'CONFIRMADO',
+      conflictState: null,
+      conflictReason: null,
     };
     render(<EventRegistrationModal {...defaultProps} initialEvent={eventToEdit} />);
     
     expect(screen.getByText(/Editar Evento/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/título do evento/i)).toHaveValue('Evento Existente');
     expect(screen.getByLabelText(/descrição/i)).toHaveValue('Descrição Existente');
+  });
+
+  it('renders Local, Projeto and Participantes fields', () => {
+    const mockLocais = [{ id: 'loc-1', nome: 'Salão', ativo: true, tipo: 'SALAO', endereco: '', capacidade: 100, caracteristicas: '' }];
+    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', ativo: true, descricao: '', dataInicio: '', dataFim: '', organizacaoResponsavelId: 'org-1' }];
+    
+    render(<EventRegistrationModal {...defaultProps} locais={mockLocais} projetos={mockProjetos} />);
+
+    expect(screen.getByLabelText(/Local/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Projeto/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Organizações de Apoio/i)).toBeInTheDocument();
   });
 });

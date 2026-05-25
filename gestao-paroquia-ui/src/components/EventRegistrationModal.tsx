@@ -13,6 +13,7 @@ import {
   MenuItem,
   Grid,
   Alert,
+  Chip,
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
@@ -79,6 +80,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState('CONFIRMADO');
   const [justification, setJustification] = useState('');
+  const [participantes, setParticipantes] = useState<string[]>([]);
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
@@ -102,6 +104,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setEndDate(formatIsoToLocal(initialEvent.fim));
         setStatus(initialEvent.status || 'CONFIRMADO');
         setJustification(initialEvent.adicionadoExtraJustificativa || '');
+        setParticipantes([]);
       } else {
         setTitle('');
         setDescription('');
@@ -110,6 +113,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setProjetoId('');
         setStatus('CONFIRMADO');
         setJustification('');
+        setParticipantes([]);
         
         const start = initialDate ? new Date(initialDate) : new Date();
         start.setHours(9, 0, 0, 0);
@@ -135,6 +139,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       organizacaoResponsavelId: orgId,
       localId: localId || null,
       projetoId: projetoId || null,
+      participantes,
       inicio: startDate ? new Date(startDate).toISOString() : '',
       fim: endDate ? new Date(endDate).toISOString() : '',
       status,
@@ -232,6 +237,78 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                     {org.nome}
                   </MenuItem>
                 ))}
+              </Select>
+            </FormControl>
+
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="new-local-label">Local</InputLabel>
+                  <Select
+                    labelId="new-local-label"
+                    value={localId}
+                    label="Local"
+                    onChange={(e) => setLocalId(e.target.value)}
+                    disabled={isSubmitting}
+                  >
+                    <MenuItem value="">
+                      <em>Nenhum</em>
+                    </MenuItem>
+                    {locais.map((l) => (
+                      <MenuItem key={l.id} value={l.id}>
+                        {l.nome}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="new-projeto-label">Projeto</InputLabel>
+                  <Select
+                    labelId="new-projeto-label"
+                    value={projetoId}
+                    label="Projeto"
+                    onChange={(e) => setProjetoId(e.target.value)}
+                    disabled={isSubmitting}
+                  >
+                    <MenuItem value="">
+                      <em>Nenhum</em>
+                    </MenuItem>
+                    {projetos.map((p) => (
+                      <MenuItem key={p.id} value={p.id}>
+                        {p.nome}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+
+            <FormControl fullWidth size="small">
+              <InputLabel id="new-apoio-label">Organizações de Apoio</InputLabel>
+              <Select
+                labelId="new-apoio-label"
+                multiple
+                value={participantes}
+                label="Organizações de Apoio"
+                onChange={(e) => setParticipantes(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                disabled={isSubmitting}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {(selected as string[]).map((id) => (
+                      <Chip key={id} label={organizations.find(o => o.id === id)?.nome || id} size="small" />
+                    ))}
+                  </Box>
+                )}
+              >
+                {organizations
+                  .filter(org => org.id !== orgId)
+                  .map((org) => (
+                    <MenuItem key={org.id} value={org.id}>
+                      {org.nome}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
 

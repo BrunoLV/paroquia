@@ -46,6 +46,12 @@ const renderCalendar = async (user = mockUser) => {
     if (url === '/eventos') {
       return Promise.resolve({ data: { content: mockEvents } });
     }
+    if (url === '/locais') {
+      return Promise.resolve({ data: [] });
+    }
+    if (url === '/projetos') {
+      return Promise.resolve({ data: [] });
+    }
     return Promise.reject(new Error('Not found'));
   });
 

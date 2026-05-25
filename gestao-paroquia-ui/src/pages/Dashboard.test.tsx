@@ -29,6 +29,12 @@ describe('Dashboard Page', () => {
           { id: 'org-2', nome: 'Pastoral B', ativo: true }
         ] });
       }
+      if (url === '/locais') {
+        return Promise.resolve({ data: [] });
+      }
+      if (url === '/projetos') {
+        return Promise.resolve({ data: [] });
+      }
       return Promise.reject(new Error('Not found'));
     });
 
