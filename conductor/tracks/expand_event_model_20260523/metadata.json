@@ -1,0 +1,8 @@
+{
+  "track_id": "expand_event_model_20260523",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-23T12:00:00Z",
+  "updated_at": "2026-05-23T12:00:00Z",
+  "description": "Implementar o model de cadastro de Evento com o restante dos campos existentes no modelo de dados conforme regras já estabelecidas no backend."
+}

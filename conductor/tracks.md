@@ -14,3 +14,8 @@
 
 - [x] **Track: No login o sistema deve ter carregado as organizações as quais o usuario logado faz parte para que as informações sejam carregadas corretamente. Ponto importante que ADMIN pode ver tudo e fazer tudo no sistema assim como as demais ROLES que possuem esse permissionamento. Para as demais é necessário que o organização seja carregada na sessão também para que as regras de permissão e apresentação nas telas sejam devidamente respeitadas.**
 *Link: [./archive/user_org_context_20260521/](./archive/user_org_context_20260521/)*
+
+---
+
+- [ ] **Track: Implementar o model de cadastro de Evento com o restante dos campos existentes no modelo de dados conforme regras já estabelecidas no backend.**
+*Link: [./tracks/expand_event_model_20260523/](./tracks/expand_event_model_20260523/)*
