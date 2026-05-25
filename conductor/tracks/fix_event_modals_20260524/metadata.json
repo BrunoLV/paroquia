@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_event_modals_20260524",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-05-24T12:00:00Z",
+  "updated_at": "2026-05-24T12:00:00Z",
+  "description": "Corrigir bugs no modal de edição e exibição de detalhes do evento relacionados aos campos recém-adicionados (local, projeto, participantes)."
+}

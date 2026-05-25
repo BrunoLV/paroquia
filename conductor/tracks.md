@@ -19,3 +19,8 @@
 
 - [x] **Track: Implementar o model de cadastro de Evento com o restante dos campos existentes no modelo de dados conforme regras já estabelecidas no backend.**
 *Link: [./archive/expand_event_model_20260523/](./archive/expand_event_model_20260523/)*
+
+---
+
+- [ ] **Track: Corrigir bugs no modal de edição e exibição de detalhes do evento relacionados aos campos recém-adicionados (local, projeto, participantes).**
+*Link: [./tracks/fix_event_modals_20260524/](./tracks/fix_event_modals_20260524/)*
