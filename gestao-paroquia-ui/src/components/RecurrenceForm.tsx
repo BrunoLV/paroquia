@@ -82,7 +82,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Frequência</InputLabel>
             <Select
@@ -97,7 +97,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <TextField
             label={rule.frequencia === 'DIARIA' ? 'A cada (dias)' : rule.frequencia === 'SEMANAL' ? 'A cada (semanas)' : 'A cada (meses)'}
             type="number"
@@ -106,12 +106,12 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
             fullWidth
             size="small"
             disabled={disabled}
-            inputProps={{ min: 1 }}
+            slotProps={{ htmlInput: { min: 1 } }}
           />
         </Grid>
 
         {rule.frequencia === 'SEMANAL' && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <FormLabel component="legend" sx={{ fontSize: '0.75rem', mb: 0.5 }}>Repetir em:</FormLabel>
             <FormGroup row sx={{ justifyContent: 'space-between' }}>
               {DAYS_OF_WEEK.map((day) => (
@@ -133,18 +133,18 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
           </Grid>
         )}
 
-        <Grid item xs={12}>
-          <FormControl component="fieldset" disabled={disabled}>
+        <Grid size={{ xs: 12 }}>
+          <FormControl component="fieldset" disabled={disabled} sx={{ width: '100%' }}>
             <FormLabel component="legend" sx={{ fontSize: '0.75rem', mb: 1 }}>Termina em:</FormLabel>
             <RadioGroup
               value={terminationType}
               onChange={(e) => handleTerminationChange(e.target.value as any)}
             >
-              <Grid container spacing={1} alignItems="center">
-                <Grid item xs={4}>
+              <Grid container spacing={1} sx={{ alignItems: 'center' }}>
+                <Grid size={{ xs: 4 }}>
                   <FormControlLabel value="NEVER" control={<Radio size="small" />} label={<Typography variant="body2">Nunca</Typography>} />
                 </Grid>
-                <Grid item xs={8}>
+                <Grid size={{ xs: 8 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <FormControlLabel value="DATE" control={<Radio size="small" />} label={<Typography variant="body2">Em:</Typography>} />
                     <TextField
@@ -158,9 +158,9 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
                     />
                   </Box>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={{ xs: 4 }}>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid size={{ xs: 8 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <FormControlLabel value="COUNT" control={<Radio size="small" />} label={<Typography variant="body2">Após:</Typography>} />
                     <TextField
@@ -169,7 +169,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
                       disabled={disabled || terminationType !== 'COUNT'}
                       value={rule.numeroOcorrencias || ''}
                       onChange={(e) => onChange({ ...rule, numeroOcorrencias: parseInt(e.target.value) })}
-                      inputProps={{ min: 1 }}
+                      slotProps={{ htmlInput: { min: 1 } }}
                       sx={{ flexGrow: 1 }}
                     />
                     <Typography variant="body2">ocorrências</Typography>

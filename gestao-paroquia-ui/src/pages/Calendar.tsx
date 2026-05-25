@@ -37,6 +37,7 @@ import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import EventCancelDialog from '../components/EventCancelDialog';
+import EditScopeDialog, { EditScope } from '../components/EditScopeDialog';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 interface CalendarDay {
@@ -134,6 +135,10 @@ const Calendar = () => {
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [cancellingEvent, setCancellingEvent] = useState<Evento | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+
+  // Recurrence edit scope states
+  const [isEditScopeOpen, setIsEditScopeOpen] = useState(false);
+  const [selectedEditScope, setSelectedEditScope] = useState<EditScope | null>(null);
 
   // Get current year and month
   const currentYear = currentDate.getFullYear();
@@ -341,7 +346,19 @@ const Calendar = () => {
   // Open Event editing dialog
   const handleOpenEdit = (event: Evento) => {
     setFormError('');
-    setEditingEvent(event);
+    if (event.recorrenciaId) {
+      setEditingEvent(event);
+      setIsEditScopeOpen(true);
+    } else {
+      setEditingEvent(event);
+      setIsDetailsOpen(false);
+      setIsCreateOpen(true);
+    }
+  };
+
+  const handleScopeSelect = (scope: EditScope) => {
+    setSelectedEditScope(scope);
+    setIsEditScopeOpen(false);
     setIsDetailsOpen(false);
     setIsCreateOpen(true);
   };
@@ -353,8 +370,13 @@ const Calendar = () => {
     try {
       if (editingEvent) {
         // UPDATE (PATCH)
-        await apiClient.patch(`/eventos/${editingEvent.id}`, data);
+        const updateData = {
+          ...data,
+          editScope: selectedEditScope || 'ONLY_THIS'
+        };
+        await apiClient.patch(`/eventos/${editingEvent.id}`, updateData);
         setSuccessMsg('Evento atualizado com sucesso!');
+        setSelectedEditScope(null);
       } else {
         // CREATE (POST)
         const { recurrence, ...eventBaseData } = data;
@@ -950,6 +972,13 @@ const Calendar = () => {
         onConfirm={handleCancelConfirm}
         isSubmitting={isCancelling}
         eventTitle={cancellingEvent?.titulo}
+      />
+
+      {/* Edit Scope Dialog Modal Component */}
+      <EditScopeDialog
+        open={isEditScopeOpen}
+        onClose={() => setIsEditScopeOpen(false)}
+        onSelect={handleScopeSelect}
       />
     </Box>
   );
