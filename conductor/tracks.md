@@ -24,3 +24,8 @@
 
 - [x] **Track: Corrigir bugs no modal de edição e exibição de detalhes do evento relacionados aos campos recém-adicionados (local, projeto, participantes).**
 *Link: [./archive/fix_event_modals_20260524/](./archive/fix_event_modals_20260524/)*
+
+---
+
+- [ ] **Track: Implementar a recorrencia dos eventos na UI conforme regra definida no backend**
+*Link: [./tracks/event_recurrence_20260524/](./tracks/event_recurrence_20260524/)*
