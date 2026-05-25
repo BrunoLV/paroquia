@@ -14,9 +14,13 @@ import {
   Grid,
   Alert,
   Chip,
+  Switch,
+  Collapse,
+  FormControlLabel,
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
+import RecurrenceForm, { RecurrenceRule } from './RecurrenceForm';
 
 const CATEGORIES = [
   'PASTORAL',
@@ -81,6 +85,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [status, setStatus] = useState('CONFIRMADO');
   const [justification, setJustification] = useState('');
   const [participantes, setParticipantes] = useState<string[]>([]);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule>({
+    frequencia: 'SEMANAL',
+    intervalo: 1,
+    diasDaSemana: [],
+  });
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
@@ -105,6 +115,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setStatus(initialEvent.status || 'CONFIRMADO');
         setJustification(initialEvent.adicionadoExtraJustificativa || '');
         setParticipantes(initialEvent.participantes || []);
+        setIsRecurring(!!initialEvent.recorrenciaId);
       } else {
         setTitle('');
         setDescription('');
@@ -114,6 +125,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setStatus('CONFIRMADO');
         setJustification('');
         setParticipantes([]);
+        setIsRecurring(false);
+        setRecurrenceRule({
+          frequencia: 'SEMANAL',
+          intervalo: 1,
+          diasDaSemana: [],
+        });
         
         const start = initialDate ? new Date(initialDate) : new Date();
         start.setHours(9, 0, 0, 0);
@@ -144,6 +161,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       fim: endDate ? new Date(endDate).toISOString() : '',
       status,
       adicionadoExtraJustificativa: justification || null,
+      recurrence: isRecurring ? recurrenceRule : null,
     });
   };
 
@@ -340,6 +358,31 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 />
               </Grid>
             </Grid>
+
+            {!initialEvent && (
+              <>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isRecurring}
+                      onChange={(e) => setIsRecurring(e.target.checked)}
+                      disabled={isSubmitting}
+                    />
+                  }
+                  label="Repetir este evento"
+                />
+
+                <Collapse in={isRecurring}>
+                  <Box sx={{ mb: 1 }}>
+                    <RecurrenceForm
+                      rule={recurrenceRule}
+                      onChange={setRecurrenceRule}
+                      disabled={isSubmitting}
+                    />
+                  </Box>
+                </Collapse>
+              </>
+            )}
 
             <TextField
               label="Justificativa Extra (Opcional)"

@@ -125,8 +125,9 @@ const Dashboard = () => {
     setModalError('');
     setIsSubmitting(true);
     try {
+      const { recurrence, ...eventBaseData } = data;
       const requestData = {
-        ...data,
+        ...eventBaseData,
         projetoId: data.projetoId || null,
         localId: data.localId || null,
         participantes: data.participantes || [],
@@ -136,9 +137,14 @@ const Dashboard = () => {
           ? crypto.randomUUID()
           : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
-      await apiClient.post('/eventos', requestData, {
+      const res = await apiClient.post('/eventos', requestData, {
         headers: { 'Idempotency-Key': idempotencyKey }
       });
+
+      // If recurrence is enabled, call the recurrence endpoint
+      if (recurrence && res.data?.id) {
+        await apiClient.put(`/eventos/${res.data.id}/recorrencia`, recurrence);
+      }
 
       setIsModalOpen(false);
       fetchData();
