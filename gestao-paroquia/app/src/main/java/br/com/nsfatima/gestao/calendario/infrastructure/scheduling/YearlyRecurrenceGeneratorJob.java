@@ -78,17 +78,18 @@ public class YearlyRecurrenceGeneratorJob {
 
     private void processRule(EventoRecorrenciaEntity ruleEntity, int year) {
         eventRepository.findById(ruleEntity.getEventoBaseId()).ifPresent(baseEvent -> {
-            LocalDate startOfYear = LocalDate.of(year, 1, 1);
+            LocalDate startOfRecurrence = baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate();
             LocalDate endOfYear = LocalDate.of(year, 12, 31);
 
-            List<LocalDate> dates = ruleEntity.getRegra().gerarDatas(startOfYear, endOfYear);
-            
+            List<LocalDate> dates = ruleEntity.getRegra().gerarDatas(startOfRecurrence, endOfYear);
+
             for (LocalDate date : dates) {
-                generateInstance(baseEvent, date, ruleEntity);
+                if (date.getYear() == year) {
+                    generateInstance(baseEvent, date, ruleEntity);
+                }
             }
         });
     }
-
     private void generateInstance(EventoEntity baseEvent, LocalDate date, EventoRecorrenciaEntity ruleEntity) {
         Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
         

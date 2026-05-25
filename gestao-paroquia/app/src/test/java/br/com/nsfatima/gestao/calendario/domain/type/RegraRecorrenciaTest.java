@@ -19,7 +19,7 @@ class RegraRecorrenciaTest {
                 1,
                 List.of(DayOfWeek.SUNDAY),
                 null, null, null, null,
-                null);
+                null, null);
 
         LocalDate start = LocalDate.of(2026, 1, 1);
         LocalDate end = LocalDate.of(2026, 1, 31);
@@ -45,7 +45,7 @@ class RegraRecorrenciaTest {
                 null,
                 5,  // May
                 13, // 13th
-                null);
+                null, null);
 
         LocalDate start = LocalDate.of(2026, 1, 1);
         LocalDate end = LocalDate.of(2028, 12, 31);
@@ -57,5 +57,45 @@ class RegraRecorrenciaTest {
         assertTrue(dates.contains(LocalDate.of(2026, 5, 13)));
         assertTrue(dates.contains(LocalDate.of(2027, 5, 13)));
         assertTrue(dates.contains(LocalDate.of(2028, 5, 13)));
+    }
+
+    @Test
+    @DisplayName("Should generate dates for a daily recurrence")
+    void shouldGenerateDailyDates() {
+        RegraRecorrencia regra = new RegraRecorrencia(
+                "DIARIA",
+                2, // Every 2 days
+                null, null, null, null, null,
+                null, null);
+
+        LocalDate start = LocalDate.of(2026, 1, 1);
+        LocalDate end = LocalDate.of(2026, 1, 10);
+
+        List<LocalDate> dates = regra.gerarDatas(start, end);
+
+        // 1, 3, 5, 7, 9
+        assertEquals(5, dates.size());
+        assertTrue(dates.contains(LocalDate.of(2026, 1, 1)));
+        assertTrue(dates.contains(LocalDate.of(2026, 1, 9)));
+    }
+
+    @Test
+    @DisplayName("Should respect numeroOcorrencias limit")
+    void shouldRespectCountLimit() {
+        RegraRecorrencia regra = new RegraRecorrencia(
+                "DIARIA",
+                1,
+                null, null, null, null, null,
+                null, 3); // Only 3 occurrences
+
+        LocalDate start = LocalDate.of(2026, 1, 1);
+        LocalDate end = LocalDate.of(2026, 1, 31);
+
+        List<LocalDate> dates = regra.gerarDatas(start, end);
+
+        assertEquals(3, dates.size());
+        assertTrue(dates.contains(LocalDate.of(2026, 1, 1)));
+        assertTrue(dates.contains(LocalDate.of(2026, 1, 2)));
+        assertTrue(dates.contains(LocalDate.of(2026, 1, 3)));
     }
 }

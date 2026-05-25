@@ -18,7 +18,7 @@ class EventoRecorrenciaEntityTest {
                 1,
                 List.of(DayOfWeek.SUNDAY),
                 null, null, null, null,
-                null);
+                null, null);
 
         entity.setRegra(regra);
 

@@ -21,10 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
+@Sql(scripts = "classpath:sql/security-fixtures.sql")
 class EventoFiltragemAvancadaIntegrationTest {
 
     @Autowired
@@ -41,6 +43,7 @@ class EventoFiltragemAvancadaIntegrationTest {
 
     @BeforeEach
     void setup() {
+        envolvidoRepository.deleteAll();
         repository.deleteAll();
         
         // Evento 1: Org A Responsavel, Categoria LITURGICO, Status CONFIRMADO

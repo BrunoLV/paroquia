@@ -19,7 +19,7 @@ class RegraRecorrenciaConverterTest {
                 2,
                 List.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
                 null, null, null, null,
-                null);
+                null, null);
 
         String json = converter.convertToDatabaseColumn(rule);
         RegraRecorrencia result = converter.convertToEntityAttribute(json);
