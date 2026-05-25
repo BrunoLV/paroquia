@@ -1,12 +1,12 @@
 # Implementation Plan: Event Recurrence Implementation
 
 ## Phase 1: Backend Enhancements
-- [ ] Task: Update `EventoEditScope` enum to include `EDIT_ALL`.
-- [ ] Task: Update `RegraRecorrencia` record and `EventoRecorrenciaRequest` to include `Integer numeroOcorrencias`.
-- [ ] Task: Implement `DIARIA` frequency logic and `numeroOcorrencias` limit in `RegraRecorrencia.gerarDatas`.
-- [ ] Task: Update `UpdateEventoUseCase` to handle `EDIT_ALL` scope by updating all associated entities sharing the same recurrence ID.
-- [ ] Task: Write unit tests for `RegraRecorrencia` and `UpdateEventoUseCase` (Edit All).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Enhancements' (Protocol in workflow.md)
+- [x] Task: Update `EventoEditScope` enum to include `EDIT_ALL`. 1f7618b
+- [x] Task: Update `RegraRecorrencia` record and `EventoRecorrenciaRequest` to include `Integer numeroOcorrencias`. 7d0018d
+- [x] Task: Implement `DIARIA` frequency logic and `numeroOcorrencias` limit in `RegraRecorrencia.gerarDatas`. ccb0598
+- [x] Task: Update `UpdateEventoUseCase` to handle `EDIT_ALL` scope by updating all associated entities sharing the same recurrence ID. fcfed38
+- [x] Task: Write unit tests for `RegraRecorrencia` and `UpdateEventoUseCase` (Edit All). ccb0598
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend Enhancements' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Recurrence Form
 - [ ] Task: Create a new `RecurrenceForm` component to be used inside the `EventRegistrationModal`.
