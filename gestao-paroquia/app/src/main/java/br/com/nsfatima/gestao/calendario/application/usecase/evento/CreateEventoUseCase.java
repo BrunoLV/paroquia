@@ -17,6 +17,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -166,7 +167,7 @@ public class CreateEventoUseCase {
         }
 
         // Manually fetch involvement to ensure response is complete
-        List<br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity> involvement = 
+        List<EventoEnvolvidoEntity> involvement = 
                 involvementRepository.findByEventoId(saved.getId());
         saved.setEnvolvidos(involvement);
 

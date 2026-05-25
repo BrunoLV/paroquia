@@ -104,7 +104,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setEndDate(formatIsoToLocal(initialEvent.fim));
         setStatus(initialEvent.status || 'CONFIRMADO');
         setJustification(initialEvent.adicionadoExtraJustificativa || '');
-        setParticipantes([]);
+        setParticipantes(initialEvent.participantes || []);
       } else {
         setTitle('');
         setDescription('');

@@ -15,6 +15,7 @@ import br.com.nsfatima.gestao.aprovacao.application.usecase.CreateSolicitacaoApr
 import br.com.nsfatima.gestao.aprovacao.application.usecase.DecideSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ListAprovacoesUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.MDC;
@@ -39,14 +40,14 @@ public class AprovacaoController {
     private final DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase;
     private final ListAprovacoesUseCase listAprovacoesUseCase;
     private final EventoAuditPublisher eventoAuditPublisher;
-    private final br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver actorContextResolver;
+    private final EventoActorContextResolver actorContextResolver;
 
     public AprovacaoController(
             CreateSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase,
             DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase,
             ListAprovacoesUseCase listAprovacoesUseCase,
             EventoAuditPublisher eventoAuditPublisher,
-            br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver actorContextResolver) {
+            EventoActorContextResolver actorContextResolver) {
         this.createSolicitacaoAprovacaoUseCase = createSolicitacaoAprovacaoUseCase;
         this.decideSolicitacaoAprovacaoUseCase = decideSolicitacaoAprovacaoUseCase;
         this.listAprovacoesUseCase = listAprovacoesUseCase;

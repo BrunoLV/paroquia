@@ -104,4 +104,29 @@ describe('EventRegistrationModal', () => {
     expect(screen.getByLabelText(/Projeto/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Organizações de Apoio/i)).toBeInTheDocument();
   });
+
+  it('pre-fills participantes in edit mode', () => {
+    const eventWithParticipants = {
+      id: 'evt-2',
+      titulo: 'Evento com Apoio',
+      descricao: '',
+      categoria: 'PASTORAL',
+      organizacaoResponsavelId: 'org-1',
+      participantes: ['org-2'],
+      inicio: '2026-05-20T10:00:00Z',
+      fim: '2026-05-20T12:00:00Z',
+      status: 'CONFIRMADO',
+      projetoId: null,
+      nomeProjeto: null,
+      localId: null,
+      conflictState: null,
+      conflictReason: null,
+    };
+    
+    render(<EventRegistrationModal {...defaultProps} initialEvent={eventWithParticipants} />);
+    
+    // MUI Select with multiple values renders them as Chips or text in the display area.
+    // We check if the name of the participant organization is visible.
+    expect(screen.getByText('Pastoral B')).toBeInTheDocument();
+  });
 });

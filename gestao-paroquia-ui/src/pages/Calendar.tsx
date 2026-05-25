@@ -30,6 +30,8 @@ import {
   Business as BusinessIcon,
   Schedule as ScheduleIcon,
   Description as DescriptionIcon,
+  LocationOn as LocationIcon,
+  Groups as PeopleIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
@@ -446,6 +448,12 @@ const Calendar = () => {
     return org ? org.nome : 'Organização Paroquial';
   };
 
+  const getLocalName = (localId: string | null) => {
+    if (!localId) return null;
+    const local = locais.find((l) => l.id === localId);
+    return local ? local.nome : null;
+  };
+
   // Filtered upcoming events list (for Agenda/List View)
   const agendaEvents = useMemo(() => {
     return [...events]
@@ -833,15 +841,48 @@ const Calendar = () => {
                   </Box>
                 </Box>
 
+                {/* Local */}
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <LocationIcon color="action" />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      Local
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                      {getLocalName(selectedEvent.localId) || 'Não especificado'}
+                    </Typography>
+                  </Box>
+                </Box>
+
                 {/* Project */}
                 {selectedEvent.nomeProjeto && (
                   <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      Projeto:
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                      {selectedEvent.nomeProjeto}
-                    </Typography>
+                    <BusinessIcon color="action" /> {/* Using BusinessIcon for project as well or another if available */}
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                        Projeto
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                        {selectedEvent.nomeProjeto}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
+
+                {/* Supporting Organizations */}
+                {selectedEvent.participantes && selectedEvent.participantes.length > 0 && (
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                    <PeopleIcon color="action" sx={{ mt: 0.3 }} />
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
+                        Organizações de Apoio
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selectedEvent.participantes.map(id => (
+                          <Chip key={id} label={getOrgName(id)} size="small" variant="outlined" />
+                        ))}
+                      </Box>
+                    </Box>
                   </Box>
                 )}
 

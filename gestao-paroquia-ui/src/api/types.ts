@@ -38,6 +38,7 @@ export interface Evento {
   inicio: string;
   fim: string;
   status: string;
+  participantes?: string[];
   conflictState: string | null;
   conflictReason: string | null;
   adicionadoExtraJustificativa?: string | null;

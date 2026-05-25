@@ -149,6 +149,43 @@ test('opens event details modal when clicking an event', async () => {
   expect(screen.getAllByText('LITURGICO').length).toBeGreaterThan(0);
 });
 
+test('event details modal displays Local and Supporting Organizations', async () => {
+  const eventWithExtraInfo = {
+    ...mockEvents[0],
+    localId: 'loc-1',
+    participantes: ['org-2']
+  };
+  
+  mockedApiClient.get.mockImplementation((url) => {
+    if (url === '/auth/me') return Promise.resolve({ data: mockUser });
+    if (url === '/organizacoes') return Promise.resolve({ data: mockOrgs });
+    if (url === '/eventos') return Promise.resolve({ data: { content: [eventWithExtraInfo] } });
+    if (url === '/locais') return Promise.resolve({ data: [{ id: 'loc-1', nome: 'Salão Principal', ativo: true }] });
+    if (url === '/projetos') return Promise.resolve({ data: [] });
+    return Promise.reject(new Error('Not found'));
+  });
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Calendar />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  const eventPill = screen.getByText(/Missa Paroquial/i);
+  await act(async () => {
+    fireEvent.click(eventPill);
+  });
+
+  expect(screen.getByText('Salão Principal')).toBeInTheDocument();
+  expect(screen.getByText('Pastoral da Comunicação')).toBeInTheDocument();
+});
+
 test('opens and submits event creation form', async () => {
   mockedApiClient.post.mockResolvedValueOnce({ data: { id: 'new-event-uuid' } });
   await renderCalendar();
