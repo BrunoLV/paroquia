@@ -14,24 +14,14 @@ import PendingApprovals from '../components/dashboard/PendingApprovals';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import { useAuth } from '../auth/AuthContext';
-
-interface Evento {
-  id: string;
-  titulo: string;
-  inicio: string;
-  categoria: string;
-}
-
-interface Organizacao {
-  id: string;
-  nome: string;
-  ativo: boolean;
-}
+import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
+  const [locais, setLocais] = useState<Local[]>([]);
+  const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -53,6 +43,30 @@ const Dashboard = () => {
           }
         } catch (err) {
           console.error('Error fetching organizations:', err);
+        }
+      };
+
+      // Fetch locales list
+      const fetchLocais = async () => {
+        try {
+          const res = await apiClient.get<Local[]>('/locais');
+          if (res.data && Array.isArray(res.data)) {
+            setLocais(res.data);
+          }
+        } catch (err) {
+          console.error('Error fetching locales:', err);
+        }
+      };
+
+      // Fetch projects list
+      const fetchProjetos = async () => {
+        try {
+          const res = await apiClient.get<Projeto[]>('/projetos');
+          if (res.data && Array.isArray(res.data)) {
+            setProjetos(res.data);
+          }
+        } catch (err) {
+          console.error('Error fetching projects:', err);
         }
       };
 
@@ -93,7 +107,7 @@ const Dashboard = () => {
         }
       };
 
-      await Promise.all([fetchOrgs(), fetchEvents()]);
+      await Promise.all([fetchOrgs(), fetchLocais(), fetchProjetos(), fetchEvents()]);
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
       setError('Não foi possível carregar os dados do dashboard.');
@@ -113,8 +127,9 @@ const Dashboard = () => {
     try {
       const requestData = {
         ...data,
-        projetoId: null,
-        participantes: [],
+        projetoId: data.projetoId || null,
+        localId: data.localId || null,
+        participantes: data.participantes || [],
       };
 
       const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID
@@ -176,6 +191,8 @@ const Dashboard = () => {
         onSubmit={handleCreateEvent}
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
+        locais={locais.filter(l => l.ativo)}
+        projetos={projetos.filter(p => p.ativo)}
         error={modalError}
       />
     </Box>

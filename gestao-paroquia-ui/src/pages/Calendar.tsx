@@ -35,30 +35,7 @@ import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import EventCancelDialog from '../components/EventCancelDialog';
-
-// Types representing backend entities
-interface Evento {
-  id: string;
-  titulo: string;
-  descricao: string;
-  categoria: string;
-  organizacaoResponsavelId: string;
-  projetoId: string | null;
-  nomeProjeto: string | null;
-  inicio: string; // ISO date-time string
-  fim: string; // ISO date-time string
-  status: string;
-  conflictState: string | null;
-  conflictReason: string | null;
-}
-
-interface Organizacao {
-  id: string;
-  nome: string;
-  tipo: string;
-  contato: string | null;
-  ativo: boolean;
-}
+import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 interface CalendarDay {
   date: Date;
@@ -128,6 +105,8 @@ const Calendar = () => {
   const [viewMode, setViewMode] = useState<'month' | 'agenda'>('month');
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
+  const [locais, setLocais] = useState<Local[]>([]);
+  const [projetos, setProjetos] = useState<Projeto[]>([]);
 
   // Filtering states
   const [selectedOrgFilter, setSelectedOrgFilter] = useState<string>('');
@@ -288,7 +267,29 @@ const Calendar = () => {
         }
       };
 
-      await Promise.all([fetchEvents(), fetchOrgs()]);
+      const fetchLocais = async () => {
+        try {
+          const res = await apiClient.get<Local[]>('/locais');
+          if (Array.isArray(res.data)) {
+            setLocais(res.data);
+          }
+        } catch (err) {
+          console.error('Error fetching locales:', err);
+        }
+      };
+
+      const fetchProjetos = async () => {
+        try {
+          const res = await apiClient.get<Projeto[]>('/projetos');
+          if (Array.isArray(res.data)) {
+            setProjetos(res.data);
+          }
+        } catch (err) {
+          console.error('Error fetching projects:', err);
+        }
+      };
+
+      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos()]);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       setErrorMsg('Não foi possível carregar as informações do calendário.');
@@ -356,8 +357,9 @@ const Calendar = () => {
         // CREATE (POST)
         const requestData = {
           ...data,
-          projetoId: null,
-          participantes: [],
+          projetoId: data.projetoId || null,
+          localId: data.localId || null,
+          participantes: data.participantes || [],
         };
 
         // Generate a simple unique idempotency key for the request headers
@@ -887,6 +889,8 @@ const Calendar = () => {
         onSubmit={handleEventSubmit}
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
+        locais={locais.filter(l => l.ativo)}
+        projetos={projetos.filter(p => p.ativo)}
         initialDate={createInitialDate}
         initialEvent={editingEvent}
         error={formError}

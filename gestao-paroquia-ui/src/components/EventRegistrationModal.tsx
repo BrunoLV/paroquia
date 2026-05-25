@@ -15,6 +15,7 @@ import {
   Alert,
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
+import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 const CATEGORIES = [
   'PASTORAL',
@@ -42,29 +43,14 @@ const formatIsoToLocal = (isoString: string) => {
   return formatLocalDate(new Date(isoString));
 };
 
-interface Organizacao {
-  id: string;
-  nome: string;
-}
-
-interface Evento {
-  id: string;
-  titulo: string;
-  descricao: string;
-  categoria: string;
-  organizacaoResponsavelId: string;
-  inicio: string;
-  fim: string;
-  status: string;
-  adicionadoExtraJustificativa?: string | null;
-}
-
 interface EventRegistrationModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: any) => void;
   isSubmitting?: boolean;
   organizations: Organizacao[];
+  locais?: Local[];
+  projetos?: Projeto[];
   initialDate?: Date;
   initialEvent?: Evento | null;
   error?: string;
@@ -76,6 +62,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   onSubmit,
   isSubmitting = false,
   organizations = [],
+  locais = [],
+  projetos = [],
   initialDate,
   initialEvent,
   error,
@@ -85,6 +73,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('PASTORAL');
   const [orgId, setOrgId] = useState('');
+  const [localId, setLocalId] = useState('');
+  const [projetoId, setProjetoId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState('CONFIRMADO');
@@ -106,6 +96,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setDescription(initialEvent.descricao || '');
         setCategory(initialEvent.categoria || 'PASTORAL');
         setOrgId(initialEvent.organizacaoResponsavelId || '');
+        setLocalId(initialEvent.localId || '');
+        setProjetoId(initialEvent.projetoId || '');
         setStartDate(formatIsoToLocal(initialEvent.inicio));
         setEndDate(formatIsoToLocal(initialEvent.fim));
         setStatus(initialEvent.status || 'CONFIRMADO');
@@ -114,6 +106,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setTitle('');
         setDescription('');
         setCategory('PASTORAL');
+        setLocalId('');
+        setProjetoId('');
         setStatus('CONFIRMADO');
         setJustification('');
         
@@ -139,6 +133,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       descricao: description,
       categoria: category,
       organizacaoResponsavelId: orgId,
+      localId: localId || null,
+      projetoId: projetoId || null,
       inicio: startDate ? new Date(startDate).toISOString() : '',
       fim: endDate ? new Date(endDate).toISOString() : '',
       status,
