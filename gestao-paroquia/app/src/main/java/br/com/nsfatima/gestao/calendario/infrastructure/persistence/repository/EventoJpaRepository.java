@@ -93,6 +93,8 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
 
     boolean existsByOrganizacaoResponsavelId(UUID organizacaoId);
 
+    List<EventoEntity> findByRecorrenciaId(UUID recorrenciaId);
+
     @Query(value = """
             SELECT DISTINCT o.nome
             FROM (

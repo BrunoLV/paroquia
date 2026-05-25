@@ -160,6 +160,8 @@ public class UpdateEventoUseCase {
             entity.setRecorrenciaId(null);
         } else if (request.editScope() == EventoEditScope.THIS_AND_FOLLOWING && entity.getRecorrenciaId() != null) {
             splitRecurrenceSeries(entity);
+        } else if (request.editScope() == EventoEditScope.EDIT_ALL && entity.getRecorrenciaId() != null) {
+            updateAllInstances(entity.getRecorrenciaId(), request, status);
         }
 
         mapper.applyPatch(entity, request, status);
@@ -177,6 +179,38 @@ public class UpdateEventoUseCase {
         evictProjectCaches(oldProjectId, saved.getProjetoId());
 
         return mapper.toResponse(saved);
+    }
+
+    private void updateAllInstances(UUID recorrenciaId, UpdateEventoRequest request, EventoStatusInput status) {
+        // 1. Update the template event (base event of the recurrence rule)
+        recurrenceRepository.findById(recorrenciaId).ifPresent(rule -> {
+            repository.findById(rule.getEventoBaseId()).ifPresent(baseEvent -> {
+                UpdateEventoRequest templateRequest = new UpdateEventoRequest(
+                        request.titulo(), request.descricao(), request.categoria(),
+                        null, null, // Don't update template start/end times via instance update
+                        request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
+                        request.organizacaoResponsavelId(), request.participantes(),
+                        null, request.projetoId(), request.localId());
+                mapper.applyPatch(baseEvent, templateRequest, status);
+                repository.save(baseEvent);
+                applyParticipantChanges(baseEvent.getId(), request.participantes());
+            });
+        });
+
+        // 2. Update all existing instances
+        List<EventoEntity> allInstances = repository.findByRecorrenciaId(recorrenciaId);
+        for (EventoEntity instance : allInstances) {
+            UpdateEventoRequest siblingRequest = new UpdateEventoRequest(
+                    request.titulo(), request.descricao(), request.categoria(),
+                    null, null, // Don't change time for siblings
+                    request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
+                    request.organizacaoResponsavelId(), request.participantes(),
+                    null, request.projetoId(), request.localId());
+
+            mapper.applyPatch(instance, siblingRequest, status);
+            repository.save(instance);
+            applyParticipantChanges(instance.getId(), request.participantes());
+        }
     }
 
     private void evictProjectCaches(UUID oldProjectId, UUID newProjectId) {
