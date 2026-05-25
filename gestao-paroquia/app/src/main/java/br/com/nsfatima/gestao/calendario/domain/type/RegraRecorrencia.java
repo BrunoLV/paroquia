@@ -17,7 +17,8 @@ public record RegraRecorrencia(
         String posicaoNoAno, // e.g., "LAST" for monthly patterns
         Integer mesDoAno,    // 1-12
         Integer diaDoMes,    // 1-31
-        LocalDate dataLimite) {
+        LocalDate dataLimite,
+        Integer numeroOcorrencias) {
 
     /**
      * Generates a list of dates between the specified range based on the recurrence rules.

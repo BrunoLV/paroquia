@@ -57,7 +57,8 @@ public class EventoRecorrenciaController {
                 payload.posicaoNoAno(),
                 payload.mesDoAno(),
                 payload.diaDoMes(),
-                payload.dataLimite()));
+                payload.dataLimite(),
+                payload.numeroOcorrencias()));
         auditPublisher.publish(context.actor(), "update-recurrence", eventoId.toString(), "success");
         return response;
     }

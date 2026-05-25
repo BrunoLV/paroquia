@@ -16,5 +16,6 @@ public record EventoRecorrenciaRequest(
         @Schema(description = "Posição no ano") String posicaoNoAno,
         @Schema(description = "Mês do ano (1-12)") Integer mesDoAno,
         @Schema(description = "Dia do mês (1-31)") Integer diaDoMes,
-        @Schema(description = "Data limite da recorrência") LocalDate dataLimite) {
+        @Schema(description = "Data limite da recorrência") LocalDate dataLimite,
+        @Schema(description = "Número de ocorrências") Integer numeroOcorrencias) {
 }
