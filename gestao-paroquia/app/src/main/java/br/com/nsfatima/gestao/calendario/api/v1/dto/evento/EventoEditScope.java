@@ -8,5 +8,8 @@ public enum EventoEditScope {
     ONLY_THIS,
 
     @Schema(description = "Edita esta instância e todas as futuras (divide a série)")
-    THIS_AND_FOLLOWING
+    THIS_AND_FOLLOWING,
+
+    @Schema(description = "Edita todas as instâncias da série")
+    EDIT_ALL
 }
