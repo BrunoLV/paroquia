@@ -11,8 +11,8 @@ describe('EventRegistrationModal', () => {
   const mockOnSubmit = jest.fn();
 
   const mockOrgs = [
-    { id: 'org-1', nome: 'Pastoral A' },
-    { id: 'org-2', nome: 'Pastoral B' },
+    { id: 'org-1', nome: 'Pastoral A', tipo: 'PASTORAL', contato: null, ativo: true },
+    { id: 'org-2', nome: 'Pastoral B', tipo: 'PASTORAL', contato: null, ativo: true },
   ];
 
   const defaultProps = {
