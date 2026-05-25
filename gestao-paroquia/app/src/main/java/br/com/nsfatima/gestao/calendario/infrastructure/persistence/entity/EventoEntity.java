@@ -60,7 +60,7 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "local_id")
     private UUID localId;
 
-    @OneToMany
+    @OneToMany(fetch = jakarta.persistence.FetchType.EAGER)
     @JoinColumn(name = "evento_id", insertable = false, updatable = false)
     private List<EventoEnvolvidoEntity> envolvidos;
 

@@ -25,6 +25,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoRecorrenciaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
@@ -165,6 +166,11 @@ public class UpdateEventoUseCase {
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
         applyParticipantChanges(entity.getId(), request.participantes());
+
+        // Manually fetch involvement to ensure response is complete (especially for EAGER loading consistency)
+        List<EventoEnvolvidoEntity> involvement = involvementRepository.findByEventoId(saved.getId());
+        saved.setEnvolvidos(involvement);
+
         publishMetrics(entity, request);
         publishAudit(saved, request, actorContext, auditResult, isApprovalFlow);
         
