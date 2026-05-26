@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Container,
   Typography,
@@ -21,9 +21,10 @@ import {
   Drawer,
   IconButton,
   Divider,
+  TextField,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { getApprovals } from '../api/approvals';
+import { getApprovals, decideApproval } from '../api/approvals';
 import { AprovacaoResponse } from '../api/types';
 
 const Approvals = () => {
@@ -44,6 +45,22 @@ const Approvals = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['approvals', currentStatus, page, size],
     queryFn: () => getApprovals(currentStatus, page, size),
+  });
+
+  const queryClient = useQueryClient();
+  const [observacao, setObservacao] = useState('');
+
+  const decisionMutation = useMutation({
+    mutationFn: ({ id, status, observacao }: { id: string; status: 'APROVADA' | 'REPROVADA'; observacao: string }) =>
+      decideApproval(id, { status, observacao }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['approvals'] });
+      setSelectedApproval(null);
+      setObservacao('');
+    },
+    onError: (error) => {
+      console.error('Error deciding approval:', error);
+    },
   });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -276,6 +293,47 @@ const Approvals = () => {
                 </>
               )}
             </Box>
+
+            {selectedApproval.status === 'PENDENTE' && (
+              <Box sx={{ mt: 4 }}>
+                <Divider sx={{ mb: 3 }} />
+                <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                  TOMADA DE DECISÃO
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Observações"
+                  multiline
+                  rows={4}
+                  value={observacao}
+                  onChange={(e) => setObservacao(e.target.value.slice(0, 2000))}
+                  placeholder="Justificativa para aprovação ou rejeição (opcional)..."
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  helperText={`${observacao.length}/2000 caracteres`}
+                />
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    fullWidth
+                    onClick={() => decisionMutation.mutate({ id: selectedApproval.id, status: 'APROVADA', observacao })}
+                    disabled={decisionMutation.isPending}
+                  >
+                    Aprovar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    fullWidth
+                    onClick={() => decisionMutation.mutate({ id: selectedApproval.id, status: 'REPROVADA', observacao })}
+                    disabled={decisionMutation.isPending}
+                  >
+                    Rejeitar
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </Box>
         )}
       </Drawer>

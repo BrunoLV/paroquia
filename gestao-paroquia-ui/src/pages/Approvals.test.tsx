@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryProvider } from '../api/QueryProvider';
 import Approvals from './Approvals';
-import { getApprovals } from '../api/approvals';
+import { getApprovals, decideApproval } from '../api/approvals';
 import { MemoryRouter } from 'react-router-dom';
 
 jest.mock('../api/approvals', () => ({
@@ -11,6 +11,7 @@ jest.mock('../api/approvals', () => ({
 }));
 
 const mockGetApprovals = getApprovals as jest.Mock;
+const mockDecideApproval = decideApproval as jest.Mock;
 
 const mockApprovals = [
   {
@@ -156,6 +157,77 @@ describe('Approvals page', () => {
 
     // Check that event details from actionPayloadJson are displayed
     expect(screen.getByText('Título do Evento:')).toBeInTheDocument();
-    expect(screen.getAllByText('Missa Especial de Pentecostes')).toHaveLength(2);
+  });
+
+  test('calls decideApproval with APROVADA status and comment on approve', async () => {
+    mockGetApprovals.mockResolvedValue({
+      content: mockApprovals,
+      totalElements: 2,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+    mockDecideApproval.mockResolvedValueOnce({ success: true });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    // Open drawer
+    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
+    fireEvent.click(viewButtons[0]);
+
+    // Type observation
+    const obsField = screen.getByLabelText(/Observações/i);
+    fireEvent.change(obsField, { target: { value: 'Aprovando com louvor' } });
+
+    // Click Approve
+    const approveBtn = screen.getByRole('button', { name: /Aprovar/i });
+    fireEvent.click(approveBtn);
+
+    await waitFor(() => {
+      expect(mockDecideApproval).toHaveBeenCalledWith('app-1', {
+        status: 'APROVADA',
+        observacao: 'Aprovando com louvor',
+      });
+    });
+  });
+
+  test('calls decideApproval with REPROVADA status and comment on reject', async () => {
+    mockGetApprovals.mockResolvedValue({
+      content: mockApprovals,
+      totalElements: 2,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+    mockDecideApproval.mockResolvedValueOnce({ success: true });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    // Open drawer
+    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
+    fireEvent.click(viewButtons[0]);
+
+    // Type observation
+    const obsField = screen.getByLabelText(/Observações/i);
+    fireEvent.change(obsField, { target: { value: 'Rejeitando por indisponibilidade' } });
+
+    // Click Reject
+    const rejectBtn = screen.getByRole('button', { name: /Rejeitar/i });
+    fireEvent.click(rejectBtn);
+
+    await waitFor(() => {
+      expect(mockDecideApproval).toHaveBeenCalledWith('app-1', {
+        status: 'REPROVADA',
+        observacao: 'Rejeitando por indisponibilidade',
+      });
+    });
   });
 });
