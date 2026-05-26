@@ -89,13 +89,41 @@ VALUES
     ('40000000-0000-0000-0000-000000000102', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-02-21T09:00:00Z', '2026-02-21T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0);
 
 -- Approvals
-INSERT INTO calendario.aprovacoes (id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc, action_payload, version)
-VALUES 
-    ('60000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000002', 'ADICAO_EXTRA', 'PAROCO', 'PENDENTE', '2026-03-01T10:00:00Z', '{"titulo": "Reunião Extraordinária Pascom", "categoria": "ADMINISTRATIVO"}', 0);
-
-INSERT INTO calendario.aprovacoes (id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc, decidido_em_utc, observacao, action_payload, version)
-VALUES 
-    ('60000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001', 'CRIACAO', 'PAROCO', 'APROVADA', '2026-01-15T08:00:00Z', '2026-01-16T09:00:00Z', 'Missa importante, autorizada.', '{"titulo": "Missa de Abertura da Catequese"}', 0);
+INSERT INTO calendario.aprovacoes (
+    id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc, 
+    decidido_em_utc, solicitante_id, aprovador_id, decision_observacao, 
+    action_payload_json, mensagem_erro_execucao, version
+) VALUES 
+    (
+        '60000000-0000-0000-0000-000000000001', NULL, 'CRIACAO_EVENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T12:00:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-06-15T08:00:00Z", "fim": "2026-06-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade."}', NULL, 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001', 'EDICAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-05-25T13:00:00Z', 
+        NULL, 'joao.liturgia', NULL, NULL, 
+        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-02-07T17:00:00Z", "fim": "2026-02-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001"}', NULL, 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000101', 'CANCELAMENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T14:00:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"motivo": "Falta de energia no Salão Paroquial"}', NULL, 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000001', 'CRIACAO_EVENTO', 'PAROCO', 'APROVADA', '2026-01-15T08:00:00Z', 
+        '2026-01-16T09:00:00Z', 'padre.pedro', '10000000-0000-0000-0000-000000000001', 'Missa importante, autorizada.', 
+        '{"titulo": "Missa de Abertura da Catequese"}', NULL, 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000005', NULL, 'EDICAO_EVENTO', 'PAROCO', 'REPROVADA', '2026-02-09T10:00:00Z', 
+        '2026-02-10T11:00:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Horário conflita com casamento agendado.', 
+        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-02-07T19:00:00Z"}', NULL, 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000006', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'FALHA_EXECUCAO', '2026-02-07T10:00:00Z', 
+        '2026-02-07T10:05:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Tentativa de aprovação automática falhou.', 
+        '{"titulo": "Missa Festiva Pascom", "inicio": "2026-02-07T18:00:00Z", "fim": "2026-02-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001"}', 'Conflito de horário detectado no local Igreja Principal.', 0
+    );
 
 -- Observations
 INSERT INTO calendario.observacoes_evento (id, evento_id, usuario_id, tipo, conteudo, criado_em_utc, version)
