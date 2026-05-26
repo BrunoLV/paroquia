@@ -470,7 +470,7 @@ const Calendar = () => {
     // 1. Transient creation events
     const transientEvents = pendingApprovals
       .filter((a) => a.tipoSolicitacao === 'CRIACAO_EVENTO' && a.actionPayloadJson)
-      .map((a) => {
+      .map((a): Evento | null => {
         try {
           const payload = JSON.parse(a.actionPayloadJson);
           return {
