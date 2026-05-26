@@ -29,3 +29,8 @@
 
 - [x] **Track: Implementar a recorrencia dos eventos na UI conforme regra definida no backend**
 *Link: [./archive/event_recurrence_20260524/](./archive/event_recurrence_20260524/)*
+
+---
+
+- [ ] **Track: Implementação do fluxo de aprovação na UI conforme implementação definida pelo backend**
+*Link: [./tracks/approval_workflow_ui_20260525/](./tracks/approval_workflow_ui_20260525/)*
