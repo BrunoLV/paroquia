@@ -1,0 +1,1 @@
+Task: Add 'Aprovações' link in src/components/Layout.tsx\nChanges: Integrated canApprove permission check into Layout menu items list to conditionally display Approvals link with FactCheck icon. Created Layout.test.tsx.\nWhy: Give authorized administrators, coordinators and priests quick access to the approvals page while keeping it hidden from standard members.
