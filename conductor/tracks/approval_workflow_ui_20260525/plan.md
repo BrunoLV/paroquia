@@ -21,7 +21,7 @@
     - [x] Implement `Approvals` page utilizing React Query to load pending approvals from backend
     - [x] Implement status filtering UI controls (tabs/filters for PENDENTE, APROVADA, REPROVADA, etc.)
     - [x] Verify tests pass and status switching works correctly
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Approvals Page Listing and Menu Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Approvals Page Listing and Menu Integration' (Protocol in workflow.md)
 
 ## Phase 3: Approvals Detail & Decisions Workflow
 - [ ] Task: TDD - Create Detail Panel/Drawer component in approvals view
