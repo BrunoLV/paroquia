@@ -35,7 +35,7 @@ const mockEvents = [
 ];
 
 // Helper wrapper to render the calendar with mocks
-const renderCalendar = async (user = mockUser) => {
+const renderCalendar = async (user = mockUser, approvals: any[] = []) => {
   mockedApiClient.get.mockImplementation((url) => {
     if (url === '/auth/me') {
       return Promise.resolve({ data: user });
@@ -51,6 +51,9 @@ const renderCalendar = async (user = mockUser) => {
     }
     if (url === '/projetos') {
       return Promise.resolve({ data: [] });
+    }
+    if (url === '/aprovacoes') {
+      return Promise.resolve({ data: { content: approvals } });
     }
     return Promise.reject(new Error('Not found'));
   });
@@ -224,4 +227,68 @@ test('opens and submits event creation form', async () => {
       }),
     })
   );
+});
+
+test('displays events with pending actions with reduced opacity and indicator', async () => {
+  const pendingApprovals = [
+    {
+      id: 'approval-1',
+      eventoId: 'event-1',
+      tipoSolicitacao: 'CANCELAMENTO',
+      status: 'PENDENTE',
+      solicitanteId: 'user-1',
+      criadoEmUtc: new Date().toISOString(),
+      actionPayloadJson: '{"motivo": "Teste"}'
+    }
+  ];
+
+  await renderCalendar(mockUser, pendingApprovals);
+
+  // It should render the event with [Pendente] indicator
+  expect(screen.getByText(/\[Pendente\] Missa Paroquial/i)).toBeInTheDocument();
+
+  // Click on the event to see details dialog warning
+  const eventPill = screen.getByText(/\[Pendente\] Missa Paroquial/i);
+  await act(async () => {
+    fireEvent.click(eventPill);
+  });
+
+  expect(screen.getByText('Solicitação de Cancelamento Pendente')).toBeInTheDocument();
+});
+
+test('parses and renders transient events from pending creation requests', async () => {
+  const pendingApprovals = [
+    {
+      id: 'approval-2',
+      eventoId: null,
+      tipoSolicitacao: 'CRIACAO_EVENTO',
+      status: 'PENDENTE',
+      solicitanteId: 'user-2',
+      criadoEmUtc: new Date().toISOString(),
+      actionPayloadJson: JSON.stringify({
+        titulo: 'Missa das Crianças',
+        descricao: 'Missa infantil',
+        categoria: 'LITURGICO',
+        inicio: new Date().toISOString(),
+        fim: new Date(Date.now() + 3600000).toISOString(),
+        organizacaoResponsavelId: 'org-1',
+        localId: null,
+        status: 'CONFIRMADO'
+      })
+    }
+  ];
+
+  await renderCalendar(mockUser, pendingApprovals);
+
+  // The transient event should be rendered on the calendar grid
+  expect(screen.getByText(/\[Pendente\] Missa das Crianças/i)).toBeInTheDocument();
+
+  // Clicking it should show the creation details dialog
+  const eventPill = screen.getByText(/\[Pendente\] Missa das Crianças/i);
+  await act(async () => {
+    fireEvent.click(eventPill);
+  });
+
+  expect(screen.getByText('Solicitação de Criação Pendente')).toBeInTheDocument();
+  expect(screen.getByText('Missa infantil')).toBeInTheDocument();
 });

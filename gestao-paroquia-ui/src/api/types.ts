@@ -43,6 +43,10 @@ export interface Evento {
   conflictState: string | null;
   conflictReason: string | null;
   adicionadoExtraJustificativa?: string | null;
+  pendingApprovalId?: string;
+  pendingSolicitanteId?: string;
+  pendingTipoSolicitacao?: string;
+  pendingActionType?: string;
 }
 
 export interface AprovacaoResponse {

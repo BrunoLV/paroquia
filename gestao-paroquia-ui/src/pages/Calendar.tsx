@@ -119,6 +119,7 @@ const Calendar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [pendingApprovals, setPendingApprovals] = useState<any[]>([]);
 
   // Modal details states
   const [selectedEvent, setSelectedEvent] = useState<Evento | null>(null);
@@ -296,7 +297,25 @@ const Calendar = () => {
         }
       };
 
-      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos()]);
+      const fetchApprovals = async () => {
+        try {
+          const res = await apiClient.get<any>('/aprovacoes', {
+            params: { status: 'PENDENTE', size: 100 }
+          });
+          if (res.data && Array.isArray(res.data.content)) {
+            setPendingApprovals(res.data.content);
+          } else if (Array.isArray(res.data)) {
+            setPendingApprovals(res.data);
+          } else {
+            setPendingApprovals([]);
+          }
+        } catch (err) {
+          console.warn('Could not fetch pending approvals:', err);
+          setPendingApprovals([]);
+        }
+      };
+
+      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), fetchApprovals()]);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       setErrorMsg('Não foi possível carregar as informações do calendário.');
@@ -446,9 +465,59 @@ const Calendar = () => {
     }
   };
 
+  // Combine API events with transient events from pending creation requests
+  const combinedEvents = useMemo(() => {
+    // 1. Transient creation events
+    const transientEvents = pendingApprovals
+      .filter((a) => a.tipoSolicitacao === 'CRIACAO_EVENTO' && a.actionPayloadJson)
+      .map((a) => {
+        try {
+          const payload = JSON.parse(a.actionPayloadJson);
+          return {
+            id: `pending-creation-${a.id}`,
+            titulo: payload.titulo || 'Novo Evento (Pendente)',
+            descricao: payload.descricao || '',
+            categoria: payload.categoria || 'PASTORAL',
+            organizacaoResponsavelId: payload.organizacaoResponsavelId || '',
+            projetoId: payload.projetoId || null,
+            nomeProjeto: null,
+            localId: payload.localId || null,
+            inicio: payload.inicio,
+            fim: payload.fim,
+            status: 'PENDENTE_CRIACAO', // custom status for pending creation
+            conflictState: null,
+            conflictReason: null,
+            pendingApprovalId: a.id,
+            pendingSolicitanteId: a.solicitanteId,
+            pendingTipoSolicitacao: a.tipoSolicitacao
+          };
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter((e): e is Evento => e !== null);
+
+    // 2. Decorated events
+    const decoratedEvents = events.map((e) => {
+      const pendingAction = pendingApprovals.find((a) => a.eventoId === e.id);
+      if (pendingAction) {
+        return {
+          ...e,
+          pendingApprovalId: pendingAction.id,
+          pendingSolicitanteId: pendingAction.solicitanteId,
+          pendingTipoSolicitacao: pendingAction.tipoSolicitacao,
+          pendingActionType: pendingAction.tipoSolicitacao
+        };
+      }
+      return e;
+    });
+
+    return [...decoratedEvents, ...transientEvents];
+  }, [events, pendingApprovals]);
+
   // Map events to their dates for quick lookup
   const getEventsForDay = (day: Date) => {
-    return events.filter((event) => {
+    return combinedEvents.filter((event) => {
       const eventStart = new Date(event.inicio);
       return isSameDay(eventStart, day);
     });
@@ -484,10 +553,10 @@ const Calendar = () => {
 
   // Filtered upcoming events list (for Agenda/List View)
   const agendaEvents = useMemo(() => {
-    return [...events]
+    return [...combinedEvents]
       .filter((e) => new Date(e.inicio) >= calendarDays[0].date)
       .sort((a, b) => new Date(a.inicio).getTime() - new Date(b.inicio).getTime());
-  }, [events, calendarDays]);
+  }, [combinedEvents, calendarDays]);
 
   return (
     <Box>
@@ -701,15 +770,15 @@ const Calendar = () => {
                             transition: 'all 0.2s',
                             boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                             textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none',
-                            opacity: evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1,
+                            opacity: evt.pendingApprovalId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1),
                             '&:hover': {
                               filter: 'brightness(0.93)',
                               transform: 'translateX(2px)',
                             },
                           }}
-                          title={evt.titulo}
+                          title={evt.pendingApprovalId ? `[Pendente] ${evt.titulo}` : evt.titulo}
                         >
-                          {evt.titulo}
+                          {evt.pendingApprovalId ? `[Pendente] ${evt.titulo}` : evt.titulo}
                         </Box>
                       );
                     })}
@@ -743,7 +812,7 @@ const Calendar = () => {
                     boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                     borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
                     transition: 'transform 0.2s, box-shadow 0.2s',
-                    opacity: evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1,
+                    opacity: evt.pendingApprovalId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1),
                     '&:hover': {
                       transform: 'translateY(-2px)',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -773,7 +842,7 @@ const Calendar = () => {
                             textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none'
                           }}
                         >
-                          {evt.titulo}
+                          {evt.pendingApprovalId ? `[Pendente] ${evt.titulo}` : evt.titulo}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
                           {evt.descricao || 'Sem descrição.'}
@@ -814,6 +883,17 @@ const Calendar = () => {
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {selectedEvent.pendingTipoSolicitacao && (
+                  <Alert severity="warning" sx={{ borderRadius: '8px' }}>
+                    {selectedEvent.pendingTipoSolicitacao === 'CRIACAO_EVENTO'
+                      ? 'Solicitação de Criação Pendente'
+                      : selectedEvent.pendingTipoSolicitacao === 'CANCELAMENTO'
+                      ? 'Solicitação de Cancelamento Pendente'
+                      : selectedEvent.pendingTipoSolicitacao === 'EDICAO_EVENTO'
+                      ? 'Solicitação de Edição Pendente'
+                      : 'Solicitação Pendente'}
+                  </Alert>
+                )}
                 {/* Title */}
                 <Box>
                   <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a237e', mb: 1 }}>
@@ -926,7 +1006,7 @@ const Calendar = () => {
               <Button onClick={() => setIsDetailsOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>
                 Fechar
               </Button>
-              {selectedEvent.status !== 'CANCELADO' && canEditEvent(selectedEvent) && (
+              {selectedEvent.status !== 'CANCELADO' && !selectedEvent.pendingApprovalId && canEditEvent(selectedEvent) && (
                 <>
                   <Button 
                     onClick={() => handleOpenCancel(selectedEvent)} 
