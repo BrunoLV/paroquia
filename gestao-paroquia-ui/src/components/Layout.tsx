@@ -13,9 +13,11 @@ import {
   Logout as LogoutIcon,
   Dashboard as DashboardIcon,
   CalendarMonth as CalendarIcon,
+  FactCheck as FactCheckIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { canApprove } from '../auth/permissions';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -35,6 +37,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
     { label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
   ];
+
+  if (canApprove(user)) {
+    menuItems.push({ label: 'Aprovações', path: '/approvals', icon: <FactCheckIcon /> });
+  }
+
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#f4f6f8' }}>
