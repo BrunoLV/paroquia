@@ -211,7 +211,11 @@ const Approvals = () => {
         anchor="right"
         open={Boolean(selectedApproval)}
         onClose={() => setSelectedApproval(null)}
-        PaperProps={{ sx: { width: { xs: '100%', sm: 450 }, p: 3 } }}
+        slotProps={{
+          paper: {
+            sx: { width: { xs: '100%', sm: 450 }, p: 3 }
+          }
+        }}
       >
         {selectedApproval && (
           <Box>
