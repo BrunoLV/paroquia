@@ -12,11 +12,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: API Integration and Route Protection' (Protocol in workflow.md)
 
 ## Phase 2: Approvals Page Listing and Menu Integration
-- [~] Task: TDD - Add "Aprovações" link in `src/components/Layout.tsx`
-    - [ ] Write failing test to check link visibility only for authorized roles (ADMIN, CONSELHO_COORDENADOR, PAROCO)
-    - [ ] Implement conditional rendering of the sidebar menu link based on user roles
-    - [ ] Verify link is shown/hidden correctly under different roles
-- [ ] Task: TDD - Create the Approvals List component and Page layout in `src/pages/Approvals.tsx`
+- [x] Task: TDD - Add "Aprovações" link in `src/components/Layout.tsx` f360c33
+    - [x] Write failing test to check link visibility only for authorized roles (ADMIN, CONSELHO_COORDENADOR, PAROCO)
+    - [x] Implement conditional rendering of the sidebar menu link based on user roles
+    - [x] Verify link is shown/hidden correctly under different roles
+- [~] Task: TDD - Create the Approvals List component and Page layout in `src/pages/Approvals.tsx`
     - [ ] Write failing tests verifying the page renders a paginated list of pending approvals
     - [ ] Implement `Approvals` page utilizing React Query to load pending approvals from backend
     - [ ] Implement status filtering UI controls (tabs/filters for PENDENTE, APROVADA, REPROVADA, etc.)
