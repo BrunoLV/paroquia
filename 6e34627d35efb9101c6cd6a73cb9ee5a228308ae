@@ -1,0 +1,8 @@
+Verification Report for Phase 2: Approvals Page Listing and Menu Integration
+Automated Tests Command: CI=true npm test (all tests pass)
+Manual Verification Steps:
+1. Reload DB seed data from gestao-paroquia/docker/seed-data.sql
+2. Start dev server npm run dev
+3. Log in with admin role and check sidebar layout for 'Aprovações' link
+4. Click and check approvals page listing and status filtering tabs (Pendentes, Aprovadas, Rejeitadas, Falhas)
+User Confirmation: Yes, continue.
