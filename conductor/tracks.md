@@ -27,5 +27,5 @@
 
 ---
 
-- [~] **Track: Implementar a recorrencia dos eventos na UI conforme regra definida no backend**
-*Link: [./tracks/event_recurrence_20260524/](./tracks/event_recurrence_20260524/)*
+- [x] **Track: Implementar a recorrencia dos eventos na UI conforme regra definida no backend**
+*Link: [./archive/event_recurrence_20260524/](./archive/event_recurrence_20260524/)*
