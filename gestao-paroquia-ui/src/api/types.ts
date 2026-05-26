@@ -39,6 +39,7 @@ export interface Evento {
   fim: string;
   status: string;
   participantes?: string[];
+  recorrenciaId?: string | null;
   conflictState: string | null;
   conflictReason: string | null;
   adicionadoExtraJustificativa?: string | null;

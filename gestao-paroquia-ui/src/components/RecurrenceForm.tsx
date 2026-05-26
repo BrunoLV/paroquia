@@ -84,8 +84,10 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
       <Grid container spacing={2}>
         <Grid size={{ xs: 6 }}>
           <FormControl fullWidth size="small">
-            <InputLabel>Frequência</InputLabel>
+            <InputLabel id="recurrence-frequency-label">Frequência</InputLabel>
             <Select
+              labelId="recurrence-frequency-label"
+              id="recurrence-frequency-select"
               value={rule.frequencia}
               label="Frequência"
               onChange={(e) => handleFrequencyChange(e.target.value as Frequency)}

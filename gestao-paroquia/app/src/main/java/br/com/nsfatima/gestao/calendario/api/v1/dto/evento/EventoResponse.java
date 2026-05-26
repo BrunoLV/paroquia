@@ -19,6 +19,7 @@ public record EventoResponse(
         EventoStatusResponse status,
         UUID localId,
         List<UUID> participantes,
+        UUID recorrenciaId,
         String conflictState,
         String conflictReason) {
 }

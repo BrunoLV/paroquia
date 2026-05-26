@@ -81,6 +81,7 @@ public class EventoMapper {
                 status,
                 entity.getLocalId(),
                 participantes,
+                entity.getRecorrenciaId(),
                 entity.getConflictState(),
                 entity.getConflictReason());
     }

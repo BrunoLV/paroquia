@@ -82,6 +82,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [projetoId, setProjetoId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [endTime, setEndTime] = useState('10:00');
   const [status, setStatus] = useState('CONFIRMADO');
   const [justification, setJustification] = useState('');
   const [participantes, setParticipantes] = useState<string[]>([]);
@@ -112,6 +113,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setProjetoId(initialEvent.projetoId || '');
         setStartDate(formatIsoToLocal(initialEvent.inicio));
         setEndDate(formatIsoToLocal(initialEvent.fim));
+
+        if (initialEvent.fim) {
+          const d = new Date(initialEvent.fim);
+          setEndTime(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`);
+        }
+
         setStatus(initialEvent.status || 'CONFIRMADO');
         setJustification(initialEvent.adicionadoExtraJustificativa || '');
         setParticipantes(initialEvent.participantes || []);
@@ -136,19 +143,27 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         start.setHours(9, 0, 0, 0);
         const end = new Date(start);
         end.setHours(10, 0, 0, 0);
-
         setStartDate(formatLocalDate(start));
         setEndDate(formatLocalDate(end));
+        setEndTime('10:00');
+      }
 
-        if (filteredOrganizations.length > 0) {
-          setOrgId(filteredOrganizations[0].id);
-        }
+      if (!initialEvent && filteredOrganizations.length > 0) {
+        setOrgId(filteredOrganizations[0].id);
       }
     }
   }, [open, initialDate, initialEvent, filteredOrganizations]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Determine real end date based on mode (recurrence uses same day + separate time)
+    let finalEndDate = endDate;
+    if (isRecurring && startDate) {
+      const datePart = startDate.split('T')[0];
+      finalEndDate = `${datePart}T${endTime}`;
+    }
+
     onSubmit({
       titulo: title,
       descricao: description,
@@ -158,7 +173,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       projetoId: projetoId || null,
       participantes,
       inicio: startDate ? new Date(startDate).toISOString() : '',
-      fim: endDate ? new Date(endDate).toISOString() : '',
+      fim: finalEndDate ? new Date(finalEndDate).toISOString() : '',
       status,
       adicionadoExtraJustificativa: justification || null,
       recurrence: isRecurring ? recurrenceRule : null,
@@ -345,17 +360,31 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 />
               </Grid>
               <Grid size={{ xs: 6 }}>
-                <TextField
-                  required
-                  label="Data e Hora de Término"
-                  type="datetime-local"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  slotProps={{ inputLabel: { shrink: true } }}
-                  fullWidth
-                  disabled={isSubmitting}
-                  size="small"
-                />
+                {isRecurring ? (
+                  <TextField
+                    required
+                    label="Hora de Término"
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    fullWidth
+                    disabled={isSubmitting}
+                    size="small"
+                  />
+                ) : (
+                  <TextField
+                    required
+                    label="Data e Hora de Término"
+                    type="datetime-local"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    fullWidth
+                    disabled={isSubmitting}
+                    size="small"
+                  />
+                )}
               </Grid>
             </Grid>
 

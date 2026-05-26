@@ -84,6 +84,11 @@ public class YearlyRecurrenceGeneratorJob {
             List<LocalDate> dates = ruleEntity.getRegra().gerarDatas(startOfRecurrence, endOfYear);
 
             for (LocalDate date : dates) {
+                // Skip the date of the base event to avoid duplication (the base event IS the first occurrence)
+                if (date.equals(startOfRecurrence)) {
+                    continue;
+                }
+                
                 if (date.getYear() == year) {
                     generateInstance(baseEvent, date, ruleEntity);
                 }
@@ -100,21 +105,9 @@ public class YearlyRecurrenceGeneratorJob {
         Instant startUtc = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
         Instant endUtc = startUtc.plus(duration);
 
-        // Simple de-duplication check: title and start time
-        boolean exists = eventRepository.findAllWithFilters(
-                startUtc, true,
-                startUtc, true,
-                List.of(baseEvent.getOrganizacaoResponsavelId()), true,
-                null, false,
-                null, false,
-                null, false,
-                null, false,
-                Pageable.unpaged())
-                .getContent().stream()
-                .anyMatch(e -> e.getTitulo().equals(baseEvent.getTitulo()) && e.getInicioUtc().equals(startUtc));
-
-        if (exists) {
-            LOGGER.debug("Instance for {} at {} already exists, skipping", baseEvent.getTitulo(), startUtc);
+        // Robust de-duplication check: same series and same start time
+        if (eventRepository.existsByRecorrenciaIdAndInicioUtc(ruleEntity.getId(), startUtc)) {
+            LOGGER.debug("Instance for {} at {} already exists in series {}, skipping", baseEvent.getTitulo(), startUtc, ruleEntity.getId());
             return;
         }
 
@@ -122,6 +115,9 @@ public class YearlyRecurrenceGeneratorJob {
         instance.setId(UUID.randomUUID());
         instance.setTitulo(baseEvent.getTitulo());
         instance.setDescricao(baseEvent.getDescricao());
+        instance.setCategoria(baseEvent.getCategoria());
+        instance.setLocalId(baseEvent.getLocalId());
+        instance.setProjetoId(baseEvent.getProjetoId());
         instance.setOrganizacaoResponsavelId(baseEvent.getOrganizacaoResponsavelId());
         instance.setStatus(baseEvent.getStatus());
         instance.setInicioUtc(startUtc);

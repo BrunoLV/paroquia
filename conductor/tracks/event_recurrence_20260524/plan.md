@@ -16,12 +16,14 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Recurrence Form' (Protocol in workflow.md) 3176b06
 
 ## Phase 3: Frontend Edit Workflow
-- [x] Task: Create a `EditScopeDialog` component to prompt the user when editing a recurring event. ac4f28b
-- [x] Task: Update the "Edit" action in the Calendar to show the `EditScopeDialog` if the event has a `recorrenciaId`. 7a10fbd
-- [x] Task: Update the `PATCH` call to pass the selected `editScope` in the request body. 7a10fbd
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Frontend Edit Workflow' (Protocol in workflow.md)
+- [x] Task: Create a `EditScopeDialog` component to prompt the user when editing a recurring event. 3fcd7fe
+- [x] Task: Update the "Edit" action in the Calendar to show the `EditScopeDialog` if the event has a `recorrenciaId`. 3fcd7fe
+- [x] Task: Update the `PATCH` call to pass the selected `editScope` in the request body. 3fcd7fe
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Edit Workflow' (Protocol in workflow.md) 3fcd7fe
 
 ## Phase 4: Verification and Polish
-- [x] Task: Verify recurring events generation via `YearlyRecurrenceGeneratorJob` (or triggering it manually in dev). d48375b
-- [x] Task: Final end-to-end testing of creating, editing (all/future), and deleting recurring events. d48375b
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Verification and Polish' (Protocol in workflow.md)
+- [x] Task: Verify recurring events generation via `YearlyRecurrenceGeneratorJob` (or triggering it manually in dev). ba312da
+- [x] Task: Final end-to-end testing of creating, editing (all/future), and deleting recurring events. ba312da
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification and Polish' (Protocol in workflow.md) ba312da
+- [x] Task: Implement base event re-anchoring to first valid occurrence and separate duration UI. (User requested refinement). 3020612
+- [x] Task: Final code review and standard import cleanup. 3020612
