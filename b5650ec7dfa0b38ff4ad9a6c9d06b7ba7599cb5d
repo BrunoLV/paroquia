@@ -1,0 +1,5 @@
+Task: TDD - Create the Approvals List component and Page layout in src/pages/Approvals.tsx (Fix)
+Summary of changes: Fixed compilation issue by using slotProps.paper instead of PaperProps on Drawer.
+Created/modified files:
+- gestao-paroquia-ui/src/pages/Approvals.tsx
+Why: To resolve TS2322 compile error under MUI v9.
