@@ -24,7 +24,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Approvals Page Listing and Menu Integration' (Protocol in workflow.md)
 
 ## Phase 3: Approvals Detail & Decisions Workflow
-- [ ] Task: TDD - Create Detail Panel/Drawer component in approvals view
+- [~] Task: TDD - Create Detail Panel/Drawer component in approvals view
     - [ ] Write failing tests verifying details dialog/drawer displays solicitor info, request type, time, and event description
     - [ ] Implement details visualization component
     - [ ] Verify tests pass
