@@ -11,7 +11,7 @@
     - [x] Verify tests pass and unauthorized users are redirected
 - [x] Task: Conductor - User Manual Verification 'Phase 1: API Integration and Route Protection' (Protocol in workflow.md)
 
-## Phase 2: Approvals Page Listing and Menu Integration
+## Phase 2: Approvals Page Listing and Menu Integration [checkpoint: 6e34627]
 - [x] Task: TDD - Add "Aprovações" link in `src/components/Layout.tsx` f360c33
     - [x] Write failing test to check link visibility only for authorized roles (ADMIN, CONSELHO_COORDENADOR, PAROCO)
     - [x] Implement conditional rendering of the sidebar menu link based on user roles
