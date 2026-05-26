@@ -1,0 +1,5 @@
+Task: Database seed data update
+Summary of changes: Fixed the approvals seed insertion to use correct schema columns (action_payload_json, decision_observacao) and added 6 comprehensive test scenarios (3 pending, 1 approved, 1 rejected, 1 execution failure).
+Created/modified files:
+- gestao-paroquia/docker/seed-data.sql
+Why: To provide realistic scenarios in the database initialization script for testing the approvals UI.
