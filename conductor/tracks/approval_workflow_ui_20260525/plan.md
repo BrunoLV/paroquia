@@ -24,11 +24,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Approvals Page Listing and Menu Integration' (Protocol in workflow.md)
 
 ## Phase 3: Approvals Detail & Decisions Workflow
-- [~] Task: TDD - Create Detail Panel/Drawer component in approvals view
-    - [ ] Write failing tests verifying details dialog/drawer displays solicitor info, request type, time, and event description
-    - [ ] Implement details visualization component
-    - [ ] Verify tests pass
-- [ ] Task: TDD - Implement Approve and Reject actions with observations
+- [x] Task: TDD - Create Detail Panel/Drawer component in approvals view bc3e4ba
+    - [x] Write failing tests verifying details dialog/drawer displays solicitor info, request type, time, and event description
+    - [x] Implement details visualization component
+    - [x] Verify tests pass
+- [~] Task: TDD - Implement Approve and Reject actions with observations
     - [ ] Write failing tests for patch approval/rejection request with observation field validation
     - [ ] Implement action buttons with a text field for observation (limit 2000 characters)
     - [ ] Send patch decision request to backend and refresh list state
