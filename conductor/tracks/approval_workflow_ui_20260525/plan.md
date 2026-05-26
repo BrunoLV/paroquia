@@ -5,11 +5,11 @@
     - [x] Write failing test for approvals API endpoints (`GET /api/v1/aprovacoes`, `PATCH /api/v1/aprovacoes/{id}`)
     - [x] Implement client integration in `src/api/` using axios/apiClient
     - [x] Verify test passes and mock returns correct structure
-- [~] Task: TDD - Implement Route Guarding for Approvals page in `src/AppRoutes.tsx`
-    - [ ] Write failing routing tests ensuring only ADMIN, CONSELHO_COORDENADOR, and PAROCO can access `/aprovacoes`
-    - [ ] Implement role-based navigation and route protection using the active organization context and user roles
-    - [ ] Verify tests pass and unauthorized users are redirected
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: API Integration and Route Protection' (Protocol in workflow.md)
+- [x] Task: TDD - Implement Route Guarding for Approvals page in `src/AppRoutes.tsx` cf4810e
+    - [x] Write failing routing tests ensuring only ADMIN, CONSELHO_COORDENADOR, and PAROCO can access `/aprovacoes`
+    - [x] Implement role-based navigation and route protection using the active organization context and user roles
+    - [x] Verify tests pass and unauthorized users are redirected
+- [~] Task: Conductor - User Manual Verification 'Phase 1: API Integration and Route Protection' (Protocol in workflow.md)
 
 ## Phase 2: Approvals Page Listing and Menu Integration
 - [ ] Task: TDD - Add "Aprovações" link in `src/components/Layout.tsx`
