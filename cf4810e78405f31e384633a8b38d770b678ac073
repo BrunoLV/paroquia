@@ -1,0 +1,1 @@
+Task: Implement Route Guarding for Approvals page\nChanges: Defined canApprove helper in permissions.ts and added corresponding tests. Added /approvals route with a custom ApprovalsRoute guard in AppRoutes.tsx. Verified protection via routing tests.\nWhy: Prevent unauthorized users from reaching the approvals administration interface.
