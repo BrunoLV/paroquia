@@ -28,12 +28,12 @@
     - [x] Write failing tests verifying details dialog/drawer displays solicitor info, request type, time, and event description
     - [x] Implement details visualization component
     - [x] Verify tests pass
-- [~] Task: TDD - Implement Approve and Reject actions with observations
-    - [ ] Write failing tests for patch approval/rejection request with observation field validation
-    - [ ] Implement action buttons with a text field for observation (limit 2000 characters)
-    - [ ] Send patch decision request to backend and refresh list state
-    - [ ] Verify decision workflow works and list is updated
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Approvals Detail & Decisions Workflow' (Protocol in workflow.md)
+- [x] Task: TDD - Implement Approve and Reject actions with observations f3761f8
+    - [x] Write failing tests for patch approval/rejection request with observation field validation
+    - [x] Implement action buttons with a text field for observation (limit 2000 characters)
+    - [x] Send patch decision request to backend and refresh list state
+    - [x] Verify decision workflow works and list is updated
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Approvals Detail & Decisions Workflow' (Protocol in workflow.md)
 
 ## Phase 4: Calendar Integration and Visual Indicators
 - [ ] Task: TDD - Update Event status rendering in Calendar
