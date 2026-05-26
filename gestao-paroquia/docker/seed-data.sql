@@ -2,7 +2,7 @@
 -- Este script deve ser executado APÓS as migrações do Flyway.
 
 -- Limpa dados existentes para evitar conflitos em re-execuções
-TRUNCATE calendario.auditoria_operacao, calendario.observacoes_evento, calendario.aprovacoes, 
+TRUNCATE calendario.auditoria_operacoes, calendario.observacoes_evento, calendario.aprovacoes, 
          calendario.eventos, calendario.eventos_recorrencia, calendario.projetos_eventos, 
          calendario.anos_paroquiais, calendario.membros_organizacao, calendario.membros, 
          calendario.usuarios, calendario.locais, calendario.organizacoes RESTART IDENTITY CASCADE;
@@ -19,9 +19,14 @@ VALUES
     ('00000000-0000-0000-0000-000000000003', 'Sala de Catequese 1', 'SALA', 30, TRUE, 0),
     ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 10, TRUE, 0);
 
--- EXTRA Organizations (Aquelas que o Flyway V001 NÃO cria)
+-- Organizations (Organizacoes)
 INSERT INTO calendario.organizacoes (id, nome, tipo, contato, ativo, version)
 VALUES 
+    ('00000000-0000-0000-0000-000000000001', 'Paróquia Nossa Senhora de Fátima', 'CLERO', 'contato@nsfatima.com', TRUE, 0),
+    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', TRUE, 0),
+    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', TRUE, 0),
+    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', TRUE, 0),
+    ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', TRUE, 0),
     ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', TRUE, 0),
     ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, 0)
 ON CONFLICT (id) DO NOTHING;
@@ -70,23 +75,32 @@ VALUES
 -- Events (Eventos)
 INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version)
 VALUES 
-    ('40000000-0000-0000-0000-000000000001', 'Missa de Abertura da Catequese', 'Missa com pais e alunos', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-02-07T18:00:00Z', '2026-02-07T19:30:00Z', '30000000-0000-0000-0000-000000000001', 0);
+    ('40000000-0000-0000-0000-000000000001', 'Missa de Abertura da Catequese', 'Missa com pais e alunos', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-09-07T18:00:00Z', '2026-09-07T19:30:00Z', '30000000-0000-0000-0000-000000000001', 0);
 
 -- Event with Extra Status
 INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version)
 VALUES 
-    ('40000000-0000-0000-0000-000000000002', 'Reunião Extraordinária Pascom', 'Urgência na cobertura do evento x', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000003', 'ADMINISTRATIVO', 'ADICIONADO_EXTRA', '2026-03-10T20:00:00Z', '2026-03-10T21:00:00Z', 'Necessidade de planejar live de última hora', 0);
+    ('40000000-0000-0000-0000-000000000002', 'Reunião Extraordinária Pascom', 'Urgência na cobertura do evento x', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000003', 'ADMINISTRATIVO', 'ADICIONADO_EXTRA', '2026-09-10T20:00:00Z', '2026-09-10T21:00:00Z', 'Necessidade de planejar live de última hora', 0);
 
--- Recurring Event stub
-INSERT INTO calendario.eventos_recorrencia (id, data_inicio, data_fim, regra, version)
-VALUES 
-    ('50000000-0000-0000-0000-000000000001', '2026-02-14', '2026-11-28', '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"]}', 0);
-
--- Recurring Events instances
+-- Recurring Events instances (Insert base event instance first with NULL recorrencia_id to satisfy FK)
 INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
 VALUES 
-    ('40000000-0000-0000-0000-000000000101', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-02-14T09:00:00Z', '2026-02-14T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0),
-    ('40000000-0000-0000-0000-000000000102', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-02-21T09:00:00Z', '2026-02-21T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0);
+    ('40000000-0000-0000-0000-000000000101', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-12T09:00:00Z', '2026-09-12T10:30:00Z', '30000000-0000-0000-0000-000000000001', NULL, 0);
+
+-- Recurring Event stub (now can reference '40000000-0000-0000-0000-000000000101' as evento_base_id)
+INSERT INTO calendario.eventos_recorrencia (id, evento_base_id, frequencia, intervalo, regra_json, data_fim_utc, version)
+VALUES 
+    ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000101', 'SEMANAL', 1, '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"]}', '2026-11-28T23:59:59Z', 0);
+
+-- Update base event instance to link to its recurrence
+UPDATE calendario.eventos 
+SET recorrencia_id = '50000000-0000-0000-0000-000000000001'
+WHERE id = '40000000-0000-0000-0000-000000000101';
+
+-- Insert remaining recurring instances referencing recorrencia_id
+INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
+VALUES 
+    ('40000000-0000-0000-0000-000000000102', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-19T09:00:00Z', '2026-09-19T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0);
 
 -- Approvals
 INSERT INTO calendario.aprovacoes (
@@ -97,12 +111,12 @@ INSERT INTO calendario.aprovacoes (
     (
         '60000000-0000-0000-0000-000000000001', NULL, 'CRIACAO_EVENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T12:00:00Z', 
         NULL, 'maria.catequese', NULL, NULL, 
-        '{"titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-06-15T08:00:00Z", "fim": "2026-06-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade."}', NULL, 0
+        '{"idempotencyKey": "idemp-0000-000000000001", "titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-09-15T08:00:00Z", "fim": "2026-09-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade.", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001', 'EDICAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-05-25T13:00:00Z', 
         NULL, 'joao.liturgia', NULL, NULL, 
-        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-02-07T17:00:00Z", "fim": "2026-02-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001"}', NULL, 0
+        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-09-07T17:00:00Z", "fim": "2026-09-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000101', 'CANCELAMENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T14:00:00Z', 
@@ -112,17 +126,17 @@ INSERT INTO calendario.aprovacoes (
     (
         '60000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000001', 'CRIACAO_EVENTO', 'PAROCO', 'APROVADA', '2026-01-15T08:00:00Z', 
         '2026-01-16T09:00:00Z', 'padre.pedro', '10000000-0000-0000-0000-000000000001', 'Missa importante, autorizada.', 
-        '{"titulo": "Missa de Abertura da Catequese"}', NULL, 0
+        '{"idempotencyKey": "idemp-0000-000000000004", "titulo": "Missa de Abertura da Catequese", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000005', NULL, 'EDICAO_EVENTO', 'PAROCO', 'REPROVADA', '2026-02-09T10:00:00Z', 
         '2026-02-10T11:00:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Horário conflita com casamento agendado.', 
-        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-02-07T19:00:00Z"}', NULL, 0
+        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-09-07T19:00:00Z", "fim": "2026-09-07T20:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000006', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'FALHA_EXECUCAO', '2026-02-07T10:00:00Z', 
         '2026-02-07T10:05:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Tentativa de aprovação automática falhou.', 
-        '{"titulo": "Missa Festiva Pascom", "inicio": "2026-02-07T18:00:00Z", "fim": "2026-02-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001"}', 'Conflito de horário detectado no local Igreja Principal.', 0
+        '{"idempotencyKey": "idemp-0000-000000000006", "titulo": "Missa Festiva Pascom", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', 'Conflito de horário detectado no local Igreja Principal.', 0
     );
 
 -- Observations
@@ -131,7 +145,7 @@ VALUES
     (gen_random_uuid(), '40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', 'NOTA', 'Lembrar de avisar os coroinhas sobre a missa.', '2026-02-01T14:00:00Z', 0);
 
 -- Audit Trail
-INSERT INTO calendario.auditoria_operacao (id, aggregate_id, aggregate_type, usuario_id, operacao, timestamp_utc, payload_antes, payload_depois)
+INSERT INTO calendario.auditoria_operacoes (id, organizacao_id, evento_id, recurso_tipo, recurso_id, acao, resultado, ator, ator_usuario_id, correlation_id, detalhes_auditaveis_json, ocorrido_em_utc)
 VALUES 
-    (gen_random_uuid(), '40000000-0000-0000-0000-000000000001', 'EVENTO', '10000000-0000-0000-0000-000000000002', 'CRIACAO', '2026-01-15T08:00:00Z', NULL, '{"titulo": "Missa de Abertura"}'),
-    (gen_random_uuid(), '40000000-0000-0000-0000-000000000001', 'EVENTO', '10000000-0000-0000-0000-000000000001', 'APROVACAO', '2026-01-16T09:00:00Z', '{"status": "PENDENTE"}', '{"status": "CONFIRMADO"}');
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000000ee', '40000000-0000-0000-0000-000000000001', 'EVENTO', '40000000-0000-0000-0000-000000000001', 'CRIACAO', 'SUCCESS', 'maria.catequese', '10000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000004', '{"titulo": "Missa de Abertura da Catequese"}', '2026-01-15T08:00:00Z'),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000000ee', '40000000-0000-0000-0000-000000000001', 'EVENTO', '40000000-0000-0000-0000-000000000001', 'APROVACAO', 'SUCCESS', 'padre.pedro', '10000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000004', '{"status": "CONFIRMADO"}', '2026-01-16T09:00:00Z');
