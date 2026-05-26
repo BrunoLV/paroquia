@@ -13,6 +13,7 @@ const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 jest.mock('./pages/Calendar', () => () => <div data-testid="calendar-page">Calendar Page</div>);
 jest.mock('./pages/Login', () => () => <div data-testid="login-page">Login Page</div>);
 jest.mock('./pages/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
+jest.mock('./pages/Approvals', () => () => <div data-testid="approvals-page">Approvals Page</div>);
 
 describe('Routing', () => {
   beforeEach(() => {
@@ -64,21 +65,23 @@ describe('Routing', () => {
     expect(screen.getByTestId('calendar-page')).toBeInTheDocument();
   });
 
-  test('redirects to dashboard after successful login', async () => {
-    const mockUser = { id: '1', name: 'Test User', username: 'testuser', roles: ['ADMIN'] };
-    // Initial load: unauthenticated
-    mockedApiClient.get.mockRejectedValueOnce({ response: { status: 401 } });
-    // Login post success
-    mockedApiClient.post.mockResolvedValueOnce({ data: { user: mockUser } });
-    // Session verify after login
+  test('authenticated user with approval role can access /approvals', async () => {
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_CONSELHO_COORDENADOR'] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
-    // Use actual Login component for this test to verify interaction
-    jest.unmock('./pages/Login');
-    const Login = require('./pages/Login').default;
-    
-    // Re-render with providers and the real Login component (will be used by AppRoutes)
-    // NOTE: jest.mock is hoisted, so we need to be careful.
-    // Actually, it's better to just trust the logic if '/' -> '/dashboard' works.
+    await renderWithProviders('/approvals');
+
+    expect(screen.getByTestId('approvals-page')).toBeInTheDocument();
+  });
+
+  test('authenticated user without approval role is redirected to dashboard when trying to access /approvals', async () => {
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'] };
+    mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
+
+    await renderWithProviders('/approvals');
+
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    expect(screen.queryByTestId('approvals-page')).not.toBeInTheDocument();
   });
 });
+

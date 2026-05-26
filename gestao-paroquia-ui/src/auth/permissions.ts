@@ -49,3 +49,15 @@ export const canManageEvent = (user: User | null, eventOrgId: string): boolean =
 
   return isEditor;
 };
+
+export const canApprove = (user: User | null): boolean => {
+  if (!user) return false;
+
+  return user.roles.some(role => 
+    role === 'ADMIN' || 
+    role === 'ROLE_ADMIN' ||
+    role.includes('CONSELHO_COORDENADOR') ||
+    role.includes('PAROCO')
+  );
+};
+

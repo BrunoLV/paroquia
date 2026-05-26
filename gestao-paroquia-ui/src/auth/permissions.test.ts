@@ -1,4 +1,4 @@
-import { canManageEvent, User } from './permissions';
+import { canManageEvent, canApprove, User } from './permissions';
 
 describe('canManageEvent', () => {
   const orgId = 'org-1';
@@ -58,7 +58,6 @@ describe('canManageEvent', () => {
   });
 
   it('denies SECRETARIO from managing event (per backend rules, they can create but not edit/patch usually, or wait...)', () => {
-    // Re-checking backend rules: ORG_EDITOR_ROLES = Set.of(COORDENADOR, VICE_COORDENADOR);
     const user: User = { 
       id: '4', 
       username: 'sec', 
@@ -68,3 +67,30 @@ describe('canManageEvent', () => {
     expect(canManageEvent(user, orgId)).toBe(false);
   });
 });
+
+describe('canApprove', () => {
+  it('returns false if user is null', () => {
+    expect(canApprove(null)).toBe(false);
+  });
+
+  it('allows ADMIN', () => {
+    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'] };
+    expect(canApprove(user)).toBe(true);
+  });
+
+  it('allows ROLE_CONSELHO_COORDENADOR', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_CONSELHO_COORDENADOR'] };
+    expect(canApprove(user)).toBe(true);
+  });
+
+  it('allows ROLE_CLERO_PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['ROLE_CLERO_PAROCO'] };
+    expect(canApprove(user)).toBe(true);
+  });
+
+  it('denies other roles like COORDENADOR or MEMBRO', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_PASTORAL_MEMBRO'] };
+    expect(canApprove(user)).toBe(false);
+  });
+});
+
