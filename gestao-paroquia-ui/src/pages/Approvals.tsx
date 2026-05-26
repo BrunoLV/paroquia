@@ -239,6 +239,43 @@ const Approvals = () => {
               <Typography variant="body2"><strong>Criado em:</strong> {new Date(selectedApproval.criadoEmUtc).toLocaleString()}</Typography>
               <Typography variant="body2"><strong>Status:</strong> {selectedApproval.status}</Typography>
             </Box>
+
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
+              DETALHES DA PROPOSTA
+            </Typography>
+            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: '8px' }}>
+              {selectedApproval.tipoSolicitacao === 'CANCELAMENTO' ? (
+                <>
+                  <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>
+                    Solicitação de Cancelamento
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Motivo:</strong> {parsePayload(selectedApproval.actionPayloadJson)?.motivo || 'Não informado'}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Título do Evento:</strong> {parsePayload(selectedApproval.actionPayloadJson)?.titulo || 'Sem título'}
+                  </Typography>
+                  {parsePayload(selectedApproval.actionPayloadJson)?.inicio && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Início:</strong> {new Date(parsePayload(selectedApproval.actionPayloadJson).inicio).toLocaleString()}
+                    </Typography>
+                  )}
+                  {parsePayload(selectedApproval.actionPayloadJson)?.fim && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Fim:</strong> {new Date(parsePayload(selectedApproval.actionPayloadJson).fim).toLocaleString()}
+                    </Typography>
+                  )}
+                  {parsePayload(selectedApproval.actionPayloadJson)?.descricao && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Descrição:</strong> {parsePayload(selectedApproval.actionPayloadJson).descricao}
+                    </Typography>
+                  )}
+                </>
+              )}
+            </Box>
           </Box>
         )}
       </Drawer>

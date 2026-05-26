@@ -129,4 +129,33 @@ describe('Approvals page', () => {
       expect(mockGetApprovals).toHaveBeenLastCalledWith('APROVADA', 0, 10);
     });
   });
+
+  test('opens detail drawer and displays correct details on clicking Visualizar', async () => {
+    mockGetApprovals.mockResolvedValueOnce({
+      content: mockApprovals,
+      totalElements: 2,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    // Find and click the 'Visualizar' button for the first row
+    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
+    fireEvent.click(viewButtons[0]);
+
+    // Check that detail drawer is open
+    expect(screen.getByText('Detalhes da Solicitação')).toBeInTheDocument();
+    expect(screen.getByText('Solicitante:')).toBeInTheDocument();
+    expect(screen.getAllByText('user-1')).toHaveLength(2);
+
+    // Check that event details from actionPayloadJson are displayed
+    expect(screen.getByText('Título do Evento:')).toBeInTheDocument();
+    expect(screen.getAllByText('Missa Especial de Pentecostes')).toHaveLength(2);
+  });
 });
