@@ -33,12 +33,12 @@
     - [x] Implement action buttons with a text field for observation (limit 2000 characters)
     - [x] Send patch decision request to backend and refresh list state
     - [x] Verify decision workflow works and list is updated
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Approvals Detail & Decisions Workflow' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Approvals Detail & Decisions Workflow' (Protocol in workflow.md)
 
 ## Phase 4: Calendar Integration and Visual Indicators
-- [ ] Task: TDD - Update Event status rendering in Calendar
-    - [ ] Write failing tests verifying events with pending status are visually distinguished on the calendar
-    - [ ] Update `Calendar.tsx` to identify pending events (e.g. check status or flag) and style them with opacity and a "Pendente" indicator
-    - [ ] Update the event details tooltip/popover inside the calendar to display a clear warning if the event is pending coordination approval
-    - [ ] Verify tests pass and pending events are styled appropriately
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Calendar Integration and Visual Indicators' (Protocol in workflow.md)
+- [x] Task: TDD - Update Event status rendering in Calendar
+    - [x] Write failing tests verifying events with pending status are visually distinguished on the calendar
+    - [x] Update `Calendar.tsx` to identify pending events (e.g. check status or flag) and style them with opacity and a "Pendente" indicator
+    - [x] Update the event details tooltip/popover inside the calendar to display a clear warning if the event is pending coordination approval
+    - [x] Verify tests pass and pending events are styled appropriately
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Calendar Integration and Visual Indicators' (Protocol in workflow.md)

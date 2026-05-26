@@ -32,5 +32,5 @@
 
 ---
 
-- [ ] **Track: Implementação do fluxo de aprovação na UI conforme implementação definida pelo backend**
+- [x] **Track: Implementação do fluxo de aprovação na UI conforme implementação definida pelo backend**
 *Link: [./tracks/approval_workflow_ui_20260525/](./tracks/approval_workflow_ui_20260525/)*
