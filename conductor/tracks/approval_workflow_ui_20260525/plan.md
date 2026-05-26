@@ -16,11 +16,11 @@
     - [x] Write failing test to check link visibility only for authorized roles (ADMIN, CONSELHO_COORDENADOR, PAROCO)
     - [x] Implement conditional rendering of the sidebar menu link based on user roles
     - [x] Verify link is shown/hidden correctly under different roles
-- [~] Task: TDD - Create the Approvals List component and Page layout in `src/pages/Approvals.tsx`
-    - [ ] Write failing tests verifying the page renders a paginated list of pending approvals
-    - [ ] Implement `Approvals` page utilizing React Query to load pending approvals from backend
-    - [ ] Implement status filtering UI controls (tabs/filters for PENDENTE, APROVADA, REPROVADA, etc.)
-    - [ ] Verify tests pass and status switching works correctly
+- [x] Task: TDD - Create the Approvals List component and Page layout in `src/pages/Approvals.tsx` 0ff9e99
+    - [x] Write failing tests verifying the page renders a paginated list of pending approvals
+    - [x] Implement `Approvals` page utilizing React Query to load pending approvals from backend
+    - [x] Implement status filtering UI controls (tabs/filters for PENDENTE, APROVADA, REPROVADA, etc.)
+    - [x] Verify tests pass and status switching works correctly
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Approvals Page Listing and Menu Integration' (Protocol in workflow.md)
 
 ## Phase 3: Approvals Detail & Decisions Workflow
