@@ -44,3 +44,34 @@ export interface Evento {
   conflictReason: string | null;
   adicionadoExtraJustificativa?: string | null;
 }
+
+export interface AprovacaoResponse {
+  id: string;
+  eventoId: string | null;
+  tipoSolicitacao: 'CRIACAO_EVENTO' | 'EDICAO_EVENTO' | 'ALTERACAO_HORARIO' | 'CANCELAMENTO' | 'RECLASSIFICACAO' | 'OUTRO' | 'UNKNOWN_LEGACY';
+  status: 'PENDENTE' | 'APROVADA' | 'REPROVADA' | 'FALHA_EXECUCAO';
+  aprovadorPapel: string | null;
+  criadoEmUtc: string;
+  decididoEmUtc: string | null;
+  solicitanteId: string;
+  aprovadorId: string | null;
+  mensagemErroExecucao: string | null;
+  actionPayloadJson: string | null;
+}
+
+export interface AprovacaoDecisionRequest {
+  status: 'APROVADA' | 'REPROVADA';
+  observacao?: string;
+}
+
+export interface AprovacaoDecisionResponse {
+  id: string;
+  status: string;
+  actionExecution: {
+    outcome: string;
+    eventoId: string;
+    eventStatus: string;
+    errorCode: string | null;
+  } | null;
+}
+

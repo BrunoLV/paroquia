@@ -35,5 +35,8 @@ public record AprovacaoResponse(
         String aprovadorId,
 
         @Schema(description = "Mensagem de erro em caso de falha na execução automática")
-        String mensagemErroExecucao) {
+        String mensagemErroExecucao,
+
+        @Schema(description = "Payload detalhado em formato JSON com os dados do evento")
+        String actionPayloadJson) {
 }
