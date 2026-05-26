@@ -1,0 +1,6 @@
+Task: TDD - Create Detail Panel/Drawer component in approvals view
+Summary of changes: Expanded approvals detail drawer to parse action_payload_json and display proposed event title, start, end, description, or cancellation reasons.
+Created/modified files:
+- gestao-paroquia-ui/src/pages/Approvals.tsx
+- gestao-paroquia-ui/src/pages/Approvals.test.tsx
+Why: To allow administrative users to inspect the specific changes proposed for approval.
