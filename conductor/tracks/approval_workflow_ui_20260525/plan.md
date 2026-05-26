@@ -9,10 +9,10 @@
     - [x] Write failing routing tests ensuring only ADMIN, CONSELHO_COORDENADOR, and PAROCO can access `/aprovacoes`
     - [x] Implement role-based navigation and route protection using the active organization context and user roles
     - [x] Verify tests pass and unauthorized users are redirected
-- [~] Task: Conductor - User Manual Verification 'Phase 1: API Integration and Route Protection' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: API Integration and Route Protection' (Protocol in workflow.md)
 
 ## Phase 2: Approvals Page Listing and Menu Integration
-- [ ] Task: TDD - Add "Aprovações" link in `src/components/Layout.tsx`
+- [~] Task: TDD - Add "Aprovações" link in `src/components/Layout.tsx`
     - [ ] Write failing test to check link visibility only for authorized roles (ADMIN, CONSELHO_COORDENADOR, PAROCO)
     - [ ] Implement conditional rendering of the sidebar menu link based on user roles
     - [ ] Verify link is shown/hidden correctly under different roles
