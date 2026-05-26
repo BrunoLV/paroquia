@@ -1,0 +1,6 @@
+Task: TDD - Implement Approve and Reject actions with observations
+Summary of changes: Implemented Approve and Reject buttons inside the detail drawer. Added optional 'Observações' text field with a 2000-character limit counter. Decisions trigger the decideApproval API patch call and invalidate query cache to refresh list state.
+Created/modified files:
+- gestao-paroquia-ui/src/pages/Approvals.tsx
+- gestao-paroquia-ui/src/pages/Approvals.test.tsx
+Why: To allow administrative users to decide on pending requests and record observations.
