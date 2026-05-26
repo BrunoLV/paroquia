@@ -1,0 +1,6 @@
+Task: TDD - Create the Approvals List component and Page layout in src/pages/Approvals.tsx
+Summary of changes: Implemented the Approvals list page displaying a paginated table of requests with filtering by status tabs (PENDENTE, APROVADA, REPROVADA, FALHA_EXECUCAO) using React Query. Corrected tests to handle duplicate texts correctly.
+Created/modified files:
+- gestao-paroquia-ui/src/pages/Approvals.tsx (modified)
+- gestao-paroquia-ui/src/pages/Approvals.test.tsx (created)
+Why: To provide administrative users with a dedicated listing page to view and filter event approvals.
