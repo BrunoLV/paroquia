@@ -1,13 +1,13 @@
 # Plan: UI Standardization & Unified Error Presentation
 
 ## Phase 1: Configuração do Tema Global (MUI Theme)
-- [ ] Task: Refinar a configuração do tema em `theme.ts`
-    - [ ] Adicionar tipografia padrão (família de fontes Roboto/Inter/System) e pesos de fonte consistentes.
-    - [ ] Padronizar estilos globais de `MuiButton` (variantes, hover transitions, border-radius coerente com design premium).
-    - [ ] Padronizar estilos de `MuiTextField`, `MuiOutlinedInput`, `MuiSelect`, `MuiInputLabel` para obter inputs uniformes.
-    - [ ] Estilizar `MuiLink` para links uniformes com hover e cor primária.
-- [ ] Task: Escrever testes unitários e de integração para validar as propriedades do tema
-    - [ ] Atualizar/criar `theme.test.tsx` para assegurar que as fontes, cores e customizações de botões/inputs estejam declaradas.
+- [x] Task: Refinar a configuração do tema em `theme.ts` [a2b4dcb]
+    - [x] Adicionar tipografia padrão (família de fontes Roboto/Inter/System) e pesos de fonte consistentes.
+    - [x] Padronizar estilos globais de `MuiButton` (variantes, hover transitions, border-radius coerente com design premium).
+    - [x] Padronizar estilos de `MuiTextField`, `MuiOutlinedInput`, `MuiSelect`, `MuiInputLabel` para obter inputs uniformes.
+    - [x] Estilizar `MuiLink` para links uniformes com hover e cor primária.
+- [x] Task: Escrever testes unitários e de integração para validar as propriedades do tema [a2b4dcb]
+    - [x] Atualizar/criar `theme.test.tsx` para assegurar que as fontes, cores e customizações de botões/inputs estejam declaradas.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Configuração do Tema Global' (Protocol in workflow.md)
 
 ## Phase 2: Padronização Visual de Formulários, Botões e Ícones
