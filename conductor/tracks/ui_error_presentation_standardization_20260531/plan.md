@@ -4,10 +4,10 @@
 - [x] Task: Update the global NotificationContext Alert styling to support multi-line text wraps [f675de7]
     - [x] Add `whiteSpace: 'pre-line'` to the Alert styling inside `NotificationProvider` in `NotificationContext.tsx` [f675de7]
     - [x] Update `NotificationContext.test.tsx` to verify standard rendering [f675de7]
-- [ ] Task: Standardize error and success messages in Calendar.tsx
-    - [ ] Remove `errorMsg` and `successMsg` local states and their corresponding `<Alert>` component blocks from `Calendar.tsx`
-    - [ ] Replace local alerts with `showSuccess` or `showError` calls from `NotificationContext` for calendar load and action callbacks
-    - [ ] Verify `Calendar.test.tsx` passes and update if necessary
+- [x] Task: Standardize error and success messages in Calendar.tsx [8f410ad]
+    - [x] Remove `errorMsg` and `successMsg` local states and their corresponding `<Alert>` component blocks from `Calendar.tsx` [8f410ad]
+    - [x] Replace local alerts with `showSuccess` or `showError` calls from `NotificationContext` for calendar load and action callbacks [8f410ad]
+    - [x] Verify `Calendar.test.tsx` passes and update if necessary [8f410ad]
 - [ ] Task: Standardize inline validation and API error presentation in Login.tsx
     - [ ] Add username and password validation error states to `Login.tsx`
     - [ ] Render helper text under `username` input when empty on submit ("O nome de usuário é obrigatório.")
