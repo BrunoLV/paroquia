@@ -1,0 +1,1 @@
+Task: Standardize inline validation and API error presentation in Login.tsx. Summary: Added client-side username and password inline validation displaying helper texts under inputs, clearing error states when user inputs changes, keeping Toast notifications strictly for API credentials failures.
