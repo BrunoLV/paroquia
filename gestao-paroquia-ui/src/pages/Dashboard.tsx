@@ -14,10 +14,12 @@ import PendingApprovals from '../components/dashboard/PendingApprovals';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import { useAuth } from '../auth/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { showError } = useNotification();
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
   const [locais, setLocais] = useState<Local[]>([]);
@@ -28,7 +30,6 @@ const Dashboard = () => {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [modalError, setModalError] = useState('');
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -122,7 +123,6 @@ const Dashboard = () => {
   }, [user]);
 
   const handleCreateEvent = async (data: any) => {
-    setModalError('');
     setIsSubmitting(true);
     try {
       const { recurrence, ...eventBaseData } = data;
@@ -149,7 +149,7 @@ const Dashboard = () => {
       setIsModalOpen(false);
       fetchData();
     } catch (err: any) {
-      setModalError(err.response?.data?.message || 'Erro ao criar evento.');
+      showError(err.response?.data?.message || 'Erro ao criar evento.');
     } finally {
       setIsSubmitting(false);
     }
@@ -199,7 +199,6 @@ const Dashboard = () => {
         organizations={organizations.filter(org => org.ativo)}
         locais={locais.filter(l => l.ativo)}
         projetos={projetos.filter(p => p.status === 'ATIVO')}
-        error={modalError}
       />
     </Box>
   );
