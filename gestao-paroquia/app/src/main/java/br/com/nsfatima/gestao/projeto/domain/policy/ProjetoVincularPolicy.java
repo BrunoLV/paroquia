@@ -42,8 +42,7 @@ public class ProjetoVincularPolicy {
         }
 
         if (eventStart.isBefore(projeto.getInicioUtc()) || eventEnd.isAfter(projeto.getFimUtc())) {
-            throw new IllegalArgumentException("Event dates must be within the project timeframe: " 
-                    + projeto.getInicioUtc() + " to " + projeto.getFimUtc());
+            throw new IllegalArgumentException("O período do evento está fora do limite definido para o projeto " + projeto.getNome());
         }
     }
 
@@ -72,28 +71,28 @@ public class ProjetoVincularPolicy {
         }
 
         if (firstStart.isBefore(projeto.getInicioUtc())) {
-            throw new IllegalArgumentException("Event start date is before project start date");
+            throw new IllegalArgumentException("A data de início do evento está fora do limite definido para o projeto " + projeto.getNome());
         }
 
         LocalDate endOfProject = projeto.getFimUtc().atZone(java.time.ZoneOffset.UTC).toLocalDate();
 
         if (regra.dataLimite() == null && regra.numeroOcorrencias() == null) {
-            throw new IllegalArgumentException("Recurring event must have an end date or a maximum number of occurrences to fit within the project timeline.");
+            throw new IllegalArgumentException("Para eventos vinculados a projetos, a repetição deve possuir um limite de data ou número de ocorrências.");
         }
 
         if (regra.dataLimite() != null && regra.dataLimite().isAfter(endOfProject)) {
-            throw new IllegalArgumentException("Recurrence end date (" + regra.dataLimite() + ") exceeds project end date (" + endOfProject + ").");
+            throw new IllegalArgumentException("A data limite da recorrência excede o período definido para o projeto " + projeto.getNome());
         }
 
         if (regra.numeroOcorrencias() != null) {
             LocalDate startOfSeries = firstStart.atZone(java.time.ZoneOffset.UTC).toLocalDate();
             java.util.List<LocalDate> dates = regra.gerarDatas(startOfSeries, endOfProject.plusYears(5));
             if (dates.isEmpty()) {
-                throw new IllegalArgumentException("No occurrences generated for this recurrence rule.");
+                throw new IllegalArgumentException("Nenhuma ocorrência gerada para esta regra de repetição.");
             }
             LocalDate lastDate = dates.get(Math.min(dates.size(), regra.numeroOcorrencias()) - 1);
             if (lastDate.isAfter(endOfProject)) {
-                throw new IllegalArgumentException("Recurrence occurrences exceed project end date (" + endOfProject + ").");
+                throw new IllegalArgumentException("As ocorrências da repetição excedem o período definido para o projeto " + projeto.getNome());
             }
         }
     }
