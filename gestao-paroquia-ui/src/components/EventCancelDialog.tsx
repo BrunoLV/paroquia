@@ -9,6 +9,7 @@ import {
   TextField,
   Box,
 } from '@mui/material';
+import { useNotification } from '../context/NotificationContext';
 
 interface EventCancelDialogProps {
   open: boolean;
@@ -26,11 +27,11 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
   eventTitle = 'este evento',
 }) => {
   const [reason, setReason] = useState('');
-  const [error, setError] = useState(false);
+  const { showError } = useNotification();
 
   const handleConfirm = () => {
     if (!reason.trim()) {
-      setError(true);
+      showError('O motivo do cancelamento é obrigatório.');
       return;
     }
     onConfirm(reason);
@@ -38,7 +39,6 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
 
   const handleClose = () => {
     setReason('');
-    setError(false);
     onClose();
   };
 
@@ -50,47 +50,44 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
       fullWidth
       sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
-      <DialogTitle sx={{ fontWeight: 700, color: '#d32f2f' }}>
-        Cancelar Evento
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText sx={{ mb: 2 }}>
-          Você tem certeza que deseja cancelar o evento <strong>{eventTitle}</strong>? Esta ação não pode ser desfeita.
-        </DialogContentText>
-        <Box sx={{ mt: 1 }}>
-          <TextField
-            autoFocus
-            required
-            label="Motivo do Cancelamento"
-            fullWidth
-            multiline
-            rows={3}
-            value={reason}
-            onChange={(e) => {
-              setReason(e.target.value);
-              if (e.target.value.trim()) setError(false);
-            }}
-            error={error}
-            helperText={error ? 'O motivo é obrigatório para realizar o cancelamento.' : ''}
+      <form onSubmit={(e) => { e.preventDefault(); handleConfirm(); }} noValidate>
+        <DialogTitle sx={{ fontWeight: 700, color: '#d32f2f' }}>
+          Cancelar Evento
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Você tem certeza que deseja cancelar o evento <strong>{eventTitle}</strong>? Esta ação não pode ser desfeita.
+          </DialogContentText>
+          <Box sx={{ mt: 1 }}>
+            <TextField
+              autoFocus
+              required
+              label="Motivo do Cancelamento"
+              fullWidth
+              multiline
+              rows={3}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              disabled={isSubmitting}
+              slotProps={{ htmlInput: { maxLength: 4000 } }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+          <Button onClick={handleClose} disabled={isSubmitting} color="secondary">
+            Voltar
+          </Button>
+          <Button 
+            type="submit"
+            variant="contained" 
+            color="error" 
             disabled={isSubmitting}
-            slotProps={{ htmlInput: { maxLength: 4000 } }}
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
-        <Button onClick={handleClose} disabled={isSubmitting} color="secondary">
-          Voltar
-        </Button>
-        <Button 
-          onClick={handleConfirm} 
-          variant="contained" 
-          color="error" 
-          disabled={isSubmitting}
-          sx={{ fontWeight: 600 }}
-        >
-          {isSubmitting ? 'Cancelando...' : 'Confirmar Cancelamento'}
-        </Button>
-      </DialogActions>
+            sx={{ fontWeight: 600 }}
+          >
+            {isSubmitting ? 'Cancelando...' : 'Confirmar Cancelamento'}
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

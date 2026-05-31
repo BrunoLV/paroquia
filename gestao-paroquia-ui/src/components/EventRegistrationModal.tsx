@@ -144,13 +144,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     diasDaSemana: [],
   });
 
-  // Validation error states
-  const [titleError, setTitleError] = useState('');
-  const [orgIdError, setOrgIdError] = useState('');
-  const [startDateError, setStartDateError] = useState('');
-  const [endDateError, setEndDateError] = useState('');
-  const [endTimeError, setEndTimeError] = useState('');
-
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
     if (user.roles.includes('ADMIN')) return organizations;
@@ -236,13 +229,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   // Reset form or set initial values when modal opens or initialEvent changes
   useEffect(() => {
     if (open) {
-      // Reset validation error states
-      setTitleError('');
-      setOrgIdError('');
-      setStartDateError('');
-      setEndDateError('');
-      setEndTimeError('');
-
       if (initialEvent) {
         setTitle(initialEvent.titulo || '');
         setDescription(initialEvent.descricao || '');
@@ -300,45 +286,39 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    let hasError = false;
-
     if (!title || !title.trim()) {
-      setTitleError('O título do evento é obrigatório.');
-      hasError = true;
+      showError('O título do evento é obrigatório.');
+      return;
     }
 
     if (!orgId) {
-      setOrgIdError('A organização responsável é obrigatória.');
-      hasError = true;
+      showError('A organização responsável é obrigatória.');
+      return;
     }
 
     if (!startDate) {
-      setStartDateError('A data e hora de início é obrigatória.');
-      hasError = true;
+      showError('A data e hora de início é obrigatória.');
+      return;
     }
 
     if (isRecurring) {
       if (!endTime) {
-        setEndTimeError('A hora de término é obrigatória.');
-        hasError = true;
+        showError('A hora de término é obrigatória.');
+        return;
       }
     } else {
       if (!endDate) {
-        setEndDateError('A data e hora de término é obrigatória.');
-        hasError = true;
+        showError('A data e hora de término é obrigatória.');
+        return;
       }
       if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-        setStartDateError('A data de início não pode ser posterior à data de término.');
-        setEndDateError('A data de término não pode ser anterior à data de início.');
-        hasError = true;
+        showError('A data de início não pode ser posterior à data de término.');
+        return;
       }
     }
 
     if (projectValidationError) {
-      hasError = true;
-    }
-
-    if (hasError) {
+      showError(projectValidationError);
       return;
     }
 
@@ -377,12 +357,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               label="Título do Evento"
               required
               value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                if (titleError) setTitleError('');
-              }}
-              error={!!titleError}
-              helperText={titleError}
+              onChange={(e) => setTitle(e.target.value)}
               fullWidth
               disabled={isSubmitting}
               size="small"
@@ -440,16 +415,13 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               </Grid>
             </Grid>
 
-            <FormControl fullWidth size="small" error={!!orgIdError} required>
+            <FormControl fullWidth size="small" required>
               <InputLabel id="new-org-label">Organização Responsável</InputLabel>
               <Select
                 labelId="new-org-label"
                 value={orgId}
                 label="Organização Responsável"
-                onChange={(e) => {
-                  setOrgId(e.target.value);
-                  if (orgIdError) setOrgIdError('');
-                }}
+                onChange={(e) => setOrgId(e.target.value)}
                 disabled={isSubmitting}
               >
                 {filteredOrganizations.map((org) => (
@@ -458,7 +430,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   </MenuItem>
                 ))}
               </Select>
-              {orgIdError && <FormHelperText>{orgIdError}</FormHelperText>}
             </FormControl>
 
             <Grid container spacing={2}>
@@ -549,12 +520,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   type="datetime-local"
                   required
                   value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value);
-                    if (startDateError) setStartDateError('');
-                  }}
-                  error={!!startDateError}
-                  helperText={startDateError}
+                  onChange={(e) => setStartDate(e.target.value)}
                   slotProps={{ inputLabel: { shrink: true } }}
                   fullWidth
                   disabled={isSubmitting}
@@ -568,12 +534,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                     type="time"
                     required
                     value={endTime}
-                    onChange={(e) => {
-                      setEndTime(e.target.value);
-                      if (endTimeError) setEndTimeError('');
-                    }}
-                    error={!!endTimeError}
-                    helperText={endTimeError}
+                    onChange={(e) => setEndTime(e.target.value)}
                     slotProps={{ inputLabel: { shrink: true } }}
                     fullWidth
                     disabled={isSubmitting}
@@ -585,12 +546,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                     type="datetime-local"
                     required
                     value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      if (endDateError) setEndDateError('');
-                    }}
-                    error={!!endDateError}
-                    helperText={endDateError}
+                    onChange={(e) => setEndDate(e.target.value)}
                     slotProps={{ inputLabel: { shrink: true } }}
                     fullWidth
                     disabled={isSubmitting}

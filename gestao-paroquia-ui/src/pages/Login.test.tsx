@@ -103,7 +103,7 @@ test('shows error toast on login failure', async () => {
   expect(mockShowError).toHaveBeenCalledWith('Falha ao entrar. Verifique suas credenciais.');
 });
 
-test('shows inline validation errors when submitting empty form', async () => {
+test('shows toast validation errors when submitting empty form', async () => {
   mockedApiClient.get.mockResolvedValueOnce({ data: null });
 
   await act(async () => {
@@ -124,8 +124,7 @@ test('shows inline validation errors when submitting empty form', async () => {
     fireEvent.click(submitButton);
   });
 
-  expect(screen.getByText('O nome de usuário é obrigatório.')).toBeInTheDocument();
-  expect(screen.getByText('A senha é obrigatória.')).toBeInTheDocument();
+  expect(mockShowError).toHaveBeenCalledWith('O nome de usuário é obrigatório.');
   expect(mockedApiClient.post).not.toHaveBeenCalled();
 });
 

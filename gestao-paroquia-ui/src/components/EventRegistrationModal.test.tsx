@@ -147,8 +147,7 @@ describe('EventRegistrationModal', () => {
     const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('O título do evento é obrigatório.')).toBeInTheDocument();
-    expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockShowError).toHaveBeenCalledWith('O título do evento é obrigatório.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -161,8 +160,7 @@ describe('EventRegistrationModal', () => {
     const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('A organização responsável é obrigatória.')).toBeInTheDocument();
-    expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockShowError).toHaveBeenCalledWith('A organização responsável é obrigatória.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -178,8 +176,7 @@ describe('EventRegistrationModal', () => {
     const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('A data e hora de início é obrigatória.')).toBeInTheDocument();
-    expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockShowError).toHaveBeenCalledWith('A data e hora de início é obrigatória.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -195,8 +192,7 @@ describe('EventRegistrationModal', () => {
     const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('A data e hora de término é obrigatória.')).toBeInTheDocument();
-    expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockShowError).toHaveBeenCalledWith('A data e hora de término é obrigatória.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -215,8 +211,7 @@ describe('EventRegistrationModal', () => {
     const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('A data de início não pode ser posterior à data de término.')).toBeInTheDocument();
-    expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 

@@ -15,8 +15,6 @@ import { useNotification } from '../context/NotificationContext';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [usernameError, setUsernameError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { showError } = useNotification();
   
@@ -29,16 +27,14 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let hasError = false;
     if (!username.trim()) {
-      setUsernameError('O nome de usuário é obrigatório.');
-      hasError = true;
+      showError('O nome de usuário é obrigatório.');
+      return;
     }
     if (!password) {
-      setPasswordError('A senha é obrigatória.');
-      hasError = true;
+      showError('A senha é obrigatória.');
+      return;
     }
-    if (hasError) return;
 
     setIsLoading(true);
 
@@ -88,12 +84,7 @@ const Login = () => {
               autoComplete="username"
               autoFocus
               value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                if (usernameError) setUsernameError('');
-              }}
-              error={!!usernameError}
-              helperText={usernameError}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -105,12 +96,7 @@ const Login = () => {
               id="password"
               autoComplete="current-password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (passwordError) setPasswordError('');
-              }}
-              error={!!passwordError}
-              helperText={passwordError}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Button
               type="submit"

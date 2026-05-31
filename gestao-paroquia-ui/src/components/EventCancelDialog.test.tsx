@@ -2,6 +2,13 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import EventCancelDialog from './EventCancelDialog';
 
+const mockShowError = jest.fn();
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: mockShowError,
+  }),
+}));
+
 describe('EventCancelDialog', () => {
   const mockOnClose = jest.fn();
   const mockOnConfirm = jest.fn();
@@ -33,7 +40,7 @@ describe('EventCancelDialog', () => {
     render(<EventCancelDialog {...defaultProps} />);
     fireEvent.click(screen.getByText(/Confirmar Cancelamento/i));
     
-    expect(screen.getByText(/O motivo é obrigatório/i)).toBeInTheDocument();
+    expect(mockShowError).toHaveBeenCalledWith('O motivo do cancelamento é obrigatório.');
     expect(mockOnConfirm).not.toHaveBeenCalled();
   });
 
@@ -43,7 +50,7 @@ describe('EventCancelDialog', () => {
     const input = screen.getByLabelText(/Motivo do Cancelamento/i);
     fireEvent.change(input, { target: { value: 'Imprevisto' } });
     
-    fireEvent.click(screen.getByText(/Confirmar Cancelamento/i));
+    fireEvent.submit(screen.getByRole('button', { name: /Confirmar Cancelamento/i }));
     
     expect(mockOnConfirm).toHaveBeenCalledWith('Imprevisto');
   });
