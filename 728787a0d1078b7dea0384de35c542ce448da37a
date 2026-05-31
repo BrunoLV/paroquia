@@ -1,0 +1,17 @@
+Task: Backend API Validation for Event Project Period
+
+Why:
+Ensure that events (single and recurring) cannot be linked to projects if their dates fall outside the project timeframe, while allowing linkings if project dates are null (unbounded).
+
+Summary of Changes:
+- ProjetoVincularPolicy: Skip validation if project start/end dates are null. Added validateRecurrence method to validate all recurring event occurrences.
+- CreateEventoUseCase & UpdateEventoUseCase: Integrate the validateLink and validateRecurrence logic into event creation and update lifecycles.
+- CreateEventoRecorrenciaUseCase: Integrate validateRecurrence logic to reject rule registration if occurrences exceed project boundaries.
+- VinculoProjetoEventoIntegrationTest: Updated to use seeded organization to prevent referential integrity errors and added integration test cases for single and recurring events (validating start, end, limits, and exceptions).
+
+Files Modified:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/policy/ProjetoVincularPolicy.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/CreateEventoUseCase.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/UpdateEventoUseCase.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/CreateEventoRecorrenciaUseCase.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/projetos/VinculoProjetoEventoIntegrationTest.java
