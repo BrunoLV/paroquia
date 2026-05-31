@@ -1,0 +1,4 @@
+Task: Padronizar a tela de gerenciamento de projetos (Projects.tsx) & Task: Unificar tratamento de erros em projetos (Projects.tsx)
+Summary: Replaced local formError state and Dialog Alert component with global showError calls from useNotification. Standardized form validation logic.
+Files: gestao-paroquia-ui/src/pages/Projects.tsx, gestao-paroquia-ui/src/pages/Projects.test.tsx
+Why: Consolidate error feedback inside the Toast/Snackbar notification provider and remove local redundant dialog alerts.
