@@ -1,0 +1,4 @@
+Task: Translate project validation messages to Portuguese
+
+Why:
+Provide clear, Portuguese error messages with project name details when linking events to projects with mismatched dates.
