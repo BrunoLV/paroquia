@@ -1,0 +1,4 @@
+Task: Align required field visual asterisks and noValidate behavior in EventRegistrationModal
+Summary of changes:
+- Added required attributes to title, organization, start datetime, end datetime, and recurring end time fields in EventRegistrationModal to consistently display asterisks.
+- Configured noValidate on EventRegistrationModal form element to prevent default browser tooltip validation and preserve the React state inline validation display, matching Projects dialog form.
