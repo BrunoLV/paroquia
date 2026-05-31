@@ -1,0 +1,1 @@
+Task: Standardize error and success messages in Calendar.tsx. Summary: Removed errorMsg and successMsg local states and Alert component blocks in Calendar.tsx, redirecting all error/success reports to the global showSuccess/showError notifications.
