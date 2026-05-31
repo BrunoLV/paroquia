@@ -88,7 +88,6 @@ const Projects = () => {
   const [formInicio, setFormInicio] = useState('');
   const [formFim, setFormFim] = useState('');
   const [formStatus, setFormStatus] = useState<'ATIVO' | 'INATIVO'>('ATIVO');
-  const [formError, setFormError] = useState('');
 
   // 1. Permission checks
   const canManageProjects = () => {
@@ -187,7 +186,6 @@ const Projects = () => {
     setFormInicio(today);
     setFormFim(endDate);
     setFormStatus('ATIVO');
-    setFormError('');
     setIsEditMode(false);
     setDialogOpen(true);
   };
@@ -203,27 +201,25 @@ const Projects = () => {
     setFormInicio(project.inicio ? project.inicio.split('T')[0] : '');
     setFormFim(project.fim ? project.fim.split('T')[0] : '');
     setFormStatus(project.status);
-    setFormError('');
     setIsEditMode(true);
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
-    setFormError('');
     if (!formNome.trim()) {
-      setFormError('O nome do projeto é obrigatório.');
+      showError('O nome do projeto é obrigatório.');
       return;
     }
     if (!formOrgId) {
-      setFormError('A organização responsável é obrigatória.');
+      showError('A organização responsável é obrigatória.');
       return;
     }
     if (!formInicio || !formFim) {
-      setFormError('As datas de início e fim são obrigatórias.');
+      showError('As datas de início e fim são obrigatórias.');
       return;
     }
     if (new Date(formInicio) > new Date(formFim)) {
-      setFormError('A data de início não pode ser posterior à data de término.');
+      showError('A data de início não pode ser posterior à data de término.');
       return;
     }
 
@@ -259,7 +255,6 @@ const Projects = () => {
           errorMsg = data.message;
         }
       }
-      setFormError(errorMsg);
       showError(errorMsg);
     }
   };
@@ -377,8 +372,6 @@ const Projects = () => {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1.5 }}>
-            {formError && <Alert severity="error">{formError}</Alert>}
-            
             <TextField
               label="Nome do Projeto"
               required

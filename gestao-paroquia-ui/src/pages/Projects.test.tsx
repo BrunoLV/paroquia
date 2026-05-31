@@ -213,4 +213,35 @@ describe('Projects Page', () => {
 
     expect(mockShowError).toHaveBeenCalledWith('Erro de validação de negócios específico do backend');
   });
+
+  test('shows client-side validation error when project end date is before start date', async () => {
+    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    await renderProjects(adminUser);
+
+    const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
+    await act(async () => {
+      newProjectBtn.click();
+    });
+
+    // Fill fields
+    fireEvent.change(screen.getByLabelText(/Nome do Projeto/i), { target: { value: 'Projeto Invalido' } });
+    
+    // Select org
+    const orgSelect = screen.getByLabelText(/Organização Responsável/i);
+    fireEvent.mouseDown(orgSelect);
+    const listbox = screen.getByRole('listbox');
+    fireEvent.click(within(listbox).getByText('Pastoral Familiar'));
+
+    // Input invalid dates (end before start)
+    fireEvent.change(screen.getByLabelText(/Data de Início/i), { target: { value: '2026-05-10' } });
+    fireEvent.change(screen.getByLabelText(/Data de Término/i), { target: { value: '2026-05-01' } });
+
+    const salvarBtn = screen.getByRole('button', { name: /Salvar/i });
+    await act(async () => {
+      salvarBtn.click();
+    });
+
+    expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
+  });
 });
+
