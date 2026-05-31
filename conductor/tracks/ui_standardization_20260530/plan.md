@@ -13,9 +13,9 @@
 ## Phase 2: Padronização Visual de Formulários, Botões e Ícones
 - [x] Task: Padronizar a tela de login (`Login.tsx`) [7f7761e]
     - [x] Usar componentes MUI e as fontes/estilos padronizados pelo tema.
-- [~] Task: Padronizar a tela de gerenciamento de projetos (`Projects.tsx`)
-    - [ ] Alinhar o formulário de cadastro/edição (TextFields, Selects, Buttons) ao tema global.
-    - [ ] Uniformizar a tabela/grade, botões de ação e ícones.
+- [x] Task: Padronizar a tela de gerenciamento de projetos (`Projects.tsx`) [6a0297e]
+    - [x] Alinhar o formulário de cadastro/edição (TextFields, Selects, Buttons) ao tema global.
+    - [x] Uniformizar a tabela/grade, botões de ação e ícones.
 - [~] Task: Padronizar o calendário e modais de evento (`Calendar.tsx`)
     - [ ] Unificar os inputs do modal de criação/edição e botões de ação.
     - [ ] Padronizar os ícones de categorias e navegação.
@@ -28,8 +28,8 @@
 ## Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast
 - [x] Task: Unificar tratamento de erros na tela de login [7f7761e]
     - [x] Remover alertas na tela e usar exclusivamente `showError(...)` do Toast para erros de credenciais ou rede.
-- [ ] Task: Unificar tratamento de erros em projetos (`Projects.tsx`)
-    - [ ] Remover campos vermelhos customizados ou alertas estáticos locais. Utilizar validações que disparam Toasts.
+- [x] Task: Unificar tratamento de erros em projetos (`Projects.tsx`) [6a0297e]
+    - [x] Remover campos vermelhos customizados ou alertas estáticos locais. Utilizar validações que disparam Toasts.
 - [ ] Task: Unificar tratamento de erros no calendário e modais de evento (`Calendar.tsx`)
     - [ ] Tratar validações de formulário do client-side e erros de API exibindo-os unicamente no Toast.
 - [ ] Task: Validar integridade dos testes de comportamento de erro
