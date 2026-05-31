@@ -212,7 +212,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}>
+    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
       <form onSubmit={handleFormSubmit}>
         <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
           {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
@@ -450,7 +450,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600 }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ fontWeight: 600, borderRadius: '8px' }}>
+          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ fontWeight: 600 }}>
             {initialEvent ? 'Salvar Alterações' : 'Criar Evento'}
           </Button>
         </DialogActions>
