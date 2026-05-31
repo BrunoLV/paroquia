@@ -8,7 +8,7 @@
     - [x] Estilizar `MuiLink` para links uniformes com hover e cor primária.
 - [x] Task: Escrever testes unitários e de integração para validar as propriedades do tema [a2b4dcb]
     - [x] Atualizar/criar `theme.test.tsx` para assegurar que as fontes, cores e customizações de botões/inputs estejam declaradas.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Configuração do Tema Global' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Configuração do Tema Global' (Protocol in workflow.md) [a2b4dcb]
 
 ## Phase 2: Padronização Visual de Formulários, Botões e Ícones
 - [ ] Task: Padronizar a tela de login (`Login.tsx`)
