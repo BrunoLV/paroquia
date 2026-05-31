@@ -1,0 +1,14 @@
+Phase 2: Frontend UI Validation Verification Report
+
+Automated Test Command:
+CI=true npm test
+
+Manual Verification Steps:
+1. Ensure servers are running.
+2. Select a project with start/end limits in EventRegistrationModal.
+3. Verify helper text showing project timeframe.
+4. Set event dates outside project limits and check that a red alert warning is shown and save button is disabled.
+5. Set event dates within project limits and verify alert disappears and button is enabled.
+
+User Confirmation:
+User reported that error messages from the backend were generic, which was resolved by translating backend policy validation messages to descriptive Portuguese formats containing the project name. Subsequent tests passed.
