@@ -20,7 +20,7 @@
     - [x] Ensure `Approvals.test.tsx` passes and check for any remaining local alerts [39b9940]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Notification Context and Core Pages Standardization' (Protocol in workflow.md) [39b9940]
 
-## Phase 2: Dialog Forms and Modals Inline Validation [checkpoint: fb682b7]
+## Phase 2: Dialog Forms and Modals Inline Validation [checkpoint: bcf31d5]
 - [x] Task: Standardize inline validations and API errors in Projects.tsx [10b4906]
     - [x] Add validation states (nome, orgId, inicio, fim) in `Projects.tsx` [10b4906]
     - [x] Replace `showError` alerts with inline helper texts under their respective form fields for client-side validation [10b4906]
@@ -34,4 +34,4 @@
     - [x] Clear error states when fields are updated by the user [c136119]
     - [x] Update event submission catch block to format multiple API validation errors into a bulleted list in a single Toast notification [c136119]
     - [x] Verify `EventRegistrationModal.test.tsx` passes and update tests to cover inline helper texts and Toast notifications [c136119]
-- [x] Task: Conductor - User Manual Verification 'Phase 2: Dialog Forms and Modals Inline Validation' (Protocol in workflow.md) [fb682b7]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Dialog Forms and Modals Inline Validation' (Protocol in workflow.md) [bcf31d5]
