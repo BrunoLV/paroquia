@@ -37,6 +37,6 @@
 
 ---
 
-- [ ] **Track: Melhorar a apresentação dos erros tanto via api como na tela. Os erros são apresentados de uma maneiro muito genérica em termos de texto sobre o ocorrido. Melhorar esse detalhamento para facilitar o entendimento dos erros.**
+- [x] **Track: Melhorar a apresentação dos erros tanto via api como na tela. Os erros são apresentados de uma maneiro muito genérica em termos de texto sobre o ocorrido. Melhorar esse detalhamento para facilitar o entendimento dos erros.**
 *Link: [./tracks/error_handling_refinement_20260531/](./tracks/error_handling_refinement_20260531/)*
 
