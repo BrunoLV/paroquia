@@ -20,10 +20,11 @@ export interface Projeto {
   id: string;
   nome: string;
   descricao: string | null;
-  dataInicio: string | null;
-  dataFim: string | null;
+  inicio: string;
+  fim: string;
   organizacaoResponsavelId: string;
-  ativo: boolean;
+  status: 'ATIVO' | 'INATIVO';
+  updated?: boolean;
 }
 
 export interface Evento {

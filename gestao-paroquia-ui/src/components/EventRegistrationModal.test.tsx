@@ -96,7 +96,7 @@ describe('EventRegistrationModal', () => {
 
   it('renders Local, Projeto and Participantes fields', () => {
     const mockLocais = [{ id: 'loc-1', nome: 'Salão', ativo: true, tipo: 'SALAO', endereco: '', capacidade: 100, caracteristicas: '' }];
-    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', ativo: true, descricao: '', dataInicio: '', dataFim: '', organizacaoResponsavelId: 'org-1' }];
+    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', status: 'ATIVO' as const, descricao: '', inicio: '', fim: '', organizacaoResponsavelId: 'org-1' }];
     
     render(<EventRegistrationModal {...defaultProps} locais={mockLocais} projetos={mockProjetos} />);
 
