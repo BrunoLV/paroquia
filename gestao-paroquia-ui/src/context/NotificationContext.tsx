@@ -53,7 +53,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }} variant="filled">
+        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%', whiteSpace: 'pre-line' }} variant="filled">
           {message}
         </Alert>
       </Snackbar>

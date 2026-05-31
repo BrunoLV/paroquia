@@ -78,4 +78,16 @@ describe('NotificationProvider', () => {
     // Verify it becomes invisible or opacity becomes 0 due to transition
     expect(alert).not.toBeVisible();
   });
+
+  it('applies pre-line whiteSpace styling to support multi-line notifications', () => {
+    render(
+      <NotificationProvider>
+        <TestComponent />
+      </NotificationProvider>
+    );
+
+    fireEvent.click(screen.getByText('Success Button'));
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveStyle({ whiteSpace: 'pre-line' });
+  });
 });
