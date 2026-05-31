@@ -185,7 +185,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Main Content Area */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <AppBar position="static" color="primary" sx={{ mb: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', bgcolor: '#1A237E' }}>
+        <AppBar position="static" color="primary" sx={{ mb: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', bgcolor: 'primary.main' }}>
           <Toolbar>
             <IconButton
               color="inherit"

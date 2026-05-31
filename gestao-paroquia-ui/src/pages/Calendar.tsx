@@ -916,7 +916,7 @@ const Calendar = () => {
                 )}
                 {/* Title */}
                 <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a237e', mb: 1 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
                     {selectedEvent.titulo}
                   </Typography>
                   <Chip
