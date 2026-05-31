@@ -19,6 +19,7 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
 import RecurrenceForm, { RecurrenceRule } from './RecurrenceForm';
 
@@ -72,6 +73,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   initialEvent,
 }) => {
   const { user } = useAuth();
+  const { showError } = useNotification();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('PASTORAL');
@@ -155,6 +157,37 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!title || !title.trim()) {
+      showError('O título do evento é obrigatório.');
+      return;
+    }
+
+    if (!orgId) {
+      showError('A organização responsável é obrigatória.');
+      return;
+    }
+
+    if (!startDate) {
+      showError('A data e hora de início é obrigatória.');
+      return;
+    }
+
+    if (isRecurring) {
+      if (!endTime) {
+        showError('A hora de término é obrigatória.');
+        return;
+      }
+    } else {
+      if (!endDate) {
+        showError('A data e hora de término é obrigatória.');
+        return;
+      }
+      if (new Date(startDate) > new Date(endDate)) {
+        showError('A data de início não pode ser posterior à data de término.');
+        return;
+      }
+    }
+
     // Determine real end date based on mode (recurrence uses same day + separate time)
     let finalEndDate = endDate;
     if (isRecurring && startDate) {
@@ -187,7 +220,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <TextField
-              required
               label="Título do Evento"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -248,7 +280,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               </Grid>
             </Grid>
 
-            <FormControl fullWidth size="small" required>
+            <FormControl fullWidth size="small">
               <InputLabel id="new-org-label">Organização Responsável</InputLabel>
               <Select
                 labelId="new-org-label"
@@ -340,7 +372,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
                 <TextField
-                  required
                   label="Data e Hora de Início"
                   type="datetime-local"
                   value={startDate}
@@ -354,7 +385,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               <Grid size={{ xs: 6 }}>
                 {isRecurring ? (
                   <TextField
-                    required
                     label="Hora de Término"
                     type="time"
                     value={endTime}
@@ -366,7 +396,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   />
                 ) : (
                   <TextField
-                    required
                     label="Data e Hora de Término"
                     type="datetime-local"
                     value={endDate}

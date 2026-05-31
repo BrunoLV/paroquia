@@ -6,6 +6,13 @@ import { useAuth } from '../auth/AuthContext';
 jest.mock('../auth/AuthContext');
 const mockedUseAuth = useAuth as jest.Mock;
 
+const mockShowError = jest.fn();
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: mockShowError,
+  }),
+}));
+
 describe('EventRegistrationModal', () => {
   const mockOnClose = jest.fn();
   const mockOnSubmit = jest.fn();
@@ -25,6 +32,7 @@ describe('EventRegistrationModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockShowError.mockClear();
     mockedUseAuth.mockReturnValue({
       user: { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] }
     });
@@ -128,5 +136,82 @@ describe('EventRegistrationModal', () => {
     // MUI Select with multiple values renders them as Chips or text in the display area.
     // We check if the name of the participant organization is visible.
     expect(screen.getByText('Pastoral B')).toBeInTheDocument();
+  });
+
+  it('shows validation error when title is missing', () => {
+    render(<EventRegistrationModal {...defaultProps} />);
+    
+    const titleInput = screen.getByLabelText(/título do evento/i);
+    fireEvent.change(titleInput, { target: { value: '' } });
+
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+    fireEvent.click(submitButton);
+
+    expect(mockShowError).toHaveBeenCalledWith('O título do evento é obrigatório.');
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error when organization is missing', () => {
+    render(<EventRegistrationModal {...defaultProps} organizations={[]} />);
+    
+    const titleInput = screen.getByLabelText(/título do evento/i);
+    fireEvent.change(titleInput, { target: { value: 'Missa' } });
+
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+    fireEvent.click(submitButton);
+
+    expect(mockShowError).toHaveBeenCalledWith('A organização responsável é obrigatória.');
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error when start date is missing', () => {
+    render(<EventRegistrationModal {...defaultProps} />);
+    
+    const titleInput = screen.getByLabelText(/título do evento/i);
+    fireEvent.change(titleInput, { target: { value: 'Missa' } });
+
+    const startInput = screen.getByLabelText(/data e hora de início/i);
+    fireEvent.change(startInput, { target: { value: '' } });
+
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+    fireEvent.click(submitButton);
+
+    expect(mockShowError).toHaveBeenCalledWith('A data e hora de início é obrigatória.');
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error when end date is missing (non-recurring)', () => {
+    render(<EventRegistrationModal {...defaultProps} />);
+    
+    const titleInput = screen.getByLabelText(/título do evento/i);
+    fireEvent.change(titleInput, { target: { value: 'Missa' } });
+
+    const endInput = screen.getByLabelText(/data e hora de término/i);
+    fireEvent.change(endInput, { target: { value: '' } });
+
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+    fireEvent.click(submitButton);
+
+    expect(mockShowError).toHaveBeenCalledWith('A data e hora de término é obrigatória.');
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error when start date is after end date', () => {
+    render(<EventRegistrationModal {...defaultProps} />);
+    
+    const titleInput = screen.getByLabelText(/título do evento/i);
+    fireEvent.change(titleInput, { target: { value: 'Missa' } });
+
+    const startInput = screen.getByLabelText(/data e hora de início/i);
+    fireEvent.change(startInput, { target: { value: '2026-05-31T12:00' } });
+
+    const endInput = screen.getByLabelText(/data e hora de término/i);
+    fireEvent.change(endInput, { target: { value: '2026-05-31T11:00' } });
+
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+    fireEvent.click(submitButton);
+
+    expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
+    expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 });

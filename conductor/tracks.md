@@ -47,7 +47,8 @@
 
 ---
 
-- [ ] **Track: padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links.**
+- [x] **Track: padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links.**
 *Link: [./tracks/ui_standardization_20260530/](./tracks/ui_standardization_20260530/)*
+
 
 

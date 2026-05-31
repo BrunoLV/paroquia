@@ -34,4 +34,4 @@
     - [x] Tratar validações de formulário do client-side e erros de API exibindo-os unicamente no Toast.
 - [x] Task: Validar integridade dos testes de comportamento de erro [d8f577e]
     - [x] Escrever/atualizar testes para garantir que as funções `showError` são chamadas sob falha e os erros estáticos locais foram limpos.
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast' (Protocol in workflow.md)

@@ -10,6 +10,13 @@ import { AuthProvider } from '../auth/AuthContext';
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: jest.fn(),
+    showSuccess: jest.fn(),
+  }),
+}));
+
 describe('Dashboard Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
