@@ -675,7 +675,7 @@ const Calendar = () => {
                 color="primary"
                 startIcon={<DownloadIcon />}
                 onClick={() => setIsExportOpen(true)}
-                sx={{ textTransform: 'none', px: 2, fontWeight: 500 }}
+                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
               >
                 Exportar
               </Button>
@@ -684,7 +684,7 @@ const Calendar = () => {
                 color="primary"
                 startIcon={<AddIcon />}
                 onClick={() => handleOpenCreate()}
-                sx={{ textTransform: 'none', px: 2, fontWeight: 500 }}
+                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
               >
                 Novo Evento
               </Button>
