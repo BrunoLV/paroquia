@@ -1,0 +1,10 @@
+Task: Implementar o provedor global de Notificações (Alert Snackbar)
+Summary:
+- Created NotificationContext and NotificationProvider using MUI Snackbar and Alert.
+- Added unit tests validating severity rendering and auto-close.
+- Integrated NotificationProvider in App.tsx.
+Files:
+- gestao-paroquia-ui/src/context/NotificationContext.tsx
+- gestao-paroquia-ui/src/context/NotificationContext.test.tsx
+- gestao-paroquia-ui/src/App.tsx
+Why: To provide a global way to notify users about API validation/error messages.
