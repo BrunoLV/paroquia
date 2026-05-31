@@ -218,4 +218,19 @@ public class ValidationExceptionHandler extends BaseExceptionHandler {
         }
         return null;
     }
+
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ValidationErrorResponse> handleTypeMismatch(
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
+        String message = "Tipo de dado inválido para o parâmetro: " + ex.getName();
+        return buildValidation(
+                HttpStatus.BAD_REQUEST,
+                ErrorCodes.VALIDATION_FIELD_INVALID,
+                message,
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.VALIDATION_FIELD_INVALID.name(),
+                        ex.getName(),
+                        message,
+                        ex.getValue() == null ? null : String.valueOf(ex.getValue()))));
+    }
 }

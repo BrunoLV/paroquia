@@ -88,7 +88,7 @@ public abstract class BaseExceptionHandler {
             return null;
         }
         return usuarioDetails.primaryMembership()
-                .map(membership -> membership.organizationId().toString())
+                .map(membership -> membership.organizationId() == null ? null : membership.organizationId().toString())
                 .orElse(null);
     }
 

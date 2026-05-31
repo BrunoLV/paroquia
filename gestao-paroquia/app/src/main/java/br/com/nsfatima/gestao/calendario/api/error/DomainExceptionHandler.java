@@ -161,6 +161,29 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         ex.getIdentifier() == null ? null : String.valueOf(ex.getIdentifier()))));
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ValidationErrorResponse> handleDataIntegrityViolation(
+            org.springframework.dao.DataIntegrityViolationException ex) {
+        String message = "Conflito de integridade de dados: valor duplicado ou restrição violada.";
+        String details = ex.getMostSpecificCause().getMessage();
+        if (details != null) {
+            if (details.contains("duplicate key") || details.contains("duplicada")) {
+                message = "Conflito: já existe um registro cadastrado com estes dados.";
+            } else if (details.contains("foreign key") || details.contains("chave estrangeira")) {
+                message = "Erro de consistência: registro associado não encontrado.";
+            }
+        }
+        return buildValidation(
+                HttpStatus.CONFLICT,
+                ErrorCodes.CONFLICT,
+                message,
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.CONFLICT.name(),
+                        "database",
+                        message,
+                        null)));
+    }
+
     @ExceptionHandler(org.springframework.dao.DataAccessException.class)
     public ResponseEntity<ValidationErrorResponse> handleDataAccess(org.springframework.dao.DataAccessException ex) {
         return buildValidation(
