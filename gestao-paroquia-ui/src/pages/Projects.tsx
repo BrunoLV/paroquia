@@ -402,7 +402,7 @@ const Projects = () => {
             {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
           </DialogTitle>
           <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
               <TextField
                 label="Nome do Projeto"
                 required
@@ -415,6 +415,7 @@ const Projects = () => {
                 error={!!nomeError}
                 helperText={nomeError}
                 slotProps={{ htmlInput: { maxLength: 160 } }}
+                size="small"
               />
 
               <TextField
@@ -425,9 +426,10 @@ const Projects = () => {
                 value={formDescricao}
                 onChange={(e) => setFormDescricao(e.target.value)}
                 slotProps={{ htmlInput: { maxLength: 2000 } }}
+                size="small"
               />
 
-              <FormControl fullWidth error={!!orgIdError}>
+              <FormControl fullWidth error={!!orgIdError} required size="small">
                 <InputLabel id="org-responsavel-label">Organização Responsável</InputLabel>
                 <Select
                   labelId="org-responsavel-label"
@@ -463,6 +465,7 @@ const Projects = () => {
                     error={!!inicioError}
                     helperText={inicioError}
                     slotProps={{ inputLabel: { shrink: true } }}
+                    size="small"
                   />
                 </Grid>
                 <Grid size={{ xs: 6 }}>
@@ -479,12 +482,13 @@ const Projects = () => {
                     error={!!fimError}
                     helperText={fimError}
                     slotProps={{ inputLabel: { shrink: true } }}
+                    size="small"
                   />
                 </Grid>
               </Grid>
 
               {isEditMode && (
-                <FormControl fullWidth>
+                <FormControl fullWidth size="small">
                   <InputLabel id="status-label">Status</InputLabel>
                   <Select
                     labelId="status-label"
