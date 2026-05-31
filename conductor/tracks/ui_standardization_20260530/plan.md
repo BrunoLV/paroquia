@@ -11,8 +11,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Configuração do Tema Global' (Protocol in workflow.md) [a2b4dcb]
 
 ## Phase 2: Padronização Visual de Formulários, Botões e Ícones
-- [~] Task: Padronizar a tela de login (`Login.tsx`)
-    - [ ] Usar componentes MUI e as fontes/estilos padronizados pelo tema.
+- [x] Task: Padronizar a tela de login (`Login.tsx`) [7f7761e]
+    - [x] Usar componentes MUI e as fontes/estilos padronizados pelo tema.
 - [~] Task: Padronizar a tela de gerenciamento de projetos (`Projects.tsx`)
     - [ ] Alinhar o formulário de cadastro/edição (TextFields, Selects, Buttons) ao tema global.
     - [ ] Uniformizar a tabela/grade, botões de ação e ícones.
@@ -26,8 +26,8 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Padronização Visual de Formulários, Botões e Ícones' (Protocol in workflow.md)
 
 ## Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast
-- [ ] Task: Unificar tratamento de erros na tela de login
-    - [ ] Remover alertas na tela e usar exclusivamente `showError(...)` do Toast para erros de credenciais ou rede.
+- [x] Task: Unificar tratamento de erros na tela de login [7f7761e]
+    - [x] Remover alertas na tela e usar exclusivamente `showError(...)` do Toast para erros de credenciais ou rede.
 - [ ] Task: Unificar tratamento de erros em projetos (`Projects.tsx`)
     - [ ] Remover campos vermelhos customizados ou alertas estáticos locais. Utilizar validações que disparam Toasts.
 - [ ] Task: Unificar tratamento de erros no calendário e modais de evento (`Calendar.tsx`)
