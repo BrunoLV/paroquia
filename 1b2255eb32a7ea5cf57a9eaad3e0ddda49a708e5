@@ -1,0 +1,13 @@
+Phase 1: Backend API Validation Verification Report
+
+Automated Test Command:
+./gradlew :app:test
+
+Manual Verification Steps:
+1. Ensure the server is running.
+2. Create a project with start/end date limits via POST /api/v1/projetos.
+3. Attempt to create an event starting outside the project period (e.g. starting on June 1st, 2026) and verify it receives 400 Bad Request.
+4. Create a recurring event whose occurrences fall inside the project dates and verify it succeeds.
+
+User Confirmation:
+Confirmed as 'yes' by the user.
