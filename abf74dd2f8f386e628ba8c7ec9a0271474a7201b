@@ -1,0 +1,12 @@
+Task: UI Validation for Event Project Period
+
+Why:
+Display real-time warnings, show project timeframe limits, and disable the save button if event dates fall outside the selected project dates.
+
+Summary of Changes:
+- EventRegistrationModal.tsx: Added useMemos to compute selected project, check validations for single and recurring events, display inline warning alert when validation fails, display project dates period as helper text under project select, and disable submit button when there is a project validation error. Added helper getRecurrenceDates to estimate date boundary of recurring events.
+- EventRegistrationModal.test.tsx: Added unit tests covering all verification scenarios (start date mismatch, end date mismatch, valid date range, null project dates).
+
+Files Modified:
+- gestao-paroquia-ui/src/components/EventRegistrationModal.tsx
+- gestao-paroquia-ui/src/components/EventRegistrationModal.test.tsx
