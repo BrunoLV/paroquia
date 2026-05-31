@@ -7,6 +7,7 @@ import { AuthProvider } from '../auth/AuthContext';
 import apiClient from '../api/client';
 import Dashboard from './Dashboard';
 import Calendar from './Calendar';
+import { NotificationProvider } from '../context/NotificationContext';
 
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
@@ -30,7 +31,9 @@ describe('Data Fetching Requirements', () => {
         <MemoryRouter>
           <AuthProvider>
             <ThemeProvider theme={theme}>
-              <Component />
+              <NotificationProvider>
+                <Component />
+              </NotificationProvider>
             </ThemeProvider>
           </AuthProvider>
         </MemoryRouter>

@@ -41,6 +41,7 @@ import {
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
 import { Projeto, Organizacao } from '../api/types';
+import { useNotification } from '../context/NotificationContext';
 
 // DTO interfaces for project summaries
 interface StatusExecucao {
@@ -66,6 +67,7 @@ interface ProjetoResumo {
 
 const Projects = () => {
   const { user } = useAuth();
+  const { showError, showSuccess } = useNotification();
   
   const [projects, setProjects] = useState<Projeto[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
@@ -136,6 +138,7 @@ const Projects = () => {
       setOrganizations(orgsRes.data || []);
     } catch (err) {
       console.error('Erro ao buscar dados:', err);
+      showError('Não foi possível carregar os projetos e organizações.');
     } finally {
       setIsLoading(false);
     }
@@ -153,6 +156,7 @@ const Projects = () => {
       setResumo(res.data);
     } catch (err) {
       console.error('Erro ao buscar resumo:', err);
+      showError('Não foi possível carregar o resumo do projeto.');
       setResumo(null);
     } finally {
       setIsLoadingResumo(false);
@@ -238,8 +242,10 @@ const Projects = () => {
     try {
       if (isEditMode) {
         await apiClient.patch(`/projetos/${formId}`, payload);
+        showSuccess('Projeto atualizado com sucesso!');
       } else {
         await apiClient.post('/projetos', payload);
+        showSuccess('Projeto criado com sucesso!');
       }
       setDialogOpen(false);
       loadData();
@@ -254,6 +260,7 @@ const Projects = () => {
         }
       }
       setFormError(errorMsg);
+      showError(errorMsg);
     }
   };
 

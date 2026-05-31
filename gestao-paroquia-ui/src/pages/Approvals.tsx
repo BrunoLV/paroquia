@@ -26,8 +26,10 @@ import {
 import { Close as CloseIcon } from '@mui/icons-material';
 import { getApprovals, decideApproval } from '../api/approvals';
 import { AprovacaoResponse } from '../api/types';
+import { useNotification } from '../context/NotificationContext';
 
 const Approvals = () => {
+  const { showError, showSuccess } = useNotification();
   const [tabValue, setTabValue] = useState(0);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
@@ -53,13 +55,16 @@ const Approvals = () => {
   const decisionMutation = useMutation({
     mutationFn: ({ id, status, observacao }: { id: string; status: 'APROVADA' | 'REPROVADA'; observacao: string }) =>
       decideApproval(id, { status, observacao }),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['approvals'] });
+      showSuccess(variables.status === 'APROVADA' ? 'Solicitação aprovada com sucesso!' : 'Solicitação rejeitada com sucesso!');
       setSelectedApproval(null);
       setObservacao('');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error deciding approval:', error);
+      const errMsg = error.response?.data?.message || 'Erro ao registrar decisão.';
+      showError(errMsg);
     },
   });
 

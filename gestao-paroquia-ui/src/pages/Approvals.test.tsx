@@ -4,6 +4,7 @@ import { QueryProvider } from '../api/QueryProvider';
 import Approvals from './Approvals';
 import { getApprovals, decideApproval } from '../api/approvals';
 import { MemoryRouter } from 'react-router-dom';
+import { NotificationProvider } from '../context/NotificationContext';
 
 jest.mock('../api/approvals', () => ({
   getApprovals: jest.fn(),
@@ -57,9 +58,11 @@ describe('Approvals page', () => {
   const renderPage = () => {
     return render(
       <QueryProvider>
-        <MemoryRouter>
-          <Approvals />
-        </MemoryRouter>
+        <NotificationProvider>
+          <MemoryRouter>
+            <Approvals />
+          </MemoryRouter>
+        </NotificationProvider>
       </QueryProvider>
     );
   };

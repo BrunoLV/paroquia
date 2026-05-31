@@ -10,6 +10,15 @@ import { AuthProvider } from '../auth/AuthContext';
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
+const mockShowError = jest.fn();
+const mockShowSuccess = jest.fn();
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: mockShowError,
+    showSuccess: mockShowSuccess,
+  }),
+}));
+
 describe('Projects Page', () => {
   const mockOrgs = [
     { id: 'org-1', nome: 'Pastoral Familiar', ativo: true },
@@ -54,6 +63,8 @@ describe('Projects Page', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockShowError.mockClear();
+    mockShowSuccess.mockClear();
   });
 
   const renderProjects = async (user: any) => {
@@ -161,5 +172,45 @@ describe('Projects Page', () => {
     const listbox = screen.getByRole('listbox');
     expect(within(listbox).getByText('Pastoral Familiar')).toBeInTheDocument();
     expect(within(listbox).queryByText('Pastoral da Juventude')).not.toBeInTheDocument();
+  });
+
+  test('shows error notification when save project fails', async () => {
+    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    await renderProjects(adminUser);
+
+    const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
+    await act(async () => {
+      newProjectBtn.click();
+    });
+
+    // Mock apiClient.post to throw error
+    mockedApiClient.post.mockRejectedValueOnce({
+      response: {
+        data: {
+          message: 'Erro de validação de negócios específico do backend'
+        }
+      }
+    });
+
+    // Fill project fields
+    fireEvent.change(screen.getByLabelText(/Nome do Projeto/i), { target: { value: 'Projeto Teste Erro' } });
+    fireEvent.change(screen.getByLabelText(/Descrição/i), { target: { value: 'Desc' } });
+    
+    // Select org
+    const orgSelect = screen.getByLabelText(/Organização Responsável/i);
+    fireEvent.mouseDown(orgSelect);
+    const listbox = screen.getByRole('listbox');
+    fireEvent.click(within(listbox).getByText('Pastoral Familiar'));
+
+    // Input dates
+    fireEvent.change(screen.getByLabelText(/Data de Início/i), { target: { value: '2026-05-01' } });
+    fireEvent.change(screen.getByLabelText(/Data de Término/i), { target: { value: '2026-08-30' } });
+
+    const salvarBtn = screen.getByRole('button', { name: /Salvar/i });
+    await act(async () => {
+      salvarBtn.click();
+    });
+
+    expect(mockShowError).toHaveBeenCalledWith('Erro de validação de negócios específico do backend');
   });
 });

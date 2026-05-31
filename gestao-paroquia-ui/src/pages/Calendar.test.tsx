@@ -10,6 +10,15 @@ import apiClient from '../api/client';
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
+const mockShowError = jest.fn();
+const mockShowSuccess = jest.fn();
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: mockShowError,
+    showSuccess: mockShowSuccess,
+  }),
+}));
+
 const mockUser = { id: '1', name: 'Test User', username: 'testuser', roles: ['ADMIN'] };
 
 const mockOrgs = [
@@ -70,6 +79,12 @@ const renderCalendar = async (user = mockUser, approvals: any[] = []) => {
     );
   });
 };
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockShowError.mockClear();
+  mockShowSuccess.mockClear();
+});
 
 test('renders calendar controls', async () => {
   await renderCalendar();
@@ -291,4 +306,10 @@ test('parses and renders transient events from pending creation requests', async
 
   expect(screen.getByText('Solicitação de Criação Pendente')).toBeInTheDocument();
   expect(screen.getByText('Missa infantil')).toBeInTheDocument();
+});
+
+test('shows error notification when calendar data fetch fails', async () => {
+  mockedApiClient.get.mockRejectedValueOnce(new Error('API failure'));
+  await renderCalendar();
+  expect(mockShowError).toHaveBeenCalledWith('Não foi possível carregar as informações do calendário.');
 });

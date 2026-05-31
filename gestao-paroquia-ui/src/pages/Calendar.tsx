@@ -36,6 +36,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
+import { useNotification } from '../context/NotificationContext';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import EventCancelDialog from '../components/EventCancelDialog';
 import EditScopeDialog, { EditScope } from '../components/EditScopeDialog';
@@ -104,6 +105,7 @@ const isSameDay = (d1: Date, d2: Date) => {
 
 const Calendar = () => {
   const { user } = useAuth();
+  const { showError, showSuccess } = useNotification();
 
   // Calendar view states
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -323,7 +325,9 @@ const Calendar = () => {
       await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), fetchApprovals()]);
     } catch (err: any) {
       console.error('Error fetching data:', err);
-      setErrorMsg('Não foi possível carregar as informações do calendário.');
+      const errMsg = 'Não foi possível carregar as informações do calendário.';
+      setErrorMsg(errMsg);
+      showError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -399,7 +403,9 @@ const Calendar = () => {
           editScope: selectedEditScope || 'ONLY_THIS'
         };
         await apiClient.patch(`/eventos/${editingEvent.id}`, updateData);
-        setSuccessMsg('Evento atualizado com sucesso!');
+        const msg = 'Evento atualizado com sucesso!';
+        setSuccessMsg(msg);
+        showSuccess(msg);
         setSelectedEditScope(null);
       } else {
         // CREATE (POST)
@@ -428,7 +434,9 @@ const Calendar = () => {
           await apiClient.put(`/eventos/${res.data.id}/recorrencia`, recurrence);
         }
 
-        setSuccessMsg('Evento criado com sucesso!');
+        const msg = 'Evento criado com sucesso!';
+        setSuccessMsg(msg);
+        showSuccess(msg);
       }
 
       setIsCreateOpen(false);
@@ -442,19 +450,21 @@ const Calendar = () => {
         err.response?.data?.message ||
         'Erro ao processar evento. Verifique as regras de negócio.';
       setFormError(errMsg);
+      showError(errMsg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle event cancellation confirmation
   const handleCancelConfirm = async (reason: string) => {
     if (!cancellingEvent) return;
     
     setIsCancelling(true);
     try {
       await apiClient.post(`/eventos/${cancellingEvent.id}/cancel`, { motivo: reason });
-      setSuccessMsg('Evento cancelado com sucesso!');
+      const msg = 'Evento cancelado com sucesso!';
+      setSuccessMsg(msg);
+      showSuccess(msg);
       setIsCancelOpen(false);
       setIsDetailsOpen(false);
       fetchData();
@@ -465,6 +475,7 @@ const Calendar = () => {
       console.error('Cancel event error:', err);
       const errMsg = err.response?.data?.message || 'Erro ao cancelar evento.';
       setErrorMsg(errMsg);
+      showError(errMsg);
     } finally {
       setIsCancelling(false);
     }
