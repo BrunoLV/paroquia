@@ -45,3 +45,9 @@
 - [x] **Track: Melhorar a apresentação dos erros tanto via api como na tela. Os erros são apresentados de uma maneiro muito genérica em termos de texto sobre o ocorrido. Melhorar esse detalhamento para facilitar o entendimento dos erros.**
 *Link: [./archive/error_handling_refinement_20260531/](./archive/error_handling_refinement_20260531/)*
 
+---
+
+- [ ] **Track: padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links.**
+*Link: [./tracks/ui_standardization_20260530/](./tracks/ui_standardization_20260530/)*
+
+
