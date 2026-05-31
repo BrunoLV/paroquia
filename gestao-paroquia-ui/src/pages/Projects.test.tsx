@@ -241,7 +241,34 @@ describe('Projects Page', () => {
       salvarBtn.click();
     });
 
-    expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
+    expect(screen.getByText('A data de início não pode ser posterior à data de término.')).toBeInTheDocument();
+    expect(screen.getByText('A data de término não pode ser anterior à data de início.')).toBeInTheDocument();
+    expect(mockShowError).not.toHaveBeenCalled();
+  });
+
+  test('shows inline errors when submitting empty project form', async () => {
+    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    await renderProjects(adminUser);
+
+    const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
+    await act(async () => {
+      newProjectBtn.click();
+    });
+
+    // Clear inputs to trigger empty validation
+    fireEvent.change(screen.getByLabelText(/Nome do Projeto/i), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText(/Data de Início/i), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText(/Data de Término/i), { target: { value: '' } });
+
+    const salvarBtn = screen.getByRole('button', { name: /Salvar/i });
+    await act(async () => {
+      salvarBtn.click();
+    });
+
+    expect(screen.getByText('O nome do projeto é obrigatório.')).toBeInTheDocument();
+    expect(screen.getByText('A data de início é obrigatória.')).toBeInTheDocument();
+    expect(screen.getByText('A data de término é obrigatória.')).toBeInTheDocument();
+    expect(mockShowError).not.toHaveBeenCalled();
   });
 });
 

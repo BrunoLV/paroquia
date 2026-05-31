@@ -28,6 +28,7 @@ import {
   LinearProgress,
   Grid,
   CircularProgress,
+  FormHelperText,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -88,6 +89,12 @@ const Projects = () => {
   const [formInicio, setFormInicio] = useState('');
   const [formFim, setFormFim] = useState('');
   const [formStatus, setFormStatus] = useState<'ATIVO' | 'INATIVO'>('ATIVO');
+
+  // Form validation errors
+  const [nomeError, setNomeError] = useState('');
+  const [orgIdError, setOrgIdError] = useState('');
+  const [inicioError, setInicioError] = useState('');
+  const [fimError, setFimError] = useState('');
 
   // 1. Permission checks
   const canManageProjects = () => {
@@ -187,6 +194,13 @@ const Projects = () => {
     setFormFim(endDate);
     setFormStatus('ATIVO');
     setIsEditMode(false);
+    
+    // Reset validation errors
+    setNomeError('');
+    setOrgIdError('');
+    setInicioError('');
+    setFimError('');
+    
     setDialogOpen(true);
   };
 
@@ -202,26 +216,41 @@ const Projects = () => {
     setFormFim(project.fim ? project.fim.split('T')[0] : '');
     setFormStatus(project.status);
     setIsEditMode(true);
+    
+    // Reset validation errors
+    setNomeError('');
+    setOrgIdError('');
+    setInicioError('');
+    setFimError('');
+    
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
+    let hasError = false;
+    
     if (!formNome.trim()) {
-      showError('O nome do projeto é obrigatório.');
-      return;
+      setNomeError('O nome do projeto é obrigatório.');
+      hasError = true;
     }
     if (!formOrgId) {
-      showError('A organização responsável é obrigatória.');
-      return;
+      setOrgIdError('A organização responsável é obrigatória.');
+      hasError = true;
     }
-    if (!formInicio || !formFim) {
-      showError('As datas de início e fim são obrigatórias.');
-      return;
+    if (!formInicio) {
+      setInicioError('A data de início é obrigatória.');
+      hasError = true;
     }
-    if (new Date(formInicio) > new Date(formFim)) {
-      showError('A data de início não pode ser posterior à data de término.');
-      return;
+    if (!formFim) {
+      setFimError('A data de término é obrigatória.');
+      hasError = true;
     }
+    if (formInicio && formFim && new Date(formInicio) > new Date(formFim)) {
+      setInicioError('A data de início não pode ser posterior à data de término.');
+      setFimError('A data de término não pode ser anterior à data de início.');
+      hasError = true;
+    }
+    if (hasError) return;
 
     const payload: any = {
       nome: formNome,
@@ -250,7 +279,7 @@ const Projects = () => {
       if (err.response?.data) {
         const data = err.response.data;
         if (Array.isArray(data.errors) && data.errors.length > 0) {
-          errorMsg = data.errors.map((e: any) => `${e.field}: ${e.message}`).join(', ');
+          errorMsg = 'Por favor, corrija os seguintes erros:\n' + data.errors.map((e: any) => `• ${e.message || e.defaultMessage}`).join('\n');
         } else if (data.message) {
           errorMsg = data.message;
         }
@@ -378,7 +407,12 @@ const Projects = () => {
               required
               fullWidth
               value={formNome}
-              onChange={(e) => setFormNome(e.target.value)}
+              onChange={(e) => {
+                setFormNome(e.target.value);
+                if (nomeError) setNomeError('');
+              }}
+              error={!!nomeError}
+              helperText={nomeError}
               slotProps={{ htmlInput: { maxLength: 160 } }}
             />
 
@@ -392,14 +426,17 @@ const Projects = () => {
               slotProps={{ htmlInput: { maxLength: 2000 } }}
             />
 
-            <FormControl fullWidth>
+            <FormControl fullWidth error={!!orgIdError}>
               <InputLabel id="org-responsavel-label">Organização Responsável</InputLabel>
               <Select
                 labelId="org-responsavel-label"
                 id="org-responsavel-select"
                 value={formOrgId}
                 label="Organização Responsável"
-                onChange={(e) => setFormOrgId(e.target.value)}
+                onChange={(e) => {
+                  setFormOrgId(e.target.value);
+                  if (orgIdError) setOrgIdError('');
+                }}
               >
                 {getSelectableOrgs().map((org) => (
                   <MenuItem key={org.id} value={org.id}>
@@ -407,6 +444,7 @@ const Projects = () => {
                   </MenuItem>
                 ))}
               </Select>
+              {orgIdError && <FormHelperText>{orgIdError}</FormHelperText>}
             </FormControl>
 
             <Grid container spacing={2}>
@@ -417,7 +455,12 @@ const Projects = () => {
                   required
                   fullWidth
                   value={formInicio}
-                  onChange={(e) => setFormInicio(e.target.value)}
+                  onChange={(e) => {
+                    setFormInicio(e.target.value);
+                    if (inicioError) setInicioError('');
+                  }}
+                  error={!!inicioError}
+                  helperText={inicioError}
                   slotProps={{ inputLabel: { shrink: true } }}
                 />
               </Grid>
@@ -428,7 +471,12 @@ const Projects = () => {
                   required
                   fullWidth
                   value={formFim}
-                  onChange={(e) => setFormFim(e.target.value)}
+                  onChange={(e) => {
+                    setFormFim(e.target.value);
+                    if (fimError) setFimError('');
+                  }}
+                  error={!!fimError}
+                  helperText={fimError}
                   slotProps={{ inputLabel: { shrink: true } }}
                 />
               </Grid>
