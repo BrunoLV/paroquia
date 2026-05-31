@@ -20,8 +20,8 @@
     - [x] Criar modal de criação/edição de projeto integrado com a API (`POST /api/v1/projetos` e `PATCH /api/v1/projetos/{id}`)
 - [x] Task: Conductor - User Manual Verification 'Fase 3: Listagem de Projetos e CRUD (Criação/Edição)' [checkpoint: c20fdb1]
 
-## Fase 4: Indicadores e Painel de Resumo do Projeto
+## Fase 4: Indicadores e Painel de Resumo do Projeto [checkpoint: 865e46c]
 - [x] Task: Implementar a exibição de indicadores consolidados (Dashboard do Projeto) [4bc1587]
     - [x] Criar testes unitários da renderização do resumo do projeto (Saúde Temporal, Execução e Colaboração)
     - [x] Integrar e renderizar o componente de resumo de indicadores do endpoint `/api/v1/projetos/{id}/resumo` na interface
-- [ ] Task: Conductor - User Manual Verification 'Fase 4: Indicadores e Painel de Resumo do Projeto' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Fase 4: Indicadores e Painel de Resumo do Projeto' [checkpoint: 865e46c]
