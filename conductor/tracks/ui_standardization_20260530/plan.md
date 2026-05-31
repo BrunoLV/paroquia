@@ -21,9 +21,9 @@
     - [x] Padronizar os ícones de categorias e navegação.
 - [x] Task: Padronizar a tela de aprovações (`Approvals.tsx`) [0c80b71]
     - [x] Garantir o alinhamento visual de listagens, botões e ícones.
-- [ ] Task: Executar e atualizar testes automatizados existentes
-    - [ ] Rodar testes de login, projetos, calendário e aprovações para garantir compatibilidade.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Padronização Visual de Formulários, Botões e Ícones' (Protocol in workflow.md)
+- [x] Task: Executar e atualizar testes automatizados existentes [eee4aab]
+    - [x] Rodar testes de login, projetos, calendário e aprovações para garantir compatibilidade.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Padronização Visual de Formulários, Botões e Ícones' (Protocol in workflow.md) [eee4aab]
 
 ## Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast
 - [x] Task: Unificar tratamento de erros na tela de login [7f7761e]
