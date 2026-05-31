@@ -1,0 +1,9 @@
+Phase 2 Checkpoint Verification Report (Refined Dialog Styles)
+Automated Test Command: CI=true npm test (116/116 tests passing)
+TypeScript Check Command: npx tsc --noEmit (0 errors)
+Manual Verification Plan:
+1. Start development server via npm run dev in gestao-paroquia-ui.
+2. Access the Projects screen, trigger inline validations, and verify they show correctly and clear on input. Verify dialog style matches the standard square style.
+3. Access Calendar, open the Event Registration Modal, verify inline validation helper texts under title, organization, start, and end fields. Verify project dates validation warnings display inline under the project field.
+4. Verify multi-line API errors formatting in toasts as a bulleted list.
+User Confirmation: Approved by user via interactive prompt.
