@@ -198,7 +198,7 @@ const Dashboard = () => {
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
         locais={locais.filter(l => l.ativo)}
-        projetos={projetos.filter(p => p.ativo)}
+        projetos={projetos.filter(p => p.status === 'ATIVO')}
         error={modalError}
       />
     </Box>

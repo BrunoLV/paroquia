@@ -32,12 +32,14 @@ import {
   Description as DescriptionIcon,
   LocationOn as LocationIcon,
   Groups as PeopleIcon,
+  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import EventCancelDialog from '../components/EventCancelDialog';
 import EditScopeDialog, { EditScope } from '../components/EditScopeDialog';
+import { ExportCalendarDialog } from '../components/ExportCalendarDialog';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 interface CalendarDay {
@@ -140,6 +142,9 @@ const Calendar = () => {
   // Recurrence edit scope states
   const [isEditScopeOpen, setIsEditScopeOpen] = useState(false);
   const [selectedEditScope, setSelectedEditScope] = useState<EditScope | null>(null);
+
+  // Export states
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Get current year and month
   const currentYear = currentDate.getFullYear();
@@ -660,6 +665,15 @@ const Calendar = () => {
                 </IconButton>
               </Box>
               <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<DownloadIcon />}
+                onClick={() => setIsExportOpen(true)}
+                sx={{ borderRadius: '8px', textTransform: 'none', px: 2, fontWeight: 500 }}
+              >
+                Exportar
+              </Button>
+              <Button
                 variant="contained"
                 color="primary"
                 startIcon={<AddIcon />}
@@ -1039,7 +1053,7 @@ const Calendar = () => {
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
         locais={locais.filter(l => l.ativo)}
-        projetos={projetos.filter(p => p.ativo)}
+        projetos={projetos.filter(p => p.status === 'ATIVO')}
         initialDate={createInitialDate}
         initialEvent={editingEvent}
         error={formError}
@@ -1059,6 +1073,13 @@ const Calendar = () => {
         open={isEditScopeOpen}
         onClose={() => setIsEditScopeOpen(false)}
         onSelect={handleScopeSelect}
+      />
+
+      {/* Export Calendar Dialog Modal Component */}
+      <ExportCalendarDialog
+        open={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        organizations={organizations}
       />
     </Box>
   );

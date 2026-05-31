@@ -366,7 +366,7 @@ const Projects = () => {
               fullWidth
               value={formNome}
               onChange={(e) => setFormNome(e.target.value)}
-              inputProps={{ maxLength: 160 }}
+              slotProps={{ htmlInput: { maxLength: 160 } }}
             />
 
             <TextField
@@ -376,7 +376,7 @@ const Projects = () => {
               rows={3}
               value={formDescricao}
               onChange={(e) => setFormDescricao(e.target.value)}
-              inputProps={{ maxLength: 2000 }}
+              slotProps={{ htmlInput: { maxLength: 2000 } }}
             />
 
             <FormControl fullWidth>
@@ -397,7 +397,7 @@ const Projects = () => {
             </FormControl>
 
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   label="Data de Início"
                   type="date"
@@ -405,10 +405,10 @@ const Projects = () => {
                   fullWidth
                   value={formInicio}
                   onChange={(e) => setFormInicio(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   label="Data de Término"
                   type="date"
@@ -416,7 +416,7 @@ const Projects = () => {
                   fullWidth
                   value={formFim}
                   onChange={(e) => setFormFim(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                 />
               </Grid>
             </Grid>
@@ -450,7 +450,9 @@ const Projects = () => {
         anchor="right"
         open={selectedProject !== null}
         onClose={() => setSelectedProject(null)}
-        PaperProps={{ sx: { width: { xs: '100%', sm: 420 }, p: 3, boxSizing: 'border-box' } }}
+        sx={{
+          '& .MuiDrawer-paper': { width: { xs: '100%', sm: 420 }, p: 3, boxSizing: 'border-box' }
+        }}
       >
         {selectedProject && (
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 3.5 }}>
@@ -489,7 +491,7 @@ const Projects = () => {
                     INÍCIO
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <CalendarIcon size="small" color="action" sx={{ fontSize: '1rem' }} />
+                    <CalendarIcon fontSize="small" color="action" sx={{ fontSize: '1rem' }} />
                     <Typography variant="body2">{formatDate(selectedProject.inicio)}</Typography>
                   </Box>
                 </Box>
@@ -498,7 +500,7 @@ const Projects = () => {
                     TÉRMINO
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <CalendarIcon size="small" color="action" sx={{ fontSize: '1rem' }} />
+                    <CalendarIcon fontSize="small" color="action" sx={{ fontSize: '1rem' }} />
                     <Typography variant="body2">{formatDate(selectedProject.fim)}</Typography>
                   </Box>
                 </Box>
@@ -510,7 +512,7 @@ const Projects = () => {
                     RESPONSÁVEL
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <BusinessIcon size="small" color="action" sx={{ fontSize: '1rem' }} />
+                    <BusinessIcon fontSize="small" color="action" sx={{ fontSize: '1rem' }} />
                     <Typography variant="body2">{getOrgName(selectedProject.organizacaoResponsavelId)}</Typography>
                   </Box>
                 </Box>
@@ -572,21 +574,21 @@ const Projects = () => {
                       Status de Execução de Eventos
                     </Typography>
                     <Grid container spacing={2}>
-                      <Grid item xs={4}>
+                      <Grid size={{ xs: 4 }}>
                         <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
-                          <Typography variant="caption" color="textSecondary" display="block">TOTAL</Typography>
+                          <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>TOTAL</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700 }}>{resumo.statusExecucao.totalEventos}</Typography>
                         </Paper>
                       </Grid>
-                      <Grid item xs={4}>
+                      <Grid size={{ xs: 4 }}>
                         <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'success.light' }}>
-                          <Typography variant="caption" color="success.main" display="block">REALIZADOS</Typography>
+                          <Typography variant="caption" color="success.main" sx={{ display: 'block' }}>REALIZADOS</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700, color: 'success.main' }}>{resumo.statusExecucao.eventosRealizados}</Typography>
                         </Paper>
                       </Grid>
-                      <Grid item xs={4}>
+                      <Grid size={{ xs: 4 }}>
                         <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'warning.light' }}>
-                          <Typography variant="caption" color="warning.main" display="block">PENDENTES</Typography>
+                          <Typography variant="caption" color="warning.main" sx={{ display: 'block' }}>PENDENTES</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700, color: 'warning.main' }}>{resumo.statusExecucao.eventosPendentes}</Typography>
                         </Paper>
                       </Grid>
