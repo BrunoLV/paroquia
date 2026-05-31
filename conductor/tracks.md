@@ -35,7 +35,3 @@
 - [x] **Track: Implementação do fluxo de aprovação na UI conforme implementação definida pelo backend**
 *Link: [./tracks/approval_workflow_ui_20260525/](./tracks/approval_workflow_ui_20260525/)*
 
----
-
-- [x] **Track: expor a funcionalidade de gerencia de projetos no sistema/ui. A api já possui as regras implementadas. Analise o que já esta implementado para que eu possa validar e sugerir algum ajuste e implementar a tela para a funcionalidade.**
-*Link: [./tracks/project_management_ui_20260530/](./tracks/project_management_ui_20260530/)*
