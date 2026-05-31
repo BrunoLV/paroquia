@@ -121,8 +121,6 @@ const Calendar = () => {
 
   // Status/loading states
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
   const [pendingApprovals, setPendingApprovals] = useState<any[]>([]);
 
   // Modal details states
@@ -215,7 +213,6 @@ const Calendar = () => {
   // Fetch events and organizations
   const fetchData = async () => {
     setIsLoading(true);
-    setErrorMsg('');
     try {
       // Calculate start and end of current visible month grid
       const startOfGrid = calendarDays[0].date;
@@ -325,7 +322,6 @@ const Calendar = () => {
     } catch (err: any) {
       console.error('Error fetching data:', err);
       const errMsg = 'Não foi possível carregar as informações do calendário.';
-      setErrorMsg(errMsg);
       showError(errMsg);
     } finally {
       setIsLoading(false);
@@ -400,7 +396,6 @@ const Calendar = () => {
         };
         await apiClient.patch(`/eventos/${editingEvent.id}`, updateData);
         const msg = 'Evento atualizado com sucesso!';
-        setSuccessMsg(msg);
         showSuccess(msg);
         setSelectedEditScope(null);
       } else {
@@ -431,15 +426,11 @@ const Calendar = () => {
         }
 
         const msg = 'Evento criado com sucesso!';
-        setSuccessMsg(msg);
         showSuccess(msg);
       }
 
       setIsCreateOpen(false);
       fetchData();
-
-      // Clear success message after 4s
-      setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err: any) {
       console.error('Submit event error:', err);
       const errMsg =
@@ -458,18 +449,13 @@ const Calendar = () => {
     try {
       await apiClient.post(`/eventos/${cancellingEvent.id}/cancel`, { motivo: reason });
       const msg = 'Evento cancelado com sucesso!';
-      setSuccessMsg(msg);
       showSuccess(msg);
       setIsCancelOpen(false);
       setIsDetailsOpen(false);
       fetchData();
-      
-      // Clear success message after 4s
-      setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err: any) {
       console.error('Cancel event error:', err);
       const errMsg = err.response?.data?.message || 'Erro ao cancelar evento.';
-      setErrorMsg(errMsg);
       showError(errMsg);
     } finally {
       setIsCancelling(false);
@@ -571,18 +557,6 @@ const Calendar = () => {
 
   return (
     <Box>
-      {/* Alerts */}
-      {successMsg && (
-        <Alert severity="success" sx={{ mb: 3, borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-          {successMsg}
-        </Alert>
-      )}
-      {errorMsg && (
-        <Alert severity="error" sx={{ mb: 3, borderRadius: 0 }}>
-          {errorMsg}
-        </Alert>
-      )}
-
       {/* Toolbar / Controls Card */}
       <Card sx={{ mb: 4, borderRadius: 0, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)', overflow: 'visible' }}>
         <CardContent sx={{ p: { xs: 2, md: 3 } }}>
