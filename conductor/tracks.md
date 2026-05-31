@@ -37,6 +37,11 @@
 
 ---
 
+- [x] **Track: expor a funcionalidade de gerencia de projetos no sistema/ui. A api já possui as regras implementadas. Analise o que já esta implementado para que eu possa validar e sugerir algum ajuste e implementar a tela para a funcionalidade.**
+*Link: [./archive/project_management_ui_20260530/](./archive/project_management_ui_20260530/)*
+
+---
+
 - [x] **Track: Melhorar a apresentação dos erros tanto via api como na tela. Os erros são apresentados de uma maneiro muito genérica em termos de texto sobre o ocorrido. Melhorar esse detalhamento para facilitar o entendimento dos erros.**
-*Link: [./tracks/error_handling_refinement_20260531/](./tracks/error_handling_refinement_20260531/)*
+*Link: [./archive/error_handling_refinement_20260531/](./archive/error_handling_refinement_20260531/)*
 
