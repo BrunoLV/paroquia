@@ -1,0 +1,10 @@
+Phase 2 Checkpoint Verification Report (Refined Required & noValidate Form Alignment)
+Automated Test Command: CI=true npm test (116/116 tests passing)
+TypeScript Check Command: npx tsc --noEmit (0 errors)
+Manual Verification Plan:
+1. Start development server via npm run dev in gestao-paroquia-ui.
+2. Access the Projects screen, trigger inline validations, and verify they show correctly and clear on input. Verify dialog style matches standard square style.
+3. Access Calendar, open the Event Registration Modal, verify inline validation helper texts under title, organization, start, and end fields. Verify project dates validation warnings display inline under the project field.
+4. Verify both modal forms feature identical visual asterisks (required) and prevent browser tooltips via noValidate.
+5. Verify multi-line API errors formatting in toasts as a bulleted list.
+User Confirmation: Approved by user via interactive prompt.
