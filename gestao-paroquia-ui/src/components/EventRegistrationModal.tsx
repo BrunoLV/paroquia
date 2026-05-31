@@ -17,6 +17,7 @@ import {
   Switch,
   Collapse,
   FormControlLabel,
+  FormHelperText,
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
@@ -47,6 +48,56 @@ const formatLocalDate = (d: Date) => {
 const formatIsoToLocal = (isoString: string) => {
   if (!isoString) return '';
   return formatLocalDate(new Date(isoString));
+};
+
+const getRecurrenceDates = (start: Date, rule: RecurrenceRule, limit: Date): Date[] => {
+  const dates: Date[] = [];
+  let current = new Date(start);
+  const maxOccurrences = rule.numeroOcorrencias || 1000;
+  const interval = rule.intervalo || 1;
+
+  if (rule.frequencia === 'DIARIA') {
+    while (current <= limit && dates.length < maxOccurrences) {
+      dates.push(new Date(current));
+      current.setDate(current.getDate() + interval);
+    }
+  } else if (rule.frequencia === 'SEMANAL') {
+    const days = rule.diasDaSemana || [];
+    if (days.length === 0) {
+      const dayNames = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+      days.push(dayNames[start.getDay()]);
+    }
+    const dayOfWeekMap: Record<string, number> = {
+      SUNDAY: 0, MONDAY: 1, TUESDAY: 2, WEDNESDAY: 3, THURSDAY: 4, FRIDAY: 5, SATURDAY: 6
+    };
+    
+    while (current <= limit && dates.length < maxOccurrences) {
+      const startOfWeek = new Date(current);
+      const weekDates: Date[] = [];
+      for (const day of days) {
+        const targetDay = dayOfWeekMap[day];
+        const diff = targetDay - startOfWeek.getDay();
+        const occurrenceDate = new Date(startOfWeek);
+        occurrenceDate.setDate(startOfWeek.getDate() + diff);
+        if (occurrenceDate >= start && occurrenceDate <= limit) {
+          weekDates.push(occurrenceDate);
+        }
+      }
+      weekDates.sort((a, b) => a.getTime() - b.getTime());
+      for (const d of weekDates) {
+        if (dates.length < maxOccurrences) {
+          dates.push(d);
+        }
+      }
+      current.setDate(current.getDate() + 7 * interval);
+    }
+  } else if (rule.frequencia === 'MENSAL') {
+    while (current <= limit && dates.length < maxOccurrences) {
+      dates.push(new Date(current));
+      current.setMonth(current.getMonth() + interval);
+    }
+  }
+  return dates;
 };
 
 interface EventRegistrationModalProps {
@@ -100,6 +151,80 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     const userOrgIds = user.organizations.map(org => org.id);
     return organizations.filter(org => userOrgIds.includes(org.id));
   }, [user, organizations]);
+
+  const selectedProject = useMemo(() => {
+    if (!projetoId) return null;
+    return projetos.find(p => p.id === projetoId) || null;
+  }, [projetoId, projetos]);
+
+  const selectedProjectInfo = useMemo(() => {
+    if (!selectedProject) return '';
+    const startStr = selectedProject.inicio ? new Date(selectedProject.inicio).toLocaleDateString() : '';
+    const endStr = selectedProject.fim ? new Date(selectedProject.fim).toLocaleDateString() : '';
+    if (startStr && endStr) {
+      return `${startStr} a ${endStr}`;
+    }
+    if (startStr) {
+      return `A partir de ${startStr}`;
+    }
+    if (endStr) {
+      return `Até ${endStr}`;
+    }
+    return 'Sem limite de datas';
+  }, [selectedProject]);
+
+  const projectValidationError = useMemo(() => {
+    if (!selectedProject) return null;
+    const projStart = selectedProject.inicio ? new Date(selectedProject.inicio) : null;
+    const projEnd = selectedProject.fim ? new Date(selectedProject.fim) : null;
+    
+    if (!projStart && !projEnd) return null;
+
+    if (!startDate) return null;
+    const eventStart = new Date(startDate);
+
+    if (projStart && eventStart < projStart) {
+      return `A data de início do evento (${eventStart.toLocaleDateString()}) é anterior ao início do projeto (${projStart.toLocaleDateString()}).`;
+    }
+
+    if (isRecurring) {
+      const { frequencia, dataLimite, numeroOcorrencias } = recurrenceRule;
+      
+      if (!dataLimite && !numeroOcorrencias) {
+        return 'Para eventos vinculados a projetos, a repetição deve possuir um limite de data ou número de ocorrências.';
+      }
+
+      if (projEnd) {
+        if (dataLimite) {
+          const limitDate = new Date(dataLimite + 'T23:59:59');
+          if (limitDate > projEnd) {
+            return `O limite da repetição (${limitDate.toLocaleDateString()}) excede o fim do projeto (${projEnd.toLocaleDateString()}).`;
+          }
+        }
+
+        if (numeroOcorrencias) {
+          const paddingLimit = new Date(projEnd);
+          paddingLimit.setDate(paddingLimit.getDate() + 10);
+          
+          const occurrences = getRecurrenceDates(eventStart, recurrenceRule, paddingLimit);
+          if (occurrences.length > 0) {
+            const lastOccurrence = occurrences[occurrences.length - 1];
+            if (lastOccurrence > projEnd) {
+              return `A última ocorrência (${lastOccurrence.toLocaleDateString()}) excede o fim do projeto (${projEnd.toLocaleDateString()}).`;
+            }
+          }
+        }
+      }
+    } else {
+      if (!endDate) return null;
+      const eventEnd = new Date(endDate);
+      if (projEnd && eventEnd > projEnd) {
+        return `A data de término do evento (${eventEnd.toLocaleDateString()}) excede o término do projeto (${projEnd.toLocaleDateString()}).`;
+      }
+    }
+
+    return null;
+  }, [selectedProject, startDate, endDate, isRecurring, recurrenceRule]);
 
   // Reset form or set initial values when modal opens or initialEvent changes
   useEffect(() => {
@@ -188,6 +313,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       }
     }
 
+    if (projectValidationError) {
+      showError(projectValidationError);
+      return;
+    }
+
     // Determine real end date based on mode (recurrence uses same day + separate time)
     let finalEndDate = endDate;
     if (isRecurring && startDate) {
@@ -219,6 +349,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            {projectValidationError && (
+              <Alert severity="error" sx={{ borderRadius: 0 }}>
+                {projectValidationError}
+              </Alert>
+            )}
             <TextField
               label="Título do Evento"
               value={title}
@@ -320,7 +455,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small">
+                <FormControl fullWidth size="small" error={!!projectValidationError}>
                   <InputLabel id="new-projeto-label">Projeto</InputLabel>
                   <Select
                     labelId="new-projeto-label"
@@ -338,6 +473,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                       </MenuItem>
                     ))}
                   </Select>
+                  {selectedProjectInfo && (
+                    <FormHelperText>
+                      Período: {selectedProjectInfo}
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
             </Grid>
@@ -450,7 +590,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600 }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ fontWeight: 600 }}>
+          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600 }}>
             {initialEvent ? 'Salvar Alterações' : 'Criar Evento'}
           </Button>
         </DialogActions>

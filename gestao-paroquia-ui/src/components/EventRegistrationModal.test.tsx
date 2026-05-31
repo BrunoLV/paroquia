@@ -214,4 +214,147 @@ describe('EventRegistrationModal', () => {
     expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
+
+  describe('Project Date Validation', () => {
+    const mockProjetos = [
+      {
+        id: 'proj-1',
+        nome: 'Projeto A',
+        status: 'ATIVO' as const,
+        descricao: '',
+        inicio: '2026-05-10T00:00:00Z',
+        fim: '2026-05-20T23:59:59Z',
+        organizacaoResponsavelId: 'org-1',
+      },
+      {
+        id: 'proj-2',
+        nome: 'Projeto B',
+        status: 'ATIVO' as const,
+        descricao: '',
+        inicio: '',
+        fim: '',
+        organizacaoResponsavelId: 'org-1',
+      }
+    ];
+
+    it('disables save button and displays alert when event start is before project start', () => {
+      const invalidEvent = {
+        id: 'evt-1',
+        titulo: 'Evento Mismatched',
+        descricao: '',
+        categoria: 'PASTORAL',
+        organizacaoResponsavelId: 'org-1',
+        projetoId: 'proj-1',
+        nomeProjeto: 'Projeto A',
+        localId: null,
+        inicio: '2026-05-05T10:00:00Z',
+        fim: '2026-05-05T11:00:00Z',
+        status: 'CONFIRMADO',
+        conflictState: null,
+        conflictReason: null,
+      };
+
+      render(
+        <EventRegistrationModal
+          {...defaultProps}
+          projetos={mockProjetos}
+          initialEvent={invalidEvent}
+        />
+      );
+
+      expect(screen.getByText(/é anterior ao início do projeto/i)).toBeInTheDocument();
+      const saveButton = screen.getByRole('button', { name: /Salvar Alterações/i });
+      expect(saveButton).toBeDisabled();
+    });
+
+    it('disables save button and displays alert when event end is after project end', () => {
+      const invalidEvent = {
+        id: 'evt-1',
+        titulo: 'Evento Mismatched',
+        descricao: '',
+        categoria: 'PASTORAL',
+        organizacaoResponsavelId: 'org-1',
+        projetoId: 'proj-1',
+        nomeProjeto: 'Projeto A',
+        localId: null,
+        inicio: '2026-05-15T10:00:00Z',
+        fim: '2026-05-21T11:00:00Z',
+        status: 'CONFIRMADO',
+        conflictState: null,
+        conflictReason: null,
+      };
+
+      render(
+        <EventRegistrationModal
+          {...defaultProps}
+          projetos={mockProjetos}
+          initialEvent={invalidEvent}
+        />
+      );
+
+      expect(screen.getByText(/excede o término do projeto/i)).toBeInTheDocument();
+      const saveButton = screen.getByRole('button', { name: /Salvar Alterações/i });
+      expect(saveButton).toBeDisabled();
+    });
+
+    it('allows event creation when event timeframe matches project duration', () => {
+      const validEvent = {
+        id: 'evt-1',
+        titulo: 'Evento Matched',
+        descricao: '',
+        categoria: 'PASTORAL',
+        organizacaoResponsavelId: 'org-1',
+        projetoId: 'proj-1',
+        nomeProjeto: 'Projeto A',
+        localId: null,
+        inicio: '2026-05-15T10:00:00Z',
+        fim: '2026-05-15T11:00:00Z',
+        status: 'CONFIRMADO',
+        conflictState: null,
+        conflictReason: null,
+      };
+
+      render(
+        <EventRegistrationModal
+          {...defaultProps}
+          projetos={mockProjetos}
+          initialEvent={validEvent}
+        />
+      );
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      const saveButton = screen.getByRole('button', { name: /Salvar Alterações/i });
+      expect(saveButton).not.toBeDisabled();
+    });
+
+    it('allows event creation when project dates are null', () => {
+      const validEvent = {
+        id: 'evt-1',
+        titulo: 'Evento Sem Limites',
+        descricao: '',
+        categoria: 'PASTORAL',
+        organizacaoResponsavelId: 'org-1',
+        projetoId: 'proj-2',
+        nomeProjeto: 'Projeto B',
+        localId: null,
+        inicio: '2026-07-15T10:00:00Z',
+        fim: '2026-07-15T11:00:00Z',
+        status: 'CONFIRMADO',
+        conflictState: null,
+        conflictReason: null,
+      };
+
+      render(
+        <EventRegistrationModal
+          {...defaultProps}
+          projetos={mockProjetos}
+          initialEvent={validEvent}
+        />
+      );
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      const saveButton = screen.getByRole('button', { name: /Salvar Alterações/i });
+      expect(saveButton).not.toBeDisabled();
+    });
+  });
 });
