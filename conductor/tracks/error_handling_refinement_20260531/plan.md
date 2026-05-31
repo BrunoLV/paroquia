@@ -16,4 +16,4 @@
 - [x] Task: Integrar tratamento de exceções da API com os Toasts nas telas de cadastro (b188d31)
     - [x] Criar testes unitários nas telas de Projetos e Calendário simulando falhas da API e checando chamada do Toast
     - [x] Atualizar formulários e ações em `Projects.tsx`, `Calendar.tsx` e `Approvals.tsx` para direcionar mensagens de falha detalhadas para o Toast global
-- [ ] Task: Conductor - User Manual Verification 'Fase 3: Integração dos Handlers de Erro nos Formulários da UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Fase 3: Integração dos Handlers de Erro nos Formulários da UI' (Protocol in workflow.md)
