@@ -128,7 +128,7 @@ const Approvals = () => {
   return (
     <Container maxWidth="xl">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, color: '#1a2035' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
           Solicitações de Aprovação
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
