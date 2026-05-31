@@ -10,6 +10,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.YearlyRecurrenceGeneratorJob;
+import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,16 +30,19 @@ public class CreateEventoRecorrenciaUseCase {
     private final EventoJpaRepository eventRepository;
     private final YearlyRecurrenceGeneratorJob generationJob;
     private final CalendarLockPolicy calendarLockPolicy;
+    private final ProjetoVincularPolicy projetoVincularPolicy;
 
     public CreateEventoRecorrenciaUseCase(
             EventoRecorrenciaJpaRepository recurrenceRepository,
             EventoJpaRepository eventRepository,
             YearlyRecurrenceGeneratorJob generationJob,
-            CalendarLockPolicy calendarLockPolicy) {
+            CalendarLockPolicy calendarLockPolicy,
+            ProjetoVincularPolicy projetoVincularPolicy) {
         this.recurrenceRepository = recurrenceRepository;
         this.eventRepository = eventRepository;
         this.generationJob = generationJob;
         this.calendarLockPolicy = calendarLockPolicy;
+        this.projetoVincularPolicy = projetoVincularPolicy;
     }
 
     /**
@@ -56,6 +60,10 @@ public class CreateEventoRecorrenciaUseCase {
 
         // Adjust base event to the first valid occurrence of the rule
         adjustBaseEventToFirstOccurrence(baseEvent, regra);
+
+        if (baseEvent.getProjetoId() != null) {
+            projetoVincularPolicy.validateRecurrence(baseEvent.getProjetoId(), baseEvent.getInicioUtc(), baseEvent.getFimUtc(), regra);
+        }
 
         EventoRecorrenciaEntity entity = new EventoRecorrenciaEntity();
         entity.setId(UUID.randomUUID());

@@ -126,7 +126,7 @@ public class CreateEventoUseCase {
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
         calendarLockPolicy.checkLock(request.inicio(), status);
         domainService.validateOrganizacaoParticipantes(request.organizacaoResponsavelId(), request.participantes());
-        projetoVincularPolicy.validateLink(request.projetoId(), request.inicio(), request.fim(), false);
+        projetoVincularPolicy.validateLink(request.projetoId(), request.inicio(), request.fim());
     }
 
     private EventoResponse createImmediate(String idempotencyKey, CreateEventoRequest request, String actor) {
