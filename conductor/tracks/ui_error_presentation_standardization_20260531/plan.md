@@ -27,11 +27,11 @@
     - [x] Clear error states when fields are updated by the user [10b4906]
     - [x] Update the `catch` block in `handleSave` to format multiple API validation errors into a bulleted list starting with `"Por favor, corrija os seguintes erros:"` separated by newlines [10b4906]
     - [x] Verify `Projects.test.tsx` passes and update tests to cover inline helper texts [10b4906]
-- [ ] Task: Standardize inline validations and API errors in EventRegistrationModal.tsx
-    - [ ] Add validation states (titulo, orgId, inicio, fim, recorrencia) in `EventRegistrationModal.tsx`
-    - [ ] Replace `showError` alerts with inline helper texts under their respective fields for client-side validation
-    - [ ] Display `projectValidationError` inline as a helper text on the project field instead of an inline error `Alert` block
-    - [ ] Clear error states when fields are updated by the user
-    - [ ] Update event submission catch block to format multiple API validation errors into a bulleted list in a single Toast notification
-    - [ ] Verify `EventRegistrationModal.test.tsx` passes and update tests to cover inline helper texts and Toast notifications
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Dialog Forms and Modals Inline Validation' (Protocol in workflow.md)
+- [x] Task: Standardize inline validations and API errors in EventRegistrationModal.tsx [c136119]
+    - [x] Add validation states (titulo, orgId, inicio, fim, recorrencia) in `EventRegistrationModal.tsx` [c136119]
+    - [x] Replace `showError` alerts with inline helper texts under their respective fields for client-side validation [c136119]
+    - [x] Display `projectValidationError` inline as a helper text on the project field instead of an inline error `Alert` block [c136119]
+    - [x] Clear error states when fields are updated by the user [c136119]
+    - [x] Update event submission catch block to format multiple API validation errors into a bulleted list in a single Toast notification [c136119]
+    - [x] Verify `EventRegistrationModal.test.tsx` passes and update tests to cover inline helper texts and Toast notifications [c136119]
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Dialog Forms and Modals Inline Validation' (Protocol in workflow.md)
