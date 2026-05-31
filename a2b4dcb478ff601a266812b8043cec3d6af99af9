@@ -1,0 +1,4 @@
+Task: Refinar a configuração do tema em theme.ts
+Summary: Configured typography fonts (Roboto, Inter, sans-serif), MuiButton customization (normal textTransform, 8px borderRadius), MuiOutlinedInput (8px borderRadius), and MuiLink (underline hover). Added corresponding tests.
+Files: gestao-paroquia-ui/src/theme.ts, gestao-paroquia-ui/src/theme.test.tsx
+Why: To enforce global UI consistency and typography styles across all forms and views.
