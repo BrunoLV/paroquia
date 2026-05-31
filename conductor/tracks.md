@@ -52,5 +52,5 @@
 
 ---
 
-- [~] **Track: implementar regra de cadastro vinculado a projeto, onde o evento só pode ser vinculado se o mesmo estiver definido dentro do periodo definido no projeto.**
+- [x] **Track: implementar regra de cadastro vinculado a projeto, onde o evento só pode ser vinculado se o mesmo estiver definido dentro do periodo definido no projeto.**
 *Link: [./tracks/event_project_date_validation_20260531/](./tracks/event_project_date_validation_20260531/)*
