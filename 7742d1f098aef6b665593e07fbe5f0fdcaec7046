@@ -1,0 +1,4 @@
+Task: Standardize control sizes (size="small") in Projects Dialog to match Events Modal
+Summary of changes:
+- Added size="small" property to all TextFields and FormControls in Projects Dialog.
+- Set margin-top of the outer Box container within the DialogContent to 1, aligning it precisely with EventRegistrationModal.tsx.
