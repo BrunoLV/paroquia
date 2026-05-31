@@ -1,0 +1,6 @@
+Phase: Fase 1: Padronização e Tratamento de Erros no Backend
+Automated Test Command: ./gradlew test
+Manual Verification Steps:
+1. Triggered MethodArgumentTypeMismatchException using curl.
+2. Verified standard 400 Bad Request with json error response.
+User Confirmation: yes
