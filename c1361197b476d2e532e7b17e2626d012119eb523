@@ -1,0 +1,8 @@
+Task: Standardize inline validations and API errors in EventRegistrationModal.tsx
+Summary of changes:
+- Converted client-side validation errors in EventRegistrationModal.tsx from global toasts to inline input field helper texts.
+- Restructured projectValidationError to be rendered directly under the project field as error helper text instead of showing a banner alert.
+- Enabled inline clearing of errors as the user modifies the inputs.
+- Formatted backend API validation error arrays into a clean multi-line bulleted list under Calendar.tsx submit callback.
+- Updated EventRegistrationModal.test.tsx to match the new inline error helper text expectations.
+Core why: Consistent presentation of validation/errors in UI, separating local fields validations (inline) from global operations results (toasts).
