@@ -32,6 +32,6 @@
     - [x] Remover campos vermelhos customizados ou alertas estáticos locais. Utilizar validações que disparam Toasts.
 - [x] Task: Unificar tratamento de erros no calendário e modais de evento (`Calendar.tsx`) [6845c20]
     - [x] Tratar validações de formulário do client-side e erros de API exibindo-os unicamente no Toast.
-- [ ] Task: Validar integridade dos testes de comportamento de erro
-    - [ ] Escrever/atualizar testes para garantir que as funções `showError` são chamadas sob falha e os erros estáticos locais foram limpos.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast' (Protocol in workflow.md)
+- [x] Task: Validar integridade dos testes de comportamento de erro [d8f577e]
+    - [x] Escrever/atualizar testes para garantir que as funções `showError` são chamadas sob falha e os erros estáticos locais foram limpos.
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast' (Protocol in workflow.md)
