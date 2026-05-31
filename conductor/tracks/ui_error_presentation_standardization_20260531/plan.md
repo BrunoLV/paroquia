@@ -8,13 +8,13 @@
     - [x] Remove `errorMsg` and `successMsg` local states and their corresponding `<Alert>` component blocks from `Calendar.tsx` [8f410ad]
     - [x] Replace local alerts with `showSuccess` or `showError` calls from `NotificationContext` for calendar load and action callbacks [8f410ad]
     - [x] Verify `Calendar.test.tsx` passes and update if necessary [8f410ad]
-- [ ] Task: Standardize inline validation and API error presentation in Login.tsx
-    - [ ] Add username and password validation error states to `Login.tsx`
-    - [ ] Render helper text under `username` input when empty on submit ("O nome de usuário é obrigatório.")
-    - [ ] Render helper text under `password` input when empty on submit ("A senha é obrigatória.")
-    - [ ] Clear field-specific error states when inputs are edited
-    - [ ] Ensure credentials validation errors from API continue to use global Toast
-    - [ ] Update `Login.test.tsx` to verify inline helper texts and API error handling
+- [x] Task: Standardize inline validation and API error presentation in Login.tsx [39b9940]
+    - [x] Add username and password validation error states to `Login.tsx` [39b9940]
+    - [x] Render helper text under `username` input when empty on submit ("O nome de usuário é obrigatório.") [39b9940]
+    - [x] Render helper text under `password` input when empty on submit ("A senha é obrigatória.") [39b9940]
+    - [x] Clear field-specific error states when inputs are edited [39b9940]
+    - [x] Ensure credentials validation errors from API continue to use global Toast [39b9940]
+    - [x] Update `Login.test.tsx` to verify inline helper texts and API error handling [39b9940]
 - [ ] Task: Standardize error presentation in Approvals.tsx
     - [ ] Ensure that decision actions (approve/reject) only use the standardized Toast (`showError` / `showSuccess`) for errors and successes
     - [ ] Ensure `Approvals.test.tsx` passes and check for any remaining local alerts
