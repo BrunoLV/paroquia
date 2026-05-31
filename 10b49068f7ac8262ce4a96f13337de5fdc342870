@@ -1,0 +1,1 @@
+Task: Standardize inline validations and API errors in Projects.tsx. Summary: Replaced Toast alerts with helperText under invalid inputs on the project registration/edit modal. Updated API validation errors catch handler to format multiple failures into a bulleted list displayed in a single Toast notification.
