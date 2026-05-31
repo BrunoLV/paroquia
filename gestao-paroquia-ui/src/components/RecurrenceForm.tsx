@@ -77,7 +77,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
   };
 
   return (
-    <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+    <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 0, border: '1px solid #e0e0e0' }}>
       <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#455a64' }}>
         Configurações de Repetição
       </Typography>

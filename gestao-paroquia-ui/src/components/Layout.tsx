@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'white' }}>
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: drawerOpen || !isMdUp ? 'flex-start' : 'center', gap: 1.5, minHeight: 64 }}>
-        <Box sx={{ bgcolor: 'white', p: 0.5, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+        <Box sx={{ bgcolor: 'white', p: 0.5, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
           <img 
             src="/logo-paroquia.png" 
             alt="Logo da Paróquia" 
@@ -106,7 +106,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               }}
               selected={isSelected}
               sx={{
-                borderRadius: '8px',
+                borderRadius: 0,
                 mb: 1,
                 justifyContent: drawerOpen || !isMdUp ? 'initial' : 'center',
                 px: 2,

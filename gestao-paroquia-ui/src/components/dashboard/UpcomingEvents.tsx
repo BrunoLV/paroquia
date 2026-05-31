@@ -15,7 +15,7 @@ interface UpcomingEventsProps {
 
 const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events, isLoading }) => {
   return (
-    <Paper sx={{ p: 3, borderRadius: '16px', minHeight: 400, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+    <Paper sx={{ p: 3, borderRadius: 0, minHeight: 400, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Próximos Eventos
       </Typography>

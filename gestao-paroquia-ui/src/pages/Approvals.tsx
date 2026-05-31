@@ -135,7 +135,7 @@ const Approvals = () => {
           Gerencie e analise as solicitações de alteração e novos eventos no calendário paroquial.
         </Typography>
 
-        <Paper sx={{ width: '100%', mb: 4, borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <Paper sx={{ width: '100%', mb: 4, borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
@@ -265,7 +265,7 @@ const Approvals = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: '8px' }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 0 }}>
               {selectedApproval.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>

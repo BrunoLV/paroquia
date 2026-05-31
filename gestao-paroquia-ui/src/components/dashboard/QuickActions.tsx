@@ -11,7 +11,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
   const navigate = useNavigate();
 
   return (
-    <Paper sx={{ p: 3, borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+    <Paper sx={{ p: 3, borderRadius: 0, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Ações Rápidas
       </Typography>
@@ -20,7 +20,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
           variant="contained"
           fullWidth
           startIcon={<AddIcon />}
-          sx={{ borderRadius: '8px', textTransform: 'none', py: 1 }}
+          sx={{ textTransform: 'none', py: 1 }}
           onClick={onNewEvent}
         >
           Novo Evento
@@ -29,7 +29,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
           variant="outlined"
           fullWidth
           startIcon={<CalendarIcon />}
-          sx={{ borderRadius: '8px', textTransform: 'none', py: 1 }}
+          sx={{ textTransform: 'none', py: 1 }}
           onClick={() => navigate('/calendar')}
         >
           Ver Calendário

@@ -287,7 +287,7 @@ const Projects = () => {
             color="primary"
             startIcon={<AddIcon />}
             onClick={handleOpenCreate}
-            sx={{ textTransform: 'none', borderRadius: '8px' }}
+            sx={{ textTransform: 'none' }}
           >
             Novo Projeto
           </Button>
@@ -316,7 +316,7 @@ const Projects = () => {
           )}
         </Paper>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <Table>
             <TableHead sx={{ bgcolor: 'rgba(26, 35, 126, 0.04)' }}>
               <TableRow>
@@ -346,6 +346,7 @@ const Projects = () => {
                       label={project.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
                       color={project.status === 'ATIVO' ? 'success' : 'default'}
                       variant="outlined"
+                      sx={{ borderRadius: 0 }}
                     />
                   </TableCell>
                   <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
@@ -537,6 +538,7 @@ const Projects = () => {
                     label={selectedProject.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
                     color={selectedProject.status === 'ATIVO' ? 'success' : 'default'}
                     variant="outlined"
+                    sx={{ borderRadius: 0 }}
                   />
                 </Box>
               </Box>
@@ -571,7 +573,7 @@ const Projects = () => {
                       variant="determinate"
                       value={Math.min(resumo.saudeTemporal.percentualTempoDecorrido, 100)}
                       color={resumo.saudeTemporal.emRisco ? 'error' : 'primary'}
-                      sx={{ height: 8, borderRadius: 4 }}
+                      sx={{ height: 8, borderRadius: 0 }}
                     />
                     {resumo.saudeTemporal.emRisco && (
                       <Alert severity="warning" icon={<WarningIcon />} sx={{ mt: 1.5, py: 0.5 }}>
@@ -587,19 +589,19 @@ const Projects = () => {
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid size={{ xs: 4 }}>
-                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderRadius: 0 }}>
                           <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>TOTAL</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700 }}>{resumo.statusExecucao.totalEventos}</Typography>
                         </Paper>
                       </Grid>
                       <Grid size={{ xs: 4 }}>
-                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'success.light' }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'success.light', borderRadius: 0 }}>
                           <Typography variant="caption" color="success.main" sx={{ display: 'block' }}>REALIZADOS</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700, color: 'success.main' }}>{resumo.statusExecucao.eventosRealizados}</Typography>
                         </Paper>
                       </Grid>
                       <Grid size={{ xs: 4 }}>
-                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'warning.light' }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'warning.light', borderRadius: 0 }}>
                           <Typography variant="caption" color="warning.main" sx={{ display: 'block' }}>PENDENTES</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700, color: 'warning.main' }}>{resumo.statusExecucao.eventosPendentes}</Typography>
                         </Paper>
@@ -625,7 +627,7 @@ const Projects = () => {
                             size="small"
                             variant="outlined"
                             icon={<InfoIcon sx={{ fontSize: '0.8rem' }} />}
-                            sx={{ borderRadius: '6px' }}
+                            sx={{ borderRadius: 0 }}
                           />
                         ))
                       )}

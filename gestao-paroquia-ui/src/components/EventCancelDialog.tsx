@@ -48,7 +48,7 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
-      sx={{ '& .MuiDialog-paper': { borderRadius: '16px' } }}
+      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
       <DialogTitle sx={{ fontWeight: 700, color: '#d32f2f' }}>
         Cancelar Evento
@@ -86,7 +86,7 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
           variant="contained" 
           color="error" 
           disabled={isSubmitting}
-          sx={{ fontWeight: 600, borderRadius: '8px' }}
+          sx={{ fontWeight: 600 }}
         >
           {isSubmitting ? 'Cancelando...' : 'Confirmar Cancelamento'}
         </Button>
