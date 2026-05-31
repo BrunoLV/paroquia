@@ -50,10 +50,3 @@
 - [x] **Track: padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links.**
 *Link: [./archive/ui_standardization_20260530/](./archive/ui_standardization_20260530/)*
 
----
-
-- [x] **Track: a ui do sistema usa bordas arredondadas no seu layout. Nao gosto desse estilo, gosto de padroes mais quadrados e angulados. ajuste o layout da aplicação e os componentes para usando componetes sem angulas arredondados.**
-*Link: [./tracks/square_ui_layout_20260531/](./tracks/square_ui_layout_20260531/)*
-
-
-
