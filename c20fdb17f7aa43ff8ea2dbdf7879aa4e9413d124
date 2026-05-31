@@ -1,0 +1,3 @@
+Task: Fix compilation errors for MUI v9 syntax and Project schema update
+Summary: Updated slotProps and Grid component size syntax for MUI v9 compliance in Projects.tsx. Fixed projetos filter in Calendar.tsx and Dashboard.tsx to check status === 'ATIVO' instead of boolean field ativo.
+Files: gestao-paroquia-ui/src/pages/Projects.tsx, gestao-paroquia-ui/src/pages/Calendar.tsx, gestao-paroquia-ui/src/pages/Dashboard.tsx
