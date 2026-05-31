@@ -1,0 +1,3 @@
+Task: Implementar tela de visualização e listagem dos projetos & diálogos de criação e edição
+Summary: Added Projects page with list, CRUD form, drawer indicators, and unit tests validating permission locks and REST integration. Registered route in AppRoutes.tsx.
+Files: gestao-paroquia-ui/src/pages/Projects.tsx, gestao-paroquia-ui/src/pages/Projects.test.tsx, gestao-paroquia-ui/src/AppRoutes.tsx
