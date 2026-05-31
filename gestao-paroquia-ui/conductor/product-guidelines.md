@@ -2,6 +2,11 @@
 
 ## UI Theme & Aesthetics
 - **Modern & Engaging:** The interface should feature subtle animations, a clean and angulated square design system (0px border radius), and vibrant accents to create an appealing and contemporary look.
+- **Marian Color Palette:** The color scheme is inspired by the traditional iconographical colors of Nossa Senhora de Fátima and the Vatican:
+  - **Primary (Blue):** Simboliza a virgindade, o céu e a luz divina (usado para cabeçalhos e ações principais).
+  - **Secondary (Gold):** Representa a realeza, a glória celestial e a divindade (usado para destaques e ações secundárias).
+  - **Alerts/Critical (Crimson Red):** Simboliza o amor e o Espírito Santo (usado para erros e exclusões/cancelamentos).
+  - **Background (White/Cream):** Cores oficiais do Vaticano e da Igreja, garantindo legibilidade e harmonia visual.
 
 ## Tone of Voice
 - **Concise & Action-oriented:** Use short, clear labels and focus on enabling users to get things done fast without unnecessary text.
