@@ -52,5 +52,5 @@
 
 ---
 
-- [ ] **Track: ajustar a identidade visual do sistema conforme esse descritivo: cores associadas à iconografia de Nossa Senhora de Fátima.**
+- [x] **Track: ajustar a identidade visual do sistema conforme esse descritivo: cores associadas à iconografia de Nossa Senhora de Fátima.**
 *Link: [./tracks/visual_theme_fatima_colors_20260531/](./tracks/visual_theme_fatima_colors_20260531/)*
