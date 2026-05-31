@@ -1,0 +1,4 @@
+Task: Padronizar a tela de aprovações (Approvals.tsx)
+Summary: Updated the main heading color from a hardcoded slate gray to the theme's primary color (primary.main), which corresponds to the Marian Blue branding color.
+Files: gestao-paroquia-ui/src/pages/Approvals.tsx
+Why: Consistently apply primary branding colors across all system views.
