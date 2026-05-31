@@ -103,3 +103,29 @@ test('shows error toast on login failure', async () => {
   expect(mockShowError).toHaveBeenCalledWith('Falha ao entrar. Verifique suas credenciais.');
 });
 
+test('shows inline validation errors when submitting empty form', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null });
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Login />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  const submitButton = screen.getByRole('button', { name: /Entrar/i });
+  
+  await act(async () => {
+    fireEvent.click(submitButton);
+  });
+
+  expect(screen.getByText('O nome de usuário é obrigatório.')).toBeInTheDocument();
+  expect(screen.getByText('A senha é obrigatória.')).toBeInTheDocument();
+  expect(mockedApiClient.post).not.toHaveBeenCalled();
+});
+
