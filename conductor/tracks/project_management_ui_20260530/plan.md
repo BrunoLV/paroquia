@@ -1,10 +1,10 @@
 # Plano de Implementação: Tela de Gerenciamento de Projetos no Frontend
 
-## Fase 1: Refatoração da Navegação Lateral (Sidebar Drawer)
-- [ ] Task: Refatorar o cabeçalho superior para usar uma barra lateral esquerda responsiva (Drawer) com ícone hambúrguer
-    - [ ] Criar testes unitários para o Layout com Drawer, validando exibição de links e botão de alternância (hambúrguer)
-    - [ ] Substituir o menu horizontal do `AppBar` por um `Drawer` lateral retrátil em `Layout.tsx`
-- [ ] Task: Conductor - User Manual Verification 'Fase 1: Refatoração da Navegação Lateral (Sidebar Drawer)' (Protocol in workflow.md)
+## Fase 1: Refatoração da Navegação Lateral (Sidebar Drawer) [checkpoint: be50fca]
+- [x] Task: Refatorar o cabeçalho superior para usar uma barra lateral esquerda responsiva (Drawer) com ícone hambúrguer
+    - [x] Criar testes unitários para o Layout com Drawer, validando exibição de links e botão de alternância (hambúrguer)
+    - [x] Substituir o menu horizontal do `AppBar` por um `Drawer` lateral retrátil em `Layout.tsx`
+- [x] Task: Conductor - User Manual Verification 'Fase 1: Refatoração da Navegação Lateral (Sidebar Drawer)' (Protocol in workflow.md)
 
 ## Fase 2: Ajuste dos Tipos (Types) e Modelo do Projeto
 - [ ] Task: Ajustar a interface `Projeto` em `types.ts` para bater com as chaves reais da API
