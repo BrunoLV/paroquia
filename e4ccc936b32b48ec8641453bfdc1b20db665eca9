@@ -1,0 +1,4 @@
+Task: Configure Theme Palette in theme.ts
+Summary: Updated theme.ts with gold, error (crimson red), and cream background colors, added matching unit tests in theme.test.tsx, and verified that the entire test suite passes.
+Files: gestao-paroquia-ui/src/theme.ts, gestao-paroquia-ui/src/theme.test.tsx
+Why: Align palette colors with the visual identity description of Nossa Senhora de Fátima.
