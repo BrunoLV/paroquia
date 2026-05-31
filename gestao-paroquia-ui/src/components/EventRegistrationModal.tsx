@@ -58,7 +58,6 @@ interface EventRegistrationModalProps {
   projetos?: Projeto[];
   initialDate?: Date;
   initialEvent?: Evento | null;
-  error?: string;
 }
 
 const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
@@ -71,7 +70,6 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   projetos = [],
   initialDate,
   initialEvent,
-  error,
 }) => {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
@@ -186,14 +184,8 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
           {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
         </DialogTitle>
-        <DialogContent sx={{ pt: 3 }}>
+        <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-            {error && (
-              <Alert severity="error" sx={{ borderRadius: '8px' }}>
-                {error}
-              </Alert>
-            )}
-            
             <TextField
               required
               label="Título do Evento"

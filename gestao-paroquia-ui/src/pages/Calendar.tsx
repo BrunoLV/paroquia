@@ -133,7 +133,6 @@ const Calendar = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Evento | null>(null);
   const [createInitialDate, setCreateInitialDate] = useState<Date | undefined>(undefined);
-  const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Modal cancellation states
@@ -365,7 +364,6 @@ const Calendar = () => {
 
   // Open Event creation dialog with optional prefilled date
   const handleOpenCreate = (prefilledDate?: Date) => {
-    setFormError('');
     setEditingEvent(null);
     setCreateInitialDate(prefilledDate);
     setIsCreateOpen(true);
@@ -373,7 +371,6 @@ const Calendar = () => {
 
   // Open Event editing dialog
   const handleOpenEdit = (event: Evento) => {
-    setFormError('');
     if (event.recorrenciaId) {
       setEditingEvent(event);
       setIsEditScopeOpen(true);
@@ -393,7 +390,6 @@ const Calendar = () => {
 
   // Handle event submission (create or update)
   const handleEventSubmit = async (data: any) => {
-    setFormError('');
     setIsSubmitting(true);
     try {
       if (editingEvent) {
@@ -449,7 +445,6 @@ const Calendar = () => {
       const errMsg =
         err.response?.data?.message ||
         'Erro ao processar evento. Verifique as regras de negócio.';
-      setFormError(errMsg);
       showError(errMsg);
     } finally {
       setIsSubmitting(false);
@@ -1067,7 +1062,6 @@ const Calendar = () => {
         projetos={projetos.filter(p => p.status === 'ATIVO')}
         initialDate={createInitialDate}
         initialEvent={editingEvent}
-        error={formError}
       />
 
       {/* Cancel Event Dialog Modal Component */}
