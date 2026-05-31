@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend API Validation' (Protocol in workflow.md) [1b2255e]
 
 ## Phase 2: Frontend UI Validation
-- [ ] Task: Write failing tests in the frontend (`gestao-paroquia-ui`) to assert that the event registration modal displays validation errors when dates fall outside the project period
-- [ ] Task: Implement the validation logic, inline messages, and save button restriction in the event registration modal (`EventRegistrationModal.tsx`)
-- [ ] Task: Verify that all frontend tests pass cleanly
+- [x] Task: Write failing tests in the frontend (`gestao-paroquia-ui`) to assert that the event registration modal displays validation errors when dates fall outside the project period [abf74dd]
+- [x] Task: Implement the validation logic, inline messages, and save button restriction in the event registration modal (`EventRegistrationModal.tsx`) [abf74dd]
+- [x] Task: Verify that all frontend tests pass cleanly [abf74dd]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI Validation' (Protocol in workflow.md)
