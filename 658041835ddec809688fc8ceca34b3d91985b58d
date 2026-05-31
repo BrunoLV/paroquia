@@ -1,0 +1,4 @@
+Phase: Fase 2: Componente Global de Toast (Snackbar) no Frontend
+Automated Test Command: CI=true npm test
+Manual Verification Steps: Verified unit tests for NotificationProvider. Integration with forms to be verified in Fase 3.
+User Confirmation: yes
