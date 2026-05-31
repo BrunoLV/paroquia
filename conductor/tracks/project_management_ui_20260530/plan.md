@@ -18,7 +18,7 @@
 - [x] Task: Implementar diálogos de criação e edição com controle de acesso e regras de organização [4bc1587]
     - [x] Criar testes unitários do formulário de criação/edição, incluindo o bloqueio de seleção de organização para coordenadores locais
     - [x] Criar modal de criação/edição de projeto integrado com a API (`POST /api/v1/projetos` e `PATCH /api/v1/projetos/{id}`)
-- [ ] Task: Conductor - User Manual Verification 'Fase 3: Listagem de Projetos e CRUD (Criação/Edição)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Fase 3: Listagem de Projetos e CRUD (Criação/Edição)' [checkpoint: c20fdb1]
 
 ## Fase 4: Indicadores e Painel de Resumo do Projeto
 - [ ] Task: Implementar a exibição de indicadores consolidados (Dashboard do Projeto)
