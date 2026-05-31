@@ -11,15 +11,15 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Configuração do Tema Global' (Protocol in workflow.md) [a2b4dcb]
 
 ## Phase 2: Padronização Visual de Formulários, Botões e Ícones
-- [ ] Task: Padronizar a tela de login (`Login.tsx`)
+- [~] Task: Padronizar a tela de login (`Login.tsx`)
     - [ ] Usar componentes MUI e as fontes/estilos padronizados pelo tema.
-- [ ] Task: Padronizar a tela de gerenciamento de projetos (`Projects.tsx`)
+- [~] Task: Padronizar a tela de gerenciamento de projetos (`Projects.tsx`)
     - [ ] Alinhar o formulário de cadastro/edição (TextFields, Selects, Buttons) ao tema global.
     - [ ] Uniformizar a tabela/grade, botões de ação e ícones.
-- [ ] Task: Padronizar o calendário e modais de evento (`Calendar.tsx`)
+- [~] Task: Padronizar o calendário e modais de evento (`Calendar.tsx`)
     - [ ] Unificar os inputs do modal de criação/edição e botões de ação.
     - [ ] Padronizar os ícones de categorias e navegação.
-- [ ] Task: Padronizar a tela de aprovações (`Approvals.tsx`)
+- [~] Task: Padronizar a tela de aprovações (`Approvals.tsx`)
     - [ ] Garantir o alinhamento visual de listagens, botões e ícones.
 - [ ] Task: Executar e atualizar testes automatizados existentes
     - [ ] Rodar testes de login, projetos, calendário e aprovações para garantir compatibilidade.
