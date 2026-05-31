@@ -6,7 +6,7 @@
     - [x] Atualizar os handlers `DomainExceptionHandler`, `SecurityExceptionHandler` e `GlobalExceptionHandler` para retornar a estrutura padronizada com códigos de erro consistentes
 - [x] Task: Conductor - User Manual Verification 'Fase 1: Padronização e Tratamento de Erros no Backend' (Protocol in workflow.md)
 
-## Fase 2: Componente Global de Toast (Snackbar) no Frontend
+## Fase 2: Componente Global de Toast (Snackbar) no Frontend [checkpoint: 6580418]
 - [x] Task: Implementar o provedor global de Notificações (Alert Snackbar) (1f7349a)
     - [x] Criar testes unitários para o componente `NotificationProvider` validando renderização de severidade (sucesso, erro) e fechamento automático
     - [x] Criar o provedor de contexto de notificações (`src/context/NotificationContext.tsx`) e integrá-lo na raiz da aplicação
