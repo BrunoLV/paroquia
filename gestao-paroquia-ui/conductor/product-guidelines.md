@@ -1,7 +1,7 @@
 # Product Guidelines
 
 ## UI Theme & Aesthetics
-- **Modern & Engaging:** The interface should feature subtle animations, rounded corners, and vibrant accents to create an appealing and contemporary look.
+- **Modern & Engaging:** The interface should feature subtle animations, a clean and angulated square design system (0px border radius), and vibrant accents to create an appealing and contemporary look.
 
 ## Tone of Voice
 - **Concise & Action-oriented:** Use short, clear labels and focus on enabling users to get things done fast without unnecessary text.
