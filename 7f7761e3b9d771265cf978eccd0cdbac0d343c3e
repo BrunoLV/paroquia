@@ -1,0 +1,4 @@
+Task: Padronizar a tela de login (Login.tsx) & Task: Unificar tratamento de erros na tela de login
+Summary: Replaced internal error Alert with showError from useNotification. Maintained standard form structure that aligns automatically with global theme.
+Files: gestao-paroquia-ui/src/pages/Login.tsx, gestao-paroquia-ui/src/pages/Login.test.tsx
+Why: Remove static inline red alerts and transition to unified error presentation using Snackbar/Toast.
