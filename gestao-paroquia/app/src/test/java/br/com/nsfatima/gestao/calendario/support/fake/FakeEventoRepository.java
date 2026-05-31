@@ -175,4 +175,12 @@ public class FakeEventoRepository implements EventoJpaRepository {
     @Override public <S extends EventoEntity> long count(Example<S> example) { return 0; }
     @Override public <S extends EventoEntity> boolean exists(Example<S> example) { return false; }
     @Override public <S extends EventoEntity, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) { return null; }
+
+    @Override
+    public List<EventoEntity> findAllInPeriod(Instant inicioUtc, Instant fimUtc) {
+        return storage.stream()
+                .filter(e -> !e.getInicioUtc().isBefore(inicioUtc) && !e.getInicioUtc().isAfter(fimUtc))
+                .sorted(java.util.Comparator.comparing(EventoEntity::getInicioUtc))
+                .toList();
+    }
 }

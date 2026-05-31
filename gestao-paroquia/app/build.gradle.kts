@@ -22,6 +22,8 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.postgresql:postgresql")
+    implementation("org.apache.poi:poi-ooxml:5.2.5")
+    implementation("com.github.librepdf:openpdf:1.3.40")
 
     testImplementation(libs.junit.jupiter)
     testImplementation("org.springframework.boot:spring-boot-starter-test")

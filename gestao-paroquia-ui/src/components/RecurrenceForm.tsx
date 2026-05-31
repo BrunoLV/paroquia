@@ -23,6 +23,7 @@ export interface RecurrenceRule {
   intervalo: number;
   diasDaSemana?: string[];
   posicaoNoMes?: string;
+  diaDoMes?: number;
   dataLimite?: string;
   numeroOcorrencias?: number;
 }
@@ -132,6 +133,93 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
                 />
               ))}
             </FormGroup>
+          </Grid>
+        )}
+
+        {rule.frequencia === 'MENSAL' && (
+          <Grid size={{ xs: 12 }}>
+            <FormControl component="fieldset" disabled={disabled} sx={{ width: '100%', mb: 2 }}>
+              <FormLabel component="legend" sx={{ fontSize: '0.75rem', mb: 1 }}>Tipo de repetição mensal:</FormLabel>
+              <RadioGroup
+                row
+                value={rule.posicaoNoMes || rule.diasDaSemana?.length ? 'RELATIVE' : 'FIXED'}
+                onChange={(e) => {
+                  if (e.target.value === 'FIXED') {
+                    onChange({
+                      ...rule,
+                      diaDoMes: rule.diaDoMes || 1,
+                      posicaoNoMes: undefined,
+                      diasDaSemana: undefined,
+                    });
+                  } else {
+                    onChange({
+                      ...rule,
+                      diaDoMes: undefined,
+                      posicaoNoMes: rule.posicaoNoMes || 'FIRST',
+                      diasDaSemana: rule.diasDaSemana?.length ? rule.diasDaSemana : ['SUNDAY'],
+                    });
+                  }
+                }}
+              >
+                <FormControlLabel value="FIXED" control={<Radio size="small" />} label={<Typography variant="body2">Dia fixo do mês</Typography>} />
+                <FormControlLabel value="RELATIVE" control={<Radio size="small" />} label={<Typography variant="body2">Dia da semana relativo</Typography>} />
+              </RadioGroup>
+            </FormControl>
+
+            {!(rule.posicaoNoMes || rule.diasDaSemana?.length) ? (
+              <TextField
+                label="Dia do mês"
+                type="number"
+                value={rule.diaDoMes || 1}
+                onChange={(e) => onChange({ ...rule, diaDoMes: Math.min(31, Math.max(1, parseInt(e.target.value) || 1)) })}
+                fullWidth
+                size="small"
+                disabled={disabled}
+                slotProps={{ htmlInput: { min: 1, max: 31 } }}
+              />
+            ) : (
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="recurrence-position-label">Posição</InputLabel>
+                    <Select
+                      labelId="recurrence-position-label"
+                      id="recurrence-position-select"
+                      value={rule.posicaoNoMes || 'FIRST'}
+                      label="Posição"
+                      onChange={(e) => onChange({ ...rule, posicaoNoMes: e.target.value })}
+                      disabled={disabled}
+                    >
+                      <MenuItem value="FIRST">Primeiro(a)</MenuItem>
+                      <MenuItem value="SECOND">Segundo(a)</MenuItem>
+                      <MenuItem value="THIRD">Terceiro(a)</MenuItem>
+                      <MenuItem value="FOURTH">Quarto(a)</MenuItem>
+                      <MenuItem value="FIFTH">Quinto(a)</MenuItem>
+                      <MenuItem value="LAST">Último(a)</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="recurrence-day-label">Dia da semana</InputLabel>
+                    <Select
+                      labelId="recurrence-day-label"
+                      id="recurrence-day-select"
+                      value={rule.diasDaSemana?.[0] || 'SUNDAY'}
+                      label="Dia da semana"
+                      onChange={(e) => onChange({ ...rule, diasDaSemana: [e.target.value] })}
+                      disabled={disabled}
+                    >
+                      {DAYS_OF_WEEK.map((day) => (
+                        <MenuItem key={day.value} value={day.value}>
+                          {day.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            )}
           </Grid>
         )}
 

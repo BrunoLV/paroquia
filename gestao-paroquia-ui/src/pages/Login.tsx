@@ -48,7 +48,14 @@ const Login = () => {
           alignItems: 'center',
         }}
       >
-        <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
+        <Paper elevation={3} sx={{ p: 4, width: '100%', textAlign: 'center' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <img 
+              src="/logo-paroquia.png" 
+              alt="Logo da Paróquia" 
+              style={{ width: '130px', height: '130px', objectFit: 'contain' }} 
+            />
+          </Box>
           <Typography component="h1" variant="h5" align="center" gutterBottom sx={{ fontWeight: 700, color: 'primary.main' }}>
             Nossa Senhora de Fátima
           </Typography>

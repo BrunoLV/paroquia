@@ -111,4 +111,13 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
             JOIN calendario.organizacoes o ON involved.org_id = o.id
             """, nativeQuery = true)
     List<String> findInvolvedOrganizationNames(@Param("projetoId") UUID projetoId);
+
+    @Query("""
+            select distinct e from EventoEntity e
+            where e.inicioUtc >= :inicioUtc and e.inicioUtc <= :fimUtc
+            order by e.inicioUtc asc
+            """)
+    List<EventoEntity> findAllInPeriod(
+            @Param("inicioUtc") Instant inicioUtc,
+            @Param("fimUtc") Instant fimUtc);
 }
