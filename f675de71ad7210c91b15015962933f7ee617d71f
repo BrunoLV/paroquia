@@ -1,0 +1,1 @@
+Task: Update the global NotificationContext Alert styling to support multi-line text wraps. Summary: Added whiteSpace: 'pre-line' to the global MUI Alert component in NotificationContext.tsx and added a unit test to verify it.
