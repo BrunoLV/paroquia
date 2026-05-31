@@ -15,10 +15,10 @@
     - [x] Clear field-specific error states when inputs are edited [39b9940]
     - [x] Ensure credentials validation errors from API continue to use global Toast [39b9940]
     - [x] Update `Login.test.tsx` to verify inline helper texts and API error handling [39b9940]
-- [ ] Task: Standardize error presentation in Approvals.tsx
-    - [ ] Ensure that decision actions (approve/reject) only use the standardized Toast (`showError` / `showSuccess`) for errors and successes
-    - [ ] Ensure `Approvals.test.tsx` passes and check for any remaining local alerts
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Notification Context and Core Pages Standardization' (Protocol in workflow.md)
+- [x] Task: Standardize error presentation in Approvals.tsx [39b9940]
+    - [x] Ensure that decision actions (approve/reject) only use the standardized Toast (`showError` / `showSuccess`) for errors and successes [39b9940]
+    - [x] Ensure `Approvals.test.tsx` passes and check for any remaining local alerts [39b9940]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Notification Context and Core Pages Standardization' (Protocol in workflow.md) [39b9940]
 
 ## Phase 2: Dialog Forms and Modals Inline Validation
 - [ ] Task: Standardize inline validations and API errors in Projects.tsx
