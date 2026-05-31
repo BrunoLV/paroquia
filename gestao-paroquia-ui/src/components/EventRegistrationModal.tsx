@@ -367,7 +367,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
 
   return (
     <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
-      <form onSubmit={handleFormSubmit}>
+      <form onSubmit={handleFormSubmit} noValidate>
         <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
           {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
         </DialogTitle>
@@ -375,6 +375,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <TextField
               label="Título do Evento"
+              required
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
@@ -439,7 +440,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               </Grid>
             </Grid>
 
-            <FormControl fullWidth size="small" error={!!orgIdError}>
+            <FormControl fullWidth size="small" error={!!orgIdError} required>
               <InputLabel id="new-org-label">Organização Responsável</InputLabel>
               <Select
                 labelId="new-org-label"
@@ -546,6 +547,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 <TextField
                   label="Data e Hora de Início"
                   type="datetime-local"
+                  required
                   value={startDate}
                   onChange={(e) => {
                     setStartDate(e.target.value);
@@ -564,6 +566,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   <TextField
                     label="Hora de Término"
                     type="time"
+                    required
                     value={endTime}
                     onChange={(e) => {
                       setEndTime(e.target.value);
@@ -580,6 +583,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   <TextField
                     label="Data e Hora de Término"
                     type="datetime-local"
+                    required
                     value={endDate}
                     onChange={(e) => {
                       setEndDate(e.target.value);
