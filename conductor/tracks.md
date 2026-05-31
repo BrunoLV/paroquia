@@ -37,5 +37,5 @@
 
 ---
 
-- [ ] **Track: expor a funcionalidade de gerencia de projetos no sistema/ui. A api já possui as regras implementadas. Analise o que já esta implementado para que eu possa validar e sugerir algum ajuste e implementar a tela para a funcionalidade.**
+- [x] **Track: expor a funcionalidade de gerencia de projetos no sistema/ui. A api já possui as regras implementadas. Analise o que já esta implementado para que eu possa validar e sugerir algum ajuste e implementar a tela para a funcionalidade.**
 *Link: [./tracks/project_management_ui_20260530/](./tracks/project_management_ui_20260530/)*
