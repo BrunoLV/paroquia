@@ -10,6 +10,17 @@ import apiClient from '../api/client';
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
+const mockShowError = jest.fn();
+const mockShowSuccess = jest.fn();
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: mockShowError,
+    showSuccess: mockShowSuccess,
+  }),
+  NotificationProvider: ({ children }: any) => <div>{children}</div>,
+}));
+
+
 test('renders login form', async () => {
   mockedApiClient.get.mockResolvedValueOnce({ data: null });
 
@@ -63,3 +74,32 @@ test('submits login form', async () => {
     password: 'password',
   });
 });
+
+test('shows error toast on login failure', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null });
+  mockedApiClient.post.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Login />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  fireEvent.change(screen.getByLabelText(/Nome de Usuário/i), { target: { value: 'wronguser' } });
+  fireEvent.change(screen.getByLabelText(/Senha/i), { target: { value: 'wrongpassword' } });
+
+  const submitButton = screen.getByRole('button', { name: /Entrar/i });
+  
+  await act(async () => {
+    fireEvent.click(submitButton);
+  });
+
+  expect(mockShowError).toHaveBeenCalledWith('Falha ao entrar. Verifique suas credenciais.');
+});
+

@@ -10,12 +10,13 @@ import {
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { showError } = useNotification();
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -25,18 +26,18 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
       await login(username, password);
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError('Falha ao entrar. Verifique suas credenciais.');
+      showError('Falha ao entrar. Verifique suas credenciais.');
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <Container maxWidth="xs">
@@ -62,13 +63,6 @@ const Login = () => {
           <Typography component="h2" variant="h6" align="center" sx={{ mb: 3, color: 'text.secondary' }}>
             Gestão Paroquial
           </Typography>
-
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
