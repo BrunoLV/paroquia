@@ -1,0 +1,11 @@
+Task: Standardize UI Error & Validation Presentation across all screens to Toast notifications
+Summary of changes:
+- Converted Login form validations (username, password) to trigger showError Toast notifications sequentially.
+- Converted Projects Dialog validations (name, org, start, end dates) to trigger showError Toast notifications sequentially instead of setting local/inline error helper text states.
+- Converted EventRegistrationModal validations (title, org, start date, end date, project dates) to trigger showError Toast notifications.
+- Converted EventCancelDialog validation to trigger showError Toast notification when reason is empty.
+- Removed unused local validation state variables and error texts.
+- Wrapped dialog forms (EventRegistrationModal, Projects, EventCancelDialog) with noValidate attributes to prevent native browser validation intercepts.
+- Updated all related test suites (Login.test.tsx, Projects.test.tsx, EventRegistrationModal.test.tsx, EventCancelDialog.test.tsx) to assert on Toast error calls rather than DOM error text rendering.
+Core "why":
+- To provide a consistent, unified user experience across all system screens, ensuring that all local form validation errors use the identical floating Toast notifications pattern and API validation errors format similarly.
