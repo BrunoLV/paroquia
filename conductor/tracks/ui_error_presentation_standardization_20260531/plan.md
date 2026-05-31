@@ -21,12 +21,12 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Notification Context and Core Pages Standardization' (Protocol in workflow.md) [39b9940]
 
 ## Phase 2: Dialog Forms and Modals Inline Validation
-- [ ] Task: Standardize inline validations and API errors in Projects.tsx
-    - [ ] Add validation states (nome, orgId, inicio, fim) in `Projects.tsx`
-    - [ ] Replace `showError` alerts with inline helper texts under their respective form fields for client-side validation
-    - [ ] Clear error states when fields are updated by the user
-    - [ ] Update the `catch` block in `handleSave` to format multiple API validation errors into a bulleted list starting with `"Por favor, corrija os seguintes erros:"` separated by newlines
-    - [ ] Verify `Projects.test.tsx` passes and update tests to cover inline helper texts
+- [x] Task: Standardize inline validations and API errors in Projects.tsx [10b4906]
+    - [x] Add validation states (nome, orgId, inicio, fim) in `Projects.tsx` [10b4906]
+    - [x] Replace `showError` alerts with inline helper texts under their respective form fields for client-side validation [10b4906]
+    - [x] Clear error states when fields are updated by the user [10b4906]
+    - [x] Update the `catch` block in `handleSave` to format multiple API validation errors into a bulleted list starting with `"Por favor, corrija os seguintes erros:"` separated by newlines [10b4906]
+    - [x] Verify `Projects.test.tsx` passes and update tests to cover inline helper texts [10b4906]
 - [ ] Task: Standardize inline validations and API errors in EventRegistrationModal.tsx
     - [ ] Add validation states (titulo, orgId, inicio, fim, recorrencia) in `EventRegistrationModal.tsx`
     - [ ] Replace `showError` alerts with inline helper texts under their respective fields for client-side validation
