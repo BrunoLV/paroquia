@@ -322,6 +322,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       return;
     }
 
+    if (status === 'ADICIONADO_EXTRA' && (!justification || !justification.trim())) {
+      showError('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
+      return;
+    }
+
     // Determine real end date based on mode (recurrence uses same day + separate time)
     let finalEndDate = endDate;
     if (isRecurring && startDate) {

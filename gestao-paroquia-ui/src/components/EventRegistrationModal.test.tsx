@@ -357,4 +357,27 @@ describe('EventRegistrationModal', () => {
       expect(saveButton).not.toBeDisabled();
     });
   });
+
+  it('shows validation error when status is ADICIONADO_EXTRA and justification is empty', () => {
+    render(<EventRegistrationModal {...defaultProps} />);
+    
+    // Fill required fields
+    fireEvent.change(screen.getByLabelText(/título do evento/i), { target: { value: 'Missa Extra' } });
+    
+    // Select status ADICIONADO_EXTRA
+    const statusSelect = screen.getByLabelText(/Status/i);
+    fireEvent.mouseDown(statusSelect);
+    const listbox = screen.getByRole('listbox');
+    fireEvent.click(within(listbox).getByText('ADICIONADO_EXTRA'));
+
+    // Clear justification
+    const justificationInput = screen.getByLabelText(/Justificativa Extra/i);
+    fireEvent.change(justificationInput, { target: { value: '' } });
+
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+    fireEvent.click(submitButton);
+
+    expect(mockShowError).toHaveBeenCalledWith('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
 });
