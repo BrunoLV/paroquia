@@ -10,7 +10,7 @@
 - [x] Task: Implementar o provedor global de Notificações (Alert Snackbar) (1f7349a)
     - [x] Criar testes unitários para o componente `NotificationProvider` validando renderização de severidade (sucesso, erro) e fechamento automático
     - [x] Criar o provedor de contexto de notificações (`src/context/NotificationContext.tsx`) e integrá-lo na raiz da aplicação
-- [ ] Task: Conductor - User Manual Verification 'Fase 2: Componente Global de Toast (Snackbar) no Frontend' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Fase 2: Componente Global de Toast (Snackbar) no Frontend' (Protocol in workflow.md)
 
 ## Fase 3: Integração dos Handlers de Erro nos Formulários da UI
 - [ ] Task: Integrar tratamento de exceções da API com os Toasts nas telas de cadastro
