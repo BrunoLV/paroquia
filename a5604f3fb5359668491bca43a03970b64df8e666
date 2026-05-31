@@ -1,0 +1,6 @@
+Task: Add client-side validation for ADICIONADO_EXTRA status requiring justification
+Summary of changes:
+- In EventRegistrationModal.tsx, added a check before submission: if status is "ADICIONADO_EXTRA" and justification is empty, show a Toast error message.
+- In EventRegistrationModal.test.tsx, added a test case asserting this Toast error validation.
+Core "why":
+- To prevent unnecessary round-trips to the backend API when registering extra events without the mandatory justification, offering instant feedback to the user.
