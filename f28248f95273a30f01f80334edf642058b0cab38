@@ -1,0 +1,11 @@
+Task: Implementar e padronizar mapeamento de exceções e erros de negócio no backend
+Summary of changes:
+- Standardized mapping for database constraint violations (DataIntegrityViolationException) to return a clean 409 CONFLICT payload.
+- Standardized mapping for method argument type mismatch exceptions to return a 400 BAD REQUEST payload.
+- Fixed a potential NullPointerException in BaseExceptionHandler when resolving user organization ID for users with no organization.
+- Created ExceptionHandlerIntegrationTest containing integration tests validating the responses of ForbiddenOperationException, AccessDeniedException, DataIntegrityViolationException, and Method Argument Type Mismatch.
+Files:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/support/api/v1/error/BaseExceptionHandler.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/error/DomainExceptionHandler.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/error/ValidationExceptionHandler.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/api/error/ExceptionHandlerIntegrationTest.java
