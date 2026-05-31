@@ -1,9 +1,9 @@
 # Plano de Implementação: Melhoria de Apresentação e Detalhamento de Erros
 
 ## Fase 1: Padronização e Tratamento de Erros no Backend
-- [ ] Task: Implementar e padronizar mapeamento de exceções e erros de negócio no backend
-    - [ ] Criar testes de integração para validar o JSON de erro para `ForbiddenOperationException`, `AccessDeniedException` e violações de integridade (banco de dados)
-    - [ ] Atualizar os handlers `DomainExceptionHandler`, `SecurityExceptionHandler` e `GlobalExceptionHandler` para retornar a estrutura padronizada com códigos de erro consistentes
+- [x] Task: Implementar e padronizar mapeamento de exceções e erros de negócio no backend (f28248f)
+    - [x] Criar testes de integração para validar o JSON de erro para `ForbiddenOperationException`, `AccessDeniedException` e violações de integridade (banco de dados)
+    - [x] Atualizar os handlers `DomainExceptionHandler`, `SecurityExceptionHandler` e `GlobalExceptionHandler` para retornar a estrutura padronizada com códigos de erro consistentes
 - [ ] Task: Conductor - User Manual Verification 'Fase 1: Padronização e Tratamento de Erros no Backend' (Protocol in workflow.md)
 
 ## Fase 2: Componente Global de Toast (Snackbar) no Frontend
