@@ -18,6 +18,19 @@ test('theme should have custom primary color', () => {
   expect(colorElement.textContent).toBe('#1A237E');
 });
 
+test('theme should have custom secondary gold color', () => {
+  expect(theme.palette.secondary.main.toUpperCase()).toBe('#C59B27');
+});
+
+test('theme should have custom error crimson red color', () => {
+  expect(theme.palette.error?.main?.toUpperCase()).toBe('#C62828');
+});
+
+test('theme should have custom background cream/white colors', () => {
+  expect(theme.palette.background?.default?.toUpperCase()).toBe('#FFFDF4');
+  expect(theme.palette.background?.paper?.toUpperCase()).toBe('#FFFFFF');
+});
+
 test('theme should have Roboto or Inter typography', () => {
   expect(theme.typography.fontFamily).toContain('Roboto');
 });

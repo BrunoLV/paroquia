@@ -6,7 +6,14 @@ const theme = createTheme({
       main: '#1A237E', // Marian Blue
     },
     secondary: {
-      main: '#FFB300', // Amber
+      main: '#C59B27', // Gold
+    },
+    error: {
+      main: '#C62828', // Crimson Red
+    },
+    background: {
+      default: '#FFFDF4', // Cream / Light Yellow
+      paper: '#FFFFFF', // White
     },
   },
   shape: {
