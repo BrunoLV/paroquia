@@ -6,8 +6,11 @@ const theme = createTheme({
       main: '#1A237E', // Marian Blue
     },
     secondary: {
-      main: '#FFB300', // Gold / Yellow
+      main: '#FFB300', // Amber
     },
+  },
+  shape: {
+    borderRadius: 0,
   },
   typography: {
     fontFamily: [
@@ -25,14 +28,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: '8px',
+          borderRadius: '0px',
         },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: '8px',
+          borderRadius: '0px',
         },
       },
     },
