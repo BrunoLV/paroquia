@@ -433,10 +433,16 @@ const Calendar = () => {
       fetchData();
     } catch (err: any) {
       console.error('Submit event error:', err);
-      const errMsg =
-        err.response?.data?.message ||
-        'Erro ao processar evento. Verifique as regras de negócio.';
-      showError(errMsg);
+      let errorMsg = 'Erro ao processar evento. Verifique as regras de negócio.';
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (Array.isArray(data.errors) && data.errors.length > 0) {
+          errorMsg = 'Por favor, corrija os seguintes erros:\n' + data.errors.map((e: any) => `• ${e.message || e.defaultMessage}`).join('\n');
+        } else if (data.message) {
+          errorMsg = data.message;
+        }
+      }
+      showError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }

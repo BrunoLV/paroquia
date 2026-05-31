@@ -144,6 +144,13 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     diasDaSemana: [],
   });
 
+  // Validation error states
+  const [titleError, setTitleError] = useState('');
+  const [orgIdError, setOrgIdError] = useState('');
+  const [startDateError, setStartDateError] = useState('');
+  const [endDateError, setEndDateError] = useState('');
+  const [endTimeError, setEndTimeError] = useState('');
+
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
     if (user.roles.includes('ADMIN')) return organizations;
@@ -229,6 +236,13 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   // Reset form or set initial values when modal opens or initialEvent changes
   useEffect(() => {
     if (open) {
+      // Reset validation error states
+      setTitleError('');
+      setOrgIdError('');
+      setStartDateError('');
+      setEndDateError('');
+      setEndTimeError('');
+
       if (initialEvent) {
         setTitle(initialEvent.titulo || '');
         setDescription(initialEvent.descricao || '');
@@ -248,6 +262,10 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setJustification(initialEvent.adicionadoExtraJustificativa || '');
         setParticipantes(initialEvent.participantes || []);
         setIsRecurring(!!initialEvent.recorrenciaId);
+        
+        if (initialEvent.recorrencia) {
+          setRecurrenceRule(initialEvent.recorrencia);
+        }
       } else {
         setTitle('');
         setDescription('');
@@ -282,39 +300,45 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    let hasError = false;
+
     if (!title || !title.trim()) {
-      showError('O título do evento é obrigatório.');
-      return;
+      setTitleError('O título do evento é obrigatório.');
+      hasError = true;
     }
 
     if (!orgId) {
-      showError('A organização responsável é obrigatória.');
-      return;
+      setOrgIdError('A organização responsável é obrigatória.');
+      hasError = true;
     }
 
     if (!startDate) {
-      showError('A data e hora de início é obrigatória.');
-      return;
+      setStartDateError('A data e hora de início é obrigatória.');
+      hasError = true;
     }
 
     if (isRecurring) {
       if (!endTime) {
-        showError('A hora de término é obrigatória.');
-        return;
+        setEndTimeError('A hora de término é obrigatória.');
+        hasError = true;
       }
     } else {
       if (!endDate) {
-        showError('A data e hora de término é obrigatória.');
-        return;
+        setEndDateError('A data e hora de término é obrigatória.');
+        hasError = true;
       }
-      if (new Date(startDate) > new Date(endDate)) {
-        showError('A data de início não pode ser posterior à data de término.');
-        return;
+      if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        setStartDateError('A data de início não pode ser posterior à data de término.');
+        setEndDateError('A data de término não pode ser anterior à data de início.');
+        hasError = true;
       }
     }
 
     if (projectValidationError) {
-      showError(projectValidationError);
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
@@ -349,15 +373,15 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-            {projectValidationError && (
-              <Alert severity="error" sx={{ borderRadius: 0 }}>
-                {projectValidationError}
-              </Alert>
-            )}
             <TextField
               label="Título do Evento"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (titleError) setTitleError('');
+              }}
+              error={!!titleError}
+              helperText={titleError}
               fullWidth
               disabled={isSubmitting}
               size="small"
@@ -415,13 +439,16 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               </Grid>
             </Grid>
 
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" error={!!orgIdError}>
               <InputLabel id="new-org-label">Organização Responsável</InputLabel>
               <Select
                 labelId="new-org-label"
                 value={orgId}
                 label="Organização Responsável"
-                onChange={(e) => setOrgId(e.target.value)}
+                onChange={(e) => {
+                  setOrgId(e.target.value);
+                  if (orgIdError) setOrgIdError('');
+                }}
                 disabled={isSubmitting}
               >
                 {filteredOrganizations.map((org) => (
@@ -430,6 +457,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   </MenuItem>
                 ))}
               </Select>
+              {orgIdError && <FormHelperText>{orgIdError}</FormHelperText>}
             </FormControl>
 
             <Grid container spacing={2}>
@@ -473,11 +501,15 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                       </MenuItem>
                     ))}
                   </Select>
-                  {selectedProjectInfo && (
+                  {projectValidationError ? (
+                    <FormHelperText error>
+                      {projectValidationError}
+                    </FormHelperText>
+                  ) : selectedProjectInfo ? (
                     <FormHelperText>
                       Período: {selectedProjectInfo}
                     </FormHelperText>
-                  )}
+                  ) : null}
                 </FormControl>
               </Grid>
             </Grid>
@@ -515,7 +547,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   label="Data e Hora de Início"
                   type="datetime-local"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    if (startDateError) setStartDateError('');
+                  }}
+                  error={!!startDateError}
+                  helperText={startDateError}
                   slotProps={{ inputLabel: { shrink: true } }}
                   fullWidth
                   disabled={isSubmitting}
@@ -528,7 +565,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                     label="Hora de Término"
                     type="time"
                     value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
+                    onChange={(e) => {
+                      setEndTime(e.target.value);
+                      if (endTimeError) setEndTimeError('');
+                    }}
+                    error={!!endTimeError}
+                    helperText={endTimeError}
                     slotProps={{ inputLabel: { shrink: true } }}
                     fullWidth
                     disabled={isSubmitting}
@@ -539,7 +581,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                     label="Data e Hora de Término"
                     type="datetime-local"
                     value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      if (endDateError) setEndDateError('');
+                    }}
+                    error={!!endDateError}
+                    helperText={endDateError}
                     slotProps={{ inputLabel: { shrink: true } }}
                     fullWidth
                     disabled={isSubmitting}
