@@ -6,10 +6,10 @@
     - [x] Substituir o menu horizontal do `AppBar` por um `Drawer` lateral retrátil em `Layout.tsx`
 - [x] Task: Conductor - User Manual Verification 'Fase 1: Refatoração da Navegação Lateral (Sidebar Drawer)' (Protocol in workflow.md)
 
-## Fase 2: Ajuste dos Tipos (Types) e Modelo do Projeto
-- [ ] Task: Ajustar a interface `Projeto` em `types.ts` para bater com as chaves reais da API
-    - [ ] Alterar propriedades `dataInicio`/`dataFim`/`ativo` para `inicio`/`fim`/`status` (enum ATIVO/INATIVO) em `src/api/types.ts`
-- [ ] Task: Conductor - User Manual Verification 'Fase 2: Ajuste dos Tipos (Types) e Modelo do Projeto' (Protocol in workflow.md)
+## Fase 2: Ajuste dos Tipos (Types) e Modelo do Projeto [checkpoint: 3afd57b]
+- [x] Task: Ajustar a interface `Projeto` em `types.ts` para bater com as chaves reais da API
+    - [x] Alterar propriedades `dataInicio`/`dataFim`/`ativo` para `inicio`/`fim`/`status` (enum ATIVO/INATIVO) em `src/api/types.ts`
+- [x] Task: Conductor - User Manual Verification 'Fase 2: Ajuste dos Tipos (Types) e Modelo do Projeto' (Protocol in workflow.md)
 
 ## Fase 3: Listagem de Projetos e CRUD (Criação/Edição)
 - [ ] Task: Implementar tela de visualização e listagem dos projetos
