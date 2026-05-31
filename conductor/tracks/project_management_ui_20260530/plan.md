@@ -21,7 +21,7 @@
 - [x] Task: Conductor - User Manual Verification 'Fase 3: Listagem de Projetos e CRUD (Criação/Edição)' [checkpoint: c20fdb1]
 
 ## Fase 4: Indicadores e Painel de Resumo do Projeto
-- [ ] Task: Implementar a exibição de indicadores consolidados (Dashboard do Projeto)
-    - [ ] Criar testes unitários da renderização do resumo do projeto (Saúde Temporal, Execução e Colaboração)
-    - [ ] Integrar e renderizar o componente de resumo de indicadores do endpoint `/api/v1/projetos/{id}/resumo` na interface
+- [x] Task: Implementar a exibição de indicadores consolidados (Dashboard do Projeto) [4bc1587]
+    - [x] Criar testes unitários da renderização do resumo do projeto (Saúde Temporal, Execução e Colaboração)
+    - [x] Integrar e renderizar o componente de resumo de indicadores do endpoint `/api/v1/projetos/{id}/resumo` na interface
 - [ ] Task: Conductor - User Manual Verification 'Fase 4: Indicadores e Painel de Resumo do Projeto' (Protocol in workflow.md)
