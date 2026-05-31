@@ -19,8 +19,8 @@
 - [x] Task: Padronizar o calendário e modais de evento (`Calendar.tsx`) [6845c20]
     - [x] Unificar os inputs do modal de criação/edição e botões de ação.
     - [x] Padronizar os ícones de categorias e navegação.
-- [~] Task: Padronizar a tela de aprovações (`Approvals.tsx`)
-    - [ ] Garantir o alinhamento visual de listagens, botões e ícones.
+- [x] Task: Padronizar a tela de aprovações (`Approvals.tsx`) [0c80b71]
+    - [x] Garantir o alinhamento visual de listagens, botões e ícones.
 - [ ] Task: Executar e atualizar testes automatizados existentes
     - [ ] Rodar testes de login, projetos, calendário e aprovações para garantir compatibilidade.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Padronização Visual de Formulários, Botões e Ícones' (Protocol in workflow.md)
