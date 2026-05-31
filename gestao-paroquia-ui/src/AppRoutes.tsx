@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
 import Approvals from './pages/Approvals';
+import Projects from './pages/Projects';
 import Layout from './components/Layout';
 import { useAuth } from './auth/AuthContext';
 import { canApprove } from './auth/permissions';
@@ -37,6 +38,7 @@ const AppRoutes = () => {
                     </ApprovalsRoute>
                   }
                 />
+                <Route path="projects" element={<Projects />} />
                 <Route index element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </Layout>
