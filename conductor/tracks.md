@@ -50,7 +50,3 @@
 - [x] **Track: padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links.**
 *Link: [./archive/ui_standardization_20260530/](./archive/ui_standardization_20260530/)*
 
----
-
-- [x] **Track: ajustar a identidade visual do sistema conforme esse descritivo: cores associadas à iconografia de Nossa Senhora de Fátima.**
-*Link: [./tracks/visual_theme_fatima_colors_20260531/](./tracks/visual_theme_fatima_colors_20260531/)*
