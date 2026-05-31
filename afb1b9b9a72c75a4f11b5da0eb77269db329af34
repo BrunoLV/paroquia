@@ -1,0 +1,3 @@
+Task: Standardize inline validations and API errors in EventRegistrationModal.tsx (Compilation fix)
+Summary of changes:
+- Added recorrencia property to Evento interface in types.ts to resolve TypeScript compiler error TS2551 on EventRegistrationModal.tsx.
