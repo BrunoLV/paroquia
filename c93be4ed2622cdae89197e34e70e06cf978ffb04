@@ -1,0 +1,4 @@
+Task: Scan components for hardcoded legacy color styling (such as older blue or amber/yellow overrides) and align them with theme colors
+Summary: Scanned and replaced hardcoded indigo hex colors (#1A237E / #1a237e) with 'primary.main' theme variables in Layout.tsx and Calendar.tsx.
+Files: gestao-paroquia-ui/src/components/Layout.tsx, gestao-paroquia-ui/src/pages/Calendar.tsx
+Why: Ensure consistent application of visual colors throughout UI elements.
