@@ -1,0 +1,5 @@
+Task: Standardize dialog design and form structure on Projects page
+Summary of changes:
+- Wrapped Projects form dialog in a standard HTML form element to support native submit flows.
+- Styled Dialog paper to use square border-radius: 0.
+- Applied identical borders, padding, color schemes, Cancel secondary color, and font weights to dialog headers and actions as in EventRegistrationModal.tsx.
