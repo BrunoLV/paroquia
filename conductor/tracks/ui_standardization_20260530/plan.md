@@ -16,9 +16,9 @@
 - [x] Task: Padronizar a tela de gerenciamento de projetos (`Projects.tsx`) [6a0297e]
     - [x] Alinhar o formulário de cadastro/edição (TextFields, Selects, Buttons) ao tema global.
     - [x] Uniformizar a tabela/grade, botões de ação e ícones.
-- [~] Task: Padronizar o calendário e modais de evento (`Calendar.tsx`)
-    - [ ] Unificar os inputs do modal de criação/edição e botões de ação.
-    - [ ] Padronizar os ícones de categorias e navegação.
+- [x] Task: Padronizar o calendário e modais de evento (`Calendar.tsx`) [6845c20]
+    - [x] Unificar os inputs do modal de criação/edição e botões de ação.
+    - [x] Padronizar os ícones de categorias e navegação.
 - [~] Task: Padronizar a tela de aprovações (`Approvals.tsx`)
     - [ ] Garantir o alinhamento visual de listagens, botões e ícones.
 - [ ] Task: Executar e atualizar testes automatizados existentes
@@ -30,8 +30,8 @@
     - [x] Remover alertas na tela e usar exclusivamente `showError(...)` do Toast para erros de credenciais ou rede.
 - [x] Task: Unificar tratamento de erros em projetos (`Projects.tsx`) [6a0297e]
     - [x] Remover campos vermelhos customizados ou alertas estáticos locais. Utilizar validações que disparam Toasts.
-- [ ] Task: Unificar tratamento de erros no calendário e modais de evento (`Calendar.tsx`)
-    - [ ] Tratar validações de formulário do client-side e erros de API exibindo-os unicamente no Toast.
+- [x] Task: Unificar tratamento de erros no calendário e modais de evento (`Calendar.tsx`) [6845c20]
+    - [x] Tratar validações de formulário do client-side e erros de API exibindo-os unicamente no Toast.
 - [ ] Task: Validar integridade dos testes de comportamento de erro
     - [ ] Escrever/atualizar testes para garantir que as funções `showError` são chamadas sob falha e os erros estáticos locais foram limpos.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Unificação da Apresentação de Erros nos Formulários via Toast' (Protocol in workflow.md)
