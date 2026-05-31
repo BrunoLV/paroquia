@@ -396,114 +396,116 @@ const Projects = () => {
       )}
 
       {/* CREATE & EDIT DIALOG */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 700, color: 'primary.main' }}>
-          {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1.5 }}>
-            <TextField
-              label="Nome do Projeto"
-              required
-              fullWidth
-              value={formNome}
-              onChange={(e) => {
-                setFormNome(e.target.value);
-                if (nomeError) setNomeError('');
-              }}
-              error={!!nomeError}
-              helperText={nomeError}
-              slotProps={{ htmlInput: { maxLength: 160 } }}
-            />
-
-            <TextField
-              label="Descrição"
-              fullWidth
-              multiline
-              rows={3}
-              value={formDescricao}
-              onChange={(e) => setFormDescricao(e.target.value)}
-              slotProps={{ htmlInput: { maxLength: 2000 } }}
-            />
-
-            <FormControl fullWidth error={!!orgIdError}>
-              <InputLabel id="org-responsavel-label">Organização Responsável</InputLabel>
-              <Select
-                labelId="org-responsavel-label"
-                id="org-responsavel-select"
-                value={formOrgId}
-                label="Organização Responsável"
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+          <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+            {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1.5 }}>
+              <TextField
+                label="Nome do Projeto"
+                required
+                fullWidth
+                value={formNome}
                 onChange={(e) => {
-                  setFormOrgId(e.target.value);
-                  if (orgIdError) setOrgIdError('');
+                  setFormNome(e.target.value);
+                  if (nomeError) setNomeError('');
                 }}
-              >
-                {getSelectableOrgs().map((org) => (
-                  <MenuItem key={org.id} value={org.id}>
-                    {org.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-              {orgIdError && <FormHelperText>{orgIdError}</FormHelperText>}
-            </FormControl>
+                error={!!nomeError}
+                helperText={nomeError}
+                slotProps={{ htmlInput: { maxLength: 160 } }}
+              />
 
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
-                <TextField
-                  label="Data de Início"
-                  type="date"
-                  required
-                  fullWidth
-                  value={formInicio}
-                  onChange={(e) => {
-                    setFormInicio(e.target.value);
-                    if (inicioError) setInicioError('');
-                  }}
-                  error={!!inicioError}
-                  helperText={inicioError}
-                  slotProps={{ inputLabel: { shrink: true } }}
-                />
-              </Grid>
-              <Grid size={{ xs: 6 }}>
-                <TextField
-                  label="Data de Término"
-                  type="date"
-                  required
-                  fullWidth
-                  value={formFim}
-                  onChange={(e) => {
-                    setFormFim(e.target.value);
-                    if (fimError) setFimError('');
-                  }}
-                  error={!!fimError}
-                  helperText={fimError}
-                  slotProps={{ inputLabel: { shrink: true } }}
-                />
-              </Grid>
-            </Grid>
+              <TextField
+                label="Descrição"
+                fullWidth
+                multiline
+                rows={3}
+                value={formDescricao}
+                onChange={(e) => setFormDescricao(e.target.value)}
+                slotProps={{ htmlInput: { maxLength: 2000 } }}
+              />
 
-            {isEditMode && (
-              <FormControl fullWidth>
-                <InputLabel id="status-label">Status</InputLabel>
+              <FormControl fullWidth error={!!orgIdError}>
+                <InputLabel id="org-responsavel-label">Organização Responsável</InputLabel>
                 <Select
-                  labelId="status-label"
-                  value={formStatus}
-                  label="Status"
-                  onChange={(e) => setFormStatus(e.target.value as 'ATIVO' | 'INATIVO')}
+                  labelId="org-responsavel-label"
+                  id="org-responsavel-select"
+                  value={formOrgId}
+                  label="Organização Responsável"
+                  onChange={(e) => {
+                    setFormOrgId(e.target.value);
+                    if (orgIdError) setOrgIdError('');
+                  }}
                 >
-                  <MenuItem value="ATIVO">Ativo</MenuItem>
-                  <MenuItem value="INATIVO">Inativo</MenuItem>
+                  {getSelectableOrgs().map((org) => (
+                    <MenuItem key={org.id} value={org.id}>
+                      {org.nome}
+                    </MenuItem>
+                  ))}
                 </Select>
+                {orgIdError && <FormHelperText>{orgIdError}</FormHelperText>}
               </FormControl>
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={() => setDialogOpen(false)} sx={{ textTransform: 'none' }}>Cancelar</Button>
-          <Button onClick={handleSave} variant="contained" color="primary" sx={{ textTransform: 'none' }}>
-            Salvar
-          </Button>
-        </DialogActions>
+
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    label="Data de Início"
+                    type="date"
+                    required
+                    fullWidth
+                    value={formInicio}
+                    onChange={(e) => {
+                      setFormInicio(e.target.value);
+                      if (inicioError) setInicioError('');
+                    }}
+                    error={!!inicioError}
+                    helperText={inicioError}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    label="Data de Término"
+                    type="date"
+                    required
+                    fullWidth
+                    value={formFim}
+                    onChange={(e) => {
+                      setFormFim(e.target.value);
+                      if (fimError) setFimError('');
+                    }}
+                    error={!!fimError}
+                    helperText={fimError}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                </Grid>
+              </Grid>
+
+              {isEditMode && (
+                <FormControl fullWidth>
+                  <InputLabel id="status-label">Status</InputLabel>
+                  <Select
+                    labelId="status-label"
+                    value={formStatus}
+                    label="Status"
+                    onChange={(e) => setFormStatus(e.target.value as 'ATIVO' | 'INATIVO')}
+                  >
+                    <MenuItem value="ATIVO">Ativo</MenuItem>
+                    <MenuItem value="INATIVO">Inativo</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
+            <Button onClick={() => setDialogOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>Cancelar</Button>
+            <Button type="submit" variant="contained" color="primary" sx={{ fontWeight: 600 }}>
+              Salvar
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
       {/* DETAIL SIDEBAR DRAWER */}
