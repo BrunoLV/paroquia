@@ -1,0 +1,4 @@
+Phase 4 Verification Report
+Automated Tests: CI=true npm test (Passed)
+Manual Verification: Opened Projects screen, clicked on a project row, verified details drawer rendered project metrics (Saúde Temporal progress bar, event execution counts, and involved pastoral chips) fetched from /api/v1/projetos/{id}/resumo.
+User Confirmation: Approved by user.
