@@ -1,0 +1,14 @@
+Task: Integrar tratamento de exceções da API com os Toasts nas telas de cadastro
+Summary:
+- Integrated NotificationContext in Projects.tsx, Calendar.tsx, and Approvals.tsx to show showError/showSuccess alerts.
+- Added and updated unit tests in Projects.test.tsx and Calendar.test.tsx to verify that error Toasts are triggered on API failure.
+- Wrapped tests in Approvals.test.tsx and DataFetching.test.tsx with NotificationProvider.
+Files:
+- gestao-paroquia-ui/src/pages/Projects.tsx
+- gestao-paroquia-ui/src/pages/Calendar.tsx
+- gestao-paroquia-ui/src/pages/Approvals.tsx
+- gestao-paroquia-ui/src/pages/Projects.test.tsx
+- gestao-paroquia-ui/src/pages/Calendar.test.tsx
+- gestao-paroquia-ui/src/pages/Approvals.test.tsx
+- gestao-paroquia-ui/src/pages/DataFetching.test.tsx
+Why: To show detailed validation and security failure notifications directly in the UI instead of relying on generic alerts or console logs.
