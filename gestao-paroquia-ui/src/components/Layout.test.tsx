@@ -55,4 +55,28 @@ describe('Layout component link visibility', () => {
 
     expect(screen.queryByText('Aprovações')).not.toBeInTheDocument();
   });
+
+  test('renders "Projetos" link and hamburger menu button in layout', () => {
+    mockUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
+      logout: jest.fn(),
+      isLoading: false,
+    });
+
+    render(
+      <QueryProvider>
+        <MemoryRouter>
+          <Layout>
+            <div>Content</div>
+          </Layout>
+        </MemoryRouter>
+      </QueryProvider>
+    );
+
+    // Verify Hamburger button and navigation links
+    expect(screen.getByLabelText('abrir menu')).toBeInTheDocument();
+    expect(screen.getByText('Projetos')).toBeInTheDocument();
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Calendário')).toBeInTheDocument();
+  });
 });
