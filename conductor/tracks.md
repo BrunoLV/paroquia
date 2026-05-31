@@ -50,3 +50,7 @@
 - [x] **Track: padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links.**
 *Link: [./archive/ui_standardization_20260530/](./archive/ui_standardization_20260530/)*
 
+---
+
+- [ ] **Track: implementar regra de cadastro vinculado a projeto, onde o evento só pode ser vinculado se o mesmo estiver definido dentro do periodo definido no projeto.**
+*Link: [./tracks/event_project_date_validation_20260531/](./tracks/event_project_date_validation_20260531/)*
