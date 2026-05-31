@@ -223,14 +223,17 @@ const Projects = () => {
       return;
     }
 
-    const payload = {
+    const payload: any = {
       nome: formNome,
       descricao: formDescricao || null,
       organizacaoResponsavelId: formOrgId,
       inicio: new Date(formInicio).toISOString(),
       fim: new Date(formFim).toISOString(),
-      status: formStatus
     };
+
+    if (isEditMode) {
+      payload.status = formStatus;
+    }
 
     try {
       if (isEditMode) {
@@ -241,7 +244,16 @@ const Projects = () => {
       setDialogOpen(false);
       loadData();
     } catch (err: any) {
-      setFormError(err.response?.data?.message || 'Erro ao salvar projeto.');
+      let errorMsg = 'Erro ao salvar projeto.';
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (Array.isArray(data.errors) && data.errors.length > 0) {
+          errorMsg = data.errors.map((e: any) => `${e.field}: ${e.message}`).join(', ');
+        } else if (data.message) {
+          errorMsg = data.message;
+        }
+      }
+      setFormError(errorMsg);
     }
   };
 
