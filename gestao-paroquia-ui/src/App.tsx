@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
 import { QueryProvider } from './api/QueryProvider';
 import { AuthProvider } from './auth/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import AppRoutes from './AppRoutes';
 import './App.css';
 
@@ -14,9 +15,11 @@ function App() {
       <AuthProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          <NotificationProvider>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </NotificationProvider>
         </ThemeProvider>
       </AuthProvider>
     </QueryProvider>
