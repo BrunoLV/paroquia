@@ -1,0 +1,7 @@
+Phase: Fase 3: Integração dos Handlers de Erro nos Formulários da UI
+Automated Test Command: CI=true npm test
+Manual Verification Steps:
+1. Filled out Novo Projeto with a duplicate name.
+2. Verified duplicate conflict raises a 409 conflict.
+3. Verified the UI displays a colored floating Toast message: 'Conflito: já existe um registro cadastrado com estes dados.'
+User Confirmation: yes
