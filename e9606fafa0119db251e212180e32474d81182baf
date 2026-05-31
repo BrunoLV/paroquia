@@ -1,0 +1,3 @@
+Task: Fix project creation validation failed error
+Summary: Prevent sending 'status' field when creating new projects (POST /api/v1/projetos) as status is not present on ProjetoCreateRequest record in backend. Parsed and mapped detailed validation error items from backend errors list in handleSave catch block.
+Files: gestao-paroquia-ui/src/pages/Projects.tsx
