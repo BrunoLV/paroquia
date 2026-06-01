@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryProvider } from '../api/QueryProvider';
 import Approvals from './Approvals';
 import { getApprovals, decideApproval } from '../api/approvals';
+import { getProjectApprovals, decideProjectApproval } from '../api/projects';
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
 
@@ -11,8 +12,22 @@ jest.mock('../api/approvals', () => ({
   decideApproval: jest.fn(),
 }));
 
+jest.mock('../api/projects', () => ({
+  getProjectApprovals: jest.fn(),
+  decideProjectApproval: jest.fn(),
+}));
+
+jest.mock('../api/client', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(() => Promise.resolve({ data: [] })),
+  },
+}));
+
 const mockGetApprovals = getApprovals as jest.Mock;
 const mockDecideApproval = decideApproval as jest.Mock;
+const mockGetProjectApprovals = getProjectApprovals as jest.Mock;
+const mockDecideProjectApproval = decideProjectApproval as jest.Mock;
 
 const mockApprovals = [
   {
@@ -47,6 +62,25 @@ const mockApprovals = [
       eventoId: 'evt-2',
       motivo: 'Falta de energia elétrica no local',
     }),
+  },
+];
+
+const mockProjectApprovals = [
+  {
+    id: 'papp-1',
+    projetoId: null,
+    tipoSolicitacao: 'CRIACAO',
+    status: 'PENDENTE',
+    solicitanteId: 'user-1',
+    criadoEmUtc: '2026-05-25T12:00:00Z',
+    decididoEmUtc: null,
+    actionPayloadJson: JSON.stringify({
+      nome: 'Evangelização das Famílias',
+      descricao: 'Novo projeto social',
+      inicio: '2026-06-01T00:00:00Z',
+      fim: '2026-12-31T00:00:00Z',
+    }),
+    cancelarEventosVinculados: false,
   },
 ];
 
@@ -231,6 +265,64 @@ describe('Approvals page', () => {
         status: 'REPROVADA',
         observacao: 'Rejeitando por indisponibilidade',
       });
+    });
+  });
+
+  test('lists pending project approvals on tab switch', async () => {
+    mockGetApprovals.mockResolvedValueOnce({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 10,
+      number: 0,
+    });
+    mockGetProjectApprovals.mockResolvedValueOnce(mockProjectApprovals);
+
+    renderPage();
+
+    // Click projects tab
+    fireEvent.click(screen.getByRole('tab', { name: /Solicitações de Projetos/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Criação de Projeto')).toBeInTheDocument();
+      expect(screen.getByText('Evangelização das Famílias')).toBeInTheDocument();
+    });
+  });
+
+  test('calls decideProjectApproval with true status and comment on approve', async () => {
+    mockGetApprovals.mockResolvedValueOnce({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 10,
+      number: 0,
+    });
+    mockGetProjectApprovals.mockResolvedValue(mockProjectApprovals);
+    mockDecideProjectApproval.mockResolvedValueOnce({ success: true });
+
+    renderPage();
+
+    // Click projects tab
+    fireEvent.click(screen.getByRole('tab', { name: /Solicitações de Projetos/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Evangelização das Famílias')).toBeInTheDocument();
+    });
+
+    // Open drawer
+    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
+    fireEvent.click(viewButtons[0]);
+
+    // Type observation
+    const obsField = screen.getByLabelText(/Observações/i);
+    fireEvent.change(obsField, { target: { value: 'Aprovando criação de projeto' } });
+
+    // Click Approve
+    const approveBtn = screen.getByRole('button', { name: /Aprovar/i });
+    fireEvent.click(approveBtn);
+
+    await waitFor(() => {
+      expect(mockDecideProjectApproval).toHaveBeenCalledWith('papp-1', true, 'Aprovando criação de projeto');
     });
   });
 });

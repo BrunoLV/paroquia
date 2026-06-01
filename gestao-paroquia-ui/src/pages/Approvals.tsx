@@ -25,15 +25,39 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { getApprovals, decideApproval } from '../api/approvals';
-import { AprovacaoResponse } from '../api/types';
+import { getProjectApprovals, decideProjectApproval } from '../api/projects';
+import { AprovacaoResponse, ProjetoAprovacaoResponse, Projeto } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
+import apiClient from '../api/client';
+import { useEffect } from 'react';
 
 const Approvals = () => {
   const { showError, showSuccess } = useNotification();
+  const [approvalsType, setApprovalsType] = useState<'EVENTOS' | 'PROJETOS'>('EVENTOS');
   const [tabValue, setTabValue] = useState(0);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [selectedApproval, setSelectedApproval] = useState<AprovacaoResponse | null>(null);
+  const [selectedProjectApproval, setSelectedProjectApproval] = useState<ProjetoAprovacaoResponse | null>(null);
+  const [projectsMap, setProjectsMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const res = await apiClient.get<Projeto[]>('/projetos');
+        const mapping: Record<string, string> = {};
+        if (Array.isArray(res.data)) {
+          res.data.forEach((p) => {
+            mapping[p.id] = p.nome;
+          });
+        }
+        setProjectsMap(mapping);
+      } catch (err) {
+        console.error('Error loading projects mapping:', err);
+      }
+    };
+    loadProjects();
+  }, []);
 
   const statuses: ('PENDENTE' | 'APROVADA' | 'REPROVADA' | 'FALHA_EXECUCAO')[] = [
     'PENDENTE',
@@ -44,9 +68,21 @@ const Approvals = () => {
 
   const currentStatus = statuses[tabValue];
 
+  const getProjectStatus = () => {
+    if (tabValue === 3) return 'PENDENTE';
+    return statuses[tabValue] as 'PENDENTE' | 'APROVADA' | 'REPROVADA';
+  };
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['approvals', currentStatus, page, size],
     queryFn: () => getApprovals(currentStatus, page, size),
+    enabled: approvalsType === 'EVENTOS',
+  });
+
+  const { data: projectData, isLoading: isProjectLoading, isError: isProjectError } = useQuery({
+    queryKey: ['projectApprovals', getProjectStatus()],
+    queryFn: () => getProjectApprovals(getProjectStatus()),
+    enabled: approvalsType === 'PROJETOS',
   });
 
   const queryClient = useQueryClient();
@@ -63,6 +99,22 @@ const Approvals = () => {
     },
     onError: (error: any) => {
       console.error('Error deciding approval:', error);
+      const errMsg = error.response?.data?.message || 'Erro ao registrar decisão.';
+      showError(errMsg);
+    },
+  });
+
+  const projectDecisionMutation = useMutation({
+    mutationFn: ({ id, aprovado, observacao }: { id: string; aprovado: boolean; observacao: string }) =>
+      decideProjectApproval(id, aprovado, observacao),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['projectApprovals'] });
+      showSuccess(variables.aprovado ? 'Solicitação de projeto aprovada com sucesso!' : 'Solicitação de projeto rejeitada com sucesso!');
+      setSelectedProjectApproval(null);
+      setObservacao('');
+    },
+    onError: (error: any) => {
+      console.error('Error deciding project approval:', error);
       const errMsg = error.response?.data?.message || 'Erro ao registrar decisão.';
       showError(errMsg);
     },
@@ -132,8 +184,27 @@ const Approvals = () => {
           Solicitações de Aprovação
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-          Gerencie e analise as solicitações de alteração e novos eventos no calendário paroquial.
+          Gerencie e analise as solicitações de alteração e novos eventos ou projetos no calendário paroquial.
         </Typography>
+
+        {/* TOP LEVEL TAB SELECTOR */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs
+            value={approvalsType}
+            onChange={(e, val) => {
+              setApprovalsType(val);
+              setTabValue(0);
+              setPage(0);
+              setSelectedApproval(null);
+              setSelectedProjectApproval(null);
+            }}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab label="Solicitações de Eventos" value="EVENTOS" sx={{ textTransform: 'none', fontWeight: 600 }} />
+            <Tab label="Solicitações de Projetos" value="PROJETOS" sx={{ textTransform: 'none', fontWeight: 600 }} />
+          </Tabs>
+        </Box>
 
         <Paper sx={{ width: '100%', mb: 4, borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <Tabs
@@ -146,31 +217,112 @@ const Approvals = () => {
             <Tab label="Pendentes" />
             <Tab label="Aprovadas" />
             <Tab label="Rejeitadas" />
-            <Tab label="Falhas" />
+            {approvalsType === 'EVENTOS' && <Tab label="Falhas" />}
           </Tabs>
 
-          {isLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
-              <CircularProgress />
-            </Box>
-          ) : isError ? (
-            <Box sx={{ p: 4 }}>
-              <Alert severity="error">Não foi possível carregar as solicitações de aprovação.</Alert>
-            </Box>
-          ) : !data || data.content.length === 0 ? (
-            <Box sx={{ p: 8, textAlign: 'center' }}>
-              <Typography variant="body1" color="textSecondary">
-                Nenhuma solicitação encontrada para o status selecionado.
-              </Typography>
-            </Box>
-          ) : (
-            <>
+          {/* EVENT APPROVALS VIEW */}
+          {approvalsType === 'EVENTOS' && (
+            isLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
+                <CircularProgress />
+              </Box>
+            ) : isError ? (
+              <Box sx={{ p: 4 }}>
+                <Alert severity="error">Não foi possível carregar as solicitações de aprovação.</Alert>
+              </Box>
+            ) : !data || data.content.length === 0 ? (
+              <Box sx={{ p: 8, textAlign: 'center' }}>
+                <Typography variant="body1" color="textSecondary">
+                  Nenhuma solicitação de evento encontrada para o status selecionado.
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                <TableContainer>
+                  <Table>
+                    <TableHead sx={{ bgcolor: '#f8f9fa' }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Evento / Detalhe</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Solicitante</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Data Criação</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }} align="right">Ações</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data.content.map((approval) => (
+                        <TableRow key={approval.id} hover>
+                          <TableCell sx={{ fontWeight: 500 }}>
+                            {getTipoLabel(approval.tipoSolicitacao)}
+                          </TableCell>
+                          <TableCell>
+                            {approval.tipoSolicitacao === 'CANCELAMENTO' ? (
+                              <Typography variant="body2" color="error" sx={{ fontWeight: 500 }}>
+                                Cancelamento de Evento
+                              </Typography>
+                            ) : (
+                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                {getEventTitle(approval)}
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell>{approval.solicitanteId}</TableCell>
+                          <TableCell>
+                            {new Date(approval.criadoEmUtc).toLocaleString()}
+                          </TableCell>
+                          <TableCell>{getStatusChip(approval.status)}</TableCell>
+                          <TableCell align="right">
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => setSelectedApproval(approval)}
+                              sx={{ textTransform: 'none' }}
+                            >
+                              Visualizar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={data.totalElements}
+                  rowsPerPage={size}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </>
+            )
+          )}
+
+          {/* PROJECT APPROVALS VIEW */}
+          {approvalsType === 'PROJETOS' && (
+            isProjectLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
+                <CircularProgress />
+              </Box>
+            ) : isProjectError ? (
+              <Box sx={{ p: 4 }}>
+                <Alert severity="error">Não foi possível carregar as solicitações de projetos.</Alert>
+              </Box>
+            ) : !projectData || projectData.length === 0 ? (
+              <Box sx={{ p: 8, textAlign: 'center' }}>
+                <Typography variant="body1" color="textSecondary">
+                  Nenhuma solicitação de projeto encontrada para o status selecionado.
+                </Typography>
+              </Box>
+            ) : (
               <TableContainer>
                 <Table>
                   <TableHead sx={{ bgcolor: '#f8f9fa' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Evento / Detalhe</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Projeto / Detalhe</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Solicitante</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Data Criação</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -178,19 +330,19 @@ const Approvals = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data.content.map((approval) => (
+                    {projectData.map((approval) => (
                       <TableRow key={approval.id} hover>
                         <TableCell sx={{ fontWeight: 500 }}>
-                          {getTipoLabel(approval.tipoSolicitacao)}
+                          {approval.tipoSolicitacao === 'CRIACAO' ? 'Criação de Projeto' : 'Cancelamento de Projeto'}
                         </TableCell>
                         <TableCell>
-                          {approval.tipoSolicitacao === 'CANCELAMENTO' ? (
-                            <Typography variant="body2" color="error" sx={{ fontWeight: 500 }}>
-                              Cancelamento de Evento
+                          {approval.tipoSolicitacao === 'CRIACAO' ? (
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                              {parsePayload(approval.actionPayloadJson)?.nome || 'Novo Projeto'}
                             </Typography>
                           ) : (
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {getEventTitle(approval)}
+                            <Typography variant="body2" color="error" sx={{ fontWeight: 500 }}>
+                              {projectsMap[approval.projetoId || ''] || 'Projeto Solicitado'}
                             </Typography>
                           )}
                         </TableCell>
@@ -203,7 +355,7 @@ const Approvals = () => {
                           <Button
                             variant="outlined"
                             size="small"
-                            onClick={() => setSelectedApproval(approval)}
+                            onClick={() => setSelectedProjectApproval(approval)}
                             sx={{ textTransform: 'none' }}
                           >
                             Visualizar
@@ -214,16 +366,7 @@ const Approvals = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={data.totalElements}
-                rowsPerPage={size}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </>
+            )
           )}
         </Paper>
       </Box>
@@ -251,7 +394,6 @@ const Approvals = () => {
             </Box>
             <Divider sx={{ mb: 3 }} />
 
-            {/* Layout details placeholders for Phase 3 */}
             <Typography variant="subtitle2" color="textSecondary" gutterBottom>
               INFORMAÇÕES GERAIS
             </Typography>
@@ -333,6 +475,125 @@ const Approvals = () => {
                     fullWidth
                     onClick={() => decisionMutation.mutate({ id: selectedApproval.id, status: 'REPROVADA', observacao })}
                     disabled={decisionMutation.isPending}
+                  >
+                    Rejeitar
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        )}
+      </Drawer>
+
+      {/* Project Details Drawer */}
+      <Drawer
+        anchor="right"
+        open={Boolean(selectedProjectApproval)}
+        onClose={() => setSelectedProjectApproval(null)}
+        slotProps={{
+          paper: {
+            sx: { width: { xs: '100%', sm: 450 }, p: 3 }
+          }
+        }}
+      >
+        {selectedProjectApproval && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Detalhes da Solicitação de Projeto
+              </Typography>
+              <IconButton onClick={() => setSelectedProjectApproval(null)}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Divider sx={{ mb: 3 }} />
+
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+              INFORMAÇÕES GERAIS
+            </Typography>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2"><strong>Solicitante:</strong> {selectedProjectApproval.solicitanteId}</Typography>
+              <Typography variant="body2">
+                <strong>Tipo:</strong> {selectedProjectApproval.tipoSolicitacao === 'CRIACAO' ? 'Criação de Projeto' : 'Cancelamento de Projeto'}
+              </Typography>
+              <Typography variant="body2"><strong>Criado em:</strong> {new Date(selectedProjectApproval.criadoEmUtc).toLocaleString()}</Typography>
+              <Typography variant="body2"><strong>Status:</strong> {selectedProjectApproval.status}</Typography>
+            </Box>
+
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
+              DETALHES DA PROPOSTA
+            </Typography>
+            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 0 }}>
+              {selectedProjectApproval.tipoSolicitacao === 'CANCELAMENTO' ? (
+                <>
+                  <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>
+                    Solicitação de Cancelamento
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Projeto:</strong> {projectsMap[selectedProjectApproval.projetoId || ''] || 'Projeto Solicitado'}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Cancelar Eventos Vinculados:</strong> {selectedProjectApproval.cancelarEventosVinculados ? 'Sim' : 'Não (Apenas desvincular)'}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Nome do Projeto:</strong> {parsePayload(selectedProjectApproval.actionPayloadJson)?.nome || 'Sem nome'}
+                  </Typography>
+                  {parsePayload(selectedProjectApproval.actionPayloadJson)?.descricao && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Descrição:</strong> {parsePayload(selectedProjectApproval.actionPayloadJson).descricao}
+                    </Typography>
+                  )}
+                  {parsePayload(selectedProjectApproval.actionPayloadJson)?.inicio && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Início:</strong> {new Date(parsePayload(selectedProjectApproval.actionPayloadJson).inicio).toLocaleString()}
+                    </Typography>
+                  )}
+                  {parsePayload(selectedProjectApproval.actionPayloadJson)?.fim && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      <strong>Fim:</strong> {new Date(parsePayload(selectedProjectApproval.actionPayloadJson).fim).toLocaleString()}
+                    </Typography>
+                  )}
+                </>
+              )}
+            </Box>
+
+            {selectedProjectApproval.status === 'PENDENTE' && (
+              <Box sx={{ mt: 4 }}>
+                <Divider sx={{ mb: 3 }} />
+                <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                  TOMADA DE DECISÃO
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Observações"
+                  multiline
+                  rows={4}
+                  value={observacao}
+                  onChange={(e) => setObservacao(e.target.value.slice(0, 2000))}
+                  placeholder="Justificativa para aprovação ou rejeição (opcional)..."
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  helperText={`${observacao.length}/2000 caracteres`}
+                />
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    fullWidth
+                    onClick={() => projectDecisionMutation.mutate({ id: selectedProjectApproval.id, aprovado: true, observacao })}
+                    disabled={projectDecisionMutation.isPending}
+                  >
+                    Aprovar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    fullWidth
+                    onClick={() => projectDecisionMutation.mutate({ id: selectedProjectApproval.id, aprovado: false, observacao })}
+                    disabled={projectDecisionMutation.isPending}
                   >
                     Rejeitar
                   </Button>

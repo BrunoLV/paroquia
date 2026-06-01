@@ -20,6 +20,10 @@ import br.com.nsfatima.gestao.projeto.application.usecase.TransitionProjetoUseCa
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoDecisaoRequest;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +48,9 @@ public class ProjetoController {
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
 
+    private final ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
+    private final ProjetoMapper mapper;
+
     /**
      * Inicializa o controller de projetos com suas dependências necessárias para orquestração de casos de uso e auditoria.
      *
@@ -54,6 +61,8 @@ public class ProjetoController {
      * @param transitionProjetoUseCase Caso de uso para transição e aprovação de projetos
      * @param auditPublisher Publicador de eventos de auditoria para rastreabilidade de ações
      * @param actorContextResolver Resolvedor de contexto do usuário/ator da requisição
+     * @param approvalRepository Repositório para solicitações de aprovação
+     * @param mapper Mapeador de projetos
      */
     public ProjetoController(
             CreateProjetoUseCase createProjetoUseCase,
@@ -62,7 +71,9 @@ public class ProjetoController {
             ProjetoAgregacaoService projetoAgregacaoService,
             TransitionProjetoUseCase transitionProjetoUseCase,
             ProjetoAuditPublisher auditPublisher,
-            EventoActorContextResolver actorContextResolver) {
+            EventoActorContextResolver actorContextResolver,
+            ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository,
+            ProjetoMapper mapper) {
         this.createProjetoUseCase = createProjetoUseCase;
         this.listProjetosUseCase = listProjetosUseCase;
         this.updateProjetoUseCase = updateProjetoUseCase;
@@ -70,6 +81,8 @@ public class ProjetoController {
         this.transitionProjetoUseCase = transitionProjetoUseCase;
         this.auditPublisher = auditPublisher;
         this.actorContextResolver = actorContextResolver;
+        this.approvalRepository = approvalRepository;
+        this.mapper = mapper;
     }
 
     /**
@@ -192,6 +205,18 @@ public class ProjetoController {
             @RequestBody @Valid ProjetoDecisaoRequest request) {
         var response = transitionProjetoUseCase.decidir(solicitacaoId, request.aprovado(), request.observacao());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/solicitacoes")
+    @Operation(summary = "Lista solicitações de aprovação de projetos", description = "Retorna uma lista de solicitações de criação ou cancelamento de projetos.")
+    public List<ProjetoAprovacaoResponse> listSolicitacoes(
+            @RequestParam(required = false) String status) {
+        var solicitacoes = status != null ? 
+                approvalRepository.findByStatus(status) : 
+                approvalRepository.findAll();
+        return solicitacoes.stream()
+                .map(mapper::toAprovacaoResponse)
+                .toList();
     }
 
     public record CancelarProjetoRequest(boolean cancelarEventosVinculados) {}

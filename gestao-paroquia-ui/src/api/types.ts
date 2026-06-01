@@ -23,7 +23,7 @@ export interface Projeto {
   inicio: string;
   fim: string;
   organizacaoResponsavelId: string;
-  status: 'ATIVO' | 'INATIVO';
+  status: 'ABERTO' | 'EM_ANDAMENTO' | 'CANCELADO' | 'CONCLUIDO';
   updated?: boolean;
 }
 
@@ -88,5 +88,17 @@ export interface AnoParoquial {
   status: AnoParoquialStatus;
   dataFechamentoUtc: string | null;
   updatedAt: string;
+}
+
+export interface ProjetoAprovacaoResponse {
+  id: string;
+  projetoId: string | null;
+  tipoSolicitacao: 'CRIACAO' | 'CANCELAMENTO';
+  status: 'PENDENTE' | 'APROVADA' | 'REPROVADA';
+  solicitanteId: string;
+  criadoEmUtc: string;
+  decididoEmUtc: string | null;
+  actionPayloadJson: string | null;
+  cancelarEventosVinculados: boolean;
 }
 

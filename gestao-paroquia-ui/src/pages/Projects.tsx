@@ -42,6 +42,8 @@ import { useAuth } from '../auth/AuthContext';
 import apiClient from '../api/client';
 import { Projeto, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
+import { iniciarProjeto, concluirProjeto, cancelarProjeto } from '../api/projects';
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 // DTO interfaces for project summaries
 interface StatusExecucao {
@@ -87,7 +89,13 @@ const Projects = () => {
   const [formOrgId, setFormOrgId] = useState('');
   const [formInicio, setFormInicio] = useState('');
   const [formFim, setFormFim] = useState('');
-  const [formStatus, setFormStatus] = useState<'ATIVO' | 'INATIVO'>('ATIVO');
+  const [formStatus, setFormStatus] = useState<Projeto['status']>('ABERTO');
+
+  // Status transition states
+  const [transitionDialogOpen, setTransitionDialogOpen] = useState(false);
+  const [transitionType, setTransitionType] = useState<'INICIAR' | 'CONCLUIR' | 'CANCELAR' | null>(null);
+  const [cancelarEventos, setCancelarEventos] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
 
 
@@ -113,6 +121,26 @@ const Projects = () => {
       role.includes('CONSELHO_VICE_COORDENADOR') ||
       role.endsWith('_PAROCO')
     );
+  };
+
+  const canTransitionProject = (project: Projeto) => {
+    if (!user) return false;
+    const highLevel = user.roles.some((role: string) => 
+      role === 'ADMIN' || 
+      role === 'ROLE_ADMIN' ||
+      role.includes('CONSELHO_COORDENADOR') || 
+      role.includes('CONSELHO_VICE_COORDENADOR') ||
+      role.endsWith('_PAROCO')
+    );
+    if (highLevel) return true;
+
+    const isOrgLeader = user.roles.some((role: string) => 
+      role.endsWith('_COORDENADOR') || role.endsWith('_VICE_COORDENADOR')
+    );
+    if (isOrgLeader && Array.isArray(user.organizations)) {
+      return user.organizations.some((org: any) => org.id === project.organizacaoResponsavelId);
+    }
+    return false;
   };
 
   // Determine which organizations are selectable in the form
@@ -188,7 +216,7 @@ const Projects = () => {
     
     setFormInicio(today);
     setFormFim(endDate);
-    setFormStatus('ATIVO');
+    setFormStatus('ABERTO');
     setIsEditMode(false);
     
 
@@ -253,8 +281,12 @@ const Projects = () => {
         await apiClient.patch(`/projetos/${formId}`, payload);
         showSuccess('Projeto atualizado com sucesso!');
       } else {
-        await apiClient.post('/projetos', payload);
-        showSuccess('Projeto criado com sucesso!');
+        const response = await apiClient.post('/projetos', payload);
+        if (response.status === 202) {
+          showSuccess('Solicitação de criação de projeto encaminhada para aprovação (Ano Paroquial bloqueado).');
+        } else {
+          showSuccess('Projeto criado com sucesso!');
+        }
       }
       setDialogOpen(false);
       loadData();
@@ -269,6 +301,44 @@ const Projects = () => {
         }
       }
       showError(errorMsg);
+    }
+  };
+
+  const handleOpenTransition = (type: 'INICIAR' | 'CONCLUIR' | 'CANCELAR') => {
+    setTransitionType(type);
+    setCancelarEventos(false);
+    setTransitionDialogOpen(true);
+  };
+
+  const handleTransitionSubmit = async () => {
+    if (!selectedProject || !transitionType) return;
+    setIsTransitioning(true);
+    try {
+      if (transitionType === 'INICIAR') {
+        const updated = await iniciarProjeto(selectedProject.id);
+        showSuccess('Projeto iniciado com sucesso!');
+        setSelectedProject(updated);
+      } else if (transitionType === 'CONCLUIR') {
+        const updated = await concluirProjeto(selectedProject.id);
+        showSuccess('Projeto concluído com sucesso!');
+        setSelectedProject(updated);
+      } else if (transitionType === 'CANCELAR') {
+        const res = await cancelarProjeto(selectedProject.id, cancelarEventos);
+        if (res.status === 'PENDENTE' || res.tipoSolicitacao === 'CANCELAMENTO') {
+          showSuccess('Solicitação de cancelamento encaminhada para aprovação.');
+        } else {
+          showSuccess('Projeto cancelado com sucesso!');
+        }
+        setSelectedProject(null);
+      }
+      setTransitionDialogOpen(false);
+      loadData();
+    } catch (err: any) {
+      console.error('Erro na transição de status:', err);
+      const errMsg = err.response?.data?.message || 'Erro ao processar transição de status.';
+      showError(errMsg);
+    } finally {
+      setIsTransitioning(false);
     }
   };
 
@@ -356,8 +426,19 @@ const Projects = () => {
                   <TableCell>
                     <Chip
                       size="small"
-                      label={project.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                      color={project.status === 'ATIVO' ? 'success' : 'default'}
+                      label={
+                        project.status === 'ABERTO' ? 'Aberto' :
+                        project.status === 'EM_ANDAMENTO' ? 'Em Andamento' :
+                        project.status === 'CANCELADO' ? 'Cancelado' :
+                        project.status === 'CONCLUIDO' ? 'Concluído' :
+                        project.status
+                      }
+                      color={
+                        project.status === 'EM_ANDAMENTO' ? 'success' :
+                        project.status === 'ABERTO' ? 'info' :
+                        project.status === 'CANCELADO' ? 'error' :
+                        'default'
+                      }
                       variant="outlined"
                       sx={{ borderRadius: 0 }}
                     />
@@ -459,10 +540,12 @@ const Projects = () => {
                     labelId="status-label"
                     value={formStatus}
                     label="Status"
-                    onChange={(e) => setFormStatus(e.target.value as 'ATIVO' | 'INATIVO')}
+                    onChange={(e) => setFormStatus(e.target.value as Projeto['status'])}
                   >
-                    <MenuItem value="ATIVO">Ativo</MenuItem>
-                    <MenuItem value="INATIVO">Inativo</MenuItem>
+                    <MenuItem value="ABERTO">Aberto</MenuItem>
+                    <MenuItem value="EM_ANDAMENTO">Em Andamento</MenuItem>
+                    <MenuItem value="CANCELADO">Cancelado</MenuItem>
+                    <MenuItem value="CONCLUIDO">Concluído</MenuItem>
                   </Select>
                 </FormControl>
               )}
@@ -554,8 +637,19 @@ const Projects = () => {
                   </Typography>
                   <Chip
                     size="small"
-                    label={selectedProject.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                    color={selectedProject.status === 'ATIVO' ? 'success' : 'default'}
+                    label={
+                      selectedProject.status === 'ABERTO' ? 'Aberto' :
+                      selectedProject.status === 'EM_ANDAMENTO' ? 'Em Andamento' :
+                      selectedProject.status === 'CANCELADO' ? 'Cancelado' :
+                      selectedProject.status === 'CONCLUIDO' ? 'Concluído' :
+                      selectedProject.status
+                    }
+                    color={
+                      selectedProject.status === 'EM_ANDAMENTO' ? 'success' :
+                      selectedProject.status === 'ABERTO' ? 'info' :
+                      selectedProject.status === 'CANCELADO' ? 'error' :
+                      'default'
+                    }
                     variant="outlined"
                     sx={{ borderRadius: 0 }}
                   />
@@ -660,14 +754,99 @@ const Projects = () => {
 
             <Divider />
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button variant="outlined" onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {selectedProject.status === 'ABERTO' && canTransitionProject(selectedProject) && (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => handleOpenTransition('INICIAR')}
+                    sx={{ textTransform: 'none', borderRadius: 0 }}
+                  >
+                    Iniciar
+                  </Button>
+                )}
+                {selectedProject.status === 'EM_ANDAMENTO' && canTransitionProject(selectedProject) && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleOpenTransition('CONCLUIR')}
+                    sx={{ textTransform: 'none', borderRadius: 0 }}
+                  >
+                    Concluir
+                  </Button>
+                )}
+                {(selectedProject.status === 'ABERTO' || selectedProject.status === 'EM_ANDAMENTO') && canTransitionProject(selectedProject) && (
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleOpenTransition('CANCELAR')}
+                    sx={{ textTransform: 'none', borderRadius: 0 }}
+                  >
+                    Cancelar
+                  </Button>
+                )}
+              </Box>
+              <Button variant="outlined" onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none', borderRadius: 0 }}>
                 Fechar
               </Button>
             </Box>
           </Box>
         )}
       </Drawer>
+      {/* STATUS TRANSITION DIALOG */}
+      <Dialog
+        open={transitionDialogOpen}
+        onClose={() => !isTransitioning && setTransitionDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          {transitionType === 'INICIAR' && 'Iniciar Projeto'}
+          {transitionType === 'CONCLUIR' && 'Concluir Projeto'}
+          {transitionType === 'CANCELAR' && 'Cancelar Projeto'}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: transitionType === 'CANCELAR' ? 2 : 0 }}>
+            {transitionType === 'INICIAR' && 'Tem certeza de que deseja iniciar este projeto? O status passará para Em Andamento.'}
+            {transitionType === 'CONCLUIR' && 'Tem certeza de que deseja concluir este projeto? O status passará para Concluído e não será mais possível vincular eventos a ele.'}
+            {transitionType === 'CANCELAR' && 'Tem certeza de que deseja cancelar este projeto?'}
+          </Typography>
+          {transitionType === 'CANCELAR' && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={cancelarEventos}
+                  onChange={(e) => setCancelarEventos(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Deseja cancelar também todos os eventos vinculados a este projeto?"
+              sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button
+            onClick={() => setTransitionDialogOpen(false)}
+            color="secondary"
+            disabled={isTransitioning}
+            sx={{ fontWeight: 600 }}
+          >
+            Não
+          </Button>
+          <Button
+            onClick={handleTransitionSubmit}
+            variant="contained"
+            color={transitionType === 'CANCELAR' ? 'error' : 'primary'}
+            disabled={isTransitioning}
+            sx={{ fontWeight: 600 }}
+          >
+            {isTransitioning ? <CircularProgress size={24} /> : 'Sim'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

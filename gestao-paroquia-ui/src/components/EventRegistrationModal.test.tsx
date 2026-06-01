@@ -104,7 +104,7 @@ describe('EventRegistrationModal', () => {
 
   it('renders Local, Projeto and Participantes fields', () => {
     const mockLocais = [{ id: 'loc-1', nome: 'Salão', ativo: true, tipo: 'SALAO', endereco: '', capacidade: 100, caracteristicas: '' }];
-    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', status: 'ATIVO' as const, descricao: '', inicio: '', fim: '', organizacaoResponsavelId: 'org-1' }];
+    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', status: 'EM_ANDAMENTO' as const, descricao: '', inicio: '', fim: '', organizacaoResponsavelId: 'org-1' }];
     
     render(<EventRegistrationModal {...defaultProps} locais={mockLocais} projetos={mockProjetos} />);
 
@@ -220,7 +220,7 @@ describe('EventRegistrationModal', () => {
       {
         id: 'proj-1',
         nome: 'Projeto A',
-        status: 'ATIVO' as const,
+        status: 'EM_ANDAMENTO' as const,
         descricao: '',
         inicio: '2026-05-10T00:00:00Z',
         fim: '2026-05-20T23:59:59Z',
@@ -229,7 +229,7 @@ describe('EventRegistrationModal', () => {
       {
         id: 'proj-2',
         nome: 'Projeto B',
-        status: 'ATIVO' as const,
+        status: 'EM_ANDAMENTO' as const,
         descricao: '',
         inicio: '',
         fim: '',

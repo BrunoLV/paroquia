@@ -33,7 +33,7 @@ describe('Projects Page', () => {
       inicio: '2026-05-01T00:00:00Z',
       fim: '2026-08-30T00:00:00Z',
       organizacaoResponsavelId: 'org-1',
-      status: 'ATIVO'
+      status: 'EM_ANDAMENTO'
     },
     {
       id: 'proj-2',
@@ -42,7 +42,7 @@ describe('Projects Page', () => {
       inicio: '2026-06-01T00:00:00Z',
       fim: '2026-06-15T00:00:00Z',
       organizacaoResponsavelId: 'org-2',
-      status: 'INATIVO'
+      status: 'CONCLUIDO'
     }
   ];
 

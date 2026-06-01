@@ -21,7 +21,7 @@
 - [x] Task: Daily Auto-Activation Cron Job (2b21d6d)
     - [x] Write unit tests verifying that projects whose start date is reached are automatically activated to `EM_ANDAMENTO`
     - [x] Implement the `@Scheduled` daily activation task in Spring Boot
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Project Status Transitions, Cancellation, and Auto-Activation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Project Status Transitions, Cancellation, and Auto-Activation' [checkpoint: b3e3e2c]
 
 ## Phase 3: Frontend UI Screen and Layout Integration
 - [ ] Task: UI Details Controls and Actions Modals
