@@ -1,6 +1,6 @@
 # Plan: Parish Year Management (Ano Paroquial)
 
-## Phase 1: Backend Implementations, Migrations, and Scheduled Tasks
+## Phase 1: Backend Implementations, Migrations, and Scheduled Tasks [checkpoint: fdace8e]
 - [x] Task: Database Migrations and Status Rename (879e1d6)
     - [x] Create a Liquibase SQL migration to rename any existing `PLANEJAMENTO` records and statuses in `anos_paroquiais` to `EM_PLANEJAMENTO`
     - [x] Update Java JPA entities and enums (`AnoParoquialStatus`) to support `EM_PLANEJAMENTO`, `FECHADO`, `CONCLUIDO`
