@@ -1,4 +1,4 @@
-import { canManageEvent, canApprove, User } from './permissions';
+import { canManageEvent, canApprove, canManageAnoParoquial, User } from './permissions';
 
 describe('canManageEvent', () => {
   const orgId = 'org-1';
@@ -91,6 +91,42 @@ describe('canApprove', () => {
   it('denies other roles like COORDENADOR or MEMBRO', () => {
     const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_PASTORAL_MEMBRO'] };
     expect(canApprove(user)).toBe(false);
+  });
+});
+
+describe('canManageAnoParoquial', () => {
+  it('returns false if user is null', () => {
+    expect(canManageAnoParoquial(null)).toBe(false);
+  });
+
+  it('allows ADMIN', () => {
+    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'] };
+    expect(canManageAnoParoquial(user)).toBe(true);
+  });
+
+  it('allows ROLE_ADMIN', () => {
+    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ROLE_ADMIN'] };
+    expect(canManageAnoParoquial(user)).toBe(true);
+  });
+
+  it('allows ROLE_CLERO_PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['ROLE_CLERO_PAROCO'] };
+    expect(canManageAnoParoquial(user)).toBe(true);
+  });
+
+  it('allows ROLE_CONSELHO_COORDENADOR', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_CONSELHO_COORDENADOR'] };
+    expect(canManageAnoParoquial(user)).toBe(true);
+  });
+
+  it('allows ROLE_CONSELHO_VICE_COORDENADOR', () => {
+    const user: User = { id: '1', username: 'vc', name: 'Vice Coord', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] };
+    expect(canManageAnoParoquial(user)).toBe(true);
+  });
+
+  it('denies other roles like secretarios, membros or regular pastoral leaders', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_CONSELHO_SECRETARIO'] };
+    expect(canManageAnoParoquial(user)).toBe(false);
   });
 });
 

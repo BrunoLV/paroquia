@@ -77,7 +77,14 @@ export interface AprovacaoDecisionResponse {
     outcome: string;
     eventoId: string;
     eventStatus: string;
-    errorCode: string | null;
-  } | null;
+}
+
+export type AnoParoquialStatus = 'EM_PLANEJAMENTO' | 'FECHADO' | 'CONCLUIDO';
+
+export interface AnoParoquial {
+  ano: number;
+  status: AnoParoquialStatus;
+  dataFechamentoUtc: string | null;
+  updatedAt: string;
 }
 

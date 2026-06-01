@@ -61,3 +61,15 @@ export const canApprove = (user: User | null): boolean => {
   );
 };
 
+export const canManageAnoParoquial = (user: User | null): boolean => {
+  if (!user) return false;
+
+  return user.roles.some(role =>
+    role === 'ADMIN' ||
+    role === 'ROLE_ADMIN' ||
+    role === 'ROLE_CLERO_PAROCO' ||
+    role === 'ROLE_CONSELHO_COORDENADOR' ||
+    role === 'ROLE_CONSELHO_VICE_COORDENADOR'
+  );
+};
+
