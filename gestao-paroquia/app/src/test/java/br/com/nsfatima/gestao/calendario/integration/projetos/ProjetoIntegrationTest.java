@@ -58,7 +58,7 @@ class ProjetoIntegrationTest {
                         .content(createPayload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Projeto Lifecycle"))
-                .andExpect(jsonPath("$.status").value("ATIVO"))
+                .andExpect(jsonPath("$.status").value("ABERTO"))
                 .andReturn().getResponse().getContentAsString();
 
         String projectId = JsonPath.read(response, "$.id");
@@ -75,7 +75,7 @@ class ProjetoIntegrationTest {
         String patchPayload = """
                 {
                   "nome": "Projeto Lifecycle Atualizado",
-                  "status": "INATIVO"
+                  "status": "CONCLUIDO"
                 }
                 """;
 
@@ -87,7 +87,7 @@ class ProjetoIntegrationTest {
                         .content(patchPayload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Projeto Lifecycle Atualizado"))
-                .andExpect(jsonPath("$.status").value("INATIVO"))
+                .andExpect(jsonPath("$.status").value("CONCLUIDO"))
                 .andExpect(jsonPath("$.updated").value(true));
     }
 
@@ -120,7 +120,7 @@ class ProjetoIntegrationTest {
         String patchPayload = """
                 {
                   "nome": "Inexistente",
-                  "status": "ATIVO"
+                  "status": "CONCLUIDO"
                 }
                 """;
 

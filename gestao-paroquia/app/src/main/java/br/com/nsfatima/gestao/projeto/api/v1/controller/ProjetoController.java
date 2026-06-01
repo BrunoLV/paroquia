@@ -19,6 +19,7 @@ import br.com.nsfatima.gestao.projeto.application.usecase.UpdateProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,20 +73,24 @@ public class ProjetoController {
      * {@code POST /api/v1/projetos} com corpo JSON contendo nome, descrição, datas e organização responsável.
      *
      * @param request Dados para criação do projeto
-     * @return Dados do projeto criado
+     * @return Dados do projeto criado ou da solicitação de aprovação
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Cria um novo projeto", description = "Registra um novo projeto no sistema.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Projeto criado com sucesso"),
+            @ApiResponse(responseCode = "202", description = "Solicitação de criação encaminhada para aprovação"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    public ProjetoResponse create(@RequestBody @Valid ProjetoCreateRequest request) {
+    public ResponseEntity<?> create(@RequestBody @Valid ProjetoCreateRequest request) {
         var context = actorContextResolver.resolveRequired();
-        var response = createProjetoUseCase.create(request);
-        auditPublisher.publish(context.actor(), "create-project", response.id().toString(), "success");
-        return response;
+        var result = createProjetoUseCase.create(request);
+        if (result.isPendingApproval()) {
+            auditPublisher.publish(context.actor(), "request-create-project", result.aprovacao().id().toString(), "success");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(result.aprovacao());
+        }
+        auditPublisher.publish(context.actor(), "create-project", result.projeto().id().toString(), "success");
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.projeto());
     }
 
     /**

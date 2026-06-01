@@ -1,8 +1,10 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper;
 
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,4 +29,22 @@ public class ProjetoMapper {
                 updated
         );
     }
+
+    public ProjetoAprovacaoResponse toAprovacaoResponse(ProjetoSolicitacaoAprovacaoEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new ProjetoAprovacaoResponse(
+                entity.getId(),
+                entity.getProjetoId(),
+                entity.getTipoSolicitacao(),
+                entity.getStatus(),
+                entity.getSolicitanteId(),
+                entity.getCriadoEmUtc(),
+                entity.getDecididoEmUtc(),
+                entity.getActionPayloadJson(),
+                entity.getCancelarEventosVinculados()
+        );
+    }
 }
+

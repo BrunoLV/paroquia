@@ -2,12 +2,18 @@ package br.com.nsfatima.gestao.projeto.application.usecase;
 
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,47 +26,77 @@ public class CreateProjetoUseCase {
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
     private final ProjetoAuthorizationService authorizationService;
+    private final AnoParoquialJpaRepository anoParoquialRepository;
+    private final ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
+    private final ObjectMapper objectMapper;
 
-    /**
-     * Inicializa o caso de uso com as dependências necessárias para persistência, auditoria e autorização.
-     *
-     * @param repository Repositório JPA para persistência de projetos
-     * @param mapper Mapeador para conversão entre entidades e DTOs
-     * @param auditPublisher Publicador de eventos de auditoria
-     * @param actorContextResolver Resolvedor de contexto do ator da requisição
-     * @param authorizationService Serviço de autorização para validar permissões
-     */
     public CreateProjetoUseCase(
             ProjetoEventoJpaRepository repository,
             ProjetoMapper mapper,
             ProjetoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver,
-            ProjetoAuthorizationService authorizationService) {
+            ProjetoAuthorizationService authorizationService,
+            AnoParoquialJpaRepository anoParoquialRepository,
+            ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository,
+            ObjectMapper objectMapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.auditPublisher = auditPublisher;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
+        this.anoParoquialRepository = anoParoquialRepository;
+        this.approvalRepository = approvalRepository;
+        this.objectMapper = objectMapper;
     }
 
     /**
      * Coordena a criação de um novo projeto, garantindo que as regras de negócio sejam aplicadas e a ação seja auditada.
-     *
-     * <p>Usage Example:
-     * {@code createProjetoUseCase.create(new ProjetoCreateRequest("Nome", "Desc", orgId, inicio, fim))}
+     * Se o ano paroquial correspondente estiver fechado ou concluído, a criação é encaminhada para aprovação.
      *
      * @param request Dados para criação do projeto
-     * @return DTO com os dados do projeto criado
-     * @throws IllegalArgumentException se a data de fim for anterior à de início
-     * @throws SecurityException se o ator não tiver permissão para criar projetos na organização
+     * @return Resultado contendo ou o projeto criado ou a solicitação de aprovação pendente
      */
     @Transactional
-    public ProjetoResponse create(ProjetoCreateRequest request) {
+    public ProjetoCreationResult create(ProjetoCreateRequest request) {
         var actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanCreate(actorContext, request.organizacaoResponsavelId());
 
         if (request.fim().isBefore(request.inicio())) {
             throw new IllegalArgumentException("Project end date cannot be before start date");
+        }
+
+        int startYear = request.inicio().atZone(java.time.ZoneOffset.UTC).getYear();
+        var anoParoquialOpt = anoParoquialRepository.findByAno(startYear);
+
+        boolean isLocked = false;
+        if (anoParoquialOpt.isPresent()) {
+            String status = anoParoquialOpt.get().getStatus();
+            if ("FECHADO".equals(status) || "CONCLUIDO".equals(status)) {
+                isLocked = true;
+            }
+        }
+
+        if (isLocked) {
+            ProjetoSolicitacaoAprovacaoEntity approval = new ProjetoSolicitacaoAprovacaoEntity();
+            approval.setId(UUID.randomUUID());
+            approval.setProjetoId(null);
+            approval.setTipoSolicitacao("CRIACAO");
+            approval.setStatus("PENDENTE");
+            approval.setSolicitanteId(actorContext.actor());
+            approval.setSolicitantePapel(actorContext.role());
+            approval.setSolicitanteTipoOrganizacao(actorContext.organizationType());
+            try {
+                approval.setActionPayloadJson(objectMapper.writeValueAsString(request));
+            } catch (Exception e) {
+                throw new RuntimeException("Error serializing project request", e);
+            }
+            approval.setCancelarEventosVinculados(false);
+            approval.setCriadoEmUtc(java.time.Instant.now());
+
+            ProjetoSolicitacaoAprovacaoEntity savedApproval = approvalRepository.save(approval);
+            auditPublisher.publish(actorContext.actor(), "request-create-project", savedApproval.getId().toString(), "success");
+
+            return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedApproval));
         }
 
         ProjetoEventoEntity entity = new ProjetoEventoEntity();
@@ -70,11 +106,13 @@ public class CreateProjetoUseCase {
         entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
         entity.setInicioUtc(request.inicio());
         entity.setFimUtc(request.fim());
+        entity.setStatus(ProjetoStatus.ABERTO.name());
         
         ProjetoEventoEntity saved = repository.save(entity);
         
         auditPublisher.publishCreateSuccess(actorContext.actor(), saved.getId().toString());
         
-        return mapper.toResponse(saved);
+        return new ProjetoCreationResult(mapper.toResponse(saved), null);
     }
 }
+
