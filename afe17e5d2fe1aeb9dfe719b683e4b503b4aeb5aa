@@ -1,0 +1,6 @@
+Task: Create Parish Year Management Screen
+Summary: Created ParishYears.tsx displaying a table of registered parish years, toggles and Concluir button with modal, hidden for unauthorized users. Wrote unit tests.
+Files:
+- gestao-paroquia-ui/src/pages/ParishYears.tsx
+- gestao-paroquia-ui/src/pages/ParishYears.test.tsx
+Why: Provide authorized administrators a graphical interface to view and manage parish year lock cycles.
