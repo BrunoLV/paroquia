@@ -1,9 +1,9 @@
 # Plan: Parish Year Management (Ano Paroquial)
 
 ## Phase 1: Backend Implementations, Migrations, and Scheduled Tasks
-- [ ] Task: Database Migrations and Status Rename
-    - [ ] Create a Liquibase SQL migration to rename any existing `PLANEJAMENTO` records and statuses in `anos_paroquiais` to `EM_PLANEJAMENTO`
-    - [ ] Update Java JPA entities and enums (`AnoParoquialStatus`) to support `EM_PLANEJAMENTO`, `FECHADO`, `CONCLUIDO`
+- [x] Task: Database Migrations and Status Rename (879e1d6)
+    - [x] Create a Liquibase SQL migration to rename any existing `PLANEJAMENTO` records and statuses in `anos_paroquiais` to `EM_PLANEJAMENTO`
+    - [x] Update Java JPA entities and enums (`AnoParoquialStatus`) to support `EM_PLANEJAMENTO`, `FECHADO`, `CONCLUIDO`
 - [ ] Task: Database Seeding Logic
     - [ ] Write failing test to check if current year is seeded when database is empty
     - [ ] Implement startup application listener to seed current civil year with `EM_PLANEJAMENTO` if no years are registered
