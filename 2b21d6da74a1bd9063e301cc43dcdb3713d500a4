@@ -1,0 +1,7 @@
+Task: Project Status Transitions, Cancellation, and Auto-Activation
+- Created TransitionProjetoUseCase to coordinate manual starts, manual conclusions, manual cancellations, and decides on approval requests.
+- Integrated ProjetoAuthorizationService check rules ensuring correct role-based access.
+- Implemented cancellation cascade logic (either cascade cancel all events or set project association to null).
+- Implemented ProjetoAutoActivationScheduler running daily, acquiring cluster locks, and activating ABERTO projects.
+- Created unit tests for scheduler activation.
+- Created integration tests validating transition endpoints, authorization rules, and cancellation cascades.
