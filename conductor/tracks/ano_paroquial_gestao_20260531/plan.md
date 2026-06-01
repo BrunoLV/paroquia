@@ -4,9 +4,9 @@
 - [x] Task: Database Migrations and Status Rename (879e1d6)
     - [x] Create a Liquibase SQL migration to rename any existing `PLANEJAMENTO` records and statuses in `anos_paroquiais` to `EM_PLANEJAMENTO`
     - [x] Update Java JPA entities and enums (`AnoParoquialStatus`) to support `EM_PLANEJAMENTO`, `FECHADO`, `CONCLUIDO`
-- [ ] Task: Database Seeding Logic
-    - [ ] Write failing test to check if current year is seeded when database is empty
-    - [ ] Implement startup application listener to seed current civil year with `EM_PLANEJAMENTO` if no years are registered
+- [x] Task: Database Seeding Logic (1a10b4d)
+    - [x] Write failing test to check if current year is seeded when database is empty
+    - [x] Implement startup application listener to seed current civil year with `EM_PLANEJAMENTO` if no years are registered
 - [ ] Task: Year Transition and Temporal Validations
     - [ ] Write TDD tests for transition restrictions: Year N to `EM_PLANEJAMENTO` requires Year N-1 to be `CONCLUIDO`
     - [ ] Write TDD tests for temporal restrictions: Year N can only transition out of `EM_PLANEJAMENTO` during its calendar year (`LocalDate.now().getYear() == N`)
