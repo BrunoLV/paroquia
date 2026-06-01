@@ -14,7 +14,7 @@
 - [x] Task: Year Rollover Scheduler (d5b5e91)
     - [x] Write tests verifying scheduled cron execution behavior at Dec 31st 23:59:59
     - [x] Implement a Spring Boot `@Scheduled` rollover cron task to transition current year to `CONCLUIDO` and create Year N+1 in `EM_PLANEJAMENTO`
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementations, Migrations, and Scheduled Tasks' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementations, Migrations, and Scheduled Tasks' (Protocol in workflow.md)
 
 ## Phase 2: Frontend UI Screen and Layout Integration
 - [ ] Task: API Client and Route Protection
