@@ -11,16 +11,16 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Database, Models, and Project Approval Flow' (Protocol in workflow.md) (87991ae)
 
 ## Phase 2: Project Status Transitions, Cancellation, and Auto-Activation
-- [ ] Task: Status Transition Actions and Event Linking Policy
-    - [ ] Write tests verifying the manual transition rules (Start, Conclude, Cancel) and role permissions
-    - [ ] Implement service methods and endpoints to manually start, conclude, and request cancellation for projects
-    - [ ] Update `ProjetoVincularPolicy` to allow event linking to `ABERTO` and `EM_ANDAMENTO` projects but block `CANCELADO` and `CONCLUIDO` projects
-- [ ] Task: Project Cancellation Options (Unlink vs. Cancel Events)
-    - [ ] Write integration tests for project cancellation behavior (checking that linked events are either unlinked or cancelled based on user option)
-    - [ ] Implement the linked events cascade/unlink handling inside the cancellation workflow
-- [ ] Task: Daily Auto-Activation Cron Job
-    - [ ] Write unit tests verifying that projects whose start date is reached are automatically activated to `EM_ANDAMENTO`
-    - [ ] Implement the `@Scheduled` daily activation task in Spring Boot
+- [x] Task: Status Transition Actions and Event Linking Policy (2b21d6d)
+    - [x] Write tests verifying the manual transition rules (Start, Conclude, Cancel) and role permissions
+    - [x] Implement service methods and endpoints to manually start, conclude, and request cancellation for projects
+    - [x] Update `ProjetoVincularPolicy` to allow event linking to `ABERTO` and `EM_ANDAMENTO` projects but block `CANCELADO` and `CONCLUIDO` projects
+- [x] Task: Project Cancellation Options (Unlink vs. Cancel Events) (2b21d6d)
+    - [x] Write integration tests for project cancellation behavior (checking that linked events are either unlinked or cancelled based on user option)
+    - [x] Implement the linked events cascade/unlink handling inside the cancellation workflow
+- [x] Task: Daily Auto-Activation Cron Job (2b21d6d)
+    - [x] Write unit tests verifying that projects whose start date is reached are automatically activated to `EM_ANDAMENTO`
+    - [x] Implement the `@Scheduled` daily activation task in Spring Boot
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Project Status Transitions, Cancellation, and Auto-Activation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend UI Screen and Layout Integration
