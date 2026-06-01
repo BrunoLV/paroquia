@@ -1,0 +1,5 @@
+Task: Database Migrations and Entity Status Update
+- Created Flyway migration to add status column and initialize existing projects.
+- Created projeto_solicitacoes_aprovacao database table.
+- Updated ProjetoStatus enum and ProjetoEventoEntity status mappings.
+- Created repository and entity skeletons for approval requests.
