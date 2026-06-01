@@ -17,9 +17,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementations, Migrations, and Scheduled Tasks' (Protocol in workflow.md)
 
 ## Phase 2: Frontend UI Screen and Layout Integration
-- [ ] Task: API Client and Route Protection
-    - [ ] Update frontend API client with GET and PATCH routes for `/anos-paroquiais`
-    - [ ] Add route protection rules and `canManageAnoParoquial` permissions helper for `ADMIN`, `PAROCO`, and `CONSELHO` leaders
+- [x] Task: API Client and Route Protection (edb91df)
+    - [x] Update frontend API client with GET and PATCH routes for `/anos-paroquiais`
+    - [x] Add route protection rules and `canManageAnoParoquial` permissions helper for `ADMIN`, `PAROCO`, and `CONSELHO` leaders
 - [ ] Task: Create Parish Year Management Screen
     - [ ] Create `ParishYears.tsx` component page under `/anos-paroquiais` displaying a structured table of years
     - [ ] Implement toggle switch for `EM_PLANEJAMENTO` vs `FECHADO` status and a "Concluir Ano" button with confirmation modal
