@@ -27,4 +27,4 @@
 - [x] Task: Sidebar Layout Integration (39e32ca)
     - [x] Add "Ano Paroquial" or "Configurações" link in `Layout.tsx` visible only to authorized users
     - [x] Verify that unauthorized users are redirected and cannot see the link
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI Screen and Layout Integration' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI Screen and Layout Integration' (Protocol in workflow.md)
