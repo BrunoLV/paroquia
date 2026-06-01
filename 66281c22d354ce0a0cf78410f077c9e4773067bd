@@ -1,0 +1,6 @@
+Task: Year Lock Validation and Pending Creation Requests
+- Integrated AnoParoquial check during project creation to detect locked years.
+- Implemented ProjetoCreationResult return flow from use case.
+- Updated controller to return 202 Accepted when a project creation needs approval.
+- Created integration tests validating open year immediate creation and closed year approval requests routing.
+- Fixed legacy integration tests to align with new status enum values.
