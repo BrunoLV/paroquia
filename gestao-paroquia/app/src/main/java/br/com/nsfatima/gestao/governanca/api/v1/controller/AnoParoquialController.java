@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -116,6 +117,33 @@ public class AnoParoquialController {
                 });
 
         AnoParoquialStatus newStatus = AnoParoquialStatus.fromJson(request.status());
+
+        AnoParoquialStatus currentStatus = (entity.getStatus() != null)
+                ? AnoParoquialStatus.valueOf(entity.getStatus())
+                : null;
+
+        // 1. Concluded years are immutable
+        if (currentStatus == AnoParoquialStatus.CONCLUIDO) {
+            throw new IllegalArgumentException("Um ano concluído não pode ser modificado.");
+        }
+
+        // 2. Succession Rule: N can only start as EM_PLANEJAMENTO if N-1 is CONCLUIDO
+        if (newStatus == AnoParoquialStatus.EM_PLANEJAMENTO) {
+            Optional<AnoParoquialEntity> previousYearOpt = repository.findByAno(ano - 1);
+            if (previousYearOpt.isPresent() && !AnoParoquialStatus.CONCLUIDO.name().equals(previousYearOpt.get().getStatus())) {
+                throw new IllegalArgumentException("O ano anterior (" + (ano - 1) + ") precisa estar concluído.");
+            }
+        }
+
+        // 3. Temporal Enforcement: can only transition out of EM_PLANEJAMENTO during corresponding calendar year
+        if ((currentStatus == null || currentStatus == AnoParoquialStatus.EM_PLANEJAMENTO)
+                && (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO)) {
+            int currentCivilYear = java.time.LocalDate.now().getYear();
+            if (ano != currentCivilYear) {
+                throw new IllegalArgumentException("Apenas o ano corrente pode ser fechado ou concluído.");
+            }
+        }
+
         entity.setStatus(newStatus.name());
 
         if (newStatus == AnoParoquialStatus.FECHADO && entity.getDataFechamentoUtc() == null) {
