@@ -1,0 +1,7 @@
+Task: Sidebar Layout Integration
+Summary: Registered the protected route in AppRoutes.tsx and added the conditionally displayed link in Layout.tsx. Wrote unit tests in Layout.test.tsx to verify link visibility.
+Files:
+- gestao-paroquia-ui/src/components/Layout.tsx
+- gestao-paroquia-ui/src/components/Layout.test.tsx
+- gestao-paroquia-ui/src/AppRoutes.tsx
+Why: Restrict access to authorized users and expose link in sidebar.
