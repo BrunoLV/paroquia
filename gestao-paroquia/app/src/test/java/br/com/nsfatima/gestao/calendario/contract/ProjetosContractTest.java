@@ -52,7 +52,7 @@ class ProjetosContractTest {
                 .andExpect(jsonPath("$[0].organizacaoResponsavelId").isString())
                 .andExpect(jsonPath("$[0].inicio").isString())
                 .andExpect(jsonPath("$[0].fim").isString())
-                .andExpect(jsonPath("$[0].status").value("ATIVO"))
+                .andExpect(jsonPath("$[0].status").value("ABERTO"))
                 .andExpect(jsonPath("$[0].updated").value(false));
     }
 
@@ -76,6 +76,6 @@ class ProjetosContractTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Semana Santa"))
                 .andExpect(jsonPath("$.organizacaoResponsavelId").value(orgId))
-                .andExpect(jsonPath("$.status").value("ATIVO"));
+                .andExpect(jsonPath("$.status").value("ABERTO"));
     }
 }

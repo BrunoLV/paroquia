@@ -47,7 +47,7 @@ class EventoProjetoLinkIntegrationTest {
         projeto.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
         projeto.setInicioUtc(Instant.parse("2026-01-01T00:00:00Z"));
         projeto.setFimUtc(Instant.parse("2026-01-31T23:59:59Z"));
-        projeto.setStatus("ATIVO");
+        projeto.setStatus("EM_ANDAMENTO");
         projetoId = projetoRepository.save(projeto).getId();
     }
 
@@ -96,7 +96,7 @@ class EventoProjetoLinkIntegrationTest {
     @Test
     void shouldFailWhenProjectIsInactive() throws Exception {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId).get();
-        projeto.setStatus("INATIVO");
+        projeto.setStatus("CANCELADO");
         projetoRepository.save(projeto);
 
         mockMvc.perform(post("/api/v1/eventos")

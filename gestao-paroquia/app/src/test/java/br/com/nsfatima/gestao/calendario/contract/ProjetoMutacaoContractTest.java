@@ -46,12 +46,12 @@ class ProjetoMutacaoContractTest {
                 .header("X-Actor-Org-Type", "CONSELHO")
                 .header("X-Actor-Org-Id", UUID.randomUUID().toString())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"nome\":\"Projeto Atualizado\",\"descricao\":\"Planejamento revisado\",\"status\":\"ATIVO\"}"))
+                .content("{\"nome\":\"Projeto Atualizado\",\"descricao\":\"Planejamento revisado\",\"status\":\"EM_ANDAMENTO\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("00000000-0000-0000-0000-000000000001"))
                 .andExpect(jsonPath("$.nome").value("Projeto Atualizado"))
                 .andExpect(jsonPath("$.descricao").value("Planejamento revisado"))
-                .andExpect(jsonPath("$.status").value("ATIVO"))
+                .andExpect(jsonPath("$.status").value("EM_ANDAMENTO"))
                 .andExpect(jsonPath("$.updated").value(true));
     }
 }
