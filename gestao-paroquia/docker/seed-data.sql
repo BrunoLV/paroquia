@@ -61,10 +61,10 @@ VALUES
 -- Years (Anos Paroquiais)
 INSERT INTO calendario.anos_paroquiais (ano, status, data_fechamento_utc)
 VALUES 
-    (2025, 'FECHADO', '2025-01-01T00:00:00Z'),
-    (2026, 'PLANEJAMENTO', NULL),
-    (2027, 'ABERTO', NULL)
-ON CONFLICT (ano) DO NOTHING;
+    (2025, 'CONCLUIDO', '2025-01-01T00:00:00Z'),
+    (2026, 'EM_PLANEJAMENTO', NULL),
+    (2027, 'EM_PLANEJAMENTO', NULL)
+ON CONFLICT (ano) DO UPDATE SET status = EXCLUDED.status, data_fechamento_utc = EXCLUDED.data_fechamento_utc;
 
 -- Projects (Projetos)
 INSERT INTO calendario.projetos_eventos (id, nome, descricao, status, organizacao_responsavel_id, inicio_utc, fim_utc, version)

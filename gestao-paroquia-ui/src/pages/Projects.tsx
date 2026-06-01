@@ -28,7 +28,6 @@ import {
   LinearProgress,
   Grid,
   CircularProgress,
-  FormHelperText,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -148,6 +147,7 @@ const Projects = () => {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 3. Resumo Fetching

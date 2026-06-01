@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnoParoquialJpaRepository extends JpaRepository<AnoParoquialEntity, Integer> {
     Optional<AnoParoquialEntity> findByAno(Integer ano);
+    boolean existsByAnoLessThanAndStatusNot(Integer ano, String status);
 }

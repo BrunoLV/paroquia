@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { QueryProvider } from '../api/QueryProvider';
 import ParishYears from './ParishYears';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
@@ -74,8 +73,8 @@ describe('ParishYears page', () => {
     });
   });
 
-  test('toggles status when switch is clicked by authorized user', async () => {
-    mockGetAnosParoquiais.mockResolvedValue(mockAnos);
+  test('calls update status when Fechar button is clicked by authorized user', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
     mockUpdateAnoParoquialStatus.mockResolvedValueOnce({
       ano: 2026,
       status: 'FECHADO',
@@ -89,14 +88,52 @@ describe('ParishYears page', () => {
       expect(screen.getByText('2026')).toBeInTheDocument();
     });
 
-    const switches = screen.getAllByRole('switch');
-    // 2026 has the toggle switch (2025 is CONCLUIDO and read-only, so no toggle switch)
-    expect(switches).toHaveLength(1);
+    const fecharBtn = screen.getByRole('button', { name: /Fechar/i });
+    expect(screen.queryByRole('button', { name: /Reabrir/i })).toBeNull();
     
-    fireEvent.click(switches[0]);
+    fireEvent.click(fecharBtn);
 
     await waitFor(() => {
       expect(mockUpdateAnoParoquialStatus).toHaveBeenCalledWith(2026, 'FECHADO');
+    });
+  });
+
+  test('calls update status when Reabrir button is clicked by authorized user', async () => {
+    const mockAnosFechados = [
+      {
+        ano: 2026,
+        status: 'FECHADO',
+        dataFechamentoUtc: '2026-05-31T23:00:00Z',
+        updatedAt: '2026-05-31T23:00:00Z',
+      },
+      {
+        ano: 2025,
+        status: 'CONCLUIDO',
+        dataFechamentoUtc: '2025-12-31T23:59:59Z',
+        updatedAt: '2025-12-31T23:59:59Z',
+      },
+    ];
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnosFechados);
+    mockUpdateAnoParoquialStatus.mockResolvedValueOnce({
+      ano: 2026,
+      status: 'EM_PLANEJAMENTO',
+      dataFechamentoUtc: null,
+      updatedAt: '2026-06-01T00:00:00Z',
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('2026')).toBeInTheDocument();
+    });
+
+    const reabrirBtn = screen.getByRole('button', { name: /Reabrir/i });
+    expect(screen.queryByRole('button', { name: /Fechar/i })).toBeNull();
+
+    fireEvent.click(reabrirBtn);
+
+    await waitFor(() => {
+      expect(mockUpdateAnoParoquialStatus).toHaveBeenCalledWith(2026, 'EM_PLANEJAMENTO');
     });
   });
 
@@ -115,7 +152,7 @@ describe('ParishYears page', () => {
       expect(screen.getByText('2026')).toBeInTheDocument();
     });
 
-    const concludeButton = screen.getByRole('button', { name: /Concluir Ano/i });
+    const concludeButton = screen.getByRole('button', { name: /Concluir/i });
     fireEvent.click(concludeButton);
 
     // Confirmation dialog opens
@@ -146,16 +183,60 @@ describe('ParishYears page', () => {
       expect(screen.getByText('2026')).toBeInTheDocument();
     });
 
-    // Switches should not be rendered
-    const switches = screen.queryAllByRole('switch');
-    expect(switches).toHaveLength(0);
-
-    // Conclude button should not be rendered
-    const concludeButton = screen.queryByRole('button', { name: /Concluir Ano/i });
-    expect(concludeButton).toBeNull();
+    // Buttons should not be rendered
+    expect(screen.queryByRole('button', { name: /Fechar/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Reabrir/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Concluir/i })).toBeNull();
 
     // Ações column header should not be rendered
     const acoesHeader = screen.queryByText('Ações');
     expect(acoesHeader).toBeNull();
+  });
+
+  test('disables Fechar and Concluir buttons if prior year is not concluded', async () => {
+    const mockAnosNotConcluido = [
+      {
+        ano: 2026,
+        status: 'EM_PLANEJAMENTO',
+        dataFechamentoUtc: null,
+        updatedAt: '2026-05-31T20:00:00Z',
+      },
+      {
+        ano: 2025,
+        status: 'EM_PLANEJAMENTO',
+        dataFechamentoUtc: null,
+        updatedAt: '2025-05-31T20:00:00Z',
+      },
+    ];
+    mockGetAnosParoquiais.mockResolvedValue(mockAnosNotConcluido);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('2026')).toBeInTheDocument();
+      expect(screen.getByText('2025')).toBeInTheDocument();
+    });
+
+    // For 2026, buttons should be disabled because 2025 is not concluded
+    const row2026 = screen.getAllByRole('row').find(row => row.textContent?.includes('2026'));
+    expect(row2026).toBeDefined();
+    
+    if (row2026) {
+      const fecharBtn = within(row2026).getByRole('button', { name: /Fechar/i });
+      const concluirBtn = within(row2026).getByRole('button', { name: /Concluir/i });
+      expect(fecharBtn).toBeDisabled();
+      expect(concluirBtn).toBeDisabled();
+    }
+
+    // For 2025 (no prior year), buttons should be active
+    const row2025 = screen.getAllByRole('row').find(row => row.textContent?.includes('2025'));
+    expect(row2025).toBeDefined();
+
+    if (row2025) {
+      const fecharBtn = within(row2025).getByRole('button', { name: /Fechar/i });
+      const concluirBtn = within(row2025).getByRole('button', { name: /Concluir/i });
+      expect(fecharBtn).not.toBeDisabled();
+      expect(concluirBtn).not.toBeDisabled();
+    }
   });
 });

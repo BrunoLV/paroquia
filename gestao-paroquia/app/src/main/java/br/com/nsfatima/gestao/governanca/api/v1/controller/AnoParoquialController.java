@@ -131,12 +131,10 @@ public class AnoParoquialController {
         if (currentStatus == AnoParoquialStatus.CONCLUIDO) {
             throw new IllegalArgumentException("Um ano concluído não pode ser modificado.");
         }
-
-        // 2. Succession Rule: N can only start as EM_PLANEJAMENTO if N-1 is CONCLUIDO
-        if (newStatus == AnoParoquialStatus.EM_PLANEJAMENTO) {
-            Optional<AnoParoquialEntity> previousYearOpt = repository.findByAno(ano - 1);
-            if (previousYearOpt.isPresent() && !AnoParoquialStatus.CONCLUIDO.name().equals(previousYearOpt.get().getStatus())) {
-                throw new IllegalArgumentException("O ano anterior (" + (ano - 1) + ") precisa estar concluído.");
+        // 2. Succession Rule: N can only transition to FECHADO or CONCLUIDO if all prior years are CONCLUIDO
+        if (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO) {
+            if (repository.existsByAnoLessThanAndStatusNot(ano, AnoParoquialStatus.CONCLUIDO.name())) {
+                throw new IllegalArgumentException("O ano anterior precisa estar concluído antes que este ano possa ser fechado ou concluído.");
             }
         }
 

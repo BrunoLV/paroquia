@@ -37,14 +37,43 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldFailToTransitionToEmPlanejamentoIfPreviousYearIsNotConcluido() throws Exception {
+    void shouldAllowTransitionToEmPlanejamentoEvenIfPreviousYearIsNotConcluido() throws Exception {
         // Arrange: previous year exists but is not CONCLUIDO (it is EM_PLANEJAMENTO)
         saveAno(currentYear - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
 
-        // Act & Assert: try to set current year to EM_PLANEJAMENTO
+        // Act & Assert: try to set current year to EM_PLANEJAMENTO (allowed)
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"status\": \"EM_PLANEJAMENTO\"}")
+                .header("X-Actor-Role", "paroco")
+                .header("X-Actor-Org-Type", "CLERO"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldFailToTransitionToFechadoIfPreviousYearIsNotConcluido() throws Exception {
+        // Arrange: previous year exists but is not CONCLUIDO (it is EM_PLANEJAMENTO)
+        saveAno(currentYear - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
+
+        // Act & Assert: try to set current year to FECHADO (fails)
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\": \"FECHADO\"}")
+                .header("X-Actor-Role", "paroco")
+                .header("X-Actor-Org-Type", "CLERO"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldFailToTransitionToFechadoIfAnyPriorYearIsNotConcluido() throws Exception {
+        // Arrange: year N-2 is EM_PLANEJAMENTO, N-1 is CONCLUIDO
+        saveAno(currentYear - 2, AnoParoquialStatus.EM_PLANEJAMENTO);
+        saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
+
+        // Act & Assert: try to set current year to FECHADO (fails because N-2 is not CONCLUIDO)
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\": \"FECHADO\"}")
                 .header("X-Actor-Role", "paroco")
                 .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isBadRequest());

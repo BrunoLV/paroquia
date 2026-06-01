@@ -11,7 +11,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Switch,
   Button,
   CircularProgress,
   Alert,
@@ -22,7 +21,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
-import { AnoParoquial, AnoParoquialStatus } from '../api/types';
+import { AnoParoquialStatus } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
 import { canManageAnoParoquial } from '../auth/permissions';
@@ -59,11 +58,14 @@ const ParishYears = () => {
     },
   });
 
-  const handleStatusToggle = (ano: number, currentStatus: AnoParoquialStatus) => {
+  const handleClosePlanejamento = (ano: number) => {
     if (!isAuthorized) return;
-    const targetStatus: AnoParoquialStatus =
-      currentStatus === 'EM_PLANEJAMENTO' ? 'FECHADO' : 'EM_PLANEJAMENTO';
-    updateMutation.mutate({ ano, status: targetStatus });
+    updateMutation.mutate({ ano, status: 'FECHADO' });
+  };
+
+  const handleReopenPlanejamento = (ano: number) => {
+    if (!isAuthorized) return;
+    updateMutation.mutate({ ano, status: 'EM_PLANEJAMENTO' });
   };
 
   const handleConcludeClick = (ano: number) => {
@@ -137,7 +139,9 @@ const ParishYears = () => {
             <TableBody>
               {years.map((y) => {
                 const isConcluido = y.status === 'CONCLUIDO';
-                const isPlanejamento = y.status === 'EM_PLANEJAMENTO';
+                const hasUnconcludedPriorYear = years.some(
+                  (other) => other.ano < y.ano && other.status !== 'CONCLUIDO'
+                );
 
                 return (
                   <TableRow key={y.ano}>
@@ -148,23 +152,39 @@ const ParishYears = () => {
                     {isAuthorized && (
                       <TableCell align="right">
                         {!isConcluido && (
-                          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', alignItems: 'center' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography variant="body2">Aberto/Fechado</Typography>
-                              <Switch
-                                checked={y.status === 'FECHADO'}
-                                onChange={() => handleStatusToggle(y.ano, y.status)}
+                          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            {y.status === 'EM_PLANEJAMENTO' && (
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => handleClosePlanejamento(y.ano)}
+                                disabled={updateMutation.isPending || hasUnconcludedPriorYear}
+                                title={hasUnconcludedPriorYear ? "O ano anterior precisa estar concluído." : undefined}
+                              >
+                                Fechar
+                              </Button>
+                            )}
+                            {y.status === 'FECHADO' && (
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => handleReopenPlanejamento(y.ano)}
                                 disabled={updateMutation.isPending}
-                              />
-                            </Box>
+                              >
+                                Reabrir
+                              </Button>
+                            )}
                             <Button
-                              variant="outlined"
+                              variant="contained"
                               color="error"
                               size="small"
                               onClick={() => handleConcludeClick(y.ano)}
-                              disabled={updateMutation.isPending}
+                              disabled={updateMutation.isPending || hasUnconcludedPriorYear}
+                              title={hasUnconcludedPriorYear ? "O ano anterior precisa estar concluído." : undefined}
                             >
-                              Concluir Ano
+                              Concluir
                             </Button>
                           </Box>
                         )}

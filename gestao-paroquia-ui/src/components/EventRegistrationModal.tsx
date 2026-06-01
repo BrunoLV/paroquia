@@ -12,7 +12,6 @@ import {
   Select,
   MenuItem,
   Grid,
-  Alert,
   Chip,
   Switch,
   Collapse,
@@ -188,7 +187,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     }
 
     if (isRecurring) {
-      const { frequencia, dataLimite, numeroOcorrencias } = recurrenceRule;
+      const { dataLimite, numeroOcorrencias } = recurrenceRule;
       
       if (!dataLimite && !numeroOcorrencias) {
         return 'Para eventos vinculados a projetos, a repetição deve possuir um limite de data ou número de ocorrências.';

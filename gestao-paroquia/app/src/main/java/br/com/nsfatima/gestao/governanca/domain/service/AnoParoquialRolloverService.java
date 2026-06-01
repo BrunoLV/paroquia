@@ -54,6 +54,10 @@ public class AnoParoquialRolloverService {
             return;
         }
 
+        if (repository.existsByAnoLessThanAndStatusNot(year, AnoParoquialStatus.CONCLUIDO.name())) {
+            throw new IllegalArgumentException("Existe um ano anterior não concluído. O ano " + year + " não pode ser concluído.");
+        }
+
         entity.setStatus(AnoParoquialStatus.CONCLUIDO.name());
         repository.save(entity);
 
