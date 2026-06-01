@@ -67,6 +67,6 @@
 
 ---
 
-- [~] **Track: Controle de status, fluxos de aprovação e governança de Projetos vinculados a anos paroquiais.**
+- [x] **Track: Controle de status, fluxos de aprovação e governança de Projetos vinculados a anos paroquiais.**
 *Link: [./tracks/projeto_governanca_status_20260601/](./tracks/projeto_governanca_status_20260601/)*
 

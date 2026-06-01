@@ -24,11 +24,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Project Status Transitions, Cancellation, and Auto-Activation' [checkpoint: b3e3e2c]
 
 ## Phase 3: Frontend UI Screen and Layout Integration
-- [ ] Task: UI Details Controls and Actions Modals
-    - [ ] Update API client in React to support project actions and approvals
-    - [ ] Add explicit action buttons ("Iniciar", "Concluir", "Cancelar") on the Projects details screen
-    - [ ] Implement the cancellation confirmation modal with the checkbox asking if user wants to cancel linked events
-- [ ] Task: Project Approvals Section
-    - [ ] Implement UI views on the Approvals dashboard displaying pending projects and cancellation requests for authorized roles
-    - [ ] Write frontend unit tests validating rendering and action dispatches on these new UI elements
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend UI Screen and Layout Integration' (Protocol in workflow.md)
+- [x] Task: UI Details Controls and Actions Modals (9b2302d)
+    - [x] Update API client in React to support project actions and approvals
+    - [x] Add explicit action buttons ("Iniciar", "Concluir", "Cancelar") on the Projects details screen
+    - [x] Implement the cancellation confirmation modal with the checkbox asking if user wants to cancel linked events
+- [x] Task: Project Approvals Section (9b2302d)
+    - [x] Implement UI views on the Approvals dashboard displaying pending projects and cancellation requests for authorized roles
+    - [x] Write frontend unit tests validating rendering and action dispatches on these new UI elements
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend UI Screen and Layout Integration' [checkpoint: 9b2302d]
