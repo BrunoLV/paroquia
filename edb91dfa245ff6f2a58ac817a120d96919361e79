@@ -1,0 +1,8 @@
+Task: API Client and Route Protection
+Summary: Added canManageAnoParoquial permissions helper to permissions.ts with tests. Created API routes in src/api/anosParoquiais.ts and added types in types.ts.
+Files:
+- gestao-paroquia-ui/src/auth/permissions.ts
+- gestao-paroquia-ui/src/auth/permissions.test.ts
+- gestao-paroquia-ui/src/api/types.ts
+- gestao-paroquia-ui/src/api/anosParoquiais.ts
+Why: Lay the foundation for UI API request and routing authorizations.
