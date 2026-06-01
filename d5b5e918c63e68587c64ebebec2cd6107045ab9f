@@ -1,0 +1,7 @@
+Task: Year Rollover Scheduler
+Summary: Implemented AnoParoquialRolloverService with @Scheduled task to conclude the active year and initialize the next year on Dec 31st 23:59:59. Integrated with PATCH endpoint in AnoParoquialController. Created integration/reflection tests.
+Files:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/governanca/domain/service/AnoParoquialRolloverService.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/governanca/AnoParoquialRolloverTest.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/governanca/api/v1/controller/AnoParoquialController.java
+Why: Enable automatic turn of the year rollover and ensure manual transitions also trigger next year initialization.
