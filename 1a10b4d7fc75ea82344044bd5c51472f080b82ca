@@ -1,0 +1,6 @@
+Task: Database Seeding Logic
+Summary: Implemented AnoParoquialSeeder to check if the table is empty and seed the current civil year as EM_PLANEJAMENTO on startup. Created integration test.
+Files:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/governanca/domain/service/AnoParoquialSeeder.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/governanca/AnoParoquialSeedingTest.java
+Why: Ensure at least one parish year is initialized when system starts with empty db.
