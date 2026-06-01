@@ -24,10 +24,11 @@ import {
   CalendarMonth as CalendarIcon,
   FactCheck as FactCheckIcon,
   Assignment as WorkIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { canApprove } from '../auth/permissions';
+import { canApprove, canManageAnoParoquial } from '../auth/permissions';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -68,6 +69,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   if (canApprove(user)) {
     menuItems.push({ label: 'Aprovações', path: '/approvals', icon: <FactCheckIcon /> });
+  }
+
+  if (canManageAnoParoquial(user)) {
+    menuItems.push({ label: 'Ano Paroquial', path: '/anos-paroquiais', icon: <SettingsIcon /> });
   }
 
   const drawerWidth = isMdUp ? (drawerOpen ? 240 : 72) : 240;

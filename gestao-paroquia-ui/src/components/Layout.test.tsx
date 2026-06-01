@@ -79,4 +79,44 @@ describe('Layout component link visibility', () => {
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Calendário')).toBeInTheDocument();
   });
+
+  test('renders "Ano Paroquial" link for users with management permissions', () => {
+    mockUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
+      logout: jest.fn(),
+      isLoading: false,
+    });
+
+    render(
+      <QueryProvider>
+        <MemoryRouter>
+          <Layout>
+            <div>Content</div>
+          </Layout>
+        </MemoryRouter>
+      </QueryProvider>
+    );
+
+    expect(screen.getByText('Ano Paroquial')).toBeInTheDocument();
+  });
+
+  test('does not render "Ano Paroquial" link for users without management permissions', () => {
+    mockUseAuth.mockReturnValue({
+      user: { id: '2', name: 'Membro', roles: ['ROLE_PASTORAL_MEMBRO'] },
+      logout: jest.fn(),
+      isLoading: false,
+    });
+
+    render(
+      <QueryProvider>
+        <MemoryRouter>
+          <Layout>
+            <div>Content</div>
+          </Layout>
+        </MemoryRouter>
+      </QueryProvider>
+    );
+
+    expect(screen.queryByText('Ano Paroquial')).not.toBeInTheDocument();
+  });
 });
