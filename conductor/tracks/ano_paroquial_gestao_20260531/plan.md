@@ -24,7 +24,7 @@
     - [x] Create `ParishYears.tsx` component page under `/anos-paroquiais` displaying a structured table of years
     - [x] Implement toggle switch for `EM_PLANEJAMENTO` vs `FECHADO` status and a "Concluir Ano" button with confirmation modal
     - [x] Write unit tests for `ParishYears.tsx` validating UI status rendering and button action dispatches
-- [ ] Task: Sidebar Layout Integration
-    - [ ] Add "Ano Paroquial" or "Configurações" link in `Layout.tsx` visible only to authorized users
-    - [ ] Verify that unauthorized users are redirected and cannot see the link
+- [x] Task: Sidebar Layout Integration (39e32ca)
+    - [x] Add "Ano Paroquial" or "Configurações" link in `Layout.tsx` visible only to authorized users
+    - [x] Verify that unauthorized users are redirected and cannot see the link
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI Screen and Layout Integration' (Protocol in workflow.md)
