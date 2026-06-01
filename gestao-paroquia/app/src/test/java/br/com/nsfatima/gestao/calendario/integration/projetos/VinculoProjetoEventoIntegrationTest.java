@@ -119,7 +119,7 @@ class VinculoProjetoEventoIntegrationTest {
         projeto.setNome("Projeto Sem Limites");
         projeto.setDescricao("Sem limites de datas");
         projeto.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
-        projeto.setStatus("ATIVO");
+        projeto.setStatus("EM_ANDAMENTO");
         projeto.setInicioUtc(null);
         projeto.setFimUtc(null);
         repository.save(projeto);
