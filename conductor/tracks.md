@@ -60,3 +60,8 @@
 - [x] **Track: os erros de validação de regras, campos e informações são mostrados de uma maneira na tela de cadastro de eventos e de outra forma nas demais telas do sistmea. Padronização a apresentação de mensagens informativas e de erro no sistema para ser seguido o mesmo padrão em TODAS as telas e fluxos do sistema.**
 *Link: [./tracks/ui_error_presentation_standardization_20260531/](./tracks/ui_error_presentation_standardization_20260531/)*
 
+---
+
+- [ ] **Track: Implementar a funcionalidade relacionada ao ano paroquial.**
+*Link: [./tracks/ano_paroquial_gestao_20260531/](./tracks/ano_paroquial_gestao_20260531/)*
+
