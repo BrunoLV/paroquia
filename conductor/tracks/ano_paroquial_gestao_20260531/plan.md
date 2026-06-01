@@ -20,10 +20,10 @@
 - [x] Task: API Client and Route Protection (edb91df)
     - [x] Update frontend API client with GET and PATCH routes for `/anos-paroquiais`
     - [x] Add route protection rules and `canManageAnoParoquial` permissions helper for `ADMIN`, `PAROCO`, and `CONSELHO` leaders
-- [ ] Task: Create Parish Year Management Screen
-    - [ ] Create `ParishYears.tsx` component page under `/anos-paroquiais` displaying a structured table of years
-    - [ ] Implement toggle switch for `EM_PLANEJAMENTO` vs `FECHADO` status and a "Concluir Ano" button with confirmation modal
-    - [ ] Write unit tests for `ParishYears.tsx` validating UI status rendering and button action dispatches
+- [x] Task: Create Parish Year Management Screen (afe17e5)
+    - [x] Create `ParishYears.tsx` component page under `/anos-paroquiais` displaying a structured table of years
+    - [x] Implement toggle switch for `EM_PLANEJAMENTO` vs `FECHADO` status and a "Concluir Ano" button with confirmation modal
+    - [x] Write unit tests for `ParishYears.tsx` validating UI status rendering and button action dispatches
 - [ ] Task: Sidebar Layout Integration
     - [ ] Add "Ano Paroquial" or "Configurações" link in `Layout.tsx` visible only to authorized users
     - [ ] Verify that unauthorized users are redirected and cannot see the link
