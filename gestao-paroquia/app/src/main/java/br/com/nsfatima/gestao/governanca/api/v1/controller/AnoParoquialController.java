@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.governanca.api.v1.controller;
 import br.com.nsfatima.gestao.governanca.api.v1.dto.AnoParoquialResponse;
 import br.com.nsfatima.gestao.governanca.api.v1.dto.UpdateAnoParoquialRequest;
 import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialAuthorizationService;
+import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialRolloverService;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
@@ -35,21 +36,25 @@ public class AnoParoquialController {
     private final AnoParoquialJpaRepository repository;
     private final AnoParoquialAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
+    private final AnoParoquialRolloverService rolloverService;
 
     /**
-     * Inicializa o controller de governança anual com as dependências para controle de acesso e persistência.
+     * Inicializa o controller de governança anual com as dependências para controle de acesso, persistência e transição de ano.
      *
      * @param repository Repositório JPA para gestão de anos paroquiais
      * @param authorizationService Serviço para validação de privilégios administrativos
      * @param actorContextResolver Resolvedor de contexto do ator da requisição
+     * @param rolloverService Serviço para rollover de ano paroquial
      */
     public AnoParoquialController(
             AnoParoquialJpaRepository repository,
             AnoParoquialAuthorizationService authorizationService,
-            EventoActorContextResolver actorContextResolver) {
+            EventoActorContextResolver actorContextResolver,
+            AnoParoquialRolloverService rolloverService) {
         this.repository = repository;
         this.authorizationService = authorizationService;
         this.actorContextResolver = actorContextResolver;
+        this.rolloverService = rolloverService;
     }
 
     /**
@@ -144,16 +149,21 @@ public class AnoParoquialController {
             }
         }
 
-        entity.setStatus(newStatus.name());
+        if (newStatus == AnoParoquialStatus.CONCLUIDO) {
+            rolloverService.concludeYear(ano);
+            entity = repository.findByAno(ano).orElse(entity);
+        } else {
+            entity.setStatus(newStatus.name());
 
-        if (newStatus == AnoParoquialStatus.FECHADO && entity.getDataFechamentoUtc() == null) {
-            entity.setDataFechamentoUtc(Instant.now());
-        } else if (newStatus == AnoParoquialStatus.EM_PLANEJAMENTO) {
-            entity.setDataFechamentoUtc(null);
+            if (newStatus == AnoParoquialStatus.FECHADO && entity.getDataFechamentoUtc() == null) {
+                entity.setDataFechamentoUtc(Instant.now());
+            } else if (newStatus == AnoParoquialStatus.EM_PLANEJAMENTO) {
+                entity.setDataFechamentoUtc(null);
+            }
+            entity = repository.save(entity);
         }
 
-        AnoParoquialEntity saved = repository.save(entity);
-        return ResponseEntity.ok(toResponse(saved));
+        return ResponseEntity.ok(toResponse(entity));
     }
 
     private AnoParoquialResponse toResponse(AnoParoquialEntity entity) {
