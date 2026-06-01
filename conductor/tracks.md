@@ -65,3 +65,8 @@
 - [x] **Track: Implementar a funcionalidade relacionada ao ano paroquial.**
 *Link: [./archive/ano_paroquial_gestao_20260531/](./archive/ano_paroquial_gestao_20260531/)*
 
+---
+
+- [ ] **Track: Controle de status, fluxos de aprovação e governança de Projetos vinculados a anos paroquiais.**
+*Link: [./tracks/projeto_governanca_status_20260601/](./tracks/projeto_governanca_status_20260601/)*
+
