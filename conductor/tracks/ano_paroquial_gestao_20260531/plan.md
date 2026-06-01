@@ -7,10 +7,10 @@
 - [x] Task: Database Seeding Logic (1a10b4d)
     - [x] Write failing test to check if current year is seeded when database is empty
     - [x] Implement startup application listener to seed current civil year with `EM_PLANEJAMENTO` if no years are registered
-- [ ] Task: Year Transition and Temporal Validations
-    - [ ] Write TDD tests for transition restrictions: Year N to `EM_PLANEJAMENTO` requires Year N-1 to be `CONCLUIDO`
-    - [ ] Write TDD tests for temporal restrictions: Year N can only transition out of `EM_PLANEJAMENTO` during its calendar year (`LocalDate.now().getYear() == N`)
-    - [ ] Implement validations in the service/controller layer and confirm tests pass
+- [x] Task: Year Transition and Temporal Validations (345cadd)
+    - [x] Write TDD tests for transition restrictions: Year N to `EM_PLANEJAMENTO` requires Year N-1 to be `CONCLUIDO`
+    - [x] Write TDD tests for temporal restrictions: Year N can only transition out of `EM_PLANEJAMENTO` during its calendar year (`LocalDate.now().getYear() == N`)
+    - [x] Implement validations in the service/controller layer and confirm tests pass
 - [ ] Task: Year Rollover Scheduler
     - [ ] Write tests verifying scheduled cron execution behavior at Dec 31st 23:59:59
     - [ ] Implement a Spring Boot `@Scheduled` rollover cron task to transition current year to `CONCLUIDO` and create Year N+1 in `EM_PLANEJAMENTO`
