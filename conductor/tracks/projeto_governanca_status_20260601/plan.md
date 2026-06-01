@@ -1,13 +1,13 @@
 # Plan: Project Governance & Status Management (Gestão de Projetos)
 
 ## Phase 1: Backend Database, Models, and Project Approval Flow
-- [ ] Task: Database Migrations and Entity Status Update
-    - [ ] Create Liquibase/Flyway migration to add `status` column to `projetos` and initialize existing projects to `EM_ANDAMENTO` or `ABERTO`
-    - [ ] Create database migration for `projeto_solicitacoes_aprovacao` table to store pending creation and cancellation requests
-    - [ ] Update `ProjetoEntity` and `ProjetoStatus` enum on the backend
-- [ ] Task: Year Lock Validation and Pending Creation Requests
-    - [ ] Write tests verifying that creating a project in a closed year is intercepted and routed to a pending approval request
-    - [ ] Implement the validation policy and service handler for pending project creations
+- [x] Task: Database Migrations and Entity Status Update (0e5c1ae)
+    - [x] Create Liquibase/Flyway migration to add `status` column to `projetos` and initialize existing projects to `EM_ANDAMENTO` or `ABERTO`
+    - [x] Create database migration for `projeto_solicitacoes_aprovacao` table to store pending creation and cancellation requests
+    - [x] Update `ProjetoEntity` and `ProjetoStatus` enum on the backend
+- [x] Task: Year Lock Validation and Pending Creation Requests (66281c2)
+    - [x] Write tests verifying that creating a project in a closed year is intercepted and routed to a pending approval request
+    - [x] Implement the validation policy and service handler for pending project creations
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Database, Models, and Project Approval Flow' (Protocol in workflow.md)
 
 ## Phase 2: Project Status Transitions, Cancellation, and Auto-Activation
