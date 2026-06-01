@@ -16,7 +16,7 @@
     - [x] Implement a Spring Boot `@Scheduled` rollover cron task to transition current year to `CONCLUIDO` and create Year N+1 in `EM_PLANEJAMENTO`
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementations, Migrations, and Scheduled Tasks' (Protocol in workflow.md)
 
-## Phase 2: Frontend UI Screen and Layout Integration
+## Phase 2: Frontend UI Screen and Layout Integration [checkpoint: 5238feb]
 - [x] Task: API Client and Route Protection (edb91df)
     - [x] Update frontend API client with GET and PATCH routes for `/anos-paroquiais`
     - [x] Add route protection rules and `canManageAnoParoquial` permissions helper for `ADMIN`, `PAROCO`, and `CONSELHO` leaders
@@ -27,4 +27,4 @@
 - [x] Task: Sidebar Layout Integration (39e32ca)
     - [x] Add "Ano Paroquial" or "Configurações" link in `Layout.tsx` visible only to authorized users
     - [x] Verify that unauthorized users are redirected and cannot see the link
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI Screen and Layout Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI Screen and Layout Integration' (Protocol in workflow.md) (5238feb)

@@ -62,6 +62,6 @@
 
 ---
 
-- [~] **Track: Implementar a funcionalidade relacionada ao ano paroquial.**
-*Link: [./tracks/ano_paroquial_gestao_20260531/](./tracks/ano_paroquial_gestao_20260531/)*
+- [x] **Track: Implementar a funcionalidade relacionada ao ano paroquial.**
+*Link: [./archive/ano_paroquial_gestao_20260531/](./archive/ano_paroquial_gestao_20260531/)*
 
