@@ -1,0 +1,6 @@
+Phase 1 Verification Report
+- Automated test command: ./gradlew test --tests *projetos*
+- Manual verification steps:
+  1. Create a project in an open year: POST to /api/v1/projetos, expect 201 Created and status ABERTO.
+  2. Create a project in a closed/concluded year: POST to /api/v1/projetos, expect 202 Accepted and status PENDENTE creation request.
+- User confirmation: Explicitly approved with 'yes'.
