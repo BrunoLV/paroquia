@@ -16,6 +16,8 @@ import br.com.nsfatima.gestao.projeto.application.usecase.CreateProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.ListProjetosUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.ProjetoAgregacaoService;
 import br.com.nsfatima.gestao.projeto.application.usecase.UpdateProjetoUseCase;
+import br.com.nsfatima.gestao.projeto.application.usecase.TransitionProjetoUseCase;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoDecisaoRequest;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,7 @@ public class ProjetoController {
     private final ListProjetosUseCase listProjetosUseCase;
     private final UpdateProjetoUseCase updateProjetoUseCase;
     private final ProjetoAgregacaoService projetoAgregacaoService;
+    private final TransitionProjetoUseCase transitionProjetoUseCase;
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
 
@@ -48,6 +51,7 @@ public class ProjetoController {
      * @param listProjetosUseCase Caso de uso para listagem de projetos existentes
      * @param updateProjetoUseCase Caso de uso para atualização de dados de projetos
      * @param projetoAgregacaoService Serviço para consolidação de indicadores e resumos do projeto
+     * @param transitionProjetoUseCase Caso de uso para transição e aprovação de projetos
      * @param auditPublisher Publicador de eventos de auditoria para rastreabilidade de ações
      * @param actorContextResolver Resolvedor de contexto do usuário/ator da requisição
      */
@@ -56,18 +60,20 @@ public class ProjetoController {
             ListProjetosUseCase listProjetosUseCase,
             UpdateProjetoUseCase updateProjetoUseCase,
             ProjetoAgregacaoService projetoAgregacaoService,
+            TransitionProjetoUseCase transitionProjetoUseCase,
             ProjetoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver) {
         this.createProjetoUseCase = createProjetoUseCase;
         this.listProjetosUseCase = listProjetosUseCase;
         this.updateProjetoUseCase = updateProjetoUseCase;
         this.projetoAgregacaoService = projetoAgregacaoService;
+        this.transitionProjetoUseCase = transitionProjetoUseCase;
         this.auditPublisher = auditPublisher;
         this.actorContextResolver = actorContextResolver;
     }
 
     /**
-     * Disponibiliza a criação de projetos paroquiais para permitir o planejamento e acompanhamento formal de iniciativas da comunidade.
+     * Disponibiliza a criação de projetos paroquiais para permitir o planejamento e acompanhamento formal de initiatives da comunidade.
      *
      * <p>Usage Example:
      * {@code POST /api/v1/projetos} com corpo JSON contendo nome, descrição, datas e organização responsável.
@@ -151,4 +157,42 @@ public class ProjetoController {
             @Parameter(description = "ID único do projeto") @PathVariable UUID projetoId) {
         return projetoAgregacaoService.obterResumo(projetoId);
     }
+
+    @PostMapping("/{projetoId}/iniciar")
+    @Operation(summary = "Inicia um projeto", description = "Altera o status de um projeto de ABERTO para EM_ANDAMENTO.")
+    public ProjetoResponse iniciar(@PathVariable UUID projetoId) {
+        return transitionProjetoUseCase.iniciar(projetoId);
+    }
+
+    @PostMapping("/{projetoId}/concluir")
+    @Operation(summary = "Conclui um projeto", description = "Altera o status de um projeto de EM_ANDAMENTO para CONCLUIDO.")
+    public ProjetoResponse concluir(@PathVariable UUID projetoId) {
+        return transitionProjetoUseCase.concluir(projetoId);
+    }
+
+    @PostMapping("/{projetoId}/cancelar")
+    @Operation(summary = "Cancela um projeto", description = "Cancela um projeto e atualiza o status de seus eventos conforme a opção selecionada.")
+    public ResponseEntity<?> cancelar(
+            @PathVariable UUID projetoId,
+            @RequestBody CancelarProjetoRequest request) {
+        var context = actorContextResolver.resolveRequired();
+        var result = transitionProjetoUseCase.cancelar(projetoId, request.cancelarEventosVinculados());
+        if (result.isPendingApproval()) {
+            auditPublisher.publish(context.actor(), "request-cancel-project", result.aprovacao().id().toString(), "success");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(result.aprovacao());
+        }
+        auditPublisher.publish(context.actor(), "cancel-project", result.projeto().id().toString(), "success");
+        return ResponseEntity.ok(result.projeto());
+    }
+
+    @PostMapping("/solicitacoes/{solicitacaoId}/decisao")
+    @Operation(summary = "Decide sobre uma solicitação", description = "Aprova ou rejeita uma solicitação de criação ou cancelamento de projeto.")
+    public ResponseEntity<?> decidir(
+            @PathVariable UUID solicitacaoId,
+            @RequestBody @Valid ProjetoDecisaoRequest request) {
+        var response = transitionProjetoUseCase.decidir(solicitacaoId, request.aprovado(), request.observacao());
+        return ResponseEntity.ok(response);
+    }
+
+    public record CancelarProjetoRequest(boolean cancelarEventosVinculados) {}
 }

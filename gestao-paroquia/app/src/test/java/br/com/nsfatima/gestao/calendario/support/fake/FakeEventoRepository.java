@@ -134,6 +134,13 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
+    public List<EventoEntity> findByProjetoId(UUID projetoId) {
+        return storage.stream()
+                .filter(e -> projetoId.equals(e.getProjetoId()))
+                .toList();
+    }
+
+    @Override
     public boolean existsByRecorrenciaIdAndInicioUtc(UUID recorrenciaId, Instant inicioUtc) {
         return storage.stream()
                 .anyMatch(e -> recorrenciaId.equals(e.getRecorrenciaId()) && inicioUtc.equals(e.getInicioUtc()));

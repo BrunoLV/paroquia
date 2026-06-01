@@ -53,4 +53,28 @@ public class ProjetoAuthorizationService {
             throw new ForbiddenOperationException("User cannot edit projects of another organization");
         }
     }
+
+    public boolean isHighLevelActor(EventoActorContext actorContext) {
+        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
+        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        return normalizedRole == PapelOrganizacional.PAROCO 
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+    }
+
+    public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
+        if (isHighLevelActor(actorContext)) {
+            return;
+        }
+        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
+        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
+        if (isOrgLeader && actorContext.organizationId() != null && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
+            return;
+        }
+        throw new ForbiddenOperationException("User does not have permission to perform this project transition");
+    }
+
+    public void assertCanCancel(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
+        assertCanStartOrConclude(actorContext, projectOrganizacaoResponsavelId);
+    }
 }
+

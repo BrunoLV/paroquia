@@ -3,8 +3,13 @@ package br.com.nsfatima.gestao.calendario.integration.projetos;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,19 +17,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Sql(scripts = "classpath:sql/security-fixtures.sql")
 class ProjetoGovernancaIntegrationTest {
 
     @Autowired
@@ -39,10 +48,17 @@ class ProjetoGovernancaIntegrationTest {
     @Autowired
     private AnoParoquialJpaRepository anoParoquialRepository;
 
+    @Autowired
+    private EventoJpaRepository eventRepository;
+
+    private static final String PASTORAL_ORG = "00000000-0000-0000-0000-0000000000aa";
+    private static final String CONSELHO_ORG = "00000000-0000-0000-0000-0000000000cc";
+
     private int testYear;
 
     @BeforeEach
     void setUp() {
+        eventRepository.deleteAll();
         repository.deleteAll();
         approvalRepository.deleteAll();
         anoParoquialRepository.deleteAll();
@@ -53,7 +69,6 @@ class ProjetoGovernancaIntegrationTest {
     @DisplayName("Should create project directly in open year (EM_PLANEJAMENTO)")
     void shouldCreateImmediatelyInOpenYear() throws Exception {
         saveAnoParoquial(testYear, AnoParoquialStatus.EM_PLANEJAMENTO);
-        String orgId = UUID.randomUUID().toString();
 
         String payload = """
                 {
@@ -63,12 +78,12 @@ class ProjetoGovernancaIntegrationTest {
                   "inicio": "%d-06-01T00:00:00Z",
                   "fim": "%d-06-30T23:59:59Z"
                 }
-                """.formatted(orgId, testYear, testYear);
+                """.formatted(CONSELHO_ORG, testYear, testYear);
 
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "CONSELHO")
-                        .header("X-Actor-Org-Id", orgId)
+                        .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isCreated())
@@ -80,7 +95,6 @@ class ProjetoGovernancaIntegrationTest {
     @DisplayName("Should return 202 Accepted and create approval request when creating project in closed year")
     void shouldRouteToApprovalWhenYearClosed() throws Exception {
         saveAnoParoquial(testYear, AnoParoquialStatus.FECHADO);
-        String orgId = UUID.randomUUID().toString();
 
         String payload = """
                 {
@@ -90,12 +104,12 @@ class ProjetoGovernancaIntegrationTest {
                   "inicio": "%d-06-01T00:00:00Z",
                   "fim": "%d-06-30T23:59:59Z"
                 }
-                """.formatted(orgId, testYear, testYear);
+                """.formatted(CONSELHO_ORG, testYear, testYear);
 
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "CONSELHO")
-                        .header("X-Actor-Org-Id", orgId)
+                        .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isAccepted())
@@ -104,10 +118,198 @@ class ProjetoGovernancaIntegrationTest {
                 .andExpect(jsonPath("$.actionPayloadJson").isNotEmpty());
     }
 
+    @Test
+    @DisplayName("Should start project manually when authorized")
+    void shouldStartProjectManuallyWhenAuthorized() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", CONSELHO_ORG))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("EM_ANDAMENTO"));
+    }
+
+    @Test
+    @DisplayName("Should reject manual start when unauthorized role/org")
+    void shouldRejectManualStartWhenUnauthorized() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .header("X-Actor-Org-Id", PASTORAL_ORG)) // different org
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Should conclude project manually when authorized")
+    void shouldConcludeProjectManuallyWhenAuthorized() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Em Andamento", ProjetoStatus.EM_ANDAMENTO, CONSELHO_ORG);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/concluir", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", CONSELHO_ORG))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CONCLUIDO"));
+    }
+
+    @Test
+    @DisplayName("Should cancel project immediately when requested by Council Leader")
+    void shouldCancelImmediatelyWhenRequestedByCouncilLeader() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", CONSELHO_ORG)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"cancelarEventosVinculados\":false}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CANCELADO"));
+    }
+
+    @Test
+    @DisplayName("Should route to approval cancellation request when requested by Pastoral Coordinator")
+    void shouldRouteToApprovalCancellationWhenRequestedByPastoralCoordinator() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, PASTORAL_ORG);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .header("X-Actor-Org-Id", PASTORAL_ORG)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"cancelarEventosVinculados\":true}"))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.status").value("PENDENTE"))
+                .andExpect(jsonPath("$.tipoSolicitacao").value("CANCELAMENTO"))
+                .andExpect(jsonPath("$.cancelarEventosVinculados").value(true));
+    }
+
+    @Test
+    @DisplayName("Should approve project creation request and create project")
+    void shouldApproveProjectCreationRequest() throws Exception {
+        String payloadJson = """
+                {
+                  "nome": "Projeto Aprovado Criacao",
+                  "descricao": "Payload",
+                  "organizacaoResponsavelId": "%s",
+                  "inicio": "2026-06-01T00:00:00Z",
+                  "fim": "2026-06-30T23:59:59Z"
+                }
+                """.formatted(CONSELHO_ORG);
+
+        ProjetoSolicitacaoAprovacaoEntity req = new ProjetoSolicitacaoAprovacaoEntity();
+        req.setId(UUID.randomUUID());
+        req.setTipoSolicitacao("CRIACAO");
+        req.setStatus("PENDENTE");
+        req.setSolicitanteId("solicitante");
+        req.setSolicitantePapel("coordenador");
+        req.setSolicitanteTipoOrganizacao("PASTORAL");
+        req.setCriadoEmUtc(Instant.now());
+        req.setActionPayloadJson(payloadJson);
+        approvalRepository.saveAndFlush(req);
+
+        mockMvc.perform(post("/api/v1/projetos/solicitacoes/{id}/decisao", req.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"aprovado\":true,\"observacao\":\"Ok\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("APROVADA"));
+
+        // Verify project is created
+        var projects = repository.findAll();
+        assertEquals(1, projects.size());
+        assertEquals("Projeto Aprovado Criacao", projects.get(0).getNome());
+        assertEquals(ProjetoStatus.ABERTO.name(), projects.get(0).getStatus());
+    }
+
+    @Test
+    @DisplayName("Should cancel linked events when cancelling project with cascade = true")
+    void shouldCancelLinkedEventsWhenCascadeTrue() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Cascata", ProjetoStatus.ABERTO, CONSELHO_ORG);
+
+        EventoEntity event = new EventoEntity();
+        event.setId(UUID.randomUUID());
+        event.setTitulo("Evento no Projeto");
+        event.setOrganizacaoResponsavelId(UUID.fromString(CONSELHO_ORG));
+        event.setInicioUtc(Instant.now());
+        event.setFimUtc(Instant.now().plusSeconds(3600));
+        event.setStatus("CONFIRMADO");
+        event.setProjetoId(project.getId());
+        eventRepository.saveAndFlush(event);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", CONSELHO_ORG)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"cancelarEventosVinculados\":true}"))
+                .andExpect(status().isOk());
+
+        // Verify project is CANCELADO
+        var savedProject = repository.findById(project.getId()).get();
+        assertEquals(ProjetoStatus.CANCELADO, savedProject.getStatusEnum());
+
+        // Verify linked event is CANCELADO
+        var savedEvent = eventRepository.findById(event.getId()).get();
+        assertEquals("CANCELADO", savedEvent.getStatus());
+        assertEquals(project.getId(), savedEvent.getProjetoId());
+    }
+
+    @Test
+    @DisplayName("Should unlink events when cancelling project with cascade = false")
+    void shouldUnlinkEventsWhenCascadeFalse() throws Exception {
+        ProjetoEventoEntity project = saveProject("Projeto Sem Cascata", ProjetoStatus.ABERTO, CONSELHO_ORG);
+
+        EventoEntity event = new EventoEntity();
+        event.setId(UUID.randomUUID());
+        event.setTitulo("Evento Solto");
+        event.setOrganizacaoResponsavelId(UUID.fromString(CONSELHO_ORG));
+        event.setInicioUtc(Instant.now());
+        event.setFimUtc(Instant.now().plusSeconds(3600));
+        event.setStatus("CONFIRMADO");
+        event.setProjetoId(project.getId());
+        eventRepository.saveAndFlush(event);
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", CONSELHO_ORG)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"cancelarEventosVinculados\":false}"))
+                .andExpect(status().isOk());
+
+        // Verify project is CANCELADO
+        var savedProject = repository.findById(project.getId()).get();
+        assertEquals(ProjetoStatus.CANCELADO, savedProject.getStatusEnum());
+
+        // Verify linked event is NOT CANCELADO but project association is removed
+        var savedEvent = eventRepository.findById(event.getId()).get();
+        assertEquals("CONFIRMADO", savedEvent.getStatus());
+        assertNull(savedEvent.getProjetoId());
+    }
+
     private void saveAnoParoquial(int ano, AnoParoquialStatus status) {
         AnoParoquialEntity entity = new AnoParoquialEntity();
         entity.setAno(ano);
         entity.setStatus(status.name());
         anoParoquialRepository.saveAndFlush(entity);
     }
+
+    private ProjetoEventoEntity saveProject(String nome, ProjetoStatus status, String orgId) {
+        ProjetoEventoEntity project = new ProjetoEventoEntity();
+        project.setId(UUID.randomUUID());
+        project.setNome(nome);
+        project.setDescricao("Teste");
+        project.setOrganizacaoResponsavelId(UUID.fromString(orgId));
+        project.setStatus(status);
+        project.setInicioUtc(Instant.now());
+        project.setFimUtc(Instant.now().plusSeconds(86400));
+        return repository.saveAndFlush(project);
+    }
 }
+

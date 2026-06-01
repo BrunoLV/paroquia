@@ -95,6 +95,8 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
 
     List<EventoEntity> findByRecorrenciaId(UUID recorrenciaId);
 
+    List<EventoEntity> findByProjetoId(UUID projetoId);
+
     boolean existsByRecorrenciaIdAndInicioUtc(UUID recorrenciaId, Instant inicioUtc);
 
     @Query(value = """

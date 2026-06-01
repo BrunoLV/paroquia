@@ -1,0 +1,60 @@
+package br.com.nsfatima.gestao.projeto.infrastructure.scheduling;
+
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
+import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+class ProjetoAutoActivationSchedulerTest {
+
+    private ProjetoEventoJpaRepository repository;
+    private JobLockJpaRepository lockRepository;
+    private ProjetoAutoActivationScheduler scheduler;
+
+    @BeforeEach
+    void setUp() {
+        repository = mock(ProjetoEventoJpaRepository.class);
+        lockRepository = mock(JobLockJpaRepository.class);
+        scheduler = new ProjetoAutoActivationScheduler(repository, lockRepository);
+    }
+
+    @Test
+    void shouldActivatePendingProjectsWhenLockAcquired() {
+        when(lockRepository.acquireLock(anyString(), any(), any())).thenReturn(true);
+
+        ProjetoEventoEntity project = new ProjetoEventoEntity();
+        project.setId(UUID.randomUUID());
+        project.setNome("Projeto Teste");
+        project.setStatus(ProjetoStatus.ABERTO);
+
+        when(repository.findByStatusAndInicioUtcLessThanEqual(eq(ProjetoStatus.ABERTO.name()), any()))
+                .thenReturn(List.of(project));
+
+        scheduler.activateProjects();
+
+        assertEquals(ProjetoStatus.EM_ANDAMENTO, project.getStatusEnum());
+        verify(repository, times(1)).save(project);
+        verify(lockRepository, times(1)).releaseLock(eq("PROJECT_AUTO_ACTIVATION_JOB"));
+    }
+
+    @Test
+    void shouldNotActivateWhenLockAcquisitionFails() {
+        when(lockRepository.acquireLock(anyString(), any(), any())).thenReturn(false);
+
+        scheduler.activateProjects();
+
+        verify(repository, never()).findByStatusAndInicioUtcLessThanEqual(anyString(), any());
+        verify(lockRepository, never()).releaseLock(anyString());
+    }
+}
