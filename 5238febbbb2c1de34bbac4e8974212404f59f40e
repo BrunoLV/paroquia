@@ -1,0 +1,1 @@
+Task: Guarantee predecessor year completion rule via implementation. Added database exists checks for unconcluded prior years in controller and service layers, added integration tests in backend, disabled corresponding buttons in frontend UI with tooltip alerts, and fixed global QueryClient cache pollution across frontend unit tests.
