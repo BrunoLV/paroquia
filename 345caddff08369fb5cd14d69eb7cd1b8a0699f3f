@@ -1,0 +1,6 @@
+Task: Year Transition and Temporal Validations
+Summary: Implemented immutability of CONCLUIDO years, succession rule (N-1 is CONCLUIDO), and temporal enforcement for transitioning out of EM_PLANEJAMENTO in AnoParoquialController. Created integration test.
+Files:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/governanca/api/v1/controller/AnoParoquialController.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/governanca/AnoParoquialTransitionTest.java
+Why: Prevent illegal calendar state transitions and enforce calendar governance.
