@@ -11,9 +11,9 @@
     - [x] Write TDD tests for transition restrictions: Year N to `EM_PLANEJAMENTO` requires Year N-1 to be `CONCLUIDO`
     - [x] Write TDD tests for temporal restrictions: Year N can only transition out of `EM_PLANEJAMENTO` during its calendar year (`LocalDate.now().getYear() == N`)
     - [x] Implement validations in the service/controller layer and confirm tests pass
-- [ ] Task: Year Rollover Scheduler
-    - [ ] Write tests verifying scheduled cron execution behavior at Dec 31st 23:59:59
-    - [ ] Implement a Spring Boot `@Scheduled` rollover cron task to transition current year to `CONCLUIDO` and create Year N+1 in `EM_PLANEJAMENTO`
+- [x] Task: Year Rollover Scheduler (d5b5e91)
+    - [x] Write tests verifying scheduled cron execution behavior at Dec 31st 23:59:59
+    - [x] Implement a Spring Boot `@Scheduled` rollover cron task to transition current year to `CONCLUIDO` and create Year N+1 in `EM_PLANEJAMENTO`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementations, Migrations, and Scheduled Tasks' (Protocol in workflow.md)
 
 ## Phase 2: Frontend UI Screen and Layout Integration
