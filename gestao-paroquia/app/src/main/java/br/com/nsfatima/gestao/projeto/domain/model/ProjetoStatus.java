@@ -4,8 +4,10 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalize
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum ProjetoStatus {
-    ATIVO,
-    INATIVO;
+    ABERTO,
+    EM_ANDAMENTO,
+    CANCELADO,
+    CONCLUIDO;
 
     @JsonCreator
     public static ProjetoStatus fromJson(String rawValue) {

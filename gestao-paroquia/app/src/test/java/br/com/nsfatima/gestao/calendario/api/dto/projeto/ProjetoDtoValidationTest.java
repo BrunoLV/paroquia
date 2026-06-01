@@ -55,7 +55,7 @@ class ProjetoDtoValidationTest {
     @DisplayName("ProjetoPatchRequest: should fail when name is too long")
     void projetoPatchRequest_NameTooLong() {
         String longName = "A".repeat(161);
-        ProjetoPatchRequest request = new ProjetoPatchRequest(longName, "Descricao", ORG_ID, START, END, ProjetoStatus.ATIVO);
+        ProjetoPatchRequest request = new ProjetoPatchRequest(longName, "Descricao", ORG_ID, START, END, ProjetoStatus.EM_ANDAMENTO);
 
         Set<ConstraintViolation<ProjetoPatchRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for long name");
@@ -65,7 +65,7 @@ class ProjetoDtoValidationTest {
     @Test
     @DisplayName("ProjetoPatchRequest: should fail when name is blank")
     void projetoPatchRequest_NameBlank() {
-        ProjetoPatchRequest request = new ProjetoPatchRequest(" ", "Descricao", ORG_ID, START, END, ProjetoStatus.ATIVO);
+        ProjetoPatchRequest request = new ProjetoPatchRequest(" ", "Descricao", ORG_ID, START, END, ProjetoStatus.EM_ANDAMENTO);
 
         Set<ConstraintViolation<ProjetoPatchRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for blank name");

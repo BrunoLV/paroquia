@@ -23,7 +23,7 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
     private String descricao;
 
     @Column(nullable = false, length = 32)
-    private String status = ProjetoStatus.ATIVO.name();
+    private String status = ProjetoStatus.ABERTO.name();
 
     @Column(name = "organizacao_responsavel_id")
     private UUID organizacaoResponsavelId;
