@@ -4,8 +4,9 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalize
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum AnoParoquialStatus {
-    PLANEJAMENTO,
-    FECHADO;
+    EM_PLANEJAMENTO,
+    FECHADO,
+    CONCLUIDO;
 
     @JsonCreator
     public static AnoParoquialStatus fromJson(String rawValue) {

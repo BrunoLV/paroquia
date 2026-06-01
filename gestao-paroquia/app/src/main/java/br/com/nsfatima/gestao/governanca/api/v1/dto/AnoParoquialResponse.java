@@ -8,7 +8,7 @@ public record AnoParoquialResponse(
         @Schema(description = "O ano civil")
         Integer ano,
         
-        @Schema(description = "Status do ano (PLANEJAMENTO, FECHADO)")
+        @Schema(description = "Status do ano (EM_PLANEJAMENTO, FECHADO, CONCLUIDO)")
         String status,
         
         @Schema(description = "Data em que o ano foi fechado")

@@ -120,7 +120,7 @@ public class AnoParoquialController {
 
         if (newStatus == AnoParoquialStatus.FECHADO && entity.getDataFechamentoUtc() == null) {
             entity.setDataFechamentoUtc(Instant.now());
-        } else if (newStatus == AnoParoquialStatus.PLANEJAMENTO) {
+        } else if (newStatus == AnoParoquialStatus.EM_PLANEJAMENTO) {
             entity.setDataFechamentoUtc(null);
         }
 

@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 @Schema(description = "Requisição para atualizar o status de um ano paroquial")
 public record UpdateAnoParoquialRequest(
         @NotBlank
-        @Schema(description = "Novo status (PLANEJAMENTO, FECHADO)")
+        @Schema(description = "Novo status (EM_PLANEJAMENTO, FECHADO, CONCLUIDO)")
         String status) {
 }
