@@ -9,7 +9,7 @@
     - [x] Verify local gradle build compiles with JDK 25.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Environment & Build Tool Upgrades' (Protocol in workflow.md) 6d59040
 
-## Phase 2: Dependency & Framework Modernization
+## Phase 2: Dependency & Framework Modernization [checkpoint: 28bfe55]
 - [x] Task: Modernize Spring Boot and Dependency Management Versions 15f5729
     - [x] Update Spring Boot plugin version to `4.0.6` in `gradle/libs.versions.toml`.
     - [x] Update Spring Dependency Management plugin version to `1.1.7` in `gradle/libs.versions.toml`.
@@ -19,7 +19,7 @@
     - [x] Modernize Caffeine Cache to `3.2.4` and Guava to `33.6.0-jre` in `gradle/libs.versions.toml`.
     - [x] Modernize Apache POI to `5.5.1` and OpenPDF to `3.0.5` in `gradle/libs.versions.toml`.
     - [x] Modernize JUnit Jupiter to `6.1.0` in `gradle/libs.versions.toml`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Dependency & Framework Modernization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Dependency & Framework Modernization' (Protocol in workflow.md) 28bfe55
 
 ## Phase 3: Code Adjustments & Test Verification
 - [ ] Task: Resolve Deprecations and Compilation Errors
