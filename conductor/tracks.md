@@ -70,3 +70,9 @@
 - [x] **Track: Controle de status, fluxos de aprovação e governança de Projetos vinculados a anos paroquiais.**
 *Link: [./archive/projeto_governanca_status_20260601/](./archive/projeto_governanca_status_20260601/)*
 
+---
+
+- [ ] **Track: modernização de ambiente Java, frameworks e dependencias utilizadas em gestao-paroquia. Necessario atualizar o projeto para Java 25 e atualizar dependencias e frameworks para a versão mais atualizada.**
+*Link: [./tracks/java_modernization_20260601/](./tracks/java_modernization_20260601/)*
+
+
