@@ -1,0 +1,3 @@
+Task: Upgrade Gradle Wrapper to 9.1.0+
+- Verified that Gradle Wrapper version is 9.5.0, which is higher than the minimum required 9.1.0+ for Java 25 support.
+- Ran ./gradlew --version to verify correct Gradle installation and runtime functionality.
