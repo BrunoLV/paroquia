@@ -1,0 +1,3 @@
+Task: Update Core Libraries and Drivers
+- Upgraded Springdoc OpenAPI to 3.0.3, Flyway to 12.7.0, Caffeine to 3.2.4, Guava to 33.6.0-jre, Apache POI to 5.5.1, OpenPDF to 3.0.5, and JUnit Jupiter to 6.1.0 in libs.versions.toml.
+- Updated gestao-paroquia/app/build.gradle.kts to use version catalog references for Springdoc OpenAPI, Apache POI, and OpenPDF.
