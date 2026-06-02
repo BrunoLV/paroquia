@@ -1,0 +1,3 @@
+Task: Update Java Target & Toolchain to Java 25
+- Modified gestao-paroquia/app/build.gradle.kts to set Java toolchain language version to 25.
+- Ran ./gradlew :app:compileJava to compile the application with JDK 25 successfully.
