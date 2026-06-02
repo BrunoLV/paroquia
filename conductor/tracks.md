@@ -33,7 +33,7 @@
 ---
 
 - [x] **Track: Implementação do fluxo de aprovação na UI conforme implementação definida pelo backend**
-*Link: [./tracks/approval_workflow_ui_20260525/](./tracks/approval_workflow_ui_20260525/)*
+*Link: [./archive/approval_workflow_ui_20260525/](./archive/approval_workflow_ui_20260525/)*
 
 ---
 
@@ -53,12 +53,12 @@
 ---
 
 - [x] **Track: implementar regra de cadastro vinculado a projeto, onde o evento só pode ser vinculado se o mesmo estiver definido dentro do periodo definido no projeto.**
-*Link: [./tracks/event_project_date_validation_20260531/](./tracks/event_project_date_validation_20260531/)*
+*Link: [./archive/event_project_date_validation_20260531/](./archive/event_project_date_validation_20260531/)*
 
 ---
 
 - [x] **Track: os erros de validação de regras, campos e informações são mostrados de uma maneira na tela de cadastro de eventos e de outra forma nas demais telas do sistmea. Padronização a apresentação de mensagens informativas e de erro no sistema para ser seguido o mesmo padrão em TODAS as telas e fluxos do sistema.**
-*Link: [./tracks/ui_error_presentation_standardization_20260531/](./tracks/ui_error_presentation_standardization_20260531/)*
+*Link: [./archive/ui_error_presentation_standardization_20260531/](./archive/ui_error_presentation_standardization_20260531/)*
 
 ---
 
@@ -68,5 +68,5 @@
 ---
 
 - [x] **Track: Controle de status, fluxos de aprovação e governança de Projetos vinculados a anos paroquiais.**
-*Link: [./tracks/projeto_governanca_status_20260601/](./tracks/projeto_governanca_status_20260601/)*
+*Link: [./archive/projeto_governanca_status_20260601/](./archive/projeto_governanca_status_20260601/)*
 
