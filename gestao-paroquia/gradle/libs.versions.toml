@@ -5,7 +5,7 @@
 guava = "33.5.0-jre"
 junit-jupiter = "5.14.3"
 caffeine = "3.1.8"
-spring-boot-plugin = "3.3.13"
+spring-boot-plugin = "4.0.6"
 spring-dependency-management-plugin = "1.1.7"
 flyway-plugin = "10.22.0"
 sonarqube-plugin = "7.3.0.8198"
