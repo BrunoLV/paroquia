@@ -13,12 +13,12 @@
 - [x] Task: Modernize Spring Boot and Dependency Management Versions 15f5729
     - [x] Update Spring Boot plugin version to `4.0.6` in `gradle/libs.versions.toml`.
     - [x] Update Spring Dependency Management plugin version to `1.1.7` in `gradle/libs.versions.toml`.
-- [ ] Task: Update Core Libraries and Drivers
-    - [ ] Modernize Springdoc OpenAPI version to `3.0.3` in `gradle/libs.versions.toml`.
-    - [ ] Modernize Flyway plugin version to `12.7.0` in `gradle/libs.versions.toml`.
-    - [ ] Modernize Caffeine Cache to `3.2.4` and Guava to `33.6.0-jre` in `gradle/libs.versions.toml`.
-    - [ ] Modernize Apache POI to `5.5.1` and OpenPDF to `3.0.5` in `gradle/libs.versions.toml`.
-    - [ ] Modernize JUnit Jupiter to `6.1.0` in `gradle/libs.versions.toml`.
+- [x] Task: Update Core Libraries and Drivers 8b91192
+    - [x] Modernize Springdoc OpenAPI version to `3.0.3` in `gradle/libs.versions.toml`.
+    - [x] Modernize Flyway plugin version to `12.7.0` in `gradle/libs.versions.toml`.
+    - [x] Modernize Caffeine Cache to `3.2.4` and Guava to `33.6.0-jre` in `gradle/libs.versions.toml`.
+    - [x] Modernize Apache POI to `5.5.1` and OpenPDF to `3.0.5` in `gradle/libs.versions.toml`.
+    - [x] Modernize JUnit Jupiter to `6.1.0` in `gradle/libs.versions.toml`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Dependency & Framework Modernization' (Protocol in workflow.md)
 
 ## Phase 3: Code Adjustments & Test Verification
