@@ -1,4 +1,12 @@
-import { canManageEvent, canApprove, canManageAnoParoquial, User } from './permissions';
+import { 
+  canManageEvent, 
+  canApprove, 
+  canManageAnoParoquial, 
+  canManageProjects, 
+  isGlobalCreator, 
+  canTransitionProject, 
+  User 
+} from './permissions';
 
 describe('canManageEvent', () => {
   const orgId = 'org-1';
@@ -127,6 +135,85 @@ describe('canManageAnoParoquial', () => {
   it('denies other roles like secretarios, membros or regular pastoral leaders', () => {
     const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_CONSELHO_SECRETARIO'] };
     expect(canManageAnoParoquial(user)).toBe(false);
+  });
+});
+
+describe('canManageProjects', () => {
+  it('returns false if user is null', () => {
+    expect(canManageProjects(null)).toBe(false);
+  });
+
+  it('allows ADMIN, ROLE_ADMIN, PAROCO, PADRE, VIGARIO', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ADMIN'] })).toBe(true);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_ADMIN'] })).toBe(true);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['PAROCO'] })).toBe(true);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CLERO_PAROCO'] })).toBe(true);
+  });
+
+  it('allows coordinators and vice-coordinators (global or membership)', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_PASTORAL'] })).toBe(true);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_PASTORAL_COORDENADOR'] })).toBe(true);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['VICE_COORDENADOR_CONSELHO'] })).toBe(true);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] })).toBe(true);
+  });
+
+  it('denies regular members', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_PASTORAL_MEMBRO'] })).toBe(false);
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['MEMBRO_CONSELHO'] })).toBe(false);
+  });
+});
+
+describe('isGlobalCreator', () => {
+  it('returns false if user is null', () => {
+    expect(isGlobalCreator(null)).toBe(false);
+  });
+
+  it('allows ADMIN, ROLE_ADMIN, PAROCO, and conselho coordinators/vice-coordinators', () => {
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ADMIN'] })).toBe(true);
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_CONSELHO'] })).toBe(true);
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CONSELHO_COORDENADOR'] })).toBe(true);
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['VICE_COORDENADOR_CONSELHO'] })).toBe(true);
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] })).toBe(true);
+  });
+
+  it('denies pastoral coordinators or general members', () => {
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_PASTORAL'] })).toBe(false);
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ROLE_PASTORAL_COORDENADOR'] })).toBe(false);
+  });
+});
+
+describe('canTransitionProject', () => {
+  const targetOrgId = 'org-catequese';
+
+  it('returns false if user is null', () => {
+    expect(canTransitionProject(null, targetOrgId)).toBe(false);
+  });
+
+  it('allows global creators regardless of linked organization', () => {
+    const adminUser = { id: '1', username: 'a', name: 'A', roles: ['ADMIN'] };
+    expect(canTransitionProject(adminUser, targetOrgId)).toBe(true);
+  });
+
+  it('allows local coordinators linked to the project organization', () => {
+    const localCoord = {
+      id: '1',
+      username: 'a',
+      name: 'A',
+      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      organizations: [{ id: targetOrgId, nome: 'Catequese', tipo: 'PASTORAL', contato: null, ativo: true }]
+    };
+    expect(canTransitionProject(localCoord, targetOrgId)).toBe(true);
+  });
+
+  it('denies local coordinators of a different organization', () => {
+    const otherCoord = {
+      id: '1',
+      username: 'a',
+      name: 'A',
+      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      organizations: [{ id: 'other-org', nome: 'Liturgia', tipo: 'PASTORAL', contato: null, ativo: true }]
+    };
+    expect(canTransitionProject(otherCoord, targetOrgId)).toBe(false);
   });
 });
 

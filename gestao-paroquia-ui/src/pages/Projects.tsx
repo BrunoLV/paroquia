@@ -39,6 +39,11 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
+import { 
+  canManageProjects as userCanManageProjects, 
+  isGlobalCreator as userIsGlobalCreator, 
+  canTransitionProject as userCanTransitionProject 
+} from '../auth/permissions';
 import apiClient from '../api/client';
 import { Projeto, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
@@ -101,46 +106,15 @@ const Projects = () => {
 
   // 1. Permission checks
   const canManageProjects = () => {
-    if (!user) return false;
-    return user.roles.some((role: string) => 
-      role === 'ADMIN' || 
-      role === 'ROLE_ADMIN' ||
-      role.endsWith('_COORDENADOR') || 
-      role.endsWith('_VICE_COORDENADOR') ||
-      role.endsWith('_PAROCO') || 
-      role.endsWith('_PADRE')
-    );
+    return userCanManageProjects(user);
   };
 
   const isGlobalCreator = () => {
-    if (!user) return false;
-    return user.roles.some((role: string) => 
-      role === 'ADMIN' || 
-      role === 'ROLE_ADMIN' ||
-      role.includes('CONSELHO_COORDENADOR') || 
-      role.includes('CONSELHO_VICE_COORDENADOR') ||
-      role.endsWith('_PAROCO')
-    );
+    return userIsGlobalCreator(user);
   };
 
   const canTransitionProject = (project: Projeto) => {
-    if (!user) return false;
-    const highLevel = user.roles.some((role: string) => 
-      role === 'ADMIN' || 
-      role === 'ROLE_ADMIN' ||
-      role.includes('CONSELHO_COORDENADOR') || 
-      role.includes('CONSELHO_VICE_COORDENADOR') ||
-      role.endsWith('_PAROCO')
-    );
-    if (highLevel) return true;
-
-    const isOrgLeader = user.roles.some((role: string) => 
-      role.endsWith('_COORDENADOR') || role.endsWith('_VICE_COORDENADOR')
-    );
-    if (isOrgLeader && Array.isArray(user.organizations)) {
-      return user.organizations.some((org: any) => org.id === project.organizacaoResponsavelId);
-    }
-    return false;
+    return userCanTransitionProject(user, project.organizacaoResponsavelId);
   };
 
   // Determine which organizations are selectable in the form

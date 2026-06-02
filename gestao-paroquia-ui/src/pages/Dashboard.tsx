@@ -84,7 +84,7 @@ const Dashboard = () => {
           sort: 'inicioUtc,asc' // Corrected field name to match backend Entity property
         };
 
-        if (user && !user.roles.includes('ADMIN')) {
+        if (user && !(user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN'))) {
           const userOrgIds = user.organizations.map(org => org.id);
           if (userOrgIds.length > 0) {
             params.organizacaoIds = userOrgIds;

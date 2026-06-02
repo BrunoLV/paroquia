@@ -152,7 +152,7 @@ const Calendar = () => {
   // Permissions check (simple for now, matches backend logic)
   const canEditEvent = (event: Evento) => {
     if (!user) return false;
-    if (user.roles.includes('ADMIN')) return true;
+    if (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN')) return true;
     
     // Member can edit if they belong to the organization responsible
     return user.organizations.some(org => org.id === event.organizacaoResponsavelId);
@@ -204,7 +204,7 @@ const Calendar = () => {
   // Restrict organizations based on user role
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
-    if (user.roles.includes('ADMIN')) return organizations;
+    if (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN')) return organizations;
     
     const userOrgIds = user.organizations.map(org => org.id);
     return organizations.filter(org => userOrgIds.includes(org.id));
@@ -229,7 +229,7 @@ const Calendar = () => {
         // Apply organization filter
         if (selectedOrgFilter) {
           params.organizacaoIds = [selectedOrgFilter];
-        } else if (user && !user.roles.includes('ADMIN')) {
+        } else if (user && !(user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN'))) {
           // Implicitly filter by user's organizations if none selected and not ADMIN
           const userOrgIds = user.organizations.map(org => org.id);
           if (userOrgIds.length > 0) {

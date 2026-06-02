@@ -145,7 +145,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
-    if (user.roles.includes('ADMIN')) return organizations;
+    if (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN')) return organizations;
     
     const userOrgIds = user.organizations.map(org => org.id);
     return organizations.filter(org => userOrgIds.includes(org.id));

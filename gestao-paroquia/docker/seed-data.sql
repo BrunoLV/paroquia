@@ -2,7 +2,7 @@
 -- Este script deve ser executado APÓS as migrações do Flyway.
 
 -- Limpa dados existentes para evitar conflitos em re-execuções
-TRUNCATE calendario.auditoria_operacoes, calendario.observacoes_evento, calendario.aprovacoes, 
+TRUNCATE calendario.projeto_solicitacoes_aprovacao, calendario.auditoria_operacoes, calendario.observacoes_evento, calendario.aprovacoes, 
          calendario.eventos, calendario.eventos_recorrencia, calendario.projetos_eventos, 
          calendario.anos_paroquiais, calendario.membros_organizacao, calendario.membros, 
          calendario.usuarios, calendario.locais, calendario.organizacoes RESTART IDENTITY CASCADE;
@@ -69,8 +69,8 @@ ON CONFLICT (ano) DO UPDATE SET status = EXCLUDED.status, data_fechamento_utc = 
 -- Projects (Projetos)
 INSERT INTO calendario.projetos_eventos (id, nome, descricao, status, organizacao_responsavel_id, inicio_utc, fim_utc, version)
 VALUES 
-    ('30000000-0000-0000-0000-000000000001', 'Catequese 2026', 'Ano letivo da catequese infantil', 'ATIVO', '00000000-0000-0000-0000-0000000000ee', '2026-02-01T00:00:00Z', '2026-12-15T23:59:59Z', 0),
-    ('30000000-0000-0000-0000-000000000002', 'Festividades de Maio', 'Mês de Nossa Senhora', 'ATIVO', '00000000-0000-0000-0000-0000000000dd', '2026-05-01T00:00:00Z', '2026-05-31T23:59:59Z', 0);
+    ('30000000-0000-0000-0000-000000000001', 'Catequese 2026', 'Ano letivo da catequese infantil', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000ee', '2026-02-01T00:00:00Z', '2026-12-15T23:59:59Z', 0),
+    ('30000000-0000-0000-0000-000000000002', 'Festividades de Maio', 'Mês de Nossa Senhora', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000dd', '2026-05-01T00:00:00Z', '2026-05-31T23:59:59Z', 0);
 
 -- Events (Eventos)
 INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version)
@@ -143,6 +143,32 @@ INSERT INTO calendario.aprovacoes (
 INSERT INTO calendario.observacoes_evento (id, evento_id, usuario_id, tipo, conteudo, criado_em_utc, version)
 VALUES 
     (gen_random_uuid(), '40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', 'NOTA', 'Lembrar de avisar os coroinhas sobre a missa.', '2026-02-01T14:00:00Z', 0);
+
+-- Project Approvals (Solicitações de Aprovação de Projetos)
+INSERT INTO calendario.projeto_solicitacoes_aprovacao (
+    id, projeto_id, tipo_solicitacao, status, solicitante_id, 
+    solicitante_papel, solicitante_tipo_organizacao, action_payload_json, 
+    cancelar_eventos_vinculados, criado_em_utc, decidido_em_utc, aprovador_id, 
+    decision_observacao, version
+) VALUES 
+    (
+        '70000000-0000-0000-0000-000000000001', NULL, 'CRIACAO', 'PENDENTE', 'maria.catequese', 
+        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Novo Projeto Catequese 2027", "descricao": "Planejamento para o ano de 2027", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2027-02-01T00:00:00Z", "fim": "2027-12-15T23:59:59Z"}', 
+        FALSE, '2026-06-01T12:00:00Z', NULL, NULL, 
+        NULL, 0
+    ),
+    (
+        '70000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000002', 'CANCELAMENTO', 'PENDENTE', 'pedro.liturgia', 
+        'COORDENADOR_PASTORAL', 'PASTORAL', NULL, 
+        TRUE, '2026-06-01T13:00:00Z', NULL, NULL, 
+        NULL, 0
+    ),
+    (
+        '70000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'CRIACAO', 'APROVADA', 'maria.catequese', 
+        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Catequese 2026", "descricao": "Ano letivo da catequese infantil", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2026-02-01T00:00:00Z", "fim": "2026-12-15T23:59:59Z"}', 
+        FALSE, '2026-01-10T10:00:00Z', '2026-01-11T09:00:00Z', 'padre.pedro', 
+        'Aprovado para início em ano aberto', 0
+    );
 
 -- Audit Trail
 INSERT INTO calendario.auditoria_operacoes (id, organizacao_id, evento_id, recurso_tipo, recurso_id, acao, resultado, ator, ator_usuario_id, correlation_id, detalhes_auditaveis_json, ocorrido_em_utc)
