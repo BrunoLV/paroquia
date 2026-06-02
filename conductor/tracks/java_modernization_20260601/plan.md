@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Environment & Build Tool Upgrades' (Protocol in workflow.md) 6d59040
 
 ## Phase 2: Dependency & Framework Modernization
-- [ ] Task: Modernize Spring Boot and Dependency Management Versions
-    - [ ] Update Spring Boot plugin version to `4.0.6` in `gradle/libs.versions.toml`.
-    - [ ] Update Spring Dependency Management plugin version to `1.1.7` in `gradle/libs.versions.toml`.
+- [x] Task: Modernize Spring Boot and Dependency Management Versions 15f5729
+    - [x] Update Spring Boot plugin version to `4.0.6` in `gradle/libs.versions.toml`.
+    - [x] Update Spring Dependency Management plugin version to `1.1.7` in `gradle/libs.versions.toml`.
 - [ ] Task: Update Core Libraries and Drivers
     - [ ] Modernize Springdoc OpenAPI version to `3.0.3` in `gradle/libs.versions.toml`.
     - [ ] Modernize Flyway plugin version to `12.7.0` in `gradle/libs.versions.toml`.
