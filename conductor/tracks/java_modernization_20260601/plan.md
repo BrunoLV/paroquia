@@ -1,13 +1,13 @@
 # Plan: Java 25 & Frameworks Modernization in gestao-paroquia
 
-## Phase 1: Environment & Build Tool Upgrades
+## Phase 1: Environment & Build Tool Upgrades [checkpoint: 6d59040]
 - [x] Task: Upgrade Gradle Wrapper to 9.1.0+ 16c8633
     - [x] Update Gradle wrapper properties in `gradle/wrapper/gradle-wrapper.properties` to reference Gradle 9.1.0 or higher.
     - [x] Run `./gradlew --version` to verify Gradle runtime works.
 - [x] Task: Update Java Target & Toolchain to Java 25 819fd22
     - [x] Modify `app/build.gradle.kts` to target JavaLanguageVersion.of(25).
     - [x] Verify local gradle build compiles with JDK 25.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Environment & Build Tool Upgrades' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Environment & Build Tool Upgrades' (Protocol in workflow.md) 6d59040
 
 ## Phase 2: Dependency & Framework Modernization
 - [ ] Task: Modernize Spring Boot and Dependency Management Versions
