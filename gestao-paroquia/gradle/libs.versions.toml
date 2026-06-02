@@ -2,18 +2,24 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-guava = "33.5.0-jre"
-junit-jupiter = "5.14.3"
-caffeine = "3.1.8"
+guava = "33.6.0-jre"
+junit-jupiter = "6.1.0"
+caffeine = "3.2.4"
 spring-boot-plugin = "4.0.6"
 spring-dependency-management-plugin = "1.1.7"
-flyway-plugin = "10.22.0"
+flyway-plugin = "12.7.0"
 sonarqube-plugin = "7.3.0.8198"
+springdoc-openapi = "3.0.3"
+apache-poi = "5.5.1"
+openpdf = "3.0.5"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
+apache-poi = { module = "org.apache.poi:poi-ooxml", version.ref = "apache-poi" }
+openpdf = { module = "com.github.librepdf:openpdf", version.ref = "openpdf" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot-plugin" }
