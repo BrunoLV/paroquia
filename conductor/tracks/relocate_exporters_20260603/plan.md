@@ -11,7 +11,7 @@
     - [x] Adjust package statements inside all moved test classes.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Code and Test Files Relocation' (Protocol in workflow.md) 47bf464
 
-## Phase 2: Reference Updates & Compilation
+## Phase 2: Reference Updates & Compilation [checkpoint: eb894aa]
 
 - [x] Task: Update Code References & Imports da39e2a
     - [x] Update imports in `ExportacaoCalendarioUseCase.java`.
@@ -19,7 +19,7 @@
     - [x] Update imports/package references in any configuration or spring wiring context.
 - [x] Task: Verify Project Compilation da39e2a
     - [x] Run `./gradlew compileJava compileTestJava` to ensure all package relocations and import changes compile successfully.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Reference Updates & Compilation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Reference Updates & Compilation' (Protocol in workflow.md) eb894aa
 
 ## Phase 3: Verification & Package Audit Report
 
