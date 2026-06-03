@@ -1,6 +1,6 @@
 # Implementation Plan: Align Package Structure with DDD, Clean Architecture, and SOLID Standards
 
-## Phase 1: Module `calendario` Packaging Restructuring
+## Phase 1: Module `calendario` Packaging Restructuring [checkpoint: 8344cc4]
 
 - [x] Task: Relocate Classes and Tests for Calendario d9fd3c7
     - [x] Create packages `domain.exception`, `application.service`, and `application.usecase.aprovacao.strategy` under `calendario`.
@@ -13,7 +13,7 @@
     - [x] Update import references in all other classes within `calendario` and controllers.
 - [x] Task: Verify Phase 1 Compilation d9fd3c7
     - [x] Run `./gradlew compileJava compileTestJava` to ensure Phase 1 restructuring compiles successfully.
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Module calendario Packaging Restructuring' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Module calendario Packaging Restructuring' (Protocol in workflow.md) 8344cc4
 
 ## Phase 2: Module `aprovacao` Packaging Restructuring
 
