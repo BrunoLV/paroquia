@@ -1,0 +1,1 @@
+Phase 1: Code and Test Files Relocation. Relocated CalendarioExporter, CsvCalendarioExporter, ExcelCalendarioExporter, PdfCalendarioExporter and their test files. Verification status: compiled with expected errors, user approved proceeding to Phase 2.
