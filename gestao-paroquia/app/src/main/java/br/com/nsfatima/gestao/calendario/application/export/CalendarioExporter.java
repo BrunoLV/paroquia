@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.evento;
+package br.com.nsfatima.gestao.calendario.application.export;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;

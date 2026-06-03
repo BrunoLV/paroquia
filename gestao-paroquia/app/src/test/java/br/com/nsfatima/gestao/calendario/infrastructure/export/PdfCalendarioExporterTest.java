@@ -1,6 +1,8 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.evento;
+package br.com.nsfatima.gestao.calendario.infrastructure.export;
 
+import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
@@ -10,18 +12,22 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-class CsvCalendarioExporterTest {
+class PdfCalendarioExporterTest {
 
-    private final CalendarioExporter exporter = new CsvCalendarioExporter();
+    private final CalendarioExporter exporter = new PdfCalendarioExporter();
 
     @Test
-    void shouldExportToCsv() {
+    void shouldExportToPdf() {
         ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
         config.setNome("Paróquia Teste");
+        config.setDiocese("Diocese Teste");
+        config.setEndereco("Endereço Teste");
+        config.setCorPrimariaHex("#1A237E");
+        config.setCorSecundariaHex("#808080");
 
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
-        event.setTitulo("Missa de Teste");
+        event.setTitulo("Missa de Teste PDF");
         event.setInicioUtc(Instant.parse("2026-05-10T10:00:00Z"));
         event.setFimUtc(Instant.parse("2026-05-10T11:00:00Z"));
         event.setStatus("CONFIRMADO");
@@ -35,8 +41,8 @@ class CsvCalendarioExporterTest {
                 config
         );
 
-        String csv = new String(result);
-        assertTrue(exporter.supports("CSV"));
-        assertTrue(csv.contains("Missa de Teste"));
+        assertNotNull(result);
+        assertTrue(exporter.supports("PDF"));
+        assertTrue(result.length > 0);
     }
 }

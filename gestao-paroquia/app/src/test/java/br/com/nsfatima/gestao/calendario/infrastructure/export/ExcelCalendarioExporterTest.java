@@ -1,5 +1,6 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.evento;
+package br.com.nsfatima.gestao.calendario.infrastructure.export;
 
+import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -11,22 +12,20 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-class PdfCalendarioExporterTest {
+class ExcelCalendarioExporterTest {
 
-    private final CalendarioExporter exporter = new PdfCalendarioExporter();
+    private final CalendarioExporter exporter = new ExcelCalendarioExporter();
 
     @Test
-    void shouldExportToPdf() {
+    void shouldExportToExcel() {
         ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
         config.setNome("Paróquia Teste");
         config.setDiocese("Diocese Teste");
         config.setEndereco("Endereço Teste");
-        config.setCorPrimariaHex("#1A237E");
-        config.setCorSecundariaHex("#808080");
 
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
-        event.setTitulo("Missa de Teste PDF");
+        event.setTitulo("Missa de Teste Excel");
         event.setInicioUtc(Instant.parse("2026-05-10T10:00:00Z"));
         event.setFimUtc(Instant.parse("2026-05-10T11:00:00Z"));
         event.setStatus("CONFIRMADO");
@@ -41,7 +40,7 @@ class PdfCalendarioExporterTest {
         );
 
         assertNotNull(result);
-        assertTrue(exporter.supports("PDF"));
+        assertTrue(exporter.supports("EXCEL"));
         assertTrue(result.length > 0);
     }
 }

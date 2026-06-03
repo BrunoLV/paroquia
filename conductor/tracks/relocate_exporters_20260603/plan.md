@@ -2,7 +2,7 @@
 
 ## Phase 1: Code and Test Files Relocation
 
-- [ ] Task: Relocate Exporter Interfaces and Implementations
+- [~] Task: Relocate Exporter Interfaces and Implementations
     - [ ] Move `CalendarioExporter.java` from `br.com.nsfatima.gestao.calendario.application.usecase.evento` to `br.com.nsfatima.gestao.calendario.application.export` package directory.
     - [ ] Move `CsvCalendarioExporter.java`, `ExcelCalendarioExporter.java`, and `PdfCalendarioExporter.java` to `br.com.nsfatima.gestao.calendario.infrastructure.export` package directory.
     - [ ] Adjust package statements inside all moved Java classes.
