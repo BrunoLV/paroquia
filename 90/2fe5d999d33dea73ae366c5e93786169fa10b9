@@ -1,0 +1,1 @@
+Phase 2: Module aprovacao Packaging Restructuring. Relocated custom exceptions, events, listeners, ports, strategies, DTOs, and mappers under aprovacao module to their clean layers. Verification status: compilation succeeded without errors.
