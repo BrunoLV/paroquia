@@ -13,13 +13,13 @@
 
 ## Phase 2: Reference Updates & Compilation
 
-- [~] Task: Update Code References & Imports
-    - [ ] Update imports in `ExportacaoCalendarioUseCase.java`.
-    - [ ] Update imports in `ExportacaoCalendarioController.java`.
-    - [ ] Update imports/package references in any configuration or spring wiring context.
-- [ ] Task: Verify Project Compilation
-    - [ ] Run `./gradlew compileJava compileTestJava` to ensure all package relocations and import changes compile successfully.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Reference Updates & Compilation' (Protocol in workflow.md)
+- [x] Task: Update Code References & Imports da39e2a
+    - [x] Update imports in `ExportacaoCalendarioUseCase.java`.
+    - [x] Update imports in `ExportacaoCalendarioController.java`.
+    - [x] Update imports/package references in any configuration or spring wiring context.
+- [x] Task: Verify Project Compilation da39e2a
+    - [x] Run `./gradlew compileJava compileTestJava` to ensure all package relocations and import changes compile successfully.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Reference Updates & Compilation' (Protocol in workflow.md)
 
 ## Phase 3: Verification & Package Audit Report
 
