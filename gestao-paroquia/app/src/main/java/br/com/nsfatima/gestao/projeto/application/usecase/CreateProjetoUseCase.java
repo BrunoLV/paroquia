@@ -13,7 +13,7 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

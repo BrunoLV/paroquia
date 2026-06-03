@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetailsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +37,7 @@ public class SecurityConfig {
     DaoAuthenticationProvider daoAuthenticationProvider(
             UsuarioDetailsService usuarioDetailsService,
             PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(usuarioDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(usuarioDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }

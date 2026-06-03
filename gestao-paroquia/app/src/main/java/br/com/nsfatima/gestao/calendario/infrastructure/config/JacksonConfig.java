@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import tools.jackson.databind.DeserializationFeature;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class JacksonConfig {
 
     @Bean
-    Jackson2ObjectMapperBuilderCustomizer strictRequestBindingCustomizer() {
-        return builder -> builder.featuresToEnable(
+    JsonMapperBuilderCustomizer strictRequestBindingCustomizer() {
+        return builder -> builder.enable(
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                 DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     }

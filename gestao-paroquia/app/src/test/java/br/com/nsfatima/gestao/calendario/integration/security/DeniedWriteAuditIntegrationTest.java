@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayloadMapper;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;

@@ -165,13 +165,21 @@ public class UpdateEventoUseCase {
         }
 
         mapper.applyPatch(entity, request, status);
+        if (request.participantes() != null && entity.getEnvolvidos() != null) {
+            entity.getEnvolvidos().clear();
+        }
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
         applyParticipantChanges(entity.getId(), request.participantes());
 
         // Manually fetch involvement to ensure response is complete (especially for EAGER loading consistency)
         List<EventoEnvolvidoEntity> involvement = involvementRepository.findByEventoId(saved.getId());
-        saved.setEnvolvidos(involvement);
+        if (saved.getEnvolvidos() != null) {
+            saved.getEnvolvidos().clear();
+            saved.getEnvolvidos().addAll(involvement);
+        } else {
+            saved.setEnvolvidos(involvement);
+        }
 
         publishMetrics(entity, request);
         publishAudit(saved, request, actorContext, auditResult, isApprovalFlow);

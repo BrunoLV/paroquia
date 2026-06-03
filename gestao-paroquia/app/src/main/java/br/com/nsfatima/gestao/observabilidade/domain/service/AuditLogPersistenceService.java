@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.observabilidade.domain.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
@@ -153,7 +153,7 @@ public class AuditLogPersistenceService {
     private String writeDetails(Map<String, Object> enrichedMetadata) {
         try {
             return objectMapper.writeValueAsString(enrichedMetadata);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             return "{}";
         }
     }

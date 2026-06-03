@@ -19,7 +19,7 @@ dependencies {
     implementation(libs.caffeine)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation(libs.springdoc.openapi)
-    implementation("org.flywaydb:flyway-core")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.postgresql:postgresql")
     implementation(libs.apache.poi)
@@ -27,6 +27,8 @@ dependencies {
 
     testImplementation(libs.junit.jupiter)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2")
 

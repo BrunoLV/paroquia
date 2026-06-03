@@ -1,11 +1,10 @@
 package br.com.nsfatima.gestao.observabilidade.domain.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +67,7 @@ public class AuditLogQueryService {
     private Map<String, Object> deserializeDetails(String json) {
         try {
             return json == null || json.isBlank() ? Map.of() : objectMapper.readValue(json, MAP_TYPE);
-        } catch (IOException ex) {
+        } catch (tools.jackson.core.JacksonException ex) {
             return Map.of("raw", json == null ? "" : json);
         }
     }

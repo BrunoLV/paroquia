@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import java.util.List;
 import br.com.nsfatima.gestao.calendario.application.usecase.metrics.PeriodoOperacionalInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
@@ -160,7 +160,7 @@ public class ValidationExceptionHandler extends BaseExceptionHandler {
         if (enumNormalizationException != null
                 && enumNormalizationException.getMessage() != null
                 && enumNormalizationException.getMessage().startsWith("Unsupported enum value")) {
-            JsonMappingException mappingException = findCause(ex, JsonMappingException.class);
+            JacksonException mappingException = findCause(ex, JacksonException.class);
             return new ValidationErrorItem(
                     ErrorCodes.VALIDATION_ENUM_VALUE_INVALID.name(),
                     extractFieldName(mappingException != null ? mappingException : ex),
@@ -198,11 +198,11 @@ public class ValidationExceptionHandler extends BaseExceptionHandler {
     }
 
     private String extractFieldName(Throwable throwable) {
-        if (throwable instanceof JsonMappingException jsonMappingException
-                && !jsonMappingException.getPath().isEmpty()) {
-            JsonMappingException.Reference reference = jsonMappingException.getPath().getLast();
-            if (reference.getFieldName() != null && !reference.getFieldName().isBlank()) {
-                return reference.getFieldName();
+        if (throwable instanceof JacksonException jacksonException
+                && !jacksonException.getPath().isEmpty()) {
+            JacksonException.Reference reference = jacksonException.getPath().getLast();
+            if (reference.getPropertyName() != null && !reference.getPropertyName().isBlank()) {
+                return reference.getPropertyName();
             }
         }
         return "requestBody";

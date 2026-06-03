@@ -17,7 +17,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

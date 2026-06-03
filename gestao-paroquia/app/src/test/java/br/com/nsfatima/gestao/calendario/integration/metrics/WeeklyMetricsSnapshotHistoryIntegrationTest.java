@@ -11,7 +11,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEv
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.WeeklyMetricsSnapshotJob;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

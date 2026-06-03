@@ -13,3 +13,4 @@ spring:
 logging:
   level:
     br.com.nsfatima.calendario.infrastructure.observability: DEBUG
+    org.springframework.security: DEBUG

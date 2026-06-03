@@ -1,12 +1,11 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +99,7 @@ public class ReworkRateCalculator {
     private Map<String, Object> deserializeDetails(String json) {
         try {
             return json == null || json.isBlank() ? Map.of() : objectMapper.readValue(json, MAP_TYPE);
-        } catch (IOException ex) {
+        } catch (tools.jackson.core.JacksonException ex) {
             return Map.of();
         }
     }

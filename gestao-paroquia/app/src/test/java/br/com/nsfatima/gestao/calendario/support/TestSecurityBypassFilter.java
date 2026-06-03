@@ -34,9 +34,17 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         Authentication existing = SecurityContextHolder.getContext().getAuthentication();
-        if (shouldStayAnonymous(request)
-                || isAuthenticated(existing)
-                || isLoginRequest(request)
+        if (shouldStayAnonymous(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (isAuthenticated(existing)) {
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (isLoginRequest(request)
                 || hasSecurityContextInSession(request)
                 || hasSessionCookie(request)) {
             filterChain.doFilter(request, response);

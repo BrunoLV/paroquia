@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,7 +16,7 @@ public class ApprovalActionPayloadMapper {
     public String toJson(ApprovalActionPayload payload) {
         try {
             return objectMapper.writeValueAsString(payload);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             throw new IllegalArgumentException("Unable to serialize approval action payload", ex);
         }
     }
@@ -27,7 +27,7 @@ public class ApprovalActionPayloadMapper {
         }
         try {
             return objectMapper.readValue(payloadJson, ApprovalActionPayload.class);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             throw new IllegalArgumentException("Unable to deserialize approval action payload", ex);
         }
     }
