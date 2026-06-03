@@ -17,22 +17,22 @@
 
 ## Phase 2: Module `aprovacao` Packaging Restructuring
 
-- [~] Task: Relocate Classes and Tests for Aprovacao
-    - [ ] Create packages `domain.exception`, `domain.event`, `application.listener`, `application.usecase.strategy`, `application.port.out`, `application.dto`, and `application.mapper` under `aprovacao`.
-    - [ ] Relocate exceptions to `domain.exception`: `ApprovalExecutionFailedException`, `ApprovalAlreadyDecidedException`, `ApprovalNotFoundException`.
-    - [ ] Relocate events to `domain.event`: `ApprovalDecisionEvent`.
-    - [ ] Relocate listener to `application.listener`: `ApprovalNotificationListener`.
-    - [ ] Relocate strategy to `application.usecase.strategy`: `ApprovalExecutionStrategy`.
-    - [ ] Relocate ports to `application.port.out`: `ApprovalAuditPublisher`, `ApprovalMetricsPublisher`.
-    - [ ] Relocate DTO to `application.dto`: `ApprovalActionPayload`.
-    - [ ] Relocate mapper to `application.mapper`: `ApprovalActionPayloadMapper`.
-    - [ ] Restructure all corresponding test classes under `src/test/java` to match.
-- [ ] Task: Update Package Declarations and Code References
-    - [ ] Adjust package statements inside all moved java classes.
-    - [ ] Update import references in all other classes within `aprovacao` and controllers.
-- [ ] Task: Verify Phase 2 Compilation
-    - [ ] Run `./gradlew compileJava compileTestJava` to ensure Phase 2 restructuring compiles successfully.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Module aprovacao Packaging Restructuring' (Protocol in workflow.md)
+- [x] Task: Relocate Classes and Tests for Aprovacao 82e039e
+    - [x] Create packages `domain.exception`, `domain.event`, `application.listener`, `application.usecase.strategy`, `application.port.out`, `application.dto`, and `application.mapper` under `aprovacao`.
+    - [x] Relocate exceptions to `domain.exception`: `ApprovalExecutionFailedException`, `ApprovalAlreadyDecidedException`, `ApprovalNotFoundException`.
+    - [x] Relocate events to `domain.event`: `ApprovalDecisionEvent`.
+    - [x] Relocate listener to `application.listener`: `ApprovalNotificationListener`.
+    - [x] Relocate strategy to `application.usecase.strategy`: `ApprovalExecutionStrategy`.
+    - [x] Relocate ports to `application.port.out`: `ApprovalAuditPublisher`, `ApprovalMetricsPublisher`.
+    - [x] Relocate DTO to `application.dto`: `ApprovalActionPayload`.
+    - [x] Relocate mapper to `application.mapper`: `ApprovalActionPayloadMapper`.
+    - [x] Restructure all corresponding test classes under `src/test/java` to match.
+- [x] Task: Update Package Declarations and Code References 82e039e
+    - [x] Adjust package statements inside all moved java classes.
+    - [x] Update import references in all other classes within `aprovacao` and controllers.
+- [x] Task: Verify Phase 2 Compilation 82e039e
+    - [x] Run `./gradlew compileJava compileTestJava` to ensure Phase 2 restructuring compiles successfully.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Module aprovacao Packaging Restructuring' (Protocol in workflow.md)
 
 ## Phase 3: Module `projeto` Packaging Restructuring & Full Verification
 
