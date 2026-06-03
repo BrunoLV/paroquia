@@ -74,3 +74,8 @@
 
 - [x] **Track: em gestao-paroquia nota-se no codigo o uso de inline fqn ao inves de import normal, isso nao e desejavel, ajuste o codigo.**
 *Link: [./tracks/clean_fqn_imports_20260602/](./tracks/clean_fqn_imports_20260602/)*
+
+---
+
+- [ ] **Track: Refactor ExportacaoCalendarioUseCase to separate export formats (PDF, Excel, CSV) via Strategy Pattern, and dynamically configure headers/footers/colors/logo from database configurations.**
+*Link: [./tracks/refactor_export_usecase_20260602/](./tracks/refactor_export_usecase_20260602/)*
