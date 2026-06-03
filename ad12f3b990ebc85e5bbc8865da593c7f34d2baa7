@@ -1,0 +1,7 @@
+Task: Scan Java Source Files for Inline FQNs
+Summary of changes:
+- Created and executed a scanning script to identify all inline FQNs across the entire gestao-paroquia Java codebase.
+- Documented 34 occurrences in fqn_locations.md.
+Created/modified files:
+- conductor/tracks/clean_fqn_imports_20260602/fqn_locations.md
+Core why: Establish baseline of all inline FQNs to prepare for import refactoring.
