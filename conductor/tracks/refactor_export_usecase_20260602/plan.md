@@ -2,13 +2,13 @@
 
 ## Phase 1: Configuration Infrastructure & Startup Seeding
 
-- [ ] Task: Create Database Migration, JPA Entity, and Repository
-    - [ ] Create Flyway migration script `V035__create_paroquia_configuracao.sql` in `db/migration`.
-    - [ ] Create JPA Entity `ParoquiaConfiguracaoEntity` mapped to the table.
-    - [ ] Create Spring Data Repository `ParoquiaConfiguracaoRepository`.
-- [ ] Task: Implement Startup Seeding with Classpath Logo
-    - [ ] Implement `ParoquiaConfiguracaoInitializer` implementing `ApplicationRunner` to seed default values.
-    - [ ] Write integration test verifying that default row is inserted with logo bytes from classpath when table is empty.
+- [x] Task: Create Database Migration, JPA Entity, and Repository 721d8cf
+    - [x] Create Flyway migration script `V035__create_paroquia_configuracao.sql` in `db/migration`.
+    - [x] Create JPA Entity `ParoquiaConfiguracaoEntity` mapped to the table.
+    - [x] Create Spring Data Repository `ParoquiaConfiguracaoRepository`.
+- [x] Task: Implement Startup Seeding with Classpath Logo 721d8cf
+    - [x] Implement `ParoquiaConfiguracaoInitializer` implementing `ApplicationRunner` to seed default values.
+    - [x] Write integration test verifying that default row is inserted with logo bytes from classpath when table is empty.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Configuration Infrastructure & Startup Seeding' (Protocol in workflow.md)
 
 ## Phase 2: Exporter Strategy Classes
