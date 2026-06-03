@@ -1,0 +1,1 @@
+Phase 1: Module calendario Packaging Restructuring. Relocated custom exceptions, services, and strategies under calendario module to domain.exception, application.service, and strategy subpackages. Verification status: compilation succeeded without errors.
