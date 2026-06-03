@@ -1,0 +1,18 @@
+Task: Replace Inline FQNs with Simple Names and Imports
+Summary: Refactored 20 Java source files to replace inline fully qualified names (FQNs) with simple names and imported the corresponding classes.
+Modified files:
+- app/src/main/java/br/com/nsfatima/gestao/calendario/api/error/DomainExceptionHandler.java
+- app/src/main/java/br/com/nsfatima/gestao/calendario/api/error/ValidationExceptionHandler.java
+- app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/ExportacaoCalendarioUseCase.java
+- app/src/main/java/br/com/nsfatima/gestao/calendario/domain/service/EventoService.java
+- app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/observability/EventoAuditPublisher.java
+- app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/entity/EventoEntity.java
+- app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/security/SecurityConfig.java
+- app/src/main/java/br/com/nsfatima/gestao/governanca/api/v1/controller/AnoParoquialController.java
+- app/src/main/java/br/com/nsfatima/gestao/projeto/application/usecase/CreateProjetoUseCase.java
+- app/src/main/java/br/com/nsfatima/gestao/projeto/domain/policy/ProjetoVincularPolicy.java
+- app/src/test/java/br/com/nsfatima/gestao/calendario/api/error/ExceptionHandlerIntegrationTest.java
+- app/src/test/java/br/com/nsfatima/gestao/calendario/api/v1/controller/EventoControllerGetTest.java
+- app/src/test/java/br/com/nsfatima/gestao/calendario/contract/ProjetoMutacaoContractTest.java
+- ... (rest of tests)
+Why: Improve codebase maintainability and readability.
