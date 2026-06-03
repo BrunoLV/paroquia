@@ -36,7 +36,7 @@
 
 ## Phase 3: Module `projeto` Packaging Restructuring & Full Verification
 
-- [ ] Task: Relocate Classes and Tests for Projeto
+- [~] Task: Relocate Classes and Tests for Projeto
     - [ ] Create packages `application.service` and `application.dto` under `projeto`.
     - [ ] Relocate service to `application.service`: `ProjetoAgregacaoService`.
     - [ ] Relocate DTO to `application.dto`: `ProjetoCreationResult`.

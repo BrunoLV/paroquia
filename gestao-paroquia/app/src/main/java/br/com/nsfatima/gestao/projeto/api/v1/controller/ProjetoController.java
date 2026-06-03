@@ -14,7 +14,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.application.usecase.CreateProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.ListProjetosUseCase;
-import br.com.nsfatima.gestao.projeto.application.usecase.ProjetoAgregacaoService;
+import br.com.nsfatima.gestao.projeto.application.service.ProjetoAgregacaoService;
 import br.com.nsfatima.gestao.projeto.application.usecase.UpdateProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.TransitionProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoDecisaoRequest;

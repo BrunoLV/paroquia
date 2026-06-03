@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.projeto.application.usecase;
+package br.com.nsfatima.gestao.projeto.application.service;
 
 import br.com.nsfatima.gestao.projeto.api.v1.dto.MapaColaboracaoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;

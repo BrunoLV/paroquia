@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.projeto.application.usecase;
+package br.com.nsfatima.gestao.projeto.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;

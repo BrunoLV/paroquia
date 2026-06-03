@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
+import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;

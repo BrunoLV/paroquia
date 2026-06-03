@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.projeto.application.usecase;
+package br.com.nsfatima.gestao.projeto.application.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
