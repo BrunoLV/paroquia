@@ -1,10 +1,10 @@
 # Tech Stack
 
 ## Programming Language
-- **Java 21**: The primary language for backend development, leveraging modern features and performance.
+- **Java 25**: The primary language for backend development, leveraging modern features and performance.
 
 ## Frameworks & Libraries
-- **Spring Boot 3.3.13**: The core framework for building the REST API, handling dependency injection, security, and more.
+- **Spring Boot 4.0.6**: The core framework for building the REST API, handling dependency injection, security, and more.
 - **Spring Data JPA**: For efficient data persistence and retrieval.
 - Spring Security: To implement robust authentication and authorization.
 - **SpringDoc OpenAPI**: For automated API documentation and interactive UI (Swagger).
