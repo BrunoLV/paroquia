@@ -23,9 +23,9 @@
 
 ## Phase 3: Verification & Package Audit Report
 
-- [ ] Task: Run Automated Tests
-    - [ ] Run `./gradlew test` to verify that all relocated exporter tests and all existing test suites pass.
-- [ ] Task: Compile Package Audit Report
-    - [ ] Perform a full scan of all `usecase` package directories.
-    - [ ] Document all classes that do not follow clean usecase architecture (exceptions, mappers, domain services, etc.) in a markdown report.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification & Package Audit Report' (Protocol in workflow.md)
+- [x] Task: Run Automated Tests 8cfb0e0
+    - [x] Run `./gradlew test` to verify that all relocated exporter tests and all existing test suites pass.
+- [x] Task: Compile Package Audit Report 8cfb0e0
+    - [x] Perform a full scan of all `usecase` package directories.
+    - [x] Document all classes that do not follow clean usecase architecture (exceptions, mappers, domain services, etc.) in a markdown report.
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Verification & Package Audit Report' (Protocol in workflow.md)
