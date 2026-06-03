@@ -9,11 +9,11 @@
 
 ## Phase 2: Refactoring & Verification
 
-- [ ] Task: Replace Inline FQNs with Simple Names and Imports
-    - [ ] Replace identified inline FQNs with their corresponding simple names.
-    - [ ] Add appropriate `import` statements at the top of the Java files.
-    - [ ] Resolve any namespace collisions if two identical simple names from different packages are used in the same file.
-- [ ] Task: Execute Build and Run Automated Tests
-    - [ ] Run `./gradlew compileJava compileTestJava` to ensure compilation is successful.
-    - [ ] Run `./gradlew test` to verify all 325 tests pass.
+- [x] Task: Replace Inline FQNs with Simple Names and Imports 9830258
+    - [x] Replace identified inline FQNs with their corresponding simple names.
+    - [x] Add appropriate `import` statements at the top of the Java files.
+    - [x] Resolve any namespace collisions if two identical simple names from different packages are used in the same file.
+- [x] Task: Execute Build and Run Automated Tests 9830258
+    - [x] Run `./gradlew compileJava compileTestJava` to ensure compilation is successful.
+    - [x] Run `./gradlew test` to verify all 325 tests pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Refactoring & Verification' (Protocol in workflow.md)
