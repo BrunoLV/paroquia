@@ -70,4 +70,7 @@
 - [x] **Track: Controle de status, fluxos de aprovação e governança de Projetos vinculados a anos paroquiais.**
 *Link: [./archive/projeto_governanca_status_20260601/](./archive/projeto_governanca_status_20260601/)*
 
+---
 
+- [ ] **Track: em gestao-paroquia nota-se no codigo o uso de inline fqn ao inves de import normal, isso nao e desejavel, ajuste o codigo.**
+*Link: [./tracks/clean_fqn_imports_20260602/](./tracks/clean_fqn_imports_20260602/)*
