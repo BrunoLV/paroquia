@@ -13,13 +13,13 @@
 
 ## Phase 2: Exporter Strategy Classes
 
-- [ ] Task: Create Exporter Strategy Interface and Unit Tests (TDD)
-    - [ ] Define `CalendarioExporter` interface.
-    - [ ] Create `CsvCalendarioExporterTest`, `ExcelCalendarioExporterTest`, and `PdfCalendarioExporterTest` classes to define expectations.
-- [ ] Task: Implement Exporter Strategy Classes
-    - [ ] Implement `CsvCalendarioExporter` and verify tests.
-    - [ ] Implement `ExcelCalendarioExporter` resolving dynamic styling/headers/logo from the database entity.
-    - [ ] Implement `PdfCalendarioExporter` (with the dynamic watermark/header/footer helper using dynamic configuration).
+- [x] Task: Create Exporter Strategy Interface and Unit Tests (TDD) 9d29c6d
+    - [x] Define `CalendarioExporter` interface.
+    - [x] Create `CsvCalendarioExporterTest`, `ExcelCalendarioExporterTest`, and `PdfCalendarioExporterTest` classes to define expectations.
+- [x] Task: Implement Exporter Strategy Classes 9d29c6d
+    - [x] Implement `CsvCalendarioExporter` and verify tests.
+    - [x] Implement `ExcelCalendarioExporter` resolving dynamic styling/headers/logo from the database entity.
+    - [x] Implement `PdfCalendarioExporter` (with the dynamic watermark/header/footer helper using dynamic configuration).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Exporter Strategy Classes' (Protocol in workflow.md)
 
 ## Phase 3: Use Case Integration & Verification
