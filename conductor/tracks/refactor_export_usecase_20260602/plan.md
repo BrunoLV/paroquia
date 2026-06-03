@@ -11,7 +11,7 @@
     - [x] Write integration test verifying that default row is inserted with logo bytes from classpath when table is empty.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration Infrastructure & Startup Seeding' (Protocol in workflow.md) ba43491
 
-## Phase 2: Exporter Strategy Classes
+## Phase 2: Exporter Strategy Classes [checkpoint: a9e1411]
 
 - [x] Task: Create Exporter Strategy Interface and Unit Tests (TDD) 9d29c6d
     - [x] Define `CalendarioExporter` interface.
@@ -20,7 +20,7 @@
     - [x] Implement `CsvCalendarioExporter` and verify tests.
     - [x] Implement `ExcelCalendarioExporter` resolving dynamic styling/headers/logo from the database entity.
     - [x] Implement `PdfCalendarioExporter` (with the dynamic watermark/header/footer helper using dynamic configuration).
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Exporter Strategy Classes' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Exporter Strategy Classes' (Protocol in workflow.md) a9e1411
 
 ## Phase 3: Use Case Integration & Verification
 
