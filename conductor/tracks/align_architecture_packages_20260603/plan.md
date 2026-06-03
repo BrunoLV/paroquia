@@ -36,15 +36,15 @@
 
 ## Phase 3: Module `projeto` Packaging Restructuring & Full Verification
 
-- [~] Task: Relocate Classes and Tests for Projeto
-    - [ ] Create packages `application.service` and `application.dto` under `projeto`.
-    - [ ] Relocate service to `application.service`: `ProjetoAgregacaoService`.
-    - [ ] Relocate DTO to `application.dto`: `ProjetoCreationResult`.
-    - [ ] Restructure all corresponding test classes under `src/test/java` to match.
-- [ ] Task: Update Package Declarations and Code References
-    - [ ] Adjust package statements inside all moved java classes.
-    - [ ] Update import references in all other classes within `projeto` and controllers.
-- [ ] Task: Run Automated Tests
-    - [ ] Run `./gradlew compileJava compileTestJava` to ensure the entire project compiles successfully.
-    - [ ] Run `./gradlew test` to verify that all automated unit and integration tests pass.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Module projeto Packaging Restructuring & Full Verification' (Protocol in workflow.md)
+- [x] Task: Relocate Classes and Tests for Projeto 50717a7
+    - [x] Create packages `application.service` and `application.dto` under `projeto`.
+    - [x] Relocate service to `application.service`: `ProjetoAgregacaoService`.
+    - [x] Relocate DTO to `application.dto`: `ProjetoCreationResult`.
+    - [x] Restructure all corresponding test classes under `src/test/java` to match.
+- [x] Task: Update Package Declarations and Code References 50717a7
+    - [x] Adjust package statements inside all moved java classes.
+    - [x] Update import references in all other classes within `projeto` and controllers.
+- [x] Task: Run Automated Tests 50717a7
+    - [x] Run `./gradlew compileJava compileTestJava` to ensure the entire project compiles successfully.
+    - [x] Run `./gradlew test` to verify that all automated unit and integration tests pass.
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Module projeto Packaging Restructuring & Full Verification' (Protocol in workflow.md)
