@@ -1,0 +1,3 @@
+Tasks: Create Exporter Strategy Interface and Unit Tests (TDD) & Implement Exporter Strategy Classes
+Summary: Created CalendarioExporter interface, and CsvCalendarioExporter, ExcelCalendarioExporter, PdfCalendarioExporter implementations. Added unit test classes for each exporter verifying supports and output formats. Resolved styling, headers, layout, and watermark logo dynamically from config database values.
+Why: Abstract and modularize export logic into format-specific strategies, separating concerns and removing hardcoded layout/image resources.
