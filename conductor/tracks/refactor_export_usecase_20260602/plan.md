@@ -22,7 +22,7 @@
     - [x] Implement `PdfCalendarioExporter` (with the dynamic watermark/header/footer helper using dynamic configuration).
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Exporter Strategy Classes' (Protocol in workflow.md) a9e1411
 
-## Phase 3: Use Case Integration & Verification
+## Phase 3: Use Case Integration & Verification [checkpoint: cfb8600]
 
 - [x] Task: Refactor and Simplify Use Case e1ef5e5
     - [x] Refactor `ExportacaoCalendarioUseCase` to inject the configuration repository and strategy list.
@@ -30,4 +30,4 @@
 - [x] Task: Verify Project Compilation and Run Automated Tests e1ef5e5
     - [x] Run `./gradlew compileJava compileTestJava` to verify compilation.
     - [x] Run `./gradlew test` to ensure all tests (including new and legacy tests) pass successfully.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Use Case Integration & Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Use Case Integration & Verification' (Protocol in workflow.md) cfb8600
