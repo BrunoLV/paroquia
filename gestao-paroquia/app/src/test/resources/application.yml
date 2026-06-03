@@ -14,3 +14,12 @@ logging:
   level:
     br.com.nsfatima.calendario.infrastructure.observability: DEBUG
     org.springframework.security: DEBUG
+
+app:
+  paroquia:
+    nome: "Paróquia Nossa Senhora de Fátima"
+    diocese: "Diocese de São Miguel Paulista"
+    endereco: "Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP"
+    cor-primaria-hex: "#1A237E"
+    cor-secundaria-hex: "#808080"
+    logo-path: "/logo-paroquia.png"

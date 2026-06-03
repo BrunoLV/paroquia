@@ -26,6 +26,13 @@ server:
 app:
   timezone:
     output: ${APP_TIMEZONE:America/Sao_Paulo}
+  paroquia:
+    nome: "Paróquia Nossa Senhora de Fátima"
+    diocese: "Diocese de São Miguel Paulista"
+    endereco: "Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP"
+    cor-primaria-hex: "#1A237E"
+    cor-secundaria-hex: "#808080"
+    logo-path: "/logo-paroquia.png"
 
 management:
   endpoints:

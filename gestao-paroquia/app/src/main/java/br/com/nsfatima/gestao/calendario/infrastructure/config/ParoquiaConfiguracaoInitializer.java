@@ -12,9 +12,13 @@ import org.springframework.stereotype.Component;
 public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {
 
     private final ParoquiaConfiguracaoRepository repository;
+    private final ParoquiaProperties properties;
 
-    public ParoquiaConfiguracaoInitializer(ParoquiaConfiguracaoRepository repository) {
+    public ParoquiaConfiguracaoInitializer(
+            ParoquiaConfiguracaoRepository repository,
+            ParoquiaProperties properties) {
         this.repository = repository;
+        this.properties = properties;
     }
 
     @Override
@@ -22,19 +26,22 @@ public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {
         if (repository.count() == 0) {
             ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
             config.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-            config.setNome("Paróquia Nossa Senhora de Fátima");
-            config.setDiocese("Diocese de São Miguel Paulista");
-            config.setEndereco("Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP");
-            config.setCorPrimariaHex("#1A237E");
-            config.setCorSecundariaHex("#808080");
+            config.setNome(properties.getNome());
+            config.setDiocese(properties.getDiocese());
+            config.setEndereco(properties.getEndereco());
+            config.setCorPrimariaHex(properties.getCorPrimariaHex());
+            config.setCorSecundariaHex(properties.getCorSecundariaHex());
 
             byte[] logoBytes = null;
-            try (InputStream is = getClass().getResourceAsStream("/logo-paroquia.png")) {
-                if (is != null) {
-                    logoBytes = is.readAllBytes();
+            String logoPath = properties.getLogoPath();
+            if (logoPath != null && !logoPath.isBlank()) {
+                try (InputStream is = getClass().getResourceAsStream(logoPath)) {
+                    if (is != null) {
+                        logoBytes = is.readAllBytes();
+                    }
+                } catch (Exception e) {
+                    // Silently ignore to guarantee resilience if logo file doesn't exist
                 }
-            } catch (Exception e) {
-                // Silently ignore to guarantee resilience if logo file doesn't exist
             }
             config.setLogoBytes(logoBytes);
 
