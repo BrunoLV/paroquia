@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalendarLockedException;
+import br.com.nsfatima.gestao.calendario.domain.exception.CalendarLockedException;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;

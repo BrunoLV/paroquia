@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
+package br.com.nsfatima.gestao.calendario.application.service;
 
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;

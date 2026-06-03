@@ -2,7 +2,7 @@
 
 ## Phase 1: Module `calendario` Packaging Restructuring
 
-- [ ] Task: Relocate Classes and Tests for Calendario
+- [~] Task: Relocate Classes and Tests for Calendario
     - [ ] Create packages `domain.exception`, `application.service`, and `application.usecase.aprovacao.strategy` under `calendario`.
     - [ ] Relocate exceptions to `domain.exception`: `PeriodoOperacionalInvalidoException`, `CalendarLockedException`, `ObservacaoNaoEncontradaException`, `ObservacaoTipoManualInvalidoException`, `ObservacaoAutorInvalidoException`, `ObservacaoTipoImutavelException`, `IdempotencyConflictException`.
     - [ ] Relocate services to `application.service`: `ReworkRateCalculator`, `EventoIdempotencyService`.

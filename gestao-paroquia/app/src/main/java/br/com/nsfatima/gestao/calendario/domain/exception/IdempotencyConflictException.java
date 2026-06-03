@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.evento;
+package br.com.nsfatima.gestao.calendario.domain.exception;
 
 public class IdempotencyConflictException extends RuntimeException {
 

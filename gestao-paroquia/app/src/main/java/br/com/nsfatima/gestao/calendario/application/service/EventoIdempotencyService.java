@@ -1,6 +1,7 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.evento;
+package br.com.nsfatima.gestao.calendario.application.service;
 
 import java.nio.charset.StandardCharsets;
+import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;

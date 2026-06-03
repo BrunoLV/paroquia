@@ -4,7 +4,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import java.util.List;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.PeriodoOperacionalInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import org.springframework.core.annotation.Order;

@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoAutorInvalidoException;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoTipoImutavelException;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoTipoManualInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import java.util.UUID;

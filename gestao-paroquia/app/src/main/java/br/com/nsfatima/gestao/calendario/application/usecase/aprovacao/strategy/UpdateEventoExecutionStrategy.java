@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao;
+package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.strategy;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayload;

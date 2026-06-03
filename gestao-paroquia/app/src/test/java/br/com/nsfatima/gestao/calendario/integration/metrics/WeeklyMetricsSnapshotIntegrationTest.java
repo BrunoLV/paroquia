@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.metrics;
 
 import tools.jackson.databind.ObjectMapper;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ReworkRateCalculator;
+import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.WeeklyMetricsSnapshotJob;

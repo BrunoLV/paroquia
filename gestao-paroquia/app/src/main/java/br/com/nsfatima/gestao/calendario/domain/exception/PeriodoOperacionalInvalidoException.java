@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
+package br.com.nsfatima.gestao.calendario.domain.exception;
 
 public class PeriodoOperacionalInvalidoException extends RuntimeException {
 

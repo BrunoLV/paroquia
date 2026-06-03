@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ReworkRateCalculator;
+import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import java.time.Instant;
 import java.util.ArrayList;

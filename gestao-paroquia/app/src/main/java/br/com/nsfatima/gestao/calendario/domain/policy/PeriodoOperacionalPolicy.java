@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.PeriodoOperacionalInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
 import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;

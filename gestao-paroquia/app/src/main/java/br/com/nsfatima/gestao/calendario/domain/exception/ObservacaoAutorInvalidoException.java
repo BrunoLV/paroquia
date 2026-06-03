@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
+package br.com.nsfatima.gestao.calendario.domain.exception;
 
 public class ObservacaoAutorInvalidoException extends RuntimeException {
 

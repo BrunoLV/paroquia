@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
+import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
+import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;

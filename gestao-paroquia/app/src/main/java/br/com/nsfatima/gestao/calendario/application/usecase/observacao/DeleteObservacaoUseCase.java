@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.service.ObservacaoMutationPolicyService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;

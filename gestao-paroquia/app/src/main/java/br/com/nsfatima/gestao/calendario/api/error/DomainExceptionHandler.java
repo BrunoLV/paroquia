@@ -1,15 +1,15 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalendarLockedException;
+import br.com.nsfatima.gestao.calendario.domain.exception.CalendarLockedException;
 import java.util.List;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.IdempotencyConflictException;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoAutorInvalidoException;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoNaoEncontradaException;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoTipoImutavelException;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ObservacaoTipoManualInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
