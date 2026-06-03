@@ -15,7 +15,7 @@
     - [x] Run `./gradlew compileJava compileTestJava` to ensure Phase 1 restructuring compiles successfully.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Module calendario Packaging Restructuring' (Protocol in workflow.md) 8344cc4
 
-## Phase 2: Module `aprovacao` Packaging Restructuring
+## Phase 2: Module `aprovacao` Packaging Restructuring [checkpoint: 902fe5d]
 
 - [x] Task: Relocate Classes and Tests for Aprovacao 82e039e
     - [x] Create packages `domain.exception`, `domain.event`, `application.listener`, `application.usecase.strategy`, `application.port.out`, `application.dto`, and `application.mapper` under `aprovacao`.
@@ -32,7 +32,7 @@
     - [x] Update import references in all other classes within `aprovacao` and controllers.
 - [x] Task: Verify Phase 2 Compilation 82e039e
     - [x] Run `./gradlew compileJava compileTestJava` to ensure Phase 2 restructuring compiles successfully.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Module aprovacao Packaging Restructuring' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Module aprovacao Packaging Restructuring' (Protocol in workflow.md) 902fe5d
 
 ## Phase 3: Module `projeto` Packaging Restructuring & Full Verification
 
