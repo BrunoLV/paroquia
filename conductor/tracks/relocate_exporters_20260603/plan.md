@@ -2,14 +2,14 @@
 
 ## Phase 1: Code and Test Files Relocation
 
-- [~] Task: Relocate Exporter Interfaces and Implementations
-    - [ ] Move `CalendarioExporter.java` from `br.com.nsfatima.gestao.calendario.application.usecase.evento` to `br.com.nsfatima.gestao.calendario.application.export` package directory.
-    - [ ] Move `CsvCalendarioExporter.java`, `ExcelCalendarioExporter.java`, and `PdfCalendarioExporter.java` to `br.com.nsfatima.gestao.calendario.infrastructure.export` package directory.
-    - [ ] Adjust package statements inside all moved Java classes.
-- [ ] Task: Relocate Exporter Test Files
-    - [ ] Move `CsvCalendarioExporterTest.java`, `ExcelCalendarioExporterTest.java`, and `PdfCalendarioExporterTest.java` from test source `usecase.evento` package to `br.com.nsfatima.gestao.calendario.infrastructure.export` test package directory.
-    - [ ] Adjust package statements inside all moved test classes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Code and Test Files Relocation' (Protocol in workflow.md)
+- [x] Task: Relocate Exporter Interfaces and Implementations 71c88d8
+    - [x] Move `CalendarioExporter.java` from `br.com.nsfatima.gestao.calendario.application.usecase.evento` to `br.com.nsfatima.gestao.calendario.application.export` package directory.
+    - [x] Move `CsvCalendarioExporter.java`, `ExcelCalendarioExporter.java`, and `PdfCalendarioExporter.java` to `br.com.nsfatima.gestao.calendario.infrastructure.export` package directory.
+    - [x] Adjust package statements inside all moved Java classes.
+- [x] Task: Relocate Exporter Test Files 71c88d8
+    - [x] Move `CsvCalendarioExporterTest.java`, `ExcelCalendarioExporterTest.java`, and `PdfCalendarioExporterTest.java` from test source `usecase.evento` package to `br.com.nsfatima.gestao.calendario.infrastructure.export` test package directory.
+    - [x] Adjust package statements inside all moved test classes.
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Code and Test Files Relocation' (Protocol in workflow.md)
 
 ## Phase 2: Reference Updates & Compilation
 
