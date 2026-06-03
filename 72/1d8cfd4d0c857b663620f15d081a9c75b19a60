@@ -1,0 +1,3 @@
+Tasks: Create Database Migration, JPA Entity, and Repository & Implement Startup Seeding with Classpath Logo
+Summary: Added V035__create_paroquia_configuracao.sql Flyway migration script, ParoquiaConfiguracaoEntity, and ParoquiaConfiguracaoRepository. Implemented ParoquiaConfiguracaoInitializer to populate the config table at startup if empty, reading the default logo from classpath. Added repository unit test and initializer integration test.
+Why: Provide dynamic configuration storage for parish details (logo, address, name, diocese, colors) in database.
