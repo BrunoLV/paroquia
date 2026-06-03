@@ -80,3 +80,9 @@
 - [x] **Track: Refactor ExportacaoCalendarioUseCase to separate export formats (PDF, Excel, CSV) via Strategy Pattern, and dynamically configure headers/footers/colors/logo from database configurations.**
 *Link: [./tracks/refactor_export_usecase_20260602/](./tracks/refactor_export_usecase_20260602/)*
 
+---
+
+- [ ] **Track: revisar o codigo e estrutra de pacotes para ficar condizente com os padrões de DDD e Hexagonal Architecture, SOLID e Clean Archtecture**
+*Link: [./tracks/align_architecture_packages_20260603/](./tracks/align_architecture_packages_20260603/)*
+
+
