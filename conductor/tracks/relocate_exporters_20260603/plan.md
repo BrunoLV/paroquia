@@ -13,7 +13,7 @@
 
 ## Phase 2: Reference Updates & Compilation
 
-- [ ] Task: Update Code References & Imports
+- [~] Task: Update Code References & Imports
     - [ ] Update imports in `ExportacaoCalendarioUseCase.java`.
     - [ ] Update imports in `ExportacaoCalendarioController.java`.
     - [ ] Update imports/package references in any configuration or spring wiring context.
