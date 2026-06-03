@@ -1,0 +1,3 @@
+Task: Load default configuration properties from application.yml
+Summary: Configured default values inside app.paroquia block in application.yml and app/src/test/resources/application.yml. Created ParoquiaProperties class to map properties from application.yml. Refactored ParoquiaConfiguracaoInitializer to use ParoquiaProperties.
+Why: Enable defining default configuration properties in configuration files instead of hardcoding them in Java source code.
