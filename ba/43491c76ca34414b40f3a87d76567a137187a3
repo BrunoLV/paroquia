@@ -1,0 +1,7 @@
+Phase Verification Report - Phase 1: Configuration Infrastructure & Startup Seeding
+Automated Test Command: CI=true ./gradlew test
+Manual Verification Steps:
+1. Query Postgres settings table: SELECT nome, diocese, cor_primaria_hex, LENGTH(logo_bytes) FROM calendario.paroquia_configuracao;
+2. Verify row contains Paróquia Nossa Senhora de Fátima, Diocese de São Miguel Paulista, #1A237E, and logo bytes.
+User Confirmation: Yes (confirmed in workspace chat)
+Status: Passed
