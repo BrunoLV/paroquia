@@ -31,11 +31,11 @@
     - [x] Verify code coverage is maintained above 80%.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Code Adjustments & Test Verification' (Protocol in workflow.md) 2175dd7
 
-## Phase 4: Container Environment Update & Integration
+## Phase 4: Container Environment Update & Integration [checkpoint: 768607c]
 - [x] Task: Update Docker Configuration 8caca62
     - [x] Modify `Dockerfile.api` to use `eclipse-temurin:25-jre-alpine`.
     - [x] Modify `Dockerfile.builder` to use `eclipse-temurin:25-jdk-alpine`.
 - [x] Task: Docker Compose Execution & Verification
     - [x] Rebuild and run all services with `docker-compose up --build -d`.
     - [x] Check container logs to verify backend starts successfully and connects to PostgreSQL/migrations run.
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Container Environment Update & Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Container Environment Update & Integration' (Protocol in workflow.md) 768607c
