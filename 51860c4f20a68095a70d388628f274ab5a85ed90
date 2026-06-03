@@ -1,0 +1,12 @@
+Task: Phase 3: Code Adjustments & Test Verification
+Summary of changes:
+- Resolved Hibernate 7 / Spring Data 4 compilation deprecations and test imports across 155+ test files (updating @DataJpaTest and TestEntityManager imports).
+- Resolved missing MockMvc packages by adding spring-boot-starter-webmvc-test dependency to version catalog.
+- Restored Flyway auto-configuration by replacing flyway-core with spring-boot-starter-flyway.
+- Fixed security context bypass filter in tests to store context in session repository for Spring Security 7 compatibility.
+- Fixed TransientPropertyValueException on EventoEntity.envolvidos update by clearing the read-only collection in-place instead of replacing references.
+- Fixed 400 Bad Request error on Local/Organization creation due to strict Jackson 3 record deserialization of primitive boolean 'ativo' field.
+Created/modified files:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/UpdateEventoUseCase.java
+- gestao-paroquia/app/src/test/java/... (155+ test files)
+Core why: Modernize codebase to Java 25 & Spring Boot 4.0.6, resolving breaking changes in libraries and framework namespace/behavior.
