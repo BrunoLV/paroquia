@@ -1,0 +1,31 @@
+# Implementation Plan: Relocate Exporters and Address Package Smells
+
+## Phase 1: Code and Test Files Relocation
+
+- [ ] Task: Relocate Exporter Interfaces and Implementations
+    - [ ] Move `CalendarioExporter.java` from `br.com.nsfatima.gestao.calendario.application.usecase.evento` to `br.com.nsfatima.gestao.calendario.application.export` package directory.
+    - [ ] Move `CsvCalendarioExporter.java`, `ExcelCalendarioExporter.java`, and `PdfCalendarioExporter.java` to `br.com.nsfatima.gestao.calendario.infrastructure.export` package directory.
+    - [ ] Adjust package statements inside all moved Java classes.
+- [ ] Task: Relocate Exporter Test Files
+    - [ ] Move `CsvCalendarioExporterTest.java`, `ExcelCalendarioExporterTest.java`, and `PdfCalendarioExporterTest.java` from test source `usecase.evento` package to `br.com.nsfatima.gestao.calendario.infrastructure.export` test package directory.
+    - [ ] Adjust package statements inside all moved test classes.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Code and Test Files Relocation' (Protocol in workflow.md)
+
+## Phase 2: Reference Updates & Compilation
+
+- [ ] Task: Update Code References & Imports
+    - [ ] Update imports in `ExportacaoCalendarioUseCase.java`.
+    - [ ] Update imports in `ExportacaoCalendarioController.java`.
+    - [ ] Update imports/package references in any configuration or spring wiring context.
+- [ ] Task: Verify Project Compilation
+    - [ ] Run `./gradlew compileJava compileTestJava` to ensure all package relocations and import changes compile successfully.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Reference Updates & Compilation' (Protocol in workflow.md)
+
+## Phase 3: Verification & Package Audit Report
+
+- [ ] Task: Run Automated Tests
+    - [ ] Run `./gradlew test` to verify that all relocated exporter tests and all existing test suites pass.
+- [ ] Task: Compile Package Audit Report
+    - [ ] Perform a full scan of all `usecase` package directories.
+    - [ ] Document all classes that do not follow clean usecase architecture (exceptions, mappers, domain services, etc.) in a markdown report.
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification & Package Audit Report' (Protocol in workflow.md)

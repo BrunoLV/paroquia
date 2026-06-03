@@ -79,3 +79,9 @@
 
 - [x] **Track: Refactor ExportacaoCalendarioUseCase to separate export formats (PDF, Excel, CSV) via Strategy Pattern, and dynamically configure headers/footers/colors/logo from database configurations.**
 *Link: [./tracks/refactor_export_usecase_20260602/](./tracks/refactor_export_usecase_20260602/)*
+
+---
+
+- [ ] **Track: classes Exporter em usecase/evento não casos de uso, sao utilitarios que servem apenas para gerar arquivos, dentro da arquitetura da app isso soa como bad smell. revise isso e ajuste os pacotes. necessário fazer essa analise no projeto como um todo**
+*Link: [./tracks/relocate_exporters_20260603/](./tracks/relocate_exporters_20260603/)*
+
