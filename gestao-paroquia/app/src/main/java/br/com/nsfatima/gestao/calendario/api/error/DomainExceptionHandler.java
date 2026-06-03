@@ -15,6 +15,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -161,9 +163,9 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         ex.getIdentifier() == null ? null : String.valueOf(ex.getIdentifier()))));
     }
 
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ValidationErrorResponse> handleDataIntegrityViolation(
-            org.springframework.dao.DataIntegrityViolationException ex) {
+            DataIntegrityViolationException ex) {
         String message = "Conflito de integridade de dados: valor duplicado ou restrição violada.";
         String details = ex.getMostSpecificCause().getMessage();
         if (details != null) {
@@ -184,8 +186,8 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
-    public ResponseEntity<ValidationErrorResponse> handleDataAccess(org.springframework.dao.DataAccessException ex) {
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ValidationErrorResponse> handleDataAccess(DataAccessException ex) {
         return buildValidation(
                 HttpStatus.SERVICE_UNAVAILABLE,
                 ErrorCodes.AUTHZ_SOURCE_UNAVAILABLE,

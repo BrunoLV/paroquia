@@ -37,6 +37,9 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -97,10 +100,10 @@ public class ExportacaoCalendarioUseCase {
         }
 
         // 2. Busca os eventos no período com filtros adicionais
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+        Pageable pageable = PageRequest.of(
                 0, 
                 100000, 
-                org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "inicioUtc")
+                Sort.by(Sort.Direction.ASC, "inicioUtc")
         );
         
         List<EventoEntity> eventos = eventRepository.findAllWithFilters(

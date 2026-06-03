@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -112,7 +114,7 @@ public class ValidationExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    private ValidationErrorItem toValidationItem(org.springframework.validation.ObjectError error) {
+    private ValidationErrorItem toValidationItem(ObjectError error) {
         if (error instanceof FieldError fieldError) {
             ErrorCodes code = isRequiredField(fieldError) ? ErrorCodes.VALIDATION_REQUIRED_FIELD
                     : ErrorCodes.VALIDATION_FIELD_INVALID;
@@ -219,9 +221,9 @@ public class ValidationExceptionHandler extends BaseExceptionHandler {
         return null;
     }
 
-    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ValidationErrorResponse> handleTypeMismatch(
-            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
+            MethodArgumentTypeMismatchException ex) {
         String message = "Tipo de dado inválido para o parâmetro: " + ex.getName();
         return buildValidation(
                 HttpStatus.BAD_REQUEST,

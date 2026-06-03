@@ -10,6 +10,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.jdbc.Sql;
 import static org.hamcrest.Matchers.hasItem;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@org.springframework.test.context.jdbc.Sql(scripts = "classpath:sql/security-fixtures.sql")
+@Sql(scripts = "classpath:sql/security-fixtures.sql")
 class LegacyEventoReadCompatibilityIntegrationTest {
 
     @Autowired

@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,8 +36,8 @@ class ProjetosContractTest {
         entity.setNome("Projeto Pastoral");
         entity.setDescricao("Planejamento");
         entity.setOrganizacaoResponsavelId(UUID.randomUUID());
-        entity.setInicioUtc(java.time.Instant.parse("2026-01-01T00:00:00Z"));
-        entity.setFimUtc(java.time.Instant.parse("2026-12-31T23:59:59Z"));
+        entity.setInicioUtc(Instant.parse("2026-01-01T00:00:00Z"));
+        entity.setFimUtc(Instant.parse("2026-12-31T23:59:59Z"));
         repository.save(entity);
     }
 

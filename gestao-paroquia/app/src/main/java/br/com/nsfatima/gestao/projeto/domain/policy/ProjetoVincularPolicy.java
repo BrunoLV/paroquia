@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.List;
+import java.time.ZoneOffset;
+import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
 
 @Service
 public class ProjetoVincularPolicy {
@@ -54,7 +57,7 @@ public class ProjetoVincularPolicy {
      * @param firstEnd The end date of the first event occurrence.
      * @param regra The recurrence rule.
      */
-    public void validateRecurrence(UUID projetoId, Instant firstStart, Instant firstEnd, br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia regra) {
+    public void validateRecurrence(UUID projetoId, Instant firstStart, Instant firstEnd, RegraRecorrencia regra) {
         if (projetoId == null) {
             return;
         }
@@ -74,7 +77,7 @@ public class ProjetoVincularPolicy {
             throw new IllegalArgumentException("A data de início do evento está fora do limite definido para o projeto " + projeto.getNome());
         }
 
-        LocalDate endOfProject = projeto.getFimUtc().atZone(java.time.ZoneOffset.UTC).toLocalDate();
+        LocalDate endOfProject = projeto.getFimUtc().atZone(ZoneOffset.UTC).toLocalDate();
 
         if (regra.dataLimite() == null && regra.numeroOcorrencias() == null) {
             throw new IllegalArgumentException("Para eventos vinculados a projetos, a repetição deve possuir um limite de data ou número de ocorrências.");
@@ -85,8 +88,8 @@ public class ProjetoVincularPolicy {
         }
 
         if (regra.numeroOcorrencias() != null) {
-            LocalDate startOfSeries = firstStart.atZone(java.time.ZoneOffset.UTC).toLocalDate();
-            java.util.List<LocalDate> dates = regra.gerarDatas(startOfSeries, endOfProject.plusYears(5));
+            LocalDate startOfSeries = firstStart.atZone(ZoneOffset.UTC).toLocalDate();
+            List<LocalDate> dates = regra.gerarDatas(startOfSeries, endOfProject.plusYears(5));
             if (dates.isEmpty()) {
                 throw new IllegalArgumentException("Nenhuma ocorrência gerada para esta regra de repetição.");
             }

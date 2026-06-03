@@ -12,6 +12,7 @@ import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,8 +46,8 @@ class ProjetoAgregacaoServiceTest {
         
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(projetoId);
-        projeto.setInicioUtc(agora.minus(10, java.time.temporal.ChronoUnit.DAYS));
-        projeto.setFimUtc(agora.plus(10, java.time.temporal.ChronoUnit.DAYS));
+        projeto.setInicioUtc(agora.minus(10, ChronoUnit.DAYS));
+        projeto.setFimUtc(agora.plus(10, ChronoUnit.DAYS));
 
         when(projetoRepository.findById(projetoId)).thenReturn(Optional.of(projeto));
         when(eventProvider.countByProjetoId(projetoId)).thenReturn(10L);

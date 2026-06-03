@@ -7,6 +7,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEv
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.WeeklyMetricsSnapshotJob;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.junit.jupiter.api.Test;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,7 +23,7 @@ class WeeklyMetricsSnapshotIntegrationTest {
         when(auditRepository.findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
                 any(),
                 any()))
-                .thenReturn(java.util.List.of());
+                .thenReturn(List.of());
 
         WeeklyMetricsSnapshotJob job = new WeeklyMetricsSnapshotJob(
                 new CadastroEventoMetricsPublisher(),

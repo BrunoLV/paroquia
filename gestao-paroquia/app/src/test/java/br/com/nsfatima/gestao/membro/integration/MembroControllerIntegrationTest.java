@@ -8,6 +8,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -108,7 +109,7 @@ class MembroControllerIntegrationTest {
     @DisplayName("Deve adicionar participação em organização")
     void deveAdicionarParticipacao() throws Exception {
         var membroId = UUID.randomUUID();
-        var entity = new br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity();
+        var entity = new MembroEntity();
         entity.setId(membroId);
         entity.setNomeCompleto("Membro Teste");
         entity.setAtivo(true);
@@ -135,7 +136,7 @@ class MembroControllerIntegrationTest {
     }
 
     private void createMembro(String nome) {
-        var entity = new br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity();
+        var entity = new MembroEntity();
         entity.setId(UUID.randomUUID());
         entity.setNomeCompleto(nome);
         entity.setAtivo(true);

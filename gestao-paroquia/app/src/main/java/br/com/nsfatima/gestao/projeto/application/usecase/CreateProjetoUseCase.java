@@ -15,6 +15,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import tools.jackson.databind.ObjectMapper;
 import java.util.UUID;
+import java.time.ZoneOffset;
+import java.time.Instant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,7 +67,7 @@ public class CreateProjetoUseCase {
             throw new IllegalArgumentException("Project end date cannot be before start date");
         }
 
-        int startYear = request.inicio().atZone(java.time.ZoneOffset.UTC).getYear();
+        int startYear = request.inicio().atZone(ZoneOffset.UTC).getYear();
         var anoParoquialOpt = anoParoquialRepository.findByAno(startYear);
 
         boolean isLocked = false;
@@ -91,7 +93,7 @@ public class CreateProjetoUseCase {
                 throw new RuntimeException("Error serializing project request", e);
             }
             approval.setCancelarEventosVinculados(false);
-            approval.setCriadoEmUtc(java.time.Instant.now());
+            approval.setCriadoEmUtc(Instant.now());
 
             ProjetoSolicitacaoAprovacaoEntity savedApproval = approvalRepository.save(approval);
             auditPublisher.publish(actorContext.actor(), "request-create-project", savedApproval.getId().toString(), "success");

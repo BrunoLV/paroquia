@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -141,7 +142,7 @@ public class AnoParoquialController {
         // 3. Temporal Enforcement: can only transition out of EM_PLANEJAMENTO during corresponding calendar year
         if ((currentStatus == null || currentStatus == AnoParoquialStatus.EM_PLANEJAMENTO)
                 && (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO)) {
-            int currentCivilYear = java.time.LocalDate.now().getYear();
+            int currentCivilYear = LocalDate.now().getYear();
             if (ano != currentCivilYear) {
                 throw new IllegalArgumentException("Apenas o ano corrente pode ser fechado ou concluído.");
             }

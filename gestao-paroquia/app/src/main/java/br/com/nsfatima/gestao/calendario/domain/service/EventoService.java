@@ -9,6 +9,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,11 +34,11 @@ public class EventoService {
     }
 
     public Page<EventoEntity> list(EventoFiltroRequest filters, Pageable pageable) {
-        java.util.List<String> categories = java.util.Optional.ofNullable(filters.categoria())
+        List<String> categories = Optional.ofNullable(filters.categoria())
                 .map(list -> list.stream().map(Enum::name).toList())
                 .orElse(null);
                 
-        java.util.List<String> statuses = java.util.Optional.ofNullable(filters.status())
+        List<String> statuses = Optional.ofNullable(filters.status())
                 .map(list -> list.stream().map(Enum::name).toList())
                 .orElse(null);
 

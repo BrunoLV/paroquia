@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -187,7 +188,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
     public List<EventoEntity> findAllInPeriod(Instant inicioUtc, Instant fimUtc) {
         return storage.stream()
                 .filter(e -> !e.getInicioUtc().isBefore(inicioUtc) && !e.getInicioUtc().isAfter(fimUtc))
-                .sorted(java.util.Comparator.comparing(EventoEntity::getInicioUtc))
+                .sorted(Comparator.comparing(EventoEntity::getInicioUtc))
                 .toList();
     }
 }

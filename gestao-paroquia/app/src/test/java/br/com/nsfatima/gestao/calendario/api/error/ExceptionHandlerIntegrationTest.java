@@ -7,6 +7,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.dao.DataIntegrityViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,9 +85,9 @@ class ExceptionHandlerIntegrationTest {
 
         @GetMapping("/integrity-violation")
         void throwIntegrityViolation() {
-            throw new org.springframework.dao.DataIntegrityViolationException(
+            throw new DataIntegrityViolationException(
                     "database violation",
-                    new java.sql.SQLIntegrityConstraintViolationException("duplicate key value violates unique constraint")
+                    new SQLIntegrityConstraintViolationException("duplicate key value violates unique constraint")
             );
         }
     }

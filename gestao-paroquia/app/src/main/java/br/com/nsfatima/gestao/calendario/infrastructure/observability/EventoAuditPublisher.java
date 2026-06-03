@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistence
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.slf4j.MDC;
 
@@ -233,7 +234,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
 
     private boolean isUuid(String value) {
         try {
-            java.util.UUID.fromString(value);
+            UUID.fromString(value);
             return true;
         } catch (Exception e) {
             return false;

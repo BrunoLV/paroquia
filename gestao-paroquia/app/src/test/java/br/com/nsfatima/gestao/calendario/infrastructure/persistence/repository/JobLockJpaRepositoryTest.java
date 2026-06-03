@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.JobLockEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -19,7 +20,7 @@ class JobLockJpaRepositoryTest {
     @Test
     void shouldAcquireAndReleaseLock() {
         String lockName = "YEARLY_RECURRENCE_JOB";
-        Instant now = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 
         // 1. Try to acquire
         boolean acquired = repository.acquireLock(lockName, now.plusSeconds(60), now);

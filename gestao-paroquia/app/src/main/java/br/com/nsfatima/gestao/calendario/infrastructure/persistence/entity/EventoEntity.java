@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import java.time.Instant;
 import java.util.List;
@@ -60,7 +61,7 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "local_id")
     private UUID localId;
 
-    @OneToMany(fetch = jakarta.persistence.FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "evento_id", insertable = false, updatable = false)
     private List<EventoEnvolvidoEntity> envolvidos;
 
