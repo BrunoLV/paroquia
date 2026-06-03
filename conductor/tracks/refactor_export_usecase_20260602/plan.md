@@ -1,6 +1,6 @@
 # Implementation Plan: Clean and Refactor Export Calendar Use Case
 
-## Phase 1: Configuration Infrastructure & Startup Seeding
+## Phase 1: Configuration Infrastructure & Startup Seeding [checkpoint: ba43491]
 
 - [x] Task: Create Database Migration, JPA Entity, and Repository 721d8cf
     - [x] Create Flyway migration script `V035__create_paroquia_configuracao.sql` in `db/migration`.
@@ -9,7 +9,7 @@
 - [x] Task: Implement Startup Seeding with Classpath Logo 721d8cf
     - [x] Implement `ParoquiaConfiguracaoInitializer` implementing `ApplicationRunner` to seed default values.
     - [x] Write integration test verifying that default row is inserted with logo bytes from classpath when table is empty.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Configuration Infrastructure & Startup Seeding' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Configuration Infrastructure & Startup Seeding' (Protocol in workflow.md) ba43491
 
 ## Phase 2: Exporter Strategy Classes
 
