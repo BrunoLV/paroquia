@@ -35,7 +35,7 @@
 - [x] Task: Update Docker Configuration 8caca62
     - [x] Modify `Dockerfile.api` to use `eclipse-temurin:25-jre-alpine`.
     - [x] Modify `Dockerfile.builder` to use `eclipse-temurin:25-jdk-alpine`.
-- [~] Task: Docker Compose Execution & Verification
-    - [ ] Rebuild and run all services with `docker-compose up --build -d`.
-    - [ ] Check container logs to verify backend starts successfully and connects to PostgreSQL/migrations run.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Container Environment Update & Integration' (Protocol in workflow.md)
+- [x] Task: Docker Compose Execution & Verification
+    - [x] Rebuild and run all services with `docker-compose up --build -d`.
+    - [x] Check container logs to verify backend starts successfully and connects to PostgreSQL/migrations run.
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Container Environment Update & Integration' (Protocol in workflow.md)
