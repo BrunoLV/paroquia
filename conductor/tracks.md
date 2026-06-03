@@ -82,7 +82,7 @@
 
 ---
 
-- [ ] **Track: revisar o codigo e estrutra de pacotes para ficar condizente com os padrões de DDD e Hexagonal Architecture, SOLID e Clean Archtecture**
+- [~] **Track: revisar o codigo e estrutra de pacotes para ficar condizente com os padrões de DDD e Hexagonal Architecture, SOLID e Clean Archtecture**
 *Link: [./tracks/align_architecture_packages_20260603/](./tracks/align_architecture_packages_20260603/)*
 
 
