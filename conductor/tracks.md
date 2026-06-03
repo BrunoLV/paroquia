@@ -82,6 +82,6 @@
 
 ---
 
-- [ ] **Track: classes Exporter em usecase/evento não casos de uso, sao utilitarios que servem apenas para gerar arquivos, dentro da arquitetura da app isso soa como bad smell. revise isso e ajuste os pacotes. necessário fazer essa analise no projeto como um todo**
+- [~] **Track: classes Exporter em usecase/evento não casos de uso, sao utilitarios que servem apenas para gerar arquivos, dentro da arquitetura da app isso soa como bad smell. revise isso e ajuste os pacotes. necessário fazer essa analise no projeto como um todo**
 *Link: [./tracks/relocate_exporters_20260603/](./tracks/relocate_exporters_20260603/)*
 
