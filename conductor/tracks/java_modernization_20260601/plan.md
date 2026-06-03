@@ -21,7 +21,7 @@
     - [x] Modernize JUnit Jupiter to `6.1.0` in `gradle/libs.versions.toml`.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Dependency & Framework Modernization' (Protocol in workflow.md) 28bfe55
 
-## Phase 3: Code Adjustments & Test Verification
+## Phase 3: Code Adjustments & Test Verification [checkpoint: 2175dd7]
 - [x] Task: Resolve Deprecations and Compilation Errors 51860c4
     - [x] Run `./gradlew compileJava` and solve compilation issues or API changes.
     - [x] Adjust configurations and imports affected by breaking changes in Spring Boot 4.0.6.
@@ -29,7 +29,7 @@
     - [x] Run tests using `./gradlew test`.
     - [x] Solve any regression or test failures caused by dependency updates.
     - [x] Verify code coverage is maintained above 80%.
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Code Adjustments & Test Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Code Adjustments & Test Verification' (Protocol in workflow.md) 2175dd7
 
 ## Phase 4: Container Environment Update & Integration
 - [ ] Task: Update Docker Configuration
