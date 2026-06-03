@@ -2,10 +2,10 @@
 
 ## Phase 1: Scan & Find Inline FQNs
 
-- [ ] Task: Scan Java Source Files for Inline FQNs
-    - [ ] Scan the `gestao-paroquia` Java source files (under `app/src/main` and `app/src/test`) for inline fully qualified package names (such as references starting with `br.com.nsfatima.`).
-    - [ ] Document all identified locations with file path, line number, and FQN details.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Scan & Find Inline FQNs' (Protocol in workflow.md)
+- [x] Task: Scan Java Source Files for Inline FQNs ad12f3b
+    - [x] Scan the `gestao-paroquia` Java source files (under `app/src/main` and `app/src/test`) for inline fully qualified package names (such as references starting with `br.com.nsfatima.`).
+    - [x] Document all identified locations with file path, line number, and FQN details.
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Scan & Find Inline FQNs' (Protocol in workflow.md)
 
 ## Phase 2: Refactoring & Verification
 
