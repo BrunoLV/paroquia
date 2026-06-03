@@ -24,10 +24,10 @@
 
 ## Phase 3: Use Case Integration & Verification
 
-- [ ] Task: Refactor and Simplify Use Case
-    - [ ] Refactor `ExportacaoCalendarioUseCase` to inject the configuration repository and strategy list.
-    - [ ] Delegate the export execution to the matching strategy bean.
-- [ ] Task: Verify Project Compilation and Run Automated Tests
-    - [ ] Run `./gradlew compileJava compileTestJava` to verify compilation.
-    - [ ] Run `./gradlew test` to ensure all tests (including new and legacy tests) pass successfully.
+- [x] Task: Refactor and Simplify Use Case e1ef5e5
+    - [x] Refactor `ExportacaoCalendarioUseCase` to inject the configuration repository and strategy list.
+    - [x] Delegate the export execution to the matching strategy bean.
+- [x] Task: Verify Project Compilation and Run Automated Tests e1ef5e5
+    - [x] Run `./gradlew compileJava compileTestJava` to verify compilation.
+    - [x] Run `./gradlew test` to ensure all tests (including new and legacy tests) pass successfully.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Use Case Integration & Verification' (Protocol in workflow.md)
