@@ -1,0 +1,8 @@
+Task: Update Docker Configuration
+Summary of changes:
+- Upgraded Dockerfile.api base image to eclipse-temurin:25-jre-alpine.
+- Upgraded Dockerfile.builder base image to eclipse-temurin:25-jdk-alpine.
+Created/modified files:
+- Dockerfile.api
+- Dockerfile.builder
+Core why: Modernize containers to run the Java 25 runtime and compile on Java 25.
