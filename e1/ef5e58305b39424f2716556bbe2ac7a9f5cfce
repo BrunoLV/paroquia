@@ -1,0 +1,3 @@
+Tasks: Refactor and Simplify Use Case & Verify Project Compilation and Run Automated Tests
+Summary: Refactored ExportacaoCalendarioUseCase to inject CalendarioExporter strategies and ParoquiaConfiguracaoRepository. Delegated format exports and loaded configurations dynamically. Removed all format-specific generation code (~390 lines deleted). Verified project compilation and executed the entire automated test suite.
+Why: Centralize usecase orchestrations and remove layout generation details from application service layer.
