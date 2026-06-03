@@ -77,5 +77,5 @@
 
 ---
 
-- [~] **Track: Refactor ExportacaoCalendarioUseCase to separate export formats (PDF, Excel, CSV) via Strategy Pattern, and dynamically configure headers/footers/colors/logo from database configurations.**
+- [x] **Track: Refactor ExportacaoCalendarioUseCase to separate export formats (PDF, Excel, CSV) via Strategy Pattern, and dynamically configure headers/footers/colors/logo from database configurations.**
 *Link: [./tracks/refactor_export_usecase_20260602/](./tracks/refactor_export_usecase_20260602/)*
