@@ -268,7 +268,7 @@ public class UpdateEventoUseCase {
         UUID projetoId = request.projetoId() != null ? request.projetoId() : entity.getProjetoId();
         boolean isRecurring = entity.getRecorrenciaId() != null && request.editScope() != EventoEditScope.ONLY_THIS;
         if (isRecurring && entity.getRecorrenciaId() != null) {
-            br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoRecorrenciaEntity recurrence = recurrenceRepository.findById(entity.getRecorrenciaId())
+            EventoRecorrenciaEntity recurrence = recurrenceRepository.findById(entity.getRecorrenciaId())
                     .orElseThrow(() -> new IllegalStateException("Recurrence not found: " + entity.getRecorrenciaId()));
             projetoVincularPolicy.validateRecurrence(projetoId, inicio, fim, recurrence.getRegra());
         } else {
