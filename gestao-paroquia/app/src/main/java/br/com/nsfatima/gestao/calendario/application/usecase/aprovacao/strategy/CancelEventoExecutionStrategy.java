@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.strategy;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayloadMapper;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalExecutionStrategy;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoCanceladoResponse;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelEventoUseCase;

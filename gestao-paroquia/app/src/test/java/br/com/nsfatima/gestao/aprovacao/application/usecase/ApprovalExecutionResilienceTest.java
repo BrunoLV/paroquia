@@ -1,5 +1,13 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalExecutionFailedException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalAlreadyDecidedException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalNotFoundException;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalMetricsPublisher;
+import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalAuditPublisher;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao;
 
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;

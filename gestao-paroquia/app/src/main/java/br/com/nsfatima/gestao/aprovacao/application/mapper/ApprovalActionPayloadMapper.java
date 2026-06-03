@@ -1,6 +1,7 @@
-package br.com.nsfatima.gestao.aprovacao.application.usecase;
+package br.com.nsfatima.gestao.aprovacao.application.mapper;
 
 import tools.jackson.core.JacksonException;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
 import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 

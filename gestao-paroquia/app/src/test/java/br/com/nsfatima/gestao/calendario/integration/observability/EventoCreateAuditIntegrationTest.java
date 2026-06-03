@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.observability;
 
 import tools.jackson.databind.ObjectMapper;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;

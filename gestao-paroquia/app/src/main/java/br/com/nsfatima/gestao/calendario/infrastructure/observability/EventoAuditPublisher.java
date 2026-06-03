@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.slf4j.MDC;
 
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalAuditPublisher;
+import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalAuditPublisher;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 
 @Component

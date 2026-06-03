@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.aprovacao.api.v1.controller;
 
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalAlreadyDecidedException;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalExecutionFailedException;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalNotFoundException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalAlreadyDecidedException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalExecutionFailedException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ApprovalRequiredException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;

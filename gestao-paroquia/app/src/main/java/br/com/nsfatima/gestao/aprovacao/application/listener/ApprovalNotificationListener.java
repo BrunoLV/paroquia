@@ -1,6 +1,7 @@
-package br.com.nsfatima.gestao.aprovacao.application.usecase;
+package br.com.nsfatima.gestao.aprovacao.application.listener;
 
 import org.slf4j.Logger;
+import br.com.nsfatima.gestao.aprovacao.domain.event.ApprovalDecisionEvent;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

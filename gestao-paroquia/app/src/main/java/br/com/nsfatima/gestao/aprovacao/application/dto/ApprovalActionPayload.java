@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.aprovacao.application.usecase;
+package br.com.nsfatima.gestao.aprovacao.application.dto;
 
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;

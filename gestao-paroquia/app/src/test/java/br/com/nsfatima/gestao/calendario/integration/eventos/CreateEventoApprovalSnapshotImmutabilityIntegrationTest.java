@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import java.time.Instant;

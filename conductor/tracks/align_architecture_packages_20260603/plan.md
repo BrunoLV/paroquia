@@ -17,7 +17,7 @@
 
 ## Phase 2: Module `aprovacao` Packaging Restructuring
 
-- [ ] Task: Relocate Classes and Tests for Aprovacao
+- [~] Task: Relocate Classes and Tests for Aprovacao
     - [ ] Create packages `domain.exception`, `domain.event`, `application.listener`, `application.usecase.strategy`, `application.port.out`, `application.dto`, and `application.mapper` under `aprovacao`.
     - [ ] Relocate exceptions to `domain.exception`: `ApprovalExecutionFailedException`, `ApprovalAlreadyDecidedException`, `ApprovalNotFoundException`.
     - [ ] Relocate events to `domain.event`: `ApprovalDecisionEvent`.

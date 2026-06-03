@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.aprovacao.application.usecase;
+package br.com.nsfatima.gestao.aprovacao.application.port.out;
 
 import java.time.Duration;
 

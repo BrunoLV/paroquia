@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.aprovacao.application.usecase;
+package br.com.nsfatima.gestao.aprovacao.domain.exception;
 
 public class ApprovalAlreadyDecidedException extends RuntimeException {
 
