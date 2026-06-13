@@ -29,7 +29,7 @@
     - [x] Run the tests and confirm they pass.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Dependency Setup & API client' (Protocol in workflow.md)
 
-## Phase 3: Frontend Dashboard UI Implementation [checkpoint: 21381d9]
+## Phase 3: Frontend Dashboard UI Implementation [checkpoint: 213c610]
 - [x] Task: Write Failing Component Tests (Red Phase)
     - [x] Write test suite for the redesigned `Dashboard` page component.
     - [x] Write mock assertions validating presence of PieChart, projects progress bar, weekly timeline, and general cards.
