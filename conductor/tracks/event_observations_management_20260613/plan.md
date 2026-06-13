@@ -1,8 +1,8 @@
 # Implementation Plan: Event Observations Management
 
 ## Phase 1: API Integration & Client Testing [checkpoint: ]
-- [ ] Task: Define TypeScript Types and Client Methods
-    - [ ] Add `Observacao` type and `TipoObservacao` enum in `src/api/types.ts`
+- [x] Task: Define TypeScript Types and Client Methods 10ce50d
+    - [x] Add `Observacao` type and `TipoObservacao` enum in `src/api/types.ts`
 - [ ] Task: Write Failing API Client Tests (Red Phase)
     - [ ] Create `src/api/observacoes.test.ts`
     - [ ] Write tests mocking API calls for listing, creating, updating, and deleting event observations
