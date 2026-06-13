@@ -7,9 +7,9 @@
     - [x] Create `src/api/observacoes.test.ts`
     - [x] Write tests mocking API calls for listing, creating, updating, and deleting event observations
     - [x] Run the tests and verify they fail
-- [ ] Task: Implement API Client Logic (Green Phase)
-    - [ ] Implement the fetching, creation, updating, and deletion client logic in a new file `src/api/observacoes.ts`
-    - [ ] Run the tests and verify they pass
+- [x] Task: Implement API Client Logic (Green Phase) 28a67c2
+    - [x] Implement the fetching, creation, updating, and deletion client logic in a new file `src/api/observacoes.ts`
+    - [x] Run the tests and verify they pass
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: API Integration & Client Testing' (Protocol in workflow.md)
 
 ## Phase 2: Event Details Dialog UI & Component Testing [checkpoint: ]
