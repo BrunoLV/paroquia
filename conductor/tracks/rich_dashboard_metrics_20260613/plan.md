@@ -29,16 +29,16 @@
     - [x] Run the tests and confirm they pass.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Dependency Setup & API client' (Protocol in workflow.md)
 
-## Phase 3: Frontend Dashboard UI Implementation
-- [ ] Task: Write Failing Component Tests (Red Phase)
-    - [ ] Write test suite for the redesigned `Dashboard` page component.
-    - [ ] Write mock assertions validating presence of PieChart, projects progress bar, weekly timeline, and general cards.
-    - [ ] Run tests and confirm they fail.
-- [ ] Task: Redesign Dashboard UI & Build Components (Green Phase)
-    - [ ] Implement general metrics summary cards with icons and gradients.
-    - [ ] Implement `EventDistributionPieChart` using PieChart from `@mui/x-charts`.
-    - [ ] Implement `ActiveProjectsProgressList` displaying `saudeTemporal` and execution status.
-    - [ ] Implement `WeeklyTimeline` displaying weekly scheduled events.
-    - [ ] Combine all components into `Dashboard.tsx` with skeleton loaders.
-    - [ ] Run tests and confirm all tests pass successfully.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Dashboard UI Implementation' (Protocol in workflow.md)
+## Phase 3: Frontend Dashboard UI Implementation [checkpoint: 21381d9]
+- [x] Task: Write Failing Component Tests (Red Phase)
+    - [x] Write test suite for the redesigned `Dashboard` page component.
+    - [x] Write mock assertions validating presence of PieChart, projects progress bar, weekly timeline, and general cards.
+    - [x] Run tests and confirm they fail.
+- [x] Task: Redesign Dashboard UI & Build Components (Green Phase)
+    - [x] Implement general metrics summary cards with icons and gradients.
+    - [x] Implement `EventDistributionPieChart` using PieChart from `@mui/x-charts`.
+    - [x] Implement `ActiveProjectsProgressList` displaying `saudeTemporal` and execution status.
+    - [x] Implement `WeeklyTimeline` displaying weekly scheduled events.
+    - [x] Combine all components into `Dashboard.tsx` with skeleton loaders.
+    - [x] Run tests and confirm all tests pass successfully.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Dashboard UI Implementation' (Protocol in workflow.md)
