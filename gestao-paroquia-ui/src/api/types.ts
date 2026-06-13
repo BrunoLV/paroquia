@@ -102,3 +102,37 @@ export interface ProjetoAprovacaoResponse {
   cancelarEventosVinculados: boolean;
 }
 
+export interface GeneralSummary {
+  totalEventosMes: number;
+  projetosAtivos: number;
+  solicitacoesPendentes: number;
+}
+
+export interface EventDistribution {
+  organizacaoNome: string;
+  quantidadeEventos: number;
+}
+
+export interface ProjectDetail {
+  nome: string;
+  status: string;
+  percentualTempoDecorrido: number;
+  totalEventos: number;
+  eventosRealizados: number;
+  emRisco: boolean;
+  envolvidos: string[];
+}
+
+export interface WeeklyEvent {
+  titulo: string;
+  inicio: string;
+  localNome: string;
+  organizacaoNome: string;
+}
+
+export interface DashboardMetrics {
+  resumoGeral: GeneralSummary;
+  eventosPorOrganizacao: EventDistribution[];
+  projetosAtivosDetalhes: ProjectDetail[];
+  eventosSemana: WeeklyEvent[];
+}
