@@ -1,6 +1,6 @@
 import React from 'react';
-import { Paper, Typography, Box, Stack, useTheme } from '@mui/material';
-import { AccessTime as TimeIcon, Place as PlaceIcon, Business as OrgIcon } from '@mui/icons-material';
+import { Paper, Typography, Box, Stack } from '@mui/material';
+import { Place as PlaceIcon, Business as OrgIcon } from '@mui/icons-material';
 import { WeeklyEvent } from '../../api/types';
 
 interface WeeklyTimelineProps {
@@ -8,7 +8,6 @@ interface WeeklyTimelineProps {
 }
 
 const WeeklyTimeline: React.FC<WeeklyTimelineProps> = ({ events }) => {
-  const theme = useTheme();
 
   const formatEventDate = (dateStr: string) => {
     try {

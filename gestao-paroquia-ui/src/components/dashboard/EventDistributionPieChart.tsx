@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Box, useTheme } from '@mui/material';
+import { Paper, Typography, Box } from '@mui/material';
 import { PieChart } from '@mui/x-charts';
 import { EventDistribution } from '../../api/types';
 
@@ -8,7 +8,6 @@ interface EventDistributionPieChartProps {
 }
 
 const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ data }) => {
-  const theme = useTheme();
 
   const chartData = data.map((item, index) => ({
     id: index,
@@ -61,15 +60,8 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
             height={200}
             slotProps={{
               legend: {
-                direction: 'column',
-                position: { vertical: 'middle', horizontal: 'right' },
-                itemMarkWidth: 8,
-                itemMarkHeight: 8,
-                markGap: 6,
-                labelStyle: {
-                  fontSize: 12,
-                  fill: theme.palette.text.secondary,
-                },
+                direction: 'vertical',
+                position: { vertical: 'middle', horizontal: 'end' },
               },
             }}
           />

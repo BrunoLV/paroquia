@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Typography, Grid, Box, SvgIcon } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Box } from '@mui/material';
 import { CalendarMonth as CalendarIcon, Assignment as ProjectIcon, HourglassEmpty as PendingIcon } from '@mui/icons-material';
 
 interface SummaryCardsProps {

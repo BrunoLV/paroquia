@@ -68,7 +68,7 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                   <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
                     {project.nome}
                   </Typography>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     {project.emRisco && (
                       <Chip
                         icon={<WarningIcon style={{ fontSize: 14, color: '#d32f2f' }} />}
