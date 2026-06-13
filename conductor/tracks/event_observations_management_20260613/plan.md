@@ -17,8 +17,8 @@
     - [x] Create `src/components/EventObservations.test.tsx`
     - [x] Write failing test cases verifying listing of notes, typing a new note, rendering edit/delete buttons, and confirming deletions
     - [x] Run tests and verify they fail
-- [ ] Task: Implement EventObservations Component & Integrate into Details Dialog (Green Phase)
-    - [ ] Create a reusable `EventObservations.tsx` component that lists notes, differentiates system notes, and allows CRUD operations
-    - [ ] Integrate `EventObservations.tsx` into the Details Dialog modal in `Calendar.tsx`
-    - [ ] Run the frontend tests and verify all tests pass
+- [x] Task: Implement EventObservations Component & Integrate into Details Dialog (Green Phase) 6df9862
+    - [x] Create a reusable `EventObservations.tsx` component that lists notes, differentiates system notes, and allows CRUD operations
+    - [x] Integrate `EventObservations.tsx` into the Details Dialog modal in `Calendar.tsx`
+    - [x] Run the frontend tests and verify all tests pass
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Event Details Dialog UI & Component Testing' (Protocol in workflow.md)
