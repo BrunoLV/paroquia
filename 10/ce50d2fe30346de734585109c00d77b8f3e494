@@ -1,0 +1,3 @@
+Task: Define TypeScript Types and Client Methods
+Summary: Added Observacao and TipoObservacao type definitions to types.ts.
+Files: gestao-paroquia-ui/src/api/types.ts
