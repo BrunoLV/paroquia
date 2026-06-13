@@ -1,6 +1,6 @@
 # Implementation Plan: Rich Dashboard & Managerial Metrics
 
-## Phase 1: Backend Metrics Endpoint & Integration Tests
+## Phase 1: Backend Metrics Endpoint & Integration Tests [checkpoint: 391f9b2]
 - [x] Task: Create Repository Queries & DTOs for Metrics 07e61db
     - [x] Create response DTOs (`DashboardMetricsDTO`, `GeneralSummaryDTO`, `EventDistributionDTO`, `ProjectDetailDTO`, `WeeklyEventDTO`) in module `projeto` or `support`.
     - [x] Implement query methods in Evento and Projeto repositories to fetch count of events in current month, counts per organization, and events for current week.
