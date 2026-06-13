@@ -1,0 +1,3 @@
+Task: Implement API Client Logic (Green Phase)
+Summary: Implemented getObservacoes, createObservacao, updateObservacao, and deleteObservacao functions in src/api/observacoes.ts using apiClient.
+Files: gestao-paroquia-ui/src/api/observacoes.ts
