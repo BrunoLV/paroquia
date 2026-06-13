@@ -1,0 +1,1 @@
+Task: Create DTOs, UseCase, Controller and Tests for Dashboard Metrics. Created unified API endpoint /api/v1/dashboard/metrics and verified with integration tests for authenticated roles.
