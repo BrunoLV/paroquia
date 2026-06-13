@@ -1,19 +1,19 @@
 # Implementation Plan: Rich Dashboard & Managerial Metrics
 
 ## Phase 1: Backend Metrics Endpoint & Integration Tests
-- [ ] Task: Create Repository Queries & DTOs for Metrics
-    - [ ] Create response DTOs (`DashboardMetricsDTO`, `GeneralSummaryDTO`, `EventDistributionDTO`, `ProjectDetailDTO`, `WeeklyEventDTO`) in module `projeto` or `support`.
-    - [ ] Implement query methods in Evento and Projeto repositories to fetch count of events in current month, counts per organization, and events for current week.
-- [ ] Task: Write Failing Tests for Dashboard Metrics (Red Phase)
-    - [ ] Create `DashboardMetricsUseCaseTest` and `DashboardMetricsControllerTest` with mocks.
-    - [ ] Write tests validating that the endpoint returns correct metrics, filters by user's organization memberships when user is not admin, and throws unauthorized when appropriate.
-    - [ ] Run the tests and confirm they fail.
-- [ ] Task: Implement UseCase and Controller (Green Phase)
-    - [ ] Create `GetDashboardMetricsUseCase` orchestrating query and data aggregation.
-    - [ ] Create `DashboardMetricsController` exposing `GET /api/v1/dashboard/metrics`.
-    - [ ] Implement membership verification and filtering using `EventoActorContextResolver`.
-    - [ ] Run the test suite and confirm all tests pass.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Metrics Endpoint & Integration Tests' (Protocol in workflow.md)
+- [x] Task: Create Repository Queries & DTOs for Metrics 07e61db
+    - [x] Create response DTOs (`DashboardMetricsDTO`, `GeneralSummaryDTO`, `EventDistributionDTO`, `ProjectDetailDTO`, `WeeklyEventDTO`) in module `projeto` or `support`.
+    - [x] Implement query methods in Evento and Projeto repositories to fetch count of events in current month, counts per organization, and events for current week.
+- [x] Task: Write Failing Tests for Dashboard Metrics (Red Phase) 07e61db
+    - [x] Create `DashboardMetricsUseCaseTest` and `DashboardMetricsControllerTest` with mocks.
+    - [x] Write tests validating that the endpoint returns correct metrics, filters by user's organization memberships when user is not admin, and throws unauthorized when appropriate.
+    - [x] Run the tests and confirm they fail.
+- [x] Task: Implement UseCase and Controller (Green Phase) 07e61db
+    - [x] Create `GetDashboardMetricsUseCase` orchestrating query and data aggregation.
+    - [x] Create `DashboardMetricsController` exposing `GET /api/v1/dashboard/metrics`.
+    - [x] Implement membership verification and filtering using `EventoActorContextResolver`.
+    - [x] Run the test suite and confirm all tests pass.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Metrics Endpoint & Integration Tests' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Dependency Setup & API Client
 - [ ] Task: Install MUI Charts Dependency
