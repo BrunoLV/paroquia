@@ -1,0 +1,9 @@
+Phase: Phase 1: API Integration & Client Testing
+Automated Test Command: CI=true npm test
+Manual Verification Steps:
+1. Ensure backend is running.
+2. Obtain session cookie via POST /api/v1/auth/login.
+3. Create note via POST /api/v1/eventos/.../observacoes.
+4. Verify response is 201 Created.
+5. Retrieve notes via GET /api/v1/eventos/.../observacoes and check it contains the posted note.
+User Confirmation: Yes, the verification plan is correct.
