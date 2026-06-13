@@ -1,0 +1,3 @@
+Task: Implement EventObservations Component & Integrate into Details Dialog (Green Phase)
+Summary: Created EventObservations.tsx component displaying note lists (differentiating system notes, showing edit/delete actions, simple post note form, edit/delete confirmation dialogs) and integrated it into Calendar.tsx event details modal.
+Files: gestao-paroquia-ui/src/components/EventObservations.tsx, gestao-paroquia-ui/src/components/EventObservations.test.tsx, gestao-paroquia-ui/src/pages/Calendar.tsx
