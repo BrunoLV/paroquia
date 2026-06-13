@@ -16,18 +16,18 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Metrics Endpoint & Integration Tests' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Dependency Setup & API Client
-- [ ] Task: Install MUI Charts Dependency
-    - [ ] Add `@mui/x-charts` to `package.json` dependencies.
-    - [ ] Run `npm install` to update the dependencies.
-- [ ] Task: Write Failing Hook Tests & Define Types (Red Phase)
-    - [ ] Define TypeScript interface `DashboardMetrics` in `src/api/types.ts`.
-    - [ ] Write failing test in `src/hooks/useDashboardMetrics.test.ts` mocking the API response.
-    - [ ] Run the tests and confirm they fail.
-- [ ] Task: Implement API Client Fetching (Green Phase)
-    - [ ] Implement `useDashboardMetrics` custom hook using React Query and `apiClient`.
-    - [ ] Verify that the fetching hook successfully retrieves and caches data.
-    - [ ] Run the tests and confirm they pass.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Dependency Setup & API client' (Protocol in workflow.md)
+- [x] Task: Install MUI Charts Dependency d235d0f
+    - [x] Add `@mui/x-charts` to `package.json` dependencies.
+    - [x] Run `npm install` to update the dependencies.
+- [x] Task: Write Failing Hook Tests & Define Types (Red Phase) d235d0f
+    - [x] Define TypeScript interface `DashboardMetrics` in `src/api/types.ts`.
+    - [x] Write failing test in `src/api/dashboard.test.ts` mocking the API response.
+    - [x] Run the tests and confirm they fail.
+- [x] Task: Implement API Client Fetching (Green Phase) d235d0f
+    - [x] Implement `getDashboardMetrics` API fetch function using `apiClient`.
+    - [x] Verify that the fetching client successfully retrieves data.
+    - [x] Run the tests and confirm they pass.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Dependency Setup & API client' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Dashboard UI Implementation
 - [ ] Task: Write Failing Component Tests (Red Phase)
