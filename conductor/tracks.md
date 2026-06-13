@@ -88,4 +88,4 @@
 ---
 
 - [x] **Track: a funcionalidade de dashboard, hoje esta muito pobre, precisamos inserir informações mais gerenciais no dashboard, como graficos, eventos.**
-*Link: [./tracks/rich_dashboard_metrics_20260613/](./tracks/rich_dashboard_metrics_20260613/)*
+*Link: [./archive/rich_dashboard_metrics_20260613/](./archive/rich_dashboard_metrics_20260613/)*
