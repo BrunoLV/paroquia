@@ -1,0 +1,3 @@
+Task: Write Failing API Client Tests (Red Phase)
+Summary: Created src/api/observacoes.test.ts containing mocked tests for listing, creating, updating, and deleting event observations.
+Files: gestao-paroquia-ui/src/api/observacoes.test.ts
