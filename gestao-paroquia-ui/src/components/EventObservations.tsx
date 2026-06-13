@@ -23,8 +23,6 @@ import {
   Delete as DeleteIcon,
   Check as CheckIcon,
   Close as CloseIcon,
-  Info as InfoIcon,
-  Note as NoteIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
