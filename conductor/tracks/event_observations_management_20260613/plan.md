@@ -3,10 +3,10 @@
 ## Phase 1: API Integration & Client Testing [checkpoint: ]
 - [x] Task: Define TypeScript Types and Client Methods 10ce50d
     - [x] Add `Observacao` type and `TipoObservacao` enum in `src/api/types.ts`
-- [ ] Task: Write Failing API Client Tests (Red Phase)
-    - [ ] Create `src/api/observacoes.test.ts`
-    - [ ] Write tests mocking API calls for listing, creating, updating, and deleting event observations
-    - [ ] Run the tests and verify they fail
+- [x] Task: Write Failing API Client Tests (Red Phase) 16fbb35
+    - [x] Create `src/api/observacoes.test.ts`
+    - [x] Write tests mocking API calls for listing, creating, updating, and deleting event observations
+    - [x] Run the tests and verify they fail
 - [ ] Task: Implement API Client Logic (Green Phase)
     - [ ] Implement the fetching, creation, updating, and deletion client logic in a new file `src/api/observacoes.ts`
     - [ ] Run the tests and verify they pass
