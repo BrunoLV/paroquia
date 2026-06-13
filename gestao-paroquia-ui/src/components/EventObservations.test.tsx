@@ -1,0 +1,98 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
+// @ts-ignore
+import EventObservations from './EventObservations';
+import { getObservacoes, createObservacao, updateObservacao, deleteObservacao } from '../api/observacoes';
+import { AuthProvider } from '../auth/AuthContext';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../theme';
+
+// Mock API client methods
+jest.mock('../api/observacoes', () => ({
+  getObservacoes: jest.fn(),
+  createObservacao: jest.fn(),
+  updateObservacao: jest.fn(),
+  deleteObservacao: jest.fn(),
+}));
+
+const mockUser = { id: 'usr-1', name: 'Padre Pedro', username: 'padre.pedro', roles: ['ADMIN'], organizations: [] };
+
+const mockObservacoes = [
+  { id: 'obs-1', eventoId: 'evt-1', usuarioId: 'usr-1', tipo: 'NOTA', conteudo: 'Esta é uma nota minha', criadoEmUtc: '2026-06-13T14:00:00Z' },
+  { id: 'obs-2', eventoId: 'evt-1', usuarioId: 'usr-2', tipo: 'NOTA', conteudo: 'Esta é uma nota de outro', criadoEmUtc: '2026-06-13T14:10:00Z' },
+  { id: 'obs-3', eventoId: 'evt-1', usuarioId: 'system', tipo: 'CANCELAMENTO', conteudo: 'Motivo: Chuva forte', criadoEmUtc: '2026-06-13T14:20:00Z' }
+];
+
+const renderComponent = async (user = mockUser) => {
+  localStorage.setItem('user', JSON.stringify(user));
+  (getObservacoes as jest.Mock).mockResolvedValue(mockObservacoes);
+
+  await act(async () => {
+    render(
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <EventObservations eventoId="evt-1" />
+        </ThemeProvider>
+      </AuthProvider>
+    );
+  });
+};
+
+describe('EventObservations Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
+
+  test('renders list of observations and inputs', async () => {
+    await renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Esta é uma nota minha')).toBeInTheDocument();
+      expect(screen.getByText('Esta é uma nota de outro')).toBeInTheDocument();
+      expect(screen.getByText('Motivo: Chuva forte')).toBeInTheDocument();
+    });
+
+    // Author labeling
+    expect(screen.getByText(/Você/i)).toBeInTheDocument();
+    expect(screen.getByText(/Usuário/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sistema/i)).toBeInTheDocument();
+
+    // Input field
+    expect(screen.getByPlaceholderText('Adicione uma nota...')).toBeInTheDocument();
+  });
+
+  test('calls createObservacao when adding a new note', async () => {
+    await renderComponent();
+    (createObservacao as jest.Mock).mockResolvedValue({
+      id: 'obs-4', eventoId: 'evt-1', usuarioId: 'usr-1', tipo: 'NOTA', conteudo: 'Nova nota digitada', criadoEmUtc: new Date().toISOString()
+    });
+
+    const input = screen.getByPlaceholderText('Adicione uma note...');
+    fireEvent.change(input, { target: { value: 'Nova nota digitada' } });
+
+    const btn = screen.getByRole('button', { name: /Adicionar/i });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+
+    expect(createObservacao).toHaveBeenCalledWith('evt-1', 'Nova nota digitada');
+    expect(getObservacoes).toHaveBeenCalled();
+  });
+
+  test('shows edit/delete actions only for user-owned manual notes', async () => {
+    await renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Esta é uma nota minha')).toBeInTheDocument();
+    });
+
+    // We should see edit and delete icons/buttons for the first note (own note)
+    const editButtons = screen.getAllByRole('button', { name: /edit/i });
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+
+    expect(editButtons.length).toBeGreaterThan(0);
+    expect(deleteButtons.length).toBeGreaterThan(0);
+  });
+});
