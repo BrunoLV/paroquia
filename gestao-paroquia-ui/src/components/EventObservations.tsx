@@ -178,7 +178,7 @@ const EventObservations = ({ eventoId }: EventObservationsProps) => {
                 }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem', bgcolor: isNote ? (isOwn ? 'primary.main' : 'grey.600') : 'teal.600' }}>
                       {isNote ? (isOwn ? 'V' : 'U') : 'S'}
                     </Avatar>
