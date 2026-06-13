@@ -1,0 +1,3 @@
+Task: Write Failing UI Component Tests (Red Phase)
+Summary: Created src/components/EventObservations.test.tsx with mocked tests verifying the EventObservations component features.
+Files: gestao-paroquia-ui/src/components/EventObservations.test.tsx
