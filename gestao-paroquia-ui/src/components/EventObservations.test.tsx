@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 // @ts-ignore
 import EventObservations from './EventObservations';
 import { getObservacoes, createObservacao, updateObservacao, deleteObservacao } from '../api/observacoes';
-import { AuthProvider } from '../auth/AuthContext';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 
@@ -16,7 +15,22 @@ jest.mock('../api/observacoes', () => ({
   deleteObservacao: jest.fn(),
 }));
 
+// Mock Notification Context
+jest.mock('../context/NotificationContext', () => ({
+  useNotification: () => ({
+    showError: jest.fn(),
+    showSuccess: jest.fn(),
+  }),
+}));
+
+// Mock Auth Context directly to return logged-in user
 const mockUser = { id: 'usr-1', name: 'Padre Pedro', username: 'padre.pedro', roles: ['ADMIN'], organizations: [] };
+jest.mock('../auth/AuthContext', () => ({
+  useAuth: () => ({
+    user: mockUser,
+    isLoading: false,
+  }),
+}));
 
 const mockObservacoes = [
   { id: 'obs-1', eventoId: 'evt-1', usuarioId: 'usr-1', tipo: 'NOTA', conteudo: 'Esta é uma nota minha', criadoEmUtc: '2026-06-13T14:00:00Z' },
@@ -24,17 +38,14 @@ const mockObservacoes = [
   { id: 'obs-3', eventoId: 'evt-1', usuarioId: 'system', tipo: 'CANCELAMENTO', conteudo: 'Motivo: Chuva forte', criadoEmUtc: '2026-06-13T14:20:00Z' }
 ];
 
-const renderComponent = async (user = mockUser) => {
-  localStorage.setItem('user', JSON.stringify(user));
+const renderComponent = async () => {
   (getObservacoes as jest.Mock).mockResolvedValue(mockObservacoes);
 
   await act(async () => {
     render(
-      <AuthProvider>
-        <ThemeProvider theme={theme}>
-          <EventObservations eventoId="evt-1" />
-        </ThemeProvider>
-      </AuthProvider>
+      <ThemeProvider theme={theme}>
+        <EventObservations eventoId="evt-1" />
+      </ThemeProvider>
     );
   });
 };
@@ -42,7 +53,6 @@ const renderComponent = async (user = mockUser) => {
 describe('EventObservations Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    localStorage.clear();
   });
 
   test('renders list of observations and inputs', async () => {
@@ -69,7 +79,7 @@ describe('EventObservations Component', () => {
       id: 'obs-4', eventoId: 'evt-1', usuarioId: 'usr-1', tipo: 'NOTA', conteudo: 'Nova nota digitada', criadoEmUtc: new Date().toISOString()
     });
 
-    const input = screen.getByPlaceholderText('Adicione uma note...');
+    const input = screen.getByPlaceholderText('Adicione uma nota...');
     fireEvent.change(input, { target: { value: 'Nova nota digitada' } });
 
     const btn = screen.getByRole('button', { name: /Adicionar/i });

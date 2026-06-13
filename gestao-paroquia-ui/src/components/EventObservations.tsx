@@ -1,0 +1,292 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  Avatar,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  CircularProgress,
+  Chip,
+} from '@mui/material';
+import {
+  Send as SendIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Check as CheckIcon,
+  Close as CloseIcon,
+  Info as InfoIcon,
+  Note as NoteIcon,
+} from '@mui/icons-material';
+import { useAuth } from '../auth/AuthContext';
+import { useNotification } from '../context/NotificationContext';
+import { Observacao } from '../api/types';
+import { getObservacoes, createObservacao, updateObservacao, deleteObservacao as deleteObsApi } from '../api/observacoes';
+
+interface EventObservationsProps {
+  eventoId: string;
+}
+
+const EventObservations = ({ eventoId }: EventObservationsProps) => {
+  const { user } = useAuth();
+  const { showError, showSuccess } = useNotification();
+
+  const [observations, setObservations] = useState<Observacao[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [newNote, setNewNote] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Editing states
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Deleting states
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fetchObservations = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getObservacoes(eventoId);
+      // Sort observations by creation date ascending
+      const sorted = [...data].sort(
+        (a, b) => new Date(a.criadoEmUtc).getTime() - new Date(b.criadoEmUtc).getTime()
+      );
+      setObservations(sorted);
+    } catch (err: any) {
+      console.error('Error fetching event observations:', err);
+      showError('Não foi possível carregar as observações do evento.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (eventoId) {
+      fetchObservations();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventoId]);
+
+  const handleAddNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNote.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await createObservacao(eventoId, newNote.trim());
+      setNewNote('');
+      showSuccess('Observação adicionada com sucesso.');
+      await fetchObservations();
+    } catch (err: any) {
+      showError(err.response?.data?.message || 'Erro ao adicionar observação.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleStartEdit = (obs: Observacao) => {
+    setEditingId(obs.id);
+    setEditText(obs.conteudo);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditText('');
+  };
+
+  const handleUpdateNote = async (obsId: string) => {
+    if (!editText.trim()) return;
+
+    setIsUpdating(true);
+    try {
+      await updateObservacao(eventoId, obsId, editText.trim());
+      setEditingId(null);
+      setEditText('');
+      showSuccess('Observação atualizada com sucesso.');
+      await fetchObservations();
+    } catch (err: any) {
+      showError(err.response?.data?.message || 'Erro ao atualizar observação.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteNote = async () => {
+    if (!deleteConfirmId) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteObsApi(eventoId, deleteConfirmId);
+      setDeleteConfirmId(null);
+      showSuccess('Observação excluída com sucesso.');
+      await fetchObservations();
+    } catch (err: any) {
+      showError(err.response?.data?.message || 'Erro ao excluir observação.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isAuthor = (obs: Observacao) => {
+    return user && obs.usuarioId === user.id;
+  };
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+        <CircularProgress size={30} />
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ mt: 3, borderTop: '1px solid #eee', pt: 3 }}>
+      <Typography variant="h6" sx={{ fontWeight: 600, color: '#37474f', mb: 2 }}>
+        Observações e Notas ({observations.length})
+      </Typography>
+
+      <Stack spacing={2} sx={{ maxWaitHeight: '300px', overflowY: 'auto', mb: 3, pr: 1 }}>
+        {observations.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', textAlign: 'center', py: 2 }}>
+            Nenhuma observação registrada para este evento.
+          </Typography>
+        ) : (
+          observations.map((obs) => {
+            const isNote = obs.tipo === 'NOTA';
+            const isOwn = isAuthor(obs);
+
+            return (
+              <Paper
+                key={obs.id}
+                variant="outlined"
+                sx={{
+                  p: 1.5,
+                  borderRadius: 1,
+                  bgcolor: isNote ? '#ffffff' : '#fcfcfc',
+                  borderColor: isNote ? '#e0e0e0' : '#e0f2f1',
+                  borderLeft: isNote ? '3px solid #1976d2' : '3px solid #009688',
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem', bgcolor: isNote ? (isOwn ? 'primary.main' : 'grey.600') : 'teal.600' }}>
+                      {isNote ? (isOwn ? 'V' : 'U') : 'S'}
+                    </Avatar>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                      {isNote ? (isOwn ? 'Você' : 'Usuário') : 'Sistema'}
+                    </Typography>
+                    {!isNote && (
+                      <Chip
+                        label={obs.tipo}
+                        size="small"
+                        color="secondary"
+                        sx={{ fontSize: '0.65rem', height: 18, fontWeight: 600 }}
+                      />
+                    )}
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary">
+                    {new Date(obs.criadoEmUtc).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                  </Typography>
+                </Box>
+
+                {editingId === obs.id ? (
+                  <Box sx={{ mt: 1 }}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={2}
+                      size="small"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      disabled={isUpdating}
+                    />
+                    <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: 'flex-end' }}>
+                      <IconButton size="small" onClick={handleCancelEdit} disabled={isUpdating} color="error">
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleUpdateNote(obs.id)} disabled={isUpdating || !editText.trim()} color="success">
+                        {isUpdating ? <CircularProgress size={16} /> : <CheckIcon fontSize="small" />}
+                      </IconButton>
+                    </Stack>
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Typography variant="body2" sx={{ color: '#37474f', whiteSpace: 'pre-wrap' }}>
+                      {obs.conteudo}
+                    </Typography>
+                    {isNote && isOwn && (
+                      <Stack direction="row" spacing={0.5}>
+                        <IconButton size="small" aria-label="edit" onClick={() => handleStartEdit(obs)}>
+                          <EditIcon fontSize="small" sx={{ fontSize: '1rem' }} />
+                        </IconButton>
+                        <IconButton size="small" aria-label="delete" onClick={() => setDeleteConfirmId(obs.id)} color="error">
+                          <DeleteIcon fontSize="small" sx={{ fontSize: '1rem' }} />
+                        </IconButton>
+                      </Stack>
+                    )}
+                  </Box>
+                )}
+              </Paper>
+            );
+          })
+        )}
+      </Stack>
+
+      <Divider sx={{ my: 2 }} />
+
+      {/* Add note form */}
+      <Box component="form" onSubmit={handleAddNote}>
+        <Stack direction="row" spacing={1}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Adicione uma nota..."
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            disabled={isSubmitting}
+            autoComplete="off"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting || !newNote.trim()}
+            endIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : <SendIcon />}
+            sx={{ fontWeight: 600 }}
+          >
+            Adicionar
+          </Button>
+        </Stack>
+      </Box>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!deleteConfirmId} onClose={() => setDeleteConfirmId(null)}>
+        <DialogTitle>Excluir Observação?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Tem certeza que deseja excluir permanentemente esta observação? Esta ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmId(null)} color="secondary" disabled={isDeleting}>
+            Cancelar
+          </Button>
+          <Button onClick={handleDeleteNote} color="error" variant="contained" disabled={isDeleting} autoFocus>
+            {isDeleting ? <CircularProgress size={20} color="inherit" /> : 'Excluir'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default EventObservations;

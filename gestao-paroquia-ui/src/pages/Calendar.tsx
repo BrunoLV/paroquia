@@ -41,6 +41,7 @@ import EventRegistrationModal from '../components/EventRegistrationModal';
 import EventCancelDialog from '../components/EventCancelDialog';
 import EditScopeDialog, { EditScope } from '../components/EditScopeDialog';
 import { ExportCalendarDialog } from '../components/ExportCalendarDialog';
+import EventObservations from '../components/EventObservations';
 import { Evento, Organizacao, Local, Projeto } from '../api/types';
 
 interface CalendarDay {
@@ -1000,6 +1001,9 @@ const Calendar = () => {
                     Conflito detectado: {selectedEvent.conflictReason}
                   </Alert>
                 )}
+
+                {/* Event Observations */}
+                <EventObservations eventoId={selectedEvent.id} />
               </Box>
             </DialogContent>
             <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
