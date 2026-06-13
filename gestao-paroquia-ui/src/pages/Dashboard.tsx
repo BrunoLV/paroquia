@@ -4,22 +4,29 @@ import {
   Typography,
   Box,
   Stack,
-  CircularProgress,
   Alert,
+  Skeleton,
 } from '@mui/material';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import UpcomingEvents from '../components/dashboard/UpcomingEvents';
 import QuickActions from '../components/dashboard/QuickActions';
 import PendingApprovals from '../components/dashboard/PendingApprovals';
+import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
+import ActiveProjectsProgressList from '../components/dashboard/ActiveProjectsProgressList';
+import WeeklyTimeline from '../components/dashboard/WeeklyTimeline';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
-import { Evento, Organizacao, Local, Projeto } from '../api/types';
+import { Evento, Organizacao, Local, Projeto, DashboardMetrics } from '../api/types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getDashboardMetrics } from '../api/dashboard';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { showError } = useNotification();
+  const queryClient = useQueryClient();
+
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
   const [locais, setLocais] = useState<Local[]>([]);
@@ -30,6 +37,17 @@ const Dashboard = () => {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch dashboard metrics via React Query
+  const {
+    data: metrics,
+    isLoading: isMetricsLoading,
+    error: metricsError,
+  } = useQuery<DashboardMetrics>({
+    queryKey: ['dashboardMetrics'],
+    queryFn: getDashboardMetrics,
+    enabled: !!user,
+  });
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -110,7 +128,7 @@ const Dashboard = () => {
 
       await Promise.all([fetchOrgs(), fetchLocais(), fetchProjetos(), fetchEvents()]);
     } catch (err: any) {
-      console.error('Error fetching dashboard data:', err);
+      console.error('Error fetching dashboard metadata:', err);
       setError('Não foi possível carregar os dados do dashboard.');
     } finally {
       setIsLoading(false);
@@ -147,6 +165,8 @@ const Dashboard = () => {
       }
 
       setIsModalOpen(false);
+      // Invalidate dashboard metrics cache & reload metadata
+      queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
       fetchData();
     } catch (err: any) {
       showError(err.response?.data?.message || 'Erro ao criar evento.');
@@ -155,10 +175,63 @@ const Dashboard = () => {
     }
   };
 
-  if (isLoading && events.length === 0) {
+  // Filter organizations shown in registration modal based on user's authorized organizations (non-admin only)
+  const allowedOrgs = React.useMemo(() => {
+    if (!user) return [];
+    const isAdmin = user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN');
+    if (isAdmin) {
+      return organizations;
+    }
+    const userOrgIds = user.organizations.map(org => org.id);
+    return organizations.filter(org => userOrgIds.includes(org.id));
+  }, [user, organizations]);
+
+  const showSkeleton = isLoading || isMetricsLoading;
+  const errorMsg = error || (metricsError ? 'Não foi possível carregar os dados do dashboard.' : '');
+
+  const summaryMetrics = React.useMemo(() => {
+    if (metrics?.resumoGeral) {
+      return {
+        monthlyEvents: metrics.resumoGeral.totalEventosMes,
+        pendingApprovals: metrics.resumoGeral.solicitacoesPendentes,
+        activeProjects: metrics.resumoGeral.projetosAtivos,
+      };
+    }
+    return undefined;
+  }, [metrics]);
+
+  if (showSkeleton) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-        <CircularProgress />
+      <Box>
+        <Skeleton variant="text" width={200} height={60} sx={{ mb: 4 }} />
+        <Grid container spacing={3}>
+          {[1, 2, 3].map((i) => (
+            <Grid key={i} size={{ xs: 12, sm: 4 }}>
+              <Skeleton variant="rounded" height={120} sx={{ borderRadius: 3 }} />
+            </Grid>
+          ))}
+        </Grid>
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Stack spacing={3}>
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <Skeleton variant="rounded" height={300} sx={{ borderRadius: 3 }} />
+                </Grid>
+                <Grid size={{ xs: 12, lg: 6 }}>
+                  <Skeleton variant="rounded" height={300} sx={{ borderRadius: 3 }} />
+                </Grid>
+              </Grid>
+              <Skeleton variant="rounded" height={250} sx={{ borderRadius: 3 }} />
+            </Stack>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Stack spacing={3}>
+              <Skeleton variant="rounded" height={150} sx={{ borderRadius: 3 }} />
+              <Skeleton variant="rounded" height={200} sx={{ borderRadius: 3 }} />
+            </Stack>
+          </Grid>
+        </Grid>
       </Box>
     );
   }
@@ -169,20 +242,35 @@ const Dashboard = () => {
         Dashboard
       </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {errorMsg && <Alert severity="error" sx={{ mb: 3 }}>{errorMsg}</Alert>}
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12 }}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
             Visão Geral
           </Typography>
-          <SummaryCards metrics={{ monthlyEvents: events.length, pendingApprovals: 0 }} />
+          <SummaryCards metrics={summaryMetrics} />
         </Grid>
 
+        {/* Charts & Project Progress */}
         <Grid size={{ xs: 12, md: 8 }}>
-          <UpcomingEvents events={events} isLoading={isLoading} />
+          <Stack spacing={3}>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, lg: 6 }}>
+                <EventDistributionPieChart data={metrics?.eventosPorOrganizacao || []} />
+              </Grid>
+              <Grid size={{ xs: 12, lg: 6 }}>
+                <ActiveProjectsProgressList projects={metrics?.projetosAtivosDetalhes || []} />
+              </Grid>
+            </Grid>
+            
+            <WeeklyTimeline events={metrics?.eventosSemana || []} />
+            
+            <UpcomingEvents events={events} isLoading={isLoading} />
+          </Stack>
         </Grid>
 
+        {/* Sidebar Actions & Pending Approvals */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3}>
             <QuickActions onNewEvent={() => setIsModalOpen(true)} />
@@ -196,7 +284,7 @@ const Dashboard = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateEvent}
         isSubmitting={isSubmitting}
-        organizations={organizations.filter(org => org.ativo)}
+        organizations={allowedOrgs.filter(org => org.ativo)}
         locais={locais.filter(l => l.ativo)}
         projetos={projetos.filter(p => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
       />

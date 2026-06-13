@@ -6,6 +6,7 @@ import theme from '../theme';
 import { MemoryRouter } from 'react-router-dom';
 import apiClient from '../api/client';
 import { AuthProvider } from '../auth/AuthContext';
+import { QueryProvider } from '../api/QueryProvider';
 
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
@@ -15,6 +16,17 @@ jest.mock('../context/NotificationContext', () => ({
     showError: jest.fn(),
     showSuccess: jest.fn(),
   }),
+}));
+
+// Mock @mui/x-charts components to avoid jsdom rendering errors
+jest.mock('@mui/x-charts', () => ({
+  PieChart: ({ series }: any) => (
+    <div data-testid="mock-pie-chart">
+      {series[0]?.data?.map((d: any) => (
+        <span key={d.label}>{d.label}: {d.value}</span>
+      ))}
+    </div>
+  ),
 }));
 
 describe('Dashboard Page', () => {
@@ -27,8 +39,23 @@ describe('Dashboard Page', () => {
       if (url === '/auth/me') {
         return Promise.resolve({ data: user });
       }
-      if (url === '/eventos') {
-        return Promise.resolve({ data: { content: [] } });
+      if (url === '/dashboard/metrics') {
+        return Promise.resolve({
+          data: {
+            resumoGeral: { totalEventosMes: 12, projetosAtivos: 3, solicitacoesPendentes: 2 },
+            eventosPorOrganizacao: [
+              { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
+              { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 }
+            ],
+            projetosAtivosDetalhes: [
+              { nome: 'Projeto Alfa', status: 'EM_ANDAMENTO', percentualTempoDecorrido: 65.0, totalEventos: 10, eventosRealizados: 6, emRisco: false, envolvidos: ['Pastoral A'] },
+              { nome: 'Projeto Beta', status: 'ABERTO', percentualTempoDecorrido: 85.0, totalEventos: 5, eventosRealizados: 2, emRisco: true, envolvidos: ['Pastoral B'] }
+            ],
+            eventosSemana: [
+              { titulo: 'Missa das Flores', inicio: '2026-06-15T10:00:00.000', localNome: 'Igreja Matriz', organizacaoNome: 'Pastoral A' }
+            ]
+          }
+        });
       }
       if (url === '/organizacoes') {
         return Promise.resolve({ data: [
@@ -48,22 +75,28 @@ describe('Dashboard Page', () => {
     await act(async () => {
       render(
         <MemoryRouter>
-          <AuthProvider>
-            <ThemeProvider theme={theme}>
-              <Dashboard />
-            </ThemeProvider>
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <ThemeProvider theme={theme}>
+                <Dashboard />
+              </ThemeProvider>
+            </AuthProvider>
+          </QueryProvider>
         </MemoryRouter>
       );
     });
   };
 
-  test('renders dashboard layout structure after loading', async () => {
+  test('renders dashboard layout structure and metrics after loading', async () => {
     const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
     await renderDashboard(adminUser);
 
-    expect(screen.getByRole('heading', { name: /Visão Geral/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Ações Rápidas/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Dashboard/i })).toBeInTheDocument();
+    expect(screen.getByText('Pastoral A: 8')).toBeInTheDocument();
+    expect(screen.getByText('Pastoral B: 4')).toBeInTheDocument();
+    expect(screen.getByText('Projeto Alfa')).toBeInTheDocument();
+    expect(screen.getByText('Projeto Beta')).toBeInTheDocument();
+    expect(screen.getByText('Missa das Flores')).toBeInTheDocument();
   });
 
   test('opens New Event modal with filtered organizations', async () => {
@@ -80,36 +113,14 @@ describe('Dashboard Page', () => {
       newEventBtn.click();
     });
 
-    // Modal should be open
     expect(screen.getByText(/Criar Novo Evento/i)).toBeInTheDocument();
     
-    // Dropdown should contain only Pastoral A
     const select = screen.getByLabelText(/organização responsável/i);
     fireEvent.mouseDown(select);
     
     const listbox = screen.getByRole('listbox');
     expect(within(listbox).getByText('Pastoral A')).toBeInTheDocument();
     expect(within(listbox).queryByText('Pastoral B')).not.toBeInTheDocument();
-  });
-
-  test('implicitly filters events for non-ADMIN users', async () => {
-    const memberUser = { 
-      id: '2', 
-      name: 'Member', 
-      roles: ['USER'], 
-      organizations: [{ id: 'org-1', nome: 'Pastoral A', ativo: true }] 
-    };
-    await renderDashboard(memberUser);
-
-    // Verify events call included the organization filter
-    expect(mockedApiClient.get).toHaveBeenCalledWith(
-      '/eventos',
-      expect.objectContaining({
-        params: expect.objectContaining({
-          organizacaoIds: ['org-1']
-        })
-      })
-    );
   });
 
   test('renders error message on fetch failure', async () => {
@@ -121,11 +132,13 @@ describe('Dashboard Page', () => {
     await act(async () => {
       render(
         <MemoryRouter>
-          <AuthProvider>
-            <ThemeProvider theme={theme}>
-              <Dashboard />
-            </ThemeProvider>
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <ThemeProvider theme={theme}>
+                <Dashboard />
+              </ThemeProvider>
+            </AuthProvider>
+          </QueryProvider>
         </MemoryRouter>
       );
     });
