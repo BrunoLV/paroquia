@@ -85,4 +85,7 @@
 - [x] **Track: revisar o codigo e estrutra de pacotes para ficar condizente com os padrões de DDD e Hexagonal Architecture, SOLID e Clean Archtecture**
 *Link: [./archive/align_architecture_packages_20260603/](./archive/align_architecture_packages_20260603/)*
 
+---
 
+- [ ] **Track: a funcionalidade de dashboard, hoje esta muito pobre, precisamos inserir informações mais gerenciais no dashboard, como graficos, eventos.**
+*Link: [./tracks/rich_dashboard_metrics_20260613/](./tracks/rich_dashboard_metrics_20260613/)*
