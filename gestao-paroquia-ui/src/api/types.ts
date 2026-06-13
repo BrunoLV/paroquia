@@ -136,3 +136,15 @@ export interface DashboardMetrics {
   projetosAtivosDetalhes: ProjectDetail[];
   eventosSemana: WeeklyEvent[];
 }
+
+export type TipoObservacao = 'NOTA' | 'JUSTIFICATIVA' | 'APROVACAO' | 'REPROVACAO' | 'CANCELAMENTO' | 'AJUSTE_HORARIO';
+
+export interface Observacao {
+  id: string;
+  eventoId: string;
+  usuarioId: string;
+  tipo: TipoObservacao;
+  conteudo: string;
+  criadoEmUtc: string;
+}
+
