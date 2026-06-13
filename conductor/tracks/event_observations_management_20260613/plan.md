@@ -12,7 +12,7 @@
     - [x] Run the tests and verify they pass
 - [x] Task: Conductor - User Manual Verification 'Phase 1: API Integration & Client Testing' (Protocol in workflow.md)
 
-## Phase 2: Event Details Dialog UI & Component Testing [checkpoint: ]
+## Phase 2: Event Details Dialog UI & Component Testing [checkpoint: b80ed72]
 - [x] Task: Write Failing UI Component Tests (Red Phase) 21872dd
     - [x] Create `src/components/EventObservations.test.tsx`
     - [x] Write failing test cases verifying listing of notes, typing a new note, rendering edit/delete buttons, and confirming deletions
@@ -21,4 +21,4 @@
     - [x] Create a reusable `EventObservations.tsx` component that lists notes, differentiates system notes, and allows CRUD operations
     - [x] Integrate `EventObservations.tsx` into the Details Dialog modal in `Calendar.tsx`
     - [x] Run the frontend tests and verify all tests pass
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Event Details Dialog UI & Component Testing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Event Details Dialog UI & Component Testing' (Protocol in workflow.md) b80ed72
