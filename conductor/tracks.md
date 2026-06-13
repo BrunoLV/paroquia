@@ -92,5 +92,5 @@
 
 ---
 
-- [ ] **Track: Implementar a funcionalidade de adicionar, editar e remover observações dos eventos conforme já implementado na api.**
+- [x] **Track: Implementar a funcionalidade de adicionar, editar e remover observações dos eventos conforme já implementado na api.**
 *Link: [./tracks/event_observations_management_20260613/](./tracks/event_observations_management_20260613/)*
