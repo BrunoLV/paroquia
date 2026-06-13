@@ -15,7 +15,7 @@
     - [x] Run the test suite and confirm all tests pass.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Metrics Endpoint & Integration Tests' (Protocol in workflow.md)
 
-## Phase 2: Frontend Dependency Setup & API Client
+## Phase 2: Frontend Dependency Setup & API Client [checkpoint: 0c9a747]
 - [x] Task: Install MUI Charts Dependency d235d0f
     - [x] Add `@mui/x-charts` to `package.json` dependencies.
     - [x] Run `npm install` to update the dependencies.
