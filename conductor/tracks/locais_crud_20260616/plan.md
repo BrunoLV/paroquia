@@ -1,16 +1,16 @@
 # Plan: CRUD de Locais (Localizações)
 
 ## Phase 1: Backend Implementation & Security (TDD)
-- [ ] Task: Escrever testes automatizados de segurança (RBAC) e remoção lógica para locais
-    - [ ] Criar testes integrados em `LocalControllerIntegrationTest` simulando requisições POST/PUT/DELETE com usuários de diferentes papéis (ADMIN, COORDENADOR_CONSELHO, COORDENADOR_CLERO/Pároco) para validar sucesso e falha (403).
-    - [ ] Criar testes unitários em `LocalServiceTest` para validar que `deleteLocal` inativa o local (ativo = false) e não lança exceção caso o local esteja associado a eventos.
-- [ ] Task: Implementar as regras de segurança nos endpoints do controller de locais
-    - [ ] Atualizar as anotações `@PreAuthorize` nos métodos `create`, `update` e `delete` do `LocalController.java` para permitir acesso a `ADMIN`, `CLERO_PAROCO`, `CONSELHO_COORDENADOR` e `CONSELHO_VICE_COORDENADOR`.
-- [ ] Task: Implementar a remoção lógica (inativação) no serviço de locais
-    - [ ] Modificar o método `deleteLocal(UUID id)` no `LocalService.java` para buscar o local, alterar seu status para `ativo = false` e salvar a entidade, ao invés de excluí-la fisicamente do banco de dados.
-    - [ ] Remover ou contornar a validação de uso físico `localRepository.isLocalInUse(id)` na exclusão lógica, garantindo integridade de dados históricos.
-- [ ] Task: Executar e validar testes do backend
-    - [ ] Rodar `./gradlew test` no backend para assegurar que todas as regras de negócio de locais e seus testes integrados passam com sucesso.
+- [x] Task: Escrever testes automatizados de segurança (RBAC) e remoção lógica para locais [16f4c83]
+    - [x] Criar testes integrados em `LocalControllerIntegrationTest` simulando requisições POST/PUT/DELETE com usuários de diferentes papéis (ADMIN, COORDENADOR_CONSELHO, COORDENADOR_CLERO/Pároco) para validar sucesso e falha (403).
+    - [x] Criar testes unitários em `LocalServiceTest` para validar que `deleteLocal` inativa o local (ativo = false) e não lança exceção caso o local esteja associado a eventos.
+- [x] Task: Implementar as regras de segurança nos endpoints do controller de locais [16f4c83]
+    - [x] Atualizar as anotações `@PreAuthorize` nos métodos `create`, `update` e `delete` do `LocalController.java` para permitir acesso a `ADMIN`, `CLERO_PAROCO`, `CONSELHO_COORDENADOR` e `CONSELHO_VICE_COORDENADOR`.
+- [x] Task: Implementar a remoção lógica (inativação) no serviço de locais [16f4c83]
+    - [x] Modificar o método `deleteLocal(UUID id)` no `LocalService.java` para buscar o local, alterar seu status para `ativo = false` e salvar a entidade, ao invés de excluí-la fisicamente do banco de dados.
+    - [x] Remover ou contornar a validação de uso físico `localRepository.isLocalInUse(id)` na exclusão lógica, garantindo integridade de dados históricos.
+- [x] Task: Executar e validar testes do backend [16f4c83]
+    - [x] Rodar `./gradlew test` no backend para assegurar que todas as regras de negócio de locais e seus testes integrados passam com sucesso.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Security' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Pages, Routing & Layout
