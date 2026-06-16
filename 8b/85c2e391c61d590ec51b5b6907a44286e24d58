@@ -1,0 +1,8 @@
+Task: Reestruturar as rotas e o menu lateral do frontend e Criar a página de Configurações unificada com abas
+Summary of changes:
+- Created the Settings page (Settings.tsx) with Tab layout for Parish Years and Locations (Locais).
+- Updated Layout.tsx to replace the sidebar navigation link 'Ano Paroquial' with 'Configurações' pointing to '/configuracoes'.
+- Updated AppRoutes.tsx to route `/configuracoes` to Settings page, protecting it using a permission helper.
+- Removed obsolete ParishYears component and test files.
+- Added Settings.test.tsx and updated Layout.test.tsx and routing.test.tsx to fully test these changes.
+Why: Centralizes global system settings (parish years and physical locations) under a unified configuration dashboard accessible only to authorized roles.
