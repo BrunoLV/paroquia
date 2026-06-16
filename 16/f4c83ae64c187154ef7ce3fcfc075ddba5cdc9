@@ -1,0 +1,1 @@
+Task: Escrever testes automatizados de segurança (RBAC) e remoção lógica para locais e implementar alterações no backend. Resolvido com controle de acesso para ADMIN, CLERO_PAROCO, CONSELHO_COORDENADOR, CONSELHO_VICE_COORDENADOR e inativação lógica de localizações.
