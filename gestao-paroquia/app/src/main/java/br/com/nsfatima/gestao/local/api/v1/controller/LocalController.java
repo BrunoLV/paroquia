@@ -43,7 +43,7 @@ public class LocalController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new location", description = "Only administrators can create locations.")
     public LocalResponse create(@RequestBody @Valid LocalRequest request) {
         Local local = localService.createLocal(
@@ -67,7 +67,7 @@ public class LocalController {
      * @return Dados atualizados do local
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing location", description = "Only administrators can update locations.")
     public LocalResponse update(@PathVariable UUID id, @RequestBody @Valid LocalRequest request) {
         Local local = localService.updateLocal(
@@ -92,7 +92,7 @@ public class LocalController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete a location", description = "Only administrators can delete locations. Cannot delete locations in use.")
     public void delete(@PathVariable UUID id) {
         localService.deleteLocal(id);

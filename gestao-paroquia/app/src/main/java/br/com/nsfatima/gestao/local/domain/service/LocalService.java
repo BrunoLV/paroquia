@@ -38,10 +38,10 @@ public class LocalService {
 
     @Transactional
     public void deleteLocal(UUID id) {
-        if (localRepository.isLocalInUse(id)) {
-            throw LocalBusinessException.inUse(id);
-        }
-        localRepository.delete(id);
+        Local local = localRepository.findById(id)
+                .orElseThrow(() -> LocalBusinessException.notFound(id));
+        local.update(local.getNome(), local.getTipo(), local.getEndereco(), local.getCapacidade(), local.getCaracteristicas(), false);
+        localRepository.save(local);
     }
 
     @Transactional(readOnly = true)

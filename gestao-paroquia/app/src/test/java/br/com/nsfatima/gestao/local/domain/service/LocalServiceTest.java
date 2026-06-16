@@ -49,25 +49,31 @@ class LocalServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenDeletingLocalInUse() {
-        UUID id = UUID.randomUUID();
-        Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
-        localRepository.save(local);
-        localRepository.setInUse(id, true);
-
-        LocalBusinessException exception = assertThrows(LocalBusinessException.class, () -> localService.deleteLocal(id));
-        assertTrue(exception.getMessage().contains("associated events"));
-    }
-
-    @Test
-    void shouldDeleteLocalWhenNotInUse() {
+    void shouldInactivateLocalInsteadOfDeleting() {
         UUID id = UUID.randomUUID();
         Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
         localRepository.save(local);
         localRepository.setInUse(id, false);
 
         localService.deleteLocal(id);
-        assertTrue(localRepository.findById(id).isEmpty());
+        
+        Optional<Local> found = localRepository.findById(id);
+        assertTrue(found.isPresent());
+        assertFalse(found.get().isAtivo());
+    }
+
+    @Test
+    void shouldInactivateLocalEvenWhenInUse() {
+        UUID id = UUID.randomUUID();
+        Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
+        localRepository.save(local);
+        localRepository.setInUse(id, true);
+
+        localService.deleteLocal(id);
+        
+        Optional<Local> found = localRepository.findById(id);
+        assertTrue(found.isPresent());
+        assertFalse(found.get().isAtivo());
     }
 
     private static class FakeLocalRepository implements LocalRepository {
