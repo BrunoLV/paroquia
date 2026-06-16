@@ -11,7 +11,7 @@
     - [x] Remover ou contornar a validação de uso físico `localRepository.isLocalInUse(id)` na exclusão lógica, garantindo integridade de dados históricos.
 - [x] Task: Executar e validar testes do backend [16f4c83]
     - [x] Rodar `./gradlew test` no backend para assegurar que todas as regras de negócio de locais e seus testes integrados passam com sucesso.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Security' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Security' (Protocol in workflow.md) [checkpoint: 9cd4b52]
 
 ## Phase 2: Frontend Pages, Routing & Layout
 - [ ] Task: Implementar helpers de permissões no frontend
