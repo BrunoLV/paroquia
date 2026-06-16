@@ -1,0 +1,1 @@
+Phase: Phase 1: Backend Implementation & Security\nAutomated Test Command: ./gradlew test --tests 'br.com.nsfatima.gestao.local.*'\nManual Verification: Tested RBAC with coordinator (403) and admin (201), verified soft delete (204) and checked get endpoint for 'ativo: false'.\nUser Confirmation: Approved
