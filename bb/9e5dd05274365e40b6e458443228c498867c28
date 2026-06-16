@@ -1,0 +1,10 @@
+Task: Implementar a listagem de locais na aba correspondente, Implementar a modal e o formulário de cadastro/edição de locais, e Integrar as chamadas de API no frontend para mutações de locais.
+Summary of changes:
+- Implemented API client functions for Locations (GET, POST, PUT, DELETE) and verified them with unit tests.
+- Replaced the skeleton in the Locations tab of Settings.tsx with a full Table showing properties (Nome, Tipo, Capacidade, Endereço, Status).
+- Used distinct styling for Active/Inactive statuses.
+- Built LocalFormModal for creation/update forms with validation, styled with 0px border radius.
+- Integrated creation, update, and status-toggle mutations with React Query.
+- Protected mutative actions behind the `canManageLocais` permission helper.
+- Fully verified all changes with unit tests (Settings.test.tsx) and production builds.
+Why: Enables parish administrators to fully manage church spaces and rooms (CRUD) from a modern, role-protected interface while preserving historical event references through soft-deleting.
