@@ -14,19 +14,19 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Security' (Protocol in workflow.md) [checkpoint: 9cd4b52]
 
 ## Phase 2: Frontend Pages, Routing & Layout
-- [ ] Task: Implementar helpers de permissões no frontend
-    - [ ] Criar ou expandir o helper `canManageLocais` em `permissions.ts` utilizando a mesma regra de papéis do Ano Paroquial.
-    - [ ] Escrever testes unitários em `permissions.test.ts` para validar a função `canManageLocais`.
-- [ ] Task: Reestruturar as rotas e o menu lateral do frontend
-    - [ ] Substituir o item "Ano Paroquial" por "Configurações" no menu lateral (`Layout.tsx`), apontando para a nova rota `/settings` (ou `/configuracoes`).
-    - [ ] Atualizar a rota `/anos-paroquiais` para `/settings` (ou `/configuracoes`) em `AppRoutes.tsx`, protegendo-a com um validador de rota de configurações gerais.
-- [ ] Task: Criar a página de Configurações unificada com abas
-    - [ ] Criar o componente `Settings.tsx` (em `src/pages/Settings.tsx`) estruturado com abas do Material UI (`Tabs`, `Tab`).
-    - [ ] Mover a tabela e lógicas do `ParishYears.tsx` para a aba 1 ("Ano Paroquial").
-    - [ ] Criar um esqueleto básico para a aba 2 ("Locais") que exibirá a listagem futuramente.
-- [ ] Task: Validar testes existentes do frontend
-    - [ ] Atualizar os testes do `Layout.test.tsx` e `AppRoutes` que referenciam o link antigo para verificar a nova aba de configurações.
-    - [ ] Rodar `npm test` para certificar que os testes unitários do frontend passam com sucesso.
+- [x] Task: Implementar helpers de permissões no frontend [8b85c2e]
+    - [x] Criar ou expandir o helper `canManageLocais` em `permissions.ts` utilizando a mesma regra de papéis do Ano Paroquial.
+    - [x] Escrever testes unitários em `permissions.test.ts` para validar a função `canManageLocais`.
+- [x] Task: Reestruturar as rotas e o menu lateral do frontend [8b85c2e]
+    - [x] Substituir o item "Ano Paroquial" por "Configurações" no menu lateral (`Layout.tsx`), apontando para a nova rota `/settings` (ou `/configuracoes`).
+    - [x] Atualizar a rota `/anos-paroquiais` para `/settings` (ou `/configuracoes`) em `AppRoutes.tsx`, protegendo-a com um validador de rota de configurações gerais.
+- [x] Task: Criar a página de Configurações unificada com abas [8b85c2e]
+    - [x] Criar o componente `Settings.tsx` (em `src/pages/Settings.tsx`) estruturado com abas do Material UI (`Tabs`, `Tab`).
+    - [x] Mover a tabela e lógicas do `ParishYears.tsx` para a aba 1 ("Ano Paroquial").
+    - [x] Criar um esqueleto básico para a aba 2 ("Locais") que exibirá a listagem futuramente.
+- [x] Task: Validar testes existentes do frontend [8b85c2e]
+    - [x] Atualizar os testes do `Layout.test.tsx` e `AppRoutes` que referenciam o link antigo para verificar a nova aba de configurações.
+    - [x] Rodar `npm test` para certificar que os testes unitários do frontend passam com sucesso.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Pages, Routing & Layout' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Locations CRUD & Final Integration
