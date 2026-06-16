@@ -14,6 +14,7 @@ jest.mock('./pages/Calendar', () => () => <div data-testid="calendar-page">Calen
 jest.mock('./pages/Login', () => () => <div data-testid="login-page">Login Page</div>);
 jest.mock('./pages/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
 jest.mock('./pages/Approvals', () => () => <div data-testid="approvals-page">Approvals Page</div>);
+jest.mock('./pages/Settings', () => () => <div data-testid="settings-page">Settings Page</div>);
 
 describe('Routing', () => {
   beforeEach(() => {
@@ -82,6 +83,25 @@ describe('Routing', () => {
 
     expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
     expect(screen.queryByTestId('approvals-page')).not.toBeInTheDocument();
+  });
+
+  test('authenticated user with management role can access /configuracoes', async () => {
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_CONSELHO_COORDENADOR'] };
+    mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
+
+    await renderWithProviders('/configuracoes');
+
+    expect(screen.getByTestId('settings-page')).toBeInTheDocument();
+  });
+
+  test('authenticated user without management role is redirected to dashboard when trying to access /configuracoes', async () => {
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'] };
+    mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
+
+    await renderWithProviders('/configuracoes');
+
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    expect(screen.queryByTestId('settings-page')).not.toBeInTheDocument();
   });
 });
 

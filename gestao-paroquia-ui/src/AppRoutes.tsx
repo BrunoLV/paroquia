@@ -6,10 +6,10 @@ import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
 import Approvals from './pages/Approvals';
 import Projects from './pages/Projects';
-import ParishYears from './pages/ParishYears';
+import Settings from './pages/Settings';
 import Layout from './components/Layout';
 import { useAuth } from './auth/AuthContext';
-import { canApprove, canManageAnoParoquial } from './auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais } from './auth/permissions';
 
 const ApprovalsRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
@@ -19,9 +19,9 @@ const ApprovalsRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const AnosParoquiaisRoute = ({ children }: { children: React.ReactNode }) => {
+const ConfiguracoesRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  if (!canManageAnoParoquial(user)) {
+  if (!canManageAnoParoquial(user) && !canManageLocais(user)) {
     return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;
@@ -49,11 +49,11 @@ const AppRoutes = () => {
                 />
                 <Route path="projects" element={<Projects />} />
                 <Route
-                  path="anos-paroquiais"
+                  path="configuracoes"
                   element={
-                    <AnosParoquiaisRoute>
-                      <ParishYears />
-                    </AnosParoquiaisRoute>
+                    <ConfiguracoesRoute>
+                      <Settings />
+                    </ConfiguracoesRoute>
                   }
                 />
                 <Route index element={<Navigate to="/dashboard" replace />} />

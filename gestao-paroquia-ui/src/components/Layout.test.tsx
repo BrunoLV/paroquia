@@ -80,7 +80,7 @@ describe('Layout component link visibility', () => {
     expect(screen.getByText('Calendário')).toBeInTheDocument();
   });
 
-  test('renders "Ano Paroquial" link for users with management permissions', () => {
+  test('renders "Configurações" link for users with management permissions', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: jest.fn(),
@@ -97,10 +97,10 @@ describe('Layout component link visibility', () => {
       </QueryProvider>
     );
 
-    expect(screen.getByText('Ano Paroquial')).toBeInTheDocument();
+    expect(screen.getByText('Configurações')).toBeInTheDocument();
   });
 
-  test('does not render "Ano Paroquial" link for users without management permissions', () => {
+  test('does not render "Configurações" link for users without management permissions', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '2', name: 'Membro', roles: ['ROLE_PASTORAL_MEMBRO'] },
       logout: jest.fn(),
@@ -117,6 +117,6 @@ describe('Layout component link visibility', () => {
       </QueryProvider>
     );
 
-    expect(screen.queryByText('Ano Paroquial')).not.toBeInTheDocument();
+    expect(screen.queryByText('Configurações')).not.toBeInTheDocument();
   });
 });

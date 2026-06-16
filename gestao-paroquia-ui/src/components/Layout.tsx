@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { canApprove, canManageAnoParoquial } from '../auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais } from '../auth/permissions';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -71,31 +71,59 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     menuItems.push({ label: 'Aprovações', path: '/approvals', icon: <FactCheckIcon /> });
   }
 
-  if (canManageAnoParoquial(user)) {
-    menuItems.push({ label: 'Ano Paroquial', path: '/anos-paroquiais', icon: <SettingsIcon /> });
+  if (canManageAnoParoquial(user) || canManageLocais(user)) {
+    menuItems.push({ label: 'Configurações', path: '/configuracoes', icon: <SettingsIcon /> });
   }
 
   const drawerWidth = isMdUp ? (drawerOpen ? 240 : 72) : 240;
 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'white' }}>
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: drawerOpen || !isMdUp ? 'flex-start' : 'center', gap: 1.5, minHeight: 64 }}>
-        <Box sx={{ bgcolor: 'white', p: 0.5, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-          <img 
-            src="/logo-paroquia.png" 
-            alt="Logo da Paróquia" 
-            style={{ width: '90%', height: '90%', objectFit: 'contain' }} 
-          />
-        </Box>
-        {(drawerOpen || !isMdUp) && (
-          <Box sx={{ overflow: 'hidden' }}>
-            <Typography variant="subtitle1" noWrap sx={{ fontWeight: 700, color: 'primary.main', lineHeight: 1.2 }}>
-              N. S. de Fátima
-            </Typography>
-            <Typography variant="caption" noWrap sx={{ color: 'text.secondary', display: 'block' }}>
-              Gestão Paroquial
-            </Typography>
-          </Box>
+      <Box sx={{ 
+        p: 2, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: drawerOpen || !isMdUp ? 'space-between' : 'center', 
+        minHeight: 64,
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
+        {(drawerOpen || !isMdUp) ? (
+          <>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
+              <Box sx={{ bgcolor: 'white', p: 0.5, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                <img 
+                  src="/logo-paroquia.png" 
+                  alt="Logo da Paróquia" 
+                  style={{ width: '90%', height: '90%', objectFit: 'contain' }} 
+                />
+              </Box>
+              <Box sx={{ overflow: 'hidden' }}>
+                <Typography variant="subtitle1" noWrap sx={{ fontWeight: 700, color: 'primary.main', lineHeight: 1.2 }}>
+                  N. S. de Fátima
+                </Typography>
+                <Typography variant="caption" noWrap sx={{ color: 'text.secondary', display: 'block' }}>
+                  Gestão Paroquial
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              color="primary"
+              aria-label={drawerOpen ? "recolher menu" : "expandir menu"}
+              onClick={handleDrawerToggle}
+              sx={{ p: 0.5 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </>
+        ) : (
+          <IconButton
+            color="primary"
+            aria-label={drawerOpen ? "recolher menu" : "expandir menu"}
+            onClick={handleDrawerToggle}
+          >
+            <MenuIcon />
+          </IconButton>
         )}
       </Box>
       <Divider />
@@ -192,15 +220,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <AppBar position="static" color="primary" sx={{ mb: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', bgcolor: 'primary.main' }}>
           <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="abrir menu"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
+            {!isMdUp && (
+              <IconButton
+                color="inherit"
+                aria-label="abrir menu"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
             
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600, letterSpacing: '0.5px' }}>
               Nossa Senhora de Fátima

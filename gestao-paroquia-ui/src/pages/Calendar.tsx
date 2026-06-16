@@ -391,8 +391,9 @@ const Calendar = () => {
     try {
       if (editingEvent) {
         // UPDATE (PATCH)
+        const { recurrence, ...eventBaseData } = data;
         const updateData = {
-          ...data,
+          ...eventBaseData,
           editScope: selectedEditScope || 'ONLY_THIS'
         };
         await apiClient.patch(`/eventos/${editingEvent.id}`, updateData);
