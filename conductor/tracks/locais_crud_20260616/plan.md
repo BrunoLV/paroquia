@@ -13,7 +13,7 @@
     - [x] Rodar `./gradlew test` no backend para assegurar que todas as regras de negócio de locais e seus testes integrados passam com sucesso.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Security' (Protocol in workflow.md) [checkpoint: 9cd4b52]
 
-## Phase 2: Frontend Pages, Routing & Layout
+## Phase 2: Frontend Pages, Routing & Layout [checkpoint: f1d418c]
 - [x] Task: Implementar helpers de permissões no frontend [8b85c2e]
     - [x] Criar ou expandir o helper `canManageLocais` em `permissions.ts` utilizando a mesma regra de papéis do Ano Paroquial.
     - [x] Escrever testes unitários em `permissions.test.ts` para validar a função `canManageLocais`.
@@ -27,7 +27,7 @@
 - [x] Task: Validar testes existentes do frontend [8b85c2e]
     - [x] Atualizar os testes do `Layout.test.tsx` e `AppRoutes` que referenciam o link antigo para verificar a nova aba de configurações.
     - [x] Rodar `npm test` para certificar que os testes unitários do frontend passam com sucesso.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Pages, Routing & Layout' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Pages, Routing & Layout' (Protocol in workflow.md) [checkpoint: f1d418c]
 
 ## Phase 3: Frontend Locations CRUD & Final Integration
 - [ ] Task: Implementar a listagem de locais na aba correspondente
