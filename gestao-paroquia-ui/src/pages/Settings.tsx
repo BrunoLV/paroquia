@@ -23,10 +23,12 @@ import {
   Tab,
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
-import { AnoParoquialStatus } from '../api/types';
+import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
+import { AnoParoquialStatus, Local } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
 import { canManageAnoParoquial, canManageLocais } from '../auth/permissions';
+import LocalFormModal from './LocalFormModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -71,6 +73,8 @@ const Settings = () => {
   const [tabValue, setTabValue] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -95,6 +99,73 @@ const Settings = () => {
       setSelectedYear(null);
     },
   });
+
+  const { data: locais = [], isLoading: isLoadingLocais, isError: isErrorLocais } = useQuery({
+    queryKey: ['locais'],
+    queryFn: getLocais,
+    enabled: tabValue === 1,
+  });
+
+  const createLocalMutation = useMutation({
+    mutationFn: (data: Omit<Local, 'id'>) => createLocal(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['locais'] });
+      showSuccess('Local cadastrado com sucesso!');
+      setModalOpen(false);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao cadastrar local.';
+      showError(errMsg);
+    },
+  });
+
+  const updateLocalMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Omit<Local, 'id'> }) => updateLocal(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['locais'] });
+      showSuccess('Local atualizado com sucesso!');
+      setModalOpen(false);
+      setSelectedLocal(null);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao atualizar local.';
+      showError(errMsg);
+    },
+  });
+
+  const toggleLocalStatusMutation = useMutation({
+    mutationFn: async (local: Local) => {
+      if (local.ativo) {
+        return deleteLocal(local.id);
+      } else {
+        const { id, ...data } = local;
+        return updateLocal(id, { ...data, ativo: true });
+      }
+    },
+    onSuccess: (_, local) => {
+      queryClient.invalidateQueries({ queryKey: ['locais'] });
+      showSuccess(`Local ${local.ativo ? 'inativado' : 'ativado'} com sucesso!`);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao alterar status do local.';
+      showError(errMsg);
+    },
+  });
+
+  const getTipoLabel = (tipo: string) => {
+    switch (tipo) {
+      case 'IGREJA':
+        return 'Igreja';
+      case 'SALAO':
+        return 'Salão';
+      case 'SALA':
+        return 'Sala';
+      case 'OUTRO':
+        return 'Outro';
+      default:
+        return tipo;
+    }
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -253,14 +324,117 @@ const Settings = () => {
 
         {/* Tab 2: Locais */}
         <CustomTabPanel value={tabValue} index={1}>
-          <Box>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
-              Gestão de Locais (Espaços Físicos)
-            </Typography>
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
-              Esqueleto da funcionalidade de CRUD de locais. (Em breve)
-            </Typography>
-          </Box>
+          {isLoadingLocais ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
+              <CircularProgress />
+            </Box>
+          ) : isErrorLocais ? (
+            <Alert severity="error">
+              Erro ao carregar as informações dos locais.
+            </Alert>
+          ) : (
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    Gestão de Locais (Espaços Físicos)
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
+                    Cadastre e gerencie os espaços disponíveis na paróquia para a realização de eventos.
+                  </Typography>
+                </Box>
+                {isAuthorizedLocais && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      setSelectedLocal(null);
+                      setModalOpen(true);
+                    }}
+                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                  >
+                    Novo Local
+                  </Button>
+                )}
+              </Box>
+
+              <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <Table>
+                  <TableHead sx={{ bgcolor: 'grey.100' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Capacidade</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Endereço</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                      {isAuthorizedLocais && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {locais.map((local) => (
+                      <TableRow key={local.id}>
+                        <TableCell sx={{ fontWeight: 500 }}>{local.nome}</TableCell>
+                        <TableCell>{getTipoLabel(local.tipo)}</TableCell>
+                        <TableCell>{local.capacidade !== null ? local.capacidade : '-'}</TableCell>
+                        <TableCell>{local.endereco || '-'}</TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              display: 'inline-block',
+                              px: 1,
+                              py: 0.5,
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              color: local.ativo ? '#2e7d32' : '#c62828',
+                              bgcolor: local.ativo ? '#e8f5e9' : '#ffebee',
+                            }}
+                          >
+                            {local.ativo ? 'Ativo' : 'Inativo'}
+                          </Box>
+                        </TableCell>
+                        {isAuthorizedLocais && (
+                          <TableCell align="right">
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => {
+                                  setSelectedLocal(local);
+                                  setModalOpen(true);
+                                }}
+                                disabled={toggleLocalStatusMutation.isPending}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color={local.ativo ? 'error' : 'primary'}
+                                size="small"
+                                onClick={() => toggleLocalStatusMutation.mutate(local)}
+                                disabled={toggleLocalStatusMutation.isPending}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                {local.ativo ? 'Inativar' : 'Ativar'}
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                    {locais.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={isAuthorizedLocais ? 6 : 5} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                          Nenhum local cadastrado.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
         </CustomTabPanel>
       </Box>
 
@@ -288,6 +462,23 @@ const Settings = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <LocalFormModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedLocal(null);
+        }}
+        onSave={(data) => {
+          if (selectedLocal) {
+            updateLocalMutation.mutate({ id: selectedLocal.id, data });
+          } else {
+            createLocalMutation.mutate(data);
+          }
+        }}
+        local={selectedLocal}
+        isPending={createLocalMutation.isPending || updateLocalMutation.isPending}
+      />
     </Container>
   );
 };

@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import { QueryProvider } from '../api/QueryProvider';
 import Settings from './Settings';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
+import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
@@ -11,12 +12,23 @@ jest.mock('../api/anosParoquiais', () => ({
   updateAnoParoquialStatus: jest.fn(),
 }));
 
+jest.mock('../api/locais', () => ({
+  getLocais: jest.fn(),
+  createLocal: jest.fn(),
+  updateLocal: jest.fn(),
+  deleteLocal: jest.fn(),
+}));
+
 jest.mock('../auth/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
 const mockGetAnosParoquiais = getAnosParoquiais as jest.Mock;
 const mockUpdateAnoParoquialStatus = updateAnoParoquialStatus as jest.Mock;
+const mockGetLocais = getLocais as jest.Mock;
+const mockCreateLocal = createLocal as jest.Mock;
+const mockUpdateLocal = updateLocal as jest.Mock;
+const mockDeleteLocal = deleteLocal as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
 
 const mockAnos = [
@@ -77,17 +89,6 @@ describe('Settings page', () => {
     });
   });
 
-  test('switches tabs to Locais when clicking the tab', async () => {
-    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
-
-    renderPage();
-
-    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
-    fireEvent.click(locaisTab);
-
-    expect(screen.getByText(/Esqueleto da funcionalidade de CRUD de locais/)).toBeInTheDocument();
-  });
-
   test('calls update status when Fechar button is clicked by authorized user', async () => {
     mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
     mockUpdateAnoParoquialStatus.mockResolvedValueOnce({
@@ -137,5 +138,250 @@ describe('Settings page', () => {
     await waitFor(() => {
       expect(mockUpdateAnoParoquialStatus).toHaveBeenCalledWith(2026, 'CONCLUIDO');
     });
+  });
+});
+
+const mockLocais = [
+  {
+    id: 'loc-1',
+    nome: 'Igreja Matriz',
+    tipo: 'IGREJA',
+    capacidade: 400,
+    endereco: 'Praça da Matriz, 1',
+    caracteristicas: 'Altar, Som, Bancos',
+    ativo: true,
+  },
+  {
+    id: 'loc-2',
+    nome: 'Salão Paroquial',
+    tipo: 'SALAO',
+    capacidade: 150,
+    endereco: 'Rua Lateral, 50',
+    caracteristicas: 'Cozinha, Mesas',
+    ativo: false,
+  },
+];
+
+describe('Settings page - Locais CRUD', () => {
+  const mockUseAuth = useAuth as jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Padre',
+        roles: ['ROLE_CLERO_PAROCO'],
+        organizations: [],
+      },
+    });
+  });
+
+  const renderPage = () => {
+    return render(
+      <QueryProvider>
+        <NotificationProvider>
+          <MemoryRouter>
+            <Settings />
+          </MemoryRouter>
+        </NotificationProvider>
+      </QueryProvider>
+    );
+  };
+
+  test('switches tabs to Locais and renders locations list', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValueOnce(mockLocais);
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+      expect(screen.getByText('Salão Paroquial')).toBeInTheDocument();
+      expect(screen.getByText('400')).toBeInTheDocument();
+      expect(screen.getByText('150')).toBeInTheDocument();
+      expect(screen.getByText('Ativo')).toBeInTheDocument();
+      expect(screen.getByText('Inativo')).toBeInTheDocument();
+    });
+  });
+
+  test('allows creating a location via the form modal', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValue(mockLocais);
+    mockCreateLocal.mockResolvedValueOnce({
+      id: 'loc-3',
+      nome: 'Sala 1',
+      tipo: 'SALA',
+      capacidade: 30,
+      endereco: '2º Andar',
+      caracteristicas: 'Quadro branco',
+      ativo: true,
+    });
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+
+    const newBtn = screen.getByRole('button', { name: /Novo Local/i });
+    fireEvent.click(newBtn);
+
+    expect(screen.getByRole('heading', { name: 'Novo Local' })).toBeInTheDocument();
+
+    const nomeInput = screen.getByLabelText(/Nome do Local/i);
+    const tipoSelect = screen.getByLabelText(/Tipo/i);
+    const capacidadeInput = screen.getByLabelText(/Capacidade/i);
+    const enderecoInput = screen.getByLabelText(/Endereço/i);
+
+    fireEvent.change(nomeInput, { target: { value: 'Sala 1' } });
+    fireEvent.mouseDown(tipoSelect);
+    const optionSala = screen.getByRole('option', { name: /Sala/i });
+    fireEvent.click(optionSala);
+    fireEvent.change(capacidadeInput, { target: { value: '30' } });
+    fireEvent.change(enderecoInput, { target: { value: '2º Andar' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Cadastrar/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockCreateLocal).toHaveBeenCalledWith({
+        nome: 'Sala 1',
+        tipo: 'SALA',
+        capacidade: 30,
+        endereco: '2º Andar',
+        caracteristicas: null,
+        ativo: true,
+      });
+    });
+  });
+
+  test('allows editing a location via the form modal', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValue(mockLocais);
+    mockUpdateLocal.mockResolvedValueOnce({
+      ...mockLocais[0],
+      nome: 'Igreja Matriz Renovada',
+    });
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+
+    const rowMatriz = screen.getAllByRole('row').find(row => row.textContent?.includes('Igreja Matriz'));
+    expect(rowMatriz).toBeDefined();
+
+    if (rowMatriz) {
+      const editBtn = within(rowMatriz).getByRole('button', { name: /Editar/i });
+      fireEvent.click(editBtn);
+    }
+
+    expect(screen.getByText('Editar Local')).toBeInTheDocument();
+    const nomeInput = screen.getByLabelText(/Nome do Local/i);
+    expect(nomeInput).toHaveValue('Igreja Matriz');
+
+    fireEvent.change(nomeInput, { target: { value: 'Igreja Matriz Renovada' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Salvar Alterações/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockUpdateLocal).toHaveBeenCalledWith('loc-1', {
+        nome: 'Igreja Matriz Renovada',
+        tipo: 'IGREJA',
+        capacidade: 400,
+        endereco: 'Praça da Matriz, 1',
+        caracteristicas: 'Altar, Som, Bancos',
+        ativo: true,
+      });
+    });
+  });
+
+  test('allows toggling status (inactivating and activating)', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValue(mockLocais);
+    mockDeleteLocal.mockResolvedValueOnce({});
+    mockUpdateLocal.mockResolvedValueOnce({
+      ...mockLocais[1],
+      ativo: true,
+    });
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+
+    // Test Inactivate
+    const rowActive = screen.getAllByRole('row').find(row => row.textContent?.includes('Igreja Matriz'));
+    if (rowActive) {
+      const toggleBtn = within(rowActive).getByRole('button', { name: /Inativar/i });
+      fireEvent.click(toggleBtn);
+    }
+
+    await waitFor(() => {
+      expect(mockDeleteLocal).toHaveBeenCalledWith('loc-1');
+    });
+
+    // Test Activate
+    const rowInactive = screen.getAllByRole('row').find(row => row.textContent?.includes('Salão Paroquial'));
+    if (rowInactive) {
+      const toggleBtn = within(rowInactive).getByRole('button', { name: /Ativar/i });
+      fireEvent.click(toggleBtn);
+    }
+
+    await waitFor(() => {
+      expect(mockUpdateLocal).toHaveBeenCalledWith('loc-2', {
+        nome: 'Salão Paroquial',
+        tipo: 'SALAO',
+        capacidade: 150,
+        endereco: 'Rua Lateral, 50',
+        caracteristicas: 'Cozinha, Mesas',
+        ativo: true,
+      });
+    });
+  });
+
+  test('hides management actions for unauthorized users', async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '2',
+        name: 'Regular Member',
+        roles: ['ROLE_PASTORAL_MEMBRO'],
+      },
+    });
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValueOnce(mockLocais);
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+
+    // Verify "Novo Local" button is not present
+    expect(screen.queryByRole('button', { name: /Novo Local/i })).toBeNull();
+
+    // Verify row actions "Editar" and "Inativar"/"Ativar" are not present
+    expect(screen.queryByRole('button', { name: /Editar/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Inativar/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Ativar/i })).toBeNull();
   });
 });
