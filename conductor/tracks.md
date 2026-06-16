@@ -94,8 +94,3 @@
 
 - [x] **Track: Implementar a funcionalidade de adicionar, editar e remover observações dos eventos conforme já implementado na api.**
 *Link: [./archive/event_observations_management_20260613/](./archive/event_observations_management_20260613/)*
-
----
-
-- [x] **Track: Cadastro, edição, remoção e listagem (CRUD completo) de localizações utilizadas nos eventos.**
-*Link: [./tracks/locais_crud_20260616/](./tracks/locais_crud_20260616/)*
