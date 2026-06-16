@@ -97,5 +97,5 @@
 
 ---
 
-- [ ] **Track: Cadastro, edição, remoção e listagem (CRUD completo) de localizações utilizadas nos eventos.**
+- [~] **Track: Cadastro, edição, remoção e listagem (CRUD completo) de localizações utilizadas nos eventos.**
 *Link: [./tracks/locais_crud_20260616/](./tracks/locais_crud_20260616/)*
