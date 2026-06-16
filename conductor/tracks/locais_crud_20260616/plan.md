@@ -30,16 +30,16 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Pages, Routing & Layout' (Protocol in workflow.md) [checkpoint: f1d418c]
 
 ## Phase 3: Frontend Locations CRUD & Final Integration
-- [ ] Task: Implementar a listagem de locais na aba correspondente
-    - [ ] Criar a tabela de locais na aba "Locais" da página de configurações, exibindo Nome, Tipo, Capacidade, Endereço e Status.
-    - [ ] Adicionar formatação visual clara para locais ativos (etiqueta verde) e inativos (etiqueta vermelha/cinza).
-- [ ] Task: Implementar a modal e o formulário de cadastro/edição de locais
-    - [ ] Criar componente de modal de formulário (`LocalFormModal.tsx`) para cadastro e edição de localizações, contendo campos Nome, Tipo, Capacidade, Endereço e Características.
-    - [ ] Implementar validação dos campos obrigatórios (Nome).
-- [ ] Task: Integrar as chamadas de API no frontend para mutações de locais
-    - [ ] Implementar as funções de chamada de API em um novo arquivo `src/api/locais.ts` (ou existente) para cadastrar, editar e inativar/ativar locais.
-    - [ ] Conectar os botões da listagem ("Novo Local", "Editar", "Inativar" / "Ativar") às mutações do React Query, exibindo notificações de sucesso/erro.
-- [ ] Task: Validar o fluxo de ponta a ponta e compilar
-    - [ ] Rodar `npm run build` no frontend para garantir que não há erros de compilação ou de tipos TypeScript.
-    - [ ] Executar a suíte de testes unitários do frontend (`npm test`).
+- [x] Task: Implementar a listagem de locais na aba correspondente [bb9e5dd]
+    - [x] Criar a tabela de locais na aba "Locais" da página de configurações, exibindo Nome, Tipo, Capacidade, Endereço e Status.
+    - [x] Adicionar formatação visual clara para locais ativos (etiqueta verde) e inativos (etiqueta vermelha/cinza).
+- [x] Task: Implementar a modal e o formulário de cadastro/edição de locais [bb9e5dd]
+    - [x] Criar componente de modal de formulário (`LocalFormModal.tsx`) para cadastro e edição de localizações, contendo campos Nome, Tipo, Capacidade, Endereço e Características.
+    - [x] Implementar validação dos campos obrigatórios (Nome).
+- [x] Task: Integrar as chamadas de API no frontend para mutações de locais [bb9e5dd]
+    - [x] Implementar as funções de chamada de API em um novo arquivo `src/api/locais.ts` (ou existente) para cadastrar, editar e inativar/ativar locais.
+    - [x] Conectar os botões da listagem ("Novo Local", "Editar", "Inativar" / "Ativar") às mutações do React Query, exibindo notificações de sucesso/erro.
+- [x] Task: Validar o fluxo de ponta a ponta e compilar [bb9e5dd]
+    - [x] Rodar `npm run build` no frontend para garantir que não há erros de compilação ou de tipos TypeScript.
+    - [x] Executar a suíte de testes unitários do frontend (`npm test`).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Locations CRUD & Final Integration' (Protocol in workflow.md)
