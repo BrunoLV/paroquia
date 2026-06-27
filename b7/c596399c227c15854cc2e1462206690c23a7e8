@@ -1,0 +1,4 @@
+Task: Rodar npm run build e testes do frontend npm test para assegurar qualidade
+Changes: Ran full production build and executed Jest tests suite successfully ensuring no regressions.
+Files: Settings.tsx
+Why: Ensure code quality, correct imports, and proper typing.
