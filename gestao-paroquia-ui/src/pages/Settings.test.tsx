@@ -3,6 +3,7 @@ import { QueryProvider } from '../api/QueryProvider';
 import Settings from './Settings';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
+import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership } from '../api/usuarios';
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
@@ -19,6 +20,14 @@ jest.mock('../api/locais', () => ({
   deleteLocal: jest.fn(),
 }));
 
+jest.mock('../api/usuarios', () => ({
+  getUsuarios: jest.fn(),
+  approveUsuario: jest.fn(),
+  getMemberships: jest.fn(),
+  addMembership: jest.fn(),
+  removeMembership: jest.fn(),
+}));
+
 jest.mock('../auth/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
@@ -29,6 +38,11 @@ const mockGetLocais = getLocais as jest.Mock;
 const mockCreateLocal = createLocal as jest.Mock;
 const mockUpdateLocal = updateLocal as jest.Mock;
 const mockDeleteLocal = deleteLocal as jest.Mock;
+const mockGetUsuarios = getUsuarios as jest.Mock;
+const mockApproveUsuario = approveUsuario as jest.Mock;
+const mockGetMemberships = getMemberships as jest.Mock;
+const mockAddMembership = addMembership as jest.Mock;
+const mockRemoveMembership = removeMembership as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
 
 const mockAnos = [
@@ -383,5 +397,91 @@ describe('Settings page - Locais CRUD', () => {
     expect(screen.queryByRole('button', { name: /Editar/i })).toBeNull();
     expect(screen.queryByRole('button', { name: /Inativar/i })).toBeNull();
     expect(screen.queryByRole('button', { name: /Ativar/i })).toBeNull();
+  });
+});
+
+describe('Settings page - Membros / Usuários', () => {
+  const mockUseAuth = useAuth as jest.Mock;
+
+  const mockUsers = [
+    {
+      id: 'user-1',
+      username: 'pending@example.com',
+      nome: 'João Pending',
+      telefone: '11999999999',
+      dataNascimento: '1990-05-10',
+      enabled: false,
+    },
+    {
+      id: 'user-2',
+      username: 'active@example.com',
+      nome: 'Maria Active',
+      telefone: '11888888888',
+      dataNascimento: '1988-10-20',
+      enabled: true,
+    },
+  ];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Padre',
+        roles: ['ROLE_CLERO_PAROCO'],
+        organizations: [],
+      },
+    });
+  });
+
+  const renderPage = () => {
+    return render(
+      <QueryProvider>
+        <NotificationProvider>
+          <MemoryRouter>
+            <Settings />
+          </MemoryRouter>
+        </NotificationProvider>
+      </QueryProvider>
+    );
+  };
+
+  test('switches tabs to Membros and renders users list', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetUsuarios.mockResolvedValueOnce(mockUsers);
+
+    renderPage();
+
+    const membrosTab = screen.getByRole('tab', { name: /Membros \/ Usuários/i });
+    fireEvent.click(membrosTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('João Pending')).toBeInTheDocument();
+      expect(screen.getByText('Maria Active')).toBeInTheDocument();
+      expect(screen.getByText('Pendente')).toBeInTheDocument();
+      expect(screen.getByText('Ativo')).toBeInTheDocument();
+    });
+  });
+
+  test('allows approving a pending user', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetUsuarios.mockResolvedValue(mockUsers);
+    mockApproveUsuario.mockResolvedValueOnce({});
+
+    renderPage();
+
+    const membrosTab = screen.getByRole('tab', { name: /Membros \/ Usuários/i });
+    fireEvent.click(membrosTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('João Pending')).toBeInTheDocument();
+    });
+
+    const approveBtn = screen.getByRole('button', { name: /Aprovar/i });
+    fireEvent.click(approveBtn);
+
+    await waitFor(() => {
+      expect(mockApproveUsuario).toHaveBeenCalledWith('user-1');
+    });
   });
 });

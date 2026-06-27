@@ -22,10 +22,15 @@ import {
   Tabs,
   Tab,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
 import { getOrganizacoes, createOrganizacao, updateOrganizacao } from '../api/organizacoes';
+import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership, Usuario, AddMembershipRequest } from '../api/usuarios';
 import { AnoParoquialStatus, Local, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
@@ -82,6 +87,12 @@ const Settings = () => {
   const [orgModalOpen, setOrgModalOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
   const [orgSearch, setOrgSearch] = useState('');
+
+  // User and Membership states
+  const [selectedUserForMemberships, setSelectedUserForMemberships] = useState<Usuario | null>(null);
+  const [isMembershipsModalOpen, setIsMembershipsModalOpen] = useState(false);
+  const [newMembershipOrgId, setNewMembershipOrgId] = useState('');
+  const [newMembershipPapel, setNewMembershipPapel] = useState('');
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -162,7 +173,61 @@ const Settings = () => {
   const { data: orgs = [], isLoading: isLoadingOrgs, isError: isErrorOrgs } = useQuery({
     queryKey: ['organizacoes'],
     queryFn: getOrganizacoes,
-    enabled: tabValue === 2,
+    enabled: tabValue === 2 || tabValue === 3,
+  });
+
+  const isAuthorizedUsers = canManageOrganizacoes(user);
+
+  const { data: users = [], isLoading: isLoadingUsers, isError: isErrorUsers } = useQuery({
+    queryKey: ['usuarios'],
+    queryFn: getUsuarios,
+    enabled: tabValue === 3 && isAuthorizedUsers,
+  });
+
+  const approveUserMutation = useMutation({
+    mutationFn: (id: string) => approveUsuario(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+      showSuccess('Usuário aprovado com sucesso!');
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao aprovar usuário.';
+      showError(errMsg);
+    },
+  });
+
+  const { data: memberships = [], isLoading: isLoadingMemberships } = useQuery({
+    queryKey: ['memberships', selectedUserForMemberships?.id],
+    queryFn: () => getMemberships(selectedUserForMemberships!.id),
+    enabled: !!selectedUserForMemberships && isMembershipsModalOpen,
+  });
+
+  const addMembershipMutation = useMutation({
+    mutationFn: (request: AddMembershipRequest) => addMembership(selectedUserForMemberships!.id, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['memberships', selectedUserForMemberships?.id] });
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Vínculo adicionado com sucesso!');
+      setNewMembershipOrgId('');
+      setNewMembershipPapel('');
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao adicionar vínculo.';
+      showError(errMsg);
+    },
+  });
+
+  const removeMembershipMutation = useMutation({
+    mutationFn: (membershipId: string) => removeMembership(selectedUserForMemberships!.id, membershipId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['memberships', selectedUserForMemberships?.id] });
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Vínculo removido com sucesso!');
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao remover vínculo.';
+      showError(errMsg);
+    },
   });
 
   const filteredOrgs = orgs.filter((org) => {
@@ -310,6 +375,9 @@ const Settings = () => {
             <Tab label="Ano Paroquial" {...a11yProps(0)} sx={{ fontWeight: 600 }} />
             <Tab label="Locais" {...a11yProps(1)} sx={{ fontWeight: 600 }} />
             <Tab label="Pastorais e Movimentos" {...a11yProps(2)} sx={{ fontWeight: 600 }} />
+            {isAuthorizedUsers && (
+              <Tab label="Membros / Usuários" {...a11yProps(3)} sx={{ fontWeight: 600 }} />
+            )}
           </Tabs>
         </Box>
 
@@ -638,7 +706,246 @@ const Settings = () => {
             </Box>
           )}
         </CustomTabPanel>
+
+        {isAuthorizedUsers && (
+          <CustomTabPanel value={tabValue} index={3}>
+            {isLoadingUsers ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                <CircularProgress />
+              </Box>
+            ) : isErrorUsers ? (
+              <Alert severity="error" sx={{ borderRadius: 0 }}>
+                Erro ao carregar os usuários.
+              </Alert>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                  <Table>
+                    <TableHead sx={{ bgcolor: 'grey.100' }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Data de Nascimento</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {users.map((u) => (
+                        <TableRow key={u.id}>
+                          <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
+                          <TableCell>{u.username}</TableCell>
+                          <TableCell>{u.telefone || '-'}</TableCell>
+                          <TableCell>{u.dataNascimento || '-'}</TableCell>
+                          <TableCell>
+                            <Box
+                              sx={{
+                                display: 'inline-block',
+                                px: 1,
+                                py: 0.5,
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                color: u.enabled ? '#2e7d32' : '#ed6c02',
+                                bgcolor: u.enabled ? '#e8f5e9' : '#fff3e0',
+                              }}
+                            >
+                              {u.enabled ? 'Ativo' : 'Pendente'}
+                            </Box>
+                          </TableCell>
+                          <TableCell align="right">
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                              {!u.enabled && (
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  size="small"
+                                  onClick={() => approveUserMutation.mutate(u.id)}
+                                  disabled={approveUserMutation.isPending}
+                                  sx={{ borderRadius: 0, fontWeight: 600 }}
+                                >
+                                  Aprovar
+                                </Button>
+                              )}
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => {
+                                  setSelectedUserForMemberships(u);
+                                  setIsMembershipsModalOpen(true);
+                                }}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                Vínculos
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {users.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={6} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                            Nenhum usuário encontrado.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            )}
+          </CustomTabPanel>
+        )}
       </Box>
+
+      {/* User Memberships Dialog */}
+      <Dialog
+        open={isMembershipsModalOpen}
+        onClose={() => {
+          setIsMembershipsModalOpen(false);
+          setSelectedUserForMemberships(null);
+          setNewMembershipOrgId('');
+          setNewMembershipPapel('');
+        }}
+        maxWidth="md"
+        fullWidth
+        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          Gerenciar Vínculos - {selectedUserForMemberships?.nome}
+        </DialogTitle>
+        <DialogContent dividers>
+          {isLoadingMemberships ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Vínculos Atuais:
+              </Typography>
+              <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0 }}>
+                <Table size="small">
+                  <TableHead sx={{ bgcolor: 'grey.50' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Organização</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(memberships || []).map((m) => (
+                      <TableRow key={m.id}>
+                        <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome}</TableCell>
+                        <TableCell>{getOrgTipoLabel(m.tipoOrganizacao)}</TableCell>
+                        <TableCell>{m.papel}</TableCell>
+                        <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
+                        <TableCell align="right">
+                          <Button
+                            variant="text"
+                            color="error"
+                            size="small"
+                            onClick={() => removeMembershipMutation.mutate(m.id)}
+                            disabled={removeMembershipMutation.isPending}
+                            sx={{ textTransform: 'none' }}
+                          >
+                            Remover
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {(memberships || []).length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center" sx={{ py: 2, color: 'text.secondary' }}>
+                          Nenhum vínculo ativo encontrado para este usuário.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', my: 1 }} />
+
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Adicionar Novo Vínculo:
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                <FormControl sx={{ minWidth: 250 }} size="small">
+                  <InputLabel id="add-membership-org-label">Organização</InputLabel>
+                  <Select
+                    labelId="add-membership-org-label"
+                    id="add-membership-org"
+                    value={newMembershipOrgId}
+                    label="Organização"
+                    onChange={(e) => setNewMembershipOrgId(e.target.value)}
+                  >
+                    {orgs
+                      .filter((o) => o.ativo)
+                      .map((o) => (
+                        <MenuItem key={o.id} value={o.id}>
+                          {o.nome} ({getOrgTipoLabel(o.tipo)})
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ minWidth: 200 }} size="small">
+                  <InputLabel id="add-membership-role-label">Papel</InputLabel>
+                  <Select
+                    labelId="add-membership-role-label"
+                    id="add-membership-role"
+                    value={newMembershipPapel}
+                    label="Papel"
+                    onChange={(e) => setNewMembershipPapel(e.target.value)}
+                  >
+                    <MenuItem value="COORDENADOR">Coordenador</MenuItem>
+                    <MenuItem value="VICE_COORDENADOR">Vice-Coordenador</MenuItem>
+                    <MenuItem value="MEMBRO">Membro</MenuItem>
+                    <MenuItem value="PAROCO">Pároco</MenuItem>
+                    <MenuItem value="VIGARIO">Vigário</MenuItem>
+                    <MenuItem value="PADRE">Padre</MenuItem>
+                    <MenuItem value="SECRETARIO">Secretário</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    const selectedOrgObj = orgs.find((o) => o.id === newMembershipOrgId);
+                    if (!selectedOrgObj) return;
+                    addMembershipMutation.mutate({
+                      organizacaoId: newMembershipOrgId,
+                      tipo: selectedOrgObj.tipo,
+                      papel: newMembershipPapel
+                    });
+                  }}
+                  disabled={!newMembershipOrgId || !newMembershipPapel || addMembershipMutation.isPending}
+                  sx={{ borderRadius: 0, fontWeight: 600, height: 40 }}
+                >
+                  {addMembershipMutation.isPending ? 'Adicionando...' : 'Adicionar Vínculo'}
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setIsMembershipsModalOpen(false);
+              setSelectedUserForMemberships(null);
+              setNewMembershipOrgId('');
+              setNewMembershipPapel('');
+            }}
+            color="inherit"
+          >
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Confirmation Modal */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
