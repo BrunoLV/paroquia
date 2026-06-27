@@ -20,11 +20,11 @@
 - [x] Task: Implementar endpoint de aprovação de usuários `PUT /api/v1/usuarios/{id}/approve` [2761967]
     - [x] Restringir acesso a `ADMIN`, `CLERO_PAROCO` e `CONSELHO_COORDENADOR`
     - [x] Ativar usuário (`enabled = true`) e associar papel básico `ROLE_USER`
-- [ ] Task: Implementar regras de vínculo e unicidade de coordenação em `membros_organizacao`
-    - [ ] Coordenador de pastoral/movimento comum pode associar membros apenas para a pastoral que coordena
-    - [ ] Ao adicionar um membro com papel `ROLE_PASTORAL_COORDENADOR` ou `ROLE_PASTORAL_VICE_COORDENADOR`, verificar a unicidade (máximo 1 ativo por organização) e inativar/substituir o anterior se aplicável
-    - [ ] Apenas `CLERO_PAROCO` pode definir `COORDENADOR_CONSELHO` e `VICE_COORDENADOR_CONSELHO`
-    - [ ] Apenas `ADMIN` pode definir `CLERO_PAROCO`
+- [x] Task: Implementar regras de vínculo e unicidade de coordenação em `membros_organizacao` [f07b32d]
+    - [x] Coordenador de pastoral/movimento comum pode associar membros apenas para a pastoral que coordena
+    - [x] Ao adicionar um membro com papel `ROLE_PASTORAL_COORDENADOR` ou `ROLE_PASTORAL_VICE_COORDENADOR`, verificar a unicidade (máximo 1 ativo por organização) e inativar/substituir o anterior se aplicável
+    - [x] Apenas `CLERO_PAROCO` pode definir `COORDENADOR_CONSELHO` e `VICE_COORDENADOR_CONSELHO`
+    - [x] Apenas `ADMIN` pode definir `CLERO_PAROCO`
 - [ ] Task: Expor na API de Organizações o Coordenador e Vice-Coordenador resolvidos
     - [ ] No `OrganizacaoResponse`, carregar dinamicamente o nome dos usuários vinculados à organização com os papéis de coordenação correspondentes
 - [ ] Task: Escrever testes unitários e de integração para governança de papéis e vínculos
