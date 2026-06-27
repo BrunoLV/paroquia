@@ -37,8 +37,11 @@ public class AddParticipanteUseCase {
      * Exemplo: useCase.execute(membroId, request, "admin_user")
      */
     public ParticipacaoResponse execute(UUID membroId, ParticipacaoRequest request, String actor) {
-        if (!membroRepository.existsById(membroId)) {
-            throw new IllegalArgumentException("Membro nao encontrado: " + membroId);
+        var membro = membroRepository.findById(membroId)
+                .orElseThrow(() -> new IllegalArgumentException("Membro nao encontrado: " + membroId));
+
+        if (membro.getUsuarioId() == null) {
+            throw new IllegalArgumentException("Para ser membro de uma organização, o fiel deve possuir um usuário cadastrado no sistema.");
         }
 
         // Evitar duplicidade ativa na mesma organização

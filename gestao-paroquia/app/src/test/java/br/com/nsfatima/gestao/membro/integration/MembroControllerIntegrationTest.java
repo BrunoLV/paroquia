@@ -13,6 +13,8 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.Membr
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
@@ -44,6 +46,9 @@ class MembroControllerIntegrationTest {
     private MembroJpaRepository membroRepository;
 
     @Autowired
+    private UsuarioJpaRepository usuarioRepository;
+
+    @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
 
     @Autowired
@@ -54,6 +59,7 @@ class MembroControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         membroRepository.deleteAll();
+        usuarioRepository.deleteAll();
         auditoriaRepository.deleteAll();
     }
 
@@ -108,10 +114,20 @@ class MembroControllerIntegrationTest {
     @Test
     @DisplayName("Deve adicionar participação em organização")
     void deveAdicionarParticipacao() throws Exception {
+        var usuario = new UsuarioEntity();
+        usuario.setId(UUID.randomUUID());
+        usuario.setUsername("testuser");
+        usuario.setPasswordHash("pass");
+        usuario.setNome("Membro Teste");
+        usuario.setRoles("ROLE_USER");
+        usuario.setEnabled(true);
+        usuarioRepository.saveAndFlush(usuario);
+
         var membroId = UUID.randomUUID();
         var entity = new MembroEntity();
         entity.setId(membroId);
         entity.setNomeCompleto("Membro Teste");
+        entity.setUsuarioId(usuario.getId());
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);
 
