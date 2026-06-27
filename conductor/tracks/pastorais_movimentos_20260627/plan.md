@@ -23,7 +23,7 @@
     - [x] Adicionar campos `coordenador` e `viceCoordenador` como opcionais em `Organization` e DTOs correspondentes
 - [x] Task: Criar cliente de API para organizações em `src/api/organizacoes.ts` com testes/mocks [f3c3fbd]
     - [x] Implementar chamadas para buscar listagem, criar, editar e inativar/deletar organizações
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend UI Implementation & Settings Tab Integration
 - [ ] Task: Desenvolver o componente `OrganizacaoFormModal.tsx`
