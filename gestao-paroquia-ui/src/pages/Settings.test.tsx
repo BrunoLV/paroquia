@@ -3,6 +3,7 @@ import { QueryProvider } from '../api/QueryProvider';
 import Settings from './Settings';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
+import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
 import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership } from '../api/usuarios';
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
@@ -18,6 +19,13 @@ jest.mock('../api/locais', () => ({
   createLocal: jest.fn(),
   updateLocal: jest.fn(),
   deleteLocal: jest.fn(),
+}));
+
+jest.mock('../api/organizacoes', () => ({
+  getOrganizacoes: jest.fn(),
+  createOrganizacao: jest.fn(),
+  updateOrganizacao: jest.fn(),
+  getOrganizacaoMembros: jest.fn(),
 }));
 
 jest.mock('../api/usuarios', () => ({
@@ -38,6 +46,10 @@ const mockGetLocais = getLocais as jest.Mock;
 const mockCreateLocal = createLocal as jest.Mock;
 const mockUpdateLocal = updateLocal as jest.Mock;
 const mockDeleteLocal = deleteLocal as jest.Mock;
+const mockGetOrganizacoes = getOrganizacoes as jest.Mock;
+const mockCreateOrganizacao = createOrganizacao as jest.Mock;
+const mockUpdateOrganizacao = updateOrganizacao as jest.Mock;
+const mockGetOrganizacaoMembros = getOrganizacaoMembros as jest.Mock;
 const mockGetUsuarios = getUsuarios as jest.Mock;
 const mockApproveUsuario = approveUsuario as jest.Mock;
 const mockGetMemberships = getMemberships as jest.Mock;
@@ -482,6 +494,80 @@ describe('Settings page - Membros / Usuários', () => {
 
     await waitFor(() => {
       expect(mockApproveUsuario).toHaveBeenCalledWith('user-1');
+    });
+  });
+});
+
+describe('Settings page - Membros por Pastoral', () => {
+  const mockUseAuth = useAuth as jest.Mock;
+
+  const mockOrgs = [
+    {
+      id: 'org-1',
+      nome: 'Pastoral Familiar',
+      tipo: 'PASTORAL',
+      contato: 'familiar@example.com',
+      coordenador: 'Coordenador Mock',
+      viceCoordenador: 'Vice Mock',
+      ativo: true,
+    },
+  ];
+
+  const mockOrgMembros = [
+    {
+      membershipId: 'memb-1',
+      usuarioId: 'user-active',
+      usuarioNome: 'Maria Membro',
+      papel: 'MEMBRO',
+      ativo: true,
+    },
+  ];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Padre',
+        roles: ['ROLE_CLERO_PAROCO'],
+        organizations: [],
+      },
+    });
+  });
+
+  const renderPage = () => {
+    return render(
+      <QueryProvider>
+        <NotificationProvider>
+          <MemoryRouter>
+            <Settings />
+          </MemoryRouter>
+        </NotificationProvider>
+      </QueryProvider>
+    );
+  };
+
+  test('opens members dialog for selected pastoral and lists members', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetOrganizacoes.mockResolvedValueOnce(mockOrgs);
+    mockGetOrganizacaoMembros.mockResolvedValueOnce(mockOrgMembros);
+
+    renderPage();
+
+    const orgsTab = screen.getByRole('tab', { name: /Pastorais e Movimentos/i });
+    fireEvent.click(orgsTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Pastoral Familiar')).toBeInTheDocument();
+    });
+
+    const membrosBtn = screen.getByRole('button', { name: /Membros/i });
+    fireEvent.click(membrosBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Membros - Pastoral Familiar')).toBeInTheDocument();
+      expect(screen.getByText('Maria Membro')).toBeInTheDocument();
+      expect(screen.getByText('MEMBRO')).toBeInTheDocument();
     });
   });
 });

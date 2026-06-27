@@ -22,3 +22,16 @@ export const updateOrganizacao = async (
 export const deleteOrganizacao = async (id: string): Promise<void> => {
   await apiClient.delete(`/organizacoes/${id}`);
 };
+
+export interface OrganizacaoMembro {
+  membershipId: string;
+  usuarioId: string;
+  usuarioNome: string;
+  papel: string;
+  ativo: boolean;
+}
+
+export const getOrganizacaoMembros = async (id: string): Promise<OrganizacaoMembro[]> => {
+  const response = await apiClient.get<OrganizacaoMembro[]>(`/organizacoes/${id}/membros`);
+  return response.data;
+};

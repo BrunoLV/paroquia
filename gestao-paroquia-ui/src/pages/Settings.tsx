@@ -29,7 +29,7 @@ import {
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
-import { getOrganizacoes, createOrganizacao, updateOrganizacao } from '../api/organizacoes';
+import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros, OrganizacaoMembro } from '../api/organizacoes';
 import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership, Usuario, AddMembershipRequest } from '../api/usuarios';
 import { AnoParoquialStatus, Local, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
@@ -93,6 +93,12 @@ const Settings = () => {
   const [isMembershipsModalOpen, setIsMembershipsModalOpen] = useState(false);
   const [newMembershipOrgId, setNewMembershipOrgId] = useState('');
   const [newMembershipPapel, setNewMembershipPapel] = useState('');
+
+  // Organization members states
+  const [selectedOrgForMembers, setSelectedOrgForMembers] = useState<Organizacao | null>(null);
+  const [isOrgMembersModalOpen, setIsOrgMembersModalOpen] = useState(false);
+  const [newOrgMemberUserId, setNewOrgMemberUserId] = useState('');
+  const [newOrgMemberPapel, setNewOrgMemberPapel] = useState('');
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -181,7 +187,7 @@ const Settings = () => {
   const { data: users = [], isLoading: isLoadingUsers, isError: isErrorUsers } = useQuery({
     queryKey: ['usuarios'],
     queryFn: getUsuarios,
-    enabled: tabValue === 3 && isAuthorizedUsers,
+    enabled: (tabValue === 3 || isOrgMembersModalOpen) && isAuthorizedUsers,
   });
 
   const approveUserMutation = useMutation({
@@ -226,6 +232,44 @@ const Settings = () => {
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao remover vínculo.';
+      showError(errMsg);
+    },
+  });
+
+  const { data: orgMembers = [], isLoading: isLoadingOrgMembers } = useQuery({
+    queryKey: ['organizacaoMembros', selectedOrgForMembers?.id],
+    queryFn: () => getOrganizacaoMembros(selectedOrgForMembers!.id),
+    enabled: !!selectedOrgForMembers && isOrgMembersModalOpen,
+  });
+
+  const addOrgMemberMutation = useMutation({
+    mutationFn: ({ userId, request }: { userId: string; request: AddMembershipRequest }) =>
+      addMembership(userId, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizacaoMembros', selectedOrgForMembers?.id] });
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Membro vinculado com sucesso!');
+      setNewOrgMemberUserId('');
+      setNewOrgMemberPapel('');
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao vincular membro.';
+      showError(errMsg);
+    },
+  });
+
+  const removeOrgMemberMutation = useMutation({
+    mutationFn: ({ userId, membershipId }: { userId: string; membershipId: string }) =>
+      removeMembership(userId, membershipId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizacaoMembros', selectedOrgForMembers?.id] });
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Membro removido com sucesso!');
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao remover membro.';
       showError(errMsg);
     },
   });
@@ -636,7 +680,7 @@ const Settings = () => {
                       <TableCell sx={{ fontWeight: 600 }}>Vice-Coordenador</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Contato</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                      {isAuthorizedOrgs && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -662,40 +706,54 @@ const Settings = () => {
                             {org.ativo ? 'Ativo' : 'Inativo'}
                           </Box>
                         </TableCell>
-                        {isAuthorizedOrgs && (
-                          <TableCell align="right">
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              <Button
-                                variant="outlined"
-                                color="primary"
-                                size="small"
-                                onClick={() => {
-                                  setSelectedOrg(org);
-                                  setOrgModalOpen(true);
-                                }}
-                                disabled={toggleOrgStatusMutation.isPending}
-                                sx={{ borderRadius: 0 }}
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                variant="outlined"
-                                color={org.ativo ? 'error' : 'primary'}
-                                size="small"
-                                onClick={() => toggleOrgStatusMutation.mutate(org)}
-                                disabled={toggleOrgStatusMutation.isPending}
-                                sx={{ borderRadius: 0 }}
-                              >
-                                {org.ativo ? 'Inativar' : 'Ativar'}
-                              </Button>
-                            </Box>
-                          </TableCell>
-                        )}
+                        <TableCell align="right">
+                          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              size="small"
+                              onClick={() => {
+                                setSelectedOrgForMembers(org);
+                                setIsOrgMembersModalOpen(true);
+                              }}
+                              sx={{ borderRadius: 0 }}
+                            >
+                              Membros
+                            </Button>
+                            {isAuthorizedOrgs && (
+                              <>
+                                <Button
+                                  variant="outlined"
+                                  color="primary"
+                                  size="small"
+                                  onClick={() => {
+                                    setSelectedOrg(org);
+                                    setOrgModalOpen(true);
+                                  }}
+                                  disabled={toggleOrgStatusMutation.isPending}
+                                  sx={{ borderRadius: 0 }}
+                                >
+                                  Editar
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  color={org.ativo ? 'error' : 'primary'}
+                                  size="small"
+                                  onClick={() => toggleOrgStatusMutation.mutate(org)}
+                                  disabled={toggleOrgStatusMutation.isPending}
+                                  sx={{ borderRadius: 0 }}
+                                >
+                                  {org.ativo ? 'Inativar' : 'Ativar'}
+                                </Button>
+                              </>
+                            )}
+                          </Box>
+                        </TableCell>
                       </TableRow>
                     ))}
                     {filteredOrgs.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={isAuthorizedOrgs ? 7 : 6} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                        <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                           Nenhuma pastoral ou movimento encontrado.
                         </TableCell>
                       </TableRow>
@@ -939,6 +997,152 @@ const Settings = () => {
               setSelectedUserForMemberships(null);
               setNewMembershipOrgId('');
               setNewMembershipPapel('');
+            }}
+            color="inherit"
+          >
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Organization Members Dialog */}
+      <Dialog
+        open={isOrgMembersModalOpen}
+        onClose={() => {
+          setIsOrgMembersModalOpen(false);
+          setSelectedOrgForMembers(null);
+          setNewOrgMemberUserId('');
+          setNewOrgMemberPapel('');
+        }}
+        maxWidth="md"
+        fullWidth
+        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          Membros - {selectedOrgForMembers?.nome}
+        </DialogTitle>
+        <DialogContent dividers>
+          {isLoadingOrgMembers ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Membros Vinculados:
+              </Typography>
+              <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0 }}>
+                <Table size="small">
+                  <TableHead sx={{ bgcolor: 'grey.50' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Nome do Membro</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(orgMembers || []).map((m) => (
+                      <TableRow key={m.membershipId}>
+                        <TableCell sx={{ fontWeight: 500 }}>{m.usuarioNome}</TableCell>
+                        <TableCell>{m.papel}</TableCell>
+                        <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
+                        <TableCell align="right">
+                          <Button
+                            variant="text"
+                            color="error"
+                            size="small"
+                            onClick={() => removeOrgMemberMutation.mutate({ userId: m.usuarioId, membershipId: m.membershipId })}
+                            disabled={removeOrgMemberMutation.isPending}
+                            sx={{ textTransform: 'none' }}
+                          >
+                            Remover
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {(orgMembers || []).length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center" sx={{ py: 2, color: 'text.secondary' }}>
+                          Nenhum membro vinculado a esta pastoral/movimento.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', my: 1 }} />
+
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                Vincular Novo Membro:
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                <FormControl sx={{ minWidth: 250 }} size="small">
+                  <InputLabel id="add-member-user-label">Usuário</InputLabel>
+                  <Select
+                    labelId="add-member-user-label"
+                    id="add-member-user"
+                    value={newOrgMemberUserId}
+                    label="Usuário"
+                    onChange={(e) => setNewOrgMemberUserId(e.target.value)}
+                  >
+                    {users
+                      .filter((u) => u.enabled)
+                      .map((u) => (
+                        <MenuItem key={u.id} value={u.id}>
+                          {u.nome} ({u.username})
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ minWidth: 200 }} size="small">
+                  <InputLabel id="add-member-role-label">Papel</InputLabel>
+                  <Select
+                    labelId="add-member-role-label"
+                    id="add-member-role"
+                    value={newOrgMemberPapel}
+                    label="Papel"
+                    onChange={(e) => setNewOrgMemberPapel(e.target.value)}
+                  >
+                    <MenuItem value="COORDENADOR">Coordenador</MenuItem>
+                    <MenuItem value="VICE_COORDENADOR">Vice-Coordenador</MenuItem>
+                    <MenuItem value="MEMBRO">Membro</MenuItem>
+                    <MenuItem value="TESOUREIRO">Tesoureiro</MenuItem>
+                    <MenuItem value="SECRETARIO">Secretário</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    if (!selectedOrgForMembers) return;
+                    addOrgMemberMutation.mutate({
+                      userId: newOrgMemberUserId,
+                      request: {
+                        organizacaoId: selectedOrgForMembers.id,
+                        tipo: selectedOrgForMembers.tipo,
+                        papel: newOrgMemberPapel
+                      }
+                    });
+                  }}
+                  disabled={!newOrgMemberUserId || !newOrgMemberPapel || addOrgMemberMutation.isPending}
+                  sx={{ borderRadius: 0, fontWeight: 600, height: 40 }}
+                >
+                  {addOrgMemberMutation.isPending ? 'Vinculando...' : 'Vincular Membro'}
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setIsOrgMembersModalOpen(false);
+              setSelectedOrgForMembers(null);
+              setNewOrgMemberUserId('');
+              setNewOrgMemberPapel('');
             }}
             color="inherit"
           >
