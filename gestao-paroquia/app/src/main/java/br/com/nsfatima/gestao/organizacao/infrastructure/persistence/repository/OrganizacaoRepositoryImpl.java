@@ -11,20 +11,26 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+
 @Repository
 public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
+    private final UsuarioJpaRepository usuarioRepository;
 
     public OrganizacaoRepositoryImpl(
             OrganizacaoJpaRepository organizacaoJpaRepository,
             MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository,
-            EventoJpaRepository eventoJpaRepository) {
+            EventoJpaRepository eventoJpaRepository,
+            UsuarioJpaRepository usuarioRepository) {
         this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.membroOrganizacaoJpaRepository = membroOrganizacaoJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -67,14 +73,24 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     }
 
     private Organizacao toDomain(OrganizacaoEntity entity) {
+        String coordName = resolveCoordinatorName(entity.getId(), PapelOrganizacional.COORDENADOR.name(), entity.getCoordenador());
+        String viceName = resolveCoordinatorName(entity.getId(), PapelOrganizacional.VICE_COORDENADOR.name(), entity.getViceCoordenador());
+
         return new Organizacao(
                 entity.getId(),
                 entity.getNome(),
                 entity.getTipo(),
                 entity.getContato(),
-                entity.getCoordenador(),
-                entity.getViceCoordenador(),
+                coordName,
+                viceName,
                 entity.isAtivo()
         );
+    }
+
+    private String resolveCoordinatorName(UUID orgId, String papel, String fallback) {
+        return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(orgId, papel)
+                .flatMap(m -> usuarioRepository.findById(m.getUsuarioId()))
+                .map(u -> u.getNome())
+                .orElse(fallback);
     }
 }
