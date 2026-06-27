@@ -34,6 +34,6 @@
     - [x] Exibir botões "Novo", "Editar" e "Inativar" / "Ativar" controlados por `canManageOrganizacoes`
 - [x] Task: Implementar busca e filtragem local na listagem [b807769]
     - [x] Adicionar caixa de texto de busca para filtrar a tabela dinamicamente por Nome, Tipo ou Coordenador
-- [ ] Task: Rodar `npm run build` e testes do frontend `npm test` para assegurar qualidade
-    - [ ] Corrigir eventuais erros de tipos TypeScript e assegurar que todos os testes da aplicação passam com sucesso
+- [x] Task: Rodar `npm run build` e testes do frontend `npm test` para assegurar qualidade [b7c5963]
+    - [x] Corrigir eventuais erros de tipos TypeScript e assegurar que todos os testes da aplicação passam com sucesso
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend UI Implementation & Settings Tab Integration' (Protocol in workflow.md)
