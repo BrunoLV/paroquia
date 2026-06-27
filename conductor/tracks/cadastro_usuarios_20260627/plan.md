@@ -6,8 +6,8 @@
 - [x] Task: Desenvolver o mecanismo de criptografia de dados JPA (`AttributeConverter`) [deef3fa]
     - [x] Criar classe helper de criptografia simétrica (AES) utilizando uma chave secreta injetada por propriedade
     - [x] Criar conversores JPA para criptografia de String (`EncryptedStringConverter`) e Data (`EncryptedLocalDateConverter`)
-- [ ] Task: Atualizar o modelo de domínio `Usuario` e entidade `UsuarioEntity` no backend
-    - [ ] Adicionar os campos anotados com `@Convert` para aplicar os conversores de criptografia nas colunas correspondentes
+- [x] Task: Atualizar o modelo de domínio `Usuario` e entidade `UsuarioEntity` no backend [ce48d9b]
+    - [x] Adicionar os campos anotados com `@Convert` para aplicar os conversores de criptografia nas colunas correspondentes
 - [ ] Task: Desenvolver o endpoint de registro público `/api/v1/usuarios/registrar` (permitAll)
     - [ ] Criar DTO `RegistrarUsuarioRequest` (com campos: nome, username, password, telefone, dataNascimento e solicitações de organizações id opcionais)
     - [ ] Permitir requisição POST sem autenticação no `SecurityConfig.java`
