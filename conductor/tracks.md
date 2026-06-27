@@ -105,3 +105,8 @@
 - [x] **Track: Implementar o cadastro de usuários no sistema com criptografia de dados sensíveis, tela de registro público no login, fluxo de aprovação e regras de governança e vínculos de coordenação.**
 *Link: [./archive/cadastro_usuarios_20260627/](./archive/cadastro_usuarios_20260627/)*
 
+---
+
+- [~] **Track: Implementar a funcionalidade de visualização da estrutura paroquial (organograma).**
+*Link: [./tracks/organograma_estrutura_20260627/](./tracks/organograma_estrutura_20260627/)*
+
