@@ -1,0 +1,4 @@
+Task: Criar API de listagem de membros por pastoral
+Changes: Added findByOrganizacaoIdAndAtivoTrue to MembroOrganizacaoJpaRepository. Implemented ListOrganizacaoMembrosUseCase to fetch organization memberships and resolve user names. Registered GET /api/v1/organizacoes/{id}/membros in OrganizacaoController. Created OrganizacaoMembroResponse DTO. Added integration test.
+Files: MembroOrganizacaoJpaRepository.java, OrganizacaoMembroResponse.java, ListOrganizacaoMembrosUseCase.java, OrganizacaoController.java, OrganizacaoApiIntegrationTest.java
+Why: Support frontend UI listing of members of a selected pastoral or movement.
