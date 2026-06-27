@@ -6,11 +6,11 @@
 - [x] Task: Atualizar o modelo de domínio `Organizacao` e entidade `OrganizacaoEntity` [fad796d]
     - [x] Atualizar `Organizacao.java` com campos, construtor e método `update`
     - [x] Atualizar `OrganizacaoEntity.java` adicionando as propriedades e anotações `@Column` JPA
-- [ ] Task: Atualizar DTOs e ajustar o mapeador/service para suportar coordenador e vice-coordenador
-    - [ ] Atualizar `OrganizacaoRequest.java` e `OrganizacaoResponse.java` com os novos campos
-    - [ ] Atualizar `OrganizacaoController.java` e `OrganizacaoService.java` para salvar os campos
-- [ ] Task: Atualizar permissões `@PreAuthorize` no `OrganizacaoController`
-    - [ ] Ajustar `@PreAuthorize` dos métodos `create`, `update` e `delete` para usar `hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')`
+- [x] Task: Atualizar DTOs e ajustar o mapeador/service para suportar coordenador e vice-coordenador [b189a30]
+    - [x] Atualizar `OrganizacaoRequest.java` e `OrganizacaoResponse.java` com os novos campos
+    - [x] Atualizar `OrganizacaoController.java` e `OrganizacaoService.java` para salvar os campos
+- [x] Task: Atualizar permissões `@PreAuthorize` no `OrganizacaoController` [b189a30]
+    - [x] Ajustar `@PreAuthorize` dos métodos `create`, `update` e `delete` para usar `hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')`
 - [ ] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test`
     - [ ] Adicionar testes em `OrganizacaoServiceTest.java` e `OrganizacaoApiIntegrationTest.java` para verificar persistência e validação de permissões RBAC
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Backend Refactoring (TDD)' (Protocol in workflow.md)
