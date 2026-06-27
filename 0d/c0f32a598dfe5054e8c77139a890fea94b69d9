@@ -1,0 +1,4 @@
+Task: Criar helper de permissões canManageOrganizacoes em permissions.ts e seus testes em permissions.test.ts
+Changes: Implemented canManageOrganizacoes logic in permissions.ts and added unit test cases in permissions.test.ts for ADMIN, CLERO_PAROCO, CONSELHO_COORDENADOR, and CONSELHO_VICE_COORDENADOR.
+Files: permissions.ts, permissions.test.ts
+Why: Restrict organizational write actions in the UI tab to authorized leadership profiles.
