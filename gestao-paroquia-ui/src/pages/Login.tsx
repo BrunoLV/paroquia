@@ -284,7 +284,7 @@ const Login = () => {
                 label="Data de Nascimento"
                 name="dataNascimento"
                 type="date"
-                InputLabelProps={{ shrink: true }}
+                slotProps={{ inputLabel: { shrink: true } }}
                 value={dataNascimento}
                 onChange={(e) => setDataNascimento(e.target.value)}
               />

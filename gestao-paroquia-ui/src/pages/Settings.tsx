@@ -29,7 +29,7 @@ import {
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
-import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros, OrganizacaoMembro } from '../api/organizacoes';
+import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
 import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership, Usuario, AddMembershipRequest } from '../api/usuarios';
 import { AnoParoquialStatus, Local, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
