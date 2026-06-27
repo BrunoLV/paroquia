@@ -59,7 +59,6 @@ class MembroControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         membroRepository.deleteAll();
-        usuarioRepository.deleteAll();
         auditoriaRepository.deleteAll();
     }
 

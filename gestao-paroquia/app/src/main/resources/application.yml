@@ -26,6 +26,8 @@ server:
 app:
   timezone:
     output: ${APP_TIMEZONE:America/Sao_Paulo}
+  security:
+    crypto-key: ${APP_CRYPTO_KEY:default-dev-fallback-key-should-be-changed-in-prod}
   paroquia:
     nome: "Paróquia Nossa Senhora de Fátima"
     diocese: "Diocese de São Miguel Paulista"
