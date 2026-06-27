@@ -94,3 +94,9 @@
 
 - [x] **Track: Implementar a funcionalidade de adicionar, editar e remover observações dos eventos conforme já implementado na api.**
 *Link: [./archive/event_observations_management_20260613/](./archive/event_observations_management_20260613/)*
+
+---
+
+- [ ] **Track: Implementar funcionalidade de cadastro de pastorais e movimentos, incluindo coordenador e vice-coordenador se existir**
+*Link: [./tracks/pastorais_movimentos_20260627/](./tracks/pastorais_movimentos_20260627/)*
+
