@@ -100,3 +100,8 @@
 - [x] **Track: Implementar funcionalidade de cadastro de pastorais e movimentos, incluindo coordenador e vice-coordenador se existir**
 *Link: [./archive/pastorais_movimentos_20260627/](./archive/pastorais_movimentos_20260627/)*
 
+---
+
+- [ ] **Track: Implementar o cadastro de usuários no sistema com criptografia de dados sensíveis, tela de registro público no login, fluxo de aprovação e regras de governança e vínculos de coordenação.**
+*Link: [./tracks/cadastro_usuarios_20260627/](./tracks/cadastro_usuarios_20260627/)*
+

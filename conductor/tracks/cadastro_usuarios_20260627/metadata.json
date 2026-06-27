@@ -1,0 +1,8 @@
+{
+  "track_id": "cadastro_usuarios_20260627",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-06-27T12:50:00Z",
+  "updated_at": "2026-06-27T12:50:00Z",
+  "description": "Implementar o cadastro de usuários no sistema com criptografia de dados sensíveis, tela de registro público no login, fluxo de aprovação e regras de governança e vínculos de coordenação."
+}
