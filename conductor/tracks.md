@@ -102,6 +102,6 @@
 
 ---
 
-- [ ] **Track: Implementar o cadastro de usuários no sistema com criptografia de dados sensíveis, tela de registro público no login, fluxo de aprovação e regras de governança e vínculos de coordenação.**
+- [~] **Track: Implementar o cadastro de usuários no sistema com criptografia de dados sensíveis, tela de registro público no login, fluxo de aprovação e regras de governança e vínculos de coordenação.**
 *Link: [./tracks/cadastro_usuarios_20260627/](./tracks/cadastro_usuarios_20260627/)*
 
