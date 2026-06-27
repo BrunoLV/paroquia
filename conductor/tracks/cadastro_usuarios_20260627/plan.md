@@ -1,6 +1,6 @@
 # Implementation Plan: Cadastro e Vínculo de Usuários
 
-## Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)
+## Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD) [checkpoint: faa3dba]
 - [x] Task: Escrever migração de banco de dados Flyway `V037__add_cadastro_fields_to_usuarios.sql` [9e3079c]
     - [x] Adicionar colunas `nome` (VARCHAR), `telefone` (VARCHAR), `data_nascimento` (VARCHAR - para suportar valor criptografado) à tabela `calendario.usuarios`
 - [x] Task: Desenvolver o mecanismo de criptografia de dados JPA (`AttributeConverter`) [deef3fa]
