@@ -1,0 +1,4 @@
+Task: Atualizar o modelo de domínio Organizacao e entidade OrganizacaoEntity
+Changes: Added properties/columns/methods for coordenador and viceCoordenador to Organizacao.java, OrganizacaoEntity.java, and OrganizacaoRepositoryImpl.java.
+Files: gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/domain/model/Organizacao.java, gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/infrastructure/persistence/entity/OrganizacaoEntity.java, gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/infrastructure/persistence/repository/OrganizacaoRepositoryImpl.java
+Why: To support persisting the coordinators of a pastoral or movement.
