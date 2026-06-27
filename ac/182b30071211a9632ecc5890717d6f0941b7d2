@@ -1,0 +1,4 @@
+Bugfix: Corrigido erro de acesso negado na aba Membros / Usuários
+Changes: Modified globalRoles mapping in UsuarioDetails.java to automatically prepend ROLE_ prefix to role strings parsed from the database.
+Files: UsuarioDetails.java
+Why: Spring Security hasAnyRole checks require ROLE_ prefix. Since roles in the database ('ADMIN') are prefix-less, the API returned 403 Forbidden on the usuarios list request.
