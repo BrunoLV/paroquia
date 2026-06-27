@@ -1,0 +1,4 @@
+Task: Desenvolver o componente OrganizacaoFormModal.tsx
+Changes: Created OrganizacaoFormModal.tsx with fields for Name, Type, Contact, Coordinator, and Vice-coordinator, including validation and state sync with props.
+Files: OrganizacaoFormModal.tsx
+Why: Provide a form UI to register or edit pastorals and movements.
