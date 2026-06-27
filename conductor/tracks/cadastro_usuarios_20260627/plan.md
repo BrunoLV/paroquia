@@ -45,11 +45,12 @@
     - [x] Rodar `npm run build` e `CI=true npm test` para validação geral
 - [x] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation (Sign Up, User Management Aba & Vínculos)' (Protocol in workflow.md)
 
-## Phase 4: Additional Requirements & Bugfixes [checkpoint: d36b127]
-- [x] Task: Exibir nome do coordenador/vice na listagem de pastorais [d36b127]
+## Phase 4: Additional Requirements & Bugfixes [checkpoint: d36b127] [06ade47]
+- [x] Task: Exibir nome do coordenador/vice na listagem de pastorais [d36b127] [06ade47]
     - [x] Modificar `OrganizacaoRepositoryImpl` para buscar no repositório de membros caso o nome no usuário seja nulo (essencial para dados de testes)
+    - [x] Modificar `ListOrganizacaoMembrosUseCase` para também buscar no repositório de membros a fim de evitar exibir "Usuário Desconhecido" na listagem
 - [x] Task: Permitir que administradores cadastrem novos usuários diretamente [d36b127]
     - [x] Adicionar botão e modal de cadastro de membros em configurações de usuários (apenas para ADMIN/PAROCO)
     - [x] Configurar `RegistrarUsuarioUseCase` para auto-aprovar e ativar o usuário e seus vínculos se cadastrado por um administrador
-- [x] Task: Conclusão e Validação da Suíte de Testes [d36b127]
+- [x] Task: Conclusão e Validação da Suíte de Testes [d36b127] [06ade47]
     - [x] Validar que todos os testes unitários do frontend (`Settings.test.tsx`) e backend passam
