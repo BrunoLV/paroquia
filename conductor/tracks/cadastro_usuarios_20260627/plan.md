@@ -41,6 +41,6 @@
 - [x] Task: Integrar gerenciamento de membros por Pastoral na UI [38ef2da]
     - [x] Adicionar visualização de membros da pastoral selecionada na aba de Pastorais/Movimentos
     - [x] Permitir que o coordenador adicione fiéis à sua pastoral local
-- [ ] Task: Executar build e testes do frontend
-    - [ ] Rodar `npm run build` e `CI=true npm test` para validação geral
+- [x] Task: Executar build e testes do frontend [8029788]
+    - [x] Rodar `npm run build` e `CI=true npm test` para validação geral
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation (Sign Up, User Management Aba & Vínculos)' (Protocol in workflow.md)
