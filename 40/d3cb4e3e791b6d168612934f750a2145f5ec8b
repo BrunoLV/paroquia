@@ -1,0 +1,4 @@
+Task: Implementar opção Cadastre-se na tela de login
+Changes: Expanded Login.tsx to support an isRegistering toggle. Added input fields for Name, E-mail, Password, Confirm Password, Phone, and Birthdate. Loaded organizations list from backend to let users request connection. Connected register submit to POST /usuarios/registrar. Updated Login.test.tsx.
+Files: Login.tsx, Login.test.tsx
+Why: Allow public users to sign up and select desired pastoral memberships before login.
