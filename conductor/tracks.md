@@ -97,6 +97,6 @@
 
 ---
 
-- [ ] **Track: Implementar funcionalidade de cadastro de pastorais e movimentos, incluindo coordenador e vice-coordenador se existir**
+- [~] **Track: Implementar funcionalidade de cadastro de pastorais e movimentos, incluindo coordenador e vice-coordenador se existir**
 *Link: [./tracks/pastorais_movimentos_20260627/](./tracks/pastorais_movimentos_20260627/)*
 
