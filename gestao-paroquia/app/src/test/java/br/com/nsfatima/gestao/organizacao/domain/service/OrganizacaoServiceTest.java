@@ -28,10 +28,12 @@ class OrganizacaoServiceTest {
 
     @Test
     void shouldCreateOrganization() {
-        Organizacao created = service.createOrganization("PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com");
+        Organizacao created = service.createOrganization("PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B");
         
         assertNotNull(created.getId());
         assertEquals("PJ", created.getNome());
+        assertEquals("Coordenador A", created.getCoordenador());
+        assertEquals("Vice Coordenador B", created.getViceCoordenador());
         assertTrue(created.isAtivo());
         verify(repository).save(any(Organizacao.class));
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
@@ -40,13 +42,15 @@ class OrganizacaoServiceTest {
     @Test
     void shouldUpdateOrganization() {
         UUID id = UUID.randomUUID();
-        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", true);
+        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true);
         when(repository.findById(id)).thenReturn(Optional.of(org));
 
-        service.updateOrganization(id, "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", false);
+        service.updateOrganization(id, "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false);
 
         assertEquals("PJ Novo", org.getNome());
         assertEquals(TipoOrganizacao.PASTORAL, org.getTipo());
+        assertEquals("Novo Coordenador", org.getCoordenador());
+        assertEquals("Novo Vice", org.getViceCoordenador());
         assertFalse(org.isAtivo());
         verify(repository).save(org);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());

@@ -26,6 +26,8 @@ class OrganizacaoApiIntegrationTest {
                   "nome": "Pastoral da Música",
                   "tipo": "PASTORAL",
                   "contato": "musica@nsfatima.com",
+                  "coordenador": "Pedro Coordenador",
+                  "viceCoordenador": "Ana Vice",
                   "ativo": true
                 }
                 """;
@@ -35,6 +37,8 @@ class OrganizacaoApiIntegrationTest {
                 .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Música"))
+                .andExpect(jsonPath("$.coordenador").value("Pedro Coordenador"))
+                .andExpect(jsonPath("$.viceCoordenador").value("Ana Vice"))
                 .andReturn().getResponse().getContentAsString();
 
         // Simple way to get ID from response
@@ -43,7 +47,31 @@ class OrganizacaoApiIntegrationTest {
         mockMvc.perform(get("/api/v1/organizacoes/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Música"))
-                .andExpect(jsonPath("$.tipo").value("PASTORAL"));
+                .andExpect(jsonPath("$.tipo").value("PASTORAL"))
+                .andExpect(jsonPath("$.coordenador").value("Pedro Coordenador"))
+                .andExpect(jsonPath("$.viceCoordenador").value("Ana Vice"));
+    }
+
+    @Test
+    @WithMockUser(roles = "CONSELHO_COORDENADOR")
+    void shouldAllowCreateForConselhoCoordenador() throws Exception {
+        String payload = """
+                {
+                  "nome": "Pastoral da Acolhida",
+                  "tipo": "PASTORAL",
+                  "contato": "acolhida@nsfatima.com",
+                  "coordenador": "Carlos Coordenador",
+                  "viceCoordenador": "Lucas Vice",
+                  "ativo": true
+                }
+                """;
+
+        mockMvc.perform(post("/api/v1/organizacoes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nome").value("Pastoral da Acolhida"))
+                .andExpect(jsonPath("$.coordenador").value("Carlos Coordenador"));
     }
 
     @Test
