@@ -1,0 +1,4 @@
+Verification Report - Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)
+Automated Tests Command: ./gradlew test
+Manual Verification Steps: Run POST /api/v1/usuarios/registrar with a JSON payload and receive 201 Created.
+User Confirmation: Yes, tests passed and this meets my expectations
