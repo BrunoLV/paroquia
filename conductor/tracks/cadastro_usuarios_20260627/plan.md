@@ -27,8 +27,8 @@
     - [x] Apenas `ADMIN` pode definir `CLERO_PAROCO`
 - [x] Task: Expor na API de Organizações o Coordenador e Vice-Coordenador resolvidos [a5d2c59]
     - [x] No `OrganizacaoResponse`, carregar dinamicamente o nome dos usuários vinculados à organização com os papéis de coordenação correspondentes
-- [ ] Task: Escrever testes unitários e de integração para governança de papéis e vínculos
-    - [ ] Validar as regras de unicidade de coordenação e delegação hierárquica (pároco define conselho, admin define pároco)
+- [x] Task: Escrever testes unitários e de integração para governança de papéis e vínculos [a5d2c59]
+    - [x] Validar as regras de unicidade de coordenação e delegação hierárquica (pároco define conselho, admin define pároco)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: User Approval, Member Linking & Role Governance (TDD)' (Protocol in workflow.md)
 
 ## Phase 3: UI Implementation (Sign Up, User Management Aba & Vínculos)
