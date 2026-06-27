@@ -38,7 +38,7 @@ public class UsuarioAuthorizationService {
         // If actor is COORDENADOR, they must share an organization with targetUserId where they are COORDENADOR
         List<MembroOrganizacaoEntity> actorMemberships = membershipRepository.findByUsuarioIdAndAtivoTrue(actorId);
         List<UUID> coordinatorOrgIds = actorMemberships.stream()
-                .filter(m -> "coordenador".equalsIgnoreCase(m.getPapel()) || "vice-coordenador".equalsIgnoreCase(m.getPapel()))
+                .filter(m -> isCoordinatorRole(m.getPapel()))
                 .map(MembroOrganizacaoEntity::getOrganizacaoId)
                 .toList();
 
@@ -72,11 +72,17 @@ public class UsuarioAuthorizationService {
 
         boolean isCoordinator = membershipRepository.findByUsuarioIdAndAtivoTrue(actorId).stream()
                 .filter(m -> organizationId.equals(m.getOrganizacaoId()))
-                .anyMatch(m -> "coordenador".equalsIgnoreCase(m.getPapel()) || "vice-coordenador".equalsIgnoreCase(m.getPapel()));
+                .anyMatch(m -> isCoordinatorRole(m.getPapel()));
 
         if (!isCoordinator) {
             throw new AccessDeniedException("Only Admin or Organization Coordinator can perform this action");
         }
+    }
+
+    private boolean isCoordinatorRole(String role) {
+        if (role == null) return false;
+        String normalized = role.trim().toUpperCase().replace("-", "_");
+        return "COORDENADOR".equals(normalized) || "VICE_COORDENADOR".equals(normalized);
     }
 
     private boolean isAdmin(Authentication auth) {

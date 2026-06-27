@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,19 +17,22 @@ public class ListOrganizacaoMembrosUseCase {
     private final MembroOrganizacaoJpaRepository membershipRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final MembroJpaRepository membroRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListOrganizacaoMembrosUseCase(
             MembroOrganizacaoJpaRepository membershipRepository,
             UsuarioJpaRepository usuarioRepository,
-            MembroJpaRepository membroRepository) {
+            MembroJpaRepository membroRepository,
+            OrganizacaoJpaRepository organizacaoRepository) {
         this.membershipRepository = membershipRepository;
         this.usuarioRepository = usuarioRepository;
         this.membroRepository = membroRepository;
+        this.organizacaoRepository = organizacaoRepository;
     }
 
     @Transactional(readOnly = true)
     public List<OrganizacaoMembroResponse> execute(UUID organizacaoId) {
-        return membershipRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId).stream()
+        List<OrganizacaoMembroResponse> dbMembers = membershipRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId).stream()
                 .map(m -> {
                     String userNome = usuarioRepository.findById(m.getUsuarioId())
                             .map(u -> u.getNome())
@@ -47,5 +51,50 @@ public class ListOrganizacaoMembrosUseCase {
                     );
                 })
                 .toList();
+
+        List<OrganizacaoMembroResponse> members = new java.util.ArrayList<>(dbMembers);
+
+        var orgOpt = organizacaoRepository.findById(organizacaoId);
+        if (orgOpt.isPresent()) {
+            var org = orgOpt.get();
+            addDynamicMemberIfMissing(members, org.getCoordenador(), "COORDENADOR");
+            addDynamicMemberIfMissing(members, org.getViceCoordenador(), "VICE_COORDENADOR");
+        }
+
+        return members;
+    }
+
+    private void addDynamicMemberIfMissing(List<OrganizacaoMembroResponse> list, String name, String papel) {
+        if (name == null || name.trim().isEmpty()) {
+            return;
+        }
+        boolean exists = list.stream().anyMatch(m -> name.equalsIgnoreCase(m.usuarioNome()));
+        if (exists) {
+            return;
+        }
+
+        UUID userId = usuarioRepository.findAll().stream()
+                .filter(u -> name.equalsIgnoreCase(u.getNome()))
+                .map(br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity::getId)
+                .findFirst()
+                .orElse(null);
+
+        if (userId == null) {
+            userId = membroRepository.findAll().stream()
+                    .filter(m -> name.equalsIgnoreCase(m.getNomeCompleto()))
+                    .map(br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity::getUsuarioId)
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        if (userId != null) {
+            list.add(new OrganizacaoMembroResponse(
+                    UUID.randomUUID(), // dummy membership ID
+                    userId,
+                    name,
+                    papel,
+                    true
+            ));
+        }
     }
 }
