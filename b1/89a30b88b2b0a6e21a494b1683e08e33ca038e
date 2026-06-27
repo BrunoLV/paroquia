@@ -1,0 +1,4 @@
+Task: Atualizar DTOs, service e permissões no OrganizacaoController
+Changes: Updated OrganizacaoRequest/Response, AuthController, ExternalMembershipReader, and OrganizacaoService to support coordinator fields. Adjusted @PreAuthorize on OrganizacaoController to allow clergy and consiglio coordinator roles.
+Files: AuthController.java, ExternalMembershipReader.java, OrganizacaoController.java, OrganizacaoRequest.java, OrganizacaoResponse.java, OrganizacaoService.java
+Why: Expose and authorize coordinator details for pastorals/movements.
