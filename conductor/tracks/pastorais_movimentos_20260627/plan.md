@@ -25,7 +25,7 @@
     - [x] Implementar chamadas para buscar listagem, criar, editar e inativar/deletar organizações
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md) 5a48960
 
-## Phase 3: Frontend UI Implementation & Settings Tab Integration
+## Phase 3: Frontend UI Implementation & Settings Tab Integration [checkpoint: 90608ba]
 - [x] Task: Desenvolver o componente `OrganizacaoFormModal.tsx` [70c3cd0]
     - [x] Criar modal similar ao `LocalFormModal.tsx` com campos Nome, Tipo, Coordenador, Vice-Coordenador, Contato e validação do Nome
 - [x] Task: Integrar a aba "Pastorais e Movimentos" no componente `Settings.tsx` [b807769]
@@ -36,4 +36,4 @@
     - [x] Adicionar caixa de texto de busca para filtrar a tabela dinamicamente por Nome, Tipo ou Coordenador
 - [x] Task: Rodar `npm run build` e testes do frontend `npm test` para assegurar qualidade [b7c5963]
     - [x] Corrigir eventuais erros de tipos TypeScript e assegurar que todos os testes da aplicação passam com sucesso
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Frontend UI Implementation & Settings Tab Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend UI Implementation & Settings Tab Integration' (Protocol in workflow.md) 90608ba
