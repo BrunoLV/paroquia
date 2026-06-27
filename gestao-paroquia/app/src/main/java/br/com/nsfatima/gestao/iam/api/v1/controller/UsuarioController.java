@@ -17,6 +17,7 @@ import br.com.nsfatima.gestao.iam.application.usecase.GetUsuarioUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ListMembershipsUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.RemoveMembershipUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.ApproveUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,7 @@ public class UsuarioController {
     private final ListMembershipsUseCase listMembershipsUseCase;
     private final UsuarioAuthorizationService authorizationService;
     private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
+    private final ApproveUsuarioUseCase approveUsuarioUseCase;
 
     public UsuarioController(
             ListUsuariosUseCase listUsuariosUseCase,
@@ -47,7 +49,8 @@ public class UsuarioController {
             RemoveMembershipUseCase removeMembershipUseCase,
             ListMembershipsUseCase listMembershipsUseCase,
             UsuarioAuthorizationService authorizationService,
-            RegistrarUsuarioUseCase registrarUsuarioUseCase) {
+            RegistrarUsuarioUseCase registrarUsuarioUseCase,
+            ApproveUsuarioUseCase approveUsuarioUseCase) {
         this.listUsuariosUseCase = listUsuariosUseCase;
         this.getUsuarioUseCase = getUsuarioUseCase;
         this.createUsuarioUseCase = createUsuarioUseCase;
@@ -57,6 +60,7 @@ public class UsuarioController {
         this.listMembershipsUseCase = listMembershipsUseCase;
         this.authorizationService = authorizationService;
         this.registrarUsuarioUseCase = registrarUsuarioUseCase;
+        this.approveUsuarioUseCase = approveUsuarioUseCase;
     }
 
     @GetMapping
@@ -114,6 +118,14 @@ public class UsuarioController {
      */
     public void update(@PathVariable UUID id, @RequestBody UsuarioResponse request) {
         updateUsuarioUseCase.execute(id, request.username(), request.enabled());
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CONSELHO_COORDENADOR')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Aprova um novo usuário e ativa suas solicitações de pastorais")
+    public void approve(@PathVariable UUID id) {
+        approveUsuarioUseCase.execute(id);
     }
 
     @GetMapping("/{id}/membros")

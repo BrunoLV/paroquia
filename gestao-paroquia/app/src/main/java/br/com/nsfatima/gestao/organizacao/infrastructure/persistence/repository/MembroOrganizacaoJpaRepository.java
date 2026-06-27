@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public interface MembroOrganizacaoJpaRepository extends JpaRepository<MembroOrganizacaoEntity, UUID> {
     List<MembroOrganizacaoEntity> findByUsuarioIdAndAtivoTrue(UUID usuarioId);
+    List<MembroOrganizacaoEntity> findByUsuarioId(UUID usuarioId);
 
     boolean existsByOrganizacaoId(UUID organizacaoId);
 }
