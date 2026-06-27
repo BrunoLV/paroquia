@@ -1,0 +1,4 @@
+Task: Atualizar o modelo de domínio Usuario e entidade UsuarioEntity no backend
+Changes: Mapped nome, telefone, and dataNascimento fields with converters onto UsuarioEntity. Extended UsuarioResponse to support the new fields and added back-compatibility constructor.
+Files: UsuarioEntity.java, UsuarioResponse.java, ListUsuariosUseCase.java, GetUsuarioUseCase.java
+Why: Integrate encrypted registration fields into entity models and APIs.
