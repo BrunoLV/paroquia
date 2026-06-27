@@ -35,9 +35,9 @@
 - [x] Task: Implementar opção "Cadastre-se" na tela de login [40d3cb4]
     - [x] Criar formulário público de cadastro no `Login.tsx` (ou redirecionar para `/cadastro`) com campos Nome, E-mail, Senha, Telefone, Data de Nascimento
     - [x] Permitir seleção de pastorais/movimentos sugeridos
-- [ ] Task: Criar aba "Membros / Usuários" no painel de configurações (`Settings.tsx`)
-    - [ ] Listar usuários e exibir status "Pendente" para usuários desabilitados
-    - [ ] Disponibilizar botões de aprovação e de vinculação a pastorais
+- [x] Task: Criar aba "Membros / Usuários" no painel de configurações (`Settings.tsx`) [d2fee23]
+    - [x] Listar usuários e exibir status "Pendente" para usuários desabilitados
+    - [x] Disponibilizar botões de aprovação e de vinculação a pastorais
 - [ ] Task: Integrar gerenciamento de membros por Pastoral na UI
     - [ ] Adicionar visualização de membros da pastoral selecionada na aba de Pastorais/Movimentos
     - [ ] Permitir que o coordenador adicione fiéis à sua pastoral local
