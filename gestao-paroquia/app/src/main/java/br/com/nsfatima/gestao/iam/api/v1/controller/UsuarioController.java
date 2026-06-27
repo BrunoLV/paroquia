@@ -64,7 +64,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR')")
     @Operation(summary = "Lista todos os usuários")
     /**
      * Fornece uma visão geral de todos os usuários cadastrados no sistema para fins de auditoria e gestão administrativa global.
