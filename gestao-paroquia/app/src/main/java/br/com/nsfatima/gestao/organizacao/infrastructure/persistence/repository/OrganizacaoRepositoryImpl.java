@@ -34,6 +34,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         entity.setNome(domain.getNome());
         entity.setTipo(domain.getTipo());
         entity.setContato(domain.getContato());
+        entity.setCoordenador(domain.getCoordenador());
+        entity.setViceCoordenador(domain.getViceCoordenador());
         entity.setAtivo(domain.isAtivo());
         organizacaoJpaRepository.save(entity);
     }
@@ -70,6 +72,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 entity.getNome(),
                 entity.getTipo(),
                 entity.getContato(),
+                entity.getCoordenador(),
+                entity.getViceCoordenador(),
                 entity.isAtivo()
         );
     }

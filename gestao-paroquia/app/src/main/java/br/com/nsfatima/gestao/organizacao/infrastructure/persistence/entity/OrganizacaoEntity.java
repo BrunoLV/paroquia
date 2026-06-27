@@ -22,6 +22,12 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     @Column(length = 255)
     private String contato;
 
+    @Column(name = "coordenador", length = 255)
+    private String coordenador;
+
+    @Column(name = "vice_coordenador", length = 255)
+    private String viceCoordenador;
+
     @Column(nullable = false)
     private boolean ativo = true;
 
@@ -55,6 +61,22 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
 
     public void setContato(String contato) {
         this.contato = contato;
+    }
+
+    public String getCoordenador() {
+        return coordenador;
+    }
+
+    public void setCoordenador(String coordenador) {
+        this.coordenador = coordenador;
+    }
+
+    public String getViceCoordenador() {
+        return viceCoordenador;
+    }
+
+    public void setViceCoordenador(String viceCoordenador) {
+        this.viceCoordenador = viceCoordenador;
     }
 
     public boolean isAtivo() {
