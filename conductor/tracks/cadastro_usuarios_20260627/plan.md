@@ -25,8 +25,8 @@
     - [x] Ao adicionar um membro com papel `ROLE_PASTORAL_COORDENADOR` ou `ROLE_PASTORAL_VICE_COORDENADOR`, verificar a unicidade (máximo 1 ativo por organização) e inativar/substituir o anterior se aplicável
     - [x] Apenas `CLERO_PAROCO` pode definir `COORDENADOR_CONSELHO` e `VICE_COORDENADOR_CONSELHO`
     - [x] Apenas `ADMIN` pode definir `CLERO_PAROCO`
-- [ ] Task: Expor na API de Organizações o Coordenador e Vice-Coordenador resolvidos
-    - [ ] No `OrganizacaoResponse`, carregar dinamicamente o nome dos usuários vinculados à organização com os papéis de coordenação correspondentes
+- [x] Task: Expor na API de Organizações o Coordenador e Vice-Coordenador resolvidos [a5d2c59]
+    - [x] No `OrganizacaoResponse`, carregar dinamicamente o nome dos usuários vinculados à organização com os papéis de coordenação correspondentes
 - [ ] Task: Escrever testes unitários e de integração para governança de papéis e vínculos
     - [ ] Validar as regras de unicidade de coordenação e delegação hierárquica (pároco define conselho, admin define pároco)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: User Approval, Member Linking & Role Governance (TDD)' (Protocol in workflow.md)
