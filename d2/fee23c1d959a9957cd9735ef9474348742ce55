@@ -1,0 +1,4 @@
+Task: Criar aba Membros / Usuários no painel de configurações (Settings.tsx)
+Changes: Created api/usuarios.ts to integrate with user approval and memberships. Added Membros / Usuários tab to Settings.tsx. Lists all users, displays status badge, and renders action buttons (Aprovar, Vínculos). Implemented a modal to view/add/remove memberships per user. Updated Settings.test.tsx.
+Files: usuarios.ts, Settings.tsx, Settings.test.tsx
+Why: Allow administrators and authorized roles to approve new signups and manage organizational roles from a centralized place.
