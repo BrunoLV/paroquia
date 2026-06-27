@@ -1,6 +1,6 @@
 # Implementation Plan: Cadastro de Pastorais e Movimentos
 
-## Phase 1: Database Migration & Backend Refactoring (TDD)
+## Phase 1: Database Migration & Backend Refactoring (TDD) [checkpoint: 6eb29f3]
 - [x] Task: Escrever migração de banco de dados Flyway `V036__add_coordenadores_to_organizacoes.sql` [9ab14e0]
     - [x] Criar arquivo de migração na pasta do backend adicionando as colunas `coordenador` e `vice_coordenador` à tabela `calendario.organizacoes`
 - [x] Task: Atualizar o modelo de domínio `Organizacao` e entidade `OrganizacaoEntity` [fad796d]
@@ -13,7 +13,7 @@
     - [x] Ajustar `@PreAuthorize` dos métodos `create`, `update` e `delete` para usar `hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')`
 - [x] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test` [e2cb183]
     - [x] Adicionar testes em `OrganizacaoServiceTest.java` e `OrganizacaoApiIntegrationTest.java` para verificar persistência e validação de permissões RBAC
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Backend Refactoring (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Backend Refactoring (TDD)' (Protocol in workflow.md) 6eb29f3
 
 ## Phase 2: Frontend API & Permissions Setup (TDD)
 - [ ] Task: Criar helper de permissões `canManageOrganizacoes` em `permissions.ts` e seus testes em `permissions.test.ts`
