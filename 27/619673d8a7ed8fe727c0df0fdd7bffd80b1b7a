@@ -1,0 +1,4 @@
+Task: Implementar endpoint de aprovação de usuários PUT /api/v1/usuarios/{id}/approve
+Changes: Added findByUsuarioId method to MembroOrganizacaoJpaRepository. Implemented ApproveUsuarioUseCase to enable user, assign ROLE_USER, and activate requested memberships. Exposed PUT /approve route in UsuarioController with PreAuthorize constraint. Verified via UsuarioApprovalIntegrationTest.
+Files: MembroOrganizacaoJpaRepository.java, ApproveUsuarioUseCase.java, UsuarioController.java, UsuarioApprovalIntegrationTest.java
+Why: Empower administrators, parocos, and council coordinators to approve signed-up users.
