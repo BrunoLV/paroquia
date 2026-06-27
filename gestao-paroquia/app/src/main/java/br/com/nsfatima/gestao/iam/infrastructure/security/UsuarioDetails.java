@@ -36,7 +36,10 @@ public class UsuarioDetails implements UserDetails {
 
         Stream<String> globalRoles = (roles == null || roles.isBlank())
                 ? Stream.empty()
-                : Arrays.stream(roles.split(",")).map(String::trim).filter(s -> !s.isEmpty());
+                : Arrays.stream(roles.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r);
 
         Stream<String> membershipRoles = this.memberships.stream()
                 .map(ExternalMembershipReader.Membership::authority);
