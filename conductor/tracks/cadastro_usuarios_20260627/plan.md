@@ -38,9 +38,9 @@
 - [x] Task: Criar aba "Membros / Usuários" no painel de configurações (`Settings.tsx`) [d2fee23]
     - [x] Listar usuários e exibir status "Pendente" para usuários desabilitados
     - [x] Disponibilizar botões de aprovação e de vinculação a pastorais
-- [ ] Task: Integrar gerenciamento de membros por Pastoral na UI
-    - [ ] Adicionar visualização de membros da pastoral selecionada na aba de Pastorais/Movimentos
-    - [ ] Permitir que o coordenador adicione fiéis à sua pastoral local
+- [x] Task: Integrar gerenciamento de membros por Pastoral na UI [38ef2da]
+    - [x] Adicionar visualização de membros da pastoral selecionada na aba de Pastorais/Movimentos
+    - [x] Permitir que o coordenador adicione fiéis à sua pastoral local
 - [ ] Task: Executar build e testes do frontend
     - [ ] Rodar `npm run build` e `CI=true npm test` para validação geral
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation (Sign Up, User Management Aba & Vínculos)' (Protocol in workflow.md)
