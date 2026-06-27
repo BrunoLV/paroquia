@@ -1,0 +1,4 @@
+Task: Desenvolver o endpoint de registro público /api/v1/usuarios/registrar (permitAll)
+Changes: Created RegistrarUsuarioRequest and RegistrarUsuarioUseCase. Added public registration route in UsuarioController and bypassed security check in SecurityConfig. Added UsuarioRegistrationIntegrationTest verifying DB encryption at rest.
+Files: RegistrarUsuarioRequest.java, RegistrarUsuarioUseCase.java, UsuarioController.java, SecurityConfig.java, UsuarioRegistrationIntegrationTest.java
+Why: Allow anonymous users to sign up securely, keeping their PII encrypted.
