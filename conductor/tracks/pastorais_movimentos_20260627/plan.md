@@ -11,8 +11,8 @@
     - [x] Atualizar `OrganizacaoController.java` e `OrganizacaoService.java` para salvar os campos
 - [x] Task: Atualizar permissões `@PreAuthorize` no `OrganizacaoController` [b189a30]
     - [x] Ajustar `@PreAuthorize` dos métodos `create`, `update` e `delete` para usar `hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')`
-- [ ] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test`
-    - [ ] Adicionar testes em `OrganizacaoServiceTest.java` e `OrganizacaoApiIntegrationTest.java` para verificar persistência e validação de permissões RBAC
+- [x] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test` [e2cb183]
+    - [x] Adicionar testes em `OrganizacaoServiceTest.java` e `OrganizacaoApiIntegrationTest.java` para verificar persistência e validação de permissões RBAC
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Backend Refactoring (TDD)' (Protocol in workflow.md)
 
 ## Phase 2: Frontend API & Permissions Setup (TDD)
