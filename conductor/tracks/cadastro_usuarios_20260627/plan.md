@@ -17,9 +17,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)' (Protocol in workflow.md)
 
 ## Phase 2: User Approval, Member Linking & Role Governance (TDD)
-- [ ] Task: Implementar endpoint de aprovação de usuários `PUT /api/v1/usuarios/{id}/approve`
-    - [ ] Restringir acesso a `ADMIN`, `CLERO_PAROCO` e `CONSELHO_COORDENADOR`
-    - [ ] Ativar usuário (`enabled = true`) e associar papel básico `ROLE_USER`
+- [x] Task: Implementar endpoint de aprovação de usuários `PUT /api/v1/usuarios/{id}/approve` [2761967]
+    - [x] Restringir acesso a `ADMIN`, `CLERO_PAROCO` e `CONSELHO_COORDENADOR`
+    - [x] Ativar usuário (`enabled = true`) e associar papel básico `ROLE_USER`
 - [ ] Task: Implementar regras de vínculo e unicidade de coordenação em `membros_organizacao`
     - [ ] Coordenador de pastoral/movimento comum pode associar membros apenas para a pastoral que coordena
     - [ ] Ao adicionar um membro com papel `ROLE_PASTORAL_COORDENADOR` ou `ROLE_PASTORAL_VICE_COORDENADOR`, verificar a unicidade (máximo 1 ativo por organização) e inativar/substituir o anterior se aplicável
