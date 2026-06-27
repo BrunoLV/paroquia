@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,15 @@ public class ListOrganizacaoMembrosUseCase {
 
     private final MembroOrganizacaoJpaRepository membershipRepository;
     private final UsuarioJpaRepository usuarioRepository;
+    private final MembroJpaRepository membroRepository;
 
     public ListOrganizacaoMembrosUseCase(
             MembroOrganizacaoJpaRepository membershipRepository,
-            UsuarioJpaRepository usuarioRepository) {
+            UsuarioJpaRepository usuarioRepository,
+            MembroJpaRepository membroRepository) {
         this.membershipRepository = membershipRepository;
         this.usuarioRepository = usuarioRepository;
+        this.membroRepository = membroRepository;
     }
 
     @Transactional(readOnly = true)
@@ -28,7 +32,12 @@ public class ListOrganizacaoMembrosUseCase {
                 .map(m -> {
                     String userNome = usuarioRepository.findById(m.getUsuarioId())
                             .map(u -> u.getNome())
-                            .orElse("Usuário Desconhecido");
+                            .orElse(null);
+                    if (userNome == null || userNome.trim().isEmpty()) {
+                        userNome = membroRepository.findByUsuarioId(m.getUsuarioId())
+                                .map(me -> me.getNomeCompleto())
+                                .orElse("Usuário Desconhecido");
+                    }
                     return new OrganizacaoMembroResponse(
                             m.getId(),
                             m.getUsuarioId(),
