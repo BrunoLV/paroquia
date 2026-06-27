@@ -31,7 +31,11 @@ public class ListUsuariosUseCase {
                         u.getUsername(),
                         u.isEnabled(),
                         u.getRoles() == null ? List.of()
-                                : Arrays.stream(u.getRoles().split(",")).map(String::trim).collect(Collectors.toList())))
+                                : Arrays.stream(u.getRoles().split(",")).map(String::trim).collect(Collectors.toList()),
+                        List.of(),
+                        u.getNome(),
+                        u.getTelefone(),
+                        u.getDataNascimento()))
                 .toList();
     }
 }

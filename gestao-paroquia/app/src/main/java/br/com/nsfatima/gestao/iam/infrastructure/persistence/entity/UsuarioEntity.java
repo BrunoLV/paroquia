@@ -5,6 +5,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
+import jakarta.persistence.Convert;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +29,18 @@ public class UsuarioEntity extends BaseVersionedEntity {
 
     @Column
     private String roles;
+
+    @Column(name = "nome")
+    @Convert(converter = EncryptedStringConverter.class)
+    private String nome;
+
+    @Column(name = "telefone")
+    @Convert(converter = EncryptedStringConverter.class)
+    private String telefone;
+
+    @Column(name = "data_nascimento")
+    @Convert(converter = EncryptedLocalDateConverter.class)
+    private LocalDate dataNascimento;
 
     public UUID getId() {
         return id;
@@ -64,5 +80,29 @@ public class UsuarioEntity extends BaseVersionedEntity {
 
     public void setRoles(String roles) {
         this.roles = roles;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 }
