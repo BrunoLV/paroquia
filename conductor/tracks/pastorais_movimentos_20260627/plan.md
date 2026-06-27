@@ -1,8 +1,8 @@
 # Implementation Plan: Cadastro de Pastorais e Movimentos
 
 ## Phase 1: Database Migration & Backend Refactoring (TDD)
-- [ ] Task: Escrever migração de banco de dados Flyway `V036__add_coordenadores_to_organizacoes.sql`
-    - [ ] Criar arquivo de migração na pasta do backend adicionando as colunas `coordenador` e `vice_coordenador` à tabela `calendario.organizacoes`
+- [x] Task: Escrever migração de banco de dados Flyway `V036__add_coordenadores_to_organizacoes.sql` [9ab14e0]
+    - [x] Criar arquivo de migração na pasta do backend adicionando as colunas `coordenador` e `vice_coordenador` à tabela `calendario.organizacoes`
 - [ ] Task: Atualizar o modelo de domínio `Organizacao` e entidade `OrganizacaoEntity`
     - [ ] Atualizar `Organizacao.java` com campos, construtor e método `update`
     - [ ] Atualizar `OrganizacaoEntity.java` adicionando as propriedades e anotações `@Column` JPA
