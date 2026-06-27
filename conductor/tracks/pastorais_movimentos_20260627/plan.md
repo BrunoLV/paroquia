@@ -15,7 +15,7 @@
     - [x] Adicionar testes em `OrganizacaoServiceTest.java` e `OrganizacaoApiIntegrationTest.java` para verificar persistência e validação de permissões RBAC
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Backend Refactoring (TDD)' (Protocol in workflow.md) 6eb29f3
 
-## Phase 2: Frontend API & Permissions Setup (TDD)
+## Phase 2: Frontend API & Permissions Setup (TDD) [checkpoint: 5a48960]
 - [x] Task: Criar helper de permissões `canManageOrganizacoes` em `permissions.ts` e seus testes em `permissions.test.ts` [0dc0f32]
     - [x] Implementar `canManageOrganizacoes` retornando verdadeiro para papéis ADMIN, CLERO_PAROCO, CONSELHO_COORDENADOR, CONSELHO_VICE_COORDENADOR e suas variações
     - [x] Escrever casos de teste que validem cada papel
@@ -23,7 +23,7 @@
     - [x] Adicionar campos `coordenador` e `viceCoordenador` como opcionais em `Organization` e DTOs correspondentes
 - [x] Task: Criar cliente de API para organizações em `src/api/organizacoes.ts` com testes/mocks [f3c3fbd]
     - [x] Implementar chamadas para buscar listagem, criar, editar e inativar/deletar organizações
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md) 5a48960
 
 ## Phase 3: Frontend UI Implementation & Settings Tab Integration
 - [ ] Task: Desenvolver o componente `OrganizacaoFormModal.tsx`
