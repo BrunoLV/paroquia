@@ -1,0 +1,4 @@
+Task: Integrar gerenciamento de membros por Pastoral na UI
+Changes: Added getOrganizacaoMembros query method to API clients. Appended a Membros button in the Pastorais list table of Settings.tsx. Clicking it opens a Dialog displaying active members of the pastoral, with add and remove options. Restores full coverage of test suite with new mock configurations and unit test cases.
+Files: organizacoes.ts, Settings.tsx, Settings.test.tsx
+Why: Allow coordinators and administrators to manage members inside their pastorals directly from the Pastorais configuration tab.
