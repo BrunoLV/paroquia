@@ -1,0 +1,4 @@
+Verification Report - Phase 2: User Approval, Member Linking & Role Governance (TDD)
+Automated Tests Command: ./gradlew test
+Manual Verification Steps: Run PUT /api/v1/usuarios/{id}/approve and then POST to associate user as COORDINATOR. Query GET /api/v1/organizacoes/{id} and assert coord name is dynamically resolved.
+User Confirmation: Yes, tests passed and this meets my expectations
