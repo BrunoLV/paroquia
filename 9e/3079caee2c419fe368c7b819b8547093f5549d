@@ -1,0 +1,4 @@
+Task: Escrever migração de banco de dados Flyway V037__add_cadastro_fields_to_usuarios.sql
+Changes: Added columns nome, telefone, and data_nascimento to calendario.usuarios table to store encrypted PII registration details.
+Files: V037__add_cadastro_fields_to_usuarios.sql
+Why: Establish database structure to capture extended registration details securely.
