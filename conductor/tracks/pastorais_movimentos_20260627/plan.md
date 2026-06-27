@@ -26,8 +26,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md) 5a48960
 
 ## Phase 3: Frontend UI Implementation & Settings Tab Integration
-- [ ] Task: Desenvolver o componente `OrganizacaoFormModal.tsx`
-    - [ ] Criar modal similar ao `LocalFormModal.tsx` com campos Nome, Tipo, Coordenador, Vice-Coordenador, Contato e validação do Nome
+- [x] Task: Desenvolver o componente `OrganizacaoFormModal.tsx` [70c3cd0]
+    - [x] Criar modal similar ao `LocalFormModal.tsx` com campos Nome, Tipo, Coordenador, Vice-Coordenador, Contato e validação do Nome
 - [ ] Task: Integrar a aba "Pastorais e Movimentos" no componente `Settings.tsx`
     - [ ] Adicionar a terceira aba "Pastorais e Movimentos"
     - [ ] Implementar a tabela com listagem das organizações
