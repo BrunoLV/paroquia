@@ -2,8 +2,10 @@ package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListOrganizacaoMembrosUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,9 +24,13 @@ import java.util.stream.Collectors;
 public class OrganizacaoController {
 
     private final OrganizacaoService organizacaoService;
+    private final ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase;
 
-    public OrganizacaoController(OrganizacaoService organizacaoService) {
+    public OrganizacaoController(
+            OrganizacaoService organizacaoService,
+            ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase) {
         this.organizacaoService = organizacaoService;
+        this.listOrganizacaoMembrosUseCase = listOrganizacaoMembrosUseCase;
     }
 
     @PostMapping
@@ -106,6 +112,12 @@ public class OrganizacaoController {
         return organizacaoService.listOrganizations().stream()
             .map(this::toResponse)
             .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}/membros")
+    @Operation(summary = "Lista os membros de uma organização")
+    public List<OrganizacaoMembroResponse> listMembros(@PathVariable UUID id) {
+        return listOrganizacaoMembrosUseCase.execute(id);
     }
 
     private OrganizacaoResponse toResponse(Organizacao domain) {

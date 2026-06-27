@@ -90,4 +90,14 @@ class OrganizacaoApiIntegrationTest {
                 .content(payload))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldListOrganizationMembers() throws Exception {
+        // Create a mock UUID
+        java.util.UUID orgId = java.util.UUID.randomUUID();
+        mockMvc.perform(get("/api/v1/organizacoes/" + orgId + "/membros")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
