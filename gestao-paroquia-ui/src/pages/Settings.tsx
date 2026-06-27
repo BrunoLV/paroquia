@@ -24,11 +24,13 @@ import {
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
-import { AnoParoquialStatus, Local } from '../api/types';
+import { getOrganizacoes, createOrganizacao, updateOrganizacao } from '../api/organizacoes';
+import { AnoParoquialStatus, Local, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
-import { canManageAnoParoquial, canManageLocais } from '../auth/permissions';
+import { canManageAnoParoquial, canManageLocais, canManageOrganizacoes } from '../auth/permissions';
 import LocalFormModal from './LocalFormModal';
+import OrganizacaoFormModal from './OrganizacaoFormModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -69,12 +71,16 @@ const Settings = () => {
   const queryClient = useQueryClient();
   const isAuthorizedAno = canManageAnoParoquial(user);
   const isAuthorizedLocais = canManageLocais(user);
+  const isAuthorizedOrgs = canManageOrganizacoes(user);
 
   const [tabValue, setTabValue] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
+  const [orgModalOpen, setOrgModalOpen] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
+  const [orgSearch, setOrgSearch] = useState('');
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -152,6 +158,65 @@ const Settings = () => {
     },
   });
 
+  const { data: orgs = [], isLoading: isLoadingOrgs, isError: isErrorOrgs } = useQuery({
+    queryKey: ['organizacoes'],
+    queryFn: getOrganizacoes,
+    enabled: tabValue === 2,
+  });
+
+  const filteredOrgs = orgs.filter((org) => {
+    const query = orgSearch.toLowerCase().trim();
+    if (!query) return true;
+    return (
+      org.nome.toLowerCase().includes(query) ||
+      (org.coordenador && org.coordenador.toLowerCase().includes(query)) ||
+      (org.viceCoordenador && org.viceCoordenador.toLowerCase().includes(query)) ||
+      getOrgTipoLabel(org.tipo).toLowerCase().includes(query)
+    );
+  });
+
+  const createOrgMutation = useMutation({
+    mutationFn: (data: Omit<Organizacao, 'id'>) => createOrganizacao(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Pastoral / Movimento cadastrado com sucesso!');
+      setOrgModalOpen(false);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao cadastrar pastoral/movimento.';
+      showError(errMsg);
+    },
+  });
+
+  const updateOrgMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Omit<Organizacao, 'id'> }) => updateOrganizacao(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Pastoral / Movimento atualizado com sucesso!');
+      setOrgModalOpen(false);
+      setSelectedOrg(null);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao atualizar pastoral/movimento.';
+      showError(errMsg);
+    },
+  });
+
+  const toggleOrgStatusMutation = useMutation({
+    mutationFn: async (org: Organizacao) => {
+      const { id, ...data } = org;
+      return updateOrganizacao(id, { ...data, ativo: !org.ativo });
+    },
+    onSuccess: (_, org) => {
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess(`Pastoral / Movimento ${org.ativo ? 'inativado' : 'ativado'} com sucesso!`);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao alterar status da pastoral/movimento.';
+      showError(errMsg);
+    },
+  });
+
   const getTipoLabel = (tipo: string) => {
     switch (tipo) {
       case 'IGREJA':
@@ -160,6 +225,25 @@ const Settings = () => {
         return 'Salão';
       case 'SALA':
         return 'Sala';
+      case 'OUTRO':
+        return 'Outro';
+      default:
+        return tipo;
+    }
+  };
+
+  const getOrgTipoLabel = (tipo: string) => {
+    switch (tipo) {
+      case 'PASTORAL':
+        return 'Pastoral';
+      case 'MOVIMENTO':
+        return 'Movimento';
+      case 'LAICATO':
+        return 'Laicato';
+      case 'CLERO':
+        return 'Clero';
+      case 'CONSELHO':
+        return 'Conselho';
       case 'OUTRO':
         return 'Outro';
       default:
@@ -224,6 +308,7 @@ const Settings = () => {
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="Abas de Configurações">
             <Tab label="Ano Paroquial" {...a11yProps(0)} sx={{ fontWeight: 600 }} />
             <Tab label="Locais" {...a11yProps(1)} sx={{ fontWeight: 600 }} />
+            <Tab label="Pastorais e Movimentos" {...a11yProps(2)} sx={{ fontWeight: 600 }} />
           </Tabs>
         </Box>
 
@@ -436,6 +521,122 @@ const Settings = () => {
             </Box>
           )}
         </CustomTabPanel>
+
+        <CustomTabPanel value={tabValue} index={2}>
+          {isLoadingOrgs ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress />
+            </Box>
+          ) : isErrorOrgs ? (
+            <Alert severity="error" sx={{ borderRadius: 0 }}>
+              Erro ao carregar pastorais e movimentos.
+            </Alert>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                <TextField
+                  placeholder="Pesquisar por nome, tipo ou coordenador..."
+                  variant="outlined"
+                  size="small"
+                  value={orgSearch}
+                  onChange={(e) => setOrgSearch(e.target.value)}
+                  sx={{ minWidth: 300, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                />
+                {isAuthorizedOrgs && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      setSelectedOrg(null);
+                      setOrgModalOpen(true);
+                    }}
+                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                  >
+                    Nova Pastoral / Movimento
+                  </Button>
+                )}
+              </Box>
+
+              <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <Table>
+                  <TableHead sx={{ bgcolor: 'grey.100' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Coordenador</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Vice-Coordenador</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Contato</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                      {isAuthorizedOrgs && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredOrgs.map((org) => (
+                      <TableRow key={org.id}>
+                        <TableCell sx={{ fontWeight: 500 }}>{org.nome}</TableCell>
+                        <TableCell>{getOrgTipoLabel(org.tipo)}</TableCell>
+                        <TableCell>{org.coordenador || '-'}</TableCell>
+                        <TableCell>{org.viceCoordenador || '-'}</TableCell>
+                        <TableCell>{org.contato || '-'}</TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              display: 'inline-block',
+                              px: 1,
+                              py: 0.5,
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              color: org.ativo ? '#2e7d32' : '#c62828',
+                              bgcolor: org.ativo ? '#e8f5e9' : '#ffebee',
+                            }}
+                          >
+                            {org.ativo ? 'Ativo' : 'Inativo'}
+                          </Box>
+                        </TableCell>
+                        {isAuthorizedOrgs && (
+                          <TableCell align="right">
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => {
+                                  setSelectedOrg(org);
+                                  setOrgModalOpen(true);
+                                }}
+                                disabled={toggleOrgStatusMutation.isPending}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color={org.ativo ? 'error' : 'primary'}
+                                size="small"
+                                onClick={() => toggleOrgStatusMutation.mutate(org)}
+                                disabled={toggleOrgStatusMutation.isPending}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                {org.ativo ? 'Inativar' : 'Ativar'}
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                    {filteredOrgs.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={isAuthorizedOrgs ? 7 : 6} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                          Nenhuma pastoral ou movimento encontrado.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+        </CustomTabPanel>
       </Box>
 
       {/* Confirmation Modal */}
@@ -478,6 +679,23 @@ const Settings = () => {
         }}
         local={selectedLocal}
         isPending={createLocalMutation.isPending || updateLocalMutation.isPending}
+      />
+
+      <OrganizacaoFormModal
+        open={orgModalOpen}
+        onClose={() => {
+          setOrgModalOpen(false);
+          setSelectedOrg(null);
+        }}
+        onSave={(data) => {
+          if (selectedOrg) {
+            updateOrgMutation.mutate({ id: selectedOrg.id, data });
+          } else {
+            createOrgMutation.mutate(data);
+          }
+        }}
+        organizacao={selectedOrg}
+        isPending={createOrgMutation.isPending || updateOrgMutation.isPending}
       />
     </Container>
   );
