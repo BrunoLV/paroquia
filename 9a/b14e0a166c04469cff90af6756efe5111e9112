@@ -1,0 +1,4 @@
+Task: Escrever migração de banco de dados Flyway V036__add_coordenadores_to_organizacoes.sql
+Changes: Created SQL migration file V036__add_coordenadores_to_organizacoes.sql adding columns coordenador and vice_coordenador.
+Files: gestao-paroquia/app/src/main/resources/db/migration/V036__add_coordenadores_to_organizacoes.sql
+Why: To persist coordinator and vice-coordinator information for pastorals and movements.
