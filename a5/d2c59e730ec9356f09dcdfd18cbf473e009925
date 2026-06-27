@@ -1,0 +1,4 @@
+Task: Expor na API de Organizações o Coordenador e Vice-Coordenador resolvidos
+Changes: Injected UsuarioJpaRepository into OrganizacaoRepositoryImpl. Updated toDomain mapper to query active coordinator/vice-coordinator users and map their decrypted names into the Organizacao model, with a fallback to raw text columns. Created OrganizacaoDynamicResolverIntegrationTest.
+Files: OrganizacaoRepositoryImpl.java, OrganizacaoDynamicResolverIntegrationTest.java
+Why: Render active real users as coordinators instead of static text fields, keeping names encrypted at rest.
