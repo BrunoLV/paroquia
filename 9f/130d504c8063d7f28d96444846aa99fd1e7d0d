@@ -1,0 +1,4 @@
+Task: Atualizar tipo Organization no types.ts
+Changes: Added coordenador and viceCoordenador properties as optional string/null to the Organizacao (types.ts) and Organization (permissions.ts) interfaces.
+Files: types.ts, permissions.ts
+Why: Align the frontend type model with the updated backend DTO payload.
