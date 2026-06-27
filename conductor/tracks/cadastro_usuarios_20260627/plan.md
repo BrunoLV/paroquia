@@ -3,9 +3,9 @@
 ## Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)
 - [x] Task: Escrever migração de banco de dados Flyway `V037__add_cadastro_fields_to_usuarios.sql` [9e3079c]
     - [x] Adicionar colunas `nome` (VARCHAR), `telefone` (VARCHAR), `data_nascimento` (VARCHAR - para suportar valor criptografado) à tabela `calendario.usuarios`
-- [ ] Task: Desenvolver o mecanismo de criptografia de dados JPA (`AttributeConverter`)
-    - [ ] Criar classe helper de criptografia simétrica (AES) utilizando uma chave secreta injetada por propriedade
-    - [ ] Criar conversores JPA para criptografia de String (`EncryptedStringConverter`) e Data (`EncryptedLocalDateConverter`)
+- [x] Task: Desenvolver o mecanismo de criptografia de dados JPA (`AttributeConverter`) [deef3fa]
+    - [x] Criar classe helper de criptografia simétrica (AES) utilizando uma chave secreta injetada por propriedade
+    - [x] Criar conversores JPA para criptografia de String (`EncryptedStringConverter`) e Data (`EncryptedLocalDateConverter`)
 - [ ] Task: Atualizar o modelo de domínio `Usuario` e entidade `UsuarioEntity` no backend
     - [ ] Adicionar os campos anotados com `@Convert` para aplicar os conversores de criptografia nas colunas correspondentes
 - [ ] Task: Desenvolver o endpoint de registro público `/api/v1/usuarios/registrar` (permitAll)
