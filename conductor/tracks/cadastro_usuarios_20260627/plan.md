@@ -12,8 +12,8 @@
     - [x] Criar DTO `RegistrarUsuarioRequest` (com campos: nome, username, password, telefone, dataNascimento e solicitações de organizações id opcionais)
     - [x] Permitir requisição POST sem autenticação no `SecurityConfig.java`
     - [x] Implementar caso de uso `RegistrarUsuarioUseCase` para criar o usuário desabilitado e salvar na tabela de usuários
-- [ ] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test`
-    - [ ] Testes em `UsuarioServiceTest` e `UsuarioControllerTest` validando cadastro desabilitado e liberação de endpoint sem autenticação
+- [x] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test` [3755126]
+    - [x] Testes em `UsuarioServiceTest` e `UsuarioControllerTest` validando cadastro desabilitado e liberação de endpoint sem autenticação
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)' (Protocol in workflow.md)
 
 ## Phase 2: User Approval, Member Linking & Role Governance (TDD)
