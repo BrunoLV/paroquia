@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 
 @Repository
@@ -21,16 +22,19 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     private final MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
     private final UsuarioJpaRepository usuarioRepository;
+    private final MembroJpaRepository membroRepository;
 
     public OrganizacaoRepositoryImpl(
             OrganizacaoJpaRepository organizacaoJpaRepository,
             MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository,
             EventoJpaRepository eventoJpaRepository,
-            UsuarioJpaRepository usuarioRepository) {
+            UsuarioJpaRepository usuarioRepository,
+            MembroJpaRepository membroRepository) {
         this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.membroOrganizacaoJpaRepository = membroOrganizacaoJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.membroRepository = membroRepository;
     }
 
     @Override
@@ -89,8 +93,17 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 
     private String resolveCoordinatorName(UUID orgId, String papel, String fallback) {
         return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(orgId, papel)
-                .flatMap(m -> usuarioRepository.findById(m.getUsuarioId()))
-                .map(u -> u.getNome())
+                .map(m -> {
+                    String name = usuarioRepository.findById(m.getUsuarioId())
+                            .map(u -> u.getNome())
+                            .orElse(null);
+                    if (name != null && !name.trim().isEmpty()) {
+                        return name;
+                    }
+                    return membroRepository.findByUsuarioId(m.getUsuarioId())
+                            .map(me -> me.getNomeCompleto())
+                            .orElse(fallback);
+                })
                 .orElse(fallback);
     }
 }

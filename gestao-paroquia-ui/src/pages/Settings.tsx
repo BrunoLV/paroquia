@@ -26,11 +26,12 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  OutlinedInput,
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
 import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
-import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership, Usuario, AddMembershipRequest } from '../api/usuarios';
+import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership, Usuario, AddMembershipRequest, registrarUsuario, RegistrarUsuarioRequest } from '../api/usuarios';
 import { AnoParoquialStatus, Local, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
@@ -99,6 +100,15 @@ const Settings = () => {
   const [isOrgMembersModalOpen, setIsOrgMembersModalOpen] = useState(false);
   const [newOrgMemberUserId, setNewOrgMemberUserId] = useState('');
   const [newOrgMemberPapel, setNewOrgMemberPapel] = useState('');
+
+  // Admin user registration states
+  const [isAdminRegisterModalOpen, setIsAdminRegisterModalOpen] = useState(false);
+  const [adminRegisterNome, setAdminRegisterNome] = useState('');
+  const [adminRegisterUsername, setAdminRegisterUsername] = useState('');
+  const [adminRegisterPassword, setAdminRegisterPassword] = useState('');
+  const [adminRegisterTelefone, setAdminRegisterTelefone] = useState('');
+  const [adminRegisterDataNascimento, setAdminRegisterDataNascimento] = useState('');
+  const [adminRegisterSelectedOrgs, setAdminRegisterSelectedOrgs] = useState<string[]>([]);
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -270,6 +280,27 @@ const Settings = () => {
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao remover membro.';
+      showError(errMsg);
+    },
+  });
+
+  const registerUserMutation = useMutation({
+    mutationFn: (request: RegistrarUsuarioRequest) => registrarUsuario(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      showSuccess('Membro cadastrado com sucesso!');
+      setIsAdminRegisterModalOpen(false);
+      // Reset fields
+      setAdminRegisterNome('');
+      setAdminRegisterUsername('');
+      setAdminRegisterPassword('');
+      setAdminRegisterTelefone('');
+      setAdminRegisterDataNascimento('');
+      setAdminRegisterSelectedOrgs([]);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao cadastrar membro.';
       showError(errMsg);
     },
   });
@@ -777,6 +808,18 @@ const Settings = () => {
               </Alert>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {user && user.roles.some(r => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => setIsAdminRegisterModalOpen(true)}
+                      sx={{ borderRadius: 0, fontWeight: 600 }}
+                    >
+                      Cadastrar Usuário
+                    </Button>
+                  </Box>
+                )}
                 <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                   <Table>
                     <TableHead sx={{ bgcolor: 'grey.100' }}>
@@ -1147,6 +1190,145 @@ const Settings = () => {
             color="inherit"
           >
             Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Admin User Registration Dialog */}
+      <Dialog
+        open={isAdminRegisterModalOpen}
+        onClose={() => {
+          setIsAdminRegisterModalOpen(false);
+          setAdminRegisterNome('');
+          setAdminRegisterUsername('');
+          setAdminRegisterPassword('');
+          setAdminRegisterTelefone('');
+          setAdminRegisterDataNascimento('');
+          setAdminRegisterSelectedOrgs([]);
+        }}
+        maxWidth="sm"
+        fullWidth
+        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          Cadastrar Novo Usuário / Membro
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="adminRegisterNome"
+              label="Nome Completo"
+              name="adminRegisterNome"
+              value={adminRegisterNome}
+              onChange={(e) => setAdminRegisterNome(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="adminRegisterUsername"
+              label="E-mail"
+              name="adminRegisterUsername"
+              type="email"
+              value={adminRegisterUsername}
+              onChange={(e) => setAdminRegisterUsername(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="adminRegisterPassword"
+              label="Senha"
+              type="password"
+              id="adminRegisterPassword"
+              value={adminRegisterPassword}
+              onChange={(e) => setAdminRegisterPassword(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="adminRegisterTelefone"
+              label="Telefone"
+              name="adminRegisterTelefone"
+              value={adminRegisterTelefone}
+              onChange={(e) => setAdminRegisterTelefone(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="adminRegisterDataNascimento"
+              label="Data de Nascimento"
+              name="adminRegisterDataNascimento"
+              type="date"
+              slotProps={{ inputLabel: { shrink: true } }}
+              value={adminRegisterDataNascimento}
+              onChange={(e) => setAdminRegisterDataNascimento(e.target.value)}
+            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="admin-reg-orgs-label">Pastorais / Movimentos Iniciais</InputLabel>
+              <Select
+                labelId="admin-reg-orgs-label"
+                id="admin-reg-orgs"
+                multiple
+                value={adminRegisterSelectedOrgs}
+                onChange={(e) => setAdminRegisterSelectedOrgs(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                input={<OutlinedInput label="Pastorais / Movimentos Iniciais" />}
+              >
+                {orgs
+                  .filter((o) => o.ativo)
+                  .map((o) => (
+                    <MenuItem key={o.id} value={o.id}>
+                      {o.nome} ({getOrgTipoLabel(o.tipo)})
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setIsAdminRegisterModalOpen(false);
+              setAdminRegisterNome('');
+              setAdminRegisterUsername('');
+              setAdminRegisterPassword('');
+              setAdminRegisterTelefone('');
+              setAdminRegisterDataNascimento('');
+              setAdminRegisterSelectedOrgs([]);
+            }}
+            color="inherit"
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={
+              !adminRegisterNome.trim() ||
+              !adminRegisterUsername.trim() ||
+              !adminRegisterPassword ||
+              !adminRegisterTelefone.trim() ||
+              !adminRegisterDataNascimento ||
+              registerUserMutation.isPending
+            }
+            onClick={() => {
+              registerUserMutation.mutate({
+                nome: adminRegisterNome,
+                username: adminRegisterUsername,
+                password: adminRegisterPassword,
+                telefone: adminRegisterTelefone,
+                dataNascimento: adminRegisterDataNascimento,
+                organizacoesSolicitadas: adminRegisterSelectedOrgs
+              });
+            }}
+            sx={{ borderRadius: 0, fontWeight: 600 }}
+          >
+            {registerUserMutation.isPending ? 'Cadastrando...' : 'Cadastrar'}
           </Button>
         </DialogActions>
       </Dialog>

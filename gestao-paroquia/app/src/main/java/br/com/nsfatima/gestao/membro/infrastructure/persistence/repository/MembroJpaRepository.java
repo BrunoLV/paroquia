@@ -22,4 +22,6 @@ public interface MembroJpaRepository extends JpaRepository<MembroEntity, UUID> {
             @Param("nome") String nome,
             @Param("ativo") Boolean ativo,
             Pageable pageable);
+
+    java.util.Optional<MembroEntity> findByUsuarioId(UUID usuarioId);
 }

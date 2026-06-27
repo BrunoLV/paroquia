@@ -46,4 +46,19 @@ export const addMembership = async (userId: string, request: AddMembershipReques
 export const removeMembership = async (userId: string, membershipId: string): Promise<void> => {
   await apiClient.delete(`/usuarios/${userId}/membros/${membershipId}`);
 };
+
+export interface RegistrarUsuarioRequest {
+  nome: string;
+  username: string;
+  password?: string;
+  telefone: string;
+  dataNascimento: string;
+  organizacoesSolicitadas?: string[];
+}
+
+export const registrarUsuario = async (request: RegistrarUsuarioRequest): Promise<string> => {
+  const response = await apiClient.post<string>('/usuarios/registrar', request);
+  return response.data;
+};
+
 export default apiClient;

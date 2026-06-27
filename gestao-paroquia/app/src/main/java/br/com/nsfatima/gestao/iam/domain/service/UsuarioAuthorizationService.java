@@ -81,7 +81,7 @@ public class UsuarioAuthorizationService {
 
     private boolean isAdmin(Authentication auth) {
         return auth.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
     }
 
     private UUID getActorId(Authentication auth) {

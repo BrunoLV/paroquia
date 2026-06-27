@@ -7,6 +7,8 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Memb
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,11 @@ public class RegistrarUsuarioUseCase {
             throw new IllegalArgumentException("Username/E-mail ja cadastrado: " + request.username());
         }
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrParoco = auth != null && auth.isAuthenticated() && 
+            auth.getAuthorities().stream().anyMatch(a -> 
+                "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
+
         UsuarioEntity user = new UsuarioEntity();
         UUID userId = UUID.randomUUID();
         user.setId(userId);
@@ -45,7 +52,7 @@ public class RegistrarUsuarioUseCase {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setTelefone(request.telefone());
         user.setDataNascimento(request.dataNascimento());
-        user.setEnabled(false); // Pending approval
+        user.setEnabled(isAdminOrParoco); // Active directly if registered by admin
         user.setRoles("ROLE_USER"); // Standard non-admin role
 
         usuarioRepository.save(user);
@@ -61,7 +68,7 @@ public class RegistrarUsuarioUseCase {
                     membership.setOrganizacaoId(org.getId());
                     membership.setTipoOrganizacao(org.getTipo().name());
                     membership.setPapel("MEMBRO");
-                    membership.setAtivo(false); // Inactive/Pending approval
+                    membership.setAtivo(isAdminOrParoco); // Active directly if registered by admin
                     membershipRepository.save(membership);
                 }
             }
