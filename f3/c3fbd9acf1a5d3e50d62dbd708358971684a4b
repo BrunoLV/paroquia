@@ -1,0 +1,4 @@
+Task: Criar cliente de API para organizações em src/api/organizacoes.ts com testes/mocks
+Changes: Implemented axios client calls in src/api/organizacoes.ts and covered them with unit tests in src/api/organizacoes.test.ts.
+Files: src/api/organizacoes.ts, src/api/organizacoes.test.ts
+Why: Standardize communication with the backend /api/v1/organizacoes endpoint.
