@@ -1,0 +1,4 @@
+Task: Desenvolver o mecanismo de criptografia de dados JPA (AttributeConverter)
+Changes: Implemented CryptoUtils utility with AES/CBC/PKCS5Padding encryption and SHA-256 key normalization. Created EncryptedStringConverter and EncryptedLocalDateConverter classes and covered them with unit tests.
+Files: CryptoUtils.java, EncryptedStringConverter.java, EncryptedLocalDateConverter.java, CryptoConverterTest.java
+Why: Secure PII (Name, Phone, Birthdate) in database at rest.
