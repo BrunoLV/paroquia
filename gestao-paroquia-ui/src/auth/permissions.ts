@@ -3,6 +3,8 @@ export interface Organization {
   nome: string;
   tipo: string;
   contato: string | null;
+  coordenador?: string | null;
+  viceCoordenador?: string | null;
   ativo: boolean;
 }
 
