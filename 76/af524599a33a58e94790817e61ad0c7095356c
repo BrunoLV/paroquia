@@ -1,0 +1,4 @@
+Phase: Phase 3: UI Implementation (Sign Up, User Management Aba & Vínculos)
+Automated Tests: ./gradlew test (backend) and CI=true npm test (frontend) passed successfully.
+Manual Verification: Verified user registration UI flow, user approval list, user memberships, and pastoral members list/addition dialog.
+User Confirmation: Yes ('sim')
