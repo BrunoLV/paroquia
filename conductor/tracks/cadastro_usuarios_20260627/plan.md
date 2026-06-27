@@ -16,7 +16,7 @@
     - [x] Testes em `UsuarioServiceTest` e `UsuarioControllerTest` validando cadastro desabilitado e liberação de endpoint sem autenticação
 - [x] Task: Conductor - User Manual Verification 'Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)' (Protocol in workflow.md)
 
-## Phase 2: User Approval, Member Linking & Role Governance (TDD)
+## Phase 2: User Approval, Member Linking & Role Governance (TDD) [checkpoint: 80efaf0]
 - [x] Task: Implementar endpoint de aprovação de usuários `PUT /api/v1/usuarios/{id}/approve` [2761967]
     - [x] Restringir acesso a `ADMIN`, `CLERO_PAROCO` e `CONSELHO_COORDENADOR`
     - [x] Ativar usuário (`enabled = true`) e associar papel básico `ROLE_USER`
