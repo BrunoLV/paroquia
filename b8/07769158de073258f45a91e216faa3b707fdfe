@@ -1,0 +1,4 @@
+Task: Integrar a aba Pastorais e Movimentos no componente Settings.tsx / Implementar busca e filtragem local na listagem
+Changes: Added the third settings tab for pastorais/movimentos. Linked it with getOrganizacoes, createOrganizacao, updateOrganizacao, and toggle status mutations. Integrated local search filtering by name, coordinator, and type.
+Files: Settings.tsx
+Why: Provide the complete administrative interface for church pastorals and movements.
