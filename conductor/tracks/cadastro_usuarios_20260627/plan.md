@@ -1,8 +1,8 @@
 # Implementation Plan: Cadastro e Vínculo de Usuários
 
 ## Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)
-- [ ] Task: Escrever migração de banco de dados Flyway `V037__add_cadastro_fields_to_usuarios.sql`
-    - [ ] Adicionar colunas `nome` (VARCHAR), `telefone` (VARCHAR), `data_nascimento` (VARCHAR - para suportar valor criptografado) à tabela `calendario.usuarios`
+- [x] Task: Escrever migração de banco de dados Flyway `V037__add_cadastro_fields_to_usuarios.sql` [9e3079c]
+    - [x] Adicionar colunas `nome` (VARCHAR), `telefone` (VARCHAR), `data_nascimento` (VARCHAR - para suportar valor criptografado) à tabela `calendario.usuarios`
 - [ ] Task: Desenvolver o mecanismo de criptografia de dados JPA (`AttributeConverter`)
     - [ ] Criar classe helper de criptografia simétrica (AES) utilizando uma chave secreta injetada por propriedade
     - [ ] Criar conversores JPA para criptografia de String (`EncryptedStringConverter`) e Data (`EncryptedLocalDateConverter`)
