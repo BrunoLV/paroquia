@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.AddMembershipRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.RegistrarUsuarioRequest;
+import br.com.nsfatima.gestao.iam.application.usecase.RegistrarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.api.v1.dto.CreateUsuarioRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.MembershipResponse;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
@@ -34,6 +36,7 @@ public class UsuarioController {
     private final RemoveMembershipUseCase removeMembershipUseCase;
     private final ListMembershipsUseCase listMembershipsUseCase;
     private final UsuarioAuthorizationService authorizationService;
+    private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
 
     public UsuarioController(
             ListUsuariosUseCase listUsuariosUseCase,
@@ -43,7 +46,8 @@ public class UsuarioController {
             AddMembershipUseCase addMembershipUseCase,
             RemoveMembershipUseCase removeMembershipUseCase,
             ListMembershipsUseCase listMembershipsUseCase,
-            UsuarioAuthorizationService authorizationService) {
+            UsuarioAuthorizationService authorizationService,
+            RegistrarUsuarioUseCase registrarUsuarioUseCase) {
         this.listUsuariosUseCase = listUsuariosUseCase;
         this.getUsuarioUseCase = getUsuarioUseCase;
         this.createUsuarioUseCase = createUsuarioUseCase;
@@ -52,6 +56,7 @@ public class UsuarioController {
         this.removeMembershipUseCase = removeMembershipUseCase;
         this.listMembershipsUseCase = listMembershipsUseCase;
         this.authorizationService = authorizationService;
+        this.registrarUsuarioUseCase = registrarUsuarioUseCase;
     }
 
     @GetMapping
@@ -77,6 +82,13 @@ public class UsuarioController {
      */
     public UUID create(@RequestBody @Valid CreateUsuarioRequest request) {
         return createUsuarioUseCase.execute(request.username(), request.password());
+    }
+
+    @PostMapping("/registrar")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Registra um novo usuário com campos adicionais de cadastro (Público)")
+    public UUID registrar(@RequestBody @Valid RegistrarUsuarioRequest request) {
+        return registrarUsuarioUseCase.execute(request);
     }
 
     @GetMapping("/{id}")
