@@ -29,7 +29,7 @@ public class OrganizacaoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new organization", description = "Only administrators can create organizations.")
     /**
      * Registra uma nova organização paroquial (pastoral, movimento, etc.) no sistema para possibilitar a gestão de seus membros e atividades vinculadas.
@@ -40,13 +40,15 @@ public class OrganizacaoController {
         Organizacao org = organizacaoService.createOrganization(
             request.nome(),
             request.tipo(),
-            request.contato()
+            request.contato(),
+            request.coordenador(),
+            request.viceCoordenador()
         );
         return toResponse(org);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing organization", description = "Only administrators can update organizations.")
     /**
      * Atualiza as informações de uma organização existente para manter os dados de contato, tipo e status de atividade devidamente sincronizados.
@@ -59,6 +61,8 @@ public class OrganizacaoController {
             request.nome(),
             request.tipo(),
             request.contato(),
+            request.coordenador(),
+            request.viceCoordenador(),
             request.ativo()
         );
         return toResponse(org);
@@ -66,7 +70,7 @@ public class OrganizacaoController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. Cannot delete organizations with active dependencies.")
     /**
      * Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências ativas que impeçam a exclusão segura.
@@ -110,6 +114,8 @@ public class OrganizacaoController {
             domain.getNome(),
             domain.getTipo(),
             domain.getContato(),
+            domain.getCoordenador(),
+            domain.getViceCoordenador(),
             domain.isAtivo()
         );
     }

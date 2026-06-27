@@ -49,6 +49,8 @@ public class AuthController {
                 membership.organizationName(),
                 TipoOrganizacao.valueOf(membership.organizationType()),
                 membership.organizationContact(),
+                membership.organizationCoordinator(),
+                membership.organizationViceCoordinator(),
                 membership.organizationActive());
     }
 }

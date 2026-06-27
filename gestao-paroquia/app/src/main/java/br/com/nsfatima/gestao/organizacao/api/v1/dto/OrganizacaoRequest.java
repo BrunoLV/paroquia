@@ -21,6 +21,14 @@ public record OrganizacaoRequest(
     @Size(max = 255, message = "Contact must not exceed 255 characters")
     String contato,
 
+    @Schema(description = "Coordinator name", example = "João Silva")
+    @Size(max = 255, message = "Coordinator name must not exceed 255 characters")
+    String coordenador,
+
+    @Schema(description = "Vice-coordinator name", example = "Maria Santos")
+    @Size(max = 255, message = "Vice-coordinator name must not exceed 255 characters")
+    String viceCoordenador,
+
     @Schema(description = "Whether the organization is active", example = "true")
     boolean ativo
 ) {

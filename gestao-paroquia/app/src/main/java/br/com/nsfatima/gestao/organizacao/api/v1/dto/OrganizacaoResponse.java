@@ -14,6 +14,10 @@ public record OrganizacaoResponse(
     TipoOrganizacao tipo,
     @Schema(description = "Contact information")
     String contato,
+    @Schema(description = "Coordinator name")
+    String coordenador,
+    @Schema(description = "Vice-coordinator name")
+    String viceCoordenador,
     @Schema(description = "Whether the organization is active")
     boolean ativo
 ) {

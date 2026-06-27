@@ -24,7 +24,7 @@ public class ExternalMembershipReader {
     public List<Membership> findActiveMemberships(UUID userId) {
         return jdbcTemplate.query(
                 """
-                        SELECT m.organizacao_id, m.tipo_organizacao, m.papel, o.nome as organizacao_nome, o.contato as organizacao_contato, o.ativo as organizacao_ativo
+                        SELECT m.organizacao_id, m.tipo_organizacao, m.papel, o.nome as organizacao_nome, o.contato as organizacao_contato, o.coordenador as organizacao_coordenador, o.vice_coordenador as organizacao_vice_coordenador, o.ativo as organizacao_ativo
                         FROM calendario.membros_organizacao m
                         JOIN calendario.organizacoes o ON o.id = m.organizacao_id
                         WHERE m.usuario_id = ?
@@ -53,6 +53,8 @@ public class ExternalMembershipReader {
                 rs.getString("organizacao_nome"),
                 rs.getString("tipo_organizacao"),
                 rs.getString("organizacao_contato"),
+                rs.getString("organizacao_coordenador"),
+                rs.getString("organizacao_vice_coordenador"),
                 rs.getBoolean("organizacao_ativo"),
                 rs.getString("papel"));
     }
@@ -62,11 +64,13 @@ public class ExternalMembershipReader {
             String organizationName,
             String organizationType,
             String organizationContact,
+            String organizationCoordinator,
+            String organizationViceCoordinator,
             boolean organizationActive,
             String role) {
 
         public Membership(UUID organizationId, String organizationType, String role) {
-            this(organizationId, "Organizacao", organizationType, null, true, role);
+            this(organizationId, "Organizacao", organizationType, null, null, null, true, role);
         }
 
         public String authority() {
