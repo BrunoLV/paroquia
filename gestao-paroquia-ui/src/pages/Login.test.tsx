@@ -128,3 +128,59 @@ test('shows toast validation errors when submitting empty form', async () => {
   expect(mockedApiClient.post).not.toHaveBeenCalled();
 });
 
+test('toggles to signup form and submits registration', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null }); // for auth check
+  mockedApiClient.get.mockResolvedValueOnce({ data: [] }); // for organizations list
+  mockedApiClient.post.mockResolvedValueOnce({ data: 'new-user-uuid' }); // for signup post
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Login />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  // Toggle to register form
+  const registerLink = screen.getByRole('button', { name: /Não tem uma conta\? Cadastre-se/i });
+  await act(async () => {
+    fireEvent.click(registerLink);
+  });
+
+  expect(screen.getByLabelText(/Nome Completo/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Senha/i, { selector: '#signup-password' })).toBeInTheDocument();
+  expect(screen.getByLabelText(/Confirmar Senha/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Telefone/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Data de Nascimento/i)).toBeInTheDocument();
+
+  fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'João Teste' } });
+  fireEvent.change(screen.getByLabelText(/E-mail/i), { target: { value: 'joao@test.com' } });
+  fireEvent.change(screen.getByLabelText(/Senha/i, { selector: '#signup-password' }), { target: { value: 'pass123' } });
+  fireEvent.change(screen.getByLabelText(/Confirmar Senha/i), { target: { value: 'pass123' } });
+  fireEvent.change(screen.getByLabelText(/Telefone/i), { target: { value: '11999999999' } });
+  fireEvent.change(screen.getByLabelText(/Data de Nascimento/i), { target: { value: '1995-12-10' } });
+
+  const registerSubmitButton = screen.getByRole('button', { name: /Cadastrar/i });
+  await act(async () => {
+    fireEvent.click(registerSubmitButton);
+  });
+
+  expect(mockedApiClient.post).toHaveBeenCalledWith('/usuarios/registrar', {
+    nome: 'João Teste',
+    username: 'joao@test.com',
+    password: 'pass123',
+    telefone: '11999999999',
+    dataNascimento: '1995-12-10',
+    organizacoesSolicitadas: []
+  });
+
+  expect(mockShowSuccess).toHaveBeenCalledWith(
+    'Cadastro solicitado com sucesso! Aguarde a aprovação de um administrador.'
+  );
+});
+
