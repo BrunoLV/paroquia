@@ -21,8 +21,8 @@
     - [x] Escrever casos de teste que validem cada papel
 - [x] Task: Atualizar tipo `Organization` no `types.ts` [9f130d5]
     - [x] Adicionar campos `coordenador` e `viceCoordenador` como opcionais em `Organization` e DTOs correspondentes
-- [ ] Task: Criar cliente de API para organizações em `src/api/organizacoes.ts` com testes/mocks
-    - [ ] Implementar chamadas para buscar listagem, criar, editar e inativar/deletar organizações
+- [x] Task: Criar cliente de API para organizações em `src/api/organizacoes.ts` com testes/mocks [f3c3fbd]
+    - [x] Implementar chamadas para buscar listagem, criar, editar e inativar/deletar organizações
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend API & Permissions Setup (TDD)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend UI Implementation & Settings Tab Integration
