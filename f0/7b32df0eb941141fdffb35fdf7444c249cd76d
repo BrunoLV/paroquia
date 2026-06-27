@@ -1,0 +1,4 @@
+Task: Implementar regras de vínculo e unicidade de coordenação em membros_organizacao
+Changes: Updated AddMembershipUseCase to perform hierarchy checks for Conselho coordinators and Paroco definitions. Implemented unicity rule to inactivate previous active coordinator/vice-coordinator upon assigning a new one. Created unit tests in AddMembershipUseCaseTest.
+Files: MembroOrganizacaoJpaRepository.java, AddMembershipUseCase.java, AddMembershipUseCaseTest.java
+Why: Prevent illegal role assignments and enforce only one active coordinator/vice-coordinator per organization.
