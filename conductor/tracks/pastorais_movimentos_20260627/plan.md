@@ -16,9 +16,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Backend Refactoring (TDD)' (Protocol in workflow.md) 6eb29f3
 
 ## Phase 2: Frontend API & Permissions Setup (TDD)
-- [ ] Task: Criar helper de permissões `canManageOrganizacoes` em `permissions.ts` e seus testes em `permissions.test.ts`
-    - [ ] Implementar `canManageOrganizacoes` retornando verdadeiro para papéis ADMIN, CLERO_PAROCO, CONSELHO_COORDENADOR, CONSELHO_VICE_COORDENADOR e suas variações
-    - [ ] Escrever casos de teste que validem cada papel
+- [x] Task: Criar helper de permissões `canManageOrganizacoes` em `permissions.ts` e seus testes em `permissions.test.ts` [0dc0f32]
+    - [x] Implementar `canManageOrganizacoes` retornando verdadeiro para papéis ADMIN, CLERO_PAROCO, CONSELHO_COORDENADOR, CONSELHO_VICE_COORDENADOR e suas variações
+    - [x] Escrever casos de teste que validem cada papel
 - [ ] Task: Atualizar tipo `Organization` no `types.ts`
     - [ ] Adicionar campos `coordenador` e `viceCoordenador` como opcionais em `Organization` e DTOs correspondentes
 - [ ] Task: Criar cliente de API para organizações em `src/api/organizacoes.ts` com testes/mocks
