@@ -1,0 +1,4 @@
+Task: Escrever testes unitários e de integração no backend e rodar ./gradlew test
+Changes: Added/updated unit tests in OrganizacaoServiceTest and integration tests in OrganizacaoApiIntegrationTest to verify saving, retrieving, and authorizing organizational updates with coordinator columns using the expanded roles list.
+Files: OrganizacaoServiceTest.java, OrganizacaoApiIntegrationTest.java
+Why: Verify that clergy and council coordinators are allowed to write, and that basic roles (USER) are still forbidden.
