@@ -8,10 +8,10 @@
     - [x] Criar conversores JPA para criptografia de String (`EncryptedStringConverter`) e Data (`EncryptedLocalDateConverter`)
 - [x] Task: Atualizar o modelo de domínio `Usuario` e entidade `UsuarioEntity` no backend [ce48d9b]
     - [x] Adicionar os campos anotados com `@Convert` para aplicar os conversores de criptografia nas colunas correspondentes
-- [ ] Task: Desenvolver o endpoint de registro público `/api/v1/usuarios/registrar` (permitAll)
-    - [ ] Criar DTO `RegistrarUsuarioRequest` (com campos: nome, username, password, telefone, dataNascimento e solicitações de organizações id opcionais)
-    - [ ] Permitir requisição POST sem autenticação no `SecurityConfig.java`
-    - [ ] Implementar caso de uso `RegistrarUsuarioUseCase` para criar o usuário desabilitado e salvar na tabela de usuários
+- [x] Task: Desenvolver o endpoint de registro público `/api/v1/usuarios/registrar` (permitAll) [3755126]
+    - [x] Criar DTO `RegistrarUsuarioRequest` (com campos: nome, username, password, telefone, dataNascimento e solicitações de organizações id opcionais)
+    - [x] Permitir requisição POST sem autenticação no `SecurityConfig.java`
+    - [x] Implementar caso de uso `RegistrarUsuarioUseCase` para criar o usuário desabilitado e salvar na tabela de usuários
 - [ ] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test`
     - [ ] Testes em `UsuarioServiceTest` e `UsuarioControllerTest` validando cadastro desabilitado e liberação de endpoint sem autenticação
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)' (Protocol in workflow.md)
