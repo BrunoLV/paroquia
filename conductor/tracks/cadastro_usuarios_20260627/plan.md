@@ -32,9 +32,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: User Approval, Member Linking & Role Governance (TDD)' (Protocol in workflow.md)
 
 ## Phase 3: UI Implementation (Sign Up, User Management Aba & Vínculos)
-- [ ] Task: Implementar opção "Cadastre-se" na tela de login
-    - [ ] Criar formulário público de cadastro no `Login.tsx` (ou redirecionar para `/cadastro`) com campos Nome, E-mail, Senha, Telefone, Data de Nascimento
-    - [ ] Permitir seleção de pastorais/movimentos sugeridos
+- [x] Task: Implementar opção "Cadastre-se" na tela de login [40d3cb4]
+    - [x] Criar formulário público de cadastro no `Login.tsx` (ou redirecionar para `/cadastro`) com campos Nome, E-mail, Senha, Telefone, Data de Nascimento
+    - [x] Permitir seleção de pastorais/movimentos sugeridos
 - [ ] Task: Criar aba "Membros / Usuários" no painel de configurações (`Settings.tsx`)
     - [ ] Listar usuários e exibir status "Pendente" para usuários desabilitados
     - [ ] Disponibilizar botões de aprovação e de vinculação a pastorais
