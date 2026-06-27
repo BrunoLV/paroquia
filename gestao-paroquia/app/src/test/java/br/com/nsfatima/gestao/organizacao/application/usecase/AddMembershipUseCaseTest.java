@@ -1,0 +1,137 @@
+package br.com.nsfatima.gestao.organizacao.application.usecase;
+
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class AddMembershipUseCaseTest {
+
+    private MembroOrganizacaoJpaRepository membershipRepository;
+    private UsuarioJpaRepository usuarioRepository;
+    private AddMembershipUseCase useCase;
+    private SecurityContext originalContext;
+
+    @BeforeEach
+    void setUp() {
+        membershipRepository = mock(MembroOrganizacaoJpaRepository.class);
+        usuarioRepository = mock(UsuarioJpaRepository.class);
+        useCase = new AddMembershipUseCase(membershipRepository, usuarioRepository);
+        originalContext = SecurityContextHolder.getContext();
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.setContext(originalContext);
+    }
+
+    private void mockAuthentication(String... roles) {
+        var authorities = java.util.Arrays.stream(roles)
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+        var principal = new UsuarioDetails(UUID.randomUUID(), "actor", "pass", true, "", List.of());
+        var auth = new UsernamePasswordAuthenticationToken(principal, null, authorities);
+        var context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(context);
+    }
+
+    @Test
+    void shouldInactivatePreviousCoordinatorWhenNewOneIsAdded() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        MembroOrganizacaoEntity existing = new MembroOrganizacaoEntity();
+        existing.setId(UUID.randomUUID());
+        existing.setUsuarioId(UUID.randomUUID());
+        existing.setOrganizacaoId(organizacaoId);
+        existing.setPapel(PapelOrganizacional.COORDENADOR.name());
+        existing.setAtivo(true);
+
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(organizacaoId, PapelOrganizacional.COORDENADOR.name()))
+                .thenReturn(Optional.of(existing));
+
+        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR);
+
+        assertFalse(existing.isAtivo());
+        verify(membershipRepository).save(existing);
+    }
+
+    @Test
+    void shouldDenyCouncilCoordinatorDefinitionWhenNotParocoOrAdmin() {
+        mockAuthentication("ROLE_USER");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        assertThrows(AccessDeniedException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR)
+        );
+    }
+
+    @Test
+    void shouldAllowCouncilCoordinatorDefinitionWhenParocoOrAdmin() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+        when(membershipRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        assertDoesNotThrow(() ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR)
+        );
+    }
+
+    @Test
+    void shouldDenyParocoDefinitionWhenNotAdmin() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        assertThrows(AccessDeniedException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CLERO, PapelOrganizacional.PAROCO)
+        );
+    }
+
+    @Test
+    void shouldAllowParocoDefinitionWhenAdmin() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+        when(membershipRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        assertDoesNotThrow(() ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CLERO, PapelOrganizacional.PAROCO)
+        );
+    }
+}
