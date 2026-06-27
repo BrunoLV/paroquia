@@ -14,7 +14,7 @@
     - [x] Implementar caso de uso `RegistrarUsuarioUseCase` para criar o usuário desabilitado e salvar na tabela de usuários
 - [x] Task: Escrever testes unitários e de integração no backend e rodar `./gradlew test` [3755126]
     - [x] Testes em `UsuarioServiceTest` e `UsuarioControllerTest` validando cadastro desabilitado e liberação de endpoint sem autenticação
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: DB Migration, Security Converters & Public Sign-Up (TDD)' (Protocol in workflow.md)
 
 ## Phase 2: User Approval, Member Linking & Role Governance (TDD)
 - [ ] Task: Implementar endpoint de aprovação de usuários `PUT /api/v1/usuarios/{id}/approve`
