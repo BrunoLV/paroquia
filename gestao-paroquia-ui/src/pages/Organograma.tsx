@@ -122,6 +122,7 @@ const Organograma: React.FC = () => {
   };
 
   const renderOrgNode = (org: OrganogramaNode) => {
+    if (!org) return null;
     const isExpanded = expandedMap[org.id] ?? false;
     const members = org.children || [];
 
@@ -132,6 +133,7 @@ const Organograma: React.FC = () => {
     // Filtrar os membros da lista para que não fiquem repetidos abaixo
     const ordinaryMembers = members.filter(
       m =>
+        m &&
         !equalsIgnoreCase(m.label, coord) &&
         !equalsIgnoreCase(m.label, vice)
     );
@@ -256,9 +258,10 @@ const Organograma: React.FC = () => {
   }
 
   // Separar clero, conselho e pastorais
-  const cleroNode = organograma.children.find(c => c.subtype === 'CLERO');
-  const conselhoNode = organograma.children.find(c => c.subtype === 'CONSELHO');
-  const pastoraisGrupoNode = organograma.children.find(c => c.id === 'grupo-pastorais');
+  const children = organograma?.children || [];
+  const cleroNode = children.find(c => c.subtype === 'CLERO');
+  const conselhoNode = children.find(c => c.subtype === 'CONSELHO');
+  const pastoraisGrupoNode = children.find(c => c.id === 'grupo-pastorais');
 
   return (
     <Box sx={{ mt: 3, mb: 4, px: { xs: 2, md: 4 } }}>
