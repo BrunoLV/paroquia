@@ -38,7 +38,13 @@ VALUES
     ('10000000-0000-0000-0000-000000000002', 'maria.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0),
     ('10000000-0000-0000-0000-000000000003', 'joao.liturgia', '{noop}senha123', TRUE, 'MEMBRO_PASTORAL', 0),
     ('10000000-0000-0000-0000-000000000004', 'pedro.liturgia', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0),
-    ('10000000-0000-0000-0000-000000000005', 'maria.conselho', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0);
+    ('10000000-0000-0000-0000-000000000005', 'maria.conselho', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0),
+    ('10000000-0000-0000-0000-000000000007', 'padre.joao', '{noop}senha123', TRUE, 'COORDENADOR_CLERO', 0),
+    ('10000000-0000-0000-0000-000000000008', 'jose.conselho', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0),
+    ('10000000-0000-0000-0000-000000000009', 'ana.conselho', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0),
+    ('10000000-0000-0000-0000-000000000010', 'lucia.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0),
+    ('10000000-0000-0000-0000-000000000011', 'carlos.catequese', '{noop}senha123', TRUE, 'MEMBRO_PASTORAL', 0),
+    ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0);
 
 -- Members (Membros)
 INSERT INTO calendario.membros (id, nome_completo, email, telefone, usuario_id, ativo, version)
@@ -47,16 +53,28 @@ VALUES
     ('20000000-0000-0000-0000-000000000002', 'Maria Oliveira', 'maria.catequese@gmail.com', '11999990002', '10000000-0000-0000-0000-000000000002', TRUE, 0),
     ('20000000-0000-0000-0000-000000000003', 'João Santos', 'joao.liturgia@outlook.com', '11999990003', '10000000-0000-0000-0000-000000000003', TRUE, 0),
     ('20000000-0000-0000-0000-000000000004', 'Pedro Junior', 'pedro.liturgia@bol.com.br', '11999990004', '10000000-0000-0000-0000-000000000004', TRUE, 0),
-    ('20000000-0000-0000-0000-000000000005', 'Maria do Conselho', 'conselho@nsfatima.com', '11999990005', '10000000-0000-0000-0000-000000000005', TRUE, 0);
+    ('20000000-0000-0000-0000-000000000005', 'Maria do Conselho', 'conselho@nsfatima.com', '11999990005', '10000000-0000-0000-0000-000000000005', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000007', 'João Batista (Vigário)', 'padre.joao@nsfatima.com', '11999990007', '10000000-0000-0000-0000-000000000007', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000008', 'José do Conselho', 'jose.conselho@nsfatima.com', '11999990008', '10000000-0000-0000-0000-000000000008', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000009', 'Ana do Conselho', 'ana.conselho@nsfatima.com', '11999990009', '10000000-0000-0000-0000-000000000009', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000010', 'Lúcia de Oliveira', 'lucia.catequese@gmail.com', '11999990010', '10000000-0000-0000-0000-000000000010', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000011', 'Carlos de Oliveira', 'carlos.catequese@gmail.com', '11999990011', '10000000-0000-0000-0000-000000000011', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000012', 'Lucas dos Santos', 'lucas.juventude@gmail.com', '11999990012', '10000000-0000-0000-0000-000000000012', TRUE, 0);
 
 -- Organizational Memberships
 INSERT INTO calendario.membros_organizacao (id, usuario_id, organizacao_id, tipo_organizacao, papel, ativo, version)
 VALUES
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000dd', 'CLERO', 'COORDENADOR', TRUE, 0),
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'COORDENADOR', TRUE, 0),
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'MEMBRO', TRUE, 0),
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'COORDENADOR', TRUE, 0),
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'COORDENADOR', TRUE, 0);
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000dd', 'CLERO', 'paroco', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-0000000000dd', 'CLERO', 'vigario', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'vice-coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'secretario', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'vice-coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'membro', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'vice-coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'membro', TRUE, 0);
 
 -- Years (Anos Paroquiais)
 INSERT INTO calendario.anos_paroquiais (ano, status, data_fechamento_utc)

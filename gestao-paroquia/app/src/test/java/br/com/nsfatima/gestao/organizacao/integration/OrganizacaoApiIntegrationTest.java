@@ -100,4 +100,15 @@ class OrganizacaoApiIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void shouldRetrieveOrganogramaTree() throws Exception {
+        mockMvc.perform(get("/api/v1/organizacoes/organograma")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("root"))
+                .andExpect(jsonPath("$.type").value("PAROQUIA"))
+                .andExpect(jsonPath("$.children").isArray());
+    }
 }

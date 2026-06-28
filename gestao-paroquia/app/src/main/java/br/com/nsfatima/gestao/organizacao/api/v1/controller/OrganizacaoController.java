@@ -3,9 +3,11 @@ package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ListOrganizacaoMembrosUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.GetOrganogramaUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,12 +27,15 @@ public class OrganizacaoController {
 
     private final OrganizacaoService organizacaoService;
     private final ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase;
+    private final GetOrganogramaUseCase getOrganogramaUseCase;
 
     public OrganizacaoController(
             OrganizacaoService organizacaoService,
-            ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase) {
+            ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase,
+            GetOrganogramaUseCase getOrganogramaUseCase) {
         this.organizacaoService = organizacaoService;
         this.listOrganizacaoMembrosUseCase = listOrganizacaoMembrosUseCase;
+        this.getOrganogramaUseCase = getOrganogramaUseCase;
     }
 
     @PostMapping
@@ -118,6 +123,12 @@ public class OrganizacaoController {
     @Operation(summary = "Lista os membros de uma organização")
     public List<OrganizacaoMembroResponse> listMembros(@PathVariable UUID id) {
         return listOrganizacaoMembrosUseCase.execute(id);
+    }
+
+    @GetMapping("/organograma")
+    @Operation(summary = "Obtém a árvore do organograma paroquial")
+    public OrganogramaNodeResponse getOrganograma() {
+        return getOrganogramaUseCase.execute();
     }
 
     private OrganizacaoResponse toResponse(Organizacao domain) {
