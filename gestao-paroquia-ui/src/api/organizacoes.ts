@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Organizacao } from './types';
+import { Organizacao, OrganogramaNode } from './types';
 
 export const getOrganizacoes = async (): Promise<Organizacao[]> => {
   const response = await apiClient.get<Organizacao[]>('/organizacoes');
@@ -33,5 +33,10 @@ export interface OrganizacaoMembro {
 
 export const getOrganizacaoMembros = async (id: string): Promise<OrganizacaoMembro[]> => {
   const response = await apiClient.get<OrganizacaoMembro[]>(`/organizacoes/${id}/membros`);
+  return response.data;
+};
+
+export const getOrganograma = async (): Promise<OrganogramaNode> => {
+  const response = await apiClient.get<OrganogramaNode>('/organizacoes/organograma');
   return response.data;
 };

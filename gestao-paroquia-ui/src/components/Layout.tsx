@@ -25,6 +25,7 @@ import {
   FactCheck as FactCheckIcon,
   Assignment as WorkIcon,
   Settings as SettingsIcon,
+  AccountTree as AccountTreeIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -65,6 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
     { label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
     { label: 'Projetos', path: '/projects', icon: <WorkIcon /> },
+    { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon /> },
   ];
 
   if (canApprove(user)) {

@@ -1,6 +1,6 @@
 import apiClient from './client';
-import { getOrganizacoes, createOrganizacao, updateOrganizacao, deleteOrganizacao } from './organizacoes';
-import { Organizacao } from './types';
+import { getOrganizacoes, createOrganizacao, updateOrganizacao, deleteOrganizacao, getOrganograma } from './organizacoes';
+import { Organizacao, OrganogramaNode } from './types';
 
 jest.mock('./client', () => ({
   __esModule: true,
@@ -76,5 +76,24 @@ describe('Organizacoes API Client', () => {
     await deleteOrganizacao('uuid-org-1');
 
     expect(apiClient.delete).toHaveBeenCalledWith('/organizacoes/uuid-org-1');
+  });
+
+  test('getOrganograma should fetch organograma tree', async () => {
+    const mockNode: OrganogramaNode = {
+      id: 'root',
+      label: 'Paróquia Teste',
+      type: 'PAROQUIA',
+      subtype: 'ROOT',
+      responsavelNome: null,
+      responsavelPapel: null,
+      viceResponsavelNome: null,
+      children: [],
+    };
+    (apiClient.get as jest.Mock).mockResolvedValue({ data: mockNode });
+
+    const result = await getOrganograma();
+
+    expect(apiClient.get).toHaveBeenCalledWith('/organizacoes/organograma');
+    expect(result).toEqual(mockNode);
   });
 });

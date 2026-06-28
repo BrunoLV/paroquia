@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Approvals from './pages/Approvals';
 import Projects from './pages/Projects';
 import Settings from './pages/Settings';
+import Organograma from './pages/Organograma';
 import Layout from './components/Layout';
 import { useAuth } from './auth/AuthContext';
 import { canApprove, canManageAnoParoquial, canManageLocais } from './auth/permissions';
@@ -39,6 +40,7 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="calendar" element={<Calendar />} />
+                <Route path="organograma" element={<Organograma />} />
                 <Route
                   path="approvals"
                   element={

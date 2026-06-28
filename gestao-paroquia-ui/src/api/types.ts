@@ -149,4 +149,13 @@ export interface Observacao {
   conteudo: string;
   criadoEmUtc: string;
 }
-
+export interface OrganogramaNode {
+  id: string;
+  label: string;
+  type: 'PAROQUIA' | 'ORGANIZACAO' | 'MEMBRO' | 'GRUPO';
+  subtype: string;
+  responsavelNome: string | null;
+  responsavelPapel: string | null;
+  viceResponsavelNome: string | null;
+  children: OrganogramaNode[];
+}
