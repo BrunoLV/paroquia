@@ -107,6 +107,12 @@
 
 ---
 
-- [~] **Track: Implementar a funcionalidade de visualização da estrutura paroquial (organograma).**
+- [x] **Track: Implementar a funcionalidade de visualização da estrutura paroquial (organograma).**
 *Link: [./tracks/organograma_estrutura_20260627/](./tracks/organograma_estrutura_20260627/)*
+
+---
+
+- [ ] **Track: Hierarquia do Organograma Paroquial com Clero no topo, Conselhos Pastoral e Economico abaixo, e Pastorais subordinadas ao Conselho Pastoral**
+*Link: [./tracks/organograma_hierarquia_clero_20260628/](./tracks/organograma_hierarquia_clero_20260628/)*
+
 
