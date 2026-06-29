@@ -383,7 +383,7 @@ const Organograma: React.FC = () => {
   }
 
   if (conselhoNode) {
-    pastorais = conselhoNode.children || [];
+    pastorais = (conselhoNode.children || []).filter(c => c.type === 'ORGANIZACAO');
   }
 
   return (
