@@ -1,0 +1,1 @@
+Task: Implementação das Validações no Backend (Green Phase). Added validation checks in AddMembershipUseCase and RegistrarUsuarioUseCase. Adapted test classes to conform to the new constraints.
