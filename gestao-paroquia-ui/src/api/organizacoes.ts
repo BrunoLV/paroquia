@@ -29,6 +29,7 @@ export interface OrganizacaoMembro {
   usuarioNome: string;
   papel: string;
   ativo: boolean;
+  igrejaVinculoId?: string | null;
 }
 
 export const getOrganizacaoMembros = async (id: string): Promise<OrganizacaoMembro[]> => {

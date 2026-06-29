@@ -593,6 +593,7 @@ describe('Settings page - Membros por Pastoral', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Membros - Pastoral Familiar')).toBeInTheDocument();
+      expect(screen.getByText('Vincular Novo Membro:')).toBeInTheDocument();
     });
 
     expect(screen.getByTestId('add-member-church-select')).toBeInTheDocument();

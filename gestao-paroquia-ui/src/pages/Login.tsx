@@ -38,6 +38,7 @@ const Login = () => {
   const [dataNascimento, setDataNascimento] = useState('');
   const [selectedOrgs, setSelectedOrgs] = useState<string[]>([]);
   const [availableOrgs, setAvailableOrgs] = useState<Organizacao[]>([]);
+  const [churchSelections, setChurchSelections] = useState<Record<string, string>>({});
 
   const [isLoading, setIsLoading] = useState(false);
   const { showError, showSuccess } = useNotification();
@@ -110,6 +111,22 @@ const Login = () => {
       return;
     }
 
+    // Validate church links
+    const solicitacoes = [];
+    for (const orgId of selectedOrgs) {
+      const org = availableOrgs.find(o => o.id === orgId);
+      if (org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO')) {
+        const churchId = churchSelections[orgId];
+        if (!churchId) {
+          showError(`Selecione a igreja de atuação para ${org.nome}`);
+          return;
+        }
+        solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: churchId });
+      } else {
+        solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: null });
+      }
+    }
+
     setIsLoading(true);
 
     try {
@@ -119,7 +136,7 @@ const Login = () => {
         password: signupPassword,
         telefone,
         dataNascimento,
-        organizacoesSolicitadas: selectedOrgs
+        organizacoesSolicitadas: solicitacoes
       });
 
       showSuccess('Cadastro solicitado com sucesso! Aguarde a aprovação de um administrador.');
@@ -133,6 +150,7 @@ const Login = () => {
       setTelefone('');
       setDataNascimento('');
       setSelectedOrgs([]);
+      setChurchSelections({});
     } catch (err: any) {
       const errMsg = err.response?.data?.message || 'Falha ao realizar cadastro. Tente novamente.';
       showError(errMsg);
@@ -145,9 +163,18 @@ const Login = () => {
     const {
       target: { value },
     } = event;
-    setSelectedOrgs(
-      typeof value === 'string' ? value.split(',') : value,
-    );
+    const nextOrgs = typeof value === 'string' ? value.split(',') : value;
+    setSelectedOrgs(nextOrgs);
+
+    setChurchSelections(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(id => {
+        if (!nextOrgs.includes(id)) {
+          delete updated[id];
+        }
+      });
+      return updated;
+    });
   };
 
   return (
@@ -289,7 +316,7 @@ const Login = () => {
                 onChange={(e) => setDataNascimento(e.target.value)}
               />
 
-              <FormControl fullWidth margin="normal">
+               <FormControl fullWidth margin="normal">
                 <InputLabel id="orgs-label">Pastorais/Movimentos Desejados</InputLabel>
                 <Select
                   labelId="orgs-label"
@@ -298,20 +325,54 @@ const Login = () => {
                   value={selectedOrgs}
                   onChange={handleOrgChange}
                   input={<OutlinedInput label="Pastorais/Movimentos Desejados" />}
+                  inputProps={{ 'data-testid': 'orgs-select' }}
                   renderValue={(selected) => 
                     selected
                       .map((id) => availableOrgs.find((o) => o.id === id)?.nome || '')
                       .join(', ')
                   }
                 >
-                  {availableOrgs.map((org) => (
-                    <MenuItem key={org.id} value={org.id}>
-                      <Checkbox checked={selectedOrgs.indexOf(org.id) > -1} />
-                      <ListItemText primary={org.nome} secondary={org.tipo} />
-                    </MenuItem>
-                  ))}
+                  {availableOrgs
+                    .filter((org) => org.tipo !== 'MATRIZ' && org.tipo !== 'COMUNIDADE') // Don't show Matriz/Comunidade as selectable pastorals!
+                    .map((org) => (
+                      <MenuItem key={org.id} value={org.id}>
+                        <Checkbox checked={selectedOrgs.indexOf(org.id) > -1} />
+                        <ListItemText primary={org.nome} secondary={org.tipo} />
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
+
+              {selectedOrgs
+                .map((id) => availableOrgs.find((o) => o.id === id))
+                .filter((org): org is Organizacao => !!org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO'))
+                .map((org) => {
+                  const activeChurches = availableOrgs.filter(
+                    (o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE')
+                  );
+                  return (
+                    <FormControl fullWidth margin="normal" key={org.id}>
+                      <InputLabel id={`church-label-${org.id}`}>Igreja de atuação para {org.nome}</InputLabel>
+                      <Select
+                        labelId={`church-label-${org.id}`}
+                        id={`church-${org.id}`}
+                        value={churchSelections[org.id] || ''}
+                        label={`Igreja de atuação para ${org.nome}`}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setChurchSelections((prev) => ({ ...prev, [org.id]: val }));
+                        }}
+                        inputProps={{ 'data-testid': `church-select-${org.id}` }}
+                      >
+                        {activeChurches.map((church) => (
+                          <MenuItem key={church.id} value={church.id}>
+                            {church.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  );
+                })}
 
               <Button
                 type="submit"

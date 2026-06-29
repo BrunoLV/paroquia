@@ -94,12 +94,14 @@ const Settings = () => {
   const [isMembershipsModalOpen, setIsMembershipsModalOpen] = useState(false);
   const [newMembershipOrgId, setNewMembershipOrgId] = useState('');
   const [newMembershipPapel, setNewMembershipPapel] = useState('');
+  const [newMembershipChurchId, setNewMembershipChurchId] = useState('');
 
   // Organization members states
   const [selectedOrgForMembers, setSelectedOrgForMembers] = useState<Organizacao | null>(null);
   const [isOrgMembersModalOpen, setIsOrgMembersModalOpen] = useState(false);
   const [newOrgMemberUserId, setNewOrgMemberUserId] = useState('');
   const [newOrgMemberPapel, setNewOrgMemberPapel] = useState('');
+  const [newOrgMemberChurchId, setNewOrgMemberChurchId] = useState('');
 
   // Admin user registration states
   const [isAdminRegisterModalOpen, setIsAdminRegisterModalOpen] = useState(false);
@@ -226,6 +228,7 @@ const Settings = () => {
       showSuccess('Vínculo adicionado com sucesso!');
       setNewMembershipOrgId('');
       setNewMembershipPapel('');
+      setNewMembershipChurchId('');
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao adicionar vínculo.';
@@ -262,6 +265,7 @@ const Settings = () => {
       showSuccess('Membro vinculado com sucesso!');
       setNewOrgMemberUserId('');
       setNewOrgMemberPapel('');
+      setNewOrgMemberChurchId('');
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao vincular membro.';
@@ -1013,15 +1017,47 @@ const Settings = () => {
                   </Select>
                 </FormControl>
 
+                {(() => {
+                  const selectedOrgObj = orgs.find((o) => o.id === newMembershipOrgId);
+                  return selectedOrgObj && (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? (
+                    <FormControl sx={{ minWidth: 200 }} size="small">
+                      <InputLabel id="add-membership-church-label">Igreja de Atuação</InputLabel>
+                      <Select
+                        labelId="add-membership-church-label"
+                        id="add-membership-church"
+                        value={newMembershipChurchId}
+                        label="Igreja de Atuação"
+                        onChange={(e) => setNewMembershipChurchId(e.target.value)}
+                        inputProps={{ 'data-testid': 'add-membership-church-select' }}
+                      >
+                        {orgs
+                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
+                          .map((o) => (
+                            <MenuItem key={o.id} value={o.id}>
+                              {o.nome}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  ) : null;
+                })()}
+
                 <Button
                   variant="contained"
                   onClick={() => {
                     const selectedOrgObj = orgs.find((o) => o.id === newMembershipOrgId);
                     if (!selectedOrgObj) return;
+                    if (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') {
+                      if (!newMembershipChurchId) {
+                        showError('A igreja de atuação é obrigatória para pastorais e movimentos');
+                        return;
+                      }
+                    }
                     addMembershipMutation.mutate({
                       organizacaoId: newMembershipOrgId,
                       tipo: selectedOrgObj.tipo,
-                      papel: newMembershipPapel
+                      papel: newMembershipPapel,
+                      igrejaVinculoId: (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? newMembershipChurchId : undefined
                     });
                   }}
                   disabled={!newMembershipOrgId || !newMembershipPapel || addMembershipMutation.isPending}
@@ -1040,6 +1076,7 @@ const Settings = () => {
               setSelectedUserForMemberships(null);
               setNewMembershipOrgId('');
               setNewMembershipPapel('');
+              setNewMembershipChurchId('');
             }}
             color="inherit"
           >
@@ -1079,6 +1116,9 @@ const Settings = () => {
                   <TableHead sx={{ bgcolor: 'grey.50' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Nome do Membro</TableCell>
+                      {selectedOrgForMembers && (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') && (
+                        <TableCell sx={{ fontWeight: 600 }}>Igreja de Atuação</TableCell>
+                      )}
                       <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
@@ -1088,6 +1128,9 @@ const Settings = () => {
                     {(orgMembers || []).map((m) => (
                       <TableRow key={m.membershipId}>
                         <TableCell sx={{ fontWeight: 500 }}>{m.usuarioNome}</TableCell>
+                        {selectedOrgForMembers && (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') && (
+                          <TableCell>{orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
+                        )}
                         <TableCell>{m.papel}</TableCell>
                         <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
                         <TableCell align="right">
@@ -1106,7 +1149,11 @@ const Settings = () => {
                     ))}
                     {(orgMembers || []).length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={4} align="center" sx={{ py: 2, color: 'text.secondary' }}>
+                        <TableCell
+                          colSpan={selectedOrgForMembers && (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') ? 5 : 4}
+                          align="center"
+                          sx={{ py: 2, color: 'text.secondary' }}
+                        >
                           Nenhum membro vinculado a esta pastoral/movimento.
                         </TableCell>
                       </TableRow>
@@ -1157,16 +1204,45 @@ const Settings = () => {
                   </Select>
                 </FormControl>
 
+                {selectedOrgForMembers && (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') && (
+                  <FormControl sx={{ minWidth: 200 }} size="small">
+                    <InputLabel id="add-member-church-label">Igreja de Atuação</InputLabel>
+                    <Select
+                      labelId="add-member-church-label"
+                      id="add-member-church"
+                      value={newOrgMemberChurchId}
+                      label="Igreja de Atuação"
+                      onChange={(e) => setNewOrgMemberChurchId(e.target.value)}
+                      inputProps={{ 'data-testid': 'add-member-church-select' }}
+                    >
+                      {orgs
+                        .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
+                        .map((o) => (
+                          <MenuItem key={o.id} value={o.id}>
+                            {o.nome}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                  </FormControl>
+                )}
+
                 <Button
                   variant="contained"
                   onClick={() => {
                     if (!selectedOrgForMembers) return;
+                    if (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') {
+                      if (!newOrgMemberChurchId) {
+                        showError('A igreja de atuação é obrigatória para pastorais e movimentos');
+                        return;
+                      }
+                    }
                     addOrgMemberMutation.mutate({
                       userId: newOrgMemberUserId,
                       request: {
                         organizacaoId: selectedOrgForMembers.id,
                         tipo: selectedOrgForMembers.tipo,
-                        papel: newOrgMemberPapel
+                        papel: newOrgMemberPapel,
+                        igrejaVinculoId: (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') ? newOrgMemberChurchId : undefined
                       }
                     });
                   }}
@@ -1186,6 +1262,7 @@ const Settings = () => {
               setSelectedOrgForMembers(null);
               setNewOrgMemberUserId('');
               setNewOrgMemberPapel('');
+              setNewOrgMemberChurchId('');
             }}
             color="inherit"
           >
