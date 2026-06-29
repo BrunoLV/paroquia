@@ -9,18 +9,21 @@ show_help() {
     echo "Opções:"
     echo "  -c, --clean       Remove volumes (limpa o banco de dados e os caches do gradle/build)"
     echo "  --no-cache        Reconstrói as imagens do Docker do zero, sem usar cache"
+    echo "  -r, --no-build    Apenas reinicia os containers sem reconstruir/buildar as imagens"
     echo "  -h, --help        Mostra esta mensagem de ajuda"
     echo ""
 }
 
 CLEAN=false
 NO_CACHE=""
+BUILD=true
 
 # Trata argumentos
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -c|--clean) CLEAN=true ;;
         --no-cache) NO_CACHE="--no-cache" ;;
+        -r|--no-build) BUILD=false ;;
         -h|--help) show_help; exit 0 ;;
         *) echo "Opção desconhecida: $1"; show_help; exit 1 ;;
     esac
@@ -41,11 +44,15 @@ else
 fi
 
 echo ""
-echo "Step 2: Reconstruindo as imagens..."
-if [ -n "$NO_CACHE" ]; then
-    echo "-> Construindo sem cache (--no-cache)..."
+if [ "$BUILD" = true ]; then
+    echo "Step 2: Reconstruindo as imagens..."
+    if [ -n "$NO_CACHE" ]; then
+        echo "-> Construindo sem cache (--no-cache)..."
+    fi
+    docker compose build $NO_CACHE
+else
+    echo "Step 2: Pulando reconstrução das imagens (--no-build)..."
 fi
-docker compose build $NO_CACHE
 
 echo ""
 echo "Step 3: Subindo o ambiente de serviços..."
