@@ -9,6 +9,7 @@ public enum TipoOrganizacao {
     LAICATO,
     CLERO,
     CONSELHO,
+    CONSELHO_ECONOMICO,
     OUTRO;
 
     @JsonCreator

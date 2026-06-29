@@ -22,7 +22,7 @@ public class AuthorizationPolicy {
             case CLERO -> normalizedRole == PapelOrganizacional.PAROCO
                     || normalizedRole == PapelOrganizacional.VIGARIO
                     || normalizedRole == PapelOrganizacional.PADRE;
-            case CONSELHO -> normalizedRole == PapelOrganizacional.COORDENADOR
+            case CONSELHO, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.COORDENADOR
                     || normalizedRole == PapelOrganizacional.VICE_COORDENADOR
                     || normalizedRole == PapelOrganizacional.SECRETARIO
                     || normalizedRole == PapelOrganizacional.MEMBRO;

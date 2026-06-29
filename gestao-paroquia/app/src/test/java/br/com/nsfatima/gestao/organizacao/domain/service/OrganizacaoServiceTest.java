@@ -75,4 +75,12 @@ class OrganizacaoServiceTest {
         verify(repository).delete(id);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
+
+    @Test
+    void shouldCreateOrganizationWithConselhoEconomico() {
+        Organizacao created = service.createOrganization("Conselho Econômico", TipoOrganizacao.CONSELHO_ECONOMICO, "financeiro@test.com", "Pedro Finanças", "Ana Administração");
+        
+        assertNotNull(created.getId());
+        assertEquals(TipoOrganizacao.CONSELHO_ECONOMICO, created.getTipo());
+    }
 }
