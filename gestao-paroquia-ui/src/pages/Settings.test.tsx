@@ -570,4 +570,31 @@ describe('Settings page - Membros por Pastoral', () => {
       expect(screen.getByText('MEMBRO')).toBeInTheDocument();
     });
   });
+
+  test('requires igrejaVinculoId when adding membership for pastoral/movimento', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetOrganizacoes.mockResolvedValueOnce(mockOrgs);
+    mockGetUsuarios.mockResolvedValueOnce([
+      { id: 'user-1', nome: 'Fiel Teste', username: 'fiel@test.com', enabled: true }
+    ]);
+    mockGetOrganizacaoMembros.mockResolvedValueOnce([]);
+
+    renderPage();
+
+    const orgsTab = screen.getByRole('tab', { name: /Pastorais e Movimentos/i });
+    fireEvent.click(orgsTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Pastoral Familiar')).toBeInTheDocument();
+    });
+
+    const membrosBtn = screen.getByRole('button', { name: /Membros/i });
+    fireEvent.click(membrosBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Membros - Pastoral Familiar')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId('add-member-church-select')).toBeInTheDocument();
+  });
 });

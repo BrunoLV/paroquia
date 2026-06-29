@@ -6,6 +6,7 @@ export interface Organizacao {
   coordenador?: string | null;
   viceCoordenador?: string | null;
   ativo: boolean;
+  parentId?: string | null;
 }
 
 export interface Local {

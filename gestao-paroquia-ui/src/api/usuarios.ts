@@ -16,12 +16,14 @@ export interface MembershipResponse {
   tipoOrganizacao: string;
   papel: string;
   ativo: boolean;
+  igrejaVinculoId?: string | null;
 }
 
 export interface AddMembershipRequest {
   organizacaoId: string;
   tipo: string;
   papel: string;
+  igrejaVinculoId?: string;
 }
 
 export const getUsuarios = async (): Promise<Usuario[]> => {
@@ -47,13 +49,18 @@ export const removeMembership = async (userId: string, membershipId: string): Pr
   await apiClient.delete(`/usuarios/${userId}/membros/${membershipId}`);
 };
 
+export interface SolicitacaoOrganizacaoRequest {
+  organizacaoId: string;
+  igrejaVinculoId?: string | null;
+}
+
 export interface RegistrarUsuarioRequest {
   nome: string;
   username: string;
   password?: string;
   telefone: string;
   dataNascimento: string;
-  organizacoesSolicitadas?: string[];
+  organizacoesSolicitadas?: SolicitacaoOrganizacaoRequest[];
 }
 
 export const registrarUsuario = async (request: RegistrarUsuarioRequest): Promise<string> => {
