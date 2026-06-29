@@ -1,0 +1,1 @@
+Phase 1 Verification Report. Automated Test Command: ./gradlew test. Manual Verification: checked schema updates for parent_id and igreja_vinculo_id. Confirmed by user.
