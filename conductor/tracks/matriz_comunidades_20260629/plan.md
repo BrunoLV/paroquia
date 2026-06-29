@@ -27,5 +27,5 @@
 - [x] Task: Implementação do Vínculo e Listagem de Membros [cd69b6e]
     - [x] Atualizar modal de vinculação em Settings.tsx para selecionar a igreja de atuação
     - [x] Exibir a igreja de atuação na lista de membros vinculados
-    - [ ] Validar que todos os testes passem com sucesso
-- [ ] Task: Conductor - User Manual Verification 'Interface do Usuário' (Protocol in workflow.md)
+    - [x] Validar que todos os testes passem com sucesso
+- [x] Task: Conductor - User Manual Verification 'Interface do Usuário' (Protocol in workflow.md) [085ca0e]
