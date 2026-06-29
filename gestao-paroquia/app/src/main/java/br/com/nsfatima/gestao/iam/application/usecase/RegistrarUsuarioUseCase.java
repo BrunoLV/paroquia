@@ -58,8 +58,8 @@ public class RegistrarUsuarioUseCase {
         usuarioRepository.save(user);
 
         if (request.organizacoesSolicitadas() != null) {
-            for (UUID orgId : request.organizacoesSolicitadas()) {
-                var orgOpt = organizacaoRepository.findById(orgId);
+            for (var solicitacao : request.organizacoesSolicitadas()) {
+                var orgOpt = organizacaoRepository.findById(solicitacao.organizacaoId());
                 if (orgOpt.isPresent()) {
                     var org = orgOpt.get();
                     MembroOrganizacaoEntity membership = new MembroOrganizacaoEntity();
@@ -68,6 +68,7 @@ public class RegistrarUsuarioUseCase {
                     membership.setOrganizacaoId(org.getId());
                     membership.setTipoOrganizacao(org.getTipo().name());
                     membership.setPapel("MEMBRO");
+                    membership.setIgrejaVinculoId(solicitacao.igrejaVinculoId());
                     membership.setAtivo(isAdminOrParoco); // Active directly if registered by admin
                     membershipRepository.save(membership);
                 }

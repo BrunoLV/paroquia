@@ -26,7 +26,7 @@ public class AddMembershipUseCase {
     }
 
     @Transactional
-    public UUID execute(UUID usuarioId, UUID organizacaoId, TipoOrganizacao tipo, PapelOrganizacional papel) {
+    public UUID execute(UUID usuarioId, UUID organizacaoId, TipoOrganizacao tipo, PapelOrganizacional papel, UUID igrejaVinculoId) {
         if (!usuarioRepository.existsById(usuarioId)) {
             throw new IllegalArgumentException("Usuario nao encontrado: " + usuarioId);
         }
@@ -68,6 +68,7 @@ public class AddMembershipUseCase {
         entity.setOrganizacaoId(organizacaoId);
         entity.setTipoOrganizacao(tipo.name());
         entity.setPapel(papel.name());
+        entity.setIgrejaVinculoId(igrejaVinculoId);
         entity.setAtivo(true);
 
         return membershipRepository.save(entity).getId();

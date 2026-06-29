@@ -152,7 +152,7 @@ public class UsuarioController {
      */
     public UUID addMembership(@PathVariable UUID id, @RequestBody @Valid AddMembershipRequest request) {
         authorizationService.requireAdminOrCoordinatorOfOrganization(request.organizacaoId());
-        return addMembershipUseCase.execute(id, request.organizacaoId(), request.tipo(), request.papel());
+        return addMembershipUseCase.execute(id, request.organizacaoId(), request.tipo(), request.papel(), request.igrejaVinculoId());
     }
 
     @DeleteMapping("/{id}/membros/{membershipId}")

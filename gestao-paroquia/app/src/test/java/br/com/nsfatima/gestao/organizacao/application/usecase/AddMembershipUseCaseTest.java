@@ -75,7 +75,7 @@ class AddMembershipUseCaseTest {
 
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR);
+        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID());
 
         assertFalse(existing.isAtivo());
         verify(membershipRepository).save(existing);
@@ -90,7 +90,7 @@ class AddMembershipUseCaseTest {
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
         assertThrows(AccessDeniedException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR, null)
         );
     }
 
@@ -104,7 +104,7 @@ class AddMembershipUseCaseTest {
         when(membershipRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR, null)
         );
     }
 
@@ -117,7 +117,7 @@ class AddMembershipUseCaseTest {
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
         assertThrows(AccessDeniedException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CLERO, PapelOrganizacional.PAROCO)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CLERO, PapelOrganizacional.PAROCO, null)
         );
     }
 
@@ -131,7 +131,25 @@ class AddMembershipUseCaseTest {
         when(membershipRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CLERO, PapelOrganizacional.PAROCO)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CLERO, PapelOrganizacional.PAROCO, null)
         );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenIgrejaVinculoIdIsMissingForPastoralOrMovimento() {
+        mockAuthentication("ROLE_ADMIN");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, null)
+        );
+        assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex1.getMessage());
+
+        IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.MOVIMENTO, PapelOrganizacional.MEMBRO, null)
+        );
+        assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex2.getMessage());
     }
 }

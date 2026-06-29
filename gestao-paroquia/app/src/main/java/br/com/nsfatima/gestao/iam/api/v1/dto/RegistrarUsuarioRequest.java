@@ -24,5 +24,5 @@ public record RegistrarUsuarioRequest(
     @NotNull(message = "Data de nascimento é obrigatória")
     LocalDate dataNascimento,
 
-    List<UUID> organizacoesSolicitadas
+    List<SolicitacaoOrganizacaoRequest> organizacoesSolicitadas
 ) {}
