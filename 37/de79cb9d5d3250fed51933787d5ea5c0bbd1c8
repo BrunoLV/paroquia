@@ -1,0 +1,1 @@
+Task: Mapeamento de Entidades e DTOs. Updated TipoOrganizacao, OrganizacaoEntity, MembroOrganizacaoEntity, and DTOs (OrganizacaoRequest, OrganizacaoResponse, AddMembershipRequest, MembershipResponse) to support parentId and igrejaVinculoId.
