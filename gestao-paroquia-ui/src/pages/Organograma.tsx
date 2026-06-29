@@ -198,6 +198,7 @@ const Organograma: React.FC = () => {
     const ordinaryMembers = members.filter(
       m =>
         m &&
+        m.type === 'MEMBRO' &&
         !equalsIgnoreCase(m.label, coord) &&
         !equalsIgnoreCase(m.label, vice)
     );
