@@ -117,7 +117,7 @@
 
 ---
 
-- [ ] **Track: implementar o plano matriz_comunidades_plan.md**
+- [x] **Track: implementar o plano matriz_comunidades_plan.md**
 *Link: [./tracks/matriz_comunidades_20260629/](./tracks/matriz_comunidades_20260629/)*
 
 
