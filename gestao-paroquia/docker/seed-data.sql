@@ -28,7 +28,8 @@ VALUES
     ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', TRUE, 0),
     ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', TRUE, 0),
     ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', TRUE, 0),
-    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, 0)
+    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, 0),
+    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', TRUE, 0)
 ON CONFLICT (id) DO NOTHING;
 
 -- Users (Usuarios)
@@ -44,7 +45,9 @@ VALUES
     ('10000000-0000-0000-0000-000000000009', 'ana.conselho', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0),
     ('10000000-0000-0000-0000-000000000010', 'lucia.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0),
     ('10000000-0000-0000-0000-000000000011', 'carlos.catequese', '{noop}senha123', TRUE, 'MEMBRO_PASTORAL', 0),
-    ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0);
+    ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL', 0),
+    ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0),
+    ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'COORDENADOR_CONSELHO', 0);
 
 -- Members (Membros)
 INSERT INTO calendario.membros (id, nome_completo, email, telefone, usuario_id, ativo, version)
@@ -59,7 +62,9 @@ VALUES
     ('20000000-0000-0000-0000-000000000009', 'Ana do Conselho', 'ana.conselho@nsfatima.com', '11999990009', '10000000-0000-0000-0000-000000000009', TRUE, 0),
     ('20000000-0000-0000-0000-000000000010', 'Lúcia de Oliveira', 'lucia.catequese@gmail.com', '11999990010', '10000000-0000-0000-0000-000000000010', TRUE, 0),
     ('20000000-0000-0000-0000-000000000011', 'Carlos de Oliveira', 'carlos.catequese@gmail.com', '11999990011', '10000000-0000-0000-0000-000000000011', TRUE, 0),
-    ('20000000-0000-0000-0000-000000000012', 'Lucas dos Santos', 'lucas.juventude@gmail.com', '11999990012', '10000000-0000-0000-0000-000000000012', TRUE, 0);
+    ('20000000-0000-0000-0000-000000000012', 'Lucas dos Santos', 'lucas.juventude@gmail.com', '11999990012', '10000000-0000-0000-0000-000000000012', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000091', 'Pedro Finanças', 'pedro.financas@nsfatima.com', '11999990091', '10000000-0000-0000-0000-000000000091', TRUE, 0),
+    ('20000000-0000-0000-0000-000000000092', 'Ana Administração', 'ana.administracao@nsfatima.com', '11999990092', '10000000-0000-0000-0000-000000000092', TRUE, 0);
 
 -- Organizational Memberships
 INSERT INTO calendario.membros_organizacao (id, usuario_id, organizacao_id, tipo_organizacao, papel, ativo, version)
@@ -74,7 +79,9 @@ VALUES
     (gen_random_uuid(), '10000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'membro', TRUE, 0),
     (gen_random_uuid(), '10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador', TRUE, 0),
     (gen_random_uuid(), '10000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'vice-coordenador', TRUE, 0),
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'membro', TRUE, 0);
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'membro', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000091', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'coordenador', TRUE, 0),
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000092', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'vice-coordenador', TRUE, 0);
 
 -- Years (Anos Paroquiais)
 INSERT INTO calendario.anos_paroquiais (ano, status, data_fechamento_utc)
