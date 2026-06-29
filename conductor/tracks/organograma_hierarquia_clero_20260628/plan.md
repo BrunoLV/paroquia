@@ -1,17 +1,17 @@
 # Plano de Implementação: Hierarquia do Organograma Paroquial
 
 ## Phase 1: Backend Model, Service and Seed Setup (TDD)
-- [ ] Task: Atualizar o enum TipoOrganizacao e entidades backend (TDD)
-    - [ ] Adicionar valor `CONSELHO_ECONOMICO` no arquivo `TipoOrganizacao.java`
-    - [ ] Atualizar serializadores e conversores se necessário
-- [ ] Task: Implementar o seed de dados no script `seed-data.sql`
-    - [ ] Adicionar insert do 'Conselho Econômico Paroquial' com tipo 'CONSELHO_ECONOMICO', associando lideranças 'Pedro Finanças' e 'Ana Administração', e membros ativos
-- [ ] Task: Reestruturar a árvore no caso de uso `GetOrganogramaUseCase` (TDD)
-    - [ ] Alterar `GetOrganogramaUseCase.java` para montar a hierarquia multinível (Clero como raiz, Conselhos como filhos diretos do Clero, Pastorais como filhas do Conselho Pastoral)
-    - [ ] Escrever novos testes unitários em `GetOrganogramaUseCaseTest.java` validando a herança e estrutura multinível da árvore
-- [ ] Task: Executar testes automatizados do backend
-    - [ ] Rodar `./gradlew test` e confirmar sucesso
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Model, Service and Seed Setup (TDD)' (Protocol in workflow.md)
+- [x] Task: Atualizar o enum TipoOrganizacao e entidades backend (TDD) (b96f4ad)
+    - [x] Adicionar valor `CONSELHO_ECONOMICO` no arquivo `TipoOrganizacao.java` (b96f4ad)
+    - [x] Atualizar serializadores e conversores se necessário (b96f4ad)
+- [x] Task: Implementar o seed de dados no script `seed-data.sql` (c691649)
+    - [x] Adicionar insert do 'Conselho Econômico Paroquial' com tipo 'CONSELHO_ECONOMICO', associando lideranças 'Pedro Finanças' e 'Ana Administração', e membros ativos (c691649)
+- [x] Task: Reestruturar a árvore no caso de uso `GetOrganogramaUseCase` (TDD) (a68abda)
+    - [x] Alterar `GetOrganogramaUseCase.java` para montar a hierarquia multinível (Clero como raiz, Conselhos como filhos diretos do Clero, Pastorais como filhas do Conselho Pastoral) (a68abda)
+    - [x] Escrever novos testes unitários em `GetOrganogramaUseCaseTest.java` validando a herança e estrutura multinível da árvore (a68abda)
+- [x] Task: Executar testes automatizados do backend (a68abda)
+    - [x] Rodar `./gradlew test` e confirmar sucesso (a68abda)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Model, Service and Seed Setup (TDD)' (Protocol in workflow.md) (a68abda)
 
 ## Phase 2: Frontend Layout and Component Adaptation (TDD)
 - [ ] Task: Atualizar tipos e traduções no frontend
