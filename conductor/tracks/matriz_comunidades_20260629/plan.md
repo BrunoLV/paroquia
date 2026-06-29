@@ -22,10 +22,10 @@
 ## Fase 3: Interface do Usuário (Frontend)
 - [x] Task: Escrita de Testes Unitários de Componentes (Red Phase) [b8d02da]
     - [x] Escrever testes falhando no formulário de cadastro e modal de vinculação para verificar o preenchimento de igreja de atuação
-- [~] Task: Implementação no Formulário de Cadastro (Sign Up)
-    - [~] Adicionar campo de seleção de Matriz/Comunidade ao escolher uma pastoral no Login.tsx
-- [ ] Task: Implementação do Vínculo e Listagem de Membros
-    - [ ] Atualizar modal de vinculação em Settings.tsx para selecionar a igreja de atuação
-    - [ ] Exibir a igreja de atuação na lista de membros vinculados
+- [x] Task: Implementação no Formulário de Cadastro (Sign Up) [cd69b6e]
+    - [x] Adicionar campo de seleção de Matriz/Comunidade ao escolher uma pastoral no Login.tsx
+- [x] Task: Implementação do Vínculo e Listagem de Membros [cd69b6e]
+    - [x] Atualizar modal de vinculação em Settings.tsx para selecionar a igreja de atuação
+    - [x] Exibir a igreja de atuação na lista de membros vinculados
     - [ ] Validar que todos os testes passem com sucesso
 - [ ] Task: Conductor - User Manual Verification 'Interface do Usuário' (Protocol in workflow.md)
