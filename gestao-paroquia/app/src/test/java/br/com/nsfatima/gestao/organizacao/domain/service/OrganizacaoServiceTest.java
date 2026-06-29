@@ -28,7 +28,7 @@ class OrganizacaoServiceTest {
 
     @Test
     void shouldCreateOrganization() {
-        Organizacao created = service.createOrganization("PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B");
+        Organizacao created = service.createOrganization("PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", null);
         
         assertNotNull(created.getId());
         assertEquals("PJ", created.getNome());
@@ -42,10 +42,10 @@ class OrganizacaoServiceTest {
     @Test
     void shouldUpdateOrganization() {
         UUID id = UUID.randomUUID();
-        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true);
+        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true, null);
         when(repository.findById(id)).thenReturn(Optional.of(org));
 
-        service.updateOrganization(id, "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false);
+        service.updateOrganization(id, "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false, null);
 
         assertEquals("PJ Novo", org.getNome());
         assertEquals(TipoOrganizacao.PASTORAL, org.getTipo());
@@ -78,7 +78,7 @@ class OrganizacaoServiceTest {
 
     @Test
     void shouldCreateOrganizationWithConselhoEconomico() {
-        Organizacao created = service.createOrganization("Conselho Econômico", TipoOrganizacao.CONSELHO_ECONOMICO, "financeiro@test.com", "Pedro Finanças", "Ana Administração");
+        Organizacao created = service.createOrganization("Conselho Econômico", TipoOrganizacao.CONSELHO_ECONOMICO, "financeiro@test.com", "Pedro Finanças", "Ana Administração", null);
         
         assertNotNull(created.getId());
         assertEquals(TipoOrganizacao.CONSELHO_ECONOMICO, created.getTipo());
