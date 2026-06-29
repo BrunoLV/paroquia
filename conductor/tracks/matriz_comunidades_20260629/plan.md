@@ -11,12 +11,12 @@
 - [x] Task: Conductor - User Manual Verification 'Banco de Dados e Infraestrutura' (Protocol in workflow.md) [508e20e]
 
 ## Fase 2: Regras de Negócio e Use Cases do Backend
-- [~] Task: Escrita de Testes Unitários de Regra de Negócio (Red Phase)
-    - [ ] Escrever testes falhando em AddMembershipUseCaseTest e RegistrarUsuarioUseCaseTest para validar a obrigatoriedade de igrejaVinculoId para pastorais/movimentos
-- [ ] Task: Implementação das Validações no Backend (Green Phase)
-    - [ ] Atualizar AddMembershipUseCase para exigir e validar a igrejaVinculoId
-    - [ ] Atualizar RegistrarUsuarioUseCase para salvar a igrejaVinculoId de atuações solicitadas
-    - [ ] Validar que os testes passem com sucesso e verificar cobertura
+- [x] Task: Escrita de Testes Unitários de Regra de Negócio (Red Phase) [8591b53]
+    - [x] Escrever testes falhando em AddMembershipUseCaseTest e RegistrarUsuarioUseCaseTest para validar a obrigatoriedade de igrejaVinculoId para pastorais/movimentos
+- [~] Task: Implementação das Validações no Backend (Green Phase)
+    - [~] Atualizar AddMembershipUseCase para exigir e validar a igrejaVinculoId
+    - [~] Atualizar RegistrarUsuarioUseCase para salvar a igrejaVinculoId de atuações solicitadas
+    - [~] Validar que os testes passem com sucesso e verificar cobertura
 - [ ] Task: Conductor - User Manual Verification 'Regras de Negócio do Backend' (Protocol in workflow.md)
 
 ## Fase 3: Interface do Usuário (Frontend)
