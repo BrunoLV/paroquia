@@ -161,7 +161,7 @@ const Organograma: React.FC = () => {
           maxWidth: 240,
           mx: 'auto',
           borderLeft: `4px solid ${roleColor}`,
-          borderRadius: 1.5,
+          borderRadius: 0,
           boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
           transition: 'all 0.2s ease-in-out',
           '&:hover': {
@@ -247,10 +247,11 @@ const Organograma: React.FC = () => {
       <Card
         sx={{
           height: '100%',
-          width: 260,
+          width: isInsideTree ? 260 : '100%',
+          maxWidth: isInsideTree ? 260 : 550,
           display: 'flex',
           flexDirection: 'column',
-          borderRadius: 3,
+          borderRadius: 0,
           boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
           border: '1px solid #eef2f6',
           background: 'linear-gradient(to bottom, #ffffff, #fafafa)',
@@ -266,8 +267,6 @@ const Organograma: React.FC = () => {
             p: 1.5,
             bgcolor: headerStyle.bgcolor,
             borderBottom: `1px solid ${headerStyle.borderColor}`,
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -339,11 +338,7 @@ const Organograma: React.FC = () => {
       </Card>
     );
 
-    return isInsideTree ? cardContent : (
-      <Grid key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-        {cardContent}
-      </Grid>
-    );
+    return cardContent;
   };
 
   if (isLoading) {
@@ -437,7 +432,7 @@ const Organograma: React.FC = () => {
                   <Card
                     sx={{
                       width: 260,
-                      borderRadius: 3,
+                      borderRadius: 0,
                       background: 'linear-gradient(135deg, #1a237e 0%, #311b92 100%)',
                       color: 'white',
                       boxShadow: '0 6px 20px rgba(26, 35, 126, 0.2)',
@@ -563,7 +558,11 @@ const Organograma: React.FC = () => {
               </Box>
 
               <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {pastorais.map(org => renderOrgNode(org, false))}
+                {pastorais.map(org => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                    {renderOrgNode(org, false)}
+                  </Grid>
+                ))}
               </Grid>
             </Box>
           )}
