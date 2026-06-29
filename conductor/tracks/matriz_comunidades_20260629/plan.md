@@ -20,10 +20,10 @@
 - [x] Task: Conductor - User Manual Verification 'Regras de Negócio do Backend' (Protocol in workflow.md) [1072db7]
 
 ## Fase 3: Interface do Usuário (Frontend)
-- [~] Task: Escrita de Testes Unitários de Componentes (Red Phase)
-    - [ ] Escrever testes falhando no formulário de cadastro e modal de vinculação para verificar o preenchimento de igreja de atuação
-- [ ] Task: Implementação no Formulário de Cadastro (Sign Up)
-    - [ ] Adicionar campo de seleção de Matriz/Comunidade ao escolher uma pastoral no Login.tsx
+- [x] Task: Escrita de Testes Unitários de Componentes (Red Phase) [b8d02da]
+    - [x] Escrever testes falhando no formulário de cadastro e modal de vinculação para verificar o preenchimento de igreja de atuação
+- [~] Task: Implementação no Formulário de Cadastro (Sign Up)
+    - [~] Adicionar campo de seleção de Matriz/Comunidade ao escolher uma pastoral no Login.tsx
 - [ ] Task: Implementação do Vínculo e Listagem de Membros
     - [ ] Atualizar modal de vinculação em Settings.tsx para selecionar a igreja de atuação
     - [ ] Exibir a igreja de atuação na lista de membros vinculados
