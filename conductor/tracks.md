@@ -115,4 +115,10 @@
 - [x] **Track: Hierarquia do Organograma Paroquial com Clero no topo, Conselhos Pastoral e Economico abaixo, e Pastorais subordinadas ao Conselho Pastoral**
 *Link: [./archive/organograma_hierarquia_clero_20260628/](./archive/organograma_hierarquia_clero_20260628/)*
 
+---
+
+- [ ] **Track: implementar o plano matriz_comunidades_plan.md**
+*Link: [./tracks/matriz_comunidades_20260629/](./tracks/matriz_comunidades_20260629/)*
+
+
 
