@@ -13,11 +13,11 @@
 ## Fase 2: Regras de Negócio e Use Cases do Backend
 - [x] Task: Escrita de Testes Unitários de Regra de Negócio (Red Phase) [8591b53]
     - [x] Escrever testes falhando em AddMembershipUseCaseTest e RegistrarUsuarioUseCaseTest para validar a obrigatoriedade de igrejaVinculoId para pastorais/movimentos
-- [~] Task: Implementação das Validações no Backend (Green Phase)
-    - [~] Atualizar AddMembershipUseCase para exigir e validar a igrejaVinculoId
-    - [~] Atualizar RegistrarUsuarioUseCase para salvar a igrejaVinculoId de atuações solicitadas
-    - [~] Validar que os testes passem com sucesso e verificar cobertura
-- [ ] Task: Conductor - User Manual Verification 'Regras de Negócio do Backend' (Protocol in workflow.md)
+- [x] Task: Implementação das Validações no Backend (Green Phase) [b085fd7]
+    - [x] Atualizar AddMembershipUseCase para exigir e validar a igrejaVinculoId
+    - [x] Atualizar RegistrarUsuarioUseCase para salvar a igrejaVinculoId de atuações solicitadas
+    - [x] Validar que os testes passem com sucesso e verificar cobertura
+- [~] Task: Conductor - User Manual Verification 'Regras de Negócio do Backend' (Protocol in workflow.md)
 
 ## Fase 3: Interface do Usuário (Frontend)
 - [ ] Task: Escrita de Testes Unitários de Componentes (Red Phase)
