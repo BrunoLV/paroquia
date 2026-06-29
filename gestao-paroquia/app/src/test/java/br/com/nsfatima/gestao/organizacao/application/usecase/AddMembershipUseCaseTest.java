@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -31,12 +32,21 @@ class AddMembershipUseCaseTest {
     private AddMembershipUseCase useCase;
     private SecurityContext originalContext;
 
+    private OrganizacaoJpaRepository organizacaoRepository;
+
     @BeforeEach
     void setUp() {
         membershipRepository = mock(MembroOrganizacaoJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        useCase = new AddMembershipUseCase(membershipRepository, usuarioRepository);
+        organizacaoRepository = mock(OrganizacaoJpaRepository.class);
+        useCase = new AddMembershipUseCase(membershipRepository, usuarioRepository, organizacaoRepository);
         originalContext = SecurityContextHolder.getContext();
+
+        var defaultIgreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        defaultIgreja.setId(UUID.randomUUID());
+        defaultIgreja.setTipo(TipoOrganizacao.MATRIZ);
+        defaultIgreja.setNome("Matriz Default");
+        when(organizacaoRepository.findById(any(UUID.class))).thenReturn(Optional.of(defaultIgreja));
     }
 
     @AfterEach
@@ -151,5 +161,39 @@ class AddMembershipUseCaseTest {
                 useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.MOVIMENTO, PapelOrganizacional.MEMBRO, null)
         );
         assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex2.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenIgrejaVinculoIdNotFound() {
+        mockAuthentication("ROLE_ADMIN");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID igrejaId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+        when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
+        );
+        assertEquals("Igreja de vinculo nao encontrada: " + igrejaId, ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenIgrejaVinculoTypeIsInvalid() {
+        mockAuthentication("ROLE_ADMIN");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID igrejaId = UUID.randomUUID();
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        var invalidIgreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        invalidIgreja.setId(igrejaId);
+        invalidIgreja.setTipo(TipoOrganizacao.PASTORAL);
+        when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.of(invalidIgreja));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
+        );
+        assertEquals("Igreja de vinculo deve ser do tipo MATRIZ ou COMUNIDADE", ex.getMessage());
     }
 }

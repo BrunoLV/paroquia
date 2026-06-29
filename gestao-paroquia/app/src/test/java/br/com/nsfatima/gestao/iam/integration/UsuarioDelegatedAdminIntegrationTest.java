@@ -37,16 +37,41 @@ class UsuarioDelegatedAdminIntegrationTest {
     @Autowired
     private MembroOrganizacaoJpaRepository membershipRepository;
 
+    @Autowired
+    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository;
+
     private UUID coordinatorId;
     private UUID memberId;
     private UUID strangerId;
     private UUID orgId;
     private UUID otherOrgId;
+    private UUID churchId;
 
     @BeforeEach
     void setUp() {
+        churchId = UUID.randomUUID();
+        var church = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        church.setId(churchId);
+        church.setNome("Igreja Matriz Teste");
+        church.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ);
+        church.setAtivo(true);
+        organizacaoRepository.save(church);
+
         orgId = UUID.randomUUID();
+        var org = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        org.setId(orgId);
+        org.setNome("Pastoral Teste");
+        org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
+        org.setAtivo(true);
+        organizacaoRepository.save(org);
+
         otherOrgId = UUID.randomUUID();
+        var otherOrg = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        otherOrg.setId(otherOrgId);
+        otherOrg.setNome("Outra Pastoral");
+        otherOrg.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
+        otherOrg.setAtivo(true);
+        organizacaoRepository.save(otherOrg);
 
         coordinatorId = createUser("coordinator");
         memberId = createUser("member");
@@ -126,7 +151,7 @@ class UsuarioDelegatedAdminIntegrationTest {
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"organizacaoId\": \"" + orgId + "\", \"tipo\": \"PASTORAL\", \"papel\": \"MEMBRO\"}"))
+                .content("{\"organizacaoId\": \"" + orgId + "\", \"tipo\": \"PASTORAL\", \"papel\": \"MEMBRO\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isCreated());
     }
 

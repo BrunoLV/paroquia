@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,18 +18,35 @@ public class AddMembershipUseCase {
 
     private final MembroOrganizacaoJpaRepository membershipRepository;
     private final UsuarioJpaRepository usuarioRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
 
     public AddMembershipUseCase(
             MembroOrganizacaoJpaRepository membershipRepository,
-            UsuarioJpaRepository usuarioRepository) {
+            UsuarioJpaRepository usuarioRepository,
+            OrganizacaoJpaRepository organizacaoRepository) {
         this.membershipRepository = membershipRepository;
         this.usuarioRepository = usuarioRepository;
+        this.organizacaoRepository = organizacaoRepository;
     }
 
     @Transactional
     public UUID execute(UUID usuarioId, UUID organizacaoId, TipoOrganizacao tipo, PapelOrganizacional papel, UUID igrejaVinculoId) {
         if (!usuarioRepository.existsById(usuarioId)) {
             throw new IllegalArgumentException("Usuario nao encontrado: " + usuarioId);
+        }
+
+        if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
+            if (igrejaVinculoId == null) {
+                throw new IllegalArgumentException("Igreja de vinculo e obrigatoria para pastorais e movimentos");
+            }
+            var igrejaOpt = organizacaoRepository.findById(igrejaVinculoId);
+            if (igrejaOpt.isEmpty()) {
+                throw new IllegalArgumentException("Igreja de vinculo nao encontrada: " + igrejaVinculoId);
+            }
+            var igreja = igrejaOpt.get();
+            if (igreja.getTipo() != TipoOrganizacao.MATRIZ && igreja.getTipo() != TipoOrganizacao.COMUNIDADE) {
+                throw new IllegalArgumentException("Igreja de vinculo deve ser do tipo MATRIZ ou COMUNIDADE");
+            }
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -60,18 +60,36 @@ public class RegistrarUsuarioUseCase {
         if (request.organizacoesSolicitadas() != null) {
             for (var solicitacao : request.organizacoesSolicitadas()) {
                 var orgOpt = organizacaoRepository.findById(solicitacao.organizacaoId());
-                if (orgOpt.isPresent()) {
-                    var org = orgOpt.get();
-                    MembroOrganizacaoEntity membership = new MembroOrganizacaoEntity();
-                    membership.setId(UUID.randomUUID());
-                    membership.setUsuarioId(userId);
-                    membership.setOrganizacaoId(org.getId());
-                    membership.setTipoOrganizacao(org.getTipo().name());
-                    membership.setPapel("MEMBRO");
-                    membership.setIgrejaVinculoId(solicitacao.igrejaVinculoId());
-                    membership.setAtivo(isAdminOrParoco); // Active directly if registered by admin
-                    membershipRepository.save(membership);
+                if (orgOpt.isEmpty()) {
+                    throw new IllegalArgumentException("Organizacao nao encontrada: " + solicitacao.organizacaoId());
                 }
+                var org = orgOpt.get();
+
+                if (org.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL 
+                        || org.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MOVIMENTO) {
+                    if (solicitacao.igrejaVinculoId() == null) {
+                        throw new IllegalArgumentException("Igreja de vinculo e obrigatoria para pastorais e movimentos");
+                    }
+                    var igrejaOpt = organizacaoRepository.findById(solicitacao.igrejaVinculoId());
+                    if (igrejaOpt.isEmpty()) {
+                        throw new IllegalArgumentException("Igreja de vinculo nao encontrada: " + solicitacao.igrejaVinculoId());
+                    }
+                    var igreja = igrejaOpt.get();
+                    if (igreja.getTipo() != br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
+                            && igreja.getTipo() != br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+                        throw new IllegalArgumentException("Igreja de vinculo deve ser do tipo MATRIZ ou COMUNIDADE");
+                    }
+                }
+
+                MembroOrganizacaoEntity membership = new MembroOrganizacaoEntity();
+                membership.setId(UUID.randomUUID());
+                membership.setUsuarioId(userId);
+                membership.setOrganizacaoId(org.getId());
+                membership.setTipoOrganizacao(org.getTipo().name());
+                membership.setPapel("MEMBRO");
+                membership.setIgrejaVinculoId(solicitacao.igrejaVinculoId());
+                membership.setAtivo(isAdminOrParoco); // Active directly if registered by admin
+                membershipRepository.save(membership);
             }
         }
 
