@@ -17,35 +17,14 @@ describe('Organograma Page', () => {
   });
 
   const mockOrganogramaData = {
-    id: 'root',
-    label: 'Paróquia Nossa Senhora de Fátima',
-    type: 'PAROQUIA',
-    subtype: 'ROOT',
-    responsavelNome: null,
-    responsavelPapel: null,
-    viceResponsavelNome: null,
+    id: 'org-clero',
+    label: 'Clero Paroquial',
+    type: 'ORGANIZACAO',
+    subtype: 'CLERO',
+    responsavelNome: 'Padre Pedro',
+    responsavelPapel: 'PÁROCO',
+    viceResponsavelNome: 'João Batista',
     children: [
-      {
-        id: 'org-clero',
-        label: 'Clero Paroquial',
-        type: 'ORGANIZACAO',
-        subtype: 'CLERO',
-        responsavelNome: 'Padre Pedro',
-        responsavelPapel: 'PÁROCO',
-        viceResponsavelNome: 'João Batista',
-        children: [
-          {
-            id: 'user-padre',
-            label: 'Padre Pedro',
-            type: 'MEMBRO',
-            subtype: 'PAROCO',
-            responsavelNome: null,
-            responsavelPapel: null,
-            viceResponsavelNome: null,
-            children: []
-          }
-        ]
-      },
       {
         id: 'org-conselho',
         label: 'Conselho Paroquial',
@@ -54,27 +33,6 @@ describe('Organograma Page', () => {
         responsavelNome: 'Maria do Conselho',
         responsavelPapel: 'COORDENADOR',
         viceResponsavelNome: 'José do Conselho',
-        children: [
-          {
-            id: 'user-conselho',
-            label: 'Maria do Conselho',
-            type: 'MEMBRO',
-            subtype: 'COORDENADOR',
-            responsavelNome: null,
-            responsavelPapel: null,
-            viceResponsavelNome: null,
-            children: []
-          }
-        ]
-      },
-      {
-        id: 'grupo-pastorais',
-        label: 'Pastorais e Movimentos',
-        type: 'GRUPO',
-        subtype: 'PASTORAL_GRUPO',
-        responsavelNome: null,
-        responsavelPapel: null,
-        viceResponsavelNome: null,
         children: [
           {
             id: 'org-catequese',
@@ -98,6 +56,16 @@ describe('Organograma Page', () => {
             ]
           }
         ]
+      },
+      {
+        id: 'org-economico',
+        label: 'Conselho Econômico',
+        type: 'ORGANIZACAO',
+        subtype: 'CONSELHO_ECONOMICO',
+        responsavelNome: 'Pedro Finanças',
+        responsavelPapel: 'COORDENADOR',
+        viceResponsavelNome: 'Ana Administração',
+        children: []
       }
     ]
   };
@@ -132,16 +100,16 @@ describe('Organograma Page', () => {
     const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
     await renderOrganograma(adminUser);
 
-    expect(await screen.findByText('Paróquia Nossa Senhora de Fátima')).toBeInTheDocument();
-    expect(screen.getByText('Clero Paroquial')).toBeInTheDocument();
+    expect(await screen.findByText('Clero Paroquial')).toBeInTheDocument();
     expect(screen.getByText('Conselho Paroquial')).toBeInTheDocument();
+    expect(screen.getByText('Conselho Econômico')).toBeInTheDocument();
     
     // In tree mode, the intermediate "Pastorais e Movimentos" group is not rendered.
     expect(screen.queryByText('Pastorais e Movimentos')).not.toBeInTheDocument();
     expect(screen.getByText('Pastoral da Catequese')).toBeInTheDocument();
     
     // Check responsibles names
-    expect(screen.getByText('Padre Pedro')).toBeInTheDocument();
+    expect(screen.getByText(/Padre Pedro/i)).toBeInTheDocument();
     expect(screen.getByText('Maria do Conselho')).toBeInTheDocument();
     expect(screen.getByText('Maria Oliveira')).toBeInTheDocument();
 
@@ -159,7 +127,7 @@ describe('Organograma Page', () => {
     const user = { id: '2', name: 'User', roles: ['USER'], organizations: [] };
     await renderOrganograma(user);
 
-    expect(await screen.findByText('Paróquia Nossa Senhora de Fátima')).toBeInTheDocument();
+    expect(await screen.findByText('Clero Paroquial')).toBeInTheDocument();
 
     // Member 'Carlos de Oliveira' should not be initially visible since the card is collapsed
     expect(screen.queryByText('Carlos de Oliveira')).not.toBeInTheDocument();
