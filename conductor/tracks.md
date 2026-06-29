@@ -113,6 +113,6 @@
 ---
 
 - [x] **Track: Hierarquia do Organograma Paroquial com Clero no topo, Conselhos Pastoral e Economico abaixo, e Pastorais subordinadas ao Conselho Pastoral**
-*Link: [./tracks/organograma_hierarquia_clero_20260628/](./tracks/organograma_hierarquia_clero_20260628/)*
+*Link: [./archive/organograma_hierarquia_clero_20260628/](./archive/organograma_hierarquia_clero_20260628/)*
 
 
