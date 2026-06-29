@@ -1,13 +1,13 @@
 # Plano de Implementação: Matriz, Comunidades e Vínculos
 
 ## Fase 1: Banco de Dados e Infraestrutura do Backend
-- [ ] Task: Banco de Dados: Migração Flyway
-    - [ ] Criar arquivo de migração SQL adicionando parent_id na tabela organizacoes
-    - [ ] Adicionar coluna igreja_vinculo_id na tabela membros_organizacao
-- [ ] Task: Mapeamento de Entidades e DTOs
-    - [ ] Adicionar parentId na entidade OrganizacaoEntity e no modelo de domínio
-    - [ ] Adicionar igrejaVinculoId na entidade MembroOrganizacaoEntity e no modelo de domínio
-    - [ ] Atualizar o enum TipoOrganizacao para incluir os tipos MATRIZ e COMUNIDADE
+- [x] Task: Banco de Dados: Migração Flyway [9bc7595]
+    - [x] Criar arquivo de migração SQL adicionando parent_id na tabela organizacoes
+    - [x] Adicionar coluna igreja_vinculo_id na tabela membros_organizacao
+- [~] Task: Mapeamento de Entidades e DTOs
+    - [~] Adicionar parentId na entidade OrganizacaoEntity e no modelo de domínio
+    - [~] Adicionar igrejaVinculoId na entidade MembroOrganizacaoEntity e no modelo de domínio
+    - [~] Atualizar o enum TipoOrganizacao para incluir os tipos MATRIZ e COMUNIDADE
 - [ ] Task: Conductor - User Manual Verification 'Banco de Dados e Infraestrutura' (Protocol in workflow.md)
 
 ## Fase 2: Regras de Negócio e Use Cases do Backend
