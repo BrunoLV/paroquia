@@ -262,4 +262,32 @@ test('demands church link selection when registering with pastorals', async () =
   });
 });
 
+test('renders layout wrapper with vertical centering, full viewport height, and scroll support', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null });
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Login />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  const wrapper = screen.getByTestId('login-layout-wrapper');
+  expect(wrapper).toBeInTheDocument();
+  // We will expect CSS classes/styles applied to the wrapper element
+  expect(wrapper).toHaveStyle({
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  });
+});
+
+
 

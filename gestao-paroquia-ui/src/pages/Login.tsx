@@ -178,16 +178,28 @@ const Login = () => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          mb: 4
-        }}
-      >
+    <Box
+      data-testid="login-layout-wrapper"
+      sx={{
+        minHeight: '100vh',
+        width: '100%',
+        bgcolor: 'background.default',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        py: 4,
+        overflowY: 'auto',
+      }}
+    >
+      <Container maxWidth="xs">
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
         <Paper elevation={3} sx={{ p: 4, width: '100%', textAlign: 'center' }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
             <img 
@@ -394,8 +406,9 @@ const Login = () => {
             </Box>
           )}
         </Paper>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
