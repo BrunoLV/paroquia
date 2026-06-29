@@ -135,13 +135,24 @@ describe('Organograma Page', () => {
     expect(await screen.findByText('Paróquia Nossa Senhora de Fátima')).toBeInTheDocument();
     expect(screen.getByText('Clero Paroquial')).toBeInTheDocument();
     expect(screen.getByText('Conselho Paroquial')).toBeInTheDocument();
-    expect(screen.getByText('Pastorais e Movimentos')).toBeInTheDocument();
+    
+    // In tree mode, the intermediate "Pastorais e Movimentos" group is not rendered.
+    expect(screen.queryByText('Pastorais e Movimentos')).not.toBeInTheDocument();
     expect(screen.getByText('Pastoral da Catequese')).toBeInTheDocument();
     
     // Check responsibles names
     expect(screen.getByText('Padre Pedro')).toBeInTheDocument();
     expect(screen.getByText('Maria do Conselho')).toBeInTheDocument();
     expect(screen.getByText('Maria Oliveira')).toBeInTheDocument();
+
+    // Now, switch to Grid view
+    const gridBtn = screen.getByRole('button', { name: /Visualização em Grade/i });
+    await act(async () => {
+      fireEvent.click(gridBtn);
+    });
+
+    // In grid mode, "Pastorais e Movimentos" group header should be visible
+    expect(screen.getByText('Pastorais e Movimentos')).toBeInTheDocument();
   });
 
   test('expands members list inside pastoral card on click', async () => {
