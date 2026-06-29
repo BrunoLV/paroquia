@@ -436,8 +436,8 @@ const Organograma: React.FC = () => {
                 <Box sx={{ position: 'relative', pb: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <Card
                     sx={{
-                      width: 280,
-                      borderRadius: 4,
+                      width: 260,
+                      borderRadius: 3,
                       background: 'linear-gradient(135deg, #1a237e 0%, #311b92 100%)',
                       color: 'white',
                       boxShadow: '0 6px 20px rgba(26, 35, 126, 0.2)',
