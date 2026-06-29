@@ -79,6 +79,17 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
         this.viceCoordenador = viceCoordenador;
     }
 
+    @Column(name = "parent_id")
+    private UUID parentId;
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
+    }
+
     public boolean isAtivo() {
         return ativo;
     }

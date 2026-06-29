@@ -53,7 +53,8 @@ public class OrganizacaoController {
             request.tipo(),
             request.contato(),
             request.coordenador(),
-            request.viceCoordenador()
+            request.viceCoordenador(),
+            request.parentId()
         );
         return toResponse(org);
     }
@@ -74,7 +75,8 @@ public class OrganizacaoController {
             request.contato(),
             request.coordenador(),
             request.viceCoordenador(),
-            request.ativo()
+            request.ativo(),
+            request.parentId()
         );
         return toResponse(org);
     }
@@ -139,7 +141,8 @@ public class OrganizacaoController {
             domain.getContato(),
             domain.getCoordenador(),
             domain.getViceCoordenador(),
-            domain.isAtivo()
+            domain.isAtivo(),
+            domain.getParentId()
         );
     }
 }

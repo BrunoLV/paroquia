@@ -26,8 +26,8 @@ public class OrganizacaoService {
     }
 
     @Transactional
-    public Organizacao createOrganization(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador) {
-        Organizacao org = new Organizacao(UUID.randomUUID(), nome, tipo, contato, coordenador, viceCoordenador, true);
+    public Organizacao createOrganization(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, UUID parentId) {
+        Organizacao org = new Organizacao(UUID.randomUUID(), nome, tipo, contato, coordenador, viceCoordenador, true, parentId);
         organizacaoRepository.save(org);
 
         auditLogService.log("admin", "admin-action", "organization", "success", Map.of(
@@ -42,11 +42,11 @@ public class OrganizacaoService {
     }
 
     @Transactional
-    public Organizacao updateOrganization(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo) {
+    public Organizacao updateOrganization(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId) {
         Organizacao org = organizacaoRepository.findById(id)
                 .orElseThrow(() -> OrganizationBusinessException.notFound(id));
         
-        org.update(nome, tipo, contato, coordenador, viceCoordenador, ativo);
+        org.update(nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId);
         organizacaoRepository.save(org);
 
         auditLogService.log("admin", "admin-action", "organization", "success", Map.of(

@@ -10,8 +10,9 @@ public class Organizacao {
     private String coordenador;
     private String viceCoordenador;
     private boolean ativo;
+    private UUID parentId;
 
-    public Organizacao(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo) {
+    public Organizacao(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId) {
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
@@ -19,6 +20,7 @@ public class Organizacao {
         this.coordenador = coordenador;
         this.viceCoordenador = viceCoordenador;
         this.ativo = ativo;
+        this.parentId = parentId;
     }
 
     public UUID getId() {
@@ -49,12 +51,21 @@ public class Organizacao {
         return ativo;
     }
 
-    public void update(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo) {
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
+    }
+
+    public void update(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId) {
         this.nome = nome;
         this.tipo = tipo;
         this.contato = contato;
         this.coordenador = coordenador;
         this.viceCoordenador = viceCoordenador;
         this.ativo = ativo;
+        this.parentId = parentId;
     }
 }

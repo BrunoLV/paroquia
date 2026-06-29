@@ -69,6 +69,17 @@ public class MembroOrganizacaoEntity extends BaseVersionedEntity {
         this.papel = papel;
     }
 
+    @Column(name = "igreja_vinculo_id")
+    private UUID igrejaVinculoId;
+
+    public UUID getIgrejaVinculoId() {
+        return igrejaVinculoId;
+    }
+
+    public void setIgrejaVinculoId(UUID igrejaVinculoId) {
+        this.igrejaVinculoId = igrejaVinculoId;
+    }
+
     public boolean isAtivo() {
         return ativo;
     }

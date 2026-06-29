@@ -51,6 +51,7 @@ public class AuthController {
                 membership.organizationContact(),
                 membership.organizationCoordinator(),
                 membership.organizationViceCoordinator(),
-                membership.organizationActive());
+                membership.organizationActive(),
+                null);
     }
 }

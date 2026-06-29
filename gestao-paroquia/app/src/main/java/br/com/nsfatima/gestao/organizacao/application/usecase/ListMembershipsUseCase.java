@@ -29,7 +29,8 @@ public class ListMembershipsUseCase {
                         m.getOrganizacaoId(),
                         m.getTipoOrganizacao(),
                         m.getPapel(),
-                        m.isAtivo()))
+                        m.isAtivo(),
+                        m.getIgrejaVinculoId()))
                 .toList();
     }
 }

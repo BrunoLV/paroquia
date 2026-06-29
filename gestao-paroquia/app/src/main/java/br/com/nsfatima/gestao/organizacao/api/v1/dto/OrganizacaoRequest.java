@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import java.util.UUID;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +31,9 @@ public record OrganizacaoRequest(
     String viceCoordenador,
 
     @Schema(description = "Whether the organization is active", example = "true")
-    boolean ativo
+    boolean ativo,
+
+    @Schema(description = "Parent organization unique identifier")
+    UUID parentId
 ) {
 }

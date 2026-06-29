@@ -8,5 +8,6 @@ import jakarta.validation.constraints.NotNull;
 public record AddMembershipRequest(
     @NotNull UUID organizacaoId,
     @NotNull TipoOrganizacao tipo,
-    @NotNull PapelOrganizacional papel
+    @NotNull PapelOrganizacional papel,
+    UUID igrejaVinculoId
 ) {}

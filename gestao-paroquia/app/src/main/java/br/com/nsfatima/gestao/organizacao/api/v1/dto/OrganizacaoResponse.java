@@ -19,6 +19,8 @@ public record OrganizacaoResponse(
     @Schema(description = "Vice-coordinator name")
     String viceCoordenador,
     @Schema(description = "Whether the organization is active")
-    boolean ativo
+    boolean ativo,
+    @Schema(description = "Parent organization unique identifier")
+    UUID parentId
 ) {
 }

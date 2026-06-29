@@ -7,5 +7,6 @@ public record MembershipResponse(
     UUID organizacaoId,
     String tipo,
     String papel,
-    boolean ativo
+    boolean ativo,
+    UUID igrejaVinculoId
 ) {}
