@@ -187,6 +187,43 @@ const Organograma: React.FC = () => {
     );
   };
 
+  const getOrgHeaderStyle = (subtype: string) => {
+    switch (subtype?.toUpperCase()) {
+      case 'CLERO':
+        return {
+          bgcolor: '#fff5f5',
+          borderColor: '#ffe3e3',
+          textColor: '#c62828',
+          iconColor: '#e53935',
+          icon: ChurchIcon,
+        };
+      case 'CONSELHO':
+        return {
+          bgcolor: '#f0f4c3',
+          borderColor: '#e6ee9c',
+          textColor: '#827717',
+          iconColor: '#afb42b',
+          icon: SupervisorAccountIcon,
+        };
+      case 'CONSELHO_ECONOMICO':
+        return {
+          bgcolor: '#e8f5e9',
+          borderColor: '#c8e6c9',
+          textColor: '#1b5e20',
+          iconColor: '#2e7d32',
+          icon: SupervisorAccountIcon,
+        };
+      default:
+        return {
+          bgcolor: '#f5f7fb',
+          borderColor: '#eef2f6',
+          textColor: '#1a237e',
+          iconColor: '#1a237e',
+          icon: ChurchIcon,
+        };
+    }
+  };
+
   const renderOrgNode = (org: OrganogramaNode, isInsideTree: boolean = false) => {
     if (!org) return null;
     const isExpanded = expandedMap[org.id] ?? false;
@@ -202,6 +239,9 @@ const Organograma: React.FC = () => {
         !equalsIgnoreCase(m.label, coord) &&
         !equalsIgnoreCase(m.label, vice)
     );
+
+    const headerStyle = getOrgHeaderStyle(org.subtype);
+    const HeaderIcon = headerStyle.icon;
 
     const cardContent = (
       <Card
@@ -224,8 +264,8 @@ const Organograma: React.FC = () => {
         <Box
           sx={{
             p: 1.5,
-            bgcolor: '#f5f7fb',
-            borderBottom: '1px solid #eef2f6',
+            bgcolor: headerStyle.bgcolor,
+            borderBottom: `1px solid ${headerStyle.borderColor}`,
             borderTopLeftRadius: 12,
             borderTopRightRadius: 12,
             display: 'flex',
@@ -234,7 +274,7 @@ const Organograma: React.FC = () => {
           }}
         >
           <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#1a237e' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: headerStyle.textColor }}>
               {org.label}
             </Typography>
             {getSubtypeLabel(org.subtype) !== org.label && (
@@ -243,7 +283,7 @@ const Organograma: React.FC = () => {
               </Typography>
             )}
           </Box>
-          <ChurchIcon sx={{ color: '#1a237e', opacity: 0.8, fontSize: 20 }} />
+          <HeaderIcon sx={{ color: headerStyle.iconColor, opacity: 0.8, fontSize: 20 }} />
         </Box>
 
         <CardContent sx={{ flexGrow: 1, p: 1.5, display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
@@ -278,7 +318,7 @@ const Organograma: React.FC = () => {
                 endIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 sx={{
                   justifyContent: 'space-between',
-                  color: '#1a237e',
+                  color: headerStyle.textColor,
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: '0.75rem',
@@ -387,10 +427,12 @@ const Organograma: React.FC = () => {
       </Box>
 
       {viewMode === 'tree' ? (
-        <Box sx={{ overflowX: 'auto', width: '100%', pb: 4, display: 'flex', justifyContent: 'flex-start', minWidth: 'min-content' }}>
-          <Box sx={treeStyles}>
+        /* Connected Interactive Tree View */
+        <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
+          <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%' }}>
             <ul>
               <li>
+                {/* Root Node (Clero Paroquial / cleroNode) */}
                 <Box sx={{ position: 'relative', pb: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <Card
                     sx={{
@@ -403,6 +445,17 @@ const Organograma: React.FC = () => {
                       overflow: 'hidden',
                     }}
                   >
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -15,
+                        right: -15,
+                        width: 70,
+                        height: 70,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(255,255,255,0.05)',
+                      }}
+                    />
                     <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
                       <ChurchIcon sx={{ fontSize: 36, mb: 0.5, color: 'rgba(255,255,255,0.9)' }} />
                       <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
@@ -425,6 +478,7 @@ const Organograma: React.FC = () => {
                       )}
                     </CardContent>
                   </Card>
+                  {/* Vertical bar coming out from root bottom */}
                   {((conselhoNode) || (conselhoEconomicoNode)) && (
                     <Box
                       sx={{
@@ -440,12 +494,15 @@ const Organograma: React.FC = () => {
                   )}
                 </Box>
 
+                {/* Level 2: Conselhos */}
                 {((conselhoNode) || (conselhoEconomicoNode)) && (
                   <ul>
+                    {/* Conselho Pastoral Paroquial */}
                     {conselhoNode && (
                       <li key={conselhoNode.id}>
                         {renderOrgNode(conselhoNode, true)}
                         
+                        {/* Level 3: Pastorais (filhos do Conselho Pastoral) */}
                         {pastorais.length > 0 && (
                           <ul>
                             {pastorais.map(pastoral => (
@@ -458,6 +515,7 @@ const Organograma: React.FC = () => {
                       </li>
                     )}
 
+                    {/* Conselho Econômico Paroquial */}
                     {conselhoEconomicoNode && (
                       <li key={conselhoEconomicoNode.id}>
                         {renderOrgNode(conselhoEconomicoNode, true)}
@@ -470,153 +528,31 @@ const Organograma: React.FC = () => {
           </Box>
         </Box>
       ) : (
+        /* Grid View Layout organized by hierarchy */
         <>
           <Grid container spacing={4} sx={{ mb: 6, justifyContent: 'center' }}>
+            {/* Nível 1: Clero Paroquial */}
             {cleroNode && (
               <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Card
-                  sx={{
-                    borderRadius: 4,
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
-                    border: '1px solid #e2e8f0',
-                    width: '100%',
-                    maxWidth: 550,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      p: 2.5,
-                      bgcolor: '#fff5f5',
-                      borderBottom: '1px solid #ffe3e3',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16,
-                    }}
-                  >
-                    <Avatar sx={{ bgcolor: '#e53935' }}>
-                      <ChurchIcon />
-                    </Avatar>
-                    <Box sx={{ textAlign: 'left' }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#c62828' }}>
-                        {cleroNode.label}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Liderança Espiritual e Eclesiástica
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <CardContent sx={{ p: 3 }}>
-                    <Grid container spacing={2}>
-                      {cleroNode.children?.map(m => (
-                        <Grid size={{ xs: 12, sm: 6 }} key={m.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                          {renderMemberNode(m, 'CLERO')}
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </CardContent>
-                </Card>
+                {renderOrgNode(cleroNode, false)}
               </Grid>
             )}
 
+            {/* Nível 2: Conselhos side-by-side */}
             {conselhoNode && (
               <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Card
-                  sx={{
-                    borderRadius: 4,
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
-                    border: '1px solid #e2e8f0',
-                    width: '100%',
-                    maxWidth: 550,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      p: 2.5,
-                      bgcolor: '#f0f4c3',
-                      borderBottom: '1px solid #e6ee9c',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16,
-                    }}
-                  >
-                    <Avatar sx={{ bgcolor: '#afb42b' }}>
-                      <SupervisorAccountIcon />
-                    </Avatar>
-                    <Box sx={{ textAlign: 'left' }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#827717' }}>
-                        {conselhoNode.label}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Conselho Administrativo e Pastoral
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <CardContent sx={{ p: 3 }}>
-                    <Grid container spacing={2}>
-                      {conselhoNode.children?.map(m => (
-                        <Grid size={{ xs: 12, sm: 6 }} key={m.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                          {renderMemberNode(m, 'CONSELHO')}
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </CardContent>
-                </Card>
+                {renderOrgNode(conselhoNode, false)}
               </Grid>
             )}
 
             {conselhoEconomicoNode && (
               <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Card
-                  sx={{
-                    borderRadius: 4,
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
-                    border: '1px solid #e2e8f0',
-                    width: '100%',
-                    maxWidth: 550,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      p: 2.5,
-                      bgcolor: '#e8f5e9',
-                      borderBottom: '1px solid #c8e6c9',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16,
-                    }}
-                  >
-                    <Avatar sx={{ bgcolor: '#2e7d32' }}>
-                      <SupervisorAccountIcon />
-                    </Avatar>
-                    <Box sx={{ textAlign: 'left' }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#1b5e20' }}>
-                        {conselhoEconomicoNode.label}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Conselho Econômico e de Assuntos Administrativos
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <CardContent sx={{ p: 3 }}>
-                    <Grid container spacing={2}>
-                      {conselhoEconomicoNode.children?.map(m => (
-                        <Grid size={{ xs: 12, sm: 6 }} key={m.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                          {renderMemberNode(m, 'CONSELHO_ECONOMICO')}
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </CardContent>
-                </Card>
+                {renderOrgNode(conselhoEconomicoNode, false)}
               </Grid>
             )}
           </Grid>
 
+          {/* Nível 3: Pastorais e Movimentos */}
           {pastorais.length > 0 && (
             <Box>
               <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>

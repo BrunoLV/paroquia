@@ -139,8 +139,11 @@ public class GetOrganogramaUseCase {
                     .orElse(null);
         }
 
-        // Se passamos uma lista customizada de filhos, usamos ela. Caso contrário, os memberNodes.
-        List<OrganogramaNodeResponse> finalChildren = children != null ? children : memberNodes;
+        List<OrganogramaNodeResponse> finalChildren = new ArrayList<>();
+        if (children != null) {
+            finalChildren.addAll(children);
+        }
+        finalChildren.addAll(memberNodes);
 
         return new OrganogramaNodeResponse(
                 org.getId().toString(),
