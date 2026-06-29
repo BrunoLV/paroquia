@@ -46,6 +46,14 @@ class GetOrganogramaUseCaseTest {
         conselho.setCoordenador("Maria do Conselho");
         conselho.setAtivo(true);
 
+        UUID conselhoEconomicoId = UUID.randomUUID();
+        OrganizacaoEntity conselhoEconomico = new OrganizacaoEntity();
+        conselhoEconomico.setId(conselhoEconomicoId);
+        conselhoEconomico.setNome("Conselho Econômico");
+        conselhoEconomico.setTipo(TipoOrganizacao.CONSELHO_ECONOMICO);
+        conselhoEconomico.setCoordenador("Pedro Finanças");
+        conselhoEconomico.setAtivo(true);
+
         UUID pastoralId = UUID.randomUUID();
         OrganizacaoEntity pastoral = new OrganizacaoEntity();
         pastoral.setId(pastoralId);
@@ -55,7 +63,7 @@ class GetOrganogramaUseCaseTest {
         pastoral.setAtivo(true);
 
         // Mock database call
-        when(organizacaoRepository.findAll()).thenReturn(List.of(clero, conselho, pastoral));
+        when(organizacaoRepository.findAll()).thenReturn(List.of(clero, conselho, conselhoEconomico, pastoral));
 
         // Mock memberships
         UUID membroId = UUID.randomUUID();
@@ -69,40 +77,36 @@ class GetOrganogramaUseCaseTest {
         when(listMembrosUseCase.execute(pastoralId)).thenReturn(List.of(memberResp));
         when(listMembrosUseCase.execute(cleroId)).thenReturn(List.of());
         when(listMembrosUseCase.execute(conselhoId)).thenReturn(List.of());
+        when(listMembrosUseCase.execute(conselhoEconomicoId)).thenReturn(List.of());
 
         // Execute Use Case
         OrganogramaNodeResponse root = getOrganogramaUseCase.execute();
 
-        // Verify root node
-        assertThat(root.id()).isEqualTo("root");
-        assertThat(root.label()).isEqualTo("Paróquia Teste");
-        assertThat(root.type()).isEqualTo("PAROQUIA");
-        assertThat(root.subtype()).isEqualTo("ROOT");
-        assertThat(root.children()).hasSize(3); // Clero, Conselho, Pastorais e Movimentos (Grupo)
+        // Verify root node (now is Clero!)
+        assertThat(root.label()).isEqualTo("Clero Paroquial");
+        assertThat(root.type()).isEqualTo("ORGANIZACAO");
+        assertThat(root.subtype()).isEqualTo("CLERO");
+        assertThat(root.responsavelNome()).isEqualTo("Padre Pedro");
+        assertThat(root.children()).hasSize(2); // Conselho Pastoral, Conselho Econômico
 
-        // Verify Clero Node
-        OrganogramaNodeResponse cleroNode = root.children().get(0);
-        assertThat(cleroNode.label()).isEqualTo("Clero Paroquial");
-        assertThat(cleroNode.type()).isEqualTo("ORGANIZACAO");
-        assertThat(cleroNode.subtype()).isEqualTo("CLERO");
-        assertThat(cleroNode.responsavelNome()).isEqualTo("Padre Pedro");
-
-        // Verify Conselho Node
-        OrganogramaNodeResponse conselhoNode = root.children().get(1);
+        // Verify Conselho Node (child of Clero)
+        OrganogramaNodeResponse conselhoNode = root.children().get(0);
         assertThat(conselhoNode.label()).isEqualTo("Conselho");
         assertThat(conselhoNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(conselhoNode.subtype()).isEqualTo("CONSELHO");
         assertThat(conselhoNode.responsavelNome()).isEqualTo("Maria do Conselho");
+        assertThat(conselhoNode.children()).hasSize(1); // Contains Pastoral da Catequese!
 
-        // Verify Pastorais Grupo Node
-        OrganogramaNodeResponse groupNode = root.children().get(2);
-        assertThat(groupNode.id()).isEqualTo("grupo-pastorais");
-        assertThat(groupNode.label()).isEqualTo("Pastorais e Movimentos");
-        assertThat(groupNode.type()).isEqualTo("GRUPO");
-        assertThat(groupNode.children()).hasSize(1);
+        // Verify Conselho Econômico Node (child of Clero)
+        OrganogramaNodeResponse conselhoEconomicoNode = root.children().get(1);
+        assertThat(conselhoEconomicoNode.label()).isEqualTo("Conselho Econômico");
+        assertThat(conselhoEconomicoNode.type()).isEqualTo("ORGANIZACAO");
+        assertThat(conselhoEconomicoNode.subtype()).isEqualTo("CONSELHO_ECONOMICO");
+        assertThat(conselhoEconomicoNode.responsavelNome()).isEqualTo("Pedro Finanças");
+        assertThat(conselhoEconomicoNode.children()).isEmpty();
 
-        // Verify Pastoral Node
-        OrganogramaNodeResponse pastoralNode = groupNode.children().get(0);
+        // Verify Pastoral Node (child of Conselho Pastoral)
+        OrganogramaNodeResponse pastoralNode = conselhoNode.children().get(0);
         assertThat(pastoralNode.label()).isEqualTo("Pastoral da Catequese");
         assertThat(pastoralNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(pastoralNode.subtype()).isEqualTo("PASTORAL");

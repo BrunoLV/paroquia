@@ -36,6 +36,7 @@ public class GetOrganogramaUseCase {
         // Identifica e separa as organizações
         OrganizacaoEntity cleroOrg = null;
         OrganizacaoEntity conselhoOrg = null;
+        OrganizacaoEntity conselhoEconomicoOrg = null;
         List<OrganizacaoEntity> pastoraisAndMovimentos = new ArrayList<>();
 
         for (OrganizacaoEntity org : allOrgs) {
@@ -51,42 +52,44 @@ public class GetOrganogramaUseCase {
                 cleroOrg = org;
             } else if (org.getTipo() == TipoOrganizacao.CONSELHO) {
                 conselhoOrg = org;
+            } else if (org.getTipo() == TipoOrganizacao.CONSELHO_ECONOMICO) {
+                conselhoEconomicoOrg = org;
             } else {
                 pastoraisAndMovimentos.add(org);
             }
         }
 
-        List<OrganogramaNodeResponse> rootChildren = new ArrayList<>();
+        // 1. Pastorais e Movimentos (filhos do Conselho Pastoral)
+        List<OrganogramaNodeResponse> pastoralNodes = pastoraisAndMovimentos.stream()
+                .map(org -> buildOrgNode(org, null))
+                .toList();
 
-        // 1. Clero Paroquial
-        if (cleroOrg != null) {
-            rootChildren.add(buildOrgNode(cleroOrg));
-        }
-
-        // 2. Conselho Paroquial
+        // 2. Conselho Pastoral Paroquial (com as pastorais como filhos)
+        OrganogramaNodeResponse conselhoPastoralNode = null;
         if (conselhoOrg != null) {
-            rootChildren.add(buildOrgNode(conselhoOrg));
+            conselhoPastoralNode = buildOrgNode(conselhoOrg, pastoralNodes);
         }
 
-        // 3. Pastorais e Movimentos (Grupo Virtual)
-        if (!pastoraisAndMovimentos.isEmpty()) {
-            List<OrganogramaNodeResponse> pastoralNodes = pastoraisAndMovimentos.stream()
-                    .map(this::buildOrgNode)
-                    .toList();
-
-            rootChildren.add(new OrganogramaNodeResponse(
-                    "grupo-pastorais",
-                    "Pastorais e Movimentos",
-                    "GRUPO",
-                    "PASTORAL_GRUPO",
-                    null,
-                    null,
-                    null,
-                    pastoralNodes
-            ));
+        // 3. Conselho Econômico Paroquial (sem filhos adicionais, apenas membros normais se houver)
+        OrganogramaNodeResponse conselhoEconomicoNode = null;
+        if (conselhoEconomicoOrg != null) {
+            conselhoEconomicoNode = buildOrgNode(conselhoEconomicoOrg, null);
         }
 
-        // Nó Raiz do Organograma (A Paróquia)
+        // 4. Clero Paroquial (Nó raiz)
+        List<OrganogramaNodeResponse> cleroChildren = new ArrayList<>();
+        if (conselhoPastoralNode != null) {
+            cleroChildren.add(conselhoPastoralNode);
+        }
+        if (conselhoEconomicoNode != null) {
+            cleroChildren.add(conselhoEconomicoNode);
+        }
+
+        if (cleroOrg != null) {
+            return buildOrgNode(cleroOrg, cleroChildren);
+        }
+
+        // Fallback caso não haja organização do clero (não deve ocorrer na prática)
         return new OrganogramaNodeResponse(
                 "root",
                 paroquiaNome,
@@ -95,11 +98,11 @@ public class GetOrganogramaUseCase {
                 null,
                 null,
                 null,
-                rootChildren
+                cleroChildren
         );
     }
 
-    private OrganogramaNodeResponse buildOrgNode(OrganizacaoEntity org) {
+    private OrganogramaNodeResponse buildOrgNode(OrganizacaoEntity org, List<OrganogramaNodeResponse> children) {
         List<OrganizacaoMembroResponse> membros = listMembrosUseCase.execute(org.getId());
 
         List<OrganogramaNodeResponse> memberNodes = membros.stream()
@@ -136,6 +139,9 @@ public class GetOrganogramaUseCase {
                     .orElse(null);
         }
 
+        // Se passamos uma lista customizada de filhos, usamos ela. Caso contrário, os memberNodes.
+        List<OrganogramaNodeResponse> finalChildren = children != null ? children : memberNodes;
+
         return new OrganogramaNodeResponse(
                 org.getId().toString(),
                 org.getNome(),
@@ -144,7 +150,7 @@ public class GetOrganogramaUseCase {
                 responsavelNome,
                 responsavelPapel,
                 viceResponsavelNome,
-                memberNodes
+                finalChildren
         );
     }
 }
