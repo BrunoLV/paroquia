@@ -1,0 +1,1 @@
+Phase 2 Verification Report. Automated Test Command: ./gradlew test. Manual Verification: verified input validation rules for church link on registration and membership endpoints. Confirmed by user.
