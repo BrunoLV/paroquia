@@ -1,6 +1,6 @@
 # Plano de Implementação: Matriz, Comunidades e Vínculos
 
-## Fase 1: Banco de Dados e Infraestrutura do Backend
+## Fase 1: Banco de Dados e Infraestrutura do Backend [checkpoint: 508e20e]
 - [x] Task: Banco de Dados: Migração Flyway [9bc7595]
     - [x] Criar arquivo de migração SQL adicionando parent_id na tabela organizacoes
     - [x] Adicionar coluna igreja_vinculo_id na tabela membros_organizacao
@@ -8,10 +8,10 @@
     - [x] Adicionar parentId na entidade OrganizacaoEntity e no modelo de domínio
     - [x] Adicionar igrejaVinculoId na entidade MembroOrganizacaoEntity e no modelo de domínio
     - [x] Atualizar o enum TipoOrganizacao para incluir os tipos MATRIZ e COMUNIDADE
-- [~] Task: Conductor - User Manual Verification 'Banco de Dados e Infraestrutura' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Banco de Dados e Infraestrutura' (Protocol in workflow.md) [508e20e]
 
 ## Fase 2: Regras de Negócio e Use Cases do Backend
-- [ ] Task: Escrita de Testes Unitários de Regra de Negócio (Red Phase)
+- [~] Task: Escrita de Testes Unitários de Regra de Negócio (Red Phase)
     - [ ] Escrever testes falhando em AddMembershipUseCaseTest e RegistrarUsuarioUseCaseTest para validar a obrigatoriedade de igrejaVinculoId para pastorais/movimentos
 - [ ] Task: Implementação das Validações no Backend (Green Phase)
     - [ ] Atualizar AddMembershipUseCase para exigir e validar a igrejaVinculoId
