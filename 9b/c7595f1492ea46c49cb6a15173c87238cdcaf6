@@ -1,0 +1,1 @@
+Task: Banco de Dados: Migração Flyway. Created SQL script adding parent_id to organizacoes and igreja_vinculo_id to membros_organizacao.
