@@ -110,6 +110,8 @@ const Organograma: React.FC = () => {
         return 'Clero Paroquial';
       case 'CONSELHO':
         return 'Conselho Pastoral Paroquial';
+      case 'CONSELHO_ECONOMICO':
+        return 'Conselho Econômico Paroquial';
       case 'PASTORAL':
         return 'Pastoral';
       case 'MOVIMENTO':
@@ -140,8 +142,9 @@ const Organograma: React.FC = () => {
     }
   };
 
-  const renderMemberNode = (member: OrganogramaNode) => {
-    const roleColor = getRoleBadgeColor(member.subtype);
+  const renderMemberNode = (member: OrganogramaNode, orgType?: string) => {
+    const isEconomic = orgType === 'CONSELHO_ECONOMICO';
+    const roleColor = isEconomic ? '#2e7d32' : getRoleBadgeColor(member.subtype);
     const initials = member.label
       .split(' ')
       .slice(0, 2)
@@ -203,7 +206,7 @@ const Organograma: React.FC = () => {
       <Card
         sx={{
           height: '100%',
-          width: 260, // Fixed width for both layout styles to look harmonic and uniform
+          width: 260,
           display: 'flex',
           flexDirection: 'column',
           borderRadius: 3,
@@ -286,7 +289,7 @@ const Organograma: React.FC = () => {
 
               <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                 <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column' }}>
-                  {ordinaryMembers.map(renderMemberNode)}
+                  {ordinaryMembers.map(m => renderMemberNode(m, org.subtype))}
                 </Box>
               </Collapse>
             </Box>
@@ -305,17 +308,14 @@ const Organograma: React.FC = () => {
   if (isLoading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ mb: 4 }}>
-          <Skeleton width={300} height={40} />
-          <Skeleton width={450} height={20} />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 3 }} />
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} /></Grid>
+          </Grid>
         </Box>
-        <Grid container spacing={3}>
-          {[1, 2, 3].map(i => (
-            <Grid size={{ xs: 12 }} key={i}>
-              <Skeleton variant="rectangular" height={150} sx={{ borderRadius: 3 }} />
-            </Grid>
-          ))}
-        </Grid>
       </Container>
     );
   }
@@ -331,21 +331,27 @@ const Organograma: React.FC = () => {
   }
 
   const children = organograma?.children || [];
-  const cleroNode = children.find(c => c.subtype === 'CLERO');
-  const conselhoNode = children.find(c => c.subtype === 'CONSELHO');
-  const pastoraisGrupoNode = children.find(c => c.id === 'grupo-pastorais');
+  let cleroNode: OrganogramaNode | undefined = undefined;
+  let conselhoNode: OrganogramaNode | undefined = undefined;
+  let conselhoEconomicoNode: OrganogramaNode | undefined = undefined;
+  let pastorais: OrganogramaNode[] = [];
 
-  // Flatten direct children list for simplified connected tree view
-  const directChildren: OrganogramaNode[] = [];
-  if (cleroNode) directChildren.push(cleroNode);
-  if (conselhoNode) directChildren.push(conselhoNode);
-  if (pastoraisGrupoNode && pastoraisGrupoNode.children) {
-    directChildren.push(...pastoraisGrupoNode.children);
+  if (organograma.subtype === 'CLERO') {
+    cleroNode = organograma;
+    conselhoNode = children.find(c => c.subtype === 'CONSELHO');
+    conselhoEconomicoNode = children.find(c => c.subtype === 'CONSELHO_ECONOMICO');
+  } else {
+    cleroNode = children.find(c => c.subtype === 'CLERO');
+    conselhoNode = children.find(c => c.subtype === 'CONSELHO');
+    conselhoEconomicoNode = children.find(c => c.subtype === 'CONSELHO_ECONOMICO');
+  }
+
+  if (conselhoNode) {
+    pastorais = conselhoNode.children || [];
   }
 
   return (
     <Box sx={{ mt: 3, mb: 4, px: { xs: 2, md: 4 } }}>
-      {/* Header with Switch */}
       <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 3, display: 'flex' }}>
@@ -380,12 +386,10 @@ const Organograma: React.FC = () => {
       </Box>
 
       {viewMode === 'tree' ? (
-        /* Connected Interactive Tree View (Simplified: All children direct under root) */
         <Box sx={{ overflowX: 'auto', width: '100%', pb: 4, display: 'flex', justifyContent: 'flex-start', minWidth: 'min-content' }}>
           <Box sx={treeStyles}>
             <ul>
               <li>
-                {/* Root Node (A Paróquia) */}
                 <Box sx={{ position: 'relative', pb: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <Card
                     sx={{
@@ -398,29 +402,29 @@ const Organograma: React.FC = () => {
                       overflow: 'hidden',
                     }}
                   >
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -15,
-                        right: -15,
-                        width: 70,
-                        height: 70,
-                        borderRadius: '50%',
-                        bgcolor: 'rgba(255,255,255,0.05)',
-                      }}
-                    />
                     <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
                       <ChurchIcon sx={{ fontSize: 36, mb: 0.5, color: 'rgba(255,255,255,0.9)' }} />
                       <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                        {organograma.label}
+                        {cleroNode?.label || 'Clero Paroquial'}
                       </Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.65rem' }}>
+                      <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.65rem', display: 'block', mb: 1 }}>
                         Administração Geral
                       </Typography>
+                      {cleroNode?.responsavelNome && (
+                        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
+                            Pároco: {cleroNode.responsavelNome}
+                          </Typography>
+                          {cleroNode.viceResponsavelNome && (
+                            <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem', display: 'block' }}>
+                              Vigário: {cleroNode.viceResponsavelNome}
+                            </Typography>
+                          )}
+                        </Box>
+                      )}
                     </CardContent>
                   </Card>
-                  {/* Vertical bar coming out from root bottom */}
-                  {directChildren.length > 0 && (
+                  {((conselhoNode) || (conselhoEconomicoNode)) && (
                     <Box
                       sx={{
                         position: 'absolute',
@@ -435,14 +439,29 @@ const Organograma: React.FC = () => {
                   )}
                 </Box>
 
-                {/* Direct Children (Clero, Conselho, Catequese, etc.) */}
-                {directChildren.length > 0 && (
+                {((conselhoNode) || (conselhoEconomicoNode)) && (
                   <ul>
-                    {directChildren.map(org => (
-                      <li key={org.id}>
-                        {renderOrgNode(org, true)}
+                    {conselhoNode && (
+                      <li key={conselhoNode.id}>
+                        {renderOrgNode(conselhoNode, true)}
+                        
+                        {pastorais.length > 0 && (
+                          <ul>
+                            {pastorais.map(pastoral => (
+                              <li key={pastoral.id}>
+                                {renderOrgNode(pastoral, true)}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </li>
-                    ))}
+                    )}
+
+                    {conselhoEconomicoNode && (
+                      <li key={conselhoEconomicoNode.id}>
+                        {renderOrgNode(conselhoEconomicoNode, true)}
+                      </li>
+                    )}
                   </ul>
                 )}
               </li>
@@ -450,50 +469,10 @@ const Organograma: React.FC = () => {
           </Box>
         </Box>
       ) : (
-        /* Grid View Layout */
         <>
-          {/* Root Card (A Paróquia) */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 5 }}>
-            <Card
-              sx={{
-                minWidth: 320,
-                maxWidth: 400,
-                borderRadius: 4,
-                background: 'linear-gradient(135deg, #1a237e 0%, #311b92 100%)',
-                color: 'white',
-                boxShadow: '0 8px 24px rgba(26, 35, 126, 0.25)',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: -20,
-                  right: -20,
-                  width: 100,
-                  height: 100,
-                  borderRadius: '50%',
-                  bgcolor: 'rgba(255,255,255,0.06)',
-                }}
-              />
-              <CardContent sx={{ p: 3, textAlign: 'center' }}>
-                <ChurchIcon sx={{ fontSize: 44, mb: 1, color: 'rgba(255,255,255,0.9)' }} />
-                <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.5px' }}>
-                  {organograma.label}
-                </Typography>
-                <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                  Administração Geral
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Nível 1 & Nível 2 (Clero e Conselho) */}
           <Grid container spacing={4} sx={{ mb: 6, justifyContent: 'center' }}>
-            {/* Clero Paroquial */}
             {cleroNode && (
-              <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Card
                   sx={{
                     borderRadius: 4,
@@ -518,7 +497,7 @@ const Organograma: React.FC = () => {
                     <Avatar sx={{ bgcolor: '#e53935' }}>
                       <ChurchIcon />
                     </Avatar>
-                    <Box>
+                    <Box sx={{ textAlign: 'left' }}>
                       <Typography variant="h6" sx={{ fontWeight: 700, color: '#c62828' }}>
                         {cleroNode.label}
                       </Typography>
@@ -531,7 +510,7 @@ const Organograma: React.FC = () => {
                     <Grid container spacing={2}>
                       {cleroNode.children?.map(m => (
                         <Grid size={{ xs: 12, sm: 6 }} key={m.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                          {renderMemberNode(m)}
+                          {renderMemberNode(m, 'CLERO')}
                         </Grid>
                       ))}
                     </Grid>
@@ -540,7 +519,6 @@ const Organograma: React.FC = () => {
               </Grid>
             )}
 
-            {/* Conselho Pastoral Paroquial */}
             {conselhoNode && (
               <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Card
@@ -567,7 +545,7 @@ const Organograma: React.FC = () => {
                     <Avatar sx={{ bgcolor: '#afb42b' }}>
                       <SupervisorAccountIcon />
                     </Avatar>
-                    <Box>
+                    <Box sx={{ textAlign: 'left' }}>
                       <Typography variant="h6" sx={{ fontWeight: 700, color: '#827717' }}>
                         {conselhoNode.label}
                       </Typography>
@@ -580,7 +558,55 @@ const Organograma: React.FC = () => {
                     <Grid container spacing={2}>
                       {conselhoNode.children?.map(m => (
                         <Grid size={{ xs: 12, sm: 6 }} key={m.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                          {renderMemberNode(m)}
+                          {renderMemberNode(m, 'CONSELHO')}
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+
+            {conselhoEconomicoNode && (
+              <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Card
+                  sx={{
+                    borderRadius: 4,
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
+                    border: '1px solid #e2e8f0',
+                    width: '100%',
+                    maxWidth: 550,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      p: 2.5,
+                      bgcolor: '#e8f5e9',
+                      borderBottom: '1px solid #c8e6c9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                    }}
+                  >
+                    <Avatar sx={{ bgcolor: '#2e7d32' }}>
+                      <SupervisorAccountIcon />
+                    </Avatar>
+                    <Box sx={{ textAlign: 'left' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#1b5e20' }}>
+                        {conselhoEconomicoNode.label}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Conselho Econômico e de Assuntos Administrativos
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <CardContent sx={{ p: 3 }}>
+                    <Grid container spacing={2}>
+                      {conselhoEconomicoNode.children?.map(m => (
+                        <Grid size={{ xs: 12, sm: 6 }} key={m.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                          {renderMemberNode(m, 'CONSELHO_ECONOMICO')}
                         </Grid>
                       ))}
                     </Grid>
@@ -590,18 +616,17 @@ const Organograma: React.FC = () => {
             )}
           </Grid>
 
-          {/* Nível 3: Pastorais e Movimentos */}
-          {pastoraisGrupoNode && (
+          {pastorais.length > 0 && (
             <Box>
               <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <PeopleIcon sx={{ color: '#1a237e' }} />
                 <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e' }}>
-                  {pastoraisGrupoNode.label}
+                  Pastorais e Movimentos
                 </Typography>
               </Box>
 
               <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {pastoraisGrupoNode.children?.map(org => renderOrgNode(org, false))}
+                {pastorais.map(org => renderOrgNode(org, false))}
               </Grid>
             </Box>
           )}
@@ -611,7 +636,6 @@ const Organograma: React.FC = () => {
   );
 };
 
-// Helper case-insensitive string compare
 const equalsIgnoreCase = (a: string | null | undefined, b: string | null | undefined): boolean => {
   if (a === null || a === undefined || b === null || b === undefined) {
     return false;
