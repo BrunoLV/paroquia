@@ -120,5 +120,10 @@
 - [x] **Track: implementar o plano matriz_comunidades_plan.md**
 *Link: [./archive/matriz_comunidades_20260629/](./archive/matriz_comunidades_20260629/)*
 
+---
+
+- [ ] **Track: fix o problema de layout da tela de cadastro de usuário onde onde não é possível fazer a rolagem da tela**
+*Link: [./tracks/cadastro_rolagem_layout_20260629/](./tracks/cadastro_rolagem_layout_20260629/)*
+
 
 

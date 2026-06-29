@@ -1,0 +1,8 @@
+{
+  "track_id": "cadastro_rolagem_layout_20260629",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-06-29T19:49:00Z",
+  "updated_at": "2026-06-29T19:49:00Z",
+  "description": "fix o problema de layout da tela de cadastro de usuário onde onde não é possível fazer a rolagem da tela"
+}
