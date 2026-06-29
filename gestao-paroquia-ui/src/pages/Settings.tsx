@@ -111,6 +111,7 @@ const Settings = () => {
   const [adminRegisterTelefone, setAdminRegisterTelefone] = useState('');
   const [adminRegisterDataNascimento, setAdminRegisterDataNascimento] = useState('');
   const [adminRegisterSelectedOrgs, setAdminRegisterSelectedOrgs] = useState<string[]>([]);
+  const [adminRegisterChurchSelections, setAdminRegisterChurchSelections] = useState<Record<string, string>>({});
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -302,6 +303,7 @@ const Settings = () => {
       setAdminRegisterTelefone('');
       setAdminRegisterDataNascimento('');
       setAdminRegisterSelectedOrgs([]);
+      setAdminRegisterChurchSelections({});
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao cadastrar membro.';
@@ -1282,6 +1284,7 @@ const Settings = () => {
           setAdminRegisterTelefone('');
           setAdminRegisterDataNascimento('');
           setAdminRegisterSelectedOrgs([]);
+          setAdminRegisterChurchSelections({});
         }}
         maxWidth="sm"
         fullWidth
@@ -1353,11 +1356,23 @@ const Settings = () => {
                 id="admin-reg-orgs"
                 multiple
                 value={adminRegisterSelectedOrgs}
-                onChange={(e) => setAdminRegisterSelectedOrgs(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                onChange={(e) => {
+                  const val = typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value;
+                  setAdminRegisterSelectedOrgs(val);
+                  setAdminRegisterChurchSelections((prev) => {
+                    const next = { ...prev };
+                    Object.keys(next).forEach((id) => {
+                      if (!val.includes(id)) {
+                        delete next[id];
+                      }
+                    });
+                    return next;
+                  });
+                }}
                 input={<OutlinedInput label="Pastorais / Movimentos Iniciais" />}
               >
                 {orgs
-                  .filter((o) => o.ativo)
+                  .filter((o) => o.ativo && o.tipo !== 'MATRIZ' && o.tipo !== 'COMUNIDADE')
                   .map((o) => (
                     <MenuItem key={o.id} value={o.id}>
                       {o.nome} ({getOrgTipoLabel(o.tipo)})
@@ -1365,6 +1380,36 @@ const Settings = () => {
                   ))}
               </Select>
             </FormControl>
+
+            {adminRegisterSelectedOrgs
+              .map((id) => orgs.find((o) => o.id === id))
+              .filter((org): org is Organizacao => !!org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO'))
+              .map((org) => {
+                const activeChurches = orgs.filter(
+                  (o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE')
+                );
+                return (
+                  <FormControl fullWidth margin="normal" key={org.id}>
+                    <InputLabel id={`admin-reg-church-label-${org.id}`}>Igreja de atuação para {org.nome}</InputLabel>
+                    <Select
+                      labelId={`admin-reg-church-label-${org.id}`}
+                      id={`admin-reg-church-${org.id}`}
+                      value={adminRegisterChurchSelections[org.id] || ''}
+                      label={`Igreja de atuação para ${org.nome}`}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAdminRegisterChurchSelections((prev) => ({ ...prev, [org.id]: val }));
+                      }}
+                    >
+                      {activeChurches.map((church) => (
+                        <MenuItem key={church.id} value={church.id}>
+                          {church.nome}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              })}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -1377,6 +1422,7 @@ const Settings = () => {
               setAdminRegisterTelefone('');
               setAdminRegisterDataNascimento('');
               setAdminRegisterSelectedOrgs([]);
+              setAdminRegisterChurchSelections({});
             }}
             color="inherit"
           >
@@ -1394,13 +1440,28 @@ const Settings = () => {
               registerUserMutation.isPending
             }
             onClick={() => {
+              const solicitacoes = [];
+              for (const orgId of adminRegisterSelectedOrgs) {
+                const org = orgs.find((o) => o.id === orgId);
+                if (org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO')) {
+                  const churchId = adminRegisterChurchSelections[orgId];
+                  if (!churchId) {
+                    showError(`Selecione a igreja de atuação para ${org.nome}`);
+                    return;
+                  }
+                  solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: churchId });
+                } else {
+                  solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: null });
+                }
+              }
+
               registerUserMutation.mutate({
                 nome: adminRegisterNome,
                 username: adminRegisterUsername,
                 password: adminRegisterPassword,
                 telefone: adminRegisterTelefone,
                 dataNascimento: adminRegisterDataNascimento,
-                organizacoesSolicitadas: adminRegisterSelectedOrgs
+                organizacoesSolicitadas: solicitacoes
               });
             }}
             sx={{ borderRadius: 0, fontWeight: 600 }}

@@ -6,6 +6,7 @@ import { AuthProvider } from '../auth/AuthContext';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 import apiClient from '../api/client';
+import { Organizacao } from '../api/types';
 
 jest.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
