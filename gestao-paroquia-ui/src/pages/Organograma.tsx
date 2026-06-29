@@ -8,6 +8,7 @@ import {
   Avatar,
   Collapse,
   Button,
+  ButtonGroup,
   Grid,
   Skeleton,
   Alert,
@@ -23,6 +24,8 @@ import {
   Church as ChurchIcon,
   SupervisorAccount as SupervisorAccountIcon,
   GridView as GridViewIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
 import { getOrganograma } from '../api/organizacoes';
 import { OrganogramaNode } from '../api/types';
@@ -96,6 +99,11 @@ const Organograma: React.FC = () => {
 
   const [viewMode, setViewMode] = useState<'tree' | 'grid'>('tree');
   const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
+  const [zoom, setZoom] = useState<number>(1.0);
+
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
+  const handleZoomReset = () => setZoom(1.0);
 
   const toggleExpand = (id: string) => {
     setExpandedMap(prev => ({
@@ -423,8 +431,64 @@ const Organograma: React.FC = () => {
 
       {viewMode === 'tree' ? (
         /* Connected Interactive Tree View */
-        <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
-          <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%' }}>
+        <Box>
+          {/* Controle de Zoom */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <ButtonGroup
+              size="small"
+              variant="outlined"
+              sx={{
+                bgcolor: 'white',
+                border: '1px solid #e2e8f0',
+                borderRadius: 0,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+              }}
+            >
+              <Button
+                onClick={handleZoomOut}
+                disabled={zoom <= 0.5}
+                title="Diminuir Zoom"
+                sx={{
+                  color: '#1a237e',
+                  borderColor: '#e2e8f0',
+                  borderRadius: 0,
+                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                }}
+              >
+                <ZoomOutIcon fontSize="small" />
+              </Button>
+              <Button
+                onClick={handleZoomReset}
+                title="Resetar Zoom"
+                sx={{
+                  color: '#1a237e',
+                  borderColor: '#e2e8f0',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                  px: 2,
+                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                }}
+              >
+                {Math.round(zoom * 100)}%
+              </Button>
+              <Button
+                onClick={handleZoomIn}
+                disabled={zoom >= 1.5}
+                title="Aumentar Zoom"
+                sx={{
+                  color: '#1a237e',
+                  borderColor: '#e2e8f0',
+                  borderRadius: 0,
+                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                }}
+              >
+                <ZoomInIcon fontSize="small" />
+              </Button>
+            </ButtonGroup>
+          </Box>
+
+          <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
+            <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%', zoom: zoom }}>
             <ul>
               <li>
                 {/* Root Node (Clero Paroquial / cleroNode) */}
@@ -522,6 +586,7 @@ const Organograma: React.FC = () => {
             </ul>
           </Box>
         </Box>
+      </Box>
       ) : (
         /* Grid View Layout organized by hierarchy */
         <>
