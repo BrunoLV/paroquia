@@ -44,7 +44,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
             <Card
               elevation={0}
               sx={{
-                borderRadius: 3,
+                borderRadius: 0,
                 border: '1px solid',
                 borderColor: 'divider',
                 background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
@@ -71,7 +71,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
                   <Box
                     sx={{
                       p: 1.5,
-                      borderRadius: 2.5,
+                      borderRadius: 0,
                       background: card.bgGradient,
                       display: 'flex',
                       alignItems: 'center',

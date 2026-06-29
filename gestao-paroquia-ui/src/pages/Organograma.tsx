@@ -353,11 +353,11 @@ const Organograma: React.FC = () => {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 3 }} />
+          <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 0 }} />
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} /></Grid>
-            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} /></Grid>
-            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 0 }} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 0 }} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 0 }} /></Grid>
           </Grid>
         </Box>
       </Container>
@@ -398,7 +398,7 @@ const Organograma: React.FC = () => {
     <Box sx={{ mt: 3, mb: 4, px: { xs: 2, md: 4 } }}>
       <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 3, display: 'flex' }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
             <AccountTreeIcon sx={{ fontSize: 32, color: '#1a237e' }} />
           </Box>
           <Box>

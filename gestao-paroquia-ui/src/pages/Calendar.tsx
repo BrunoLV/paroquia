@@ -594,7 +594,7 @@ const Calendar = () => {
                   value={selectedOrgFilter}
                   label="Organização"
                   onChange={(e) => setSelectedOrgFilter(e.target.value)}
-                  sx={{ borderRadius: '8px' }}
+                  sx={{ borderRadius: 0 }}
                 >
                   <MenuItem value="">
                     <em>Todas</em>
@@ -614,7 +614,7 @@ const Calendar = () => {
                   value={selectedCategoryFilter}
                   label="Categoria"
                   onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  sx={{ borderRadius: '8px' }}
+                  sx={{ borderRadius: 0 }}
                 >
                   <MenuItem value="">
                     <em>Todas</em>

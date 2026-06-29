@@ -30,7 +30,7 @@ const WeeklyTimeline: React.FC<WeeklyTimelineProps> = ({ events }) => {
       elevation={0}
       sx={{
         p: 3,
-        borderRadius: 3,
+        borderRadius: 0,
         border: '1px solid',
         borderColor: 'divider',
         height: '100%',
