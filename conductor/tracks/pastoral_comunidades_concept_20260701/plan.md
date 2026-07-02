@@ -17,13 +17,13 @@
     - [x] Update `AuthorizationPolicy` to restrict event editing/approval based on coordinator's church link matching the event's `igrejaVinculoId`.
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [008a1fd]
 
-## Phase 3: Frontend Development (TDD)
-- [ ] Task: Red Phase - Write Frontend Unit Tests
-    - [ ] Add unit tests in `EventRegistrationModal.test.tsx` verifying display and saving of `igrejaVinculoId`.
-    - [ ] Add unit tests in `Settings.test.tsx` verifying display and saving of community coordinators.
-- [ ] Task: Green Phase - Implement UI Changes
-    - [ ] Update `types.ts` to add `igrejaVinculoId` property on `Evento` and related types.
-    - [ ] Add `igrejaVinculoId` field (optional dropdown) to `EventRegistrationModal.tsx` for Pastorais and Movimentos.
-    - [ ] Update `Calendar.tsx` to render the concatenations of `Pastoral - Igreja` in event list and detail components.
-    - [ ] Update `Settings.tsx` Pastoral Edit dialog: replace the single text coordinator fields with a dynamic grid to display and assign the Coordinator and Vice-Coordinator for each active church (Matriz and all Communities).
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+## Phase 3: Frontend Development (TDD) [checkpoint: 37289f5]
+- [x] Task: Red Phase - Write Frontend Unit Tests
+    - [x] Add unit tests in `EventRegistrationModal.test.tsx` verifying display and saving of `igrejaVinculoId`.
+    - [x] Add unit tests in `Settings.test.tsx` verifying display and saving of community coordinators.
+- [x] Task: Green Phase - Implement UI Changes
+    - [x] Update `types.ts` to add `igrejaVinculoId` property on `Evento` and related types.
+    - [x] Add `igrejaVinculoId` field (optional dropdown) to `EventRegistrationModal.tsx` for Pastorais and Movimentos.
+    - [x] Update `Calendar.tsx` to render the concatenations of `Pastoral - Igreja` in event list and detail components.
+    - [x] Update `Settings.tsx` Pastoral Edit dialog: replace the single text coordinator fields with a dynamic grid to display and assign the Coordinator and Vice-Coordinator for each active church (Matriz and all Communities).
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) [37289f5]
