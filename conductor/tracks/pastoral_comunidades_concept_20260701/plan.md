@@ -1,9 +1,9 @@
 # Implementation Plan: Scoping Pastorais and Events by Church (Matriz/Comunidade)
 
-## Phase 1: Database Migration
+## Phase 1: Database Migration [checkpoint: 15bf283]
 - [x] Task: Create Flyway migration to add `igreja_vinculo_id` column to `eventos` table. [c06a817]
     - [x] Create `V039__add_event_igreja_vinculo.sql` adding `igreja_vinculo_id` (UUID references `calendario.organizacoes(id)`) to `calendario.eventos`.
-- [ ] Task: Conductor - User Manual Verification 'Database Schema' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Database Schema' (Protocol in workflow.md) [15bf283]
 
 ## Phase 2: Backend Development (TDD)
 - [ ] Task: Red Phase - Write Backend Unit Tests
