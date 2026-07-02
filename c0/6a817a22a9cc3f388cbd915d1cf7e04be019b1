@@ -1,0 +1,4 @@
+Task: Create Flyway migration to add igreja_vinculo_id column to eventos table
+Summary: Added Flyway SQL migration V039.
+Files: gestao-paroquia/app/src/main/resources/db/migration/V039__add_event_igreja_vinculo.sql
+Core why: To scope calendar events to a specific church context.
