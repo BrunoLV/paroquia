@@ -1,0 +1,4 @@
+Task: Green Phase - Implement Repository & Usecase Logic (part 2)
+Summary: Integrated igrejaVinculoId field to EventoEntity, EventoRequest, EventoResponse, EventoMapper, and all event creation/update/cancel use cases and approval mapping. Enforced scoped authorization rules on events based on user's active/fallback memberships.
+Files: Multiple files in gestao-paroquia module.
+Core why: To enable scoping calendar events to specific church communities (Matriz/Comunidade) and restrict editing/approvals to coordinators linked to those churches.
