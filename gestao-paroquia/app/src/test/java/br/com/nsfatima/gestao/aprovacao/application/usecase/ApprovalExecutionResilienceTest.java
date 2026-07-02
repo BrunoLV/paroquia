@@ -80,7 +80,7 @@ class ApprovalExecutionResilienceTest {
         entity.setStatus(AprovacaoStatus.PENDENTE.name());
         
         when(repository.findById(id)).thenReturn(Optional.of(entity));
-        when(actorContextResolver.resolveRequired()).thenReturn(new EventoActorContext("admin", "admin", "admin", null, null));
+        when(actorContextResolver.resolveRequired()).thenReturn(new EventoActorContext("admin", "admin", "admin", null, null, null));
         
         ApprovalExecutionStrategy strategy = strategies.get(2); // cancel
         when(strategy.execute(any(), any())).thenThrow(new RuntimeException("Crash"));

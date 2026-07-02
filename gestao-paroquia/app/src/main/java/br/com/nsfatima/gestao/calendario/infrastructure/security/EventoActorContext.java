@@ -6,8 +6,7 @@ public record EventoActorContext(
         String actor,
         String role,
         String organizationType,
-        UUID
- organizationId,
-        UUID
- usuarioId) {
+        UUID organizationId,
+        UUID usuarioId,
+        UUID igrejaVinculoId) {
 }

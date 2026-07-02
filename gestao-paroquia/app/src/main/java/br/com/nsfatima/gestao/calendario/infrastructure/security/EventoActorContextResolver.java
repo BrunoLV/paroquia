@@ -41,7 +41,8 @@ public class EventoActorContextResolver {
                         PapelOrganizacional.PAROCO.storedValue(),
                         TipoOrganizacao.CLERO.name(),
                         null,
-                        usuarioDetails.getUsuarioId());
+                        usuarioDetails.getUsuarioId(),
+                        null);
             }
 
             ExternalMembershipReader.Membership membership = usuarioDetails.getMemberships().stream()
@@ -54,7 +55,8 @@ public class EventoActorContextResolver {
                     membership.role(),
                     membership.organizationType(),
                     membership.organizationId(),
-                    usuarioDetails.getUsuarioId());
+                    usuarioDetails.getUsuarioId(),
+                    membership.igrejaVinculoId());
         }
 
         for (GrantedAuthority authority : authentication.getAuthorities()) {
@@ -71,7 +73,7 @@ public class EventoActorContextResolver {
             String organizationType = parts[0].toUpperCase(Locale.ROOT);
             String role = parts[1].toLowerCase(Locale.ROOT).replace('_', '-');
             if (authorizationPolicy.isRoleAllowed(organizationType, role)) {
-                return new EventoActorContext(authentication.getName(), role, organizationType, null, null);
+                return new EventoActorContext(authentication.getName(), role, organizationType, null, null, null);
             }
         }
 
@@ -79,6 +81,7 @@ public class EventoActorContextResolver {
                 authentication.getName(),
                 PapelOrganizacional.COORDENADOR.storedValue(),
                 TipoOrganizacao.PASTORAL.name(),
+                null,
                 null,
                 null);
     }

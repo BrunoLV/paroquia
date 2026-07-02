@@ -12,6 +12,12 @@ public interface MembroOrganizacaoJpaRepository extends JpaRepository<MembroOrga
 
     Optional<MembroOrganizacaoEntity> findByOrganizacaoIdAndPapelAndAtivoTrue(UUID organizacaoId, String papel);
 
+    Optional<MembroOrganizacaoEntity> findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(UUID organizacaoId, String papel, UUID igrejaVinculoId);
+
+    Optional<MembroOrganizacaoEntity> findByOrganizacaoIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(UUID organizacaoId, String papel);
+
+    Optional<MembroOrganizacaoEntity> findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(UUID usuarioId, UUID organizacaoId, String papel, UUID igrejaVinculoId);
+
     List<MembroOrganizacaoEntity> findByOrganizacaoIdAndAtivoTrue(UUID organizacaoId);
 
     boolean existsByOrganizacaoId(UUID organizacaoId);

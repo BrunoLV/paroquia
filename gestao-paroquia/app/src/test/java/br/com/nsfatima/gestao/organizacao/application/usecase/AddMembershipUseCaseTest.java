@@ -80,7 +80,7 @@ class AddMembershipUseCaseTest {
         existing.setPapel(PapelOrganizacional.COORDENADOR.name());
         existing.setAtivo(true);
 
-        when(membershipRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(organizacaoId, PapelOrganizacional.COORDENADOR.name()))
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(eq(organizacaoId), eq(PapelOrganizacional.COORDENADOR.name()), any(UUID.class)))
                 .thenReturn(Optional.of(existing));
 
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -195,5 +195,118 @@ class AddMembershipUseCaseTest {
                 useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
         );
         assertEquals("Igreja de vinculo deve ser do tipo MATRIZ ou COMUNIDADE", ex.getMessage());
+    }
+
+    @Test
+    void shouldAllowDuplicateMembershipsInDifferentChurches() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID churchA = UUID.randomUUID();
+        UUID churchB = UUID.randomUUID();
+
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchA))
+                .thenReturn(Optional.empty());
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchB))
+                .thenReturn(Optional.empty());
+
+        var defaultIgrejaA = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        defaultIgrejaA.setId(churchA);
+        defaultIgrejaA.setTipo(TipoOrganizacao.MATRIZ);
+        when(organizacaoRepository.findById(churchA)).thenReturn(Optional.of(defaultIgrejaA));
+
+        var defaultIgrejaB = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        defaultIgrejaB.setId(churchB);
+        defaultIgrejaB.setTipo(TipoOrganizacao.COMUNIDADE);
+        when(organizacaoRepository.findById(churchB)).thenReturn(Optional.of(defaultIgrejaB));
+
+        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertDoesNotThrow(() -> useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchA));
+        assertDoesNotThrow(() -> useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchB));
+    }
+
+    @Test
+    void shouldPreventDuplicateMembershipsInSameChurch() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID churchId = UUID.randomUUID();
+
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        MembroOrganizacaoEntity existing = new MembroOrganizacaoEntity();
+        existing.setId(UUID.randomUUID());
+        existing.setUsuarioId(usuarioId);
+        existing.setOrganizacaoId(organizacaoId);
+        existing.setPapel(PapelOrganizacional.MEMBRO.name());
+        existing.setIgrejaVinculoId(churchId);
+        existing.setAtivo(true);
+
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchId))
+                .thenReturn(Optional.of(existing));
+
+        UUID resultId = useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchId);
+        assertEquals(existing.getId(), resultId);
+        verify(membershipRepository, never()).save(any(MembroOrganizacaoEntity.class));
+    }
+
+    @Test
+    void shouldReactivateInactiveMembershipInsteadOfDuplicate() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID churchId = UUID.randomUUID();
+
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        MembroOrganizacaoEntity existing = new MembroOrganizacaoEntity();
+        existing.setId(UUID.randomUUID());
+        existing.setUsuarioId(usuarioId);
+        existing.setOrganizacaoId(organizacaoId);
+        existing.setPapel(PapelOrganizacional.MEMBRO.name());
+        existing.setIgrejaVinculoId(churchId);
+        existing.setAtivo(false);
+
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchId))
+                .thenReturn(Optional.of(existing));
+        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        UUID resultId = useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchId);
+        assertEquals(existing.getId(), resultId);
+        assertTrue(existing.isAtivo());
+        verify(membershipRepository).save(existing);
+    }
+
+    @Test
+    void shouldOnlyInactivatePreviousCoordinatorAtSpecificChurch() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID churchA = UUID.randomUUID();
+
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        MembroOrganizacaoEntity existing = new MembroOrganizacaoEntity();
+        existing.setId(UUID.randomUUID());
+        existing.setUsuarioId(UUID.randomUUID());
+        existing.setOrganizacaoId(organizacaoId);
+        existing.setPapel(PapelOrganizacional.COORDENADOR.name());
+        existing.setIgrejaVinculoId(churchA);
+        existing.setAtivo(true);
+
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId, PapelOrganizacional.COORDENADOR.name(), churchA))
+                .thenReturn(Optional.of(existing));
+        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, churchA);
+
+        assertFalse(existing.isAtivo());
+        verify(membershipRepository).save(existing);
     }
 }

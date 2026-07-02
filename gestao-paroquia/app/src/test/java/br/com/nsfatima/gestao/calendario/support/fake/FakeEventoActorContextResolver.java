@@ -15,7 +15,8 @@ public class FakeEventoActorContextResolver extends EventoActorContextResolver {
                 "tester",
                 "CONSELHO",
                 UUID.randomUUID(),
-                UUID.randomUUID());
+                UUID.randomUUID(),
+                null);
     }
 
     public void setContext(EventoActorContext context) {

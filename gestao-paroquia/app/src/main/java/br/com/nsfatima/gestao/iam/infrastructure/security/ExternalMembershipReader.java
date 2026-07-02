@@ -24,7 +24,7 @@ public class ExternalMembershipReader {
     public List<Membership> findActiveMemberships(UUID userId) {
         return jdbcTemplate.query(
                 """
-                        SELECT m.organizacao_id, m.tipo_organizacao, m.papel, o.nome as organizacao_nome, o.contato as organizacao_contato, o.coordenador as organizacao_coordenador, o.vice_coordenador as organizacao_vice_coordenador, o.ativo as organizacao_ativo
+                        SELECT m.organizacao_id, m.tipo_organizacao, m.papel, m.igreja_vinculo_id, o.nome as organizacao_nome, o.contato as organizacao_contato, o.coordenador as organizacao_coordenador, o.vice_coordenador as organizacao_vice_coordenador, o.ativo as organizacao_ativo
                         FROM calendario.membros_organizacao m
                         JOIN calendario.organizacoes o ON o.id = m.organizacao_id
                         WHERE m.usuario_id = ?
@@ -48,6 +48,8 @@ public class ExternalMembershipReader {
     }
 
     private Membership mapMembership(ResultSet rs, int rowNum) throws SQLException {
+        String igrejaVinculoStr = rs.getString("igreja_vinculo_id");
+        UUID igrejaVinculoId = igrejaVinculoStr == null ? null : UUID.fromString(igrejaVinculoStr);
         return new Membership(
                 UUID.fromString(rs.getString("organizacao_id")),
                 rs.getString("organizacao_nome"),
@@ -56,7 +58,8 @@ public class ExternalMembershipReader {
                 rs.getString("organizacao_coordenador"),
                 rs.getString("organizacao_vice_coordenador"),
                 rs.getBoolean("organizacao_ativo"),
-                rs.getString("papel"));
+                rs.getString("papel"),
+                igrejaVinculoId);
     }
 
     public record Membership(
@@ -67,10 +70,11 @@ public class ExternalMembershipReader {
             String organizationCoordinator,
             String organizationViceCoordinator,
             boolean organizationActive,
-            String role) {
+            String role,
+            UUID igrejaVinculoId) {
 
         public Membership(UUID organizationId, String organizationType, String role) {
-            this(organizationId, "Organizacao", organizationType, null, null, null, true, role);
+            this(organizationId, "Organizacao", organizationType, null, null, null, true, role, null);
         }
 
         public String authority() {

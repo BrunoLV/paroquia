@@ -71,13 +71,30 @@ public class AddMembershipUseCase {
             }
         }
 
-        // Unicity rule: Organizations can only have 1 coordinator and 1 vice-coordinator active at a time
+        // Duplicate check: Prevent duplicate memberships for the exact same combination of {usuarioId, organizacaoId, papel, igrejaVinculoId}
+        var existingMembership = membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, papel.name(), igrejaVinculoId);
+        if (existingMembership.isPresent()) {
+            var membership = existingMembership.get();
+            if (membership.isAtivo()) {
+                return membership.getId();
+            } else {
+                membership.setAtivo(true);
+                return membershipRepository.save(membership).getId();
+            }
+        }
+
+        // Unicity rule: Organizations can only have 1 coordinator and 1 vice-coordinator active at a time per church context
         if (papel == PapelOrganizacional.COORDENADOR || papel == PapelOrganizacional.VICE_COORDENADOR) {
-            membershipRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(organizacaoId, papel.name())
-                    .ifPresent(existing -> {
-                        existing.setAtivo(false);
-                        membershipRepository.save(existing);
-                    });
+            java.util.Optional<MembroOrganizacaoEntity> existing;
+            if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
+                existing = membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId, papel.name(), igrejaVinculoId);
+            } else {
+                existing = membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(organizacaoId, papel.name());
+            }
+            existing.ifPresent(old -> {
+                old.setAtivo(false);
+                membershipRepository.save(old);
+            });
         }
 
         MembroOrganizacaoEntity entity = new MembroOrganizacaoEntity();
