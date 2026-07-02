@@ -1,0 +1,4 @@
+Task: Green Phase - Implement Repository & Usecase Logic (part 1)
+Summary: Updated MembroOrganizacaoJpaRepository, AddMembershipUseCase, and security resolvers to support scoped church memberships and local coordinator unicity rules.
+Files: Multiple files in gestao-paroquia module.
+Core why: To allow members to have multiple church-specific coordinator roles without global deactivation.
