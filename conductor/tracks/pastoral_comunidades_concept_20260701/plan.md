@@ -5,7 +5,7 @@
     - [x] Create `V039__add_event_igreja_vinculo.sql` adding `igreja_vinculo_id` (UUID references `calendario.organizacoes(id)`) to `calendario.eventos`.
 - [x] Task: Conductor - User Manual Verification 'Database Schema' (Protocol in workflow.md) [15bf283]
 
-## Phase 2: Backend Development (TDD)
+## Phase 2: Backend Development (TDD) [checkpoint: 008a1fd]
 - [x] Task: Red Phase - Write Backend Unit Tests
     - [x] Write tests in `AddMembershipUseCaseTest.java` verifying duplicate prevention and community-scoped coordinator unicity rules.
     - [x] Write tests in `AuthorizationPolicyTest.java` verifying that event creation/editing/approvals check church links.
@@ -15,7 +15,7 @@
     - [x] Update `Evento` JPA entity, Mapper, and DTO classes (`EventoRequest`, `EventoResponse`) to include `igrejaVinculoId`.
     - [x] Update event creation/update logic to validate and save `igrejaVinculoId`.
     - [x] Update `AuthorizationPolicy` to restrict event editing/approval based on coordinator's church link matching the event's `igrejaVinculoId`.
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [008a1fd]
 
 ## Phase 3: Frontend Development (TDD)
 - [ ] Task: Red Phase - Write Frontend Unit Tests
