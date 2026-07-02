@@ -1,0 +1,2 @@
+Task: Red Phase - Write Backend Unit Tests
+Summary: Created EventoPatchAuthorizationServiceTest.java containing unit tests for the church-scoped authorization logic on events.
