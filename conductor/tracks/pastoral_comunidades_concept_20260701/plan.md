@@ -6,9 +6,9 @@
 - [x] Task: Conductor - User Manual Verification 'Database Schema' (Protocol in workflow.md) [15bf283]
 
 ## Phase 2: Backend Development (TDD)
-- [ ] Task: Red Phase - Write Backend Unit Tests
-    - [ ] Write tests in `AddMembershipUseCaseTest.java` verifying duplicate prevention and community-scoped coordinator unicity rules.
-    - [ ] Write tests in `AuthorizationPolicyTest.java` verifying that event creation/editing/approvals check church links.
+- [x] Task: Red Phase - Write Backend Unit Tests
+    - [x] Write tests in `AddMembershipUseCaseTest.java` verifying duplicate prevention and community-scoped coordinator unicity rules.
+    - [x] Write tests in `AuthorizationPolicyTest.java` verifying that event creation/editing/approvals check church links.
 - [ ] Task: Green Phase - Implement Repository & Usecase Logic
     - [ ] Add query methods to `MembroOrganizacaoJpaRepository` for finding memberships by organization, role, and church link (both with specific UUID and null).
     - [ ] Update `AddMembershipUseCase` to prevent duplicate identical memberships and enforce coordinator unicity per church.
