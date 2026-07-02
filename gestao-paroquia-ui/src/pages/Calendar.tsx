@@ -545,9 +545,16 @@ const Calendar = () => {
   ];
 
   // Helper to find organization name by ID
-  const getOrgName = (orgId: string) => {
+  const getOrgName = (orgId: string, igrejaVinculoId?: string | null) => {
     const org = organizations.find((o) => o.id === orgId);
-    return org ? org.nome : 'Organização Paroquial';
+    const orgName = org ? org.nome : 'Organização Paroquial';
+    if (igrejaVinculoId) {
+      const church = organizations.find((o) => o.id === igrejaVinculoId);
+      if (church) {
+        return `${orgName} - ${church.nome}`;
+      }
+    }
+    return orgName;
   };
 
   const getLocalName = (localId: string | null) => {
@@ -851,7 +858,7 @@ const Calendar = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                           <Chip size="small" label={evt.categoria} sx={{ bgcolor: styleColors.bg, color: styleColors.text, fontWeight: 600 }} />
-                          <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
+                          <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId, evt.igrejaVinculoId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
                           <Chip size="small" label={evt.status} color={getStatusColor(evt.status)} sx={{ fontWeight: 600 }} />
                         </Box>
                       </Grid>
@@ -933,7 +940,7 @@ const Calendar = () => {
                       Organização Responsável
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
-                      {getOrgName(selectedEvent.organizacaoResponsavelId)}
+                      {getOrgName(selectedEvent.organizacaoResponsavelId, selectedEvent.igrejaVinculoId)}
                     </Typography>
                   </Box>
                 </Box>

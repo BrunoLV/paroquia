@@ -48,6 +48,7 @@ export interface Evento {
   conflictState: string | null;
   conflictReason: string | null;
   adicionadoExtraJustificativa?: string | null;
+  igrejaVinculoId?: string | null;
   pendingApprovalId?: string;
   pendingSolicitanteId?: string;
   pendingTipoSolicitacao?: string;

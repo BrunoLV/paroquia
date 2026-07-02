@@ -128,6 +128,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('PASTORAL');
   const [orgId, setOrgId] = useState('');
+  const [igrejaVinculoId, setIgrejaVinculoId] = useState('');
   const [localId, setLocalId] = useState('');
   const [projetoId, setProjetoId] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -142,6 +143,10 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     intervalo: 1,
     diasDaSemana: [],
   });
+
+  const churches = useMemo(() => {
+    return organizations.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'));
+  }, [organizations]);
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
@@ -233,6 +238,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setDescription(initialEvent.descricao || '');
         setCategory(initialEvent.categoria || 'PASTORAL');
         setOrgId(initialEvent.organizacaoResponsavelId || '');
+        setIgrejaVinculoId(initialEvent.igrejaVinculoId || '');
         setLocalId(initialEvent.localId || '');
         setProjetoId(initialEvent.projetoId || '');
         setStartDate(formatIsoToLocal(initialEvent.inicio));
@@ -255,6 +261,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setTitle('');
         setDescription('');
         setCategory('PASTORAL');
+        setIgrejaVinculoId('');
         setLocalId('');
         setProjetoId('');
         setStatus('CONFIRMADO');
@@ -338,6 +345,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       descricao: description,
       categoria: category,
       organizacaoResponsavelId: orgId,
+      igrejaVinculoId: igrejaVinculoId || null,
       localId: localId || null,
       projetoId: projetoId || null,
       participantes,
@@ -431,6 +439,27 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 {filteredOrganizations.map((org) => (
                   <MenuItem key={org.id} value={org.id}>
                     {org.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth size="small">
+              <InputLabel id="new-igreja-vinculo-label">Igreja de Atuação (Opcional)</InputLabel>
+              <Select
+                labelId="new-igreja-vinculo-label"
+                value={igrejaVinculoId}
+                label="Igreja de Atuação (Opcional)"
+                onChange={(e) => setIgrejaVinculoId(e.target.value)}
+                disabled={isSubmitting}
+                data-testid="event-church-select"
+              >
+                <MenuItem value="">
+                  <em>Nenhuma (Paróquia / Geral)</em>
+                </MenuItem>
+                {churches.map((ch) => (
+                  <MenuItem key={ch.id} value={ch.id}>
+                    {ch.nome}
                   </MenuItem>
                 ))}
               </Select>

@@ -200,7 +200,13 @@ const Settings = () => {
   const { data: users = [], isLoading: isLoadingUsers, isError: isErrorUsers } = useQuery({
     queryKey: ['usuarios'],
     queryFn: getUsuarios,
-    enabled: (tabValue === 3 || isOrgMembersModalOpen) && isAuthorizedUsers,
+    enabled: (tabValue === 3 || isOrgMembersModalOpen || orgModalOpen) && isAuthorizedUsers,
+  });
+
+  const { data: editingOrgMembros = [] } = useQuery({
+    queryKey: ['organizacaoMembros', selectedOrg?.id],
+    queryFn: () => getOrganizacaoMembros(selectedOrg!.id),
+    enabled: !!selectedOrg && orgModalOpen && (selectedOrg.tipo === 'PASTORAL' || selectedOrg.tipo === 'MOVIMENTO'),
   });
 
   const approveUserMutation = useMutation({
@@ -323,9 +329,38 @@ const Settings = () => {
   });
 
   const createOrgMutation = useMutation({
-    mutationFn: (data: Omit<Organizacao, 'id'>) => createOrganizacao(data),
+    mutationFn: async ({ data, matrix }: { data: Omit<Organizacao, 'id'>; matrix?: { churchId: string; coordenadorId?: string | null; viceCoordenadorId?: string | null }[] }) => {
+      const createdOrg = await createOrganizacao(data);
+
+      if (matrix && (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO')) {
+        const promises: Promise<any>[] = [];
+        for (const entry of matrix) {
+          const { churchId, coordenadorId, viceCoordenadorId } = entry;
+          if (coordenadorId) {
+            promises.push(addMembership(coordenadorId, {
+              organizacaoId: createdOrg.id,
+              tipo: data.tipo,
+              papel: 'COORDENADOR',
+              igrejaVinculoId: churchId
+            }));
+          }
+          if (viceCoordenadorId) {
+            promises.push(addMembership(viceCoordenadorId, {
+              organizacaoId: createdOrg.id,
+              tipo: data.tipo,
+              papel: 'VICE_COORDENADOR',
+              igrejaVinculoId: churchId
+            }));
+          }
+        }
+        await Promise.all(promises);
+      }
+
+      return createdOrg;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
       showSuccess('Pastoral / Movimento cadastrado com sucesso!');
       setOrgModalOpen(false);
     },
@@ -336,9 +371,59 @@ const Settings = () => {
   });
 
   const updateOrgMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Omit<Organizacao, 'id'> }) => updateOrganizacao(id, data),
+    mutationFn: async ({ id, data, matrix }: { id: string; data: Omit<Organizacao, 'id'>; matrix?: { churchId: string; coordenadorId?: string | null; viceCoordenadorId?: string | null }[] }) => {
+      const updatedOrg = await updateOrganizacao(id, data);
+
+      if (matrix && (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO')) {
+        const currentMembros = await getOrganizacaoMembros(id);
+        const promises: Promise<any>[] = [];
+
+        for (const entry of matrix) {
+          const { churchId, coordenadorId, viceCoordenadorId } = entry;
+
+          const currentCoord = currentMembros.find(m => m.ativo && m.papel === 'COORDENADOR' && m.igrejaVinculoId === churchId);
+          const currentVice = currentMembros.find(m => m.ativo && m.papel === 'VICE_COORDENADOR' && m.igrejaVinculoId === churchId);
+
+          if (coordenadorId) {
+            if (!currentCoord || currentCoord.usuarioId !== coordenadorId) {
+              promises.push(addMembership(coordenadorId, {
+                organizacaoId: id,
+                tipo: data.tipo,
+                papel: 'COORDENADOR',
+                igrejaVinculoId: churchId
+              }));
+            }
+          } else {
+            if (currentCoord) {
+              promises.push(removeMembership(currentCoord.usuarioId, currentCoord.membershipId));
+            }
+          }
+
+          if (viceCoordenadorId) {
+            if (!currentVice || currentVice.usuarioId !== viceCoordenadorId) {
+              promises.push(addMembership(viceCoordenadorId, {
+                organizacaoId: id,
+                tipo: data.tipo,
+                papel: 'VICE_COORDENADOR',
+                igrejaVinculoId: churchId
+              }));
+            }
+          } else {
+            if (currentVice) {
+              promises.push(removeMembership(currentVice.usuarioId, currentVice.membershipId));
+            }
+          }
+        }
+
+        await Promise.all(promises);
+      }
+
+      return updatedOrg;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+      queryClient.invalidateQueries({ queryKey: ['organizacaoMembros'] });
       showSuccess('Pastoral / Movimento atualizado com sucesso!');
       setOrgModalOpen(false);
       setSelectedOrg(null);
@@ -1519,15 +1604,18 @@ const Settings = () => {
           setOrgModalOpen(false);
           setSelectedOrg(null);
         }}
-        onSave={(data) => {
+        onSave={(data, matrix) => {
           if (selectedOrg) {
-            updateOrgMutation.mutate({ id: selectedOrg.id, data });
+            updateOrgMutation.mutate({ id: selectedOrg.id, data, matrix });
           } else {
-            createOrgMutation.mutate(data);
+            createOrgMutation.mutate({ data, matrix });
           }
         }}
         organizacao={selectedOrg}
         isPending={createOrgMutation.isPending || updateOrgMutation.isPending}
+        usuarios={users}
+        igrejas={orgs.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))}
+        membros={editingOrgMembros}
       />
     </Container>
   );

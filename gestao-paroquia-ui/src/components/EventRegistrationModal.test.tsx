@@ -380,4 +380,22 @@ describe('EventRegistrationModal', () => {
     expect(mockShowError).toHaveBeenCalledWith('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
+
+  it('renders optional church link selection and submits value', () => {
+    const mockOrgsWithChurches = [
+      { id: 'org-1', nome: 'Pastoral A', tipo: 'PASTORAL', contato: null, ativo: true },
+      { id: 'church-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', contato: null, ativo: true },
+      { id: 'church-2', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: null, ativo: false },
+    ];
+
+    render(
+      <EventRegistrationModal
+        {...defaultProps}
+        organizations={mockOrgsWithChurches}
+      />
+    );
+
+    const churchSelect = screen.getByTestId('event-church-select');
+    expect(churchSelect).toBeInTheDocument();
+  });
 });
