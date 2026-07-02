@@ -125,5 +125,10 @@
 - [x] **Track: fix o problema de layout da tela de cadastro de usuário onde onde não é possível fazer a rolagem da tela**
 *Link: [./archive/cadastro_rolagem_layout_20260629/](./archive/cadastro_rolagem_layout_20260629/)*
 
+---
+
+- [ ] **Track: necessario ajustar o conceito de Pastora, membros e coordenadores (scoping por paroquia e comunidades)**
+*Link: [./tracks/pastoral_comunidades_concept_20260701/](./tracks/pastoral_comunidades_concept_20260701/)*
+
 
 
