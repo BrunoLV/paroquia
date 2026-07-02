@@ -123,7 +123,7 @@
 ---
 
 - [x] **Track: fix o problema de layout da tela de cadastro de usuário onde onde não é possível fazer a rolagem da tela**
-*Link: [./tracks/cadastro_rolagem_layout_20260629/](./tracks/cadastro_rolagem_layout_20260629/)*
+*Link: [./archive/cadastro_rolagem_layout_20260629/](./archive/cadastro_rolagem_layout_20260629/)*
 
 
 
