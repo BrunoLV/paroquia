@@ -1,0 +1,4 @@
+Task: Green Phase - Implement UI changes
+Summary: Updated types, form modals, and pages to support coordination matrix per active church and scoping calendar events optionally to specific churches.
+Files: Multiple files in gestao-paroquia-ui module.
+Core why: Complete the full feature requirements requested by the user.
