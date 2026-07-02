@@ -9,12 +9,12 @@
 - [x] Task: Red Phase - Write Backend Unit Tests
     - [x] Write tests in `AddMembershipUseCaseTest.java` verifying duplicate prevention and community-scoped coordinator unicity rules.
     - [x] Write tests in `AuthorizationPolicyTest.java` verifying that event creation/editing/approvals check church links.
-- [ ] Task: Green Phase - Implement Repository & Usecase Logic
-    - [ ] Add query methods to `MembroOrganizacaoJpaRepository` for finding memberships by organization, role, and church link (both with specific UUID and null).
-    - [ ] Update `AddMembershipUseCase` to prevent duplicate identical memberships and enforce coordinator unicity per church.
-    - [ ] Update `Evento` JPA entity, Mapper, and DTO classes (`EventoRequest`, `EventoResponse`) to include `igrejaVinculoId`.
-    - [ ] Update event creation/update logic to validate and save `igrejaVinculoId`.
-    - [ ] Update `AuthorizationPolicy` to restrict event editing/approval based on coordinator's church link matching the event's `igrejaVinculoId`.
+- [x] Task: Green Phase - Implement Repository & Usecase Logic
+    - [x] Add query methods to `MembroOrganizacaoJpaRepository` for finding memberships by organization, role, and church link (both with specific UUID and null).
+    - [x] Update `AddMembershipUseCase` to prevent duplicate identical memberships and enforce coordinator unicity per church.
+    - [x] Update `Evento` JPA entity, Mapper, and DTO classes (`EventoRequest`, `EventoResponse`) to include `igrejaVinculoId`.
+    - [x] Update event creation/update logic to validate and save `igrejaVinculoId`.
+    - [x] Update `AuthorizationPolicy` to restrict event editing/approval based on coordinator's church link matching the event's `igrejaVinculoId`.
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Development (TDD)
