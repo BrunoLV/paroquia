@@ -26,11 +26,11 @@ public class EventoPatchAuthorizationService {
             PapelOrganizacional.VIGARIO,
             PapelOrganizacional.PADRE);
 
-    public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoResponsavelId) {
-        resolveCreateRequestMode(actorContext, organizacaoResponsavelId);
+    public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
+        resolveCreateRequestMode(actorContext, organizacaoResponsavelId, igrejaVinculoId);
     }
 
-    public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext, UUID organizacaoResponsavelId) {
+    public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext, UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
@@ -38,11 +38,16 @@ public class EventoPatchAuthorizationService {
             throw new AccessDeniedException("User does not have permission for this create operation");
         }
 
-        if (actorContext.organizationId() != null
-                && organizacaoResponsavelId != null
-                && !organizacaoResponsavelId.equals(actorContext.organizationId())
-                && normalizedRole != PapelOrganizacional.PAROCO) {
-            throw new AccessDeniedException("User cannot create events outside the responsible organization scope");
+        if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
+            boolean matchesOrg = actorContext.organizationId().equals(organizacaoResponsavelId);
+            boolean matchesChurch = (igrejaVinculoId == null) || (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
+
+            if (!matchesOrg || !matchesChurch) {
+                boolean hasOtherValidMembership = checkUserMembership(organizacaoResponsavelId, igrejaVinculoId, ORG_CREATOR_ROLES);
+                if (!hasOtherValidMembership) {
+                    throw new AccessDeniedException("User cannot create events outside the responsible organization scope");
+                }
+            }
         }
 
         if (normalizedRole == PapelOrganizacional.PAROCO
@@ -55,21 +60,27 @@ public class EventoPatchAuthorizationService {
         return CreateRequestMode.REQUIRES_APPROVAL;
     }
 
-    public void assertCanEditGeneral(EventoActorContext actorContext, UUID eventoOrganizacaoResponsavelId) {
+    public void assertCanEditGeneral(EventoActorContext actorContext, UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (!ORG_EDITOR_ROLES.contains(normalizedRole)) {
             throw new ForbiddenOperationException("User does not have permission for this patch operation");
         }
-        if (actorContext.organizationId() == null) {
-            return;
-        }
-        if (!eventoOrganizacaoResponsavelId.equals(actorContext.organizationId())) {
-            throw new ForbiddenOperationException("User cannot edit events outside the responsible organization scope");
+
+        if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
+            boolean matchesOrg = actorContext.organizationId().equals(eventoOrganizacaoResponsavelId);
+            boolean matchesChurch = (eventIgrejaVinculoId == null) || (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(eventIgrejaVinculoId));
+
+            if (!matchesOrg || !matchesChurch) {
+                boolean hasOtherValidMembership = checkUserMembership(eventoOrganizacaoResponsavelId, eventIgrejaVinculoId, ORG_EDITOR_ROLES);
+                if (!hasOtherValidMembership) {
+                    throw new ForbiddenOperationException("User cannot edit events outside the responsible organization scope");
+                }
+            }
         }
     }
 
-    public void assertCanManageParticipants(EventoActorContext actorContext, UUID eventoOrganizacaoResponsavelId) {
-        assertCanEditGeneral(actorContext, eventoOrganizacaoResponsavelId);
+    public void assertCanManageParticipants(EventoActorContext actorContext, UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
+        assertCanEditGeneral(actorContext, eventoOrganizacaoResponsavelId, eventIgrejaVinculoId);
     }
 
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
@@ -84,6 +95,23 @@ public class EventoPatchAuthorizationService {
             throw new ForbiddenOperationException(
                     "Only conselho coordinator or parroco can change responsible organization");
         }
+    }
+
+    private boolean checkUserMembership(UUID organizacaoResponsavelId, UUID eventIgrejaVinculoId, Set<PapelOrganizacional> allowedRoles) {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
+        if (auth.getPrincipal() instanceof br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails usuarioDetails) {
+            return usuarioDetails.getMemberships().stream()
+                    .anyMatch(m -> {
+                        boolean sameOrg = m.organizationId().equals(organizacaoResponsavelId);
+                        boolean roleAllowed = allowedRoles.contains(PapelOrganizacional.fromStoredValue(m.role()));
+                        boolean sameChurch = (eventIgrejaVinculoId == null) || (m.igrejaVinculoId() != null && m.igrejaVinculoId().equals(eventIgrejaVinculoId));
+                        return sameOrg && roleAllowed && sameChurch;
+                    });
+        }
+        return false;
     }
 
     public enum CreateRequestMode {

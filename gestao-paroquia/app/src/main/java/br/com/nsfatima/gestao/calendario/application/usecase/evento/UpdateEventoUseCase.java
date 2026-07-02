@@ -137,16 +137,16 @@ public class UpdateEventoUseCase {
         if (request.organizacaoResponsavelId() != null && !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId())) {
             authorizationService.assertCanChangeResponsibleOrganization(actorContext);
         } else {
-            authorizationService.assertCanEditGeneral(actorContext, entity.getOrganizacaoResponsavelId());
+            authorizationService.assertCanEditGeneral(actorContext, entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
         }
 
         if (request.participantes() != null) {
-            authorizationService.assertCanManageParticipants(actorContext, entity.getOrganizacaoResponsavelId());
+            authorizationService.assertCanManageParticipants(actorContext, entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
         }
     }
 
     private boolean requiresApproval(EventoEntity entity, EventoActorContext actorContext) {
-        return authorizationService.resolveCreateRequestMode(actorContext, entity.getOrganizacaoResponsavelId()) 
+        return authorizationService.resolveCreateRequestMode(actorContext, entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId()) 
                 == CreateRequestMode.REQUIRES_APPROVAL;
     }
 
@@ -198,7 +198,7 @@ public class UpdateEventoUseCase {
                         null, null, // Don't update template start/end times via instance update
                         request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
                         request.organizacaoResponsavelId(), request.participantes(),
-                        null, request.projetoId(), request.localId());
+                        null, request.projetoId(), request.localId(), request.igrejaVinculoId());
                 mapper.applyPatch(baseEvent, templateRequest, status);
                 repository.save(baseEvent);
                 applyParticipantChanges(baseEvent.getId(), request.participantes());
@@ -213,7 +213,7 @@ public class UpdateEventoUseCase {
                     null, null, // Don't change time for siblings
                     request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
                     request.organizacaoResponsavelId(), request.participantes(),
-                    null, request.projetoId(), request.localId());
+                    null, request.projetoId(), request.localId(), request.igrejaVinculoId());
 
             mapper.applyPatch(instance, siblingRequest, status);
             repository.save(instance);
@@ -323,6 +323,6 @@ public class UpdateEventoUseCase {
     public UpdateEventoRequest restoreFromApprovalPayload(ApprovalActionPayload payload) {
         return new UpdateEventoRequest(payload.titulo(), payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
                 payload.status(), payload.adicionadoExtraJustificativa(), payload.canceladoMotivo(),
-                payload.organizacaoResponsavelId(), payload.participantes(), null, payload.projetoId(), payload.localId());
+                payload.organizacaoResponsavelId(), payload.participantes(), null, payload.projetoId(), payload.localId(), payload.igrejaVinculoId());
     }
 }

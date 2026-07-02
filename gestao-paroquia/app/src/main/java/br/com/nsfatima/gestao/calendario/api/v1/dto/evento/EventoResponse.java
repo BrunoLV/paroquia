@@ -18,6 +18,7 @@ public record EventoResponse(
         Instant fim,
         EventoStatusResponse status,
         UUID localId,
+        UUID igrejaVinculoId,
         List<UUID> participantes,
         UUID recorrenciaId,
         String conflictState,

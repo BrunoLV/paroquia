@@ -48,7 +48,10 @@ public record UpdateEventoRequest(
         UUID projetoId,
 
         @Schema(description = "ID do local onde o evento ocorrerá")
-        UUID localId) {
+        UUID localId,
+
+        @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade) se houver")
+        UUID igrejaVinculoId) {
 
         public boolean isEmptyPayload() {
 
@@ -63,10 +66,28 @@ public record UpdateEventoRequest(
                 && organizacaoResponsavelId == null
                 && participantes == null
                 && projetoId == null
-                && localId == null;
+                && localId == null
+                && igrejaVinculoId == null;
     }
 
     public boolean changesSensitiveFields() {
-        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO || projetoId != null || localId != null;
+        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO || projetoId != null || localId != null || igrejaVinculoId != null;
+    }
+
+    public UpdateEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID organizacaoResponsavelId,
+            List<UUID> participantes,
+            EventoEditScope editScope,
+            UUID projetoId,
+            UUID localId) {
+        this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, organizacaoResponsavelId, participantes, editScope, projetoId, localId, null);
     }
 }

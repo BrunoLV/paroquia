@@ -100,7 +100,7 @@ public class CreateEventoUseCase {
         validateCreationRequest(request);
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext, request.organizacaoResponsavelId());
+        CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext, request.organizacaoResponsavelId(), request.igrejaVinculoId());
 
         if (mode == CreateRequestMode.REQUIRES_APPROVAL) {
             return new EventoOperationResult.Pending(approvalRequestUseCase.execute(idempotencyKey, request), HttpStatus.ACCEPTED);
@@ -205,7 +205,7 @@ public class CreateEventoUseCase {
         Objects.requireNonNull(payload.fim(), "fim is required");
         
         return new CreateEventoRequest(payload.titulo(), payload.descricao(), payload.categoria(), payload.organizacaoResponsavelId(),
-                payload.projetoId(), payload.localId(), payload.inicio(), payload.fim(), payload.status(), payload.adicionadoExtraJustificativa(),
+                payload.projetoId(), payload.localId(), payload.igrejaVinculoId(), payload.inicio(), payload.fim(), payload.status(), payload.adicionadoExtraJustificativa(),
                 payload.participantes());
     }
 }

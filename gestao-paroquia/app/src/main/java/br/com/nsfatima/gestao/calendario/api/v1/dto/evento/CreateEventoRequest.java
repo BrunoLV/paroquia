@@ -32,6 +32,9 @@ public record CreateEventoRequest(
         @Schema(description = "ID do local onde o evento ocorrerá")
         UUID localId,
 
+        @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade) se houver")
+        UUID igrejaVinculoId,
+
         @Schema(description = "Data e hora de início do evento (UTC)")
         @NotNull Instant inicio,
 
@@ -46,4 +49,19 @@ public record CreateEventoRequest(
 
         @Schema(description = "Lista de IDs das organizações participantes")
         List<UUID> participantes) {
+
+    public CreateEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID organizacaoResponsavelId,
+            UUID projetoId,
+            UUID localId,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            List<UUID> participantes) {
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status, adicionadoExtraJustificativa, participantes);
+    }
 }

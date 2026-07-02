@@ -61,6 +61,9 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "local_id")
     private UUID localId;
 
+    @Column(name = "igreja_vinculo_id")
+    private UUID igrejaVinculoId;
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "evento_id", insertable = false, updatable = false)
     private List<EventoEnvolvidoEntity> envolvidos;
@@ -191,5 +194,13 @@ public class EventoEntity extends BaseVersionedEntity {
 
     public void setEnvolvidos(List<EventoEnvolvidoEntity> envolvidos) {
         this.envolvidos = envolvidos;
+    }
+
+    public UUID getIgrejaVinculoId() {
+        return igrejaVinculoId;
+    }
+
+    public void setIgrejaVinculoId(UUID igrejaVinculoId) {
+        this.igrejaVinculoId = igrejaVinculoId;
     }
 }

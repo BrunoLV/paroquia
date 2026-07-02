@@ -37,6 +37,7 @@ public class EventoMapper {
         entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
         entity.setProjetoId(request.projetoId());
         entity.setLocalId(request.localId());
+        entity.setIgrejaVinculoId(request.igrejaVinculoId());
         if (request.categoria() != null) {
             entity.setCategoria(request.categoria().name());
         }
@@ -80,6 +81,7 @@ public class EventoMapper {
                 entity.getFimUtc(),
                 status,
                 entity.getLocalId(),
+                entity.getIgrejaVinculoId(),
                 participantes,
                 entity.getRecorrenciaId(),
                 entity.getConflictState(),
@@ -113,6 +115,9 @@ public class EventoMapper {
         }
         if (request.localId() != null) {
             entity.setLocalId(request.localId());
+        }
+        if (request.igrejaVinculoId() != null) {
+            entity.setIgrejaVinculoId(request.igrejaVinculoId());
         }
         if (request.categoria() != null) {
             entity.setCategoria(request.categoria().name());
