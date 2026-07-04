@@ -130,5 +130,11 @@
 - [x] **Track: necessario ajustar o conceito de Pastora, membros e coordenadores (scoping por paroquia e comunidades)**
 *Link: [./archive/pastoral_comunidades_concept_20260701/](./archive/pastoral_comunidades_concept_20260701/)*
 
+---
+
+- [ ] **Track: Implementar mudança de hierarquia (Clero, Paróquia/Comunidades, Conselhos e Pastorais)**
+*Link: [./tracks/organizational_hierarchy_alignment_20260704/](./tracks/organizational_hierarchy_alignment_20260704/)*
+
+
 
 
