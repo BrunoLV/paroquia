@@ -127,8 +127,8 @@
 
 ---
 
-- [~] **Track: necessario ajustar o conceito de Pastora, membros e coordenadores (scoping por paroquia e comunidades)**
-*Link: [./tracks/pastoral_comunidades_concept_20260701/](./tracks/pastoral_comunidades_concept_20260701/)*
+- [x] **Track: necessario ajustar o conceito de Pastora, membros e coordenadores (scoping por paroquia e comunidades)**
+*Link: [./archive/pastoral_comunidades_concept_20260701/](./archive/pastoral_comunidades_concept_20260701/)*
 
 
 
