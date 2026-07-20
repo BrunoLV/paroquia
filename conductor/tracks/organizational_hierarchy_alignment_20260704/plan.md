@@ -18,8 +18,8 @@
 - [x] Task: Red Phase - Write Frontend Unit Tests (f128bb4)
     - [x] Add unit tests in `OrganizacaoFormModal.test.tsx` verifying that parent-child inputs filter options dynamically based on the selected organization type. (f128bb4)
     - [x] Add unit tests in `Organograma.test.tsx` verifying that recursive structures are rendered correctly. (f128bb4)
-- [~] Task: Green Phase - Implement UI Changes
-    - [~] Add a **Vínculo (Pai)** dropdown selector in `OrganizacaoFormModal.tsx`.
-    - [~] Implement dynamic filtering of parent options in `OrganizacaoFormModal.tsx` based on the selected organization type.
-    - [~] Verify that `Settings.tsx` passes all necessary list collections (e.g., all active organizations) to populate parent options.
+- [x] Task: Green Phase - Implement UI Changes (e16a9ea)
+    - [x] Add a **Vínculo (Pai)** dropdown selector in `OrganizacaoFormModal.tsx`. (e16a9ea)
+    - [x] Implement dynamic filtering of parent options in `OrganizacaoFormModal.tsx` based on the selected organization type. (e16a9ea)
+    - [x] Verify that `Settings.tsx` passes all necessary list collections (e.g., all active organizations) to populate parent options. (e16a9ea)
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
