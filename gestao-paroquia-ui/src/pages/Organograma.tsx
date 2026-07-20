@@ -468,7 +468,24 @@ const Organograma: React.FC = () => {
             )}
           </Box>
         ) : (
-          renderOrgNode(node, true)
+          hasChildren ? (
+            <Box sx={{ position: 'relative', pb: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {renderOrgNode(node, true)}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  borderLeft: '2px solid #1a237e',
+                  height: '24px',
+                  width: 0,
+                }}
+              />
+            </Box>
+          ) : (
+            renderOrgNode(node, true)
+          )
         )}
 
         {hasChildren && (
