@@ -1,0 +1,7 @@
+Task: Green Phase - Implement UI Changes (Recursive Organograma)
+Summary of changes:
+- Rewrote organograma rendering logic in Organograma.tsx to render the tree recursively.
+- Grouped the Grid view dynamically by logical organization subtypes.
+Modified files:
+- gestao-paroquia-ui/src/pages/Organograma.tsx
+Why: Correctly render all organizations (including Matriz, Comunidade, Councils and Pastorais) down the new deep canonical hierarchy tree.
