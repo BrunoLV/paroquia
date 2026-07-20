@@ -6,9 +6,9 @@
 - [x] Task: Conductor - User Manual Verification 'Database Verification & Seed Update' (Protocol in workflow.md) (ce825cd)
 
 ## Phase 2: Backend Development (TDD) [checkpoint: ]
-- [ ] Task: Red Phase - Write Backend Unit Tests
-    - [ ] Add unit tests in `GetOrganogramaUseCaseTest` to verify that the organograma tree is generated dynamically using `parentId` relationships.
-    - [ ] Add unit tests in `CreateOrganizacaoUseCaseTest` / `UpdateOrganizacaoUseCaseTest` to verify hierarchy validation rules (e.g. Matriz/Comunidade must have Clero as parent; Councils must have Matriz/Comunidade as parent; Pastorais must have Pastoral Councils as parent).
+- [x] Task: Red Phase - Write Backend Unit Tests (c24d8be)
+    - [x] Add unit tests in `GetOrganogramaUseCaseTest` to verify that the organograma tree is generated dynamically using `parentId` relationships. (c24d8be)
+    - [x] Add unit tests in `CreateOrganizacaoUseCaseTest` / `UpdateOrganizacaoUseCaseTest` to verify hierarchy validation rules (e.g. Matriz/Comunidade must have Clero as parent; Councils must have Matriz/Comunidade as parent; Pastorais must have Pastoral Councils as parent). (c24d8be)
 - [ ] Task: Green Phase - Implement Usecase & Validation Logic
     - [ ] Rewrite `GetOrganogramaUseCase.java` to dynamically build the recursive tree from `parentId` linkages in the database.
     - [ ] Implement hierarchy validation rules in organization creation and update use cases.
