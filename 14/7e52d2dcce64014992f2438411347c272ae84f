@@ -1,0 +1,4 @@
+Task: Update SQL seed script seed-data.sql to link MATRIZ and COMUNIDADE organizations to the CLERO root organization.
+Summary of changes: Updated parent_id fields for seeded organizations (Matriz, Comunidades, Conselhos, and Pastorais) to align them under their proper canonical hierarchical parents.
+Modified files: gestao-paroquia/docker/seed-data.sql
+Why: To prepare database state matching the canonical hierarchy.
