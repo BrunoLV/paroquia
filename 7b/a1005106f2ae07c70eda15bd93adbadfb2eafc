@@ -1,0 +1,10 @@
+Task: Green Phase - Implement Usecase & Validation Logic
+Summary of changes:
+- Rewrote GetOrganogramaUseCase.java to recursively build the organograma tree from parentId relationships.
+- Implemented validateHierarchy rules in OrganizacaoService.java for creation/updates.
+- Fixed OrganizacaoApiIntegrationTest.java to align tests with new validations and setup test database.
+Modified files:
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/application/usecase/GetOrganogramaUseCase.java
+- gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/domain/service/OrganizacaoService.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/organizacao/integration/OrganizacaoApiIntegrationTest.java
+Why: Implement dynamic tree generation and enforce canonical parish organizational hierarchy rules in the backend.
