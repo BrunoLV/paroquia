@@ -5,7 +5,7 @@
     - [x] Update SQL seed script `seed-data.sql` to link `MATRIZ` and `COMUNIDADE` organizations to the `CLERO` root organization. (147e52d)
 - [x] Task: Conductor - User Manual Verification 'Database Verification & Seed Update' (Protocol in workflow.md) (ce825cd)
 
-## Phase 2: Backend Development (TDD) [checkpoint: ]
+## Phase 2: Backend Development (TDD) [checkpoint: 3e0edf9]
 - [x] Task: Red Phase - Write Backend Unit Tests (c24d8be)
     - [x] Add unit tests in `GetOrganogramaUseCaseTest` to verify that the organograma tree is generated dynamically using `parentId` relationships. (c24d8be)
     - [x] Add unit tests in `CreateOrganizacaoUseCaseTest` / `UpdateOrganizacaoUseCaseTest` to verify hierarchy validation rules (e.g. Matriz/Comunidade must have Clero as parent; Councils must have Matriz/Comunidade as parent; Pastorais must have Pastoral Councils as parent). (c24d8be)
