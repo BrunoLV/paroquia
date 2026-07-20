@@ -1,0 +1,20 @@
+Verification Report - Phase 2: Backend Development
+
+Automated Test Command:
+./gradlew test (inside gestao-paroquia directory)
+Outcome: BUILD SUCCESSFUL (all 370 tests passed)
+
+Manual Verification Steps:
+1. Ensure application stack is running: ./restart-docker.sh
+2. POST to create a PASTORAL without parentId:
+   curl -i -X POST http://localhost:8080/api/v1/organizacoes -H "Content-Type: application/json" -d '{"nome": "Pastoral Inválida", "tipo": "PASTORAL", "contato": "musica@nsfatima.com"}'
+   Expected response: 409 Conflict (message: PASTORAL organization must have a parent organization.)
+3. POST to create a PASTORAL under Conselho Pastoral Paroquial (00000000-0000-0000-0000-0000000000cc):
+   curl -i -X POST http://localhost:8080/api/v1/organizacoes -H "Content-Type: application/json" -d '{"nome": "Pastoral da Música Teste", "tipo": "PASTORAL", "parentId": "00000000-0000-0000-0000-0000000000cc", "contato": "musica@nsfatima.com", "ativo": true}'
+   Expected response: 201 Created
+4. GET organograma endpoint:
+   curl -s http://localhost:8080/api/v1/organizacoes/organograma
+   Expected response: Dynamic tree structure rooted at Clero Paroquial with correctly nested children.
+
+User Confirmation:
+Explicit confirmation 'yes' received from user.
