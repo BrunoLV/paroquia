@@ -28,6 +28,7 @@ interface OrganizacaoFormModalProps {
   usuarios?: Usuario[];
   igrejas?: Organizacao[];
   membros?: OrganizacaoMembro[];
+  organizacoes?: Organizacao[];
 }
 
 const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
@@ -39,12 +40,14 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   usuarios = [],
   igrejas = [],
   membros = [],
+  organizacoes = [],
 }) => {
   const [nome, setNome] = useState('');
   const [tipo, setTipo] = useState('PASTORAL');
   const [contato, setContato] = useState('');
   const [coordenador, setCoordenador] = useState('');
   const [viceCoordenador, setViceCoordenador] = useState('');
+  const [parentId, setParentId] = useState('');
   const [errors, setErrors] = useState<{ nome?: string }>({});
 
   const [matrixState, setMatrixState] = useState<Record<string, { coordenadorId: string; viceCoordenadorId: string }>>({});
@@ -56,12 +59,14 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       setContato(organizacao.contato || '');
       setCoordenador(organizacao.coordenador || '');
       setViceCoordenador(organizacao.viceCoordenador || '');
+      setParentId(organizacao.parentId || '');
     } else {
       setNome('');
       setTipo('PASTORAL');
       setContato('');
       setCoordenador('');
       setViceCoordenador('');
+      setParentId('');
     }
     setErrors({});
   }, [organizacao, open]);
@@ -116,8 +121,25 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       coordenador: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? null : (coordenador.trim() || null),
       viceCoordenador: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? null : (viceCoordenador.trim() || null),
       ativo: organizacao ? organizacao.ativo : true,
+      parentId: (tipo === 'CLERO') ? null : (parentId || null),
     }, matrixPayload);
   };
+
+  const parentOptions = organizacoes
+    .filter(org => org.ativo)
+    .filter(org => !organizacao || org.id !== organizacao.id)
+    .filter(org => {
+      if (tipo === 'MATRIZ' || tipo === 'COMUNIDADE') {
+        return org.tipo === 'CLERO';
+      }
+      if (tipo === 'CONSELHO' || tipo === 'CONSELHO_ECONOMICO') {
+        return org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
+      }
+      if (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') {
+        return org.tipo === 'CONSELHO';
+      }
+      return true;
+    });
 
   return (
     <Dialog
@@ -166,13 +188,37 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                   <MenuItem value="MOVIMENTO">Movimento</MenuItem>
                   <MenuItem value="LAICATO">Laicato</MenuItem>
                   <MenuItem value="CLERO">Clero</MenuItem>
+                  <MenuItem value="MATRIZ">Matriz</MenuItem>
+                  <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
                   <MenuItem value="CONSELHO">Conselho</MenuItem>
+                  <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico</MenuItem>
                   <MenuItem value="OUTRO">Outro</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6 }}>
+            {tipo !== 'CLERO' && (
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="parent-org-label">Organização Pai</InputLabel>
+                  <Select
+                    labelId="parent-org-label"
+                    label="Organização Pai"
+                    value={parentId}
+                    onChange={(e) => setParentId(e.target.value as string)}
+                    disabled={isPending}
+                    sx={{ borderRadius: 0 }}
+                  >
+                    <MenuItem value=""><em>Nenhuma</em></MenuItem>
+                    {parentOptions.map(org => (
+                      <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
+
+            <Grid size={{ xs: 12, sm: tipo === 'CLERO' ? 6 : 12 }}>
               <TextField
                 label="Contato (E-mail/Tel)"
                 variant="outlined"

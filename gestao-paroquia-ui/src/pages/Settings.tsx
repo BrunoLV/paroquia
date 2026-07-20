@@ -1616,6 +1616,7 @@ const Settings = () => {
         usuarios={users}
         igrejas={orgs.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))}
         membros={editingOrgMembros}
+        organizacoes={orgs}
       />
     </Container>
   );
