@@ -1,0 +1,5 @@
+Task: Red Phase - Write Frontend Unit Tests
+Summary of changes: Added unit tests to OrganizacaoFormModal.test.tsx to verify filtering of parent options, displaying only active options, and submitting parentId.
+Modified files:
+- gestao-paroquia-ui/src/pages/OrganizacaoFormModal.test.tsx
+Why: Define expected UI behaviors in the TDD cycle before implementing them.
