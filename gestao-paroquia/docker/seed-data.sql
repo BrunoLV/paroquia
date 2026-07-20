@@ -23,16 +23,16 @@ VALUES
 INSERT INTO calendario.organizacoes (id, nome, tipo, contato, ativo, parent_id, version)
 VALUES 
     ('00000000-0000-0000-0000-000000000001', 'Paróquia Nossa Senhora de Fátima', 'CLERO', 'contato@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', TRUE, NULL, 0),
+    ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
+    ('00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
+    ('00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
+    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', 0),
+    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', 0),
+    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', TRUE, NULL, 0)
+    ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', 0),
+    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', 0),
+    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', 0)
 ON CONFLICT (id) DO NOTHING;
 
 -- Users (Usuarios)
