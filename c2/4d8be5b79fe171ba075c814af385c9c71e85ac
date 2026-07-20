@@ -1,0 +1,6 @@
+Task: Red Phase - Write Backend Unit Tests
+Summary of changes: Added failing unit tests to define hierarchy validation and dynamic organograma tree traversal.
+Modified files:
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/organizacao/application/usecase/GetOrganogramaUseCaseTest.java
+- gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/organizacao/domain/service/OrganizacaoServiceTest.java
+Why: Establish failing tests as the baseline for the TDD cycle.
