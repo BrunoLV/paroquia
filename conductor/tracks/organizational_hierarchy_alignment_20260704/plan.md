@@ -22,4 +22,4 @@
     - [x] Add a **Vínculo (Pai)** dropdown selector in `OrganizacaoFormModal.tsx`. (e16a9ea)
     - [x] Implement dynamic filtering of parent options in `OrganizacaoFormModal.tsx` based on the selected organization type. (e16a9ea)
     - [x] Verify that `Settings.tsx` passes all necessary list collections (e.g., all active organizations) to populate parent options. (e16a9ea)
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
