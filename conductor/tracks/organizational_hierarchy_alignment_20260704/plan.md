@@ -15,9 +15,9 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) (ded4ca0)
 
 ## Phase 3: Frontend Development (TDD) [checkpoint: ]
-- [~] Task: Red Phase - Write Frontend Unit Tests
-    - [~] Add unit tests in `OrganizacaoFormModal.test.tsx` verifying that parent-child inputs filter options dynamically based on the selected organization type.
-    - [~] Add unit tests in `Organograma.test.tsx` verifying that recursive structures are rendered correctly.
+- [x] Task: Red Phase - Write Frontend Unit Tests (f128bb4)
+    - [x] Add unit tests in `OrganizacaoFormModal.test.tsx` verifying that parent-child inputs filter options dynamically based on the selected organization type. (f128bb4)
+    - [x] Add unit tests in `Organograma.test.tsx` verifying that recursive structures are rendered correctly. (f128bb4)
 - [ ] Task: Green Phase - Implement UI Changes
     - [ ] Add a **Vínculo (Pai)** dropdown selector in `OrganizacaoFormModal.tsx`.
     - [ ] Implement dynamic filtering of parent options in `OrganizacaoFormModal.tsx` based on the selected organization type.
