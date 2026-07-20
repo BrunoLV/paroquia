@@ -1,0 +1,6 @@
+Task: Green Phase - Implement UI Changes (Organograma Connectors)
+Summary of changes:
+- Wrapped non-root parent nodes that have children in a relative Box with a bottom vertical connector line.
+Modified files:
+- gestao-paroquia-ui/src/pages/Organograma.tsx
+Why: Fix visual disconnection of connection lines in the organograma tree view for nested parent levels.
