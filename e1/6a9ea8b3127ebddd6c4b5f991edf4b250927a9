@@ -1,0 +1,10 @@
+Task: Green Phase - Implement UI Changes
+Summary of changes:
+- Added a Vínculo (Pai) select dropdown to OrganizacaoFormModal.tsx when type is not CLERO.
+- Implemented dynamic parent option filtering logic in the frontend form matching canonical types and excluding self.
+- Passed parentId to the onSave handler.
+- Passed list of all organizations from Settings.tsx to OrganizacaoFormModal.
+Modified files:
+- gestao-paroquia-ui/src/pages/OrganizacaoFormModal.tsx
+- gestao-paroquia-ui/src/pages/Settings.tsx
+Why: Allow users to select parent organizations when creating/editing organizations in the UI, enforcing canonical structure constraints.
