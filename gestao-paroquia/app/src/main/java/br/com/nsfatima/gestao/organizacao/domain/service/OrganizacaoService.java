@@ -27,6 +27,7 @@ public class OrganizacaoService {
 
     @Transactional
     public Organizacao createOrganization(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, UUID parentId) {
+        validateHierarchy(null, tipo, parentId);
         Organizacao org = new Organizacao(UUID.randomUUID(), nome, tipo, contato, coordenador, viceCoordenador, true, parentId);
         organizacaoRepository.save(org);
 
@@ -45,6 +46,8 @@ public class OrganizacaoService {
     public Organizacao updateOrganization(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId) {
         Organizacao org = organizacaoRepository.findById(id)
                 .orElseThrow(() -> OrganizationBusinessException.notFound(id));
+        
+        validateHierarchy(id, tipo, parentId);
         
         org.update(nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId);
         organizacaoRepository.save(org);
@@ -82,5 +85,62 @@ public class OrganizacaoService {
     @Transactional(readOnly = true)
     public List<Organizacao> listOrganizations() {
         return organizacaoRepository.findAll();
+    }
+
+    private void validateHierarchy(UUID id, TipoOrganizacao tipo, UUID parentId) {
+        if (parentId != null && id != null && parentId.equals(id)) {
+            throw new OrganizationBusinessException("An organization cannot be its own parent.");
+        }
+
+        if (tipo == TipoOrganizacao.CLERO) {
+            if (parentId != null) {
+                throw new OrganizationBusinessException("Clero organization cannot have a parent organization.");
+            }
+            return;
+        }
+
+        // All other canonical types MUST have a parent organization
+        if (tipo == TipoOrganizacao.MATRIZ || tipo == TipoOrganizacao.COMUNIDADE ||
+            tipo == TipoOrganizacao.CONSELHO || tipo == TipoOrganizacao.CONSELHO_ECONOMICO ||
+            tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
+            
+            if (parentId == null) {
+                throw new OrganizationBusinessException(tipo.name() + " organization must have a parent organization.");
+            }
+        }
+
+        if (parentId != null) {
+            Organizacao parent = organizacaoRepository.findById(parentId)
+                    .orElseThrow(() -> new OrganizationBusinessException("Parent organization not found with ID: " + parentId));
+
+            if (!parent.isAtivo()) {
+                throw new OrganizationBusinessException("Parent organization is not active.");
+            }
+
+            TipoOrganizacao parentTipo = parent.getTipo();
+
+            switch (tipo) {
+                case MATRIZ:
+                case COMUNIDADE:
+                    if (parentTipo != TipoOrganizacao.CLERO) {
+                        throw new OrganizationBusinessException(tipo.name() + " organization parent must be a CLERO organization.");
+                    }
+                    break;
+                case CONSELHO:
+                case CONSELHO_ECONOMICO:
+                    if (parentTipo != TipoOrganizacao.MATRIZ && parentTipo != TipoOrganizacao.COMUNIDADE) {
+                        throw new OrganizationBusinessException(tipo.name() + " organization parent must be a MATRIZ or COMUNIDADE organization.");
+                    }
+                    break;
+                case PASTORAL:
+                case MOVIMENTO:
+                    if (parentTipo != TipoOrganizacao.CONSELHO) {
+                        throw new OrganizationBusinessException(tipo.name() + " organization parent must be a CONSELHO organization.");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

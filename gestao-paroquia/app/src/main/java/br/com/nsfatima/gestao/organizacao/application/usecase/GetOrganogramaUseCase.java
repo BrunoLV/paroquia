@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class GetOrganogramaUseCase {
@@ -33,63 +35,32 @@ public class GetOrganogramaUseCase {
     public OrganogramaNodeResponse execute() {
         List<OrganizacaoEntity> allOrgs = organizacaoRepository.findAll();
 
-        // Identifica e separa as organizações
-        OrganizacaoEntity cleroOrg = null;
-        OrganizacaoEntity conselhoOrg = null;
-        OrganizacaoEntity conselhoEconomicoOrg = null;
-        List<OrganizacaoEntity> pastoraisAndMovimentos = new ArrayList<>();
-
-        for (OrganizacaoEntity org : allOrgs) {
-            if (!org.isAtivo()) {
-                continue;
-            }
-            // Ignora a organização raiz da paróquia que representa o todo para evitar duplicação no organograma
-            if (org.getId().toString().equals("00000000-0000-0000-0000-000000000001")) {
-                continue;
-            }
-
-            if (org.getTipo() == TipoOrganizacao.CLERO) {
-                cleroOrg = org;
-            } else if (org.getTipo() == TipoOrganizacao.CONSELHO) {
-                conselhoOrg = org;
-            } else if (org.getTipo() == TipoOrganizacao.CONSELHO_ECONOMICO) {
-                conselhoEconomicoOrg = org;
-            } else {
-                pastoraisAndMovimentos.add(org);
-            }
-        }
-
-        // 1. Pastorais e Movimentos (filhos do Conselho Pastoral)
-        List<OrganogramaNodeResponse> pastoralNodes = pastoraisAndMovimentos.stream()
-                .map(org -> buildOrgNode(org, null))
+        List<OrganizacaoEntity> rootOrgs = allOrgs.stream()
+                .filter(OrganizacaoEntity::isAtivo)
+                .filter(org -> !org.getId().toString().equals("00000000-0000-0000-0000-000000000001"))
+                .filter(org -> org.getParentId() == null)
                 .toList();
 
-        // 2. Conselho Pastoral Paroquial (com as pastorais como filhos)
-        OrganogramaNodeResponse conselhoPastoralNode = null;
-        if (conselhoOrg != null) {
-            conselhoPastoralNode = buildOrgNode(conselhoOrg, pastoralNodes);
+        OrganizacaoEntity rootClero = rootOrgs.stream()
+                .filter(org -> org.getTipo() == TipoOrganizacao.CLERO)
+                .findFirst()
+                .orElse(null);
+
+        Map<UUID, List<OrganizacaoEntity>> childrenByParentId = allOrgs.stream()
+                .filter(OrganizacaoEntity::isAtivo)
+                .filter(org -> !org.getId().toString().equals("00000000-0000-0000-0000-000000000001"))
+                .filter(org -> org.getParentId() != null)
+                .collect(Collectors.groupingBy(OrganizacaoEntity::getParentId));
+
+        if (rootClero != null) {
+            return buildOrgNodeRecursively(rootClero, childrenByParentId);
         }
 
-        // 3. Conselho Econômico Paroquial (sem filhos adicionais, apenas membros normais se houver)
-        OrganogramaNodeResponse conselhoEconomicoNode = null;
-        if (conselhoEconomicoOrg != null) {
-            conselhoEconomicoNode = buildOrgNode(conselhoEconomicoOrg, null);
-        }
+        // Fallback caso não haja organização do clero raiz
+        List<OrganogramaNodeResponse> rootChildren = rootOrgs.stream()
+                .map(org -> buildOrgNodeRecursively(org, childrenByParentId))
+                .toList();
 
-        // 4. Clero Paroquial (Nó raiz)
-        List<OrganogramaNodeResponse> cleroChildren = new ArrayList<>();
-        if (conselhoPastoralNode != null) {
-            cleroChildren.add(conselhoPastoralNode);
-        }
-        if (conselhoEconomicoNode != null) {
-            cleroChildren.add(conselhoEconomicoNode);
-        }
-
-        if (cleroOrg != null) {
-            return buildOrgNode(cleroOrg, cleroChildren);
-        }
-
-        // Fallback caso não haja organização do clero (não deve ocorrer na prática)
         return new OrganogramaNodeResponse(
                 "root",
                 paroquiaNome,
@@ -98,11 +69,16 @@ public class GetOrganogramaUseCase {
                 null,
                 null,
                 null,
-                cleroChildren
+                rootChildren
         );
     }
 
-    private OrganogramaNodeResponse buildOrgNode(OrganizacaoEntity org, List<OrganogramaNodeResponse> children) {
+    private OrganogramaNodeResponse buildOrgNodeRecursively(OrganizacaoEntity org, Map<UUID, List<OrganizacaoEntity>> childrenByParentId) {
+        List<OrganizacaoEntity> childOrgs = childrenByParentId.getOrDefault(org.getId(), List.of());
+        List<OrganogramaNodeResponse> childNodes = childOrgs.stream()
+                .map(child -> buildOrgNodeRecursively(child, childrenByParentId))
+                .collect(Collectors.toCollection(ArrayList::new));
+
         List<OrganizacaoMembroResponse> membros = listMembrosUseCase.execute(org.getId());
 
         List<OrganogramaNodeResponse> memberNodes = membros.stream()
@@ -139,11 +115,7 @@ public class GetOrganogramaUseCase {
                     .orElse(null);
         }
 
-        List<OrganogramaNodeResponse> finalChildren = new ArrayList<>();
-        if (children != null) {
-            finalChildren.addAll(children);
-        }
-        finalChildren.addAll(memberNodes);
+        childNodes.addAll(memberNodes);
 
         return new OrganogramaNodeResponse(
                 org.getId().toString(),
@@ -153,7 +125,7 @@ public class GetOrganogramaUseCase {
                 responsavelNome,
                 responsavelPapel,
                 viceResponsavelNome,
-                finalChildren
+                childNodes
         );
     }
 }

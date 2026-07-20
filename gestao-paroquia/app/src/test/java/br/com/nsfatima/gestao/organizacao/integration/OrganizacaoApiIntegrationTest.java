@@ -1,5 +1,9 @@
 package br.com.nsfatima.gestao.organizacao.integration;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -7,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -18,19 +24,62 @@ class OrganizacaoApiIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private OrganizacaoJpaRepository organizacaoRepository;
+
+    private UUID conselhoId;
+
+    @BeforeEach
+    void setUp() {
+        // Usar UUIDs estáticos compatíveis com o seed e atualizar seus tipos e parentIds
+        UUID cleroId = UUID.fromString("00000000-0000-0000-0000-0000000000dd");
+        UUID matrizId = UUID.fromString("00000000-0000-0000-0000-000000000100");
+        UUID conselhoIdVal = UUID.fromString("00000000-0000-0000-0000-0000000000cc");
+
+        // 1. Clero
+        OrganizacaoEntity clero = organizacaoRepository.findById(cleroId).orElseGet(OrganizacaoEntity::new);
+        clero.setId(cleroId);
+        clero.setNome("Clero Paroquial");
+        clero.setTipo(TipoOrganizacao.CLERO);
+        clero.setAtivo(true);
+        clero.setParentId(null);
+        organizacaoRepository.save(clero);
+
+        // 2. Matriz
+        OrganizacaoEntity matriz = organizacaoRepository.findById(matrizId).orElseGet(OrganizacaoEntity::new);
+        matriz.setId(matrizId);
+        matriz.setNome("Igreja Matriz");
+        matriz.setTipo(TipoOrganizacao.MATRIZ);
+        matriz.setParentId(cleroId);
+        matriz.setAtivo(true);
+        organizacaoRepository.save(matriz);
+
+        // 3. Conselho
+        OrganizacaoEntity conselho = organizacaoRepository.findById(conselhoIdVal).orElseGet(OrganizacaoEntity::new);
+        conselho.setId(conselhoIdVal);
+        conselho.setNome("Conselho Pastoral");
+        conselho.setTipo(TipoOrganizacao.CONSELHO);
+        conselho.setParentId(matrizId);
+        conselho.setAtivo(true);
+        organizacaoRepository.save(conselho);
+
+        conselhoId = conselhoIdVal;
+    }
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldCreateAndRetrieveOrganization() throws Exception {
-        String payload = """
+        String payload = String.format("""
                 {
                   "nome": "Pastoral da Música",
                   "tipo": "PASTORAL",
                   "contato": "musica@nsfatima.com",
                   "coordenador": "Pedro Coordenador",
                   "viceCoordenador": "Ana Vice",
+                  "parentId": "%s",
                   "ativo": true
                 }
-                """;
+                """, conselhoId);
 
         String response = mockMvc.perform(post("/api/v1/organizacoes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -55,16 +104,17 @@ class OrganizacaoApiIntegrationTest {
     @Test
     @WithMockUser(roles = "CONSELHO_COORDENADOR")
     void shouldAllowCreateForConselhoCoordenador() throws Exception {
-        String payload = """
+        String payload = String.format("""
                 {
                   "nome": "Pastoral da Acolhida",
                   "tipo": "PASTORAL",
                   "contato": "acolhida@nsfatima.com",
                   "coordenador": "Carlos Coordenador",
                   "viceCoordenador": "Lucas Vice",
+                  "parentId": "%s",
                   "ativo": true
                 }
-                """;
+                """, conselhoId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,8 +157,8 @@ class OrganizacaoApiIntegrationTest {
         mockMvc.perform(get("/api/v1/organizacoes/organograma")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("root"))
-                .andExpect(jsonPath("$.type").value("PAROQUIA"))
+                .andExpect(jsonPath("$.label").value("Clero Paroquial"))
+                .andExpect(jsonPath("$.subtype").value("CLERO"))
                 .andExpect(jsonPath("$.children").isArray());
     }
 }
