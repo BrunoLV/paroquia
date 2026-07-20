@@ -12,7 +12,7 @@
 - [x] Task: Green Phase - Implement Usecase & Validation Logic (7ba1005)
     - [x] Rewrite `GetOrganogramaUseCase.java` to dynamically build the recursive tree from `parentId` linkages in the database. (7ba1005)
     - [x] Implement hierarchy validation rules in organization creation and update use cases. (7ba1005)
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Development (TDD) [checkpoint: ]
 - [ ] Task: Red Phase - Write Frontend Unit Tests
