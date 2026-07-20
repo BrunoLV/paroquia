@@ -374,25 +374,111 @@ const Organograma: React.FC = () => {
     );
   }
 
-  const children = organograma?.children || [];
-  let cleroNode: OrganogramaNode | undefined = undefined;
-  let conselhoNode: OrganogramaNode | undefined = undefined;
-  let conselhoEconomicoNode: OrganogramaNode | undefined = undefined;
-  let pastorais: OrganogramaNode[] = [];
+  const collectNodesBySubtypes = (node: OrganogramaNode, subtypes: string[]): OrganogramaNode[] => {
+    if (!node) return [];
+    let results: OrganogramaNode[] = [];
+    if (subtypes.includes(node.subtype?.toUpperCase())) {
+      results.push(node);
+    }
+    if (node.children) {
+      node.children.forEach(child => {
+        results = results.concat(collectNodesBySubtypes(child, subtypes));
+      });
+    }
+    return results;
+  };
 
-  if (organograma.subtype === 'CLERO') {
-    cleroNode = organograma;
-    conselhoNode = children.find(c => c.subtype === 'CONSELHO');
-    conselhoEconomicoNode = children.find(c => c.subtype === 'CONSELHO_ECONOMICO');
-  } else {
-    cleroNode = children.find(c => c.subtype === 'CLERO');
-    conselhoNode = children.find(c => c.subtype === 'CONSELHO');
-    conselhoEconomicoNode = children.find(c => c.subtype === 'CONSELHO_ECONOMICO');
+  const cleroOrgs = collectNodesBySubtypes(organograma, ['CLERO']);
+  const matrizesOrgs = collectNodesBySubtypes(organograma, ['MATRIZ', 'COMUNIDADE']);
+  const conselhoOrgs = collectNodesBySubtypes(organograma, ['CONSELHO', 'CONSELHO_ECONOMICO']);
+  const pastoralOrgs = collectNodesBySubtypes(organograma, ['PASTORAL', 'MOVIMENTO', 'LAICATO', 'OUTRO']);
+
+  let cleroRootNode = organograma;
+  if (organograma.subtype !== 'CLERO') {
+    if (cleroOrgs.length > 0) {
+      cleroRootNode = cleroOrgs[0];
+    }
   }
 
-  if (conselhoNode) {
-    pastorais = (conselhoNode.children || []).filter(c => c.type === 'ORGANIZACAO');
-  }
+  const renderTreeNode = (node: OrganogramaNode, isRoot: boolean = false) => {
+    if (!node) return null;
+    const childrenOrgs = (node.children || []).filter(c => c && c.type === 'ORGANIZACAO');
+    const hasChildren = childrenOrgs.length > 0;
+
+    return (
+      <li key={node.id}>
+        {isRoot ? (
+          <Box sx={{ position: 'relative', pb: hasChildren ? '24px' : 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Card
+              sx={{
+                width: 260,
+                borderRadius: 0,
+                background: 'linear-gradient(135deg, #1a237e 0%, #311b92 100%)',
+                color: 'white',
+                boxShadow: '0 6px 20px rgba(26, 35, 126, 0.2)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: -15,
+                  right: -15,
+                  width: 70,
+                  height: 70,
+                  borderRadius: '50%',
+                  bgcolor: 'rgba(255,255,255,0.05)',
+                }}
+              />
+              <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
+                <ChurchIcon sx={{ fontSize: 36, mb: 0.5, color: 'rgba(255,255,255,0.9)' }} />
+                <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                  {node.label || 'Clero Paroquial'}
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.65rem', display: 'block', mb: 1 }}>
+                  Administração Geral
+                </Typography>
+                {node.responsavelNome && (
+                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
+                      Pároco: {node.responsavelNome}
+                    </Typography>
+                    {node.viceResponsavelNome && (
+                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem', display: 'block' }}>
+                        Vigário: {node.viceResponsavelNome}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+            {hasChildren && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  borderLeft: '2px solid #1a237e',
+                  height: '24px',
+                  width: 0,
+                }}
+              />
+            )}
+          </Box>
+        ) : (
+          renderOrgNode(node, true)
+        )}
+
+        {hasChildren && (
+          <ul>
+            {childrenOrgs.map(child => renderTreeNode(child, false))}
+          </ul>
+        )}
+      </li>
+    );
+  };
 
   return (
     <Box sx={{ mt: 3, mb: 4, px: { xs: 2, md: 4 } }}>
@@ -489,142 +575,72 @@ const Organograma: React.FC = () => {
 
           <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
             <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%', zoom: zoom }}>
-            <ul>
-              <li>
-                {/* Root Node (Clero Paroquial / cleroNode) */}
-                <Box sx={{ position: 'relative', pb: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <Card
-                    sx={{
-                      width: 260,
-                      borderRadius: 0,
-                      background: 'linear-gradient(135deg, #1a237e 0%, #311b92 100%)',
-                      color: 'white',
-                      boxShadow: '0 6px 20px rgba(26, 35, 126, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -15,
-                        right: -15,
-                        width: 70,
-                        height: 70,
-                        borderRadius: '50%',
-                        bgcolor: 'rgba(255,255,255,0.05)',
-                      }}
-                    />
-                    <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
-                      <ChurchIcon sx={{ fontSize: 36, mb: 0.5, color: 'rgba(255,255,255,0.9)' }} />
-                      <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                        {cleroNode?.label || 'Clero Paroquial'}
-                      </Typography>
-                      <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.65rem', display: 'block', mb: 1 }}>
-                        Administração Geral
-                      </Typography>
-                      {cleroNode?.responsavelNome && (
-                        <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
-                            Pároco: {cleroNode.responsavelNome}
-                          </Typography>
-                          {cleroNode.viceResponsavelNome && (
-                            <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem', display: 'block' }}>
-                              Vigário: {cleroNode.viceResponsavelNome}
-                            </Typography>
-                          )}
-                        </Box>
-                      )}
-                    </CardContent>
-                  </Card>
-                  {/* Vertical bar coming out from root bottom */}
-                  {((conselhoNode) || (conselhoEconomicoNode)) && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        borderLeft: '2px solid #1a237e',
-                        height: '24px',
-                        width: 0,
-                      }}
-                    />
-                  )}
-                </Box>
-
-                {/* Level 2: Conselhos */}
-                {((conselhoNode) || (conselhoEconomicoNode)) && (
-                  <ul>
-                    {/* Conselho Pastoral Paroquial */}
-                    {conselhoNode && (
-                      <li key={conselhoNode.id}>
-                        {renderOrgNode(conselhoNode, true)}
-                        
-                        {/* Level 3: Pastorais (filhos do Conselho Pastoral) */}
-                        {pastorais.length > 0 && (
-                          <ul>
-                            {pastorais.map(pastoral => (
-                              <li key={pastoral.id}>
-                                {renderOrgNode(pastoral, true)}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    )}
-
-                    {/* Conselho Econômico Paroquial */}
-                    {conselhoEconomicoNode && (
-                      <li key={conselhoEconomicoNode.id}>
-                        {renderOrgNode(conselhoEconomicoNode, true)}
-                      </li>
-                    )}
-                  </ul>
-                )}
-              </li>
-            </ul>
+              <ul>
+                {renderTreeNode(cleroRootNode, true)}
+              </ul>
+            </Box>
           </Box>
         </Box>
-      </Box>
       ) : (
-        /* Grid View Layout organized by hierarchy */
+        /* Grid View Layout organized by hierarchy groups */
         <>
-          <Grid container spacing={4} sx={{ mb: 6, justifyContent: 'center' }}>
-            {/* Nível 1: Clero Paroquial */}
-            {cleroNode && (
-              <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-                {renderOrgNode(cleroNode, false)}
-              </Grid>
-            )}
-
-            {/* Nível 2: Conselhos side-by-side */}
-            {conselhoNode && (
-              <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-                {renderOrgNode(conselhoNode, false)}
-              </Grid>
-            )}
-
-            {conselhoEconomicoNode && (
-              <Grid size={{ xs: 12, md: 6 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-                {renderOrgNode(conselhoEconomicoNode, false)}
-              </Grid>
-            )}
-          </Grid>
-
-          {/* Nível 3: Pastorais e Movimentos */}
-          {pastorais.length > 0 && (
-            <Box>
-              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <PeopleIcon sx={{ color: '#1a237e' }} />
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e' }}>
-                  Pastorais e Movimentos
-                </Typography>
-              </Box>
-
+          {/* Nível 1: Clero */}
+          {cleroOrgs.length > 0 && (
+            <Box sx={{ mb: 6 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ChurchIcon /> Clero Paroquial
+              </Typography>
               <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {pastorais.map(org => (
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                {cleroOrgs.map(org => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {renderOrgNode(org, false)}
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
+          {/* Nível 2: Matrizes e Comunidades */}
+          {matrizesOrgs.length > 0 && (
+            <Box sx={{ mb: 6 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ChurchIcon /> Matriz e Comunidades
+              </Typography>
+              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                {matrizesOrgs.map(org => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {renderOrgNode(org, false)}
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
+          {/* Nível 3: Conselhos */}
+          {conselhoOrgs.length > 0 && (
+            <Box sx={{ mb: 6 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <SupervisorAccountIcon /> Conselhos Paroquiais
+              </Typography>
+              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                {conselhoOrgs.map(org => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {renderOrgNode(org, false)}
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
+          {/* Nível 4: Pastorais, Movimentos e outros */}
+          {pastoralOrgs.length > 0 && (
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <PeopleIcon /> Pastorais e Movimentos
+              </Typography>
+              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                {pastoralOrgs.map(org => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
                     {renderOrgNode(org, false)}
                   </Grid>
                 ))}
