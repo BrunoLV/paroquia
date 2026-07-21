@@ -48,6 +48,7 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         entity.setViceCoordenador(domain.getViceCoordenador());
         entity.setAtivo(domain.isAtivo());
         entity.setParentId(domain.getParentId());
+        entity.setPastoralOficialId(domain.getPastoralOficialId());
         organizacaoJpaRepository.save(entity);
     }
 
@@ -89,7 +90,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 coordName,
                 viceName,
                 entity.isAtivo(),
-                entity.getParentId()
+                entity.getParentId(),
+                entity.getPastoralOficialId()
         );
     }
 

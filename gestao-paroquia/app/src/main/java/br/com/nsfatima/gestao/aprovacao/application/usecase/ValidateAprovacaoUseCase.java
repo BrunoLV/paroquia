@@ -61,7 +61,7 @@ public class ValidateAprovacaoUseCase {
         if (normalizedRole == PapelOrganizacional.PAROCO) {
             return;
         }
-        if (normalizedOrgType == TipoOrganizacao.CONSELHO
+        if (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
                 && (normalizedRole == PapelOrganizacional.COORDENADOR
                         || normalizedRole == PapelOrganizacional.VICE_COORDENADOR)) {
             return;

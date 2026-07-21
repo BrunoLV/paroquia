@@ -34,6 +34,9 @@ public record OrganizacaoRequest(
     boolean ativo,
 
     @Schema(description = "Parent organization unique identifier")
-    UUID parentId
+    UUID parentId,
+
+    @Schema(description = "Pastoral/Movimento Oficial unique identifier")
+    UUID pastoralOficialId
 ) {
 }

@@ -51,7 +51,7 @@ class GetOrganogramaUseCaseTest {
         OrganizacaoEntity conselho = new OrganizacaoEntity();
         conselho.setId(conselhoId);
         conselho.setNome("Conselho");
-        conselho.setTipo(TipoOrganizacao.CONSELHO);
+        conselho.setTipo(TipoOrganizacao.CONSELHO_PASTORAL);
         conselho.setCoordenador("Maria do Conselho");
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
@@ -111,7 +111,7 @@ class GetOrganogramaUseCaseTest {
 
         // Verify Conselho Node (child of Igreja Matriz)
         OrganogramaNodeResponse conselhoNode = matrizNode.children().stream()
-                .filter(c -> "CONSELHO".equals(c.subtype()))
+                .filter(c -> "CONSELHO_PASTORAL".equals(c.subtype()))
                 .findFirst().orElseThrow();
         assertThat(conselhoNode.label()).isEqualTo("Conselho");
         assertThat(conselhoNode.responsavelNome()).isEqualTo("Maria do Conselho");

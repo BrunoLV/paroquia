@@ -15,8 +15,7 @@ public class EventoCancelamentoAuthorizationService {
             PapelOrganizacional.COORDENADOR,
             PapelOrganizacional.VICE_COORDENADOR);
     private static final Set<TipoOrganizacao> LOCAL_SCOPED_ORG_TYPES = Set.of(
-            TipoOrganizacao.PASTORAL,
-            TipoOrganizacao.LAICATO);
+            TipoOrganizacao.PASTORAL);
 
     public CancelamentoRequestMode resolveRequestMode(
             EventoActorContext actorContext,
@@ -57,7 +56,7 @@ public class EventoCancelamentoAuthorizationService {
     }
 
     private boolean isConselhoLeadership(PapelOrganizacional role, TipoOrganizacao organizationType) {
-        return organizationType == TipoOrganizacao.CONSELHO && LEADERSHIP_ROLES.contains(role);
+        return organizationType == TipoOrganizacao.CONSELHO_PASTORAL && LEADERSHIP_ROLES.contains(role);
     }
 
     private boolean isLocalLeadership(PapelOrganizacional role, TipoOrganizacao organizationType) {

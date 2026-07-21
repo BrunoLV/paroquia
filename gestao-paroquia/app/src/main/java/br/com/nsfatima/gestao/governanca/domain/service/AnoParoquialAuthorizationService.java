@@ -21,7 +21,7 @@ public class AnoParoquialAuthorizationService {
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
         boolean isParoco = normalizedRole == PapelOrganizacional.PAROCO;
-        boolean isConselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO 
+        boolean isConselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL 
                 && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
 
         if (!isParoco && !isConselhoCoordinator) {

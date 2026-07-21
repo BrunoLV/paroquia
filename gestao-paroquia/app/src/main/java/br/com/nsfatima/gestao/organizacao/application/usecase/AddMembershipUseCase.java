@@ -58,7 +58,7 @@ public class AddMembershipUseCase {
         boolean isParoco = auth.getAuthorities().stream().anyMatch(a -> "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
 
         // Hierarchy rule: COORDENADOR and VICE of CONSELHO / CONSELHO_ECONOMICO can only be defined by PAROCO or ADMIN
-        if ((tipo == TipoOrganizacao.CONSELHO || tipo == TipoOrganizacao.CONSELHO_ECONOMICO) && (papel == PapelOrganizacional.COORDENADOR || papel == PapelOrganizacional.VICE_COORDENADOR)) {
+        if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CONSELHO_ECONOMICO) && (papel == PapelOrganizacional.COORDENADOR || papel == PapelOrganizacional.VICE_COORDENADOR)) {
             if (!isAdmin && !isParoco) {
                 throw new AccessDeniedException("Apenas o Pároco ou Admin podem definir coordenador e vice do Conselho");
             }

@@ -51,7 +51,7 @@ public class EventoPatchAuthorizationService {
         }
 
         if (normalizedRole == PapelOrganizacional.PAROCO
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
                         && (normalizedRole == PapelOrganizacional.COORDENADOR
                                 || normalizedRole == PapelOrganizacional.VICE_COORDENADOR))) {
             return CreateRequestMode.IMMEDIATE;
@@ -86,7 +86,7 @@ public class EventoPatchAuthorizationService {
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
-        boolean conselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO
+        boolean conselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
                 && (normalizedRole == PapelOrganizacional.COORDENADOR
                         || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
         boolean parroco = normalizedRole == PapelOrganizacional.PAROCO;

@@ -21,6 +21,8 @@ public record OrganizacaoResponse(
     @Schema(description = "Whether the organization is active")
     boolean ativo,
     @Schema(description = "Parent organization unique identifier")
-    UUID parentId
+    UUID parentId,
+    @Schema(description = "Pastoral/Movimento Oficial unique identifier")
+    UUID pastoralOficialId
 ) {
 }

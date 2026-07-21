@@ -100,7 +100,7 @@ class AddMembershipUseCaseTest {
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
         assertThrows(AccessDeniedException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR, null)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO_PASTORAL, PapelOrganizacional.COORDENADOR, null)
         );
     }
 
@@ -114,7 +114,7 @@ class AddMembershipUseCaseTest {
         when(membershipRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR, null)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO_PASTORAL, PapelOrganizacional.COORDENADOR, null)
         );
     }
 

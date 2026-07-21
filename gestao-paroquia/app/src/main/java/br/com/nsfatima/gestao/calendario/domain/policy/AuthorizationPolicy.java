@@ -16,13 +16,13 @@ public class AuthorizationPolicy {
         }
 
         return switch (normalizedOrg) {
-            case PASTORAL, MOVIMENTO, LAICATO, MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORDENADOR
+            case PASTORAL, MOVIMENTO, MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORDENADOR
                     || normalizedRole == PapelOrganizacional.VICE_COORDENADOR
                     || normalizedRole == PapelOrganizacional.MEMBRO;
             case CLERO -> normalizedRole == PapelOrganizacional.PAROCO
                     || normalizedRole == PapelOrganizacional.VIGARIO
                     || normalizedRole == PapelOrganizacional.PADRE;
-            case CONSELHO, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.COORDENADOR
+            case CONSELHO_PASTORAL, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.COORDENADOR
                     || normalizedRole == PapelOrganizacional.VICE_COORDENADOR
                     || normalizedRole == PapelOrganizacional.SECRETARIO
                     || normalizedRole == PapelOrganizacional.MEMBRO;

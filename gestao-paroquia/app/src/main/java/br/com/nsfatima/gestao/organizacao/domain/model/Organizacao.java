@@ -11,8 +11,9 @@ public class Organizacao {
     private String viceCoordenador;
     private boolean ativo;
     private UUID parentId;
+    private UUID pastoralOficialId;
 
-    public Organizacao(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId) {
+    public Organizacao(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId, UUID pastoralOficialId) {
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
@@ -21,6 +22,7 @@ public class Organizacao {
         this.viceCoordenador = viceCoordenador;
         this.ativo = ativo;
         this.parentId = parentId;
+        this.pastoralOficialId = pastoralOficialId;
     }
 
     public UUID getId() {
@@ -59,7 +61,15 @@ public class Organizacao {
         this.parentId = parentId;
     }
 
-    public void update(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId) {
+    public UUID getPastoralOficialId() {
+        return pastoralOficialId;
+    }
+
+    public void setPastoralOficialId(UUID pastoralOficialId) {
+        this.pastoralOficialId = pastoralOficialId;
+    }
+
+    public void update(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId, UUID pastoralOficialId) {
         this.nome = nome;
         this.tipo = tipo;
         this.contato = contato;
@@ -67,5 +77,6 @@ public class Organizacao {
         this.viceCoordenador = viceCoordenador;
         this.ativo = ativo;
         this.parentId = parentId;
+        this.pastoralOficialId = pastoralOficialId;
     }
 }

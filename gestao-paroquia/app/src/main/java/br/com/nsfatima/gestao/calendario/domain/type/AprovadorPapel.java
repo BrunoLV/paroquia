@@ -40,7 +40,7 @@ public enum AprovadorPapel {
         if (papel == PapelOrganizacional.PAROCO) {
             return PAROCO;
         }
-        if (tipoOrganizacao == TipoOrganizacao.CONSELHO && papel == PapelOrganizacional.VICE_COORDENADOR) {
+        if (tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL && papel == PapelOrganizacional.VICE_COORDENADOR) {
             return CONSELHO_VICE_COORDENADOR;
         }
         return CONSELHO_COORDENADOR;

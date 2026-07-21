@@ -70,7 +70,7 @@ public class EventoService {
         }
 
         // Conselho pode ver tudo
-        if (orgType == TipoOrganizacao.CONSELHO) {
+        if (orgType == TipoOrganizacao.CONSELHO_PASTORAL) {
             return;
         }
 

@@ -6,7 +6,7 @@ public record OrganogramaNodeResponse(
     String id,
     String label,
     String type,          // e.g. "ORGANIZACAO", "MEMBRO", "GRUPO"
-    String subtype,       // e.g. "CLERO", "CONSELHO", "PASTORAL", "MOVIMENTO", "LAICATO", "MEMBER_ROLE"
+    String subtype,       // e.g. "CLERO", "CONSELHO_PASTORAL", "CONSELHO_ECONOMICO", "PASTORAL", "MOVIMENTO", "MEMBER_ROLE"
     String responsavelNome,
     String responsavelPapel,
     String viceResponsavelNome,

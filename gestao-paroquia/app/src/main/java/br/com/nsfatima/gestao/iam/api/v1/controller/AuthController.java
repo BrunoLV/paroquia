@@ -52,6 +52,7 @@ public class AuthController {
                 membership.organizationCoordinator(),
                 membership.organizationViceCoordinator(),
                 membership.organizationActive(),
+                null,
                 null);
     }
 }

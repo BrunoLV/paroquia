@@ -99,7 +99,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void viceCoordenadorLaicatoSensitiveFieldsReturnsPendingApproval() throws Exception {
+    void viceCoordenadorMovimentoSensitiveFieldsReturnsPendingApproval() throws Exception {
         // Create event first
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
                 .header("Idempotency-Key", UUID.randomUUID())
@@ -109,7 +109,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
-                          "titulo": "Evento laicato",
+                          "titulo": "Evento movimento",
                           "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                           "inicio": "2027-07-01T09:00:00Z",
                           "fim": "2027-07-01T10:00:00Z"
@@ -123,7 +123,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoIdStr)
                 .header("X-Actor-Role", "vice-coordenador")
-                .header("X-Actor-Org-Type", "LAICATO")
+                .header("X-Actor-Org-Type", "MOVIMENTO")
                 .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""

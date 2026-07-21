@@ -8,18 +8,26 @@ public enum TipoOrganizacao {
     COMUNIDADE,
     PASTORAL,
     MOVIMENTO,
-    LAICATO,
     CLERO,
-    CONSELHO,
+    CONSELHO_PASTORAL,
     CONSELHO_ECONOMICO,
     OUTRO;
 
     @JsonCreator
     public static TipoOrganizacao fromJson(String rawValue) {
+        if ("CONSELHO".equalsIgnoreCase(rawValue)) {
+            return CONSELHO_PASTORAL;
+        }
         return EnumRequestNormalizer.normalize(rawValue, TipoOrganizacao.class);
     }
 
     public static TipoOrganizacao fromStoredValue(String rawValue) {
-        return rawValue == null ? null : EnumRequestNormalizer.normalize(rawValue, TipoOrganizacao.class);
+        if (rawValue == null) {
+            return null;
+        }
+        if ("CONSELHO".equalsIgnoreCase(rawValue)) {
+            return CONSELHO_PASTORAL;
+        }
+        return EnumRequestNormalizer.normalize(rawValue, TipoOrganizacao.class);
     }
 }

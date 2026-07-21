@@ -31,7 +31,7 @@ public class ProjetoAuthorizationService {
         // Only Paroco or Conselho Coordinators can create projects for any organization.
         // Others can only create for their own organization.
         boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO 
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
 
         if (!isHighLevelActor && actorContext.organizationId() != null && !actorContext.organizationId().equals(organizacaoResponsavelId)) {
             throw new AccessDeniedException("User cannot create projects for another organization");
@@ -47,7 +47,7 @@ public class ProjetoAuthorizationService {
         }
 
         boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO 
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
 
         if (!isHighLevelActor && actorContext.organizationId() != null && !actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
             throw new ForbiddenOperationException("User cannot edit projects of another organization");
@@ -58,7 +58,7 @@ public class ProjetoAuthorizationService {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
         return normalizedRole == PapelOrganizacional.PAROCO 
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
     }
 
     public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {

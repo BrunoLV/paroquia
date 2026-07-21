@@ -82,12 +82,23 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     @Column(name = "parent_id")
     private UUID parentId;
 
+    @Column(name = "pastoral_oficial_id")
+    private UUID pastoralOficialId;
+
     public UUID getParentId() {
         return parentId;
     }
 
     public void setParentId(UUID parentId) {
         this.parentId = parentId;
+    }
+
+    public UUID getPastoralOficialId() {
+        return pastoralOficialId;
+    }
+
+    public void setPastoralOficialId(UUID pastoralOficialId) {
+        this.pastoralOficialId = pastoralOficialId;
     }
 
     public boolean isAtivo() {
