@@ -148,7 +148,7 @@
 ---
 
 - [x] **Track: Vínculos de Usuários/Membros, Igrejas, Organizações e Papéis**
-*Link: [./tracks/vinculo_usuarios_igreja_papeis_20260721/](./tracks/vinculo_usuarios_igreja_papeis_20260721/)*
+*Link: [./archive/vinculo_usuarios_igreja_papeis_20260721/](./archive/vinculo_usuarios_igreja_papeis_20260721/)*
 
 
 
