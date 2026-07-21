@@ -14,6 +14,7 @@ import {
   ListItemText,
   Divider,
   Tooltip,
+  Paper,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
@@ -29,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { canApprove, canManageAnoParoquial, canManageLocais } from '../auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser } from '../auth/permissions';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -252,7 +253,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </AppBar>
 
         <Container maxWidth="xl" sx={{ pb: 6, flexGrow: 1 }}>
-          {children}
+          {user && isUnlinkedUser(user) ? (
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+              <Paper elevation={2} sx={{ p: 4, maxWidth: 600, width: '100%', borderRadius: 2 }}>
+                <Box sx={{ textAlign: 'center', mb: 2 }}>
+                  <Typography variant="h5" color="primary" gutterBottom sx={{ fontWeight: 600 }}>
+                    Conta Ativa
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" paragraph sx={{ mt: 2 }}>
+                    Sua conta está ativa, porém aguardando vínculo a uma pastoral ou movimento da sua comunidade por um coordenador ou administrador.
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Assim que seu vínculo for adicionado, as funcionalidades do sistema serão liberadas automaticamente.
+                  </Typography>
+                </Box>
+              </Paper>
+            </Box>
+          ) : (
+            children
+          )}
         </Container>
       </Box>
     </Box>

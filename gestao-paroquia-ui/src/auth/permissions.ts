@@ -178,3 +178,15 @@ export const canViewPendingEvents = (user: User | null): boolean => {
   const isOnlyMember = user.roles.length > 0 && user.roles.every(r => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
   return !isOnlyMember;
 };
+
+export const isUnlinkedUser = (user: User | null): boolean => {
+  if (!user) return false;
+
+  const isAdminOrClero = user.roles.some(r =>
+    r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO' || r === 'VIGARIO' || r === 'PADRE' || r === 'SECRETARIO'
+  );
+  if (isAdminOrClero) return false;
+
+  const hasOrganizations = Array.isArray(user.organizations) && user.organizations.length > 0;
+  return !hasOrganizations;
+};

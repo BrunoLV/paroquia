@@ -9,6 +9,7 @@ import {
   canTransitionProject, 
   canAddObservation,
   canViewPendingEvents,
+  isUnlinkedUser,
   User 
 } from './permissions';
 
@@ -327,5 +328,33 @@ describe('canAddObservation', () => {
     expect(canAddObservation(user, targetOrgId)).toBe(false);
   });
 });
+
+describe('isUnlinkedUser', () => {
+  it('returns false if user is null', () => {
+    expect(isUnlinkedUser(null)).toBe(false);
+  });
+
+  it('returns false for admin or clero roles regardless of organization memberships', () => {
+    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    expect(isUnlinkedUser(user)).toBe(false);
+  });
+
+  it('returns true for member users with no active organizations', () => {
+    const user: User = { id: '2', username: 'membro', name: 'Membro', roles: ['MEMBRO'], organizations: [] };
+    expect(isUnlinkedUser(user)).toBe(true);
+  });
+
+  it('returns false for member users with at least one active organization', () => {
+    const user: User = {
+      id: '2',
+      username: 'membro',
+      name: 'Membro',
+      roles: ['MEMBRO'],
+      organizations: [{ id: 'org-1', nome: 'Catequese', tipo: 'PASTORAL', contato: null, ativo: true }]
+    };
+    expect(isUnlinkedUser(user)).toBe(false);
+  });
+});
+
 
 
