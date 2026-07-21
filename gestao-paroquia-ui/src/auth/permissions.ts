@@ -157,3 +157,24 @@ export const canManageOrganizacoes = (user: User | null): boolean => {
     role === 'VICE_COORDENADOR_CONSELHO'
   );
 };
+
+export const canAddObservation = (user: User | null, targetOrgId: string): boolean => {
+  if (!user) return false;
+
+  const isOnlyMember = user.roles.length > 0 && user.roles.every(r => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
+  if (!isOnlyMember) {
+    return true;
+  }
+
+  if (Array.isArray(user.organizations)) {
+    return user.organizations.some(org => org.id === targetOrgId);
+  }
+
+  return false;
+};
+
+export const canViewPendingEvents = (user: User | null): boolean => {
+  if (!user) return false;
+  const isOnlyMember = user.roles.length > 0 && user.roles.every(r => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
+  return !isOnlyMember;
+};

@@ -7,6 +7,8 @@ import {
   canManageProjects, 
   isGlobalCreator, 
   canTransitionProject, 
+  canAddObservation,
+  canViewPendingEvents,
   User 
 } from './permissions';
 
@@ -290,4 +292,40 @@ describe('canManageOrganizacoes', () => {
     expect(canManageOrganizacoes(user)).toBe(false);
   });
 });
+
+describe('canAddObservation', () => {
+  const targetOrgId = 'org-music';
+
+  it('returns false if user is null', () => {
+    expect(canAddObservation(null, targetOrgId)).toBe(false);
+  });
+
+  it('allows non-MEMBRO roles to add observation to any organization', () => {
+    const user: User = { id: '1', username: 'p', name: 'Padre', roles: ['PADRE'] };
+    expect(canAddObservation(user, targetOrgId)).toBe(true);
+  });
+
+  it('allows MEMBRO if linked to the event organization', () => {
+    const user: User = {
+      id: '2',
+      username: 'membro',
+      name: 'Membro',
+      roles: ['MEMBRO'],
+      organizations: [{ id: targetOrgId, nome: 'Musica', tipo: 'PASTORAL', contato: null, ativo: true }]
+    };
+    expect(canAddObservation(user, targetOrgId)).toBe(true);
+  });
+
+  it('denies MEMBRO if not linked to the target organization', () => {
+    const user: User = {
+      id: '2',
+      username: 'membro',
+      name: 'Membro',
+      roles: ['MEMBRO'],
+      organizations: [{ id: 'other-org', nome: 'Outra', tipo: 'PASTORAL', contato: null, ativo: true }]
+    };
+    expect(canAddObservation(user, targetOrgId)).toBe(false);
+  });
+});
+
 
