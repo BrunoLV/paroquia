@@ -1,0 +1,4 @@
+TypeScript Fix: unused membros prop in Settings.tsx
+
+Summary:
+- Removed the unused 'membros' prop from the OrganizacaoFormModal component invocation in Settings.tsx to resolve TypeScript compile error TS2322.
