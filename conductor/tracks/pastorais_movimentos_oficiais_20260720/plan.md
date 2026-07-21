@@ -28,4 +28,4 @@
     - [x] Create catalog administration view in `Settings.tsx` (accessible to ADMIN users).
     - [x] Update `OrganizacaoFormModal.tsx` to include and dynamically filter the `PastoralMovimentoOficial` dropdown selector based on the chosen organization type.
     - [x] Update searching/filtering functionality in the list of organizations.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
