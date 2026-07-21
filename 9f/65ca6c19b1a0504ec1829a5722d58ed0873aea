@@ -1,0 +1,7 @@
+Task: Show dropdown for coordinator based on parent church members
+
+Summary:
+- Integrated react-query useQuery inside OrganizacaoFormModal.tsx to fetch church members/participants using getOrganizacaoMembros(churchId) dynamically.
+- Replaced the Coordinator and Vice-Coordinator text inputs in the modal with Select dropdown components containing the list of fetched church members (value is the member's name as string).
+- Kept standard text input fields as fallback if the parent organization does not resolve to a church.
+- Wrapped tests in OrganizacaoFormModal.test.tsx with QueryClientProvider and added assertions validating the members dropdown rendering.
