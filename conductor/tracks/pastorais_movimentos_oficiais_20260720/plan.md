@@ -34,4 +34,9 @@
     - [x] Update frontend tests to remove matrix assertions and test direct coordination field updates.
 - [x] Task: Bug Fix - Database version column type mismatch [4026f9b]
     - [x] Create V041 migration SQL script altering version column type of calendario.pastorais_movimentos_oficiais to BIGINT.
+- [x] Task: Refactor - Show dropdown for coordinator based on parent church members [9f65ca6]
+    - [x] Fetch church members dynamically based on the chosen parent organization's parent church/community.
+    - [x] Render Coordinator and Vice-Coordinator as Select dropdown fields displaying the names of members participating in the church.
+    - [x] Keep standard text input fields as fallback if the parent organization does not resolve to a church.
+    - [x] Wrap and update tests in `OrganizacaoFormModal.test.tsx` to assert members dropdown rendering.
 - [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
