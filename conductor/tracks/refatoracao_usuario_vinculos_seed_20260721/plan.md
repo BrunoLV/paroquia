@@ -18,6 +18,6 @@
 - [x] Task: Conductor - User Manual Verification 'Frontend User Model Cleanup & User Memberships Modal' (Protocol in workflow.md)
 
 ## Phase 3: Docker Seed Data Update & End-to-End Verification
-- [ ] Task: Update Docker SQL Seed Script with Test Hierarchy & Memberships
-    - [ ] Update `V002__seed_data.sql` / seed scripts to include Matriz, Comunidade Santo Agostinho, pre-configured users with `igreja_id`, and active memberships.
-- [ ] Task: Conductor - User Manual Verification 'Docker Seed Data Update & End-to-End Verification' (Protocol in workflow.md)
+- [x] Task: Update Docker SQL Seed Script with Test Hierarchy & Memberships
+    - [x] Update `V002__seed_data.sql` / seed scripts to include Matriz, Comunidade Santo Agostinho, pre-configured users with `igreja_id`, and active memberships.
+- [x] Task: Conductor - User Manual Verification 'Docker Seed Data Update & End-to-End Verification' (Protocol in workflow.md)
