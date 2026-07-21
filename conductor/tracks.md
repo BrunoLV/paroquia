@@ -142,7 +142,7 @@
 
 ---
 
-- [~] **Track: Sistema de Autorização, Papéis e Alcance de Permissões**
+- [x] **Track: Sistema de Autorização, Papéis e Alcance de Permissões**
 *Link: [./tracks/sistema_autorizacao_papeis_20260721/](./tracks/sistema_autorizacao_papeis_20260721/)*
 
 
