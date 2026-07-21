@@ -150,6 +150,12 @@
 - [x] **Track: Vínculos de Usuários/Membros, Igrejas, Organizações e Papéis**
 *Link: [./archive/vinculo_usuarios_igreja_papeis_20260721/](./archive/vinculo_usuarios_igreja_papeis_20260721/)*
 
+---
+
+- [ ] **Track: Refatoração do Modelo de Usuário, Vínculos com Organizações e Seed Docker**
+*Link: [./tracks/refatoracao_usuario_vinculos_seed_20260721/](./tracks/refatoracao_usuario_vinculos_seed_20260721/)*
+
+
 
 
 
