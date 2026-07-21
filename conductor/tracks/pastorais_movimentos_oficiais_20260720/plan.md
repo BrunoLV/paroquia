@@ -21,9 +21,9 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [297bd49]
 
 ## Phase 3: Frontend Development (TDD) [checkpoint: ]
-- [ ] Task: Red Phase - Write Frontend Unit Tests
-    - [ ] Add unit tests verifying the administrative CRUD tab for official types in settings.
-    - [ ] Add unit tests verifying that the dropdown selector for official types is displayed and mandatory for organizations of type `PASTORAL` / `MOVIMENTO`.
+- [~] Task: Red Phase - Write Frontend Unit Tests
+    - [~] Add unit tests verifying the administrative CRUD tab for official types in settings.
+    - [~] Add unit tests verifying that the dropdown selector for official types is displayed and mandatory for organizations of type `PASTORAL` / `MOVIMENTO`.
 - [ ] Task: Green Phase - Implement UI Changes
     - [ ] Create catalog administration view in `Settings.tsx` (accessible to ADMIN users).
     - [ ] Update `OrganizacaoFormModal.tsx` to include and dynamically filter the `PastoralMovimentoOficial` dropdown selector based on the chosen organization type.
