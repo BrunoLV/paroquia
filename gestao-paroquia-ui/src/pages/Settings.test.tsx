@@ -734,6 +734,7 @@ describe('Settings page - Membros por Pastoral', () => {
     mockUpdatePastoralOficial.mockResolvedValueOnce({ id: '1', nome: 'PJ Oficial Editada', tipo: 'PASTORAL' });
     mockDeletePastoralOficial.mockResolvedValueOnce(undefined);
 
+    window.confirm = jest.fn().mockImplementation(() => true);
     renderPage();
 
     fireEvent.click(await screen.findByRole('tab', { name: /Catálogo Oficial/i }));
@@ -747,7 +748,7 @@ describe('Settings page - Membros por Pastoral', () => {
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Pastoral Familiar Oficial' } });
     
     // Select type PASTORAL
-    const tipoSelect = screen.getByLabelText(/Tipo/i);
+    const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
     fireEvent.mouseDown(tipoSelect);
     fireEvent.click(screen.getByRole('option', { name: 'Pastoral' }));
 
@@ -760,8 +761,14 @@ describe('Settings page - Membros por Pastoral', () => {
       });
     });
 
+    // Wait for creation dialog to close and aria-hidden to clear
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
     // Edit
-    const editBtn = screen.getByRole('button', { name: /Editar/i });
+    const catalogPanel = document.getElementById('settings-tabpanel-4') as HTMLElement;
+    const editBtn = within(catalogPanel).getByRole('button', { name: /Editar/i });
     fireEvent.click(editBtn);
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'PJ Oficial Editada' } });
     fireEvent.click(screen.getByRole('button', { name: /Salvar/i }));
@@ -773,8 +780,13 @@ describe('Settings page - Membros por Pastoral', () => {
       });
     });
 
+    // Wait for edit dialog to close and aria-hidden to clear
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
     // Delete
-    const deleteBtn = screen.getByRole('button', { name: /Excluir/i });
+    const deleteBtn = within(catalogPanel).getByRole('button', { name: /Excluir/i });
     fireEvent.click(deleteBtn);
 
     await waitFor(() => {

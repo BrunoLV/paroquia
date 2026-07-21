@@ -12,7 +12,7 @@ import {
   MenuItem,
   Grid,
 } from '@mui/material';
-import { Organizacao } from '../api/types';
+import { Organizacao, PastoralMovimentoOficial } from '../api/types';
 import { Usuario } from '../api/usuarios';
 import { OrganizacaoMembro } from '../api/organizacoes';
 
@@ -29,6 +29,7 @@ interface OrganizacaoFormModalProps {
   igrejas?: Organizacao[];
   membros?: OrganizacaoMembro[];
   organizacoes?: Organizacao[];
+  pastoraisOficiais?: PastoralMovimentoOficial[];
 }
 
 const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
@@ -41,6 +42,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   igrejas = [],
   membros = [],
   organizacoes = [],
+  pastoraisOficiais = [],
 }) => {
   const [nome, setNome] = useState('');
   const [tipo, setTipo] = useState('PASTORAL');
@@ -48,7 +50,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   const [coordenador, setCoordenador] = useState('');
   const [viceCoordenador, setViceCoordenador] = useState('');
   const [parentId, setParentId] = useState('');
-  const [errors, setErrors] = useState<{ nome?: string }>({});
+  const [pastoralOficialId, setPastoralOficialId] = useState('');
+  const [errors, setErrors] = useState<{ nome?: string; pastoralOficialId?: string }>({});
 
   const [matrixState, setMatrixState] = useState<Record<string, { coordenadorId: string; viceCoordenadorId: string }>>({});
 
@@ -60,6 +63,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       setCoordenador(organizacao.coordenador || '');
       setViceCoordenador(organizacao.viceCoordenador || '');
       setParentId(organizacao.parentId || '');
+      setPastoralOficialId(organizacao.pastoralOficialId || '');
     } else {
       setNome('');
       setTipo('PASTORAL');
@@ -67,6 +71,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       setCoordenador('');
       setViceCoordenador('');
       setParentId('');
+      setPastoralOficialId('');
     }
     setErrors({});
   }, [organizacao, open]);
@@ -101,8 +106,16 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const newErrors: { nome?: string; pastoralOficialId?: string } = {};
     if (!nome.trim()) {
-      setErrors({ nome: 'O nome é obrigatório' });
+      newErrors.nome = 'O nome é obrigatório';
+    }
+    if ((tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && !pastoralOficialId) {
+      newErrors.pastoralOficialId = 'A associação oficial é obrigatória';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -122,6 +135,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       viceCoordenador: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? null : (viceCoordenador.trim() || null),
       ativo: organizacao ? organizacao.ativo : true,
       parentId: (tipo === 'CLERO') ? null : (parentId || null),
+      pastoralOficialId: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? pastoralOficialId : null,
     }, matrixPayload);
   };
 
@@ -132,11 +146,11 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       if (tipo === 'MATRIZ' || tipo === 'COMUNIDADE') {
         return org.tipo === 'CLERO';
       }
-      if (tipo === 'CONSELHO' || tipo === 'CONSELHO_ECONOMICO') {
+      if (tipo === 'CONSELHO_PASTORAL' || tipo === 'CONSELHO_ECONOMICO') {
         return org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
       }
       if (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') {
-        return org.tipo === 'CONSELHO';
+        return org.tipo === 'CONSELHO_PASTORAL';
       }
       return true;
     });
@@ -186,16 +200,46 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                 >
                   <MenuItem value="PASTORAL">Pastoral</MenuItem>
                   <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-                  <MenuItem value="LAICATO">Laicato</MenuItem>
                   <MenuItem value="CLERO">Clero</MenuItem>
                   <MenuItem value="MATRIZ">Matriz</MenuItem>
                   <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
-                  <MenuItem value="CONSELHO">Conselho</MenuItem>
+                  <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral</MenuItem>
                   <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico</MenuItem>
                   <MenuItem value="OUTRO">Outro</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
+
+            {(tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && (
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth required error={!!errors.pastoralOficialId}>
+                  <InputLabel id="pastoral-oficial-label">Tipo Oficial / Movimento</InputLabel>
+                  <Select
+                    labelId="pastoral-oficial-label"
+                    label="Tipo Oficial / Movimento"
+                    value={pastoralOficialId}
+                    onChange={(e) => {
+                      setPastoralOficialId(e.target.value as string);
+                      setErrors(prev => ({ ...prev, pastoralOficialId: undefined }));
+                    }}
+                    disabled={isPending}
+                    sx={{ borderRadius: 0 }}
+                  >
+                    <MenuItem value=""><em>Selecione...</em></MenuItem>
+                    {pastoraisOficiais
+                      .filter(po => po.tipo === tipo)
+                      .map(po => (
+                        <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
+                      ))}
+                  </Select>
+                  {errors.pastoralOficialId && (
+                    <span style={{ color: '#d32f2f', fontSize: '0.75rem', marginTop: '3px', marginLeft: '14px' }}>
+                      {errors.pastoralOficialId}
+                    </span>
+                  )}
+                </FormControl>
+              </Grid>
+            )}
 
             {tipo !== 'CLERO' && (
               <Grid size={{ xs: 12, sm: 6 }}>

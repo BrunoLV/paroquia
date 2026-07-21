@@ -32,10 +32,11 @@ import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquia
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
 import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
 import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership, Usuario, AddMembershipRequest, registrarUsuario, RegistrarUsuarioRequest } from '../api/usuarios';
-import { AnoParoquialStatus, Local, Organizacao } from '../api/types';
+import { getPastoraisOficiais, createPastoralOficial, updatePastoralOficial, deletePastoralOficial } from '../api/pastoraisOficiais';
+import { AnoParoquialStatus, Local, Organizacao, PastoralMovimentoOficial } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
-import { canManageAnoParoquial, canManageLocais, canManageOrganizacoes } from '../auth/permissions';
+import { canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin } from '../auth/permissions';
 import LocalFormModal from './LocalFormModal';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
 
@@ -112,6 +113,13 @@ const Settings = () => {
   const [adminRegisterDataNascimento, setAdminRegisterDataNascimento] = useState('');
   const [adminRegisterSelectedOrgs, setAdminRegisterSelectedOrgs] = useState<string[]>([]);
   const [adminRegisterChurchSelections, setAdminRegisterChurchSelections] = useState<Record<string, string>>({});
+
+  // Catalog states
+  const [poModalOpen, setPoModalOpen] = useState(false);
+  const [selectedPO, setSelectedPO] = useState<PastoralMovimentoOficial | null>(null);
+  const [poNome, setPoNome] = useState('');
+  const [poTipo, setPoTipo] = useState<'PASTORAL' | 'MOVIMENTO'>('PASTORAL');
+  const [poErrors, setPoErrors] = useState<{ nome?: string }>({});
 
   const { data: years = [], isLoading, isError } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -328,6 +336,81 @@ const Settings = () => {
     );
   });
 
+  const { data: pastoraisOficiais = [], isLoading: isLoadingPO, isError: isErrorPO } = useQuery({
+    queryKey: ['pastoraisOficiais'],
+    queryFn: getPastoraisOficiais,
+    enabled: tabValue === 4 || orgModalOpen,
+  });
+
+  const createPOMutation = useMutation({
+    mutationFn: (data: Omit<PastoralMovimentoOficial, 'id'>) => createPastoralOficial(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
+      showSuccess('Tipo oficial cadastrado com sucesso!');
+      setPoModalOpen(false);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao cadastrar tipo oficial.';
+      showError(errMsg);
+    },
+  });
+
+  const updatePOMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Omit<PastoralMovimentoOficial, 'id'> }) =>
+      updatePastoralOficial(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
+      showSuccess('Tipo oficial atualizado com sucesso!');
+      setPoModalOpen(false);
+      setSelectedPO(null);
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao atualizar tipo oficial.';
+      showError(errMsg);
+    },
+  });
+
+  const deletePOMutation = useMutation({
+    mutationFn: (id: string) => deletePastoralOficial(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
+      showSuccess('Tipo oficial excluído com sucesso!');
+    },
+    onError: (error: any) => {
+      const errMsg = error.response?.data?.message || 'Erro ao excluir tipo oficial.';
+      showError(errMsg);
+    },
+  });
+
+  const handleCreatePO = () => {
+    setSelectedPO(null);
+    setPoNome('');
+    setPoTipo('PASTORAL');
+    setPoErrors({});
+    setPoModalOpen(true);
+  };
+
+  const handleEditPO = (po: PastoralMovimentoOficial) => {
+    setSelectedPO(po);
+    setPoNome(po.nome);
+    setPoTipo(po.tipo);
+    setPoErrors({});
+    setPoModalOpen(true);
+  };
+
+  const handlePOSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!poNome.trim()) {
+      setPoErrors({ nome: 'O nome é obrigatório' });
+      return;
+    }
+    if (selectedPO) {
+      updatePOMutation.mutate({ id: selectedPO.id, data: { nome: poNome.trim(), tipo: poTipo } });
+    } else {
+      createPOMutation.mutate({ nome: poNome.trim(), tipo: poTipo });
+    }
+  };
+
   const createOrgMutation = useMutation({
     mutationFn: async ({ data, matrix }: { data: Omit<Organizacao, 'id'>; matrix?: { churchId: string; coordenadorId?: string | null; viceCoordenadorId?: string | null }[] }) => {
       const createdOrg = await createOrganizacao(data);
@@ -470,12 +553,16 @@ const Settings = () => {
         return 'Pastoral';
       case 'MOVIMENTO':
         return 'Movimento';
-      case 'LAICATO':
-        return 'Laicato';
       case 'CLERO':
         return 'Clero';
-      case 'CONSELHO':
-        return 'Conselho';
+      case 'CONSELHO_PASTORAL':
+        return 'Conselho Pastoral';
+      case 'CONSELHO_ECONOMICO':
+        return 'Conselho Econômico';
+      case 'MATRIZ':
+        return 'Matriz';
+      case 'COMUNIDADE':
+        return 'Comunidade';
       case 'OUTRO':
         return 'Outro';
       default:
@@ -543,6 +630,9 @@ const Settings = () => {
             <Tab label="Pastorais e Movimentos" {...a11yProps(2)} sx={{ fontWeight: 600 }} />
             {isAuthorizedUsers && (
               <Tab label="Membros / Usuários" {...a11yProps(3)} sx={{ fontWeight: 600 }} />
+            )}
+            {isAdmin(user) && (
+              <Tab label="Catálogo Oficial" {...a11yProps(4)} sx={{ fontWeight: 600 }} />
             )}
           </Tabs>
         </Box>
@@ -979,6 +1069,90 @@ const Settings = () => {
                         <TableRow>
                           <TableCell colSpan={6} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                             Nenhum usuário encontrado.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            )}
+          </CustomTabPanel>
+        )}
+
+        {isAdmin(user) && (
+          <CustomTabPanel value={tabValue} index={4}>
+            {isLoadingPO ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                <CircularProgress />
+              </Box>
+            ) : isErrorPO ? (
+              <Alert severity="error" sx={{ borderRadius: 0 }}>
+                Erro ao carregar o catálogo de pastorais e movimentos oficiais.
+              </Alert>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    Catálogo Oficial de Pastorais e Movimentos
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleCreatePO}
+                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                  >
+                    Novo Tipo
+                  </Button>
+                </Box>
+
+                <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                  <Table>
+                    <TableHead sx={{ bgcolor: 'grey.100' }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {pastoraisOficiais.map((po) => (
+                        <TableRow key={po.id}>
+                          <TableCell sx={{ fontWeight: 500 }}>{po.nome}</TableCell>
+                          <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
+                          <TableCell align="right">
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                onClick={() => handleEditPO(po)}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                Editar
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                onClick={() => {
+                                  if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
+                                    deletePOMutation.mutate(po.id);
+                                  }
+                                }}
+                                disabled={deletePOMutation.isPending}
+                                sx={{ borderRadius: 0 }}
+                              >
+                                Excluir
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {pastoraisOficiais.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                            Nenhum tipo cadastrado.
                           </TableCell>
                         </TableRow>
                       )}
@@ -1617,7 +1791,68 @@ const Settings = () => {
         igrejas={orgs.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))}
         membros={editingOrgMembros}
         organizacoes={orgs}
+        pastoraisOficiais={pastoraisOficiais}
       />
+
+      {/* Official Catalog Form Modal */}
+      <Dialog
+        open={poModalOpen}
+        onClose={() => setPoModalOpen(false)}
+        fullWidth
+        maxWidth="sm"
+        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
+      >
+        <form onSubmit={handlePOSubmit}>
+          <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
+            {selectedPO ? 'Editar Tipo Oficial' : 'Novo Tipo Oficial'}
+          </DialogTitle>
+          <DialogContent dividers>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+              <TextField
+                label="Nome"
+                variant="outlined"
+                fullWidth
+                required
+                value={poNome}
+                onChange={(e) => {
+                  setPoNome(e.target.value);
+                  if (e.target.value.trim()) setPoErrors({});
+                }}
+                error={!!poErrors.nome}
+                helperText={poErrors.nome}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+              />
+              <FormControl fullWidth required>
+                <InputLabel id="po-tipo-label">Tipo</InputLabel>
+                <Select
+                  labelId="po-tipo-label"
+                  label="Tipo"
+                  value={poTipo}
+                  onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
+                  sx={{ borderRadius: 0 }}
+                >
+                  <MenuItem value="PASTORAL">Pastoral</MenuItem>
+                  <MenuItem value="MOVIMENTO">Movimento</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={() => setPoModalOpen(false)} color="inherit" sx={{ borderRadius: 0 }}>
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={createPOMutation.isPending || updatePOMutation.isPending}
+              sx={{ borderRadius: 0, fontWeight: 600 }}
+            >
+              Salvar
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </Container>
   );
 };

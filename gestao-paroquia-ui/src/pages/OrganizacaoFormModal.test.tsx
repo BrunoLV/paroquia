@@ -48,7 +48,7 @@ describe('OrganizacaoFormModal', () => {
     );
 
     // 1. Test for MATRIZ: parent must be CLERO
-    const tipoSelect = screen.getByLabelText(/Tipo/i);
+    const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
     fireEvent.mouseDown(tipoSelect);
     fireEvent.click(screen.getByRole('option', { name: 'Matriz' }));
 
@@ -84,7 +84,7 @@ describe('OrganizacaoFormModal', () => {
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
 
     // Select official type
-    fireEvent.mouseDown(screen.getByLabelText(/Tipo Oficial \/ Movimento/i));
+    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
     fireEvent.click(screen.getByRole('option', { name: 'Catequese Oficial' }));
 
     // Open parent dropdown and select Conselho Pastoral
@@ -113,10 +113,10 @@ describe('OrganizacaoFormModal', () => {
     );
 
     // 1. Initially type is PASTORAL. Dropdown should be visible.
-    expect(screen.getByLabelText(/Tipo Oficial \/ Movimento/i)).toBeInTheDocument();
+    expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
     
     // Open dropdown
-    fireEvent.mouseDown(screen.getByLabelText(/Tipo Oficial \/ Movimento/i));
+    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
     // Should show PASTORAL types, but NOT MOVIMENTO types
     expect(screen.getByRole('option', { name: 'Catequese Oficial' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Dízimo Oficial' })).toBeInTheDocument();
@@ -126,13 +126,13 @@ describe('OrganizacaoFormModal', () => {
     fireEvent.click(document.body);
 
     // 2. Change type to MOVIMENTO
-    const tipoSelect = screen.getByLabelText(/Tipo/i);
+    const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
     fireEvent.mouseDown(tipoSelect);
     fireEvent.click(screen.getByRole('option', { name: 'Movimento' }));
 
     // Dropdown should still be visible
-    expect(screen.getByLabelText(/Tipo Oficial \/ Movimento/i)).toBeInTheDocument();
-    fireEvent.mouseDown(screen.getByLabelText(/Tipo Oficial \/ Movimento/i));
+    expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
+    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
     // Should show MOVIMENTO types, but NOT PASTORAL types
     expect(screen.getByRole('option', { name: 'EJC Oficial' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Catequese Oficial' })).not.toBeInTheDocument();
@@ -145,7 +145,7 @@ describe('OrganizacaoFormModal', () => {
     fireEvent.click(screen.getByRole('option', { name: 'Clero' }));
 
     // Dropdown should NOT be visible
-    expect(screen.queryByLabelText(/Tipo Oficial \/ Movimento/i)).not.toBeInTheDocument();
+    expect(screen.queryAllByLabelText(/Tipo Oficial \/ Movimento/i).length).toBe(0);
   });
 
   test('requires pastoralOficialId to submit successfully', () => {
@@ -163,7 +163,7 @@ describe('OrganizacaoFormModal', () => {
     expect(mockOnSave).not.toHaveBeenCalled();
 
     // Select official type
-    fireEvent.mouseDown(screen.getByLabelText(/Tipo Oficial \/ Movimento/i));
+    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
     fireEvent.click(screen.getByRole('option', { name: 'Catequese Oficial' }));
 
     // Submit again
