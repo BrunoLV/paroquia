@@ -1,0 +1,4 @@
+Bug Fix: Wrong column type for version in official catalog table
+
+Summary:
+- Added V041 migration SQL file altering the version column type of calendario.pastorais_movimentos_oficiais to BIGINT to resolve schema validation issues with JPA entity version property (which maps to Long/BIGINT).
