@@ -1171,7 +1171,18 @@ const Settings = () => {
                     onChange={(e) => setNewMembershipOrgId(e.target.value)}
                   >
                     {orgs
-                      .filter((o) => o.ativo)
+                      .filter((o) => {
+                        if (!o.ativo) return false;
+                        if (!selectedUserForMemberships?.igrejaId) return true;
+                        const userChurch = selectedUserForMemberships.igrejaId;
+                        if (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') {
+                          return o.id === userChurch;
+                        }
+                        if (o.tipo === 'PASTORAL' || o.tipo === 'MOVIMENTO') {
+                          return true;
+                        }
+                        return o.parentId === userChurch || !o.parentId;
+                      })
                       .map((o) => (
                         <MenuItem key={o.id} value={o.id}>
                           {o.nome} ({getOrgTipoLabel(o.tipo)})
@@ -1213,7 +1224,7 @@ const Settings = () => {
                         inputProps={{ 'data-testid': 'add-membership-church-select' }}
                       >
                         {orgs
-                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
+                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') && (!selectedUserForMemberships?.igrejaId || o.id === selectedUserForMemberships.igrejaId))
                           .map((o) => (
                             <MenuItem key={o.id} value={o.id}>
                               {o.nome}
@@ -1360,7 +1371,12 @@ const Settings = () => {
                     onChange={(e) => setNewOrgMemberUserId(e.target.value)}
                   >
                     {users
-                      .filter((u) => u.enabled)
+                      .filter((u) => {
+                        if (!u.enabled) return false;
+                        const targetChurch = newOrgMemberChurchId || selectedOrgForMembers?.parentId || (selectedOrgForMembers?.tipo === 'MATRIZ' || selectedOrgForMembers?.tipo === 'COMUNIDADE' ? selectedOrgForMembers?.id : undefined);
+                        if (!targetChurch || !u.igrejaId) return true;
+                        return u.igrejaId === targetChurch;
+                      })
                       .map((u) => (
                         <MenuItem key={u.id} value={u.id}>
                           {u.nome} ({u.username})

@@ -1,11 +1,11 @@
 # Implementation Plan: Atualização dos Arquivos Docker, Validação de Vínculo por Igreja e Seed Data
 
 ## Phase 1: Backend Strict Church Membership Validation (TDD)
-- [ ] Task: Red Phase - Write Unit Tests for Church Membership Scoping in AddMembershipUseCase & Controller
-    - [ ] Create unit tests in `AddMembershipUseCaseTest` verifying that linking a user to an organization of a different church throws `IllegalArgumentException`.
-- [ ] Task: Green Phase - Implement Strict Church Membership Validation in Backend
-    - [ ] Update `AddMembershipUseCase.java` and `OrganizacaoController.java` to fetch user's `igrejaId` and reject memberships when user's `igrejaId` differs from organization's `igrejaVinculoId`.
-- [ ] Task: Conductor - User Manual Verification 'Backend Strict Church Membership Validation' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write Unit Tests for Church Membership Scoping in AddMembershipUseCase & Controller
+    - [x] Create unit tests in `AddMembershipUseCaseTest` verifying that linking a user to an organization of a different church throws `IllegalArgumentException`.
+- [x] Task: Green Phase - Implement Strict Church Membership Validation in Backend
+    - [x] Update `AddMembershipUseCase.java` and `OrganizacaoController.java` to fetch user's `igrejaId` and reject memberships when user's `igrejaId` differs from organization's `igrejaVinculoId`.
+- [x] Task: Conductor - User Manual Verification 'Backend Strict Church Membership Validation' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Scoped Membership Selectors & Validation
 - [ ] Task: Red Phase - Write Frontend Tests for Church-Scoped Membership Options in Settings
