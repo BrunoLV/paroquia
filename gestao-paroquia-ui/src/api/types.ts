@@ -7,6 +7,13 @@ export interface Organizacao {
   viceCoordenador?: string | null;
   ativo: boolean;
   parentId?: string | null;
+  pastoralOficialId?: string | null;
+}
+
+export interface PastoralMovimentoOficial {
+  id: string;
+  nome: string;
+  tipo: 'PASTORAL' | 'MOVIMENTO';
 }
 
 export interface Local {

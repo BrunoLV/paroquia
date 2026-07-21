@@ -5,6 +5,7 @@ import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquia
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
 import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
 import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership } from '../api/usuarios';
+import { getPastoraisOficiais, createPastoralOficial, updatePastoralOficial, deletePastoralOficial } from '../api/pastoraisOficiais';
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
@@ -40,6 +41,13 @@ jest.mock('../auth/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock('../api/pastoraisOficiais', () => ({
+  getPastoraisOficiais: jest.fn(),
+  createPastoralOficial: jest.fn(),
+  updatePastoralOficial: jest.fn(),
+  deletePastoralOficial: jest.fn(),
+}));
+
 const mockGetAnosParoquiais = getAnosParoquiais as jest.Mock;
 const mockUpdateAnoParoquialStatus = updateAnoParoquialStatus as jest.Mock;
 const mockGetLocais = getLocais as jest.Mock;
@@ -56,6 +64,10 @@ const mockGetMemberships = getMemberships as jest.Mock;
 const mockAddMembership = addMembership as jest.Mock;
 const mockRemoveMembership = removeMembership as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
+const mockGetPastoraisOficiais = getPastoraisOficiais as jest.Mock;
+const mockCreatePastoralOficial = createPastoralOficial as jest.Mock;
+const mockUpdatePastoralOficial = updatePastoralOficial as jest.Mock;
+const mockDeletePastoralOficial = deletePastoralOficial as jest.Mock;
 
 const mockAnos = [
   {
@@ -650,5 +662,123 @@ describe('Settings page - Membros por Pastoral', () => {
 
     expect(coordSelect).toBeInTheDocument();
     expect(viceSelect).toBeInTheDocument();
+  });
+
+  test('hides Catálogo Oficial tab for non-admin users', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Padre',
+        roles: ['ROLE_CLERO_PAROCO'],
+        organizations: [],
+      },
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.queryByRole('tab', { name: /Catálogo Oficial/i })).not.toBeInTheDocument();
+    });
+  });
+
+  test('renders Catálogo Oficial tab and list for admin users', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Administrador',
+        roles: ['ROLE_ADMIN'],
+        organizations: [],
+      },
+    });
+
+    const mockPastoraisOficiais = [
+      { id: '1', nome: 'Pastoral da Juventude Oficial', tipo: 'PASTORAL' },
+      { id: '2', nome: 'Pastoral Familiar Oficial', tipo: 'PASTORAL' },
+      { id: '3', nome: 'EJC Oficial', tipo: 'MOVIMENTO' }
+    ];
+    mockGetPastoraisOficiais.mockResolvedValueOnce(mockPastoraisOficiais);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: /Catálogo Oficial/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('tab', { name: /Catálogo Oficial/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Pastoral da Juventude Oficial')).toBeInTheDocument();
+      expect(screen.getByText('Pastoral Familiar Oficial')).toBeInTheDocument();
+      expect(screen.getByText('EJC Oficial')).toBeInTheDocument();
+    });
+  });
+
+  test('allows creating, editing, and deleting official types in catalog tab', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Administrador',
+        roles: ['ROLE_ADMIN'],
+        organizations: [],
+      },
+    });
+
+    const mockPastoraisOficiais = [
+      { id: '1', nome: 'Pastoral da Juventude Oficial', tipo: 'PASTORAL' }
+    ];
+    mockGetPastoraisOficiais.mockResolvedValue(mockPastoraisOficiais);
+    mockCreatePastoralOficial.mockResolvedValueOnce({ id: '2', nome: 'Pastoral Familiar Oficial', tipo: 'PASTORAL' });
+    mockUpdatePastoralOficial.mockResolvedValueOnce({ id: '1', nome: 'PJ Oficial Editada', tipo: 'PASTORAL' });
+    mockDeletePastoralOficial.mockResolvedValueOnce(undefined);
+
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('tab', { name: /Catálogo Oficial/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Pastoral da Juventude Oficial')).toBeInTheDocument();
+    });
+
+    // Create
+    fireEvent.click(screen.getByRole('button', { name: /Novo Tipo/i }));
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Pastoral Familiar Oficial' } });
+    
+    // Select type PASTORAL
+    const tipoSelect = screen.getByLabelText(/Tipo/i);
+    fireEvent.mouseDown(tipoSelect);
+    fireEvent.click(screen.getByRole('option', { name: 'Pastoral' }));
+
+    fireEvent.click(screen.getByRole('button', { name: /Salvar/i }));
+
+    await waitFor(() => {
+      expect(mockCreatePastoralOficial).toHaveBeenCalledWith({
+        nome: 'Pastoral Familiar Oficial',
+        tipo: 'PASTORAL'
+      });
+    });
+
+    // Edit
+    const editBtn = screen.getByRole('button', { name: /Editar/i });
+    fireEvent.click(editBtn);
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'PJ Oficial Editada' } });
+    fireEvent.click(screen.getByRole('button', { name: /Salvar/i }));
+
+    await waitFor(() => {
+      expect(mockUpdatePastoralOficial).toHaveBeenCalledWith('1', {
+        nome: 'PJ Oficial Editada',
+        tipo: 'PASTORAL'
+      });
+    });
+
+    // Delete
+    const deleteBtn = screen.getByRole('button', { name: /Excluir/i });
+    fireEvent.click(deleteBtn);
+
+    await waitFor(() => {
+      expect(mockDeletePastoralOficial).toHaveBeenCalledWith('1');
+    });
   });
 });
