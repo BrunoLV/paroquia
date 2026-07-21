@@ -182,11 +182,24 @@ export const canViewPendingEvents = (user: User | null): boolean => {
 export const isUnlinkedUser = (user: User | null): boolean => {
   if (!user) return false;
 
-  const isAdminOrClero = user.roles.some(r =>
-    r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO' || r === 'VIGARIO' || r === 'PADRE' || r === 'SECRETARIO'
+  const isLeaderOrClero = user.roles.some(r =>
+    r === 'ADMIN' || r === 'ROLE_ADMIN' ||
+    r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO' ||
+    r === 'VIGARIO' || r === 'PADRE' || r === 'SECRETARIO' ||
+    r === 'ROLE_CONSELHO_COORDENADOR' || r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
+    r === 'COORDENADOR_CONSELHO' || r === 'VICE_COORDENADOR_CONSELHO' ||
+    r === 'ROLE_PASTORAL_COORDENADOR' || r === 'ROLE_PASTORAL_VICE_COORDENADOR' ||
+    r === 'COORDENADOR' || r === 'VICE_COORDENADOR'
   );
-  if (isAdminOrClero) return false;
+  if (isLeaderOrClero) return false;
 
-  const hasOrganizations = Array.isArray(user.organizations) && user.organizations.length > 0;
-  return !hasOrganizations;
+  const isRegularUserOrMember = user.roles.every(r =>
+    r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO' || r === 'ROLE_USER' || r === 'USER'
+  );
+
+  if (isRegularUserOrMember && Array.isArray(user.organizations) && user.organizations.length === 0) {
+    return true;
+  }
+
+  return false;
 };
