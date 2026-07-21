@@ -155,6 +155,11 @@
 - [x] **Track: Refatoração do Modelo de Usuário, Vínculos com Organizações e Seed Docker**
 *Link: [./archive/refatoracao_usuario_vinculos_seed_20260721/](./archive/refatoracao_usuario_vinculos_seed_20260721/)*
 
+---
+
+- [ ] **Track: Atualização dos Arquivos Docker, Validação de Vínculo por Igreja e Seed Data**
+*Link: [./tracks/docker_seed_vinculo_igreja_20260721/](./tracks/docker_seed_vinculo_igreja_20260721/)*
+
 
 
 
