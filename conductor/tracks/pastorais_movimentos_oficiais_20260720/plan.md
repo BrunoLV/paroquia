@@ -24,8 +24,8 @@
 - [x] Task: Red Phase - Write Frontend Unit Tests [3c2a405]
     - [x] Add unit tests verifying the administrative CRUD tab for official types in settings.
     - [x] Add unit tests verifying that the dropdown selector for official types is displayed and mandatory for organizations of type `PASTORAL` / `MOVIMENTO`.
-- [~] Task: Green Phase - Implement UI Changes
-    - [~] Create catalog administration view in `Settings.tsx` (accessible to ADMIN users).
-    - [~] Update `OrganizacaoFormModal.tsx` to include and dynamically filter the `PastoralMovimentoOficial` dropdown selector based on the chosen organization type.
-    - [~] Update searching/filtering functionality in the list of organizations.
+- [x] Task: Green Phase - Implement UI Changes [156f44e]
+    - [x] Create catalog administration view in `Settings.tsx` (accessible to ADMIN users).
+    - [x] Update `OrganizacaoFormModal.tsx` to include and dynamically filter the `PastoralMovimentoOficial` dropdown selector based on the chosen organization type.
+    - [x] Update searching/filtering functionality in the list of organizations.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
