@@ -1,13 +1,13 @@
 # Implementation Plan: Registro de Tipos Pastorais e Movimentos Oficiais
 
-## Phase 1: Database Migration & Seed Data [checkpoint: ]
-- [~] Task: Implement Flyway Migration for schema updates
-    - [~] Create a new V0xx migration script to create `calendario.pastorais_movimentos_oficiais` and add `pastoral_oficial_id` to `calendario.organizacoes`.
-    - [~] Handle rename of `CONSELHO` to `CONSELHO_PASTORAL` and deletion of `LAICATO` in the database.
-- [ ] Task: Populate official catalog and link existing seeds
-    - [ ] Update `seed-data.sql` to populate `calendario.pastorais_movimentos_oficiais` with the full list of official Catholic pastorals and movements.
-    - [ ] Link existing seeded organizations of type `PASTORAL` or `MOVIMENTO` to their corresponding official types.
-- [ ] Task: Conductor - User Manual Verification 'Database Migration & Seed Data' (Protocol in workflow.md)
+## Phase 1: Database Migration & Seed Data [checkpoint: c5bfc1e]
+- [x] Task: Implement Flyway Migration for schema updates (c5bfc1e)
+    - [x] Create a new V0xx migration script to create `calendario.pastorais_movimentos_oficiais` and add `pastoral_oficial_id` to `calendario.organizacoes`. (c5bfc1e)
+    - [x] Handle rename of `CONSELHO` to `CONSELHO_PASTORAL` and deletion of `LAICATO` in the database. (c5bfc1e)
+- [x] Task: Populate official catalog and link existing seeds (c5bfc1e)
+    - [x] Update `seed-data.sql` to populate `calendario.pastorais_movimentos_oficiais` with the full list of official Catholic pastorals and movements. (c5bfc1e)
+    - [x] Link existing seeded organizations of type `PASTORAL` or `MOVIMENTO` to their corresponding official types. (c5bfc1e)
+- [x] Task: Conductor - User Manual Verification 'Database Migration & Seed Data' (c5bfc1e)
 
 ## Phase 2: Backend Development (TDD) [checkpoint: ]
 - [ ] Task: Red Phase - Write Backend Unit Tests
