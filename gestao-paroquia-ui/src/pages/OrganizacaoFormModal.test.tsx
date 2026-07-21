@@ -44,7 +44,17 @@ describe('OrganizacaoFormModal', () => {
     pastoraisOficiais: mockPastoraisOficiais,
   };
 
-  const renderModal = (props = defaultProps) => {
+  const renderModal = (props: {
+    open?: boolean;
+    onClose?: () => void;
+    onSave?: (data: any) => void;
+    organizacao?: Organizacao | null;
+    isPending?: boolean;
+    usuarios?: any[];
+    igrejas?: Organizacao[];
+    organizacoes?: Organizacao[];
+    pastoraisOficiais?: any[];
+  } = {}) => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -52,10 +62,11 @@ describe('OrganizacaoFormModal', () => {
         },
       },
     });
+    const mergedProps = { ...defaultProps, ...props };
     return render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-          <OrganizacaoFormModal {...props} />
+          <OrganizacaoFormModal {...mergedProps} />
         </ThemeProvider>
       </QueryClientProvider>
     );
@@ -189,7 +200,6 @@ describe('OrganizacaoFormModal', () => {
     ]);
 
     renderModal({
-      ...defaultProps,
       organizacao: { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true }
     });
 
