@@ -20,7 +20,7 @@
     - [x] Update `validateHierarchy` and CRUD actions in `OrganizacaoService.java` to enforce the mandatory association of `PASTORAL`/`MOVIMENTO` with their official types.
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [297bd49]
 
-## Phase 3: Frontend Development (TDD) [checkpoint: ]
+## Phase 3: Frontend Development (TDD) [checkpoint: 5cde2a7]
 - [x] Task: Red Phase - Write Frontend Unit Tests [3c2a405]
     - [x] Add unit tests verifying the administrative CRUD tab for official types in settings.
     - [x] Add unit tests verifying that the dropdown selector for official types is displayed and mandatory for organizations of type `PASTORAL` / `MOVIMENTO`.
@@ -28,4 +28,10 @@
     - [x] Create catalog administration view in `Settings.tsx` (accessible to ADMIN users).
     - [x] Update `OrganizacaoFormModal.tsx` to include and dynamically filter the `PastoralMovimentoOficial` dropdown selector based on the chosen organization type.
     - [x] Update searching/filtering functionality in the list of organizations.
+- [x] Task: Refactor - Remove Church Coordination Matrix [5cde2a7]
+    - [x] Remove the coordination matrix layout and sequential membership linking logic in frontend.
+    - [x] Expose standard Coordinator and Vice-Coordinator text fields unconditionally for all types (including Pastoral/Movimento) for independent church registrations.
+    - [x] Update frontend tests to remove matrix assertions and test direct coordination field updates.
+- [x] Task: Bug Fix - Database version column type mismatch [4026f9b]
+    - [x] Create V041 migration SQL script altering version column type of calendario.pastorais_movimentos_oficiais to BIGINT.
 - [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
