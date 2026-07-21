@@ -1,0 +1,7 @@
+Task: Remove Church Coordination Matrix
+
+Summary:
+- Removed the custom Church Coordination Matrix layout/logic in OrganizacaoFormModal.tsx for PASTORAL and MOVIMENTO organization types.
+- Updated OrganizacaoFormModal.tsx to display standard coordinator/vice-coordinator text fields for all organization types.
+- Simplified create/update organization mutations in Settings.tsx to remove sequential member linking operations.
+- Updated unit tests in Settings.test.tsx and OrganizacaoFormModal.test.tsx to assert standard fields and omit matrix assertions.
