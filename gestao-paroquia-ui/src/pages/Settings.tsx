@@ -1717,7 +1717,6 @@ const Settings = () => {
         isPending={createOrgMutation.isPending || updateOrgMutation.isPending}
         usuarios={users}
         igrejas={orgs.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))}
-        membros={editingOrgMembros}
         organizacoes={orgs}
         pastoraisOficiais={pastoraisOficiais}
       />
