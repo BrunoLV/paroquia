@@ -20,5 +20,7 @@ public interface MembroOrganizacaoJpaRepository extends JpaRepository<MembroOrga
 
     List<MembroOrganizacaoEntity> findByOrganizacaoIdAndAtivoTrue(UUID organizacaoId);
 
+    List<MembroOrganizacaoEntity> findByIgrejaVinculoIdAndAtivoTrue(UUID igrejaVinculoId);
+
     boolean existsByOrganizacaoId(UUID organizacaoId);
 }

@@ -28,25 +28,26 @@ public class OrganizacaoController {
     private final OrganizacaoService organizacaoService;
     private final ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase;
     private final GetOrganogramaUseCase getOrganogramaUseCase;
+    private final br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase addMembershipUseCase;
+    private final br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository usuarioRepository;
 
     public OrganizacaoController(
             OrganizacaoService organizacaoService,
             ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase,
-            GetOrganogramaUseCase getOrganogramaUseCase) {
+            GetOrganogramaUseCase getOrganogramaUseCase,
+            br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase addMembershipUseCase,
+            br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository usuarioRepository) {
         this.organizacaoService = organizacaoService;
         this.listOrganizacaoMembrosUseCase = listOrganizacaoMembrosUseCase;
         this.getOrganogramaUseCase = getOrganogramaUseCase;
+        this.addMembershipUseCase = addMembershipUseCase;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new organization", description = "Only administrators can create organizations.")
-    /**
-     * Registra uma nova organização paroquial (pastoral, movimento, etc.) no sistema para possibilitar a gestão de seus membros e atividades vinculadas.
-     * 
-     * Exemplo: POST /api/v1/organizacoes { "nome": "Pastoral da Criança", "tipo": "PASTORAL", "contato": "contato@exemplo.com" }
-     */
     public OrganizacaoResponse create(@RequestBody @Valid OrganizacaoRequest request) {
         Organizacao org = organizacaoService.createOrganization(
             request.nome(),
@@ -57,17 +58,13 @@ public class OrganizacaoController {
             request.parentId(),
             request.pastoralOficialId()
         );
+        syncCoordinatorMemberships(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing organization", description = "Only administrators can update organizations.")
-    /**
-     * Atualiza as informações de uma organização existente para manter os dados de contato, tipo e status de atividade devidamente sincronizados.
-     * 
-     * Exemplo: PUT /api/v1/organizacoes/{id} { "nome": "Novo Nome", "tipo": "MOVIMENTO", "contato": "novo@exemplo.com", "ativo": true }
-     */
     public OrganizacaoResponse update(@PathVariable UUID id, @RequestBody @Valid OrganizacaoRequest request) {
         Organizacao org = organizacaoService.updateOrganization(
             id,
@@ -80,7 +77,65 @@ public class OrganizacaoController {
             request.parentId(),
             request.pastoralOficialId()
         );
+        syncCoordinatorMemberships(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
+    }
+
+    private void syncCoordinatorMemberships(Organizacao org, String coordName, String viceCoordName) {
+        UUID igrejaId = resolveIgrejaVinculoId(org);
+        syncSingleRole(org, coordName, br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional.COORDENADOR, igrejaId);
+        syncSingleRole(org, viceCoordName, br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional.VICE_COORDENADOR, igrejaId);
+    }
+
+    private void syncSingleRole(Organizacao org, String nameInput, br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional papel, UUID igrejaVinculoId) {
+        if (nameInput == null || nameInput.trim().isEmpty()) {
+            return;
+        }
+        String input = nameInput.trim();
+        UUID userId = null;
+        try {
+            userId = UUID.fromString(input);
+        } catch (IllegalArgumentException e) {
+            var userOpt = usuarioRepository.findByNomeIgnoreCase(input);
+            if (userOpt.isEmpty()) {
+                userOpt = usuarioRepository.findByUsernameIgnoreCase(input);
+            }
+            if (userOpt.isPresent()) {
+                userId = userOpt.get().getId();
+            }
+        }
+
+        if (userId != null && usuarioRepository.existsById(userId)) {
+            try {
+                addMembershipUseCase.execute(userId, org.getId(), org.getTipo(), papel, igrejaVinculoId);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private UUID resolveIgrejaVinculoId(Organizacao org) {
+        if (org.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
+                || org.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+            return org.getId();
+        }
+        if (org.getParentId() != null) {
+            var parentOpt = organizacaoService.getOrganization(org.getParentId());
+            if (parentOpt.isPresent()) {
+                var parent = parentOpt.get();
+                if (parent.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
+                        || parent.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+                    return parent.getId();
+                }
+                if (parent.getParentId() != null) {
+                    var grandParentOpt = organizacaoService.getOrganization(parent.getParentId());
+                    if (grandParentOpt.isPresent() && (grandParentOpt.get().getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
+                            || grandParentOpt.get().getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE)) {
+                        return grandParentOpt.get().getId();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @DeleteMapping("/{id}")

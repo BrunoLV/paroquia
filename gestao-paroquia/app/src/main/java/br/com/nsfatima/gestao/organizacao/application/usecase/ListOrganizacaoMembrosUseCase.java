@@ -32,7 +32,15 @@ public class ListOrganizacaoMembrosUseCase {
 
     @Transactional(readOnly = true)
     public List<OrganizacaoMembroResponse> execute(UUID organizacaoId) {
-        List<OrganizacaoMembroResponse> dbMembers = membershipRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId).stream()
+        var rawMembers = new java.util.ArrayList<>(membershipRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
+        var churchMembers = membershipRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
+        for (var cm : churchMembers) {
+            if (rawMembers.stream().noneMatch(m -> m.getUsuarioId().equals(cm.getUsuarioId()))) {
+                rawMembers.add(cm);
+            }
+        }
+
+        List<OrganizacaoMembroResponse> dbMembers = rawMembers.stream()
                 .map(m -> {
                     String userNome = usuarioRepository.findById(m.getUsuarioId())
                             .map(u -> u.getNome())
