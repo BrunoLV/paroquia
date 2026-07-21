@@ -1,0 +1,5 @@
+TypeScript Fix: test file prop assignment error
+
+Summary:
+- Explicitly typed the props parameter in the renderModal helper function inside OrganizacaoFormModal.test.tsx to allow optional parameters (like organizacao).
+- Simplified the helper call to not require defaultProps spreading manually.
