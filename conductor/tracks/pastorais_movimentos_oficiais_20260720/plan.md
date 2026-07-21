@@ -14,10 +14,10 @@
     - [x] Add unit tests for `PastoralMovimentoOficial` CRUD services, repository, and controller.
     - [x] Add unit tests asserting validation errors when saving `PASTORAL` or `MOVIMENTO` organizations without a valid `pastoralOficialId`.
     - [x] Add unit tests asserting role-based security (ADMIN role required for mutation endpoints).
-- [~] Task: Green Phase - Implement API & Business Logic
-    - [~] Implement `PastoralMovimentoOficial` JPA entity, repository, service, and controller endpoints under `/api/v1/pastorais-oficiais`.
-    - [~] Refactor Java codebase to use `CONSELHO_PASTORAL` instead of `CONSELHO` and remove `LAICATO` from `TipoOrganizacao` enum.
-    - [~] Update `validateHierarchy` and CRUD actions in `OrganizacaoService.java` to enforce the mandatory association of `PASTORAL`/`MOVIMENTO` with their official types.
+- [x] Task: Green Phase - Implement API & Business Logic [6f429d2]
+    - [x] Implement `PastoralMovimentoOficial` JPA entity, repository, service, and controller endpoints under `/api/v1/pastorais-oficiais`.
+    - [x] Refactor Java codebase to use `CONSELHO_PASTORAL` instead of `CONSELHO` and remove `LAICATO` from `TipoOrganizacao` enum.
+    - [x] Update `validateHierarchy` and CRUD actions in `OrganizacaoService.java` to enforce the mandatory association of `PASTORAL`/`MOVIMENTO` with their official types.
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Development (TDD) [checkpoint: ]
