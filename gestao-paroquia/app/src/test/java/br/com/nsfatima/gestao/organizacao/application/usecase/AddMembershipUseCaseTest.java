@@ -347,4 +347,27 @@ class AddMembershipUseCaseTest {
                 .anyMatch(m -> oldCoordId.equals(m.getUsuarioId()) && "MEMBRO".equals(m.getPapel()) && m.isAtivo());
         assertTrue(demotedSaved, "Previous coordinator should have an active MEMBRO membership saved");
     }
+
+    @Test
+    void shouldThrowExceptionWhenUserIgrejaIdDiffersFromIgrejaVinculoId() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID usuarioId = UUID.randomUUID();
+        UUID userChurchId = UUID.randomUUID();
+        UUID differentChurchId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+
+        var usuarioEntity = new br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity();
+        usuarioEntity.setId(usuarioId);
+        usuarioEntity.setIgrejaId(userChurchId);
+
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuarioEntity));
+
+        var ex = assertThrows(IllegalArgumentException.class, () ->
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, differentChurchId)
+        );
+
+        assertTrue(ex.getMessage().contains("O usuário pertence a outra igreja/comunidade"));
+    }
 }

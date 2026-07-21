@@ -34,6 +34,25 @@ public class AddMembershipUseCase {
         if (!usuarioRepository.existsById(usuarioId)) {
             throw new IllegalArgumentException("Usuario nao encontrado: " + usuarioId);
         }
+        var usuarioOpt = usuarioRepository.findById(usuarioId);
+        if (usuarioOpt.isPresent() && usuarioOpt.get().getIgrejaId() != null) {
+            UUID userChurchId = usuarioOpt.get().getIgrejaId();
+            UUID targetChurchId = igrejaVinculoId;
+            if (targetChurchId == null) {
+                var orgOpt = organizacaoRepository.findById(organizacaoId);
+                if (orgOpt.isPresent()) {
+                    var org = orgOpt.get();
+                    if (org.getTipo() == TipoOrganizacao.MATRIZ || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
+                        targetChurchId = org.getId();
+                    } else {
+                        targetChurchId = org.getParentId();
+                    }
+                }
+            }
+            if (targetChurchId != null && !userChurchId.equals(targetChurchId)) {
+                throw new IllegalArgumentException("O usuário pertence a outra igreja/comunidade e não pode ser vinculado a esta organização");
+            }
+        }
 
         if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
             if (igrejaVinculoId == null) {
