@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.organizacao.domain.model;
 import java.util.Locale;
 
 public enum PapelOrganizacional {
+    ADMIN("admin"),
     COORDENADOR("coordenador"),
     VICE_COORDENADOR("vice-coordenador"),
     MEMBRO("membro"),
