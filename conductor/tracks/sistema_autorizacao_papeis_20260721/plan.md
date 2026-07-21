@@ -16,9 +16,9 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Security & RBAC Scope Evaluators' (Protocol in workflow.md) 2c369e7
 
 ## Phase 3: Frontend Permissions Framework & UI Action Controls (TDD)
-- [ ] Task: Red Phase - Write Frontend Permission Unit Tests
-    - [ ] Add unit tests in `permissions.test.ts` for scope-based check functions (e.g. `canEditEvent`, `canApproveEvent`, `canAddObservation`).
-- [ ] Task: Green Phase - Refactor UI Permissions & Action Buttons
-    - [ ] Refactor `gestao-paroquia-ui/src/auth/permissions.ts` to implement scope checking.
-    - [ ] Update UI components (Calendar, Events, Organizations, Projects, Observations, Settings) to show/hide/disable actions based on user role and organization scope.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Permissions Framework & UI Action Controls' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write Frontend Permission Unit Tests 15f255b
+    - [x] Add unit tests in `permissions.test.ts` for scope-based check functions (e.g. `canEditEvent`, `canApproveEvent`, `canAddObservation`). 15f255b
+- [x] Task: Green Phase - Refactor UI Permissions & Action Buttons 15f255b
+    - [x] Refactor `gestao-paroquia-ui/src/auth/permissions.ts` to implement scope checking. 15f255b
+    - [x] Update UI components (Calendar, Events, Organizations, Projects, Observations, Settings) to show/hide/disable actions based on user role and organization scope. 15f255b
+- [~] Task: Conductor - User Manual Verification 'Frontend Permissions Framework & UI Action Controls' (Protocol in workflow.md)
