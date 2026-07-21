@@ -94,6 +94,21 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
     enabled: !!churchId,
   });
 
+  const getCoordinatorOptions = () => {
+    if (churchId && churchMembers.length > 0) {
+      return churchMembers.map(m => ({
+        id: m.membershipId,
+        nome: m.usuarioNome
+      }));
+    }
+    return usuarios.map(u => ({
+      id: u.id,
+      nome: u.nome
+    }));
+  };
+
+  const coordinatorOptions = getCoordinatorOptions();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -258,65 +273,41 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }}>
-              {churchId ? (
-                <FormControl fullWidth>
-                  <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
-                  <Select
-                    labelId="coordenador-select-label"
-                    label="Coordenador"
-                    value={coordenador}
-                    onChange={(e) => setCoordenador(e.target.value as string)}
-                    disabled={isPending}
-                    sx={{ borderRadius: 0 }}
-                  >
-                    <MenuItem value=""><em>Nenhum</em></MenuItem>
-                    {churchMembers.map(m => (
-                      <MenuItem key={m.membershipId} value={m.usuarioNome}>{m.usuarioNome}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <TextField
+              <FormControl fullWidth>
+                <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
+                <Select
+                  labelId="coordenador-select-label"
                   label="Coordenador"
-                  variant="outlined"
-                  fullWidth
                   value={coordenador}
-                  onChange={(e) => setCoordenador(e.target.value)}
+                  onChange={(e) => setCoordenador(e.target.value as string)}
                   disabled={isPending}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                />
-              )}
+                  sx={{ borderRadius: 0 }}
+                >
+                  <MenuItem value=""><em>Nenhum</em></MenuItem>
+                  {coordinatorOptions.map(opt => (
+                    <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }}>
-              {churchId ? (
-                <FormControl fullWidth>
-                  <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
-                  <Select
-                    labelId="vice-coordenador-select-label"
-                    label="Vice-Coordenador"
-                    value={viceCoordenador}
-                    onChange={(e) => setViceCoordenador(e.target.value as string)}
-                    disabled={isPending}
-                    sx={{ borderRadius: 0 }}
-                  >
-                    <MenuItem value=""><em>Nenhum</em></MenuItem>
-                    {churchMembers.map(m => (
-                      <MenuItem key={m.membershipId} value={m.usuarioNome}>{m.usuarioNome}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <TextField
+              <FormControl fullWidth>
+                <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
+                <Select
+                  labelId="vice-coordenador-select-label"
                   label="Vice-Coordenador"
-                  variant="outlined"
-                  fullWidth
                   value={viceCoordenador}
-                  onChange={(e) => setViceCoordenador(e.target.value)}
+                  onChange={(e) => setViceCoordenador(e.target.value as string)}
                   disabled={isPending}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                />
-              )}
+                  sx={{ borderRadius: 0 }}
+                >
+                  <MenuItem value=""><em>Nenhum</em></MenuItem>
+                  {coordinatorOptions.map(opt => (
+                    <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </DialogContent>

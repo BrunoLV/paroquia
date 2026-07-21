@@ -626,7 +626,10 @@ describe('Settings page - Membros por Pastoral', () => {
       }
     ];
     mockGetOrganizacoes.mockResolvedValue(mockChurchesAndPastoral);
-    mockGetUsuarios.mockResolvedValue([]);
+    mockGetUsuarios.mockResolvedValue([
+      { id: 'u-1', nome: 'João Coordinator', email: 'joao@test.com' },
+      { id: 'u-2', nome: 'Maria Vice', email: 'maria@test.com' },
+    ]);
     mockGetOrganizacaoMembros.mockResolvedValue([]);
     mockGetPastoraisOficiais.mockResolvedValue([
       { id: 'po-1', nome: 'Catequese Oficial', tipo: 'PASTORAL' }
@@ -649,14 +652,24 @@ describe('Settings page - Membros por Pastoral', () => {
     });
 
     // Verify coordinator/vice-coordinator inputs are displayed
-    const coordInput = screen.getByLabelText(/^Coordenador$/);
-    const viceInput = screen.getByLabelText(/^Vice-Coordenador$/);
+    const coordSelect = screen.getByLabelText(/^Coordenador$/);
+    const viceSelect = screen.getByLabelText(/^Vice-Coordenador$/);
 
-    expect(coordInput).toBeInTheDocument();
-    expect(viceInput).toBeInTheDocument();
+    expect(coordSelect).toBeInTheDocument();
+    expect(viceSelect).toBeInTheDocument();
 
-    fireEvent.change(coordInput, { target: { value: 'João Coordinator' } });
-    fireEvent.change(viceInput, { target: { value: 'Maria Vice' } });
+    await waitFor(() => {
+      fireEvent.mouseDown(coordSelect);
+      expect(screen.getByRole('option', { name: 'João Coordinator' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('option', { name: 'João Coordinator' }));
+
+    await waitFor(() => {
+      fireEvent.mouseDown(viceSelect);
+      expect(screen.getByRole('option', { name: 'Maria Vice' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('option', { name: 'Maria Vice' }));
+
     fireEvent.click(screen.getByRole('button', { name: /Salvar Alterações/i }));
 
     await waitFor(() => {

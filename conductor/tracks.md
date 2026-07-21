@@ -137,7 +137,7 @@
 
 ---
 
-- [~] **Track: Registro de Tipos Pastorais e Movimentos Oficiais**
+- [x] **Track: Registro de Tipos Pastorais e Movimentos Oficiais**
 *Link: [./tracks/pastorais_movimentos_oficiais_20260720/](./tracks/pastorais_movimentos_oficiais_20260720/)*
 
 
