@@ -3,10 +3,10 @@
 ## Phase 1: Backend Domain Logic & Role Transition Services (TDD)
 - [x] Task: Red Phase - Write Unit Tests for Church Member Scoping & Auto Role Transition 52e5986
     - [x] Create unit tests in `OrganizacaoServiceTest` and `UsuarioServiceTest` asserting church scoping validation and automatic role transition on coordinator change. 52e5986
-- [~] Task: Green Phase - Implement Church Scoping Validation & Coordinator Role Transition
-    - [ ] Update `OrganizacaoService.java` to enforce that members linked as coordinator/vice-coordinator belong to the same church.
-    - [ ] Implement automatic transition logic: when a coordinator/vice-coordinator changes, demote previous coordinator to `MEMBRO` and promote new coordinator to `COORDENADOR`/`VICE_COORDENADOR`.
-- [ ] Task: Conductor - User Manual Verification 'Backend Domain Logic & Role Transition Services' (Protocol in workflow.md)
+- [x] Task: Green Phase - Implement Church Scoping Validation & Coordinator Role Transition c74ad44
+    - [x] Update `OrganizacaoService.java` to enforce that members linked as coordinator/vice-coordinator belong to the same church. c74ad44
+    - [x] Implement automatic transition logic: when a coordinator/vice-coordinator changes, demote previous coordinator to `MEMBRO` and promote new coordinator to `COORDENADOR`/`VICE_COORDENADOR`. c74ad44
+- [~] Task: Conductor - User Manual Verification 'Backend Domain Logic & Role Transition Services' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Member Scoping & Automatic Role Association (TDD)
 - [ ] Task: Red Phase - Write Frontend Tests for Member Scoping & Zero Access State
