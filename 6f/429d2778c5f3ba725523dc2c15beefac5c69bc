@@ -1,0 +1,7 @@
+Task: Green Phase - Implement API & Business Logic
+
+Summary:
+- Implemented PastoralMovimentoOficial JPA entity, repository, service, and controller endpoints.
+- Renamed CONSELHO to CONSELHO_PASTORAL and removed LAICATO from TipoOrganizacao.
+- Enforced validation rules linking PASTORAL/MOVIMENTO organizations to their official types.
+- Fixed all failing backend tests.
