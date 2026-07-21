@@ -14,20 +14,15 @@ import {
 } from '@mui/material';
 import { Organizacao, PastoralMovimentoOficial } from '../api/types';
 import { Usuario } from '../api/usuarios';
-import { OrganizacaoMembro } from '../api/organizacoes';
 
 interface OrganizacaoFormModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (
-    data: Omit<Organizacao, 'id'>,
-    matrix?: { churchId: string; coordenadorId?: string | null; viceCoordenadorId?: string | null }[]
-  ) => void;
+  onSave: (data: Omit<Organizacao, 'id'>) => void;
   organizacao?: Organizacao | null;
   isPending: boolean;
   usuarios?: Usuario[];
   igrejas?: Organizacao[];
-  membros?: OrganizacaoMembro[];
   organizacoes?: Organizacao[];
   pastoraisOficiais?: PastoralMovimentoOficial[];
 }
@@ -40,7 +35,6 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   isPending,
   usuarios = [],
   igrejas = [],
-  membros = [],
   organizacoes = [],
   pastoraisOficiais = [],
 }) => {
@@ -52,8 +46,6 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   const [parentId, setParentId] = useState('');
   const [pastoralOficialId, setPastoralOficialId] = useState('');
   const [errors, setErrors] = useState<{ nome?: string; pastoralOficialId?: string }>({});
-
-  const [matrixState, setMatrixState] = useState<Record<string, { coordenadorId: string; viceCoordenadorId: string }>>({});
 
   useEffect(() => {
     if (organizacao) {
@@ -76,33 +68,6 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
     setErrors({});
   }, [organizacao, open]);
 
-  useEffect(() => {
-    if (open) {
-      const initial: Record<string, { coordenadorId: string; viceCoordenadorId: string }> = {};
-      if (igrejas && igrejas.length > 0) {
-        igrejas.forEach(igreja => {
-          const coord = membros.find(m => m.ativo && m.papel === 'COORDENADOR' && m.igrejaVinculoId === igreja.id);
-          const vice = membros.find(m => m.ativo && m.papel === 'VICE_COORDENADOR' && m.igrejaVinculoId === igreja.id);
-          initial[igreja.id] = {
-            coordenadorId: coord ? coord.usuarioId : '',
-            viceCoordenadorId: vice ? vice.usuarioId : '',
-          };
-        });
-      }
-      setMatrixState(initial);
-    }
-  }, [open, membros, igrejas]);
-
-  const handleMatrixChange = (churchId: string, field: 'coordenadorId' | 'viceCoordenadorId', value: string) => {
-    setMatrixState(prev => ({
-      ...prev,
-      [churchId]: {
-        ...prev[churchId] || { coordenadorId: '', viceCoordenadorId: '' },
-        [field]: value,
-      },
-    }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -119,24 +84,16 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       return;
     }
 
-    const matrixPayload = (tipo === 'PASTORAL' || tipo === 'MOVIMENTO')
-      ? Object.entries(matrixState).map(([churchId, state]) => ({
-          churchId,
-          coordenadorId: state.coordenadorId || null,
-          viceCoordenadorId: state.viceCoordenadorId || null,
-        }))
-      : undefined;
-
     onSave({
       nome: nome.trim(),
       tipo,
       contato: contato.trim() || null,
-      coordenador: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? null : (coordenador.trim() || null),
-      viceCoordenador: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? null : (viceCoordenador.trim() || null),
+      coordenador: coordenador.trim() || null,
+      viceCoordenador: viceCoordenador.trim() || null,
       ativo: organizacao ? organizacao.ativo : true,
       parentId: (tipo === 'CLERO') ? null : (parentId || null),
       pastoralOficialId: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? pastoralOficialId : null,
-    }, matrixPayload);
+    });
   };
 
   const parentOptions = organizacoes
@@ -274,94 +231,29 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               />
             </Grid>
 
-            {(tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? (
-              <Grid size={{ xs: 12 }}>
-                <p style={{ fontWeight: 600, marginTop: 16, marginBottom: 8, color: '#333' }}>
-                  Matriz de Coordenação por Igreja (Matriz / Comunidade)
-                </p>
-                <div style={{ maxHeight: 250, overflowY: 'auto', border: '1px solid #ccc', padding: '16px 8px' }}>
-                  <Grid container spacing={2}>
-                    {igrejas.map(igreja => {
-                      const key = igreja.id;
-                      const coordVal = matrixState[key]?.coordenadorId || '';
-                      const viceVal = matrixState[key]?.viceCoordenadorId || '';
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Coordenador"
+                variant="outlined"
+                fullWidth
+                value={coordenador}
+                onChange={(e) => setCoordenador(e.target.value)}
+                disabled={isPending}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+              />
+            </Grid>
 
-                      return (
-                        <React.Fragment key={key}>
-                          <Grid size={{ xs: 4 }} style={{ display: 'flex', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{igreja.nome}</span>
-                          </Grid>
-                          <Grid size={{ xs: 4 }}>
-                            <FormControl fullWidth size="small">
-                              <InputLabel id={`coord-${key}-label`}>Coordenador</InputLabel>
-                              <Select
-                                labelId={`coord-${key}-label`}
-                                label="Coordenador"
-                                value={coordVal}
-                                onChange={(e) => handleMatrixChange(key, 'coordenadorId', e.target.value as string)}
-                                disabled={isPending}
-                                sx={{ borderRadius: 0 }}
-                                data-testid={`coord-select-${key}`}
-                              >
-                                <MenuItem value=""><em>Nenhum</em></MenuItem>
-                                {usuarios.map(u => (
-                                  <MenuItem key={u.id} value={u.id}>{u.nome}</MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                          <Grid size={{ xs: 4 }}>
-                            <FormControl fullWidth size="small">
-                              <InputLabel id={`vice-${key}-label`}>Vice-Coordenador</InputLabel>
-                              <Select
-                                labelId={`vice-${key}-label`}
-                                label="Vice-Coordenador"
-                                value={viceVal}
-                                onChange={(e) => handleMatrixChange(key, 'viceCoordenadorId', e.target.value as string)}
-                                disabled={isPending}
-                                sx={{ borderRadius: 0 }}
-                                data-testid={`vice-select-${key}`}
-                              >
-                                <MenuItem value=""><em>Nenhum</em></MenuItem>
-                                {usuarios.map(u => (
-                                  <MenuItem key={u.id} value={u.id}>{u.nome}</MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </React.Fragment>
-                      );
-                    })}
-                  </Grid>
-                </div>
-              </Grid>
-            ) : (
-              <>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    label="Coordenador"
-                    variant="outlined"
-                    fullWidth
-                    value={coordenador}
-                    onChange={(e) => setCoordenador(e.target.value)}
-                    disabled={isPending}
-                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    label="Vice-Coordenador"
-                    variant="outlined"
-                    fullWidth
-                    value={viceCoordenador}
-                    onChange={(e) => setViceCoordenador(e.target.value)}
-                    disabled={isPending}
-                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                  />
-                </Grid>
-              </>
-            )}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Vice-Coordenador"
+                variant="outlined"
+                fullWidth
+                value={viceCoordenador}
+                onChange={(e) => setViceCoordenador(e.target.value)}
+                disabled={isPending}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+              />
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>

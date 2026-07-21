@@ -100,8 +100,7 @@ describe('OrganizacaoFormModal', () => {
         tipo: 'PASTORAL',
         parentId: 'org-conselho',
         pastoralOficialId: 'po-pastoral-1',
-      }),
-      expect.any(Array)
+      })
     );
   });
 
@@ -174,8 +173,7 @@ describe('OrganizacaoFormModal', () => {
         nome: 'Nova Pastoral',
         tipo: 'PASTORAL',
         pastoralOficialId: 'po-pastoral-1'
-      }),
-      expect.any(Array)
+      })
     );
   });
 });

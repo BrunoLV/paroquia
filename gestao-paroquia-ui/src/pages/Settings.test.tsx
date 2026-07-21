@@ -611,7 +611,7 @@ describe('Settings page - Membros por Pastoral', () => {
     expect(screen.getByTestId('add-member-church-select')).toBeInTheDocument();
   });
 
-  test('renders coordination matrix when editing a pastoral and saves changes', async () => {
+  test('allows editing a pastoral and saves coordinator/vice-coordinator directly', async () => {
     mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
     const mockChurchesAndPastoral = [
       {
@@ -622,21 +622,15 @@ describe('Settings page - Membros por Pastoral', () => {
         coordenador: null,
         viceCoordenador: null,
         ativo: true,
-      },
-      {
-        id: 'church-1',
-        nome: 'Comunidade Santo Agostinho',
-        tipo: 'COMUNIDADE',
-        contato: null,
-        ativo: true,
+        pastoralOficialId: 'po-1',
       }
     ];
     mockGetOrganizacoes.mockResolvedValue(mockChurchesAndPastoral);
-    mockGetUsuarios.mockResolvedValue([
-      { id: 'user-1', nome: 'João Coordinator', username: 'joao@test.com', enabled: true },
-      { id: 'user-2', nome: 'Maria Vice', username: 'maria@test.com', enabled: true }
-    ]);
+    mockGetUsuarios.mockResolvedValue([]);
     mockGetOrganizacaoMembros.mockResolvedValue([]);
+    mockGetPastoraisOficiais.mockResolvedValue([
+      { id: 'po-1', nome: 'Catequese Oficial', tipo: 'PASTORAL' }
+    ]);
 
     renderPage();
 
@@ -654,14 +648,24 @@ describe('Settings page - Membros por Pastoral', () => {
       expect(screen.getByText('Editar Pastoral / Movimento')).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Matriz de Coordenação por Igreja/i)).toBeInTheDocument();
-    expect(screen.getAllByText('Comunidade Santo Agostinho').length).toBeGreaterThanOrEqual(2);
+    // Verify coordinator/vice-coordinator inputs are displayed
+    const coordInput = screen.getByLabelText(/^Coordenador$/);
+    const viceInput = screen.getByLabelText(/^Vice-Coordenador$/);
 
-    const coordSelect = screen.getByTestId('coord-select-church-1');
-    const viceSelect = screen.getByTestId('vice-select-church-1');
+    expect(coordInput).toBeInTheDocument();
+    expect(viceInput).toBeInTheDocument();
 
-    expect(coordSelect).toBeInTheDocument();
-    expect(viceSelect).toBeInTheDocument();
+    fireEvent.change(coordInput, { target: { value: 'João Coordinator' } });
+    fireEvent.change(viceInput, { target: { value: 'Maria Vice' } });
+    fireEvent.click(screen.getByRole('button', { name: /Salvar Alterações/i }));
+
+    await waitFor(() => {
+      expect(mockUpdateOrganizacao).toHaveBeenCalledWith('pastoral-1', expect.objectContaining({
+        nome: 'Catequese',
+        coordenador: 'João Coordinator',
+        viceCoordenador: 'Maria Vice'
+      }));
+    });
   });
 
   test('hides Catálogo Oficial tab for non-admin users', async () => {

@@ -412,34 +412,8 @@ const Settings = () => {
   };
 
   const createOrgMutation = useMutation({
-    mutationFn: async ({ data, matrix }: { data: Omit<Organizacao, 'id'>; matrix?: { churchId: string; coordenadorId?: string | null; viceCoordenadorId?: string | null }[] }) => {
-      const createdOrg = await createOrganizacao(data);
-
-      if (matrix && (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO')) {
-        const promises: Promise<any>[] = [];
-        for (const entry of matrix) {
-          const { churchId, coordenadorId, viceCoordenadorId } = entry;
-          if (coordenadorId) {
-            promises.push(addMembership(coordenadorId, {
-              organizacaoId: createdOrg.id,
-              tipo: data.tipo,
-              papel: 'COORDENADOR',
-              igrejaVinculoId: churchId
-            }));
-          }
-          if (viceCoordenadorId) {
-            promises.push(addMembership(viceCoordenadorId, {
-              organizacaoId: createdOrg.id,
-              tipo: data.tipo,
-              papel: 'VICE_COORDENADOR',
-              igrejaVinculoId: churchId
-            }));
-          }
-        }
-        await Promise.all(promises);
-      }
-
-      return createdOrg;
+    mutationFn: async ({ data }: { data: Omit<Organizacao, 'id'> }) => {
+      return createOrganizacao(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
@@ -454,54 +428,8 @@ const Settings = () => {
   });
 
   const updateOrgMutation = useMutation({
-    mutationFn: async ({ id, data, matrix }: { id: string; data: Omit<Organizacao, 'id'>; matrix?: { churchId: string; coordenadorId?: string | null; viceCoordenadorId?: string | null }[] }) => {
-      const updatedOrg = await updateOrganizacao(id, data);
-
-      if (matrix && (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO')) {
-        const currentMembros = await getOrganizacaoMembros(id);
-        const promises: Promise<any>[] = [];
-
-        for (const entry of matrix) {
-          const { churchId, coordenadorId, viceCoordenadorId } = entry;
-
-          const currentCoord = currentMembros.find(m => m.ativo && m.papel === 'COORDENADOR' && m.igrejaVinculoId === churchId);
-          const currentVice = currentMembros.find(m => m.ativo && m.papel === 'VICE_COORDENADOR' && m.igrejaVinculoId === churchId);
-
-          if (coordenadorId) {
-            if (!currentCoord || currentCoord.usuarioId !== coordenadorId) {
-              promises.push(addMembership(coordenadorId, {
-                organizacaoId: id,
-                tipo: data.tipo,
-                papel: 'COORDENADOR',
-                igrejaVinculoId: churchId
-              }));
-            }
-          } else {
-            if (currentCoord) {
-              promises.push(removeMembership(currentCoord.usuarioId, currentCoord.membershipId));
-            }
-          }
-
-          if (viceCoordenadorId) {
-            if (!currentVice || currentVice.usuarioId !== viceCoordenadorId) {
-              promises.push(addMembership(viceCoordenadorId, {
-                organizacaoId: id,
-                tipo: data.tipo,
-                papel: 'VICE_COORDENADOR',
-                igrejaVinculoId: churchId
-              }));
-            }
-          } else {
-            if (currentVice) {
-              promises.push(removeMembership(currentVice.usuarioId, currentVice.membershipId));
-            }
-          }
-        }
-
-        await Promise.all(promises);
-      }
-
-      return updatedOrg;
+    mutationFn: async ({ id, data }: { id: string; data: Omit<Organizacao, 'id'> }) => {
+      return updateOrganizacao(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
@@ -1778,11 +1706,11 @@ const Settings = () => {
           setOrgModalOpen(false);
           setSelectedOrg(null);
         }}
-        onSave={(data, matrix) => {
+        onSave={(data) => {
           if (selectedOrg) {
-            updateOrgMutation.mutate({ id: selectedOrg.id, data, matrix });
+            updateOrgMutation.mutate({ id: selectedOrg.id, data });
           } else {
-            createOrgMutation.mutate({ data, matrix });
+            createOrgMutation.mutate({ data });
           }
         }}
         organizacao={selectedOrg}
