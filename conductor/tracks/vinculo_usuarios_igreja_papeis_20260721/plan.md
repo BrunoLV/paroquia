@@ -1,7 +1,7 @@
 # Implementation Plan: Vínculos de Usuários/Membros, Igrejas, Organizações e Papéis
 
 ## Phase 1: Backend Domain Logic & Role Transition Services (TDD)
-- [ ] Task: Red Phase - Write Unit Tests for Church Member Scoping & Auto Role Transition
+- [~] Task: Red Phase - Write Unit Tests for Church Member Scoping & Auto Role Transition
     - [ ] Create unit tests in `OrganizacaoServiceTest` and `UsuarioServiceTest` asserting church scoping validation and automatic role transition on coordinator change.
 - [ ] Task: Green Phase - Implement Church Scoping Validation & Coordinator Role Transition
     - [ ] Update `OrganizacaoService.java` to enforce that members linked as coordinator/vice-coordinator belong to the same church.

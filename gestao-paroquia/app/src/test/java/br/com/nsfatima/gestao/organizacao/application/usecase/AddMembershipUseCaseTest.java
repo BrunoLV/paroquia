@@ -309,4 +309,42 @@ class AddMembershipUseCaseTest {
         assertFalse(existing.isAtivo());
         verify(membershipRepository).save(existing);
     }
+
+    @Test
+    void shouldDemotePreviousCoordinatorToMembroRoleWhenNewOneIsAssigned() {
+        mockAuthentication("ROLE_ADMIN");
+
+        UUID newCoordId = UUID.randomUUID();
+        UUID oldCoordId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        UUID churchId = UUID.randomUUID();
+
+        when(usuarioRepository.existsById(newCoordId)).thenReturn(true);
+
+        MembroOrganizacaoEntity existingCoord = new MembroOrganizacaoEntity();
+        existingCoord.setId(UUID.randomUUID());
+        existingCoord.setUsuarioId(oldCoordId);
+        existingCoord.setOrganizacaoId(organizacaoId);
+        existingCoord.setPapel(PapelOrganizacional.COORDENADOR.name());
+        existingCoord.setIgrejaVinculoId(churchId);
+        existingCoord.setAtivo(true);
+
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId, PapelOrganizacional.COORDENADOR.name(), churchId))
+                .thenReturn(Optional.of(existingCoord));
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(oldCoordId, organizacaoId, "MEMBRO", churchId))
+                .thenReturn(Optional.empty());
+
+        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        useCase.execute(newCoordId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, churchId);
+
+        assertFalse(existingCoord.isAtivo());
+        // Verify demoted MEMBRO membership was created and saved
+        ArgumentCaptor<MembroOrganizacaoEntity> captor = ArgumentCaptor.forClass(MembroOrganizacaoEntity.class);
+        verify(membershipRepository, atLeast(2)).save(captor.capture());
+
+        boolean demotedSaved = captor.getAllValues().stream()
+                .anyMatch(m -> oldCoordId.equals(m.getUsuarioId()) && "MEMBRO".equals(m.getPapel()) && m.isAtivo());
+        assertTrue(demotedSaved, "Previous coordinator should have an active MEMBRO membership saved");
+    }
 }
