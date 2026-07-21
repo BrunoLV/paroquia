@@ -32,7 +32,17 @@ VALUES
     ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', TRUE, NULL, 0),
     ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', 0),
     ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', 0),
-    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', 0)
+    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', 0),
+    -- Comunidade São José Allamano
+    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO', 'cpc.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000200', 0),
+    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO_ECONOMICO', 'cec.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000200', 0),
+    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000002c0', 0),
+    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000002c0', 0),
+    -- Comunidade Santo Agostinho
+    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO', 'cpc.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000300', 0),
+    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO_ECONOMICO', 'cec.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000300', 0),
+    ('00000000-0000-0000-0000-0000000003a1', 'Pastoral da Liturgia - Santo Agostinho', 'PASTORAL', 'liturgia.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000003c0', 0),
+    ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000003c0', 0)
 ON CONFLICT (id) DO NOTHING;
 
 -- Users (Usuarios)
