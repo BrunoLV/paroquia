@@ -1,0 +1,8 @@
+Task: Green Phase - Implement UI Changes
+
+Summary:
+- Implemented the official catalog administration tab (Catálogo Oficial) in Settings.tsx for Admin users with CRUD capabilities.
+- Added official types selector in OrganizacaoFormModal.tsx which is displayed and mandatory only for Pastoral and Movimento organization types, with options filtered automatically.
+- Passed pastoraisOficiais down to OrganizacaoFormModal inside Settings.tsx.
+- Renamed CONSELHO to CONSELHO_PASTORAL and deleted LAICATO in Settings.tsx type label mapper.
+- Updated Organizacao model interface in types.ts to support pastoralOficialId.
