@@ -94,6 +94,25 @@ public class AddMembershipUseCase {
             existing.ifPresent(old -> {
                 old.setAtivo(false);
                 membershipRepository.save(old);
+
+                // Transition: Demote previous coordinator to MEMBRO role
+                var oldMembroOpt = membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+                        old.getUsuarioId(), organizacaoId, "MEMBRO", igrejaVinculoId);
+                if (oldMembroOpt.isPresent()) {
+                    var m = oldMembroOpt.get();
+                    m.setAtivo(true);
+                    membershipRepository.save(m);
+                } else {
+                    MembroOrganizacaoEntity demoted = new MembroOrganizacaoEntity();
+                    demoted.setId(UUID.randomUUID());
+                    demoted.setUsuarioId(old.getUsuarioId());
+                    demoted.setOrganizacaoId(organizacaoId);
+                    demoted.setTipoOrganizacao(tipo.name());
+                    demoted.setPapel("MEMBRO");
+                    demoted.setIgrejaVinculoId(igrejaVinculoId);
+                    demoted.setAtivo(true);
+                    membershipRepository.save(demoted);
+                }
             });
         }
 
