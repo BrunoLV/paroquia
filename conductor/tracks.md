@@ -140,6 +140,12 @@
 - [x] **Track: Registro de Tipos Pastorais e Movimentos Oficiais**
 *Link: [./archive/pastorais_movimentos_oficiais_20260720/](./archive/pastorais_movimentos_oficiais_20260720/)*
 
+---
+
+- [ ] **Track: Sistema de Autorização, Papéis e Alcance de Permissões**
+*Link: [./tracks/sistema_autorizacao_papeis_20260721/](./tracks/sistema_autorizacao_papeis_20260721/)*
+
+
 
 
 
