@@ -12,8 +12,10 @@ import {
   MenuItem,
   Grid,
 } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import { Organizacao, PastoralMovimentoOficial } from '../api/types';
 import { Usuario } from '../api/usuarios';
+import { getOrganizacaoMembros } from '../api/organizacoes';
 
 interface OrganizacaoFormModalProps {
   open: boolean;
@@ -67,6 +69,30 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
     }
     setErrors({});
   }, [organizacao, open]);
+
+  const getSelectedChurchId = () => {
+    if (!parentId) return null;
+    const parentOrg = organizacoes.find(o => o.id === parentId);
+    if (!parentOrg) return null;
+    if (parentOrg.tipo === 'MATRIZ' || parentOrg.tipo === 'COMUNIDADE') {
+      return parentOrg.id;
+    }
+    if (parentOrg.parentId) {
+      const grandParentOrg = organizacoes.find(o => o.id === parentOrg.parentId);
+      if (grandParentOrg && (grandParentOrg.tipo === 'MATRIZ' || grandParentOrg.tipo === 'COMUNIDADE')) {
+        return grandParentOrg.id;
+      }
+    }
+    return null;
+  };
+
+  const churchId = getSelectedChurchId();
+
+  const { data: churchMembers = [] } = useQuery({
+    queryKey: ['organizacaoMembros', churchId],
+    queryFn: () => getOrganizacaoMembros(churchId!),
+    enabled: !!churchId,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,27 +258,65 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Coordenador"
-                variant="outlined"
-                fullWidth
-                value={coordenador}
-                onChange={(e) => setCoordenador(e.target.value)}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
+              {churchId ? (
+                <FormControl fullWidth>
+                  <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
+                  <Select
+                    labelId="coordenador-select-label"
+                    label="Coordenador"
+                    value={coordenador}
+                    onChange={(e) => setCoordenador(e.target.value as string)}
+                    disabled={isPending}
+                    sx={{ borderRadius: 0 }}
+                  >
+                    <MenuItem value=""><em>Nenhum</em></MenuItem>
+                    {churchMembers.map(m => (
+                      <MenuItem key={m.membershipId} value={m.usuarioNome}>{m.usuarioNome}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  label="Coordenador"
+                  variant="outlined"
+                  fullWidth
+                  value={coordenador}
+                  onChange={(e) => setCoordenador(e.target.value)}
+                  disabled={isPending}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                />
+              )}
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Vice-Coordenador"
-                variant="outlined"
-                fullWidth
-                value={viceCoordenador}
-                onChange={(e) => setViceCoordenador(e.target.value)}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
+              {churchId ? (
+                <FormControl fullWidth>
+                  <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
+                  <Select
+                    labelId="vice-coordenador-select-label"
+                    label="Vice-Coordenador"
+                    value={viceCoordenador}
+                    onChange={(e) => setViceCoordenador(e.target.value as string)}
+                    disabled={isPending}
+                    sx={{ borderRadius: 0 }}
+                  >
+                    <MenuItem value=""><em>Nenhum</em></MenuItem>
+                    {churchMembers.map(m => (
+                      <MenuItem key={m.membershipId} value={m.usuarioNome}>{m.usuarioNome}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  label="Vice-Coordenador"
+                  variant="outlined"
+                  fullWidth
+                  value={viceCoordenador}
+                  onChange={(e) => setViceCoordenador(e.target.value)}
+                  disabled={isPending}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                />
+              )}
             </Grid>
           </Grid>
         </DialogContent>

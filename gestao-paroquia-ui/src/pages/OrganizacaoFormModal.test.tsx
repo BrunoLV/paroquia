@@ -1,9 +1,18 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 import { Organizacao } from '../api/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { getOrganizacaoMembros } from '../api/organizacoes';
+
+jest.mock('../api/organizacoes', () => ({
+  ...jest.requireActual('../api/organizacoes'),
+  getOrganizacaoMembros: jest.fn(),
+}));
+
+const mockGetOrganizacaoMembros = getOrganizacaoMembros as jest.Mock;
 
 describe('OrganizacaoFormModal', () => {
   const mockOnSave = jest.fn();
@@ -32,20 +41,33 @@ describe('OrganizacaoFormModal', () => {
     organizacoes: mockOrganizacoes,
     usuarios: [],
     igrejas: [],
-    membros: [],
     pastoraisOficiais: mockPastoraisOficiais,
+  };
+
+  const renderModal = (props = defaultProps) => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <OrganizacaoFormModal {...props} />
+        </ThemeProvider>
+      </QueryClientProvider>
+    );
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetOrganizacaoMembros.mockResolvedValue([]);
   });
 
   test('filters parent options dynamically based on organization type', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <OrganizacaoFormModal {...defaultProps} />
-      </ThemeProvider>
-    );
+    renderModal();
 
     // 1. Test for MATRIZ: parent must be CLERO
     const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
@@ -60,11 +82,7 @@ describe('OrganizacaoFormModal', () => {
   });
 
   test('displays only active organizations as parent options', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <OrganizacaoFormModal {...defaultProps} />
-      </ThemeProvider>
-    );
+    renderModal();
 
     // 2. Test for PASTORAL: parent must be CONSELHO (and active)
     const parentSelect = screen.getByLabelText(/Organização Pai/i);
@@ -75,11 +93,7 @@ describe('OrganizacaoFormModal', () => {
   });
 
   test('submits parentId correctly on save', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <OrganizacaoFormModal {...defaultProps} />
-      </ThemeProvider>
-    );
+    renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
 
@@ -105,11 +119,7 @@ describe('OrganizacaoFormModal', () => {
   });
 
   test('displays official type dropdown only for PASTORAL or MOVIMENTO and filters options accordingly', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <OrganizacaoFormModal {...defaultProps} />
-      </ThemeProvider>
-    );
+    renderModal();
 
     // 1. Initially type is PASTORAL. Dropdown should be visible.
     expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
@@ -148,11 +158,7 @@ describe('OrganizacaoFormModal', () => {
   });
 
   test('requires pastoralOficialId to submit successfully', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <OrganizacaoFormModal {...defaultProps} />
-      </ThemeProvider>
-    );
+    renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
     fireEvent.submit(screen.getByRole('button', { name: /Cadastrar/i }));
@@ -175,5 +181,26 @@ describe('OrganizacaoFormModal', () => {
         pastoralOficialId: 'po-pastoral-1'
       })
     );
+  });
+
+  test('renders coordinator select dropdown and calls getOrganizacaoMembros when parent organization resolves to a church', async () => {
+    mockGetOrganizacaoMembros.mockResolvedValue([
+      { membershipId: 'm-1', usuarioId: 'u-1', usuarioNome: 'Membro Teste', papel: 'OUTRO', ativo: true }
+    ]);
+
+    renderModal({
+      ...defaultProps,
+      organizacao: { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true }
+    });
+
+    // Expect Coordenador to be rendered as select/combobox
+    const coordSelect = screen.getByRole('combobox', { name: /^Coordenador$/ });
+    expect(coordSelect).toBeInTheDocument();
+
+    fireEvent.mouseDown(coordSelect);
+    
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Membro Teste' })).toBeInTheDocument();
+    });
   });
 });
