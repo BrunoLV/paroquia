@@ -8,12 +8,12 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Strict Church Membership Validation' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Scoped Membership Selectors & Validation
-- [ ] Task: Red Phase - Write Frontend Tests for Church-Scoped Membership Options in Settings
-    - [ ] Add unit tests in `Settings.test.tsx` verifying that membership dropdowns only present users/organizations matching the selected church.
-- [ ] Task: Green Phase - Implement Scoped Selectors in Settings.tsx
-    - [ ] Update `Settings.tsx` to filter user dropdown in Organization Members modal by user `igrejaId` matching organization's `igrejaVinculoId`.
-    - [ ] Update `Settings.tsx` to filter organization dropdown in User Memberships modal by organization's `igrejaVinculoId` matching user `igrejaId`.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Scoped Membership Selectors & Validation' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write Frontend Tests for Church-Scoped Membership Options in Settings
+    - [x] Add unit tests in `Settings.test.tsx` verifying that membership dropdowns only present users/organizations matching the selected church.
+- [x] Task: Green Phase - Implement Scoped Selectors in Settings.tsx
+    - [x] Update `Settings.tsx` to filter user dropdown in Organization Members modal by user `igrejaId` matching organization's `igrejaVinculoId`.
+    - [x] Update `Settings.tsx` to filter organization dropdown in User Memberships modal by organization's `igrejaVinculoId` matching user `igrejaId`.
+- [x] Task: Conductor - User Manual Verification 'Frontend Scoped Membership Selectors & Validation' (Protocol in workflow.md)
 
 ## Phase 3: Docker Files Modernization & Seed Data Alignment
 - [ ] Task: Modernize Docker Compose Files (Compose V2)
