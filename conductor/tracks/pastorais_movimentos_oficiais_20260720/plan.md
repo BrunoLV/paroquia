@@ -10,10 +10,10 @@
 - [x] Task: Conductor - User Manual Verification 'Database Migration & Seed Data' (c5bfc1e)
 
 ## Phase 2: Backend Development (TDD) [checkpoint: ]
-- [ ] Task: Red Phase - Write Backend Unit Tests
-    - [ ] Add unit tests for `PastoralMovimentoOficial` CRUD services, repository, and controller.
-    - [ ] Add unit tests asserting validation errors when saving `PASTORAL` or `MOVIMENTO` organizations without a valid `pastoralOficialId`.
-    - [ ] Add unit tests asserting role-based security (ADMIN role required for mutation endpoints).
+- [~] Task: Red Phase - Write Backend Unit Tests
+    - [~] Add unit tests for `PastoralMovimentoOficial` CRUD services, repository, and controller.
+    - [~] Add unit tests asserting validation errors when saving `PASTORAL` or `MOVIMENTO` organizations without a valid `pastoralOficialId`.
+    - [~] Add unit tests asserting role-based security (ADMIN role required for mutation endpoints).
 - [ ] Task: Green Phase - Implement API & Business Logic
     - [ ] Implement `PastoralMovimentoOficial` JPA entity, repository, service, and controller endpoints under `/api/v1/pastorais-oficiais`.
     - [ ] Refactor Java codebase to use `CONSELHO_PASTORAL` instead of `CONSELHO` and remove `LAICATO` from `TipoOrganizacao` enum.
