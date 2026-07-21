@@ -135,6 +135,11 @@
 - [x] **Track: Implementar mudança de hierarquia (Clero, Paróquia/Comunidades, Conselhos e Pastorais)**
 *Link: [./archive/organizational_hierarchy_alignment_20260704/](./archive/organizational_hierarchy_alignment_20260704/)*
 
+---
+
+- [ ] **Track: Registro de Tipos Pastorais e Movimentos Oficiais**
+*Link: [./tracks/pastorais_movimentos_oficiais_20260720/](./tracks/pastorais_movimentos_oficiais_20260720/)*
+
 
 
 
