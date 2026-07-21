@@ -1,9 +1,9 @@
 # Implementation Plan: Registro de Tipos Pastorais e Movimentos Oficiais
 
 ## Phase 1: Database Migration & Seed Data [checkpoint: ]
-- [ ] Task: Implement Flyway Migration for schema updates
-    - [ ] Create a new V0xx migration script to create `calendario.pastorais_movimentos_oficiais` and add `pastoral_oficial_id` to `calendario.organizacoes`.
-    - [ ] Handle rename of `CONSELHO` to `CONSELHO_PASTORAL` and deletion of `LAICATO` in the database.
+- [~] Task: Implement Flyway Migration for schema updates
+    - [~] Create a new V0xx migration script to create `calendario.pastorais_movimentos_oficiais` and add `pastoral_oficial_id` to `calendario.organizacoes`.
+    - [~] Handle rename of `CONSELHO` to `CONSELHO_PASTORAL` and deletion of `LAICATO` in the database.
 - [ ] Task: Populate official catalog and link existing seeds
     - [ ] Update `seed-data.sql` to populate `calendario.pastorais_movimentos_oficiais` with the full list of official Catholic pastorals and movements.
     - [ ] Link existing seeded organizations of type `PASTORAL` or `MOVIMENTO` to their corresponding official types.
