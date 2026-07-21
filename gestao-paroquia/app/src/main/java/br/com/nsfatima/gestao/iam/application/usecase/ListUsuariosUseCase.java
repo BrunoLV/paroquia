@@ -15,18 +15,18 @@ public class ListUsuariosUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final MembroJpaRepository membroRepository;
+    private final br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository;
 
-    public ListUsuariosUseCase(UsuarioJpaRepository usuarioRepository, MembroJpaRepository membroRepository) {
+    public ListUsuariosUseCase(
+            UsuarioJpaRepository usuarioRepository,
+            MembroJpaRepository membroRepository,
+            br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.membroRepository = membroRepository;
+        this.organizacaoRepository = organizacaoRepository;
     }
 
     @Transactional(readOnly = true)
-    /**
-     * Recupera a listagem completa de usuários cadastrados para visualização e gestão em painéis administrativos.
-     * 
-     * Exemplo: useCase.execute()
-     */
     public List<UsuarioResponse> execute() {
         return usuarioRepository.findAll().stream()
                 .map(u -> {
@@ -43,6 +43,14 @@ public class ListUsuariosUseCase {
                         }
                     }
 
+                    java.util.UUID igrejaId = u.getIgrejaId();
+                    String igrejaNome = null;
+                    if (igrejaId != null) {
+                        igrejaNome = organizacaoRepository.findById(igrejaId)
+                                .map(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity::getNome)
+                                .orElse(null);
+                    }
+
                     return new UsuarioResponse(
                             u.getId(),
                             u.getUsername(),
@@ -52,7 +60,9 @@ public class ListUsuariosUseCase {
                             List.of(),
                             nome,
                             telefone,
-                            dataNascimento);
+                            dataNascimento,
+                            igrejaId,
+                            igrejaNome);
                 })
                 .toList();
     }

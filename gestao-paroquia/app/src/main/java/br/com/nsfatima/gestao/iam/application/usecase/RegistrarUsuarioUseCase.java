@@ -44,6 +44,19 @@ public class RegistrarUsuarioUseCase {
             auth.getAuthorities().stream().anyMatch(a -> 
                 "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
 
+        if (request.igrejaId() == null) {
+            throw new IllegalArgumentException("A igreja/comunidade e obrigatoria para o cadastro do usuario");
+        }
+        var igrejaTargetOpt = organizacaoRepository.findById(request.igrejaId());
+        if (igrejaTargetOpt.isEmpty()) {
+            throw new IllegalArgumentException("Igreja nao encontrada: " + request.igrejaId());
+        }
+        var igrejaTarget = igrejaTargetOpt.get();
+        if (igrejaTarget.getTipo() != br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
+                && igrejaTarget.getTipo() != br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+            throw new IllegalArgumentException("A igreja selecionada deve ser do tipo MATRIZ ou COMUNIDADE");
+        }
+
         UsuarioEntity user = new UsuarioEntity();
         UUID userId = UUID.randomUUID();
         user.setId(userId);
@@ -52,6 +65,7 @@ public class RegistrarUsuarioUseCase {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setTelefone(request.telefone());
         user.setDataNascimento(request.dataNascimento());
+        user.setIgrejaId(request.igrejaId());
         user.setEnabled(isAdminOrParoco); // Active directly if registered by admin
         user.setRoles("ROLE_USER"); // Standard non-admin role
 

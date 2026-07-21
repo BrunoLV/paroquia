@@ -42,6 +42,9 @@ public class UsuarioEntity extends BaseVersionedEntity {
     @Convert(converter = EncryptedLocalDateConverter.class)
     private LocalDate dataNascimento;
 
+    @Column(name = "igreja_id")
+    private UUID igrejaId;
+
     public UUID getId() {
         return id;
     }
@@ -104,5 +107,13 @@ public class UsuarioEntity extends BaseVersionedEntity {
 
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
+    }
+
+    public UUID getIgrejaId() {
+        return igrejaId;
+    }
+
+    public void setIgrejaId(UUID igrejaId) {
+        this.igrejaId = igrejaId;
     }
 }

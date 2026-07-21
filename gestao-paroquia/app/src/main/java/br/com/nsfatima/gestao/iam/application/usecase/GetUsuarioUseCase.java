@@ -17,18 +17,18 @@ public class GetUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final MembroJpaRepository membroRepository;
+    private final br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository;
 
-    public GetUsuarioUseCase(UsuarioJpaRepository usuarioRepository, MembroJpaRepository membroRepository) {
+    public GetUsuarioUseCase(
+            UsuarioJpaRepository usuarioRepository,
+            MembroJpaRepository membroRepository,
+            br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.membroRepository = membroRepository;
+        this.organizacaoRepository = organizacaoRepository;
     }
 
     @Transactional(readOnly = true)
-    /**
-     * Busca os dados de um usuário pelo seu identificador único para fornecer informações de perfil e status.
-     * 
-     * Exemplo: useCase.execute(userId)
-     */
     public UsuarioResponse execute(UUID id) {
         return usuarioRepository.findById(id)
                 .map(u -> {
@@ -45,6 +45,14 @@ public class GetUsuarioUseCase {
                         }
                     }
 
+                    java.util.UUID igrejaId = u.getIgrejaId();
+                    String igrejaNome = null;
+                    if (igrejaId != null) {
+                        igrejaNome = organizacaoRepository.findById(igrejaId)
+                                .map(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity::getNome)
+                                .orElse(null);
+                    }
+
                     return new UsuarioResponse(
                             u.getId(),
                             u.getUsername(),
@@ -54,7 +62,9 @@ public class GetUsuarioUseCase {
                             List.of(),
                             nome,
                             telefone,
-                            dataNascimento);
+                            dataNascimento,
+                            igrejaId,
+                            igrejaNome);
                 })
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
     }
