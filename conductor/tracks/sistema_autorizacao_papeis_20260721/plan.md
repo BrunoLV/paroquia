@@ -1,11 +1,11 @@
 # Implementation Plan: Sistema de Autorização, Papéis e Alcance de Permissões
 
-## Phase 1: Database Migration & Schema Updates
+## Phase 1: Database Migration & Schema Updates [checkpoint: f14b354]
 - [x] Task: Red Phase - Write Unit Tests for Schema & Role Enum Migration 9f2f387
     - [x] Add unit tests verifying `Papel` enum value mapping and migration script integrity. 9f2f387
 - [x] Task: Green Phase - Flyway Migration V042 for User Roles 9f2f387
     - [x] Create V042 Flyway script updating `calendario.usuarios` role definitions and enum values (`PAROCO`, `VIGARIO`, `COORDENADOR`, `VICE_COORDENADOR`, `PADRE`, `MEMBRO`, `SECRETARIO`, `ADMIN`). 9f2f387
-- [~] Task: Conductor - User Manual Verification 'Database Migration & Schema Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Database Migration & Schema Updates' (Protocol in workflow.md) f14b354
 
 ## Phase 2: Backend Security & RBAC Scope Evaluators (TDD)
 - [ ] Task: Red Phase - Write Backend Security Scope Unit Tests
