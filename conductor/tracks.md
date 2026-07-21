@@ -153,7 +153,7 @@
 ---
 
 - [x] **Track: Refatoração do Modelo de Usuário, Vínculos com Organizações e Seed Docker**
-*Link: [./tracks/refatoracao_usuario_vinculos_seed_20260721/](./tracks/refatoracao_usuario_vinculos_seed_20260721/)*
+*Link: [./archive/refatoracao_usuario_vinculos_seed_20260721/](./archive/refatoracao_usuario_vinculos_seed_20260721/)*
 
 
 
