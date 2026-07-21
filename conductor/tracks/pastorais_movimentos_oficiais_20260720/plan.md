@@ -39,4 +39,4 @@
     - [x] Render Coordinator and Vice-Coordinator as Select dropdown fields displaying the names of members participating in the church.
     - [x] Keep standard text input fields as fallback if the parent organization does not resolve to a church.
     - [x] Wrap and update tests in `OrganizacaoFormModal.test.tsx` to assert members dropdown rendering.
-- [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) [89d5285]
