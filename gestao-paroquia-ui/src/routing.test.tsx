@@ -76,7 +76,7 @@ describe('Routing', () => {
   });
 
   test('authenticated user without approval role is redirected to dashboard when trying to access /approvals', async () => {
-    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'] };
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'], organizations: [{ id: 'org-1', nome: 'Pastoral', tipo: 'PASTORAL', contato: null, ativo: true }] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
     await renderWithProviders('/approvals');
@@ -95,7 +95,7 @@ describe('Routing', () => {
   });
 
   test('authenticated user without management role is redirected to dashboard when trying to access /configuracoes', async () => {
-    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'] };
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'], organizations: [{ id: 'org-1', nome: 'Pastoral', tipo: 'PASTORAL', contato: null, ativo: true }] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
     await renderWithProviders('/configuracoes');

@@ -260,7 +260,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <Typography variant="h5" color="primary" gutterBottom sx={{ fontWeight: 600 }}>
                     Conta Ativa
                   </Typography>
-                  <Typography variant="body1" color="text.secondary" paragraph sx={{ mt: 2 }}>
+                  <Typography variant="body1" color="text.secondary" sx={{ mt: 2, mb: 2 }}>
                     Sua conta está ativa, porém aguardando vínculo a uma pastoral ou movimento da sua comunidade por um coordenador ou administrador.
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
