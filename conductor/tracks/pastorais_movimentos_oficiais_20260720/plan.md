@@ -9,7 +9,7 @@
     - [x] Link existing seeded organizations of type `PASTORAL` or `MOVIMENTO` to their corresponding official types. (c5bfc1e)
 - [x] Task: Conductor - User Manual Verification 'Database Migration & Seed Data' (c5bfc1e)
 
-## Phase 2: Backend Development (TDD) [checkpoint: ]
+## Phase 2: Backend Development (TDD) [checkpoint: 297bd49]
 - [x] Task: Red Phase - Write Backend Unit Tests
     - [x] Add unit tests for `PastoralMovimentoOficial` CRUD services, repository, and controller.
     - [x] Add unit tests asserting validation errors when saving `PASTORAL` or `MOVIMENTO` organizations without a valid `pastoralOficialId`.
@@ -18,7 +18,7 @@
     - [x] Implement `PastoralMovimentoOficial` JPA entity, repository, service, and controller endpoints under `/api/v1/pastorais-oficiais`.
     - [x] Refactor Java codebase to use `CONSELHO_PASTORAL` instead of `CONSELHO` and remove `LAICATO` from `TipoOrganizacao` enum.
     - [x] Update `validateHierarchy` and CRUD actions in `OrganizacaoService.java` to enforce the mandatory association of `PASTORAL`/`MOVIMENTO` with their official types.
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [297bd49]
 
 ## Phase 3: Frontend Development (TDD) [checkpoint: ]
 - [ ] Task: Red Phase - Write Frontend Unit Tests
