@@ -16,8 +16,8 @@
 - [x] Task: Conductor - User Manual Verification 'Frontend Scoped Membership Selectors & Validation' (Protocol in workflow.md)
 
 ## Phase 3: Docker Files Modernization & Seed Data Alignment
-- [ ] Task: Modernize Docker Compose Files (Compose V2)
-    - [ ] Update `docker-compose.yml` to remove deprecated `version:` top-level attribute and align service definitions with Compose V2 standards.
-- [ ] Task: Align docker/seed-data.sql with Strict Church Membership Rules
-    - [ ] Audit and update `docker/seed-data.sql` so all user `igreja_id` and membership `igreja_vinculo_id` records satisfy the strict church matching rule.
-- [ ] Task: Conductor - User Manual Verification 'Docker Files Modernization & Seed Data Alignment' (Protocol in workflow.md)
+- [x] Task: Modernize Docker Compose Files (Compose V2)
+    - [x] Update `docker-compose.yml` to remove deprecated `version:` top-level attribute and align service definitions with Compose V2 standards.
+- [x] Task: Align docker/seed-data.sql with Strict Church Membership Rules
+    - [x] Audit and update `docker/seed-data.sql` so all user `igreja_id` and membership `igreja_vinculo_id` records satisfy the strict church matching rule.
+- [x] Task: Conductor - User Manual Verification 'Docker Files Modernization & Seed Data Alignment' (Protocol in workflow.md)
