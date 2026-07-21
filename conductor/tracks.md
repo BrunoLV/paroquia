@@ -132,8 +132,8 @@
 
 ---
 
-- [~] **Track: Implementar mudança de hierarquia (Clero, Paróquia/Comunidades, Conselhos e Pastorais)**
-*Link: [./tracks/organizational_hierarchy_alignment_20260704/](./tracks/organizational_hierarchy_alignment_20260704/)*
+- [x] **Track: Implementar mudança de hierarquia (Clero, Paróquia/Comunidades, Conselhos e Pastorais)**
+*Link: [./archive/organizational_hierarchy_alignment_20260704/](./archive/organizational_hierarchy_alignment_20260704/)*
 
 
 
