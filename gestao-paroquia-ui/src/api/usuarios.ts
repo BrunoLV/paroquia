@@ -7,6 +7,8 @@ export interface Usuario {
   telefone?: string;
   dataNascimento?: string;
   enabled: boolean;
+  igrejaId?: string;
+  igrejaNome?: string;
 }
 
 export interface MembershipResponse {
@@ -60,6 +62,7 @@ export interface RegistrarUsuarioRequest {
   password?: string;
   telefone: string;
   dataNascimento: string;
+  igrejaId: string;
   organizacoesSolicitadas?: SolicitacaoOrganizacaoRequest[];
 }
 

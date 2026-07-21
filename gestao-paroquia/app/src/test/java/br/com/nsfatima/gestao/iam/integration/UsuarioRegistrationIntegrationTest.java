@@ -31,6 +31,14 @@ class UsuarioRegistrationIntegrationTest {
 
     @Test
     void shouldRegisterNewUserAsDisabledAndEncrypted() throws Exception {
+        br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity igreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        UUID igrejaId = UUID.randomUUID();
+        igreja.setId(igrejaId);
+        igreja.setNome("Matriz Teste " + UUID.randomUUID());
+        igreja.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ);
+        igreja.setAtivo(true);
+        organizacaoJpaRepository.save(igreja);
+
         String username = "test.register." + UUID.randomUUID() + "@example.com";
         String body = """
                 {
@@ -39,9 +47,10 @@ class UsuarioRegistrationIntegrationTest {
                     "password": "SecretPassword123",
                     "telefone": "11988888888",
                     "dataNascimento": "1990-05-15",
+                    "igrejaId": "%s",
                     "organizacoesSolicitadas": []
                 }
-                """.formatted(username);
+                """.formatted(username, igrejaId);
 
         mockMvc.perform(post("/api/v1/usuarios/registrar")
                         .contentType(MediaType.APPLICATION_JSON)

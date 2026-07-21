@@ -26,7 +26,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  OutlinedInput,
 } from '@mui/material';
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
@@ -111,8 +110,7 @@ const Settings = () => {
   const [adminRegisterPassword, setAdminRegisterPassword] = useState('');
   const [adminRegisterTelefone, setAdminRegisterTelefone] = useState('');
   const [adminRegisterDataNascimento, setAdminRegisterDataNascimento] = useState('');
-  const [adminRegisterSelectedOrgs, setAdminRegisterSelectedOrgs] = useState<string[]>([]);
-  const [adminRegisterChurchSelections, setAdminRegisterChurchSelections] = useState<Record<string, string>>({});
+  const [adminRegisterChurchId, setAdminRegisterChurchId] = useState('');
 
   // Catalog states
   const [poModalOpen, setPoModalOpen] = useState(false);
@@ -209,12 +207,6 @@ const Settings = () => {
     queryKey: ['usuarios'],
     queryFn: getUsuarios,
     enabled: (tabValue === 3 || isOrgMembersModalOpen || orgModalOpen) && isAuthorizedUsers,
-  });
-
-  const { data: editingOrgMembros = [] } = useQuery({
-    queryKey: ['organizacaoMembros', selectedOrg?.id],
-    queryFn: () => getOrganizacaoMembros(selectedOrg!.id),
-    enabled: !!selectedOrg && orgModalOpen && (selectedOrg.tipo === 'PASTORAL' || selectedOrg.tipo === 'MOVIMENTO'),
   });
 
   const approveUserMutation = useMutation({
@@ -316,8 +308,7 @@ const Settings = () => {
       setAdminRegisterPassword('');
       setAdminRegisterTelefone('');
       setAdminRegisterDataNascimento('');
-      setAdminRegisterSelectedOrgs([]);
-      setAdminRegisterChurchSelections({});
+      setAdminRegisterChurchId('');
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao cadastrar membro.';
@@ -935,6 +926,7 @@ const Settings = () => {
                       <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Data de Nascimento</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -946,6 +938,7 @@ const Settings = () => {
                         <TableRow key={u.id}>
                           <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
                           <TableCell>{u.username}</TableCell>
+                          <TableCell>{u.igrejaNome || '-'}</TableCell>
                           <TableCell>{u.telefone || '-'}</TableCell>
                           <TableCell>{u.dataNascimento || '-'}</TableCell>
                           <TableCell>
@@ -987,7 +980,7 @@ const Settings = () => {
                                 }}
                                 sx={{ borderRadius: 0 }}
                               >
-                                Vínculos
+                                Gerenciar Vínculos
                               </Button>
                             </Box>
                           </TableCell>
@@ -995,7 +988,7 @@ const Settings = () => {
                       ))}
                       {users.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={6} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                          <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                             Nenhum usuário encontrado.
                           </TableCell>
                         </TableRow>
@@ -1470,8 +1463,7 @@ const Settings = () => {
           setAdminRegisterPassword('');
           setAdminRegisterTelefone('');
           setAdminRegisterDataNascimento('');
-          setAdminRegisterSelectedOrgs([]);
-          setAdminRegisterChurchSelections({});
+          setAdminRegisterChurchId('');
         }}
         maxWidth="sm"
         fullWidth
@@ -1536,67 +1528,24 @@ const Settings = () => {
               value={adminRegisterDataNascimento}
               onChange={(e) => setAdminRegisterDataNascimento(e.target.value)}
             />
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="admin-reg-orgs-label">Pastorais / Movimentos Iniciais</InputLabel>
+            <FormControl fullWidth margin="normal" required>
+              <InputLabel id="admin-reg-church-label">Igreja / Comunidade</InputLabel>
               <Select
-                labelId="admin-reg-orgs-label"
-                id="admin-reg-orgs"
-                multiple
-                value={adminRegisterSelectedOrgs}
-                onChange={(e) => {
-                  const val = typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value;
-                  setAdminRegisterSelectedOrgs(val);
-                  setAdminRegisterChurchSelections((prev) => {
-                    const next = { ...prev };
-                    Object.keys(next).forEach((id) => {
-                      if (!val.includes(id)) {
-                        delete next[id];
-                      }
-                    });
-                    return next;
-                  });
-                }}
-                input={<OutlinedInput label="Pastorais / Movimentos Iniciais" />}
+                labelId="admin-reg-church-label"
+                id="admin-reg-church"
+                value={adminRegisterChurchId}
+                label="Igreja / Comunidade"
+                onChange={(e) => setAdminRegisterChurchId(e.target.value)}
               >
                 {orgs
-                  .filter((o) => o.ativo && o.tipo !== 'MATRIZ' && o.tipo !== 'COMUNIDADE')
+                  .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
                   .map((o) => (
                     <MenuItem key={o.id} value={o.id}>
-                      {o.nome} ({getOrgTipoLabel(o.tipo)})
+                      {o.nome} ({o.tipo === 'MATRIZ' ? 'Matriz' : 'Comunidade'})
                     </MenuItem>
                   ))}
               </Select>
             </FormControl>
-
-            {adminRegisterSelectedOrgs
-              .map((id) => orgs.find((o) => o.id === id))
-              .filter((org): org is Organizacao => !!org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO'))
-              .map((org) => {
-                const activeChurches = orgs.filter(
-                  (o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE')
-                );
-                return (
-                  <FormControl fullWidth margin="normal" key={org.id}>
-                    <InputLabel id={`admin-reg-church-label-${org.id}`}>Igreja de atuação para {org.nome}</InputLabel>
-                    <Select
-                      labelId={`admin-reg-church-label-${org.id}`}
-                      id={`admin-reg-church-${org.id}`}
-                      value={adminRegisterChurchSelections[org.id] || ''}
-                      label={`Igreja de atuação para ${org.nome}`}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setAdminRegisterChurchSelections((prev) => ({ ...prev, [org.id]: val }));
-                      }}
-                    >
-                      {activeChurches.map((church) => (
-                        <MenuItem key={church.id} value={church.id}>
-                          {church.nome}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                );
-              })}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -1608,8 +1557,7 @@ const Settings = () => {
               setAdminRegisterPassword('');
               setAdminRegisterTelefone('');
               setAdminRegisterDataNascimento('');
-              setAdminRegisterSelectedOrgs([]);
-              setAdminRegisterChurchSelections({});
+              setAdminRegisterChurchId('');
             }}
             color="inherit"
           >
@@ -1624,31 +1572,17 @@ const Settings = () => {
               !adminRegisterPassword ||
               !adminRegisterTelefone.trim() ||
               !adminRegisterDataNascimento ||
+              !adminRegisterChurchId ||
               registerUserMutation.isPending
             }
             onClick={() => {
-              const solicitacoes = [];
-              for (const orgId of adminRegisterSelectedOrgs) {
-                const org = orgs.find((o) => o.id === orgId);
-                if (org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO')) {
-                  const churchId = adminRegisterChurchSelections[orgId];
-                  if (!churchId) {
-                    showError(`Selecione a igreja de atuação para ${org.nome}`);
-                    return;
-                  }
-                  solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: churchId });
-                } else {
-                  solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: null });
-                }
-              }
-
               registerUserMutation.mutate({
                 nome: adminRegisterNome,
                 username: adminRegisterUsername,
                 password: adminRegisterPassword,
                 telefone: adminRegisterTelefone,
                 dataNascimento: adminRegisterDataNascimento,
-                organizacoesSolicitadas: solicitacoes
+                igrejaId: adminRegisterChurchId,
               });
             }}
             sx={{ borderRadius: 0, fontWeight: 600 }}

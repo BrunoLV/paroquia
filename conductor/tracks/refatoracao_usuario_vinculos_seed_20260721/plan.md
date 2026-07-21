@@ -1,12 +1,12 @@
 # Implementation Plan: Refatoração do Modelo de Usuário, Vínculos com Organizações e Seed Docker
 
 ## Phase 1: User Data Model Refactoring & Flyway Migration (TDD)
-- [ ] Task: Red Phase - Write Backend Unit Tests for Usuario igrejaId & Clean Registration Flow
-    - [ ] Create unit tests in `UsuarioServiceTest` and `RegistrarUsuarioUseCaseTest` asserting mandatory `igrejaId` validation and clean registration flow without legacy pastoral requests.
-- [ ] Task: Green Phase - Implement Usuario igrejaId, Flyway V043 Migration & DTO Cleanups
-    - [ ] Create Flyway migration `V043__add_usuario_igreja_id.sql` adding `igreja_id` column to `calendario.usuarios`.
-    - [ ] Update `UsuarioEntity.java`, `UsuarioResponse.java`, `RegistrarUsuarioRequest.java`, and `RegistrarUsuarioUseCase.java` to handle `igrejaId` cleanly.
-- [ ] Task: Conductor - User Manual Verification 'User Data Model Refactoring & Flyway Migration' (Protocol in workflow.md)
+- [x] Task: Red Phase - Write Backend Unit Tests for Usuario igrejaId & Clean Registration Flow
+    - [x] Create unit tests in `UsuarioServiceTest` and `RegistrarUsuarioUseCaseTest` asserting mandatory `igrejaId` validation and clean registration flow without legacy pastoral requests.
+- [x] Task: Green Phase - Implement Usuario igrejaId, Flyway V043 Migration & DTO Cleanups
+    - [x] Create Flyway migration `V043__add_usuario_igreja_id.sql` adding `igreja_id` column to `calendario.usuarios`.
+    - [x] Update `UsuarioEntity.java`, `UsuarioResponse.java`, `RegistrarUsuarioRequest.java`, and `RegistrarUsuarioUseCase.java` to handle `igrejaId` cleanly.
+- [x] Task: Conductor - User Manual Verification 'User Data Model Refactoring & Flyway Migration' (Protocol in workflow.md)
 
 ## Phase 2: Frontend User Model Cleanup & User Memberships Modal (TDD)
 - [ ] Task: Red Phase - Write Frontend Tests for Registration & User Memberships Management

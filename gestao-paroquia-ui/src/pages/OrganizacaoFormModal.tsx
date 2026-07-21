@@ -95,14 +95,21 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   });
 
   const getCoordinatorOptions = () => {
-    if (churchId && churchMembers.length > 0) {
-      return churchMembers.map(m => ({
-        id: m.membershipId,
-        nome: m.usuarioNome
+    if (churchId) {
+      if (churchMembers.length > 0) {
+        return churchMembers.map(m => ({
+          id: m.usuarioNome,
+          nome: m.usuarioNome
+        }));
+      }
+      const filteredByChurch = usuarios.filter(u => !u.igrejaId || u.igrejaId === churchId);
+      return filteredByChurch.map(u => ({
+        id: u.nome,
+        nome: u.nome
       }));
     }
     return usuarios.map(u => ({
-      id: u.id,
+      id: u.nome,
       nome: u.nome
     }));
   };
