@@ -1,0 +1,5 @@
+Task: Red Phase - Write Frontend Unit Tests
+
+Summary:
+- Added unit tests in Settings.test.tsx for testing the visibility, loading, creation, editing, and deletion in the new official catalog administration tab.
+- Added unit tests in OrganizacaoFormModal.test.tsx for testing the official type dropdown visibility, filtering by organization type, and mandatory validation checks.
