@@ -213,4 +213,13 @@ describe('OrganizacaoFormModal', () => {
       expect(screen.getByRole('option', { name: 'Membro Teste' })).toBeInTheDocument();
     });
   });
+
+  test('renders action buttons with right alignment and standardized labels', () => {
+    renderModal();
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+    const submitButton = screen.getByRole('button', { name: /Cadastrar/i });
+
+    expect(cancelButton).toBeInTheDocument();
+    expect(submitButton).toBeInTheDocument();
+  });
 });

@@ -28,7 +28,7 @@ interface EditScopeDialogProps {
 
 const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSelect }) => {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
       <DialogTitle sx={{ fontWeight: 700 }}>Editar Evento Recorrente</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ mb: 2 }}>
@@ -36,7 +36,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
         </DialogContentText>
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onSelect('ONLY_THIS')}>
+            <ListItemButton onClick={() => onSelect('ONLY_THIS')} sx={{ borderRadius: 0 }}>
               <ListItemIcon>
                 <EventIcon color="primary" />
               </ListItemIcon>
@@ -47,7 +47,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onSelect('THIS_AND_FOLLOWING')}>
+            <ListItemButton onClick={() => onSelect('THIS_AND_FOLLOWING')} sx={{ borderRadius: 0 }}>
               <ListItemIcon>
                 <UpdateIcon color="primary" />
               </ListItemIcon>
@@ -58,7 +58,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onSelect('EDIT_ALL')}>
+            <ListItemButton onClick={() => onSelect('EDIT_ALL')} sx={{ borderRadius: 0 }}>
               <ListItemIcon>
                 <EventRepeatIcon color="primary" />
               </ListItemIcon>
@@ -70,8 +70,8 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
           </ListItem>
         </List>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">
+      <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+        <Button onClick={onClose} color="inherit" sx={{ borderRadius: 0, textTransform: 'none' }}>
           Cancelar
         </Button>
       </DialogActions>

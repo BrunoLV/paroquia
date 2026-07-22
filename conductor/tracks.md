@@ -182,7 +182,7 @@
 
 ---
 
-- [ ] **Track: padronização e modernização de layout da ui, botoes, mensagens, formularios e alertas.**
+- [x] **Track: padronização e modernização de layout da ui, botoes, mensagens, formularios e alertas.**
 *Link: [./tracks/padronizacao_ui_modernizacao_20260722/](./tracks/padronizacao_ui_modernizacao_20260722/)*
 
 

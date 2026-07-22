@@ -76,7 +76,7 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
       <DialogTitle sx={{ fontWeight: 600, color: '#37474f' }}>Exportar Calendário</DialogTitle>
       <DialogContent dividers>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
@@ -215,14 +215,15 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
 
         </Box>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} color="inherit" size="small">Cancelar</Button>
+      <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+        <Button onClick={onClose} color="inherit" size="small" sx={{ borderRadius: 0, textTransform: 'none' }}>Cancelar</Button>
         <Button 
           onClick={handleExport} 
           variant="contained" 
           color="primary"
           size="small"
           disabled={opcao === 'PERIODO' && (!dataInicio || !dataFim)}
+          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}
         >
           Exportar
         </Button>

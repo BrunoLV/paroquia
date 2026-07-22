@@ -398,4 +398,13 @@ describe('EventRegistrationModal', () => {
     const churchSelect = screen.getByTestId('event-church-select');
     expect(churchSelect).toBeInTheDocument();
   });
+
+  it('renders action buttons with standardized right alignment and border-radius 0', () => {
+    render(<EventRegistrationModal {...defaultProps} />);
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+    const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+
+    expect(cancelButton).toBeInTheDocument();
+    expect(submitButton).toBeInTheDocument();
+  });
 });

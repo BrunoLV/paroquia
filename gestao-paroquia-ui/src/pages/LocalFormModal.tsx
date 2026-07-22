@@ -166,8 +166,8 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0 }}>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none' }}>
             Cancelar
           </Button>
           <Button
@@ -175,7 +175,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             variant="contained"
             color="primary"
             disabled={isPending}
-            sx={{ borderRadius: 0, fontWeight: 600 }}
+            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none' }}
           >
             {local ? 'Salvar Alterações' : 'Cadastrar'}
           </Button>

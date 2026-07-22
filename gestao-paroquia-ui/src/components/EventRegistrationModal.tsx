@@ -627,10 +627,10 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
-          <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600 }}>
+          <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600, borderRadius: 0, textTransform: 'none' }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600 }}>
+          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600, borderRadius: 0, textTransform: 'none' }}>
             {initialEvent ? 'Salvar Alterações' : 'Criar Evento'}
           </Button>
         </DialogActions>

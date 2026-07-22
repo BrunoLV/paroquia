@@ -318,8 +318,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0 }}>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none' }}>
             Cancelar
           </Button>
           <Button
@@ -327,7 +327,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             variant="contained"
             color="primary"
             disabled={isPending}
-            sx={{ borderRadius: 0, fontWeight: 600 }}
+            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none' }}
           >
             {organizacao ? 'Salvar Alterações' : 'Cadastrar'}
           </Button>

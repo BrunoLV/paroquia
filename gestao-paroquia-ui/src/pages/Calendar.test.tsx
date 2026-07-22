@@ -329,6 +329,6 @@ test('toggles calendar view between Grid and List mode', async () => {
     fireEvent.click(gridBtn);
   });
 
-  expect(screen.getByRole('heading', { name: /Calendar|Calendário/i })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Julho/i })).toBeInTheDocument();
 });
 
