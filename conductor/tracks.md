@@ -180,6 +180,12 @@
 - [ ] **Track: Cadastros do Sistema via Importação de Arquivos CSV e Excel (XLS/XLSX)**
 *Link: [./tracks/importacao_arquivos_20260721/](./tracks/importacao_arquivos_20260721/)*
 
+---
+
+- [ ] **Track: padronização e modernização de layout da ui, botoes, mensagens, formularios e alertas.**
+*Link: [./tracks/padronizacao_ui_modernizacao_20260722/](./tracks/padronizacao_ui_modernizacao_20260722/)*
+
+
 
 
 
