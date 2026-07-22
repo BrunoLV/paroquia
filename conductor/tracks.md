@@ -177,7 +177,7 @@
 
 ---
 
-- [ ] **Track: Cadastros do Sistema via Importação de Arquivos CSV e Excel (XLS/XLSX)**
+- [x] **Track: Cadastros do Sistema via Importação de Arquivos CSV e Excel (XLS/XLSX)**
 *Link: [./tracks/importacao_arquivos_20260721/](./tracks/importacao_arquivos_20260721/)*
 
 ---

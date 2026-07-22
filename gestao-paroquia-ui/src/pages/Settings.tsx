@@ -38,6 +38,7 @@ import { useAuth } from '../auth/AuthContext';
 import { canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin } from '../auth/permissions';
 import LocalFormModal from './LocalFormModal';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
+import ImportModal from '../components/ImportModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -105,6 +106,7 @@ const Settings = () => {
 
   // Admin user registration states
   const [isAdminRegisterModalOpen, setIsAdminRegisterModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [adminRegisterNome, setAdminRegisterNome] = useState('');
   const [adminRegisterUsername, setAdminRegisterUsername] = useState('');
   const [adminRegisterPassword, setAdminRegisterPassword] = useState('');
@@ -535,12 +537,26 @@ const Settings = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#37474f' }}>
-          Configurações do Sistema
-        </Typography>
-        <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-          Gerencie os parâmetros globais do sistema, como o calendário paroquial e os locais físicos.
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#37474f' }}>
+              Configurações do Sistema
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              Gerencie os parâmetros globais do sistema, como o calendário paroquial e os locais físicos.
+            </Typography>
+          </Box>
+          {isAdmin(user) && (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setIsImportModalOpen(true)}
+              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+            >
+              Importar em Lote (CSV/Excel)
+            </Button>
+          )}
+        </Box>
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="Abas de Configurações">
@@ -1732,6 +1748,10 @@ const Settings = () => {
           </DialogActions>
         </form>
       </Dialog>
+      <ImportModal
+        open={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+      />
     </Container>
   );
 };

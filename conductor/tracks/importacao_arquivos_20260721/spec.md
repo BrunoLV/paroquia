@@ -5,8 +5,8 @@ Esta especificação define a funcionalidade de cadastro em lote de entidades da
 
 ## Functional & Technical Requirements
 
-1. **Entidades Suportadas & Templates CSV/Excel**:
-   - Fornecer modelos de arquivos estruturados com os cabeçalhos padrão para cada tipo de cadastro:
+1. **Entidades Suportadas & Downloads de Arquivos de Exemplo (Templates CSV/Excel)**:
+   - Disponibilizar botões e atalhos para download de arquivos de exemplo (templates CSV e Excel `.xlsx`) com cabeçalhos padrão e dados de exemplo preenchidos para orientar o usuário nos cadastros:
      - **Membros**: `nomeCompleto,email,telefone,dataNascimento,rua,numero,bairro,cidade`
      - **Usuários**: `nome,username,telefone,dataNascimento,igrejaId,roles`
      - **Organizações**: `nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId`
