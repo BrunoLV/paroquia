@@ -11,6 +11,10 @@ import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
+import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
+import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -39,19 +43,25 @@ public class ImportacaoService {
     private final OrganizacaoService organizacaoService;
     private final EventoJpaRepository eventoJpaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OrganizacaoJpaRepository organizacaoJpaRepository;
+    private final PastoralMovimentoOficialRepository pastoralOficialRepository;
 
     public ImportacaoService(CreateMembroUseCase createMembroUseCase, 
                              MembroJpaRepository membroJpaRepository,
                              UsuarioJpaRepository usuarioJpaRepository,
                              OrganizacaoService organizacaoService,
                              EventoJpaRepository eventoJpaRepository,
-                             PasswordEncoder passwordEncoder) {
+                             PasswordEncoder passwordEncoder,
+                             OrganizacaoJpaRepository organizacaoJpaRepository,
+                             PastoralMovimentoOficialRepository pastoralOficialRepository) {
         this.createMembroUseCase = createMembroUseCase;
         this.membroJpaRepository = membroJpaRepository;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
         this.eventoJpaRepository = eventoJpaRepository;
         this.passwordEncoder = passwordEncoder;
+        this.organizacaoJpaRepository = organizacaoJpaRepository;
+        this.pastoralOficialRepository = pastoralOficialRepository;
     }
 
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
@@ -152,6 +162,9 @@ public class ImportacaoService {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String headerLine = reader.readLine();
             if (headerLine == null) return rows;
+            if (headerLine.startsWith("\uFEFF")) {
+                headerLine = headerLine.substring(1);
+            }
             String[] headers = headerLine.split(",");
             String line;
             while ((line = reader.readLine()) != null) {
@@ -174,7 +187,11 @@ public class ImportacaoService {
             Row headerRow = sheet.getRow(0);
             if (headerRow == null) return rows;
             List<String> headers = new ArrayList<>();
-            for (Cell cell : headerRow) headers.add(getCellValueAsString(cell).trim());
+            for (Cell cell : headerRow) {
+                String h = getCellValueAsString(cell).trim();
+                if (h.startsWith("\uFEFF")) h = h.substring(1);
+                headers.add(h);
+            }
             for (int r = 1; r <= sheet.getLastRowNum(); r++) {
                 Row row = sheet.getRow(r);
                 if (row == null) continue;
@@ -266,7 +283,20 @@ public class ImportacaoService {
                         count++;
                     }
                     case "ORGANIZACAO" -> {
-                        organizacaoService.createOrganization(data.get("nome"), parseTipoOrganizacao(data.get("tipo")), data.get("contato"), data.get("coordenador"), data.get("viceCoordenador"), parseUuid(data.get("parentId")), parseUuid(data.get("pastoralOficialId")));
+                        TipoOrganizacao tipoOrg = parseTipoOrganizacao(data.get("tipo"));
+                        UUID parentId = resolveParentId(tipoOrg, data.get("parentId"));
+                        UUID pastoralOficialId = (tipoOrg == TipoOrganizacao.PASTORAL || tipoOrg == TipoOrganizacao.MOVIMENTO)
+                                ? resolvePastoralOficialId(tipoOrg, data.get("pastoralOficialId"), data.get("nome"))
+                                : null;
+                        organizacaoService.createOrganization(
+                                data.get("nome"),
+                                tipoOrg,
+                                data.get("contato"),
+                                data.get("coordenador"),
+                                data.get("viceCoordenador"),
+                                parentId,
+                                pastoralOficialId
+                        );
                         count++;
                     }
                     case "EVENTO" -> {
@@ -282,16 +312,84 @@ public class ImportacaoService {
                         entity.setCategoria(Optional.ofNullable(data.get("categoria")).filter(c -> !c.isBlank()).orElse("GERAL"));
                         entity.setLocalId(parseUuid(data.get("localId")));
                         entity.setIgrejaVinculoId(parseUuid(data.get("igrejaId")));
-                        entity.setOrganizacaoResponsavelId(Optional.ofNullable(parseUuid(data.get("organizacaoId"))).orElse(UUID.randomUUID()));
+                        entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));
                         eventoJpaRepository.save(entity);
                         count++;
                     }
                 }
             } catch (Exception e) {
-                log.error("Erro ao importar registro de {}: {}", tipo, e.getMessage());
+                log.error("Erro ao importar registro de {}: {}", tipo, e.getMessage(), e);
             }
         }
         return count;
+    }
+
+    private UUID resolveParentId(TipoOrganizacao tipo, String inputParentId) {
+        UUID id = parseUuid(inputParentId);
+        if (id != null) {
+            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) return id;
+        }
+
+        if (organizacaoJpaRepository == null) return null;
+        List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
+        if (all == null || all.isEmpty()) return null;
+        if (tipo == TipoOrganizacao.CLERO) return null;
+
+        if (tipo == TipoOrganizacao.MATRIZ || tipo == TipoOrganizacao.COMUNIDADE) {
+            return all.stream()
+                    .filter(o -> o.getTipo() == TipoOrganizacao.CLERO || o.getTipo() == TipoOrganizacao.MATRIZ)
+                    .map(OrganizacaoEntity::getId)
+                    .findFirst()
+                    .orElse(all.get(0).getId());
+        }
+
+        if (tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CONSELHO_ECONOMICO) {
+            return all.stream()
+                    .filter(o -> o.getTipo() == TipoOrganizacao.MATRIZ || o.getTipo() == TipoOrganizacao.COMUNIDADE || o.getTipo() == TipoOrganizacao.CLERO)
+                    .map(OrganizacaoEntity::getId)
+                    .findFirst()
+                    .orElse(all.get(0).getId());
+        }
+
+        if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
+            return all.stream()
+                    .filter(o -> o.getTipo() == TipoOrganizacao.CONSELHO_PASTORAL)
+                    .map(OrganizacaoEntity::getId)
+                    .findFirst()
+                    .orElse(all.get(0).getId());
+        }
+
+        return all.get(0).getId();
+    }
+
+    private UUID resolvePastoralOficialId(TipoOrganizacao tipo, String inputId, String orgNome) {
+        UUID id = parseUuid(inputId);
+        if (id != null) {
+            if (pastoralOficialRepository == null || pastoralOficialRepository.findById(id).isPresent()) return id;
+        }
+
+        if (pastoralOficialRepository == null) return null;
+        List<PastoralMovimentoOficial> oficiais = pastoralOficialRepository.findAll();
+        if (oficiais != null && !oficiais.isEmpty()) {
+            Optional<PastoralMovimentoOficial> match = oficiais.stream().filter(p -> p.getTipo() == tipo).findFirst();
+            if (match.isPresent()) return match.get().getId();
+        }
+
+        return null;
+    }
+
+    private UUID resolveOrganizacaoResponsavelId(String inputId) {
+        UUID id = parseUuid(inputId);
+        if (id != null) {
+            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) return id;
+        }
+
+        if (organizacaoJpaRepository != null) {
+            List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
+            if (all != null && !all.isEmpty()) return all.get(0).getId();
+        }
+
+        return null;
     }
 
     private LocalDate parseLocalDate(String input) {

@@ -29,6 +29,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+
 @ExtendWith(MockitoExtension.class)
 class ImportacaoServiceTest {
 
@@ -50,6 +53,12 @@ class ImportacaoServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private OrganizacaoJpaRepository organizacaoJpaRepository;
+
+    @Mock
+    private PastoralMovimentoOficialRepository pastoralOficialRepository;
+
     private ImportacaoService importacaoService;
 
     @BeforeEach
@@ -60,7 +69,9 @@ class ImportacaoServiceTest {
                 usuarioJpaRepository,
                 organizacaoService,
                 eventoJpaRepository,
-                passwordEncoder
+                passwordEncoder,
+                organizacaoJpaRepository,
+                pastoralOficialRepository
         );
     }
 
