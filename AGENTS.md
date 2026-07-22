@@ -98,7 +98,7 @@
 
 ---
 
-## Logging & Observability
+## Logging & Observability/
 
 ### Backend (Java)
 
