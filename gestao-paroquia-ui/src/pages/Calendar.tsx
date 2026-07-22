@@ -576,24 +576,66 @@ const Calendar = () => {
       <Card sx={{ mb: 4, borderRadius: 0, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)', overflow: 'visible' }}>
         <CardContent sx={{ p: { xs: 2, md: 3 } }}>
           <Grid container spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            {/* Month Navigation */}
-            <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* Top Row / Section 1: Month Navigation */}
+            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton onClick={handlePrevMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
                 <ChevronLeft />
               </IconButton>
-              <Typography variant="h5" sx={{ minWidth: 160, textAlign: 'center', fontWeight: 600, color: '#37474f' }}>
+              <Typography variant="h5" sx={{ minWidth: 150, textAlign: 'center', fontWeight: 600, color: '#37474f' }}>
                 {monthNames[currentMonth]} {currentYear}
               </Typography>
               <IconButton onClick={handleNextMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
                 <ChevronRight />
               </IconButton>
-              <Button variant="outlined" onClick={handleToday} sx={{ ml: 1, textTransform: 'none' }}>
+              <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none' }}>
                 Hoje
               </Button>
             </Grid>
 
-            {/* Filtering Controls */}
-            <Grid size={{ xs: 12, sm: 8, md: 5 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {/* Top Row / Section 2: View Toggle & Action Buttons */}
+            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, gap: 1, flexWrap: 'wrap' }}>
+              <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 0, overflow: 'hidden', display: 'flex' }}>
+                <IconButton
+                  color={viewMode === 'month' ? 'primary' : 'default'}
+                  onClick={() => setViewMode('month')}
+                  sx={{ borderRadius: 0, bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
+                  title="Visualização Mensal"
+                  aria-label="Mês"
+                >
+                  <CalendarIcon />
+                </IconButton>
+                <IconButton
+                  color={viewMode === 'agenda' ? 'primary' : 'default'}
+                  onClick={() => setViewMode('agenda')}
+                  sx={{ borderRadius: 0, bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
+                  title="Visualização em Agenda"
+                  aria-label="Lista"
+                >
+                  <ListIcon />
+                </IconButton>
+              </Box>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<DownloadIcon />}
+                onClick={() => setIsExportOpen(true)}
+                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
+              >
+                Exportar
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => handleOpenCreate()}
+                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
+              >
+                Novo Evento
+              </Button>
+            </Grid>
+
+            {/* Second Row / Section 3: Filtering Controls */}
+            <Grid size={{ xs: 12, lg: 4 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mt: { xs: 1, lg: 0 } }}>
               <FormControl size="small" sx={{ minWidth: 160, flexGrow: 1 }}>
                 <InputLabel id="org-filter-label">Organização</InputLabel>
                 <Select
@@ -637,48 +679,6 @@ const Calendar = () => {
               <IconButton onClick={fetchData} disabled={isLoading} title="Recarregar calendário" sx={{ border: '1px solid #e0e0e0' }}>
                 {isLoading ? <CircularProgress size={24} /> : <RefreshIcon />}
               </IconButton>
-            </Grid>
-
-            {/* View Toggle & New Event */}
-             <Grid size={{ xs: 12, sm: 4, md: 3 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, gap: 1 }}>
-              <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 0, overflow: 'hidden', display: 'flex' }}>
-                <IconButton
-                  color={viewMode === 'month' ? 'primary' : 'default'}
-                  onClick={() => setViewMode('month')}
-                  sx={{ borderRadius: 0, bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
-                  title="Visualização Mensal"
-                  aria-label="Mês"
-                >
-                  <CalendarIcon />
-                </IconButton>
-                <IconButton
-                  color={viewMode === 'agenda' ? 'primary' : 'default'}
-                  onClick={() => setViewMode('agenda')}
-                  sx={{ borderRadius: 0, bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
-                  title="Visualização em Agenda"
-                  aria-label="Lista"
-                >
-                  <ListIcon />
-                </IconButton>
-              </Box>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<DownloadIcon />}
-                onClick={() => setIsExportOpen(true)}
-                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
-              >
-                Exportar
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => handleOpenCreate()}
-                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
-              >
-                Novo Evento
-              </Button>
             </Grid>
           </Grid>
         </CardContent>
