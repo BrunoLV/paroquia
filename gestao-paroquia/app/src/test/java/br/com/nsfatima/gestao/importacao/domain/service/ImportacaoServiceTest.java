@@ -44,6 +44,7 @@ class ImportacaoServiceTest {
         byte[] bytes = importacaoService.gerarTemplate("MEMBRO", "CSV");
         String content = new String(bytes, StandardCharsets.UTF_8);
         assertTrue(content.contains("nomeCompleto,email,telefone,dataNascimento"));
+        assertTrue(content.contains("João da Silva,joao.silva@email.com"));
     }
 
     @Test

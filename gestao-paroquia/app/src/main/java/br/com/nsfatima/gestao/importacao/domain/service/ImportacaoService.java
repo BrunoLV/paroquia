@@ -31,6 +31,8 @@ public class ImportacaoService {
 
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
         String headers = getHeadersParaTipo(tipo);
+        List<String> sampleRows = getSampleRowsParaTipo(tipo);
+
         if ("XLSX".equalsIgnoreCase(formato) || "XLS".equalsIgnoreCase(formato)) {
             try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 Sheet sheet = workbook.createSheet("Template_" + tipo);
@@ -40,12 +42,27 @@ public class ImportacaoService {
                     Cell cell = headerRow.createCell(i);
                     cell.setCellValue(cols[i]);
                 }
+
+                for (int r = 0; r < sampleRows.size(); r++) {
+                    Row row = sheet.createRow(r + 1);
+                    String[] rowVals = sampleRows.get(r).split(",");
+                    for (int c = 0; c < rowVals.length; c++) {
+                        Cell cell = row.createCell(c);
+                        cell.setCellValue(rowVals[c]);
+                    }
+                }
+
                 workbook.write(out);
                 return out.toByteArray();
             }
         }
-        // Default to CSV
-        return (headers + "\n").getBytes(StandardCharsets.UTF_8);
+
+        // Default to CSV with sample rows
+        StringBuilder csv = new StringBuilder(headers).append("\n");
+        for (String sample : sampleRows) {
+            csv.append(sample).append("\n");
+        }
+        return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     private String getHeadersParaTipo(String tipo) {
@@ -55,6 +72,28 @@ public class ImportacaoService {
             case "ORGANIZACAO" -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
             case "EVENTO" -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
             default -> throw new IllegalArgumentException("Tipo de importação inválido: " + tipo);
+        };
+    }
+
+    private List<String> getSampleRowsParaTipo(String tipo) {
+        return switch (tipo.toUpperCase()) {
+            case "MEMBRO" -> List.of(
+                    "João da Silva,joao.silva@email.com,11999998888,1985-05-20,Rua das Flores,123,Centro,São Paulo",
+                    "Maria Souza,maria.souza@email.com,11988887777,1992-08-14,Avenida Brasil,456,Jardins,São Paulo"
+            );
+            case "USUARIO" -> List.of(
+                    "Carlos Eduardo,carlos.eduardo,11977776666,1988-03-10,igreja-matriz,USER",
+                    "Ana Beatriz,ana.beatriz,11966665555,1995-11-25,igreja-matriz,USER"
+            );
+            case "ORGANIZACAO" -> List.of(
+                    "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,org-conselho,po-pastoral-1",
+                    "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,Lucas Mendes,Patricia Rocha,org-conselho,po-movimento-1"
+            );
+            case "EVENTO" -> List.of(
+                    "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,local-1,igreja-1,org-1",
+                    "Encontro da Catequese,Formação sobre Sacramentos,2026-08-05 14:00,2026-08-05 16:00,FORMATIVO,local-2,igreja-1,org-2"
+            );
+            default -> Collections.emptyList();
         };
     }
 
