@@ -11,6 +11,7 @@ projeto @gestao-paroquia-ui será um app web para permitir que os usuários inte
 - **Role-based Dashboard:** Personalized views based on user permissions and roles.
 - **Reports & Metrics Module:** Comprehensive overview of parish members, leadership indicators, and activity volume distribution.
 - **Design System & Component Standardization:** Global UI design tokens (Marian Blue/Gold palette, 0px border-radius, right-aligned form actions, unified NotificationContext alerts).
+- **Batch Data Importation & Template Downloads:** Support for bulk uploading Membros, Usuários, Organizações, and Eventos via CSV and Excel (.xlsx) files, line-by-line validation preview, and sample template downloads.
 - **Approval Workflows UI:** Interfaces to review, approve, or reject pending requests.
 - **Management Modules:** CRUD interfaces for managing events, members, and resources.
 
