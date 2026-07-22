@@ -163,7 +163,7 @@
 ---
 
 - [x] **Track: Padronização do Código e Documentação segundo os Padrões AGENTS.md**
-*Link: [./tracks/padronizacao_agents_20260721/](./tracks/padronizacao_agents_20260721/)*
+*Link: [./archive/padronizacao_agents_20260721/](./archive/padronizacao_agents_20260721/)*
 
 
 
