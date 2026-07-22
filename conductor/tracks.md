@@ -160,6 +160,11 @@
 - [x] **Track: Atualização dos Arquivos Docker, Validação de Vínculo por Igreja e Seed Data**
 *Link: [./archive/docker_seed_vinculo_igreja_20260721/](./archive/docker_seed_vinculo_igreja_20260721/)*
 
+---
+
+- [ ] **Track: Padronização do Código e Documentação segundo os Padrões AGENTS.md**
+*Link: [./tracks/padronizacao_agents_20260721/](./tracks/padronizacao_agents_20260721/)*
+
 
 
 
