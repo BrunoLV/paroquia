@@ -647,6 +647,7 @@ const Calendar = () => {
                   onClick={() => setViewMode('month')}
                   sx={{ borderRadius: 0, bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
                   title="Visualização Mensal"
+                  aria-label="Mês"
                 >
                   <CalendarIcon />
                 </IconButton>
@@ -655,6 +656,7 @@ const Calendar = () => {
                   onClick={() => setViewMode('agenda')}
                   sx={{ borderRadius: 0, bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
                   title="Visualização em Agenda"
+                  aria-label="Lista"
                 >
                   <ListIcon />
                 </IconButton>

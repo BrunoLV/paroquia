@@ -10,7 +10,7 @@
 - [x] Task: Conductor - User Manual Verification 'Redesign and Responsiveness of Dashboard.tsx & Reports.tsx' (Protocol in workflow.md) [d3357d9]
 
 ## Phase 2: Refactoring and Responsive Layout of Calendar.tsx
-- [ ] Task: Red Phase - Write Frontend Tests for Calendar Responsiveness
+- [x] Task: Red Phase - Write Frontend Tests for Calendar Responsiveness [8ad1caf]
     - [ ] Update unit tests in `Calendar.test.tsx` verifying controls, view switcher and mobile responsive layouts.
 - [ ] Task: Green Phase - Implement Responsive Controls and Styling in Calendar.tsx
     - [ ] Refactor `Calendar.tsx` date navigation, filter controls and event badges for optimal responsive display across mobile, tablet and desktop.
