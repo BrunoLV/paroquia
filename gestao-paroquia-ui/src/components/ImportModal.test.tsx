@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ImportModal from './ImportModal';
 import { downloadTemplate, validarImportacao, confirmarImportacao } from '../api/importacao';
 
@@ -23,6 +24,14 @@ const mockDownloadTemplate = downloadTemplate as jest.Mock;
 const mockValidarImportacao = validarImportacao as jest.Mock;
 const mockConfirmarImportacao = confirmarImportacao as jest.Mock;
 
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+});
+
+const renderModal = (ui: React.ReactElement) => render(
+  <QueryClientProvider client={createTestQueryClient()}>{ui}</QueryClientProvider>
+);
+
 describe('ImportModal', () => {
   const mockOnClose = jest.fn();
   const mockOnSuccess = jest.fn();
@@ -32,13 +41,13 @@ describe('ImportModal', () => {
   });
 
   it('renders modal when open is true', () => {
-    render(<ImportModal open={true} onClose={mockOnClose} />);
+    renderModal(<ImportModal open={true} onClose={mockOnClose} />);
     expect(screen.getByText(/Importação de Registros em Lote/i)).toBeInTheDocument();
   });
 
   it('triggers CSV template download', async () => {
     mockDownloadTemplate.mockResolvedValueOnce(undefined);
-    render(<ImportModal open={true} onClose={mockOnClose} />);
+    renderModal(<ImportModal open={true} onClose={mockOnClose} />);
 
     const downloadCsvButton = screen.getByRole('button', { name: /Baixar Template CSV/i });
     fireEvent.click(downloadCsvButton);
@@ -60,7 +69,7 @@ describe('ImportModal', () => {
       ],
     });
 
-    render(<ImportModal open={true} onClose={mockOnClose} />);
+    renderModal(<ImportModal open={true} onClose={mockOnClose} />);
 
     const file = new File(['nomeCompleto\nMaria'], 'membros.csv', { type: 'text/csv' });
     const fileInput = screen.getByLabelText(/Selecionar Arquivo/i);
@@ -87,7 +96,7 @@ describe('ImportModal', () => {
     });
     mockConfirmarImportacao.mockResolvedValueOnce({ registrosImportados: 1 });
 
-    render(<ImportModal open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+    renderModal(<ImportModal open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
 
     const file = new File(['nomeCompleto\nJoão'], 'membros.csv', { type: 'text/csv' });
     const fileInput = screen.getByLabelText(/Selecionar Arquivo/i);
