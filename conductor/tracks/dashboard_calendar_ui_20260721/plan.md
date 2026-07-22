@@ -12,7 +12,7 @@
 ## Phase 2: Refactoring and Responsive Layout of Calendar.tsx
 - [x] Task: Red Phase - Write Frontend Tests for Calendar Responsiveness [8ad1caf]
     - [ ] Update unit tests in `Calendar.test.tsx` verifying controls, view switcher and mobile responsive layouts.
-- [ ] Task: Green Phase - Implement Responsive Controls and Styling in Calendar.tsx
+- [x] Task: Green Phase - Implement Responsive Controls and Styling in Calendar.tsx [8ad1caf]
     - [ ] Refactor `Calendar.tsx` date navigation, filter controls and event badges for optimal responsive display across mobile, tablet and desktop.
     - [ ] Run `npm run build` and `npm test` to verify zero regression.
 - [ ] Task: Conductor - User Manual Verification 'Refactoring and Responsive Layout of Calendar.tsx' (Protocol in workflow.md)
