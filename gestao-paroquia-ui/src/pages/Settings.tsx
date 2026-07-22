@@ -1117,6 +1117,7 @@ const Settings = () => {
                   <TableHead sx={{ bgcolor: 'grey.50' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Organização</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -1126,7 +1127,8 @@ const Settings = () => {
                   <TableBody>
                     {(memberships || []).map((m) => (
                       <TableRow key={m.id}>
-                        <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome}</TableCell>
+                        <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome || orgs.find((o) => o.id === m.organizacaoId)?.nome || '-'}</TableCell>
+                        <TableCell>{m.igrejaVinculoNome || orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
                         <TableCell>{getOrgTipoLabel(m.tipoOrganizacao)}</TableCell>
                         <TableCell>{m.papel}</TableCell>
                         <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
@@ -1146,7 +1148,7 @@ const Settings = () => {
                     ))}
                     {(memberships || []).length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} align="center" sx={{ py: 2, color: 'text.secondary' }}>
+                        <TableCell colSpan={6} align="center" sx={{ py: 2, color: 'text.secondary' }}>
                           Nenhum vínculo ativo encontrado para este usuário.
                         </TableCell>
                       </TableRow>

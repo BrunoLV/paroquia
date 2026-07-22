@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.MembershipResponse;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ListMembershipsUseCase {
 
     private final MembroOrganizacaoJpaRepository membershipRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
 
-    public ListMembershipsUseCase(MembroOrganizacaoJpaRepository membershipRepository) {
+    public ListMembershipsUseCase(MembroOrganizacaoJpaRepository membershipRepository, OrganizacaoJpaRepository organizacaoRepository) {
         this.membershipRepository = membershipRepository;
+        this.organizacaoRepository = organizacaoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -24,13 +27,23 @@ public class ListMembershipsUseCase {
      */
     public List<MembershipResponse> execute(UUID usuarioId) {
         return membershipRepository.findByUsuarioIdAndAtivoTrue(usuarioId).stream()
-                .map(m -> new MembershipResponse(
-                        m.getId(),
-                        m.getOrganizacaoId(),
-                        m.getTipoOrganizacao(),
-                        m.getPapel(),
-                        m.isAtivo(),
-                        m.getIgrejaVinculoId()))
+                .map(m -> {
+                    String orgNome = organizacaoRepository.findById(m.getOrganizacaoId())
+                            .map(o -> o.getNome())
+                            .orElse(null);
+                    String igrejaNome = m.getIgrejaVinculoId() != null
+                            ? organizacaoRepository.findById(m.getIgrejaVinculoId()).map(o -> o.getNome()).orElse(null)
+                            : null;
+                    return new MembershipResponse(
+                            m.getId(),
+                            m.getOrganizacaoId(),
+                            orgNome,
+                            m.getTipoOrganizacao(),
+                            m.getPapel(),
+                            m.isAtivo(),
+                            m.getIgrejaVinculoId(),
+                            igrejaNome);
+                })
                 .toList();
     }
 }

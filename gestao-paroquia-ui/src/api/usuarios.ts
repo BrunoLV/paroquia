@@ -14,11 +14,12 @@ export interface Usuario {
 export interface MembershipResponse {
   id: string;
   organizacaoId: string;
-  organizacaoNome: string;
+  organizacaoNome?: string;
   tipoOrganizacao: string;
   papel: string;
   ativo: boolean;
   igrejaVinculoId?: string | null;
+  igrejaVinculoNome?: string | null;
 }
 
 export interface AddMembershipRequest {

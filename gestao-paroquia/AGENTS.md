@@ -1,5 +1,6 @@
 ## Code style
 
+- Types over Strings: Always prefer enum over standardized String to represent states, categories, or fixed values.
 - Functions: 4-20 lines. Split if longer.
 - Files: under 500 lines. Split by responsibility.
 - One thing per function, one responsibility per module (SRP).

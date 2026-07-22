@@ -5,8 +5,10 @@ import java.util.UUID;
 public record MembershipResponse(
     UUID id,
     UUID organizacaoId,
-    String tipo,
+    String organizacaoNome,
+    String tipoOrganizacao,
     String papel,
     boolean ativo,
-    UUID igrejaVinculoId
+    UUID igrejaVinculoId,
+    String igrejaVinculoNome
 ) {}
