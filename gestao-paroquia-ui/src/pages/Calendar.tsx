@@ -575,9 +575,9 @@ const Calendar = () => {
       {/* Toolbar / Controls Card */}
       <Card sx={{ mb: 4, borderRadius: 0, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)', overflow: 'visible' }}>
         <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-          <Grid container spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            {/* Top Row / Section 1: Month Navigation */}
-            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+            {/* Top Line: Month Navigation (Left) & Action Buttons (Right) */}
+            <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton onClick={handlePrevMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
                 <ChevronLeft />
               </IconButton>
@@ -592,8 +592,7 @@ const Calendar = () => {
               </Button>
             </Grid>
 
-            {/* Top Row / Section 2: View Toggle & Action Buttons */}
-            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, gap: 1, flexWrap: 'wrap' }}>
+            <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
               <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 0, overflow: 'hidden', display: 'flex' }}>
                 <IconButton
                   color={viewMode === 'month' ? 'primary' : 'default'}
@@ -634,9 +633,9 @@ const Calendar = () => {
               </Button>
             </Grid>
 
-            {/* Second Row / Section 3: Filtering Controls */}
-            <Grid size={{ xs: 12, lg: 4 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mt: { xs: 1, lg: 0 } }}>
-              <FormControl size="small" sx={{ minWidth: 160, flexGrow: 1 }}>
+            {/* Line Below: Filtering Controls */}
+            <Grid size={{ xs: 12 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mt: 1, pt: 1, borderTop: '1px solid #f0f0f0' }}>
+              <FormControl size="small" sx={{ minWidth: 200, maxWidth: 300, flexGrow: 1 }}>
                 <InputLabel id="org-filter-label">Organização</InputLabel>
                 <Select
                   labelId="org-filter-label"
@@ -656,7 +655,7 @@ const Calendar = () => {
                 </Select>
               </FormControl>
 
-              <FormControl size="small" sx={{ minWidth: 140, flexGrow: 1 }}>
+              <FormControl size="small" sx={{ minWidth: 180, maxWidth: 260, flexGrow: 1 }}>
                 <InputLabel id="cat-filter-label">Categoria</InputLabel>
                 <Select
                   labelId="cat-filter-label"
