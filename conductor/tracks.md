@@ -170,6 +170,11 @@
 - [x] **Track: Vínculos de Membros com Organizações (Consistência Bidirecional e Sincronismo de Liderança)**
 *Link: [./archive/vinculo_membros_organizacoes_20260721/](./archive/vinculo_membros_organizacoes_20260721/)*
 
+---
+
+- [ ] **Track: Melhorias Visuais e Responsivas nos Dashboards e Calendário do Frontend**
+*Link: [./tracks/dashboard_calendar_ui_20260721/](./tracks/dashboard_calendar_ui_20260721/)*
+
 
 
 
