@@ -313,3 +313,22 @@ test('shows error notification when calendar data fetch fails', async () => {
   await renderCalendar();
   expect(mockShowError).toHaveBeenCalledWith('Não foi possível carregar as informações do calendário.');
 });
+
+test('toggles calendar view between Grid and List mode', async () => {
+  await renderCalendar();
+
+  const listBtn = screen.getByRole('button', { name: /Lista/i });
+  await act(async () => {
+    fireEvent.click(listBtn);
+  });
+
+  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+
+  const gridBtn = screen.getByRole('button', { name: /Mês/i });
+  await act(async () => {
+    fireEvent.click(gridBtn);
+  });
+
+  expect(screen.getByRole('heading', { name: /Calendar|Calendário/i })).toBeInTheDocument();
+});
+
