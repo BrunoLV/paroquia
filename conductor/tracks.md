@@ -158,7 +158,7 @@
 ---
 
 - [x] **Track: Atualização dos Arquivos Docker, Validação de Vínculo por Igreja e Seed Data**
-*Link: [./tracks/docker_seed_vinculo_igreja_20260721/](./tracks/docker_seed_vinculo_igreja_20260721/)*
+*Link: [./archive/docker_seed_vinculo_igreja_20260721/](./archive/docker_seed_vinculo_igreja_20260721/)*
 
 
 
