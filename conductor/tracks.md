@@ -167,7 +167,7 @@
 
 ---
 
-- [ ] **Track: Vínculos de Membros com Organizações (Consistência Bidirecional e Sincronismo de Liderança)**
+- [x] **Track: Vínculos de Membros com Organizações (Consistência Bidirecional e Sincronismo de Liderança)**
 *Link: [./tracks/vinculo_membros_organizacoes_20260721/](./tracks/vinculo_membros_organizacoes_20260721/)*
 
 

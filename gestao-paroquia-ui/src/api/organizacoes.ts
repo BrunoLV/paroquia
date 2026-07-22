@@ -27,6 +27,7 @@ export interface OrganizacaoMembro {
   membershipId: string;
   usuarioId: string;
   usuarioNome: string;
+  nomeCompleto?: string;
   papel: string;
   ativo: boolean;
   igrejaVinculoId?: string | null;
