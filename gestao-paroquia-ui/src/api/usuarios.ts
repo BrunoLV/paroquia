@@ -29,25 +29,40 @@ export interface AddMembershipRequest {
   igrejaVinculoId?: string;
 }
 
+/**
+ * Busca a lista de usuários cadastrados no sistema.
+ */
 export const getUsuarios = async (): Promise<Usuario[]> => {
   const response = await apiClient.get<Usuario[]>('/usuarios');
   return response.data;
 };
 
+/**
+ * Aprova o cadastro de um usuário pendente.
+ */
 export const approveUsuario = async (id: string): Promise<void> => {
   await apiClient.put(`/usuarios/${id}/approve`);
 };
 
+/**
+ * Busca a lista de vínculos de um usuário com organizações da paróquia.
+ */
 export const getMemberships = async (id: string): Promise<MembershipResponse[]> => {
   const response = await apiClient.get<MembershipResponse[]>(`/usuarios/${id}/membros`);
   return response.data;
 };
 
+/**
+ * Adiciona um novo vínculo de organização a um usuário.
+ */
 export const addMembership = async (userId: string, request: AddMembershipRequest): Promise<string> => {
   const response = await apiClient.post<string>(`/usuarios/${userId}/membros`, request);
   return response.data;
 };
 
+/**
+ * Remove um vínculo de organização de um usuário.
+ */
 export const removeMembership = async (userId: string, membershipId: string): Promise<void> => {
   await apiClient.delete(`/usuarios/${userId}/membros/${membershipId}`);
 };
@@ -67,6 +82,9 @@ export interface RegistrarUsuarioRequest {
   organizacoesSolicitadas?: SolicitacaoOrganizacaoRequest[];
 }
 
+/**
+ * Registra um novo usuário com solicitações de participação em pastorais/movimentos.
+ */
 export const registrarUsuario = async (request: RegistrarUsuarioRequest): Promise<string> => {
   const response = await apiClient.post<string>('/usuarios/registrar', request);
   return response.data;
