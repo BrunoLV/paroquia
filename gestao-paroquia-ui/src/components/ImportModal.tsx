@@ -32,6 +32,7 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { useNotification } from '../context/NotificationContext';
+import { useQueryClient } from '@tanstack/react-query';
 import { downloadTemplate, validarImportacao, confirmarImportacao, ImportacaoValidacaoResultado } from '../api/importacao';
 
 interface ImportModalProps {
@@ -50,6 +51,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   defaultEntity = 'MEMBRO',
 }) => {
   const { showSuccess, showError } = useNotification();
+  const queryClient = useQueryClient();
   const [activeStep, setActiveStep] = useState(0);
   const [entityType, setEntityType] = useState(defaultEntity);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -113,6 +115,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     try {
       const validItems = validationResult.itens.filter(i => i.valido).map(i => i.dados);
       const res = await confirmarImportacao(entityType, validItems);
+      queryClient.invalidateQueries();
       showSuccess(`Sucesso! ${res.registrosImportados} registro(s) foram cadastrados no sistema.`);
       if (onSuccess) onSuccess();
       handleCloseModal();

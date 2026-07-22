@@ -1,18 +1,28 @@
 package br.com.nsfatima.gestao.importacao.domain.service;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoItemResultadoDTO;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
-import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -20,13 +30,28 @@ import java.util.regex.Pattern;
 @Service
 public class ImportacaoService {
 
+    private static final Logger log = LoggerFactory.getLogger(ImportacaoService.class);
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    
     private final CreateMembroUseCase createMembroUseCase;
     private final MembroJpaRepository membroJpaRepository;
+    private final UsuarioJpaRepository usuarioJpaRepository;
+    private final OrganizacaoService organizacaoService;
+    private final EventoJpaRepository eventoJpaRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ImportacaoService(CreateMembroUseCase createMembroUseCase, MembroJpaRepository membroJpaRepository) {
+    public ImportacaoService(CreateMembroUseCase createMembroUseCase, 
+                             MembroJpaRepository membroJpaRepository,
+                             UsuarioJpaRepository usuarioJpaRepository,
+                             OrganizacaoService organizacaoService,
+                             EventoJpaRepository eventoJpaRepository,
+                             PasswordEncoder passwordEncoder) {
         this.createMembroUseCase = createMembroUseCase;
         this.membroJpaRepository = membroJpaRepository;
+        this.usuarioJpaRepository = usuarioJpaRepository;
+        this.organizacaoService = organizacaoService;
+        this.eventoJpaRepository = eventoJpaRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
@@ -57,7 +82,6 @@ public class ImportacaoService {
             }
         }
 
-        // Default to CSV with sample rows
         StringBuilder csv = new StringBuilder(headers).append("\n");
         for (String sample : sampleRows) {
             csv.append(sample).append("\n");
@@ -79,19 +103,19 @@ public class ImportacaoService {
         return switch (tipo.toUpperCase()) {
             case "MEMBRO" -> List.of(
                     "João da Silva,joao.silva@email.com,11999998888,1985-05-20,Rua das Flores,123,Centro,São Paulo",
-                    "Maria Souza,maria.souza@email.com,11988887777,1992-08-14,Avenida Brasil,456,Jardins,São Paulo"
+                    "Maria Souza,maria.souza@email.com,11998887777,1992-08-14,Avenida Brasil,456,Jardins,São Paulo"
             );
             case "USUARIO" -> List.of(
                     "Carlos Eduardo,carlos.eduardo,11977776666,1988-03-10,igreja-matriz,USER",
                     "Ana Beatriz,ana.beatriz,11966665555,1995-11-25,igreja-matriz,USER"
             );
             case "ORGANIZACAO" -> List.of(
-                    "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,org-conselho,po-pastoral-1",
-                    "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,Lucas Mendes,Patricia Rocha,org-conselho,po-movimento-1"
+                    "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,,",
+                    "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,Lucas Mendes,Patricia Rocha,,"
             );
             case "EVENTO" -> List.of(
-                    "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,local-1,igreja-1,org-1",
-                    "Encontro da Catequese,Formação sobre Sacramentos,2026-08-05 14:00,2026-08-05 16:00,FORMATIVO,local-2,igreja-1,org-2"
+                    "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,,,",
+                    "Encontro da Catequese,Formação sobre Sacramentos,2026-08-05 14:00,2026-08-05 16:00,FORMATIVO,,,"
             );
             default -> Collections.emptyList();
         };
@@ -111,17 +135,12 @@ public class ImportacaoService {
         int invalidos = 0;
 
         for (int i = 0; i < rows.size(); i++) {
-            int linhaNum = i + 2; // Line 1 is header
+            int linhaNum = i + 2;
             Map<String, String> rowData = rows.get(i);
             String errorMsg = validarLinha(tipo, rowData);
             boolean isValido = (errorMsg == null);
 
-            if (isValido) {
-                valids++;
-            } else {
-                invalidos++;
-            }
-
+            if (isValido) valids++; else invalidos++;
             itens.add(new ImportacaoItemResultadoDTO(linhaNum, isValido, errorMsg, rowData));
         }
 
@@ -134,15 +153,13 @@ public class ImportacaoService {
             String headerLine = reader.readLine();
             if (headerLine == null) return rows;
             String[] headers = headerLine.split(",");
-
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
                 String[] values = line.split(",", -1);
-                Map<String, String> map = new HashMap<>();
+                Map<String, String> map = new LinkedHashMap<>();
                 for (int i = 0; i < headers.length; i++) {
-                    String val = (i < values.length) ? values[i].trim() : "";
-                    map.put(headers[i].trim(), val);
+                    map.put(headers[i].trim(), (i < values.length) ? values[i].trim() : "");
                 }
                 rows.add(map);
             }
@@ -154,28 +171,21 @@ public class ImportacaoService {
         List<Map<String, String>> rows = new ArrayList<>();
         try (Workbook workbook = WorkbookFactory.create(is)) {
             Sheet sheet = workbook.getSheetAt(0);
-            Iterator<Row> rowIterator = sheet.iterator();
-            if (!rowIterator.hasNext()) return rows;
-
-            Row headerRow = rowIterator.next();
+            Row headerRow = sheet.getRow(0);
+            if (headerRow == null) return rows;
             List<String> headers = new ArrayList<>();
-            for (Cell cell : headerRow) {
-                headers.add(cell.getStringCellValue().trim());
-            }
-
-            while (rowIterator.hasNext()) {
-                Row row = rowIterator.next();
-                Map<String, String> map = new HashMap<>();
+            for (Cell cell : headerRow) headers.add(getCellValueAsString(cell).trim());
+            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+                Row row = sheet.getRow(r);
+                if (row == null) continue;
+                Map<String, String> map = new LinkedHashMap<>();
                 boolean empty = true;
-                for (int i = 0; i < headers.size(); i++) {
-                    Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    String val = getCellValueAsString(cell);
+                for (int c = 0; c < headers.size(); c++) {
+                    String val = getCellValueAsString(row.getCell(c)).trim();
                     if (!val.isEmpty()) empty = false;
-                    map.put(headers.get(i), val);
+                    map.put(headers.get(c), val);
                 }
-                if (!empty) {
-                    rows.add(map);
-                }
+                if (!empty) rows.add(map);
             }
         }
         return rows;
@@ -184,17 +194,11 @@ public class ImportacaoService {
     private String getCellValueAsString(Cell cell) {
         if (cell == null) return "";
         return switch (cell.getCellType()) {
-            case STRING -> cell.getStringCellValue().trim();
+            case STRING -> cell.getStringCellValue();
             case NUMERIC -> {
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    yield cell.getLocalDateTimeCellValue().toLocalDate().toString();
-                } else {
-                    double val = cell.getNumericCellValue();
-                    if (val == (long) val) {
-                        yield String.valueOf((long) val);
-                    }
-                    yield String.valueOf(val);
-                }
+                if (DateUtil.isCellDateFormatted(cell)) yield cell.getLocalDateTimeCellValue().toString();
+                double num = cell.getNumericCellValue();
+                yield (num == Math.floor(num)) ? String.valueOf((long) num) : String.valueOf(num);
             }
             case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
             default -> "";
@@ -212,73 +216,104 @@ public class ImportacaoService {
     }
 
     private String validarMembro(Map<String, String> data) {
-        String nome = data.get("nomeCompleto");
-        if (nome == null || nome.trim().isEmpty()) {
-            return "O campo 'nomeCompleto' é obrigatório.";
-        }
+        if (data.getOrDefault("nomeCompleto", "").isBlank()) return "O campo 'nomeCompleto' é obrigatório.";
         String email = data.get("email");
-        if (email != null && !email.trim().isEmpty() && !EMAIL_PATTERN.matcher(email.trim()).matches()) {
-            return "O formato do e-mail é inválido.";
-        }
+        if (email != null && !email.isBlank() && !EMAIL_PATTERN.matcher(email.trim()).matches()) return "Formato de e-mail inválido.";
         return null;
     }
 
     private String validarUsuario(Map<String, String> data) {
-        String nome = data.get("nome");
-        String username = data.get("username");
-        if (nome == null || nome.trim().isEmpty()) return "O campo 'nome' é obrigatório.";
-        if (username == null || username.trim().isEmpty()) return "O campo 'username' é obrigatório.";
+        if (data.getOrDefault("nome", "").isBlank()) return "O campo 'nome' é obrigatório.";
+        if (data.getOrDefault("username", "").isBlank()) return "O campo 'username' é obrigatório.";
         return null;
     }
 
     private String validarOrganizacao(Map<String, String> data) {
-        String nome = data.get("nome");
-        String tipo = data.get("tipo");
-        if (nome == null || nome.trim().isEmpty()) return "O campo 'nome' é obrigatório.";
-        if (tipo == null || tipo.trim().isEmpty()) return "O campo 'tipo' é obrigatório.";
+        if (data.getOrDefault("nome", "").isBlank()) return "O campo 'nome' é obrigatório.";
+        if (data.getOrDefault("tipo", "").isBlank()) return "O campo 'tipo' é obrigatório.";
         return null;
     }
 
     private String validarEvento(Map<String, String> data) {
-        String nome = data.get("nome");
-        String dataInicio = data.get("dataInicio");
-        if (nome == null || nome.trim().isEmpty()) return "O campo 'nome' é obrigatório.";
-        if (dataInicio == null || dataInicio.trim().isEmpty()) return "O campo 'dataInicio' é obrigatório.";
+        if (data.getOrDefault("nome", "").isBlank()) return "O campo 'nome' é obrigatório.";
+        if (data.getOrDefault("dataInicio", "").isBlank()) return "O campo 'dataInicio' é obrigatório.";
         return null;
     }
 
+    @Transactional
     public int confirmarImportacao(String tipo, List<Map<String, String>> validItems, String actor) {
         int count = 0;
         for (Map<String, String> data : validItems) {
-            if ("MEMBRO".equalsIgnoreCase(tipo)) {
-                try {
-                    String nome = data.get("nomeCompleto");
-                    String email = data.get("email");
-                    String tel = data.get("telefone");
-                    String dtStr = data.get("dataNascimento");
-                    LocalDate dt = (dtStr != null && !dtStr.isBlank()) ? LocalDate.parse(dtStr, DateTimeFormatter.ISO_LOCAL_DATE) : null;
-
-                    String endereco = String.join(", ",
-                            Optional.ofNullable(data.get("rua")).orElse(""),
-                            Optional.ofNullable(data.get("numero")).orElse(""),
-                            Optional.ofNullable(data.get("bairro")).orElse(""),
-                            Optional.ofNullable(data.get("cidade")).orElse("")
-                    ).replaceAll("^, |, $|(?<=, ), ", "").trim();
-
-                    MembroRequest req = new MembroRequest(
-                            nome, dt, email, tel,
-                            endereco.isBlank() ? null : endereco,
-                            null, null, null, null, null
-                    );
-                    createMembroUseCase.execute(req, actor);
-                    count++;
-                } catch (Exception e) {
-                    // Ignore or log error for single failed record
+            try {
+                switch (tipo.toUpperCase()) {
+                    case "MEMBRO" -> {
+                        String endereco = String.join(", ", Optional.ofNullable(data.get("rua")).orElse(""), Optional.ofNullable(data.get("numero")).orElse(""), Optional.ofNullable(data.get("bairro")).orElse(""), Optional.ofNullable(data.get("cidade")).orElse("")).replaceAll("^, |, $|(?<=, ), ", "").trim();
+                        createMembroUseCase.execute(new MembroRequest(data.get("nomeCompleto"), parseLocalDate(data.get("dataNascimento")), data.get("email"), data.get("telefone"), endereco.isBlank() ? null : endereco, null, null, null, null, null), actor);
+                        count++;
+                    }
+                    case "USUARIO" -> {
+                        UsuarioEntity entity = new UsuarioEntity();
+                        entity.setId(UUID.randomUUID());
+                        entity.setNome(data.get("nome"));
+                        entity.setUsername(data.get("username"));
+                        entity.setPasswordHash(passwordEncoder.encode("Mudar123!"));
+                        entity.setTelefone(data.get("telefone"));
+                        entity.setDataNascimento(parseLocalDate(data.get("dataNascimento")));
+                        entity.setRoles(Optional.ofNullable(data.get("roles")).filter(r -> !r.isBlank()).orElse("USER"));
+                        entity.setIgrejaId(parseUuid(data.get("igrejaId")));
+                        entity.setEnabled(true);
+                        usuarioJpaRepository.save(entity);
+                        count++;
+                    }
+                    case "ORGANIZACAO" -> {
+                        organizacaoService.createOrganization(data.get("nome"), parseTipoOrganizacao(data.get("tipo")), data.get("contato"), data.get("coordenador"), data.get("viceCoordenador"), parseUuid(data.get("parentId")), parseUuid(data.get("pastoralOficialId")));
+                        count++;
+                    }
+                    case "EVENTO" -> {
+                        EventoEntity entity = new EventoEntity();
+                        entity.setId(UUID.randomUUID());
+                        entity.setTitulo(data.get("nome"));
+                        entity.setDescricao(data.get("descricao"));
+                        Instant inicio = parseInstant(data.get("dataInicio"));
+                        Instant fim = parseInstant(data.get("dataFim"));
+                        entity.setInicioUtc(inicio != null ? inicio : Instant.now());
+                        entity.setFimUtc(fim != null ? fim : entity.getInicioUtc().plusSeconds(3600));
+                        entity.setStatus("APROVADO");
+                        entity.setCategoria(Optional.ofNullable(data.get("categoria")).filter(c -> !c.isBlank()).orElse("GERAL"));
+                        entity.setLocalId(parseUuid(data.get("localId")));
+                        entity.setIgrejaVinculoId(parseUuid(data.get("igrejaId")));
+                        entity.setOrganizacaoResponsavelId(Optional.ofNullable(parseUuid(data.get("organizacaoId"))).orElse(UUID.randomUUID()));
+                        eventoJpaRepository.save(entity);
+                        count++;
+                    }
                 }
-            } else {
-                count++;
+            } catch (Exception e) {
+                log.error("Erro ao importar registro de {}: {}", tipo, e.getMessage());
             }
         }
         return count;
+    }
+
+    private LocalDate parseLocalDate(String input) {
+        if (input == null || input.isBlank()) return null;
+        for (DateTimeFormatter fmt : List.of(DateTimeFormatter.ISO_LOCAL_DATE, DateTimeFormatter.ofPattern("dd/MM/yyyy"))) {
+            try { return LocalDate.parse(input.trim(), fmt); } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    private Instant parseInstant(String input) {
+        if (input == null || input.isBlank()) return null;
+        try { return Instant.parse(input.trim()); } catch (Exception ignored) {}
+        try { return LocalDateTime.parse(input.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(ZoneId.systemDefault()).toInstant(); } catch (Exception ignored) {}
+        return null;
+    }
+
+    private UUID parseUuid(String input) {
+        try { return UUID.fromString(input.trim()); } catch (Exception e) { return null; }
+    }
+
+    private TipoOrganizacao parseTipoOrganizacao(String input) {
+        try { return TipoOrganizacao.valueOf(input.trim().toUpperCase()); } catch (Exception e) { return TipoOrganizacao.PASTORAL; }
     }
 }

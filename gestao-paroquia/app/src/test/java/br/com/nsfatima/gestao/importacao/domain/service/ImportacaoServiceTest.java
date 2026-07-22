@@ -1,8 +1,11 @@
 package br.com.nsfatima.gestao.importacao.domain.service;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
 import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -13,10 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,11 +38,30 @@ class ImportacaoServiceTest {
     @Mock
     private MembroJpaRepository membroJpaRepository;
 
+    @Mock
+    private UsuarioJpaRepository usuarioJpaRepository;
+
+    @Mock
+    private OrganizacaoService organizacaoService;
+
+    @Mock
+    private EventoJpaRepository eventoJpaRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     private ImportacaoService importacaoService;
 
     @BeforeEach
     void setUp() {
-        importacaoService = new ImportacaoService(createMembroUseCase, membroJpaRepository);
+        importacaoService = new ImportacaoService(
+                createMembroUseCase,
+                membroJpaRepository,
+                usuarioJpaRepository,
+                organizacaoService,
+                eventoJpaRepository,
+                passwordEncoder
+        );
     }
 
     @Test
@@ -94,5 +119,42 @@ class ImportacaoServiceTest {
         assertEquals(1, resultado.totalLinhas());
         assertEquals(1, resultado.totalValidos());
         assertTrue(resultado.itens().get(0).valido());
+    }
+
+    @Test
+    void shouldConfirmarImportacaoParaMembroEUsuarioEOrganizacaoEEvento() {
+        Map<String, String> membroMap = Map.of(
+                "nomeCompleto", "João da Silva",
+                "email", "joao@email.com",
+                "telefone", "11999998888",
+                "dataNascimento", "20/05/1985"
+        );
+        int countMembro = importacaoService.confirmarImportacao("MEMBRO", List.of(membroMap), "admin");
+        assertEquals(1, countMembro);
+        verify(createMembroUseCase).execute(any(), eq("admin"));
+
+        Map<String, String> usuarioMap = Map.of(
+                "nome", "Carlos Eduardo",
+                "username", "carlos.eduardo"
+        );
+        int countUsuario = importacaoService.confirmarImportacao("USUARIO", List.of(usuarioMap), "admin");
+        assertEquals(1, countUsuario);
+        verify(usuarioJpaRepository).save(any());
+
+        Map<String, String> orgMap = Map.of(
+                "nome", "Pastoral da Música",
+                "tipo", "PASTORAL"
+        );
+        int countOrg = importacaoService.confirmarImportacao("ORGANIZACAO", List.of(orgMap), "admin");
+        assertEquals(1, countOrg);
+        verify(organizacaoService).createOrganization(eq("Pastoral da Música"), any(), any(), any(), any(), any(), any());
+
+        Map<String, String> eventoMap = Map.of(
+                "nome", "Missa Dominical",
+                "dataInicio", "2026-08-02 09:00"
+        );
+        int countEvento = importacaoService.confirmarImportacao("EVENTO", List.of(eventoMap), "admin");
+        assertEquals(1, countEvento);
+        verify(eventoJpaRepository).save(any());
     }
 }
