@@ -175,6 +175,11 @@
 - [ ] **Track: Melhorias Visuais e Responsivas nos Dashboards e Calendário do Frontend**
 *Link: [./tracks/dashboard_calendar_ui_20260721/](./tracks/dashboard_calendar_ui_20260721/)*
 
+---
+
+- [ ] **Track: Cadastros do Sistema via Importação de Arquivos CSV e Excel (XLS/XLSX)**
+*Link: [./tracks/importacao_arquivos_20260721/](./tracks/importacao_arquivos_20260721/)*
+
 
 
 
