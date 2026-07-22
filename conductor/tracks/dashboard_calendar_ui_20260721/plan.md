@@ -1,7 +1,7 @@
 # Implementation Plan: Melhorias Visuais e Responsivas nos Dashboards e Calendário do Frontend
 
 ## Phase 1: Redesign and Responsiveness of Dashboard.tsx & Reports.tsx
-- [ ] Task: Red Phase - Write Frontend Tests for Dashboard & Reports Layout
+- [x] Task: Red Phase - Write Frontend Tests for Dashboard & Reports Layout [ef1c954]
     - [ ] Update unit tests in `Dashboard.test.tsx` and `Reports.test.tsx` verifying metric cards, responsive grid rendering and dynamic chart elements.
 - [ ] Task: Green Phase - Implement UI Polish & Dynamic Metrics in Dashboard and Reports
     - [ ] Refactor `Dashboard.tsx` with gradient metric cards, hover micro-interactions and dynamic event distribution charts.
