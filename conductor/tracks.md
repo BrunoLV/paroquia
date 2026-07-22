@@ -172,7 +172,7 @@
 
 ---
 
-- [ ] **Track: Melhorias Visuais e Responsivas nos Dashboards e Calendário do Frontend**
+- [x] **Track: Melhorias Visuais e Responsivas nos Dashboards e Calendário do Frontend**
 *Link: [./tracks/dashboard_calendar_ui_20260721/](./tracks/dashboard_calendar_ui_20260721/)*
 
 ---
