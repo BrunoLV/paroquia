@@ -165,6 +165,11 @@
 - [x] **Track: Padronização do Código e Documentação segundo os Padrões AGENTS.md**
 *Link: [./archive/padronizacao_agents_20260721/](./archive/padronizacao_agents_20260721/)*
 
+---
+
+- [ ] **Track: Vínculos de Membros com Organizações (Consistência Bidirecional e Sincronismo de Liderança)**
+*Link: [./tracks/vinculo_membros_organizacoes_20260721/](./tracks/vinculo_membros_organizacoes_20260721/)*
+
 
 
 
