@@ -101,8 +101,8 @@ public class ImportacaoService {
 
     private String getHeadersParaTipo(String tipo) {
         return switch (tipo.toUpperCase()) {
-            case "MEMBRO" -> "nomeCompleto,email,telefone,dataNascimento,rua,numero,bairro,cidade";
-            case "USUARIO" -> "nome,username,telefone,dataNascimento,igrejaId,roles";
+            case "MEMBRO" -> "usuarioUsername,organizacaoNome,papel,igrejaId";
+            case "USUARIO" -> "nome,username,telefone,dataNascimento,igrejaId,roles,batizado,primeiraComunhao,crismado,casadoIgrejaCatolica";
             case "ORGANIZACAO" -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
             case "EVENTO" -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
             default -> throw new IllegalArgumentException("Tipo de importação inválido: " + tipo);
@@ -112,12 +112,12 @@ public class ImportacaoService {
     private List<String> getSampleRowsParaTipo(String tipo) {
         return switch (tipo.toUpperCase()) {
             case "MEMBRO" -> List.of(
-                    "João da Silva,joao.silva@email.com,11999998888,1985-05-20,Rua das Flores,123,Centro,São Paulo",
-                    "Maria Souza,maria.souza@email.com,11998887777,1992-08-14,Avenida Brasil,456,Jardins,São Paulo"
+                    "joao.silva@email.com,Pastoral da Comunicação,COORDENADOR,",
+                    "maria.souza@email.com,Pastoral da Catequese,MEMBRO,"
             );
             case "USUARIO" -> List.of(
-                    "Carlos Eduardo,carlos.eduardo,11977776666,1988-03-10,igreja-matriz,USER",
-                    "Ana Beatriz,ana.beatriz,11966665555,1995-11-25,igreja-matriz,USER"
+                    "Carlos Eduardo,carlos.eduardo@email.com,11977776666,1988-03-10,,ROLE_USER,true,true,true,false",
+                    "Ana Beatriz,ana.beatriz@email.com,11966665555,1995-11-25,,ROLE_USER,true,true,false,false"
             );
             case "ORGANIZACAO" -> List.of(
                     "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,,",
@@ -233,9 +233,17 @@ public class ImportacaoService {
     }
 
     private String validarMembro(Map<String, String> data) {
-        if (data.getOrDefault("nomeCompleto", "").isBlank()) return "O campo 'nomeCompleto' é obrigatório.";
-        String email = data.get("email");
-        if (email != null && !email.isBlank() && !EMAIL_PATTERN.matcher(email.trim()).matches()) return "Formato de e-mail inválido.";
+        String username = data.getOrDefault("usuarioUsername", "").trim();
+        if (username.isBlank()) return "O campo 'usuarioUsername' é obrigatório.";
+        var userOpt = usuarioJpaRepository.findByUsernameIgnoreCase(username);
+        if (userOpt.isEmpty()) return "Usuário não encontrado: " + username;
+
+        String orgNome = data.getOrDefault("organizacaoNome", "").trim();
+        if (orgNome.isBlank()) return "O campo 'organizacaoNome' é obrigatório.";
+        var orgOpt = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome);
+        if (orgOpt.isEmpty()) return "Organização não encontrada: " + orgNome;
+
+        if (data.getOrDefault("papel", "").isBlank()) return "O campo 'papel' é obrigatório.";
         return null;
     }
 
@@ -264,8 +272,17 @@ public class ImportacaoService {
             try {
                 switch (tipo.toUpperCase()) {
                     case "MEMBRO" -> {
-                        String endereco = String.join(", ", Optional.ofNullable(data.get("rua")).orElse(""), Optional.ofNullable(data.get("numero")).orElse(""), Optional.ofNullable(data.get("bairro")).orElse(""), Optional.ofNullable(data.get("cidade")).orElse("")).replaceAll("^, |, $|(?<=, ), ", "").trim();
-                        createMembroUseCase.execute(new MembroRequest(data.get("nomeCompleto"), parseLocalDate(data.get("dataNascimento")), data.get("email"), data.get("telefone"), endereco.isBlank() ? null : endereco, null, null, null, null, null), actor);
+                        String username = data.get("usuarioUsername").trim();
+                        String orgNome = data.get("organizacaoNome").trim();
+                        String papel = Optional.ofNullable(data.get("papel")).filter(p -> !p.isBlank()).orElse("MEMBRO");
+                        UUID igrejaId = parseUuid(data.get("igrejaId"));
+
+                        var user = usuarioJpaRepository.findByUsernameIgnoreCase(username)
+                                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado: " + username));
+                        var org = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome)
+                                .orElseThrow(() -> new IllegalArgumentException("Organização não encontrada: " + orgNome));
+
+                        createMembroUseCase.execute(new MembroRequest(user.getId(), org.getId(), papel, LocalDate.now(), igrejaId, true), actor);
                         count++;
                     }
                     case "USUARIO" -> {
@@ -276,8 +293,12 @@ public class ImportacaoService {
                         entity.setPasswordHash(passwordEncoder.encode("Mudar123!"));
                         entity.setTelefone(data.get("telefone"));
                         entity.setDataNascimento(parseLocalDate(data.get("dataNascimento")));
-                        entity.setRoles(Optional.ofNullable(data.get("roles")).filter(r -> !r.isBlank()).orElse("USER"));
+                        entity.setRoles(Optional.ofNullable(data.get("roles")).filter(r -> !r.isBlank()).orElse("ROLE_USER"));
                         entity.setIgrejaId(parseUuid(data.get("igrejaId")));
+                        entity.setBatizado(parseBoolean(data.get("batizado")));
+                        entity.setPrimeiraComunhao(parseBoolean(data.get("primeiraComunhao")));
+                        entity.setCrismado(parseBoolean(data.get("crismado")));
+                        entity.setCasadoIgrejaCatolica(parseBoolean(data.get("casadoIgrejaCatolica")));
                         entity.setEnabled(true);
                         usuarioJpaRepository.save(entity);
                         count++;
@@ -409,6 +430,12 @@ public class ImportacaoService {
 
     private UUID parseUuid(String input) {
         try { return UUID.fromString(input.trim()); } catch (Exception e) { return null; }
+    }
+
+    private boolean parseBoolean(String input) {
+        if (input == null || input.isBlank()) return false;
+        String trimmed = input.trim().toLowerCase();
+        return "true".equals(trimmed) || "1".equals(trimmed) || "sim".equals(trimmed) || "s".equals(trimmed);
     }
 
     private TipoOrganizacao parseTipoOrganizacao(String input) {

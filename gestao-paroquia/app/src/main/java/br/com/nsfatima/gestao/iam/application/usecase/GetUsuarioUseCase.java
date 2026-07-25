@@ -36,14 +36,6 @@ public class GetUsuarioUseCase {
                     String telefone = u.getTelefone();
                     java.time.LocalDate dataNascimento = u.getDataNascimento();
 
-                    if (nome == null || nome.trim().isEmpty()) {
-                        var membroOpt = membroRepository.findByUsuarioId(u.getId());
-                        if (membroOpt.isPresent()) {
-                            nome = membroOpt.get().getNomeCompleto();
-                            telefone = membroOpt.get().getTelefone();
-                            dataNascimento = membroOpt.get().getDataNascimento();
-                        }
-                    }
 
                     java.util.UUID igrejaId = u.getIgrejaId();
                     String igrejaNome = null;
@@ -64,7 +56,12 @@ public class GetUsuarioUseCase {
                             telefone,
                             dataNascimento,
                             igrejaId,
-                            igrejaNome);
+                            igrejaNome,
+                            u.isBatizado(),
+                            u.isPrimeiraComunhao(),
+                            u.isCrismado(),
+                            u.isCasadoIgrejaCatolica());
+
                 })
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
     }

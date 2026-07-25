@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -97,6 +98,15 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                     HttpStatus.SERVICE_UNAVAILABLE,
                     ErrorCodes.AUTHZ_SOURCE_UNAVAILABLE,
                     "Fonte de autorizacao temporariamente indisponivel.");
+            return;
+        }
+
+        if (exception instanceof DisabledException) {
+            writeError(
+                    response,
+                    HttpStatus.UNAUTHORIZED,
+                    ErrorCodes.APPROVAL_REQUIRED,
+                    "Cadastro pendente de aprovacao por um administrador.");
             return;
         }
 

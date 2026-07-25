@@ -4,12 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
+import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPublisher;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPublisher;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +30,12 @@ class MembroUseCaseTest {
 
     @Mock
     private MembroJpaRepository repository;
+
+    @Mock
+    private UsuarioJpaRepository usuarioRepository;
+
+    @Mock
+    private OrganizacaoJpaRepository organizacaoRepository;
 
     @Mock
     private MembroMapper mapper;
@@ -45,46 +55,64 @@ class MembroUseCaseTest {
     private MembroRequest request;
     private MembroEntity entity;
     private MembroResponse response;
+    private UUID usuarioId;
+    private UUID organizacaoId;
 
     @BeforeEach
     void setUp() {
+        usuarioId = UUID.randomUUID();
+        organizacaoId = UUID.randomUUID();
+
         request = new MembroRequest(
-                "João da Silva",
-                LocalDate.of(1990, 1, 1),
-                "joao@example.com",
-                "11999999999",
-                "Rua A, 123",
+                usuarioId,
+                organizacaoId,
+                "MEMBRO",
+                LocalDate.now(),
                 null,
-                null, null, null, null
+                true
         );
 
         entity = new MembroEntity();
         entity.setId(UUID.randomUUID());
-        entity.setNomeCompleto(request.nomeCompleto());
+        entity.setUsuarioId(usuarioId);
+        entity.setOrganizacaoId(organizacaoId);
+        entity.setPapel("MEMBRO");
 
         response = new MembroResponse(
                 entity.getId(),
-                entity.getNomeCompleto(),
-                request.dataNascimento(),
-                request.email(),
-                request.telefone(),
-                request.endereco(),
-                null,
+                usuarioId,
+                "João da Silva",
+                "joao@example.com",
+                "11999999999",
+                organizacaoId,
+                "Pastoral da Música",
+                "MEMBRO",
+                LocalDate.now(),
                 true,
-                null, null, null, null
+                null
         );
     }
 
     @Test
     @DisplayName("Deve criar um membro com sucesso")
     void deveCriarMembro() {
+        UsuarioEntity user = new UsuarioEntity();
+        user.setId(usuarioId);
+        user.setNome("João da Silva");
+
+        OrganizacaoEntity org = new OrganizacaoEntity();
+        org.setId(organizacaoId);
+
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(user));
+        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
+        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId, organizacaoId)).thenReturn(Optional.empty());
         when(repository.save(any(MembroEntity.class))).thenReturn(entity);
         when(mapper.toResponse(any(MembroEntity.class))).thenReturn(response);
 
         MembroResponse result = createUseCase.execute(request, "admin");
 
         assertNotNull(result);
-        assertEquals("João da Silva", result.nomeCompleto());
+        assertEquals(usuarioId, result.usuarioId());
         verify(repository).save(any(MembroEntity.class));
         verify(auditPublisher).publish(eq("admin"), eq("create"), anyString(), eq("success"));
     }
@@ -93,7 +121,17 @@ class MembroUseCaseTest {
     @DisplayName("Deve atualizar um membro com sucesso")
     void deveAtualizarMembro() {
         UUID id = entity.getId();
+        UsuarioEntity user = new UsuarioEntity();
+        user.setId(usuarioId);
+        user.setNome("João da Silva");
+
+        OrganizacaoEntity org = new OrganizacaoEntity();
+        org.setId(organizacaoId);
+
         when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(user));
+        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
+        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId, organizacaoId)).thenReturn(Optional.empty());
         when(repository.save(any(MembroEntity.class))).thenReturn(entity);
         when(mapper.toResponse(any(MembroEntity.class))).thenReturn(response);
 

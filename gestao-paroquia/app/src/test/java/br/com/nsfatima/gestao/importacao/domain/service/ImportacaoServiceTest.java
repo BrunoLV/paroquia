@@ -1,11 +1,15 @@
 package br.com.nsfatima.gestao.importacao.domain.service;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
 import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -23,14 +27,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-
-import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ImportacaoServiceTest {
@@ -79,8 +83,8 @@ class ImportacaoServiceTest {
     void shouldGerarCsvTemplateParaMembro() throws IOException {
         byte[] bytes = importacaoService.gerarTemplate("MEMBRO", "CSV");
         String content = new String(bytes, StandardCharsets.UTF_8);
-        assertTrue(content.contains("nomeCompleto,email,telefone,dataNascimento"));
-        assertTrue(content.contains("João da Silva,joao.silva@email.com"));
+        assertTrue(content.contains("usuarioUsername,organizacaoNome,papel,igrejaId"));
+        assertTrue(content.contains("joao.silva@email.com,Pastoral da Comunicação"));
     }
 
     @Test
@@ -92,9 +96,14 @@ class ImportacaoServiceTest {
 
     @Test
     void shouldValidarArquivoCsvComSucessoEErros() throws IOException {
-        String csvContent = "nomeCompleto,email,telefone\n" +
-                "João Silva,joao@email.com,11999999999\n" +
-                ",email_invalido,11888888888\n";
+        when(usuarioJpaRepository.findByUsernameIgnoreCase("joao@email.com"))
+                .thenReturn(Optional.of(new UsuarioEntity()));
+        when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
+                .thenReturn(Optional.of(new OrganizacaoEntity()));
+
+        String csvContent = "usuarioUsername,organizacaoNome,papel\n" +
+                "joao@email.com,Pastoral da Música,COORDENADOR\n" +
+                "desconhecido@email.com,Inexistente,MEMBRO\n";
 
         MockMultipartFile file = new MockMultipartFile("file", "membros.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8));
 
@@ -108,16 +117,23 @@ class ImportacaoServiceTest {
 
     @Test
     void shouldValidarArquivoXlsx() throws IOException {
+        when(usuarioJpaRepository.findByUsernameIgnoreCase("maria@email.com"))
+                .thenReturn(Optional.of(new UsuarioEntity()));
+        when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Catequese"))
+                .thenReturn(Optional.of(new OrganizacaoEntity()));
+
         byte[] xlsxBytes;
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Membros");
             Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("nomeCompleto");
-            header.createCell(1).setCellValue("email");
+            header.createCell(0).setCellValue("usuarioUsername");
+            header.createCell(1).setCellValue("organizacaoNome");
+            header.createCell(2).setCellValue("papel");
 
             Row row1 = sheet.createRow(1);
-            row1.createCell(0).setCellValue("Maria Agostinho");
-            row1.createCell(1).setCellValue("maria@email.com");
+            row1.createCell(0).setCellValue("maria@email.com");
+            row1.createCell(1).setCellValue("Pastoral da Catequese");
+            row1.createCell(2).setCellValue("MEMBRO");
 
             workbook.write(out);
             xlsxBytes = out.toByteArray();
@@ -134,11 +150,20 @@ class ImportacaoServiceTest {
 
     @Test
     void shouldConfirmarImportacaoParaMembroEUsuarioEOrganizacaoEEvento() {
+        var user = new UsuarioEntity();
+        user.setId(UUID.randomUUID());
+        var org = new OrganizacaoEntity();
+        org.setId(UUID.randomUUID());
+
+        when(usuarioJpaRepository.findByUsernameIgnoreCase("joao@email.com"))
+                .thenReturn(Optional.of(user));
+        when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
+                .thenReturn(Optional.of(org));
+
         Map<String, String> membroMap = Map.of(
-                "nomeCompleto", "João da Silva",
-                "email", "joao@email.com",
-                "telefone", "11999998888",
-                "dataNascimento", "20/05/1985"
+                "usuarioUsername", "joao@email.com",
+                "organizacaoNome", "Pastoral da Música",
+                "papel", "COORDENADOR"
         );
         int countMembro = importacaoService.confirmarImportacao("MEMBRO", List.of(membroMap), "admin");
         assertEquals(1, countMembro);
@@ -146,7 +171,7 @@ class ImportacaoServiceTest {
 
         Map<String, String> usuarioMap = Map.of(
                 "nome", "Carlos Eduardo",
-                "username", "carlos.eduardo"
+                "username", "carlos.eduardo@email.com"
         );
         int countUsuario = importacaoService.confirmarImportacao("USUARIO", List.of(usuarioMap), "admin");
         assertEquals(1, countUsuario);

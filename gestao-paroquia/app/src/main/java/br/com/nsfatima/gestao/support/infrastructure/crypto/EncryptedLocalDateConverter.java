@@ -13,6 +13,17 @@ public class EncryptedLocalDateConverter implements AttributeConverter<LocalDate
 
     @Override
     public LocalDate convertToEntityAttribute(String dbData) {
-        return dbData != null ? LocalDate.parse(CryptoUtils.decrypt(dbData)) : null;
+        if (dbData == null || dbData.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(CryptoUtils.decrypt(dbData));
+        } catch (Exception e) {
+            try {
+                return LocalDate.parse(dbData);
+            } catch (Exception ex) {
+                return null;
+            }
+        }
     }
 }

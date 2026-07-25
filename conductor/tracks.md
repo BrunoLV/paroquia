@@ -185,6 +185,13 @@
 - [x] **Track: padronização e modernização de layout da ui, botoes, mensagens, formularios e alertas.**
 *Link: [./archive/padronizacao_ui_modernizacao_20260722/](./archive/padronizacao_ui_modernizacao_20260722/)*
 
+---
+
+- [x] **Track: Unificação do conceito de Membro e Usuário (Membro como vínculo de Usuário com Organização e Papel)**
+*Link: [./archive/unificacao_membro_usuario_20260722/](./archive/unificacao_membro_usuario_20260722/)*
+
+
+
 
 
 

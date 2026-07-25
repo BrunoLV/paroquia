@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 public record RegistrarUsuarioRequest(
@@ -24,7 +23,17 @@ public record RegistrarUsuarioRequest(
     @NotNull(message = "Data de nascimento é obrigatória")
     LocalDate dataNascimento,
 
-    List<SolicitacaoOrganizacaoRequest> organizacoesSolicitadas,
+    @NotNull(message = "Igreja é obrigatória")
+    UUID igrejaId,
 
-    UUID igrejaId
-) {}
+    Boolean batizado,
+    Boolean primeiraComunhao,
+    Boolean crismado,
+    Boolean casadoIgrejaCatolica
+) {
+    public RegistrarUsuarioRequest(String nome, String username, String password, String telefone, LocalDate dataNascimento, UUID igrejaId) {
+        this(nome, username, password, telefone, dataNascimento, igrejaId, false, false, false, false);
+    }
+}
+
+

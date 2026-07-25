@@ -26,7 +26,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Chip,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
+
 import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
 import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
 import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
@@ -113,6 +117,11 @@ const Settings = () => {
   const [adminRegisterTelefone, setAdminRegisterTelefone] = useState('');
   const [adminRegisterDataNascimento, setAdminRegisterDataNascimento] = useState('');
   const [adminRegisterChurchId, setAdminRegisterChurchId] = useState('');
+  const [adminRegisterBatizado, setAdminRegisterBatizado] = useState(false);
+  const [adminRegisterPrimeiraComunhao, setAdminRegisterPrimeiraComunhao] = useState(false);
+  const [adminRegisterCrismado, setAdminRegisterCrismado] = useState(false);
+  const [adminRegisterCasadoIgrejaCatolica, setAdminRegisterCasadoIgrejaCatolica] = useState(false);
+
 
   // Catalog states
   const [poModalOpen, setPoModalOpen] = useState(false);
@@ -311,7 +320,12 @@ const Settings = () => {
       setAdminRegisterTelefone('');
       setAdminRegisterDataNascimento('');
       setAdminRegisterChurchId('');
+      setAdminRegisterBatizado(false);
+      setAdminRegisterPrimeiraComunhao(false);
+      setAdminRegisterCrismado(false);
+      setAdminRegisterCasadoIgrejaCatolica(false);
     },
+
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao cadastrar membro.';
       showError(errMsg);
@@ -945,6 +959,7 @@ const Settings = () => {
                         <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Data de Nascimento</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Sacramentos</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                         <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                       </TableRow>
@@ -957,6 +972,16 @@ const Settings = () => {
                           <TableCell>{u.igrejaNome || '-'}</TableCell>
                           <TableCell>{u.telefone || '-'}</TableCell>
                           <TableCell>{u.dataNascimento || '-'}</TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                              {u.batizado && <Chip label="Batismo" size="small" color="info" variant="outlined" sx={{ borderRadius: 0 }} />}
+                              {u.primeiraComunhao && <Chip label="1ª Comunhão" size="small" color="success" variant="outlined" sx={{ borderRadius: 0 }} />}
+                              {u.crismado && <Chip label="Crisma" size="small" color="secondary" variant="outlined" sx={{ borderRadius: 0 }} />}
+                              {u.casadoIgrejaCatolica && <Chip label="Matrimônio" size="small" color="warning" variant="outlined" sx={{ borderRadius: 0 }} />}
+                              {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
+                            </Box>
+                          </TableCell>
+
                           <TableCell>
                             <Box
                               sx={{
@@ -1580,6 +1605,47 @@ const Settings = () => {
                   ))}
               </Select>
             </FormControl>
+            <Typography variant="subtitle2" sx={{ mt: 1, fontWeight: 600 }}>
+              Indicadores Sacramentais
+            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={adminRegisterBatizado}
+                    onChange={(e) => setAdminRegisterBatizado(e.target.checked)}
+                  />
+                }
+                label="Batizado"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={adminRegisterPrimeiraComunhao}
+                    onChange={(e) => setAdminRegisterPrimeiraComunhao(e.target.checked)}
+                  />
+                }
+                label="1ª Comunhão"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={adminRegisterCrismado}
+                    onChange={(e) => setAdminRegisterCrismado(e.target.checked)}
+                  />
+                }
+                label="Crismado"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={adminRegisterCasadoIgrejaCatolica}
+                    onChange={(e) => setAdminRegisterCasadoIgrejaCatolica(e.target.checked)}
+                  />
+                }
+                label="Casado na Igreja"
+              />
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -1592,6 +1658,10 @@ const Settings = () => {
               setAdminRegisterTelefone('');
               setAdminRegisterDataNascimento('');
               setAdminRegisterChurchId('');
+              setAdminRegisterBatizado(false);
+              setAdminRegisterPrimeiraComunhao(false);
+              setAdminRegisterCrismado(false);
+              setAdminRegisterCasadoIgrejaCatolica(false);
             }}
             color="inherit"
           >
@@ -1617,10 +1687,15 @@ const Settings = () => {
                 telefone: adminRegisterTelefone,
                 dataNascimento: adminRegisterDataNascimento,
                 igrejaId: adminRegisterChurchId,
+                batizado: adminRegisterBatizado,
+                primeiraComunhao: adminRegisterPrimeiraComunhao,
+                crismado: adminRegisterCrismado,
+                casadoIgrejaCatolica: adminRegisterCasadoIgrejaCatolica,
               });
             }}
             sx={{ borderRadius: 0, fontWeight: 600 }}
           >
+
             {registerUserMutation.isPending ? 'Cadastrando...' : 'Cadastrar'}
           </Button>
         </DialogActions>

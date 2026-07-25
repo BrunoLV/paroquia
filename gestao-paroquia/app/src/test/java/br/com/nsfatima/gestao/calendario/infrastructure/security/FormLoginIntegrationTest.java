@@ -62,6 +62,21 @@ class FormLoginIntegrationTest {
     }
 
     @Test
+    void shouldRejectDisabledUserWithApprovalRequired() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  \"username\": \"usuario.inativo\",
+                                  \"password\": \"senha123\"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("APPROVAL_REQUIRED"))
+                .andExpect(jsonPath("$.message").value("Cadastro pendente de aprovacao por um administrador."));
+    }
+
+    @Test
     void shouldInvalidateSessionOnLogout() throws Exception {
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

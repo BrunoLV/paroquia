@@ -76,11 +76,13 @@ public class MembroController {
      * Exemplo: GET /api/v1/membros?nome=Maria&ativo=true&page=0&size=20
      */
     public Page<MembroResponse> list(
-            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) UUID organizacaoId,
+            @RequestParam(required = false) UUID usuarioId,
             @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 20) Pageable pageable) {
-        return listMembrosUseCase.execute(nome, ativo, pageable);
+        return listMembrosUseCase.execute(organizacaoId, usuarioId, ativo, pageable);
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

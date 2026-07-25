@@ -3,17 +3,14 @@ package br.com.nsfatima.gestao.membro.api.v1.dto;
 import java.time.LocalDate;
 import java.util.UUID;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
 public record MembroRequest(
-        @NotBlank @Size(max = 255) String nomeCompleto,
-        LocalDate dataNascimento,
-        @Size(max = 255) String email,
-        @Size(max = 20) String telefone,
-        @Size(max = 500) String endereco,
-        UUID usuarioId,
-        LocalDate dataBatismo,
-        String localBatismo,
-        LocalDate dataCrisma,
-        LocalDate dataMatrimonio) {
+        @NotNull(message = "Usuário é obrigatório") UUID usuarioId,
+        @NotNull(message = "Organização é obrigatória") UUID organizacaoId,
+        @NotBlank(message = "Papel é obrigatório") String papel,
+        LocalDate dataEntrada,
+        UUID igrejaId,
+        Boolean ativo
+) {
 }

@@ -3,26 +3,25 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 import java.util.List;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class ListUsuariosUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
-    private final MembroJpaRepository membroRepository;
-    private final br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListUsuariosUseCase(
             UsuarioJpaRepository usuarioRepository,
-            MembroJpaRepository membroRepository,
-            br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository) {
+            OrganizacaoJpaRepository organizacaoRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.membroRepository = membroRepository;
         this.organizacaoRepository = organizacaoRepository;
     }
 
@@ -30,24 +29,11 @@ public class ListUsuariosUseCase {
     public List<UsuarioResponse> execute() {
         return usuarioRepository.findAll().stream()
                 .map(u -> {
-                    String nome = u.getNome();
-                    String telefone = u.getTelefone();
-                    java.time.LocalDate dataNascimento = u.getDataNascimento();
-
-                    if (nome == null || nome.trim().isEmpty()) {
-                        var membroOpt = membroRepository.findByUsuarioId(u.getId());
-                        if (membroOpt.isPresent()) {
-                            nome = membroOpt.get().getNomeCompleto();
-                            telefone = membroOpt.get().getTelefone();
-                            dataNascimento = membroOpt.get().getDataNascimento();
-                        }
-                    }
-
-                    java.util.UUID igrejaId = u.getIgrejaId();
+                    UUID igrejaId = u.getIgrejaId();
                     String igrejaNome = null;
                     if (igrejaId != null) {
                         igrejaNome = organizacaoRepository.findById(igrejaId)
-                                .map(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity::getNome)
+                                .map(OrganizacaoEntity::getNome)
                                 .orElse(null);
                     }
 
@@ -58,11 +44,16 @@ public class ListUsuariosUseCase {
                             u.getRoles() == null ? List.of()
                                     : Arrays.stream(u.getRoles().split(",")).map(String::trim).collect(Collectors.toList()),
                             List.of(),
-                            nome,
-                            telefone,
-                            dataNascimento,
+                            u.getNome(),
+                            u.getTelefone(),
+                            u.getDataNascimento(),
                             igrejaId,
-                            igrejaNome);
+                            igrejaNome,
+                            u.isBatizado(),
+                            u.isPrimeiraComunhao(),
+                            u.isCrismado(),
+                            u.isCasadoIgrejaCatolica());
+
                 })
                 .toList();
     }

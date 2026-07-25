@@ -29,6 +29,9 @@ class UsuarioRegistrationIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoJpaRepository;
+
     @Test
     void shouldRegisterNewUserAsDisabledAndEncrypted() throws Exception {
         br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity igreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
@@ -47,8 +50,7 @@ class UsuarioRegistrationIntegrationTest {
                     "password": "SecretPassword123",
                     "telefone": "11988888888",
                     "dataNascimento": "1990-05-15",
-                    "igrejaId": "%s",
-                    "organizacoesSolicitadas": []
+                    "igrejaId": "%s"
                 }
                 """.formatted(username, igrejaId);
 
@@ -76,19 +78,8 @@ class UsuarioRegistrationIntegrationTest {
         assertNotEquals("João da Silva", rawNome);
     }
 
-    @Autowired
-    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoJpaRepository;
-
     @Test
-    void shouldFailRegistrationWhenPastoralIsRequestedWithoutIgrejaVinculo() throws Exception {
-        br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity org = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
-        UUID orgId = UUID.randomUUID();
-        org.setId(orgId);
-        org.setNome("Pastoral Teste Validation " + UUID.randomUUID());
-        org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
-        org.setAtivo(true);
-        organizacaoJpaRepository.save(org);
-
+    void shouldFailRegistrationWhenIgrejaIsMissing() throws Exception {
         String username = "test.fail.reg." + UUID.randomUUID() + "@example.com";
         String body = """
                 {
@@ -96,15 +87,9 @@ class UsuarioRegistrationIntegrationTest {
                     "username": "%s",
                     "password": "SecretPassword123",
                     "telefone": "11988888888",
-                    "dataNascimento": "1990-05-15",
-                    "organizacoesSolicitadas": [
-                        {
-                            "organizacaoId": "%s",
-                            "igrejaVinculoId": null
-                        }
-                    ]
+                    "dataNascimento": "1990-05-15"
                 }
-                """.formatted(username, orgId);
+                """.formatted(username);
 
         mockMvc.perform(post("/api/v1/usuarios/registrar")
                         .contentType(MediaType.APPLICATION_JSON)

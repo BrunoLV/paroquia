@@ -44,12 +44,7 @@ public class ListOrganizacaoMembrosUseCase {
                 .map(m -> {
                     String userNome = usuarioRepository.findById(m.getUsuarioId())
                             .map(u -> u.getNome())
-                            .orElse(null);
-                    if (userNome == null || userNome.trim().isEmpty()) {
-                        userNome = membroRepository.findByUsuarioId(m.getUsuarioId())
-                                .map(me -> me.getNomeCompleto())
-                                .orElse("Usuário Desconhecido");
-                    }
+                            .orElse("Usuário Desconhecido");
                     return new OrganizacaoMembroResponse(
                             m.getId(),
                             m.getUsuarioId(),
@@ -87,14 +82,6 @@ public class ListOrganizacaoMembrosUseCase {
                 .findFirst()
                 .orElse(null);
 
-        if (userId == null) {
-            userId = membroRepository.findAll().stream()
-                    .filter(m -> name.equalsIgnoreCase(m.getNomeCompleto()))
-                    .map(br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity::getUsuarioId)
-                    .findFirst()
-                    .orElse(null);
-        }
-
         if (userId != null) {
             list.add(new OrganizacaoMembroResponse(
                     UUID.randomUUID(), // dummy membership ID
@@ -105,4 +92,5 @@ public class ListOrganizacaoMembrosUseCase {
             ));
         }
     }
+
 }

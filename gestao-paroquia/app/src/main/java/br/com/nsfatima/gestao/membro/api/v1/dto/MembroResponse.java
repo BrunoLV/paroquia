@@ -5,15 +5,15 @@ import java.util.UUID;
 
 public record MembroResponse(
         UUID id,
-        String nomeCompleto,
-        LocalDate dataNascimento,
-        String email,
-        String telefone,
-        String endereco,
         UUID usuarioId,
+        String usuarioNome,
+        String usuarioEmail,
+        String usuarioTelefone,
+        UUID organizacaoId,
+        String organizacaoNome,
+        String papel,
+        LocalDate dataEntrada,
         boolean ativo,
-        LocalDate dataBatismo,
-        String localBatismo,
-        LocalDate dataCrisma,
-        LocalDate dataMatrimonio) {
+        UUID igrejaId
+) {
 }

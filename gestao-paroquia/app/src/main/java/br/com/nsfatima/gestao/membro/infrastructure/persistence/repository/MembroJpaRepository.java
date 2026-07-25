@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -15,13 +17,21 @@ public interface MembroJpaRepository extends JpaRepository<MembroEntity, UUID> {
 
     @Query("""
             SELECT m FROM MembroEntity m
-            WHERE (:nome IS NULL OR LOWER(m.nomeCompleto) LIKE LOWER(CONCAT('%', :nome, '%')))
+            WHERE (:organizacaoId IS NULL OR m.organizacaoId = :organizacaoId)
+            AND (:usuarioId IS NULL OR m.usuarioId = :usuarioId)
             AND (:ativo IS NULL OR m.ativo = :ativo)
             """)
     Page<MembroEntity> findByFiltros(
-            @Param("nome") String nome,
+            @Param("organizacaoId") UUID organizacaoId,
+            @Param("usuarioId") UUID usuarioId,
             @Param("ativo") Boolean ativo,
             Pageable pageable);
 
-    java.util.Optional<MembroEntity> findByUsuarioId(UUID usuarioId);
+    Optional<MembroEntity> findByUsuarioIdAndOrganizacaoId(UUID usuarioId, UUID organizacaoId);
+
+    Optional<MembroEntity> findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(UUID usuarioId, UUID organizacaoId);
+
+    List<MembroEntity> findByUsuarioId(UUID usuarioId);
+
+    List<MembroEntity> findByOrganizacaoId(UUID organizacaoId);
 }

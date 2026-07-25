@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface OrganizacaoJpaRepository extends JpaRepository<OrganizacaoEntity, UUID> {
+    java.util.Optional<OrganizacaoEntity> findByNomeIgnoreCase(String nome);
 }
+

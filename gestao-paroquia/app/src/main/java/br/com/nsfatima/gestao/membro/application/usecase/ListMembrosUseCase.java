@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class ListMembrosUseCase {
 
@@ -20,13 +22,8 @@ public class ListMembrosUseCase {
     }
 
     @Transactional(readOnly = true)
-    /**
-     * Executa a listagem filtrada e paginada de membros para possibilitar a gestão eficiente e organizada do cadastro paroquial.
-     * 
-     * Exemplo: useCase.execute("Maria", true, pageable)
-     */
-    public Page<MembroResponse> execute(String nome, Boolean ativo, Pageable pageable) {
-        return repository.findByFiltros(nome, ativo, pageable)
+    public Page<MembroResponse> execute(UUID organizacaoId, UUID usuarioId, Boolean ativo, Pageable pageable) {
+        return repository.findByFiltros(organizacaoId, usuarioId, ativo, pageable)
                 .map(mapper::toResponse);
     }
 }

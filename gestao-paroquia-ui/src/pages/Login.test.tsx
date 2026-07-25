@@ -130,8 +130,13 @@ test('shows toast validation errors when submitting empty form', async () => {
 });
 
 test('toggles to signup form and submits registration', async () => {
+  const mockOrgs: Organizacao[] = [
+    { id: 'matriz-id', nome: 'Igreja Matriz', tipo: 'MATRIZ', contato: null, ativo: true },
+    { id: 'comunidade-id', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: null, ativo: true }
+  ];
+
   mockedApiClient.get.mockResolvedValueOnce({ data: null }); // for auth check
-  mockedApiClient.get.mockResolvedValueOnce({ data: [] }); // for organizations list
+  mockedApiClient.get.mockResolvedValueOnce({ data: mockOrgs }); // for organizations list
   mockedApiClient.post.mockResolvedValueOnce({ data: 'new-user-uuid' }); // for signup post
 
   await act(async () => {
@@ -167,80 +172,16 @@ test('toggles to signup form and submits registration', async () => {
   fireEvent.change(screen.getByLabelText(/Data de Nascimento/i), { target: { value: '1995-12-10' } });
 
   const registerSubmitButton = screen.getByRole('button', { name: /Cadastrar/i });
+
+  // Try submitting without selecting churchId
   await act(async () => {
     fireEvent.click(registerSubmitButton);
   });
 
-  expect(mockedApiClient.post).toHaveBeenCalledWith('/usuarios/registrar', {
-    nome: 'João Teste',
-    username: 'joao@test.com',
-    password: 'pass123',
-    telefone: '11999999999',
-    dataNascimento: '1995-12-10',
-    organizacoesSolicitadas: []
-  });
+  expect(mockShowError).toHaveBeenCalledWith('A igreja / comunidade é obrigatória.');
 
-  expect(mockShowSuccess).toHaveBeenCalledWith(
-    'Cadastro solicitado com sucesso! Aguarde a aprovação de um administrador.'
-  );
-});
-
-test('demands church link selection when registering with pastorals', async () => {
-  const mockOrgs: Organizacao[] = [
-    { id: 'matriz-id', nome: 'Igreja Matriz', tipo: 'MATRIZ', contato: null, ativo: true },
-    { id: 'comunidade-id', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: null, ativo: true },
-    { id: 'pastoral-id', nome: 'Pastoral da Juventude', tipo: 'PASTORAL', contato: null, ativo: true }
-  ];
-
-  mockedApiClient.get.mockResolvedValueOnce({ data: null }); // for auth check
-  mockedApiClient.get.mockResolvedValueOnce({ data: mockOrgs }); // for organizations list
-  mockedApiClient.post.mockResolvedValueOnce({ data: 'new-user-uuid' }); // for signup post
-
-  await act(async () => {
-    render(
-      <BrowserRouter>
-        <AuthProvider>
-          <ThemeProvider theme={theme}>
-            <Login />
-          </ThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    );
-  });
-
-  // Toggle to register form
-  const registerLink = screen.getByRole('button', { name: /Não tem uma conta\? Cadastre-se/i });
-  await act(async () => {
-    fireEvent.click(registerLink);
-  });
-
-  // Fill standard fields
-  fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'João Teste' } });
-  fireEvent.change(screen.getByLabelText(/E-mail/i), { target: { value: 'joao@test.com' } });
-  fireEvent.change(screen.getByLabelText(/Senha/i, { selector: '#signup-password' }), { target: { value: 'pass123' } });
-  fireEvent.change(screen.getByLabelText(/Confirmar Senha/i), { target: { value: 'pass123' } });
-  fireEvent.change(screen.getByLabelText(/Telefone/i), { target: { value: '11999999999' } });
-  fireEvent.change(screen.getByLabelText(/Data de Nascimento/i), { target: { value: '1995-12-10' } });
-
-  // Simulate selecting Pastoral da Juventude
-  const orgsSelect = screen.getByTestId('orgs-select');
-  await act(async () => {
-    fireEvent.change(orgsSelect, { target: { value: ['pastoral-id'] } });
-  });
-
-  // Now, the church selection dropdown for Pastoral da Juventude should appear
-  expect(screen.getByTestId('church-select-pastoral-id')).toBeInTheDocument();
-
-  // Try submitting without selecting the church
-  const registerSubmitButton = screen.getByRole('button', { name: /Cadastrar/i });
-  await act(async () => {
-    fireEvent.click(registerSubmitButton);
-  });
-
-  expect(mockShowError).toHaveBeenCalledWith('Selecione a igreja de atuação para Pastoral da Juventude');
-
-  // Select the church (Igreja Matriz)
-  const churchSelect = screen.getByTestId('church-select-pastoral-id');
+  // Select churchId
+  const churchSelect = screen.getByTestId('signup-church-select');
   await act(async () => {
     fireEvent.change(churchSelect, { target: { value: 'matriz-id' } });
   });
@@ -256,10 +197,16 @@ test('demands church link selection when registering with pastorals', async () =
     password: 'pass123',
     telefone: '11999999999',
     dataNascimento: '1995-12-10',
-    organizacoesSolicitadas: [
-      { organizacaoId: 'pastoral-id', igrejaVinculoId: 'matriz-id' }
-    ]
+    igrejaId: 'matriz-id',
+    batizado: false,
+    primeiraComunhao: false,
+    crismado: false,
+    casadoIgrejaCatolica: false
   });
+
+  expect(mockShowSuccess).toHaveBeenCalledWith(
+    'Cadastro solicitado com sucesso! Aguarde a aprovação de um administrador.'
+  );
 });
 
 test('renders layout wrapper with vertical centering, full viewport height, and scroll support', async () => {

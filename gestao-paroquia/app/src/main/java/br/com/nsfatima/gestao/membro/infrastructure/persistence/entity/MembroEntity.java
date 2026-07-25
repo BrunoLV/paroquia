@@ -15,39 +15,23 @@ public class MembroEntity extends BaseVersionedEntity {
     @Id
     private UUID id;
 
-    @Column(name = "nome_completo", nullable = false, length = 255)
-    private String nomeCompleto;
-
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
-
-    @Column(length = 255)
-    private String email;
-
-    @Column(length = 20)
-    private String telefone;
-
-    @Column(length = 500)
-    private String endereco;
-
-    @Column(name = "usuario_id")
+    @Column(name = "usuario_id", nullable = false)
     private UUID usuarioId;
+
+    @Column(name = "organizacao_id", nullable = false)
+    private UUID organizacaoId;
+
+    @Column(name = "papel", nullable = false, length = 64)
+    private String papel;
+
+    @Column(name = "data_entrada")
+    private LocalDate dataEntrada;
 
     @Column(nullable = false)
     private boolean ativo = true;
 
-    // Campos sacramentais
-    @Column(name = "data_batismo")
-    private LocalDate dataBatismo;
-
-    @Column(name = "local_batismo", length = 255)
-    private String localBatismo;
-
-    @Column(name = "data_crisma")
-    private LocalDate dataCrisma;
-
-    @Column(name = "data_matrimonio")
-    private LocalDate dataMatrimonio;
+    @Column(name = "igreja_id")
+    private UUID igrejaId;
 
     public UUID getId() {
         return id;
@@ -55,46 +39,6 @@ public class MembroEntity extends BaseVersionedEntity {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getNomeCompleto() {
-        return nomeCompleto;
-    }
-
-    public void setNomeCompleto(String nomeCompleto) {
-        this.nomeCompleto = nomeCompleto;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
     }
 
     public UUID getUsuarioId() {
@@ -105,6 +49,30 @@ public class MembroEntity extends BaseVersionedEntity {
         this.usuarioId = usuarioId;
     }
 
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
+    }
+
+    public void setOrganizacaoId(UUID organizacaoId) {
+        this.organizacaoId = organizacaoId;
+    }
+
+    public String getPapel() {
+        return papel;
+    }
+
+    public void setPapel(String papel) {
+        this.papel = papel;
+    }
+
+    public LocalDate getDataEntrada() {
+        return dataEntrada;
+    }
+
+    public void setDataEntrada(LocalDate dataEntrada) {
+        this.dataEntrada = dataEntrada;
+    }
+
     public boolean isAtivo() {
         return ativo;
     }
@@ -113,35 +81,11 @@ public class MembroEntity extends BaseVersionedEntity {
         this.ativo = ativo;
     }
 
-    public LocalDate getDataBatismo() {
-        return dataBatismo;
+    public UUID getIgrejaId() {
+        return igrejaId;
     }
 
-    public void setDataBatismo(LocalDate dataBatismo) {
-        this.dataBatismo = dataBatismo;
-    }
-
-    public String getLocalBatismo() {
-        return localBatismo;
-    }
-
-    public void setLocalBatismo(String localBatismo) {
-        this.localBatismo = localBatismo;
-    }
-
-    public LocalDate getDataCrisma() {
-        return dataCrisma;
-    }
-
-    public void setDataCrisma(LocalDate dataCrisma) {
-        this.dataCrisma = dataCrisma;
-    }
-
-    public LocalDate getDataMatrimonio() {
-        return dataMatrimonio;
-    }
-
-    public void setDataMatrimonio(LocalDate dataMatrimonio) {
-        this.dataMatrimonio = dataMatrimonio;
+    public void setIgrejaId(UUID igrejaId) {
+        this.igrejaId = igrejaId;
     }
 }

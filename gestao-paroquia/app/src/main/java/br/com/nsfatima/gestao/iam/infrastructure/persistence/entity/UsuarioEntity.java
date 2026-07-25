@@ -45,6 +45,18 @@ public class UsuarioEntity extends BaseVersionedEntity {
     @Column(name = "igreja_id")
     private UUID igrejaId;
 
+    @Column(name = "batizado", nullable = false)
+    private boolean batizado = false;
+
+    @Column(name = "primeira_comunhao", nullable = false)
+    private boolean primeiraComunhao = false;
+
+    @Column(name = "crismado", nullable = false)
+    private boolean crismado = false;
+
+    @Column(name = "casado_igreja_catolica", nullable = false)
+    private boolean casadoIgrejaCatolica = false;
+
     public UUID getId() {
         return id;
     }
@@ -116,4 +128,37 @@ public class UsuarioEntity extends BaseVersionedEntity {
     public void setIgrejaId(UUID igrejaId) {
         this.igrejaId = igrejaId;
     }
+
+    public boolean isBatizado() {
+        return batizado;
+    }
+
+    public void setBatizado(boolean batizado) {
+        this.batizado = batizado;
+    }
+
+    public boolean isPrimeiraComunhao() {
+        return primeiraComunhao;
+    }
+
+    public void setPrimeiraComunhao(boolean primeiraComunhao) {
+        this.primeiraComunhao = primeiraComunhao;
+    }
+
+    public boolean isCrismado() {
+        return crismado;
+    }
+
+    public void setCrismado(boolean crismado) {
+        this.crismado = crismado;
+    }
+
+    public boolean isCasadoIgrejaCatolica() {
+        return casadoIgrejaCatolica;
+    }
+
+    public void setCasadoIgrejaCatolica(boolean casadoIgrejaCatolica) {
+        this.casadoIgrejaCatolica = casadoIgrejaCatolica;
+    }
 }
+

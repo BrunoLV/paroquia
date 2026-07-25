@@ -16,13 +16,18 @@ public record UsuarioResponse(
     String telefone,
     LocalDate dataNascimento,
     UUID igrejaId,
-    String igrejaNome
+    String igrejaNome,
+    boolean batizado,
+    boolean primeiraComunhao,
+    boolean crismado,
+    boolean casadoIgrejaCatolica
 ) {
     public UsuarioResponse(UUID id, String username, boolean enabled, Collection<String> roles) {
-        this(id, username, enabled, roles, List.of(), null, null, null, null, null);
+        this(id, username, enabled, roles, List.of(), null, null, null, null, null, false, false, false, false);
     }
 
     public UsuarioResponse(UUID id, String username, boolean enabled, Collection<String> roles, Collection<OrganizacaoResponse> organizations) {
-        this(id, username, enabled, roles, organizations, null, null, null, null, null);
+        this(id, username, enabled, roles, organizations, null, null, null, null, null, false, false, false, false);
     }
 }
+

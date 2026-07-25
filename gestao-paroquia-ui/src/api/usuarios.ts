@@ -9,6 +9,10 @@ export interface Usuario {
   enabled: boolean;
   igrejaId?: string;
   igrejaNome?: string;
+  batizado?: boolean;
+  primeiraComunhao?: boolean;
+  crismado?: boolean;
+  casadoIgrejaCatolica?: boolean;
 }
 
 export interface MembershipResponse {
@@ -67,11 +71,6 @@ export const removeMembership = async (userId: string, membershipId: string): Pr
   await apiClient.delete(`/usuarios/${userId}/membros/${membershipId}`);
 };
 
-export interface SolicitacaoOrganizacaoRequest {
-  organizacaoId: string;
-  igrejaVinculoId?: string | null;
-}
-
 export interface RegistrarUsuarioRequest {
   nome: string;
   username: string;
@@ -79,11 +78,14 @@ export interface RegistrarUsuarioRequest {
   telefone: string;
   dataNascimento: string;
   igrejaId: string;
-  organizacoesSolicitadas?: SolicitacaoOrganizacaoRequest[];
+  batizado?: boolean;
+  primeiraComunhao?: boolean;
+  crismado?: boolean;
+  casadoIgrejaCatolica?: boolean;
 }
 
 /**
- * Registra um novo usuário com solicitações de participação em pastorais/movimentos.
+ * Registra um novo usuário no sistema.
  */
 export const registrarUsuario = async (request: RegistrarUsuarioRequest): Promise<string> => {
   const response = await apiClient.post<string>('/usuarios/registrar', request);

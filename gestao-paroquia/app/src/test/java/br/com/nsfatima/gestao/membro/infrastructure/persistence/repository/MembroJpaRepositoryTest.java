@@ -2,8 +2,9 @@ package br.com.nsfatima.gestao.membro.infrastructure.persistence.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
-import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,58 +21,77 @@ class MembroJpaRepositoryTest {
     @Autowired
     private MembroJpaRepository repository;
 
+    @Autowired
+    private UsuarioJpaRepository usuarioRepository;
+
     @Test
     @DisplayName("Deve salvar e buscar um membro por ID")
     void deveSalvarEBuscarMembro() {
+        UsuarioEntity usuario = createUsuario();
         UUID id = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+
         MembroEntity membro = new MembroEntity();
         membro.setId(id);
-        membro.setNomeCompleto("João da Silva");
-        membro.setDataNascimento(LocalDate.of(1980, 5, 15));
+        membro.setUsuarioId(usuario.getId());
+        membro.setOrganizacaoId(organizacaoId);
+        membro.setPapel("COORDENADOR");
         membro.setAtivo(true);
 
         repository.save(membro);
 
         MembroEntity found = repository.findById(id).orElseThrow();
-        assertThat(found.getNomeCompleto()).isEqualTo("João da Silva");
-        assertThat(found.getDataNascimento()).isEqualTo(LocalDate.of(1980, 5, 15));
+        assertThat(found.getUsuarioId()).isEqualTo(usuario.getId());
+        assertThat(found.getOrganizacaoId()).isEqualTo(organizacaoId);
+        assertThat(found.getPapel()).isEqualTo("COORDENADOR");
     }
 
     @Test
-    @DisplayName("Deve filtrar membros por nome")
-    void deveFiltrarPorNome() {
-        createMembro("Alice Oliveira");
-        createMembro("Bob Silva");
-        createMembro("Carlos Oliveira");
+    @DisplayName("Deve filtrar membros por organizacaoId")
+    void deveFiltrarPorOrganizacaoId() {
+        UUID org1 = UUID.randomUUID();
+        UUID org2 = UUID.randomUUID();
 
-        Page<MembroEntity> result = repository.findByFiltros("Oliveira", null, PageRequest.of(0, 10));
+        createMembro(createUsuario().getId(), org1);
+        createMembro(createUsuario().getId(), org1);
+        createMembro(createUsuario().getId(), org2);
+
+        Page<MembroEntity> result = repository.findByFiltros(org1, null, null, PageRequest.of(0, 10));
 
         assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getContent()).extracting(MembroEntity::getNomeCompleto)
-                .containsExactlyInAnyOrder("Alice Oliveira", "Carlos Oliveira");
     }
 
     @Test
     @DisplayName("Deve filtrar membros por status ativo")
     void deveFiltrarPorAtivo() {
-        MembroEntity m1 = createMembro("Ativo");
-        MembroEntity m2 = createMembro("Inativo");
+        UUID orgId = UUID.randomUUID();
+        MembroEntity m1 = createMembro(createUsuario().getId(), orgId);
+        MembroEntity m2 = createMembro(createUsuario().getId(), orgId);
         m2.setAtivo(false);
         repository.save(m2);
 
-        Page<MembroEntity> ativos = repository.findByFiltros(null, true, PageRequest.of(0, 10));
-        Page<MembroEntity> inativos = repository.findByFiltros(null, false, PageRequest.of(0, 10));
+        Page<MembroEntity> ativos = repository.findByFiltros(null, null, true, PageRequest.of(0, 10));
+        Page<MembroEntity> inativos = repository.findByFiltros(null, null, false, PageRequest.of(0, 10));
 
         assertThat(ativos.getContent()).hasSize(1);
-        assertThat(ativos.getContent().getFirst().getNomeCompleto()).isEqualTo("Ativo");
         assertThat(inativos.getContent()).hasSize(1);
-        assertThat(inativos.getContent().getFirst().getNomeCompleto()).isEqualTo("Inativo");
     }
 
-    private MembroEntity createMembro(String nome) {
+    private UsuarioEntity createUsuario() {
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(UUID.randomUUID());
+        usuario.setUsername("user_" + UUID.randomUUID() + "@test.com");
+        usuario.setPasswordHash("hash");
+        usuario.setNome("Usuario Teste");
+        return usuarioRepository.save(usuario);
+    }
+
+    private MembroEntity createMembro(UUID usuarioId, UUID organizacaoId) {
         MembroEntity membro = new MembroEntity();
         membro.setId(UUID.randomUUID());
-        membro.setNomeCompleto(nome);
+        membro.setUsuarioId(usuarioId);
+        membro.setOrganizacaoId(organizacaoId);
+        membro.setPapel("MEMBRO");
         membro.setAtivo(true);
         return repository.save(membro);
     }

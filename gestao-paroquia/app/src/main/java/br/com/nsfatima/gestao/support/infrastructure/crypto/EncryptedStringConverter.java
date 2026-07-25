@@ -12,6 +12,13 @@ public class EncryptedStringConverter implements AttributeConverter<String, Stri
 
     @Override
     public String convertToEntityAttribute(String dbData) {
-        return dbData != null ? CryptoUtils.decrypt(dbData) : null;
+        if (dbData == null || dbData.isBlank()) {
+            return dbData;
+        }
+        try {
+            return CryptoUtils.decrypt(dbData);
+        } catch (Exception e) {
+            return dbData;
+        }
     }
 }

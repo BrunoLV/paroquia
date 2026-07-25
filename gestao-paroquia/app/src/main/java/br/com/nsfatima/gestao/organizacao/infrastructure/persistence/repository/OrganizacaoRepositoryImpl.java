@@ -100,14 +100,10 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 .map(m -> {
                     String name = usuarioRepository.findById(m.getUsuarioId())
                             .map(u -> u.getNome())
-                            .orElse(null);
-                    if (name != null && !name.trim().isEmpty()) {
-                        return name;
-                    }
-                    return membroRepository.findByUsuarioId(m.getUsuarioId())
-                            .map(me -> me.getNomeCompleto())
                             .orElse(fallback);
+                    return (name != null && !name.trim().isEmpty()) ? name : fallback;
                 })
                 .orElse(fallback);
     }
+
 }

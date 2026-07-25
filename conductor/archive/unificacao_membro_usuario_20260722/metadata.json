@@ -1,0 +1,8 @@
+{
+  "track_id": "unificacao_membro_usuario_20260722",
+  "type": "refactor",
+  "status": "new",
+  "created_at": "2026-07-22T18:59:50Z",
+  "updated_at": "2026-07-22T18:59:50Z",
+  "description": "Unificação do conceito de Membro e Usuário (Membro como vínculo de Usuário com Organização e Papel)"
+}

@@ -11,10 +11,9 @@ import {
   InputLabel,
   FormControl,
   Checkbox,
-  ListItemText,
-  OutlinedInput,
-  SelectChangeEvent
+  FormControlLabel
 } from '@mui/material';
+
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
@@ -36,9 +35,13 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [telefone, setTelefone] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
-  const [selectedOrgs, setSelectedOrgs] = useState<string[]>([]);
+  const [churchId, setChurchId] = useState('');
+  const [batizado, setBatizado] = useState(false);
+  const [primeiraComunhao, setPrimeiraComunhao] = useState(false);
+  const [crismado, setCrismado] = useState(false);
+  const [casadoIgrejaCatolica, setCasadoIgrejaCatolica] = useState(false);
+
   const [availableOrgs, setAvailableOrgs] = useState<Organizacao[]>([]);
-  const [churchSelections, setChurchSelections] = useState<Record<string, string>>({});
 
   const [isLoading, setIsLoading] = useState(false);
   const { showError, showSuccess } = useNotification();
@@ -77,7 +80,8 @@ const Login = () => {
       await login(username, password);
       navigate(from, { replace: true });
     } catch (err: any) {
-      showError('Falha ao entrar. Verifique suas credenciais.');
+      const errMsg = err.response?.data?.message || 'Falha ao entrar. Verifique suas credenciais.';
+      showError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -110,21 +114,9 @@ const Login = () => {
       showError('A data de nascimento é obrigatória.');
       return;
     }
-
-    // Validate church links
-    const solicitacoes = [];
-    for (const orgId of selectedOrgs) {
-      const org = availableOrgs.find(o => o.id === orgId);
-      if (org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO')) {
-        const churchId = churchSelections[orgId];
-        if (!churchId) {
-          showError(`Selecione a igreja de atuação para ${org.nome}`);
-          return;
-        }
-        solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: churchId });
-      } else {
-        solicitacoes.push({ organizacaoId: orgId, igrejaVinculoId: null });
-      }
+    if (!churchId) {
+      showError('A igreja / comunidade é obrigatória.');
+      return;
     }
 
     setIsLoading(true);
@@ -136,7 +128,11 @@ const Login = () => {
         password: signupPassword,
         telefone,
         dataNascimento,
-        organizacoesSolicitadas: solicitacoes
+        igrejaId: churchId,
+        batizado,
+        primeiraComunhao,
+        crismado,
+        casadoIgrejaCatolica
       });
 
       showSuccess('Cadastro solicitado com sucesso! Aguarde a aprovação de um administrador.');
@@ -149,32 +145,18 @@ const Login = () => {
       setConfirmPassword('');
       setTelefone('');
       setDataNascimento('');
-      setSelectedOrgs([]);
-      setChurchSelections({});
+      setChurchId('');
+      setBatizado(false);
+      setPrimeiraComunhao(false);
+      setCrismado(false);
+      setCasadoIgrejaCatolica(false);
+
     } catch (err: any) {
       const errMsg = err.response?.data?.message || 'Falha ao realizar cadastro. Tente novamente.';
       showError(errMsg);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleOrgChange = (event: SelectChangeEvent<typeof selectedOrgs>) => {
-    const {
-      target: { value },
-    } = event;
-    const nextOrgs = typeof value === 'string' ? value.split(',') : value;
-    setSelectedOrgs(nextOrgs);
-
-    setChurchSelections(prev => {
-      const updated = { ...prev };
-      Object.keys(updated).forEach(id => {
-        if (!nextOrgs.includes(id)) {
-          delete updated[id];
-        }
-      });
-      return updated;
-    });
   };
 
   return (
@@ -327,64 +309,67 @@ const Login = () => {
                 value={dataNascimento}
                 onChange={(e) => setDataNascimento(e.target.value)}
               />
-
-               <FormControl fullWidth margin="normal">
-                <InputLabel id="orgs-label">Pastorais/Movimentos Desejados</InputLabel>
+              <FormControl fullWidth margin="normal" required>
+                <InputLabel id="signup-church-label">Igreja / Comunidade</InputLabel>
                 <Select
-                  labelId="orgs-label"
-                  id="orgs"
-                  multiple
-                  value={selectedOrgs}
-                  onChange={handleOrgChange}
-                  input={<OutlinedInput label="Pastorais/Movimentos Desejados" />}
-                  inputProps={{ 'data-testid': 'orgs-select' }}
-                  renderValue={(selected) => 
-                    selected
-                      .map((id) => availableOrgs.find((o) => o.id === id)?.nome || '')
-                      .join(', ')
-                  }
+                  labelId="signup-church-label"
+                  id="signup-church"
+                  value={churchId}
+                  label="Igreja / Comunidade"
+                  onChange={(e) => setChurchId(e.target.value)}
+                  inputProps={{ 'data-testid': 'signup-church-select' }}
                 >
                   {availableOrgs
-                    .filter((org) => org.tipo !== 'MATRIZ' && org.tipo !== 'COMUNIDADE') // Don't show Matriz/Comunidade as selectable pastorals!
-                    .map((org) => (
-                      <MenuItem key={org.id} value={org.id}>
-                        <Checkbox checked={selectedOrgs.indexOf(org.id) > -1} />
-                        <ListItemText primary={org.nome} secondary={org.tipo} />
+                    .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
+                    .map((o) => (
+                      <MenuItem key={o.id} value={o.id}>
+                        {o.nome} ({o.tipo === 'MATRIZ' ? 'Matriz' : 'Comunidade'})
                       </MenuItem>
                     ))}
                 </Select>
               </FormControl>
 
-              {selectedOrgs
-                .map((id) => availableOrgs.find((o) => o.id === id))
-                .filter((org): org is Organizacao => !!org && (org.tipo === 'PASTORAL' || org.tipo === 'MOVIMENTO'))
-                .map((org) => {
-                  const activeChurches = availableOrgs.filter(
-                    (o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE')
-                  );
-                  return (
-                    <FormControl fullWidth margin="normal" key={org.id}>
-                      <InputLabel id={`church-label-${org.id}`}>Igreja de atuação para {org.nome}</InputLabel>
-                      <Select
-                        labelId={`church-label-${org.id}`}
-                        id={`church-${org.id}`}
-                        value={churchSelections[org.id] || ''}
-                        label={`Igreja de atuação para ${org.nome}`}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setChurchSelections((prev) => ({ ...prev, [org.id]: val }));
-                        }}
-                        inputProps={{ 'data-testid': `church-select-${org.id}` }}
-                      >
-                        {activeChurches.map((church) => (
-                          <MenuItem key={church.id} value={church.id}>
-                            {church.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  );
-                })}
+              <Typography variant="subtitle2" align="left" sx={{ mt: 2, mb: 1, fontWeight: 600, color: 'text.primary' }}>
+                Indicadores Sacramentais
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5, textAlign: 'left' }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={batizado}
+                      onChange={(e) => setBatizado(e.target.checked)}
+                    />
+                  }
+                  label="Batizado"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={primeiraComunhao}
+                      onChange={(e) => setPrimeiraComunhao(e.target.checked)}
+                    />
+                  }
+                  label="1ª Comunhão"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={crismado}
+                      onChange={(e) => setCrismado(e.target.checked)}
+                    />
+                  }
+                  label="Crismado"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={casadoIgrejaCatolica}
+                      onChange={(e) => setCasadoIgrejaCatolica(e.target.checked)}
+                    />
+                  }
+                  label="Casado na Igreja"
+                />
+              </Box>
 
               <Button
                 type="submit"
