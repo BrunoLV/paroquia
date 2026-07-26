@@ -1,4 +1,5 @@
-import { useState, RefObject } from 'react';
+import { useState, RefObject, useCallback } from 'react';
+import { toPng, toSvg } from 'html-to-image';
 
 export type ExportFormat = 'png' | 'svg';
 
@@ -15,7 +16,7 @@ export interface UseOrganogramaExportReturn {
 export function useOrganogramaExport(): UseOrganogramaExportReturn {
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
-  const generateFilename = (orgName: string = 'paroquia', format: ExportFormat = 'png'): string => {
+  const generateFilename = useCallback((orgName: string = 'paroquia', format: ExportFormat = 'png'): string => {
     const today = new Date().toISOString().split('T')[0];
     const sanitizedOrg = orgName
       .toLowerCase()
@@ -25,20 +26,54 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
     return `organograma_${sanitizedOrg || 'paroquia'}_${today}.${format}`;
+  }, []);
+
+  const downloadFile = (dataUrl: string, filename: string): void => {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    link.click();
   };
 
-  const exportOrganograma = async (
-    _elementRef: RefObject<HTMLElement | null>,
-    _format: ExportFormat,
-    _customFilename?: string
-  ): Promise<void> => {
-    setIsExporting(true);
-    try {
-      // Stub a ser implementado em detalhes na Phase 2
-    } finally {
-      setIsExporting(false);
-    }
-  };
+  const exportOrganograma = useCallback(
+    async (
+      elementRef: RefObject<HTMLElement | null>,
+      format: ExportFormat,
+      customFilename?: string
+    ): Promise<void> => {
+      const element = elementRef.current;
+      if (!element) {
+        throw new Error('Elemento do organograma não encontrado para exportação');
+      }
+
+      setIsExporting(true);
+
+      try {
+        const options = {
+          quality: 0.95,
+          pixelRatio: 2,
+          backgroundColor: '#ffffff',
+          cacheBust: true,
+        };
+
+        let dataUrl: string;
+        if (format === 'svg') {
+          dataUrl = await toSvg(element, options);
+        } else {
+          dataUrl = await toPng(element, options);
+        }
+
+        const filename = customFilename || generateFilename('paroquia', format);
+        downloadFile(dataUrl, filename);
+      } catch (error) {
+        console.error('Erro ao exportar organograma:', error);
+        throw error;
+      } finally {
+        setIsExporting(false);
+      }
+    },
+    [generateFilename]
+  );
 
   return {
     isExporting,
