@@ -233,9 +233,12 @@ const Reports: React.FC = () => {
     color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
   }));
 
-  // Organization names and counts for BarChart
-  const barChartXLabels = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.organizacaoNome);
-  const barChartValues = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.quantidadeEventos);
+  // Series per organization for BarChart
+  const barChartSeries = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
+    data: [item.quantidadeEventos],
+    label: item.organizacaoNome,
+    color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
+  }));
 
   const summaryCards = [
     {
@@ -445,20 +448,11 @@ const Reports: React.FC = () => {
               </Typography>
             </Box>
 
-            {barChartValues.length > 0 ? (
+            {barChartSeries.length > 0 ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 320, width: '100%' }}>
                 <BarChart
-                  xAxis={[{ scaleType: 'band', data: barChartXLabels }]}
-                  series={[
-                    {
-                      data: barChartValues,
-                      label: 'Quantidade de Eventos',
-                      colorMap: {
-                        type: 'ordinal',
-                        colors: MARIAN_PALETTE,
-                      },
-                    },
-                  ]}
+                  xAxis={[{ scaleType: 'band', data: ['Quantidade de Eventos'] }]}
+                  series={barChartSeries}
                   height={310}
                   margin={{ top: 20, bottom: 50, left: 40, right: 20 }}
                   slotProps={{
