@@ -45,12 +45,12 @@
     - [x] Escrever teste: deve exibir indicador de loading quando `isExporting = true`
     - [x] Escrever teste: deve desabilitar o botão enquanto `isExporting = true`
     - [x] Confirmar que todos os testes falham (Red Phase)
-- [ ] Task: Implementar componente `OrganogramaExportButton` (Green Phase)
-    - [ ] Criar `src/components/organograma/OrganogramaExportButton.tsx`
-    - [ ] Implementar botão primário MUI com menu dropdown (PNG / SVG)
-    - [ ] Integrar prop `isExporting` para exibir `CircularProgress` e desabilitar botão
-    - [ ] Aplicar design system do projeto (Marian Blue/Gold palette)
-    - [ ] Confirmar que todos os testes passam (Green Phase)
+- [x] Task: Implementar componente `OrganogramaExportButton` (Green Phase) eb3b049
+    - [x] Criar `src/components/organograma/OrganogramaExportButton.tsx`
+    - [x] Implementar botão primário MUI com menu dropdown (PNG / SVG)
+    - [x] Integrar prop `isExporting` para exibir `CircularProgress` e desabilitar botão
+    - [x] Aplicar design system do projeto (Marian Blue/Gold palette)
+    - [x] Confirmar que todos os testes passam (Green Phase)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Componente de UI' (Protocol in workflow.md)
 
 ## Phase 4: Integração na Página do Organograma
