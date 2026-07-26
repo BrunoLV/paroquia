@@ -14,16 +14,16 @@
 
 ## Phase 2: Implementação do Hook de Exportação (TDD)
 
-- [ ] Task: Escrever testes unitários para o hook `useOrganogramaExport` (Red Phase)
-    - [ ] Criar `src/hooks/__tests__/useOrganogramaExport.test.ts`
-    - [ ] Escrever teste: deve iniciar com `isExporting = false`
-    - [ ] Escrever teste: deve definir `isExporting = true` durante a exportação
-    - [ ] Escrever teste: deve chamar `html-to-image` com o formato PNG correto
-    - [ ] Escrever teste: deve chamar `html-to-image` com o formato SVG correto
-    - [ ] Escrever teste: deve gerar nome de arquivo no formato `organograma_<nome>_<data>.<ext>`
-    - [ ] Escrever teste: deve restaurar `isExporting = false` após completar
-    - [ ] Escrever teste: deve tratar erro de captura e restaurar `isExporting = false`
-    - [ ] Confirmar que todos os testes falham (Red Phase)
+- [x] Task: Escrever testes unitários para o hook `useOrganogramaExport` (Red Phase) 1a7b171
+    - [x] Criar `src/hooks/__tests__/useOrganogramaExport.test.ts`
+    - [x] Escrever teste: deve iniciar com `isExporting = false`
+    - [x] Escrever teste: deve definir `isExporting = true` durante a exportação
+    - [x] Escrever teste: deve chamar `html-to-image` com o formato PNG correto
+    - [x] Escrever teste: deve chamar `html-to-image` com o formato SVG correto
+    - [x] Escrever teste: deve gerar nome de arquivo no formato `organograma_<nome>_<data>.<ext>`
+    - [x] Escrever teste: deve restaurar `isExporting = false` após completar
+    - [x] Escrever teste: deve tratar erro de captura e restaurar `isExporting = false`
+    - [x] Confirmar que todos os testes falham (Red Phase)
 - [ ] Task: Implementar lógica do hook `useOrganogramaExport` (Green Phase)
     - [ ] Implementar função `exportToPng(ref, filename)` usando `html-to-image`
     - [ ] Implementar função `exportToSvg(ref, filename)` usando `html-to-image`
