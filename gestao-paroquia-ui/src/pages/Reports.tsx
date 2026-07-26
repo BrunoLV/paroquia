@@ -31,7 +31,9 @@ import {
 import { PieChart, BarChart } from '@mui/x-charts';
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardMetrics } from '../api/dashboard';
-import { DashboardMetrics } from '../api/types';
+import { getOrganizacoes } from '../api/organizacoes';
+import apiClient from '../api/client';
+import { DashboardMetrics, Organizacao, WeeklyEvent } from '../api/types';
 import ReportFilters from '../components/reports/ReportFilters';
 import ReportExportButtons from '../components/reports/ReportExportButtons';
 import { generateMetricsCSV, downloadCSV, exportElementAsPDF } from '../utils/exportUtils';
@@ -45,13 +47,64 @@ const Reports: React.FC = () => {
   const [endDate, setEndDate] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
+  // Fetch baseline metrics from dashboard endpoint
   const {
-    data,
-    isLoading,
-    error,
+    data: metricsData,
+    isLoading: isMetricsLoading,
+    error: metricsError,
   } = useQuery<DashboardMetrics>({
     queryKey: ['dashboardMetrics'],
     queryFn: getDashboardMetrics,
+  });
+
+  // Fetch organizations list for resolving names
+  const { data: orgsData } = useQuery<Organizacao[]>({
+    queryKey: ['organizacoes'],
+    queryFn: getOrganizacoes,
+  });
+
+  const orgMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (orgsData) {
+      orgsData.forEach((o) => {
+        map[o.id] = o.nome;
+      });
+    }
+    return map;
+  }, [orgsData]);
+
+  const isFiltered = Boolean(startDate || endDate);
+
+  // Fetch filtered events when date filter is active
+  const {
+    data: customEventsData,
+    isLoading: isCustomEventsLoading,
+  } = useQuery<WeeklyEvent[]>({
+    queryKey: ['reportCustomEvents', startDate, endDate],
+    queryFn: async () => {
+      const params: Record<string, any> = { size: 500 };
+      if (startDate) params.dataInicio = `${startDate}T00:00:00Z`;
+      if (endDate) params.dataFim = `${endDate}T23:59:59Z`;
+
+      const response = await apiClient.get<any>('/eventos', { params });
+      const rawEvents = Array.isArray(response.data?.content)
+        ? response.data.content
+        : Array.isArray(response.data)
+        ? response.data
+        : [];
+
+      return rawEvents.map((ev: any) => ({
+        titulo: ev.titulo || ev.nome || 'Evento sem título',
+        inicio: ev.inicio || ev.dataInicio || ev.criadoEmUtc || '',
+        localNome: ev.local?.nome || ev.localNome || 'Sem Local',
+        organizacaoNome:
+          ev.organizacao?.nome ||
+          orgMap[ev.organizacaoResponsavelId] ||
+          ev.organizacaoNome ||
+          'Paróquia',
+      }));
+    },
+    enabled: isFiltered,
   });
 
   const handleClearFilters = () => {
@@ -59,69 +112,51 @@ const Reports: React.FC = () => {
     setEndDate('');
   };
 
-  // Compute filtered metrics based on selected date range
-  const { filteredMetrics, isFiltered, activeEventsCount } = useMemo(() => {
-    if (!data) {
-      return { filteredMetrics: null, isFiltered: false, activeEventsCount: 0 };
+  // Combine baseline metrics with custom date filter results
+  const filteredMetrics = useMemo<DashboardMetrics | null>(() => {
+    if (!metricsData) return null;
+
+    if (!isFiltered) {
+      return metricsData;
     }
 
-    const hasFilter = Boolean(startDate || endDate);
-    if (!hasFilter) {
-      return {
-        filteredMetrics: data,
-        isFiltered: false,
-        activeEventsCount: data.resumoGeral?.totalEventosMes ?? 0,
-      };
-    }
+    const eventsList = customEventsData || [];
 
-    const startTimestamp = startDate ? new Date(`${startDate}T00:00:00`).getTime() : null;
-    const endTimestamp = endDate ? new Date(`${endDate}T23:59:59.999`).getTime() : null;
-
-    const filteredEvents = (data.eventosSemana || []).filter((ev) => {
-      if (!ev.inicio) return true;
-      const evTime = new Date(ev.inicio).getTime();
-      if (isNaN(evTime)) return true;
-
-      if (startTimestamp !== null && evTime < startTimestamp) return false;
-      if (endTimestamp !== null && evTime > endTimestamp) return false;
-      return true;
-    });
-
-    // Compute distribution of filtered events per organization
+    // Aggregate counts per organization from fetched filtered events
     const orgCountMap: Record<string, number> = {};
-    filteredEvents.forEach((ev) => {
-      const orgName = ev.organizacaoNome || 'Sem Organização';
+    eventsList.forEach((ev) => {
+      const orgName = ev.organizacaoNome || 'Paróquia';
       orgCountMap[orgName] = (orgCountMap[orgName] || 0) + 1;
     });
 
-    const filteredEventosPorOrganizacao = Object.entries(orgCountMap).map(([organizacaoNome, quantidadeEventos]) => ({
-      organizacaoNome,
-      quantidadeEventos,
-    }));
+    const filteredEventosPorOrganizacao = Object.entries(orgCountMap).map(
+      ([organizacaoNome, quantidadeEventos]) => ({
+        organizacaoNome,
+        quantidadeEventos,
+      })
+    );
 
-    const result: DashboardMetrics = {
-      ...data,
+    return {
+      ...metricsData,
       resumoGeral: {
-        ...data.resumoGeral,
-        totalEventosMes: filteredEvents.length,
+        ...metricsData.resumoGeral,
+        totalEventosMes: eventsList.length,
       },
       eventosPorOrganizacao: filteredEventosPorOrganizacao,
-      eventosSemana: filteredEvents,
+      eventosSemana: eventsList,
     };
-
-    return { filteredMetrics: result, isFiltered: true, activeEventsCount: filteredEvents.length };
-  }, [data, startDate, endDate]);
+  }, [metricsData, isFiltered, customEventsData]);
 
   // Status breakdown of projects
   const projectStatusBreakdown = useMemo(() => {
-    if (!data?.projetosAtivosDetalhes) return [];
+    if (!metricsData?.projetosAtivosDetalhes) return [];
     const counts: Record<string, number> = {};
-    data.projetosAtivosDetalhes.forEach((p) => {
+    metricsData.projetosAtivosDetalhes.forEach((p) => {
       const st = p.status || 'OUTROS';
       counts[st] = (counts[st] || 0) + 1;
     });
     return Object.entries(counts).map(([status, count]) => ({ status, count }));
-  }, [data]);
+  }, [metricsData]);
 
   const handleExportCSV = () => {
     if (!filteredMetrics) return;
@@ -152,6 +187,8 @@ const Reports: React.FC = () => {
     }
   };
 
+  const isLoading = isMetricsLoading || (isFiltered && isCustomEventsLoading);
+
   if (isLoading) {
     return (
       <Box sx={{ p: 1 }}>
@@ -170,7 +207,7 @@ const Reports: React.FC = () => {
     );
   }
 
-  if (error || !data || !filteredMetrics) {
+  if (metricsError || !metricsData || !filteredMetrics) {
     return (
       <Box sx={{ p: 1 }}>
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: '#1a237e' }}>
@@ -277,7 +314,7 @@ const Reports: React.FC = () => {
           onClose={handleClearFilters}
         >
           Filtro ativo de <strong>{startDate || 'início do registro'}</strong> até{' '}
-          <strong>{endDate || 'data atual'}</strong> — Exibindo <strong>{activeEventsCount}</strong> evento(s) no período selecionado.
+          <strong>{endDate || 'data atual'}</strong> — Exibindo <strong>{filteredMetrics.eventosSemana.length}</strong> evento(s) no período selecionado.
         </Alert>
       )}
 

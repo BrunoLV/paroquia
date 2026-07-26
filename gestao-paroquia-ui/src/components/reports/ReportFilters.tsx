@@ -17,13 +17,19 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
   onEndDateChange,
   onClearFilters,
 }) => {
+  const handleClear = () => {
+    onStartDateChange('');
+    onEndDateChange('');
+    onClearFilters();
+  };
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
         <TextField
           label="Data Início"
           type="date"
-          value={startDate}
+          value={startDate || ''}
           onChange={(e) => onStartDateChange(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
           size="small"
@@ -35,7 +41,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
         <TextField
           label="Data Fim"
           type="date"
-          value={endDate}
+          value={endDate || ''}
           onChange={(e) => onEndDateChange(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
           size="small"
@@ -48,7 +54,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           variant="outlined"
           color="secondary"
           size="small"
-          onClick={onClearFilters}
+          onClick={handleClear}
           startIcon={<FilterAltOffIcon />}
           sx={{
             borderRadius: 0,

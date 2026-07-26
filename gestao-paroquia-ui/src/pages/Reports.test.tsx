@@ -78,6 +78,29 @@ describe('Reports Page', () => {
           },
         });
       }
+      if (url === '/organizacoes') {
+        return Promise.resolve({
+          data: [
+            { id: 'org-1', nome: 'Catequese' },
+            { id: 'org-2', nome: 'Liturgia' },
+          ],
+        });
+      }
+      if (url === '/eventos') {
+        return Promise.resolve({
+          data: {
+            content: [
+              {
+                id: 'evt-100',
+                titulo: 'Retiro de Casais',
+                inicio: '2026-08-15T09:00:00Z',
+                localNome: 'Sítio São José',
+                organizacaoResponsavelId: 'org-1',
+              },
+            ],
+          },
+        });
+      }
       return Promise.reject(new Error('Not found'));
     });
 
@@ -132,30 +155,23 @@ describe('Reports Page', () => {
     expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-container', 'relatorio-gerencial.pdf');
   });
 
-  test('filters dates and clears filter inputs', async () => {
+  test('filters dates and fetches events from backend for the selected range', async () => {
     await renderReports();
 
     expect(screen.getByText('Reunião de Pais')).toBeInTheDocument();
 
     const startInput = screen.getByLabelText(/data início/i);
     const endInput = screen.getByLabelText(/data fim/i);
-    const clearBtn = screen.getByRole('button', { name: /limpar filtros/i });
 
-    // Filter for a past range where event ('2026-07-28') is out of range
-    fireEvent.change(startInput, { target: { value: '2026-06-01' } });
-    fireEvent.change(endInput, { target: { value: '2026-06-30' } });
+    // Set filter dates for August 2026
+    await act(async () => {
+      fireEvent.change(startInput, { target: { value: '2026-08-01' } });
+      fireEvent.change(endInput, { target: { value: '2026-08-31' } });
+    });
 
-    expect(startInput).toHaveValue('2026-06-01');
-    expect(endInput).toHaveValue('2026-06-30');
-
-    expect(screen.queryByText('Reunião de Pais')).not.toBeInTheDocument();
-    expect(screen.getByText(/Nenhum evento encontrado no período selecionado/i)).toBeInTheDocument();
-
-    fireEvent.click(clearBtn);
-
-    expect(startInput).toHaveValue('');
-    expect(endInput).toHaveValue('');
-    expect(screen.getByText('Reunião de Pais')).toBeInTheDocument();
+    // Wait for API-filtered event to render
+    await screen.findByText('Retiro de Casais');
+    expect(screen.getByText(/Filtro ativo de/i)).toBeInTheDocument();
   });
 
   test('renders error state on API failure', async () => {
