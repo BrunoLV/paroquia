@@ -68,4 +68,4 @@
     - [x] Validar manualmente o download SVG em Chrome e Firefox
     - [x] Verificar que o nome do arquivo segue o padrão correto
     - [x] Verificar que o loading é exibido e desaparece após o download
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Integração na Página' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Integração na Página' (Protocol in workflow.md)
