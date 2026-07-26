@@ -35,16 +35,16 @@
 
 ## Phase 3: Componente de UI do Botão de Exportação (TDD)
 
-- [ ] Task: Escrever testes para o componente `OrganogramaExportButton` (Red Phase)
-    - [ ] Criar `src/components/organograma/__tests__/OrganogramaExportButton.test.tsx`
-    - [ ] Escrever teste: deve renderizar o botão de exportação
-    - [ ] Escrever teste: deve abrir menu de opções ao clicar no botão
-    - [ ] Escrever teste: deve exibir opções PNG e SVG no menu
-    - [ ] Escrever teste: deve chamar `onExport('png')` ao selecionar PNG
-    - [ ] Escrever teste: deve chamar `onExport('svg')` ao selecionar SVG
-    - [ ] Escrever teste: deve exibir indicador de loading quando `isExporting = true`
-    - [ ] Escrever teste: deve desabilitar o botão enquanto `isExporting = true`
-    - [ ] Confirmar que todos os testes falham (Red Phase)
+- [x] Task: Escrever testes para o componente `OrganogramaExportButton` (Red Phase) 5935b22
+    - [x] Criar `src/components/organograma/__tests__/OrganogramaExportButton.test.tsx`
+    - [x] Escrever teste: deve renderizar o botão de exportação
+    - [x] Escrever teste: deve abrir menu de opções ao clicar no botão
+    - [x] Escrever teste: deve exibir opções PNG e SVG no menu
+    - [x] Escrever teste: deve chamar `onExport('png')` ao selecionar PNG
+    - [x] Escrever teste: deve chamar `onExport('svg')` ao selecionar SVG
+    - [x] Escrever teste: deve exibir indicador de loading quando `isExporting = true`
+    - [x] Escrever teste: deve desabilitar o botão enquanto `isExporting = true`
+    - [x] Confirmar que todos os testes falham (Red Phase)
 - [ ] Task: Implementar componente `OrganogramaExportButton` (Green Phase)
     - [ ] Criar `src/components/organograma/OrganogramaExportButton.tsx`
     - [ ] Implementar botão primário MUI com menu dropdown (PNG / SVG)
