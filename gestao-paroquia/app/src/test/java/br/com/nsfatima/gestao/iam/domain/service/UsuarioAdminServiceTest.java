@@ -20,14 +20,13 @@ class UsuarioAdminServiceTest {
     private UsuarioJpaRepository repository;
     private PasswordEncoder passwordEncoder;
     private AuditLogPersistenceService auditLogService;
-    private UsuarioAuthorizationService authorizationService;
 
     @BeforeEach
     void setUp() {
         repository = mock(UsuarioJpaRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
         auditLogService = mock(AuditLogPersistenceService.class);
-        authorizationService = mock(UsuarioAuthorizationService.class);
+        UsuarioAuthorizationService authorizationService = mock(UsuarioAuthorizationService.class);
         service = new UsuarioAdminService(repository, passwordEncoder, auditLogService, authorizationService);
     }
 

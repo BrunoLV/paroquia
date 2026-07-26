@@ -53,7 +53,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields by coordenador/CONSELHO → 200 OK (immediately
         // applied)
@@ -99,7 +99,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields by vice-coordenador/CONSELHO → 200 OK
         // (immediately applied)

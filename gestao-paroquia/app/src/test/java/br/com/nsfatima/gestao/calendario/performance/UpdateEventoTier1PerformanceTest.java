@@ -52,7 +52,7 @@ class UpdateEventoTier1PerformanceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"titulo\": \"Evento atualizado warmup\"
+                                  "titulo": "Evento atualizado warmup"
                                 }
                                 """))
                 .andExpect(status().isOk());
@@ -63,7 +63,7 @@ class UpdateEventoTier1PerformanceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"titulo\": \"Evento atualizado em benchmark\"
+                                  "titulo": "Evento atualizado em benchmark"
                                 }
                                 """))
                 .andExpect(status().isOk());

@@ -84,8 +84,8 @@ class AprovacoesContractTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
                                 {
-                                    \"status\": \"APROVADA\",
-                                    \"observacao\": \"Executar cancelamento\"
+                                    "status": "APROVADA",
+                                    "observacao": "Executar cancelamento"
                                 }
                                 """))
                 .andExpect(status().isOk())

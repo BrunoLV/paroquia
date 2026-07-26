@@ -46,7 +46,7 @@ class DeleteObservacaoIntegrationTest {
                 .andReturn();
 
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
-        UUID observacaoId = UUID.fromString(created.path("id").asText());
+        UUID observacaoId = UUID.fromString(created.path("id").asString());
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId))
                 .andExpect(status().isNoContent());

@@ -56,7 +56,7 @@ class UpdateEventoApprovalSnapshotImmutabilityIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
@@ -76,7 +76,7 @@ class UpdateEventoApprovalSnapshotImmutabilityIntegrationTest {
 
         UUID aprovacaoId = UUID.fromString(
                 objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                        .get("solicitacaoAprovacaoId").asText());
+                        .get("solicitacaoAprovacaoId").asString());
 
         var aprovacaoBefore = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
         String snapshotBefore = aprovacaoBefore.getActionPayloadJson();
@@ -120,7 +120,7 @@ class UpdateEventoApprovalSnapshotImmutabilityIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
@@ -138,7 +138,7 @@ class UpdateEventoApprovalSnapshotImmutabilityIntegrationTest {
 
         UUID aprovacaoId = UUID.fromString(
                 objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                        .get("solicitacaoAprovacaoId").asText());
+                        .get("solicitacaoAprovacaoId").asString());
 
         var aprovacaoBefore = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
         String snapshotBefore = aprovacaoBefore.getActionPayloadJson();

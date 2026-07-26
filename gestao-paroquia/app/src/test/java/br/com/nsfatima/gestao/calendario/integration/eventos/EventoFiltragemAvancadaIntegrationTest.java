@@ -30,17 +30,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
 class EventoFiltragemAvancadaIntegrationTest {
 
+    private final UUID orgA = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+    private final UUID orgB = UUID.fromString("00000000-0000-0000-0000-0000000000bb");
     @Autowired
     private ListEventosUseCase listEventosUseCase;
-
     @Autowired
     private EventoJpaRepository repository;
-
     @Autowired
     private EventoEnvolvidoJpaRepository envolvidoRepository;
-
-    private UUID orgA = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
-    private UUID orgB = UUID.fromString("00000000-0000-0000-0000-0000000000bb");
 
     @BeforeEach
     void setup() {

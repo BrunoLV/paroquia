@@ -57,7 +57,7 @@ public class CreateMembroUseCase {
         entity.setOrganizacaoId(request.organizacaoId());
         entity.setPapel(request.papel());
         entity.setDataEntrada(request.dataEntrada() != null ? request.dataEntrada() : LocalDate.now());
-        entity.setAtivo(request.ativo() == null ? true : request.ativo());
+        entity.setAtivo(request.ativo() == null || request.ativo());
         entity.setIgrejaId(request.igrejaId());
 
         MembroEntity saved = repository.save(entity);

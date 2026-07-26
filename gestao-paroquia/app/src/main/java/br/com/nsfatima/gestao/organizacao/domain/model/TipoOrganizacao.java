@@ -25,9 +25,6 @@ public enum TipoOrganizacao {
         if (rawValue == null) {
             return null;
         }
-        if ("CONSELHO".equalsIgnoreCase(rawValue)) {
-            return CONSELHO_PASTORAL;
-        }
-        return EnumRequestNormalizer.normalize(rawValue, TipoOrganizacao.class);
+        return fromJson(rawValue);
     }
 }

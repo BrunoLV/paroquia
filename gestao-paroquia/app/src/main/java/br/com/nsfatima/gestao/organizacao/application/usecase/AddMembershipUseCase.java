@@ -40,18 +40,7 @@ public class AddMembershipUseCase {
         var usuarioOpt = usuarioRepository.findById(usuarioId);
         if (usuarioOpt.isPresent() && usuarioOpt.get().getIgrejaId() != null) {
             UUID userChurchId = usuarioOpt.get().getIgrejaId();
-            UUID targetChurchId = igrejaVinculoId;
-            if (targetChurchId == null) {
-                var orgOpt = organizacaoRepository.findById(organizacaoId);
-                if (orgOpt.isPresent()) {
-                    var org = orgOpt.get();
-                    if (org.getTipo() == TipoOrganizacao.MATRIZ || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
-                        targetChurchId = org.getId();
-                    } else {
-                        targetChurchId = org.getParentId();
-                    }
-                }
-            }
+            UUID targetChurchId = resolveTargetChurchId(organizacaoId, igrejaVinculoId);
             if (targetChurchId != null && !userChurchId.equals(targetChurchId)) {
                 throw new IllegalArgumentException(
                         "O usuário pertence a outra igreja/comunidade"
@@ -161,5 +150,20 @@ public class AddMembershipUseCase {
         entity.setAtivo(true);
 
         return membershipRepository.save(entity).getId();
+    }
+
+    private UUID resolveTargetChurchId(UUID organizacaoId, UUID igrejaVinculoId) {
+        if (igrejaVinculoId != null) {
+            return igrejaVinculoId;
+        }
+        var orgOpt = organizacaoRepository.findById(organizacaoId);
+        if (orgOpt.isEmpty()) {
+            return null;
+        }
+        var org = orgOpt.get();
+        if (org.getTipo() == TipoOrganizacao.MATRIZ || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
+            return org.getId();
+        }
+        return org.getParentId();
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 
+import java.util.Objects;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -37,6 +39,6 @@ class CacheInfrastructureTest {
         cache.put(key, value);
 
         assertThat(cache.get(key)).isNotNull();
-        assertThat(cache.get(key).get()).isEqualTo(value);
+        assertThat(Objects.requireNonNull(cache.get(key)).get()).isEqualTo(value);
     }
 }

@@ -20,10 +20,10 @@ public class CreateUsuarioUseCase {
     }
 
     @Transactional
-    /**
-     * Cria uma nova conta de usuário com senha criptografada para permitir o acesso seguro ao sistema.
-     *
-     * Exemplo: useCase.execute("novo.usuario", "senhaForte")
+    /*
+      Cria uma nova conta de usuário com senha criptografada para permitir o acesso seguro ao sistema.
+      <p>
+      Exemplo: useCase.execute("novo.usuario", "senhaForte")
      */
     public UUID execute(String username, String rawPassword) {
         if (usuarioRepository.findByUsernameIgnoreCase(username).isPresent()) {

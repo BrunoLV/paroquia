@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,8 +45,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -55,7 +55,7 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager,
             DaoAuthenticationProvider daoAuthenticationProvider,
             JsonAuthenticationOutcomeProcessor authenticationOutcomeProcessor,
-            ObjectMapper objectMapper) throws Exception {
+            ObjectMapper objectMapper) {
         JsonUsernamePasswordAuthenticationFilter loginFilter =
                 new JsonUsernamePasswordAuthenticationFilter(authenticationManager, objectMapper);
         loginFilter.setAuthenticationSuccessHandler(authenticationOutcomeProcessor);
@@ -64,7 +64,7 @@ public class SecurityConfig {
         http.authenticationProvider(daoAuthenticationProvider)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Sessao stateful mantida via JSESSIONID; CSRF desabilitado explicitamente para a API JSON.
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationOutcomeProcessor)
@@ -76,8 +76,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/usuarios/registrar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/organizacoes").permitAll()
                         .anyRequest().authenticated())
-                .formLogin(form -> form.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
                         .clearAuthentication(true)

@@ -208,19 +208,18 @@ public class UpdateEventoUseCase {
 
     private void updateAllInstances(UUID recorrenciaId, UpdateEventoRequest request, EventoStatusInput status) {
         // 1. Update the template event (base event of the recurrence rule)
-        recurrenceRepository.findById(recorrenciaId).ifPresent(rule -> {
-            repository.findById(rule.getEventoBaseId()).ifPresent(baseEvent -> {
-                UpdateEventoRequest templateRequest = new UpdateEventoRequest(
-                        request.titulo(), request.descricao(), request.categoria(),
-                        null, null, // Don't update template start/end times via instance update
-                        request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
-                        request.organizacaoResponsavelId(), request.participantes(),
-                        null, request.projetoId(), request.localId(), request.igrejaVinculoId());
-                mapper.applyPatch(baseEvent, templateRequest, status);
-                repository.save(baseEvent);
-                applyParticipantChanges(baseEvent.getId(), request.participantes());
-            });
-        });
+        recurrenceRepository.findById(recorrenciaId).flatMap(rule -> repository.findById(rule.getEventoBaseId()))
+                .ifPresent(baseEvent -> {
+                    UpdateEventoRequest templateRequest = new UpdateEventoRequest(
+                            request.titulo(), request.descricao(), request.categoria(),
+                            null, null, // Don't update template start/end times via instance update
+                            request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
+                            request.organizacaoResponsavelId(), request.participantes(),
+                            null, request.projetoId(), request.localId(), request.igrejaVinculoId());
+                    mapper.applyPatch(baseEvent, templateRequest, status);
+                    repository.save(baseEvent);
+                    applyParticipantChanges(baseEvent.getId(), request.participantes());
+                });
 
         // 2. Update all existing instances
         List<EventoEntity> allInstances = repository.findByRecorrenciaId(recorrenciaId);
@@ -280,7 +279,8 @@ public class UpdateEventoUseCase {
         UUID org = request.organizacaoResponsavelId() != null ? request.organizacaoResponsavelId() :
                 entity.getOrganizacaoResponsavelId();
         List<UUID> part = request.participantes() != null ? request.participantes() :
-                involvementRepository.findByEventoId(entity.getId()).stream().map(e -> e.getOrganizacaoId()).toList();
+                involvementRepository.findByEventoId(entity.getId()).stream().map(
+                        EventoEnvolvidoEntity::getOrganizacaoId).toList();
 
         domainService.validateOrganizacaoParticipantes(org, part);
 

@@ -40,10 +40,8 @@ class AuditoriaEventosContractTest {
                 UUID.fromString("00000000-0000-0000-0000-000000000101"),
                 organizacaoId,
                 eventoId,
-                "patch",
-                "success",
-                Instant.parse("2026-10-03T10:15:00Z"),
-                "{\"scheduleChanged\":true}"));
+                Instant.parse("2026-10-03T10:15:00Z")
+        ));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
                         .param("organizacaoId", organizacaoId.toString())
@@ -63,21 +61,18 @@ class AuditoriaEventosContractTest {
             UUID id,
             UUID organizacaoId,
             UUID eventoId,
-            String acao,
-            String resultado,
-            Instant ocorridoEmUtc,
-            String detalhesJson) {
+            Instant ocorridoEmUtc) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(id);
         entity.setOrganizacaoId(organizacaoId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
-        entity.setAcao(acao);
-        entity.setResultado(resultado);
+        entity.setAcao("patch");
+        entity.setResultado("success");
         entity.setAtor("tester");
         entity.setCorrelationId("corr-contract");
-        entity.setDetalhesAuditaveisJson(detalhesJson);
+        entity.setDetalhesAuditaveisJson("{\"scheduleChanged\":true}");
         entity.setOcorridoEmUtc(ocorridoEmUtc);
         return entity;
     }

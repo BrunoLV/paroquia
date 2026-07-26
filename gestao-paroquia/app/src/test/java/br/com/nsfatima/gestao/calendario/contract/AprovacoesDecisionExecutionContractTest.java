@@ -49,7 +49,7 @@ class AprovacoesDecisionExecutionContractTest {
                 .andReturn();
 
         String approvalId = objectMapper.readTree(pending.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText();
+                .get("solicitacaoAprovacaoId").asString();
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
                         .header("X-Actor-Role", "coordenador")
@@ -89,7 +89,7 @@ class AprovacoesDecisionExecutionContractTest {
                 .andReturn();
 
         String approvalId = objectMapper.readTree(pending.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText();
+                .get("solicitacaoAprovacaoId").asString();
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
                         .header("X-Actor-Role", "coordenador")

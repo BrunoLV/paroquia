@@ -101,9 +101,11 @@ class ImportacaoServiceTest {
         when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
                 .thenReturn(Optional.of(new OrganizacaoEntity()));
 
-        String csvContent = "usuarioUsername,organizacaoNome,papel\n" +
-                "joao@email.com,Pastoral da Música,COORDENADOR\n" +
-                "desconhecido@email.com,Inexistente,MEMBRO\n";
+        String csvContent = """
+                usuarioUsername,organizacaoNome,papel
+                joao@email.com,Pastoral da Música,COORDENADOR
+                desconhecido@email.com,Inexistente,MEMBRO
+                """;
 
         MockMultipartFile file = new MockMultipartFile("file",
                 "membros.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8));
@@ -149,7 +151,7 @@ class ImportacaoServiceTest {
 
         assertEquals(1, resultado.totalLinhas());
         assertEquals(1, resultado.totalValidos());
-        assertTrue(resultado.itens().get(0).valido());
+        assertTrue(resultado.itens().getFirst().valido());
     }
 
     @Test

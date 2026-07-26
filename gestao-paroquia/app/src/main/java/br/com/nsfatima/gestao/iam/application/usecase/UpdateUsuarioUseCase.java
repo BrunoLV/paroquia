@@ -18,10 +18,10 @@ public class UpdateUsuarioUseCase {
     }
 
     @Transactional
-    /**
-     * Atualiza os campos editáveis de um usuário para refletir mudanças cadastrais ou de permissão de acesso.
-     *
-     * Exemplo: useCase.execute(userId, "novo.username", true)
+    /*
+      Atualiza os campos editáveis de um usuário para refletir mudanças cadastrais ou de permissão de acesso.
+      <p>
+      Exemplo: useCase.execute(userId, "novo.username", true)
      */
     public void execute(UUID id, String username, Boolean enabled) {
         UsuarioEntity entity = usuarioRepository.findById(id)

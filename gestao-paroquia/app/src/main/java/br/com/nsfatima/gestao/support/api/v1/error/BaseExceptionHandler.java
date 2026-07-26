@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * Base class for exception handlers providing common utilities for response building and logging.
  */
+@SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 public abstract class BaseExceptionHandler {
 
     protected final AuditLogPersistenceService auditLogPersistenceService;

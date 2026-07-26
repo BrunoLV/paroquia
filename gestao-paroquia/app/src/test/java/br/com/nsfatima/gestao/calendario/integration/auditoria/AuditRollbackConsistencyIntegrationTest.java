@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.auditoria;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
@@ -69,7 +70,7 @@ class AuditRollbackConsistencyIntegrationTest {
 
         doThrow(new RuntimeException("db down"))
                 .when(auditoriaOperacaoJpaRepository)
-                .save(org.mockito.ArgumentMatchers.<AuditoriaOperacaoEntity>any());
+                .save(org.mockito.ArgumentMatchers.any());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
                         .header("X-Actor-Org-Id", organizacaoId.toString())
@@ -141,11 +142,11 @@ class AuditRollbackConsistencyIntegrationTest {
                 .andReturn();
 
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
-        UUID observacaoId = UUID.fromString(created.path("id").asText());
+        UUID observacaoId = UUID.fromString(created.path("id").asString());
 
         doThrow(new RuntimeException("db down"))
                 .when(auditoriaOperacaoJpaRepository)
-                .save(org.mockito.ArgumentMatchers.<AuditoriaOperacaoEntity>any());
+                .save(org.mockito.ArgumentMatchers.any());
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
                         .header("X-Actor-Org-Id", organizacaoId))
@@ -154,7 +155,7 @@ class AuditRollbackConsistencyIntegrationTest {
         assertThat(observacaoEventoJpaRepository.findById(Objects.requireNonNull(observacaoId)))
                 .isPresent()
                 .get()
-                .extracting(observacao -> observacao.isRemovida())
+                .extracting(ObservacaoEventoEntity::isRemovida)
                 .isEqualTo(false);
 
         mockMvc.perform(get("/api/v1/eventos/{eventoId}/observacoes", eventoId)

@@ -60,7 +60,7 @@ class ObservacaoTier1PerformanceTest {
             createLatencies.add(nanosToMillis(System.nanoTime() - createStart));
 
             JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
-            UUID observacaoId = UUID.fromString(created.path("id").asText());
+            UUID observacaoId = UUID.fromString(created.path("id").asString());
 
             long editStart = System.nanoTime();
             mockMvc.perform(patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)

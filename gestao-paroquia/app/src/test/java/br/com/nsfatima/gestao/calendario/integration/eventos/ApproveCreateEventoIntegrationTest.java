@@ -68,7 +68,7 @@ class ApproveCreateEventoIntegrationTest {
                 .andReturn();
 
         String postBody = postResult.getResponse().getContentAsString();
-        String aprovacaoIdStr = objectMapper.readTree(postBody).get("solicitacaoAprovacaoId").asText();
+        String aprovacaoIdStr = objectMapper.readTree(postBody).get("solicitacaoAprovacaoId").asString();
         UUID aprovacaoId = UUID.fromString(aprovacaoIdStr);
 
         assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore);

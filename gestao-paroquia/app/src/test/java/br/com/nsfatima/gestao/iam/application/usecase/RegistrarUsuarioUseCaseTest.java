@@ -16,21 +16,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class RegistrarUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
     private OrganizacaoJpaRepository organizacaoRepository;
-    private PasswordEncoder passwordEncoder;
     private RegistrarUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
         organizacaoRepository = mock(OrganizacaoJpaRepository.class);
-        passwordEncoder = mock(PasswordEncoder.class);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         when(passwordEncoder.encode(any())).thenReturn("encoded_pass");
 
         useCase = new RegistrarUsuarioUseCase(

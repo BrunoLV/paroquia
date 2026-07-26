@@ -19,19 +19,6 @@ import java.util.UUID;
 @Transactional
 public class OrganizacaoService {
 
-    private final OrganizacaoRepository organizacaoRepository;
-    private final AuditLogPersistenceService auditLogService;
-    private final PastoralMovimentoOficialRepository pastoralOficialRepository;
-
-    public OrganizacaoService(
-            OrganizacaoRepository organizacaoRepository,
-            AuditLogPersistenceService auditLogService,
-            PastoralMovimentoOficialRepository pastoralOficialRepository) {
-        this.organizacaoRepository = organizacaoRepository;
-        this.auditLogService = auditLogService;
-        this.pastoralOficialRepository = pastoralOficialRepository;
-    }
-
     private static final String AUDIT_ACTOR = "admin";
     private static final String AUDIT_ACTION = "admin-action";
     private static final String AUDIT_TARGET = "organization";
@@ -41,6 +28,17 @@ public class OrganizacaoService {
     private static final String KEY_RESOURCE_ID = "resourceId";
     private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
     private static final String KEY_ACTION = "action";
+    private final OrganizacaoRepository organizacaoRepository;
+    private final AuditLogPersistenceService auditLogService;
+    private final PastoralMovimentoOficialRepository pastoralOficialRepository;
+    public OrganizacaoService(
+            OrganizacaoRepository organizacaoRepository,
+            AuditLogPersistenceService auditLogService,
+            PastoralMovimentoOficialRepository pastoralOficialRepository) {
+        this.organizacaoRepository = organizacaoRepository;
+        this.auditLogService = auditLogService;
+        this.pastoralOficialRepository = pastoralOficialRepository;
+    }
 
     @Transactional
     public Organizacao createOrganization(String nome,
@@ -91,7 +89,7 @@ public class OrganizacaoService {
 
     @Transactional
     public void deleteOrganization(UUID id) {
-        if (!organizacaoRepository.findById(id).isPresent()) {
+        if (organizacaoRepository.findById(id).isEmpty()) {
             throw OrganizationBusinessException.notFound(id);
         }
 
@@ -120,7 +118,7 @@ public class OrganizacaoService {
     }
 
     private void validateHierarchy(UUID id, TipoOrganizacao tipo, UUID parentId, UUID pastoralOficialId) {
-        if (parentId != null && id != null && parentId.equals(id)) {
+        if (parentId != null && parentId.equals(id)) {
             throw new OrganizationBusinessException("An organization cannot be its own parent.");
         }
 

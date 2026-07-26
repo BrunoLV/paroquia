@@ -22,11 +22,11 @@ public class AuthController {
 
     @GetMapping("/me")
     @Operation(summary = "Obtém o perfil do usuário logado")
-    /**
-     * Identifica o usuário atualmente autenticado na sessão para fornecer dados de perfil e permissões.
-     *
-     * Exemplo: GET /api/v1/auth/me -> 200 OK { "id": "...", "username": "...", "enabled": true, "roles": ["ADMIN"],
-     * "organizations": [...] }
+    /*
+      Identifica o usuário atualmente autenticado na sessão para fornecer dados de perfil e permissões.
+      <p>
+      Exemplo: GET /api/v1/auth/me -> 200 OK { "id": "...", "username": "...", "enabled": true, "roles": ["ADMIN"],
+      "organizations": [...] }
      */
     public UsuarioResponse me(@AuthenticationPrincipal UsuarioDetails userDetails) {
         if (userDetails == null) {

@@ -25,17 +25,16 @@ public record RegraRecorrencia(
      */
     public List<LocalDate> gerarDatas(LocalDate inicio, LocalDate fim) {
         List<LocalDate> datas = new ArrayList<>();
-        LocalDate atual = inicio;
         LocalDate dataFimReal = dataLimite != null && dataLimite.isBefore(fim) ? dataLimite : fim;
 
         if ("DIARIA".equalsIgnoreCase(frequencia)) {
-            gerarDatasDiarias(datas, atual, dataFimReal);
+            gerarDatasDiarias(datas, inicio, dataFimReal);
         } else if ("SEMANAL".equalsIgnoreCase(frequencia)) {
-            gerarDatasSemanais(datas, atual, dataFimReal);
+            gerarDatasSemanais(datas, inicio, dataFimReal);
         } else if ("MENSAL".equalsIgnoreCase(frequencia)) {
-            gerarDatasMensais(datas, atual, dataFimReal, inicio);
+            gerarDatasMensais(datas, inicio, dataFimReal, inicio);
         } else if ("ANUAL".equalsIgnoreCase(frequencia)) {
-            gerarDatasAnuais(datas, atual, dataFimReal);
+            gerarDatasAnuais(datas, inicio, dataFimReal);
         }
 
         datas.sort(LocalDate::compareTo);
@@ -47,51 +46,56 @@ public record RegraRecorrencia(
         return datas;
     }
 
-    private void gerarDatasDiarias(List<LocalDate> datas, LocalDate atual, LocalDate dataFimReal) {
-        while (!atual.isAfter(dataFimReal)) {
-            datas.add(atual);
-            atual = atual.plusDays(intervalo);
+    private void gerarDatasDiarias(List<LocalDate> datas, LocalDate inicioParam, LocalDate dataFimReal) {
+        LocalDate cursor = inicioParam;
+        while (!cursor.isAfter(dataFimReal)) {
+            datas.add(cursor);
+            cursor = cursor.plusDays(intervalo);
         }
     }
 
-    private void gerarDatasSemanais(List<LocalDate> datas, LocalDate atual, LocalDate dataFimReal) {
-        while (!atual.isAfter(dataFimReal)) {
+    private void gerarDatasSemanais(List<LocalDate> datas, LocalDate inicioParam, LocalDate dataFimReal) {
+        LocalDate cursor = inicioParam;
+        while (!cursor.isAfter(dataFimReal)) {
             if (diasDaSemana != null && !diasDaSemana.isEmpty()) {
                 for (DayOfWeek dia : diasDaSemana) {
-                    LocalDate proximo = atual.with(TemporalAdjusters.nextOrSame(dia));
-                    if (!proximo.isBefore(atual) && !proximo.isAfter(dataFimReal) && !datas.contains(proximo)) {
+                    LocalDate proximo = cursor.with(TemporalAdjusters.nextOrSame(dia));
+                    if (!proximo.isBefore(cursor) && !proximo.isAfter(dataFimReal) && !datas.contains(proximo)) {
                         datas.add(proximo);
                     }
                 }
             }
-            atual = atual.plusWeeks(intervalo);
+            cursor = cursor.plusWeeks(intervalo);
         }
     }
 
-    private void gerarDatasMensais(List<LocalDate> datas, LocalDate atual, LocalDate dataFimReal, LocalDate inicio) {
-        while (!atual.isAfter(dataFimReal)) {
+    private void gerarDatasMensais(
+            List<LocalDate> datas,
+            LocalDate inicioParam,
+            LocalDate dataFimReal,
+            LocalDate inicio) {
+        LocalDate cursor = inicioParam;
+        while (!cursor.isAfter(dataFimReal)) {
             if (posicaoNoMes != null && !posicaoNoMes.isBlank() && diasDaSemana != null && !diasDaSemana.isEmpty()) {
                 int ordinal = getOrdinalFromPosicao(posicaoNoMes);
                 if (ordinal != 0) {
                     for (DayOfWeek dia : diasDaSemana) {
-                        try {
-                            LocalDate targetDay;
-                            if (ordinal == -1) {
-                                targetDay = atual.with(TemporalAdjusters.lastInMonth(dia));
-                            } else {
-                                targetDay = atual.with(TemporalAdjusters.dayOfWeekInMonth(ordinal, dia));
-                            }
-                            if (!targetDay.isBefore(inicio) && !targetDay.isAfter(dataFimReal)) {
-                                datas.add(targetDay);
-                            }
-                        } catch (Exception e) {
-                            // Skip invalid days (e.g. 5th occurrence if it doesn't exist in that month)
+                        LocalDate proximo;
+                        if (ordinal > 0) {
+                            proximo = cursor.with(TemporalAdjusters.dayOfWeekInMonth(ordinal, dia));
+                        } else {
+                            proximo = cursor.with(TemporalAdjusters.lastInMonth(dia));
+                        }
+
+                        if (!proximo.isBefore(inicio) && !proximo.isAfter(dataFimReal) && !datas.contains(proximo)) {
+                            datas.add(proximo);
                         }
                     }
                 }
             } else if (diaDoMes != null) {
                 try {
-                    LocalDate dataFixa = atual.withDayOfMonth(diaDoMes);
+                    int diaAjustado = Math.min(diaDoMes, cursor.lengthOfMonth());
+                    LocalDate dataFixa = cursor.withDayOfMonth(diaAjustado);
                     if (!dataFixa.isBefore(inicio) && !dataFixa.isAfter(dataFimReal)) {
                         datas.add(dataFixa);
                     }
@@ -99,7 +103,7 @@ public record RegraRecorrencia(
                     // Skip invalid days (e.g., Feb 30th)
                 }
             }
-            atual = atual.plusMonths(intervalo);
+            cursor = cursor.plusMonths(intervalo);
         }
     }
 
@@ -153,13 +157,14 @@ public record RegraRecorrencia(
     }
 
 
-    private void gerarDatasAnuais(List<LocalDate> datas, LocalDate atual, LocalDate dataFimReal) {
-        while (!atual.isAfter(dataFimReal)) {
+    private void gerarDatasAnuais(List<LocalDate> datas, LocalDate inicioParam, LocalDate dataFimReal) {
+        LocalDate cursor = inicioParam;
+        while (!cursor.isAfter(dataFimReal)) {
             if (mesDoAno != null && diaDoMes != null) {
                 try {
-                    LocalDate dataFixa = LocalDate.of(atual.getYear(), mesDoAno, diaDoMes);
-                    if (!dataFixa.isBefore(atual.withDayOfYear(1)) && !dataFixa.isAfter(dataFimReal)) {
-                        if (!dataFixa.isBefore(atual)) {
+                    LocalDate dataFixa = LocalDate.of(cursor.getYear(), mesDoAno, diaDoMes);
+                    if (!dataFixa.isBefore(cursor.withDayOfYear(1)) && !dataFixa.isAfter(dataFimReal)) {
+                        if (!dataFixa.isBefore(cursor)) {
                             datas.add(dataFixa);
                         }
                     }
@@ -167,7 +172,7 @@ public record RegraRecorrencia(
                     // Skip invalid dates
                 }
             }
-            atual = atual.plusYears(intervalo);
+            cursor = cursor.plusYears(intervalo);
         }
     }
 }

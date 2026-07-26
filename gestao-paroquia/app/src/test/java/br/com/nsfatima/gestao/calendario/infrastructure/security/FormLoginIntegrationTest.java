@@ -10,6 +10,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Objects;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,8 +32,8 @@ class FormLoginIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"username\": \"joao.silva\",
-                                  \"password\": \"senha123\"
+                                  "username": "joao.silva",
+                                  "password": "senha123"
                                 }
                                 """))
                 .andExpect(status().isOk())
@@ -40,7 +42,8 @@ class FormLoginIntegrationTest {
 
         Cookie sessionCookie = result.getResponse().getCookie("JSESSIONID");
         if (sessionCookie == null && result.getRequest().getSession(false) != null) {
-            sessionCookie = new Cookie("JSESSIONID", result.getRequest().getSession(false).getId());
+            sessionCookie = new Cookie("JSESSIONID",
+                    Objects.requireNonNull(result.getRequest().getSession(false)).getId());
         }
         assertNotNull(sessionCookie);
     }
@@ -51,8 +54,8 @@ class FormLoginIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"username\": \"joao.silva\",
-                                  \"password\": \"senha-errada\"
+                                  "username": "joao.silva",
+                                  "password": "senha-errada"
                                 }
                                 """))
                 .andExpect(status().isUnauthorized())
@@ -65,8 +68,8 @@ class FormLoginIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"username\": \"usuario.inativo\",
-                                  \"password\": \"senha123\"
+                                  "username": "usuario.inativo",
+                                  "password": "senha123"
                                 }
                                 """))
                 .andExpect(status().isUnauthorized())
@@ -80,8 +83,8 @@ class FormLoginIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"username\": \"joao.silva\",
-                                  \"password\": \"senha123\"
+                                  "username": "joao.silva",
+                                  "password": "senha123"
                                 }
                                 """))
                 .andExpect(status().isOk())
@@ -89,7 +92,8 @@ class FormLoginIntegrationTest {
 
         Cookie sessionCookie = loginResult.getResponse().getCookie("JSESSIONID");
         if (sessionCookie == null && loginResult.getRequest().getSession(false) != null) {
-            sessionCookie = new Cookie("JSESSIONID", loginResult.getRequest().getSession(false).getId());
+            sessionCookie = new Cookie("JSESSIONID",
+                    Objects.requireNonNull(loginResult.getRequest().getSession(false)).getId());
         }
         assertNotNull(sessionCookie);
 

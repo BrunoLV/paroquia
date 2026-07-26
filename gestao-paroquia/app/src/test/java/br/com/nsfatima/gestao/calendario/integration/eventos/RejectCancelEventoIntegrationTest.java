@@ -62,8 +62,8 @@ class RejectCancelEventoIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"status\": \"REPROVADA\",
-                                  \"observacao\": \"Manter evento\"
+                                  "status": "REPROVADA",
+                                  "observacao": "Manter evento"
                                 }
                                 """))
                 .andExpect(status().isOk())

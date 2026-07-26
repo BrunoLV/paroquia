@@ -23,7 +23,7 @@ public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         if (repository.count() == 0) {
             ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
             config.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));

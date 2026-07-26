@@ -56,7 +56,7 @@ class EventoRecorrenciaIntegracaoTest {
     void shouldHandleFullRecurrenceLifecycle_OnlyThis() throws Exception {
         // 1. Create Base Event
         UUID baseId = UUID.randomUUID();
-        EventoEntity baseEvent = createEvento(baseId, "Base Recorrente", "CONFIRMADO", "2026-05-10T10:00:00Z");
+        EventoEntity baseEvent = createEvento(baseId, "Base Recorrente", "2026-05-10T10:00:00Z");
         eventoRepository.save(baseEvent);
 
         // 2. Configure Weekly Recurrence (Sundays)
@@ -121,7 +121,7 @@ class EventoRecorrenciaIntegracaoTest {
     void shouldHandleFullRecurrenceLifecycle_ThisAndFollowing() throws Exception {
         // 1. Create Base Event
         UUID baseId = UUID.randomUUID();
-        EventoEntity baseEvent = createEvento(baseId, "Serie Original", "CONFIRMADO", "2026-06-01T10:00:00Z");
+        EventoEntity baseEvent = createEvento(baseId, "Serie Original", "2026-06-01T10:00:00Z");
         eventoRepository.save(baseEvent);
 
         // 2. Configure Weekly Recurrence (Mondays)
@@ -138,7 +138,7 @@ class EventoRecorrenciaIntegracaoTest {
                         .content(rulePayload))
                 .andExpect(status().isOk());
 
-        UUID oldRuleId = recorrenciaRepository.findAll().get(0).getId();
+        UUID oldRuleId = recorrenciaRepository.findAll().getFirst().getId();
 
         // 3. Find instance on June 15th
         EventoEntity instance = eventoRepository.findAll().stream()
@@ -180,12 +180,12 @@ class EventoRecorrenciaIntegracaoTest {
         assertThat(updatedInstance.getTitulo()).isEqualTo("Nova Serie");
     }
 
-    private EventoEntity createEvento(UUID id, String titulo, String status, String inicio) {
+    private EventoEntity createEvento(UUID id, String titulo, String inicio) {
         EventoEntity entity = new EventoEntity();
         entity.setId(id);
         entity.setTitulo(titulo);
         entity.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
-        entity.setStatus(status);
+        entity.setStatus("CONFIRMADO");
         entity.setInicioUtc(Instant.parse(inicio));
         entity.setFimUtc(Instant.parse(inicio).plusSeconds(3600));
         return entity;

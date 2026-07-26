@@ -22,7 +22,7 @@ class ParoquiaConfiguracaoInitializerIntegrationTest {
         List<ParoquiaConfiguracaoEntity> configs = repository.findAll();
         assertFalse(configs.isEmpty(), "Should have initialized at least one configuration");
 
-        ParoquiaConfiguracaoEntity config = configs.get(0);
+        ParoquiaConfiguracaoEntity config = configs.getFirst();
         assertNotNull(config.getId());
         assertEquals("Paróquia Nossa Senhora de Fátima", config.getNome());
         assertEquals("Diocese de São Miguel Paulista", config.getDiocese());

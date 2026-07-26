@@ -10,10 +10,10 @@ public enum AprovadorPapel {
     CONSELHO_COORDENADOR("conselho-coordenador"),
     CONSELHO_VICE_COORDENADOR("conselho-vice-coordenador");
 
-    private final String storedValue;
+    private final String storedCode;
 
-    AprovadorPapel(String storedValue) {
-        this.storedValue = storedValue;
+    AprovadorPapel(String storedCode) {
+        this.storedCode = storedCode;
     }
 
     public static AprovadorPapel fromStoredValue(String rawValue) {
@@ -23,7 +23,7 @@ public enum AprovadorPapel {
 
         String normalized = rawValue.trim().toLowerCase(Locale.ROOT);
         for (AprovadorPapel value : values()) {
-            if (value.storedValue.equals(normalized)) {
+            if (value.storedCode.equals(normalized)) {
                 return value;
             }
         }
@@ -44,6 +44,6 @@ public enum AprovadorPapel {
     }
 
     public String storedValue() {
-        return storedValue;
+        return storedCode;
     }
 }

@@ -5,16 +5,16 @@
 guava = "33.6.0-jre"
 junit-jupiter = "6.1.0"
 caffeine = "3.2.4"
-spring-boot-plugin = "4.0.6"
+spring-boot-plugin = "4.1.0"
 spring-dependency-management-plugin = "1.1.7"
 flyway-plugin = "12.7.0"
 sonarqube-plugin = "7.3.0.8198"
+spotbugs-plugin = "6.4.8"
 springdoc-openapi = "3.0.3"
 apache-poi = "5.5.1"
 openpdf = "3.0.5"
 
 [libraries]
-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
@@ -25,4 +25,4 @@ openpdf = { module = "com.github.librepdf:openpdf", version.ref = "openpdf" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot-plugin" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management-plugin" }
 flyway = { id = "org.flywaydb.flyway", version.ref = "flyway-plugin" }
-sonarqube = { id = "org.sonarqube", version.ref = "sonarqube-plugin" }
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs-plugin" }

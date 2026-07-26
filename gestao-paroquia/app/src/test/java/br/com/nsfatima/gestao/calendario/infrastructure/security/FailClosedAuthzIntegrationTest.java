@@ -39,8 +39,8 @@ class FailClosedAuthzIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"username\": \"joao.silva\",
-                                  \"password\": \"senha123\"
+                                  "username": "joao.silva",
+                                  "password": "senha123"
                                 }
                                 """))
                 .andExpect(status().isServiceUnavailable())

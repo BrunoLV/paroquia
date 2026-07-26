@@ -58,7 +58,7 @@ class CancelEventoAuthorizationIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Sem autorizacao\"
+                                  "motivo": "Sem autorizacao"
                                 }
                                 """))
                 .andExpect(status().isForbidden())

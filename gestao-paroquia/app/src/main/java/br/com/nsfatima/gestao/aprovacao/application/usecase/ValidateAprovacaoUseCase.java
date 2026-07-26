@@ -20,14 +20,12 @@ public class ValidateAprovacaoUseCase {
             AprovadorPapel.PAROCO,
             AprovadorPapel.CONSELHO_COORDENADOR,
             AprovadorPapel.CONSELHO_VICE_COORDENADOR);
-
+    private static final String ERROR_MSG = "Approval is required for date change or cancellation";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
 
     public ValidateAprovacaoUseCase(AprovacaoJpaRepository aprovacaoJpaRepository) {
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
     }
-
-    private static final String ERROR_MSG = "Approval is required for date change or cancellation";
 
     public void validateRequired(UUID eventoId, UUID aprovacaoId) {
         if (aprovacaoId == null) {

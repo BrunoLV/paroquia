@@ -119,7 +119,7 @@ class ApprovalAutoExecutionFailureConsistencyIntegrationTest {
 
         UUID realEventId = UUID
                 .fromString(objectMapper.readTree(createResult.getResponse().getContentAsString())
-                        .get("id").asText());
+                        .get("id").asString());
         long countBefore = eventoJpaRepository.count();
 
         UUID approvalId = UUID.randomUUID();

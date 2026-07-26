@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
@@ -16,7 +17,6 @@ public class ListOrganizacaoMembrosUseCase {
 
     private final MembroOrganizacaoJpaRepository membershipRepository;
     private final UsuarioJpaRepository usuarioRepository;
-    private final MembroJpaRepository membroRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListOrganizacaoMembrosUseCase(
@@ -26,7 +26,6 @@ public class ListOrganizacaoMembrosUseCase {
             OrganizacaoJpaRepository organizacaoRepository) {
         this.membershipRepository = membershipRepository;
         this.usuarioRepository = usuarioRepository;
-        this.membroRepository = membroRepository;
         this.organizacaoRepository = organizacaoRepository;
     }
 
@@ -43,7 +42,7 @@ public class ListOrganizacaoMembrosUseCase {
         List<OrganizacaoMembroResponse> dbMembers = rawMembers.stream()
                 .map(m -> {
                     String userNome = usuarioRepository.findById(m.getUsuarioId())
-                            .map(u -> u.getNome())
+                            .map(UsuarioEntity::getNome)
                             .orElse("Usuário Desconhecido");
                     return new OrganizacaoMembroResponse(
                             m.getId(),
@@ -76,21 +75,17 @@ public class ListOrganizacaoMembrosUseCase {
             return;
         }
 
-        UUID userId = usuarioRepository.findAll().stream()
+        usuarioRepository.findAll().stream()
                 .filter(u -> name.equalsIgnoreCase(u.getNome()))
-                .map(br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity::getId)
-                .findFirst()
-                .orElse(null);
+                .map(UsuarioEntity::getId)
+                .findFirst().ifPresent(userId -> list.add(new OrganizacaoMembroResponse(
+                        UUID.randomUUID(), // dummy membership ID
+                        userId,
+                        name,
+                        papel,
+                        true
+                )));
 
-        if (userId != null) {
-            list.add(new OrganizacaoMembroResponse(
-                    UUID.randomUUID(), // dummy membership ID
-                    userId,
-                    name,
-                    papel,
-                    true
-            ));
-        }
     }
 
 }

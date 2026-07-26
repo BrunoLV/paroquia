@@ -30,14 +30,12 @@ class PastoralMovimentoOficialApiIntegrationTest {
     @Autowired
     private OrganizacaoJpaRepository organizacaoRepository;
 
-    private UUID cleroId;
-    private UUID matrizId;
     private UUID conselhoId;
 
     @BeforeEach
     void setUp() {
-        cleroId = UUID.fromString("00000000-0000-0000-0000-0000000000dd");
-        matrizId = UUID.fromString("00000000-0000-0000-0000-000000000100");
+        UUID cleroId = UUID.fromString("00000000-0000-0000-0000-0000000000dd");
+        UUID matrizId = UUID.fromString("00000000-0000-0000-0000-000000000100");
         conselhoId = UUID.fromString("00000000-0000-0000-0000-0000000000cc");
 
         // Clero

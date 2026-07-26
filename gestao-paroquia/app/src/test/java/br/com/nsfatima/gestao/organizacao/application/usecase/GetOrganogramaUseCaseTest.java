@@ -103,7 +103,7 @@ class GetOrganogramaUseCaseTest {
         assertThat(root.children()).hasSize(1); // Only Igreja Matriz
 
         // Verify Igreja Matriz (child of Clero)
-        OrganogramaNodeResponse matrizNode = root.children().get(0);
+        OrganogramaNodeResponse matrizNode = root.children().getFirst();
         assertThat(matrizNode.label()).isEqualTo("Igreja Matriz");
         assertThat(matrizNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(matrizNode.subtype()).isEqualTo("MATRIZ");
@@ -126,14 +126,14 @@ class GetOrganogramaUseCaseTest {
         assertThat(conselhoEconomicoNode.children()).isEmpty();
 
         // Verify Pastoral Node (child of Conselho Pastoral)
-        OrganogramaNodeResponse pastoralNode = conselhoNode.children().get(0);
+        OrganogramaNodeResponse pastoralNode = conselhoNode.children().getFirst();
         assertThat(pastoralNode.label()).isEqualTo("Pastoral da Catequese");
         assertThat(pastoralNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(pastoralNode.subtype()).isEqualTo("PASTORAL");
         assertThat(pastoralNode.children()).hasSize(1); // Contains Member
 
         // Verify Member Node (child of Pastoral)
-        OrganogramaNodeResponse memberNode = pastoralNode.children().get(0);
+        OrganogramaNodeResponse memberNode = pastoralNode.children().getFirst();
         assertThat(memberNode.label()).isEqualTo("João Santos");
         assertThat(memberNode.type()).isEqualTo("MEMBRO");
         assertThat(memberNode.subtype()).isEqualTo("membro");

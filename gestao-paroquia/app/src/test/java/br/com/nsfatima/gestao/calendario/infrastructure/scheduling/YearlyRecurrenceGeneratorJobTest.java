@@ -25,14 +25,13 @@ import static org.mockito.Mockito.when;
 class YearlyRecurrenceGeneratorJobTest {
 
     private EventoRecorrenciaJpaRepository recurrenceRepository;
-    private JobLockJpaRepository lockRepository;
     private FakeEventoRepository eventRepository;
     private YearlyRecurrenceGeneratorJob job;
 
     @BeforeEach
     void setUp() {
         recurrenceRepository = mock(EventoRecorrenciaJpaRepository.class);
-        lockRepository = mock(JobLockJpaRepository.class);
+        JobLockJpaRepository lockRepository = mock(JobLockJpaRepository.class);
         eventRepository = new FakeEventoRepository();
         job = new YearlyRecurrenceGeneratorJob(recurrenceRepository, eventRepository, lockRepository);
     }

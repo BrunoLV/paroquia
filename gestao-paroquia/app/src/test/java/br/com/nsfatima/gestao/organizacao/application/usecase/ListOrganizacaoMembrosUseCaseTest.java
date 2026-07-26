@@ -72,7 +72,7 @@ class ListOrganizacaoMembrosUseCaseTest {
         List<OrganizacaoMembroResponse> response = useCase.execute(orgId);
 
         assertThat(response).hasSize(1);
-        assertThat(response.get(0).usuarioNome()).isEqualTo("João da Silva");
-        assertThat(response.get(0).papel()).isEqualTo("COORDENADOR");
+        assertThat(response.getFirst().usuarioNome()).isEqualTo("João da Silva");
+        assertThat(response.getFirst().papel()).isEqualTo("COORDENADOR");
     }
 }

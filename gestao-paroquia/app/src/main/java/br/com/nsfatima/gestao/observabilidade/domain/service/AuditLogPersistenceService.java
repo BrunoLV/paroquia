@@ -28,7 +28,7 @@ import java.util.UUID;
 public class AuditLogPersistenceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogPersistenceService.class);
-
+    private static final String KEY_CORRELATION_ID = "correlationId";
     private final AuditoriaOperacaoJpaRepository repository;
     private final ObjectMapper objectMapper;
 
@@ -51,8 +51,6 @@ public class AuditLogPersistenceService {
 
         persistAuditableRecord(actor, action, target, result, enriched);
     }
-
-    private static final String KEY_CORRELATION_ID = "correlationId";
 
     private Map<String, Object> enrichMetadata(String result, Map<String, Object> metadata) {
         Map<String, Object> enriched = new LinkedHashMap<>(metadata);

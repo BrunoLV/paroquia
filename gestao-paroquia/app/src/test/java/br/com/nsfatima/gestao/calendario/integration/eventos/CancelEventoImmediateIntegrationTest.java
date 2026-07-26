@@ -54,7 +54,7 @@ class CancelEventoImmediateIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Evento suprimido pelo conselho paroquial\"
+                                  "motivo": "Evento suprimido pelo conselho paroquial"
                                 }
                                 """))
                 .andExpect(status().isOk())
@@ -67,7 +67,7 @@ class CancelEventoImmediateIntegrationTest {
 
         List<ObservacaoEventoEntity> observacoes = observacaoEventoJpaRepository.findByEventoId(eventoId);
         assertThat(observacoes).hasSize(1);
-        assertThat(observacoes.get(0).getTipo()).isEqualTo("CANCELAMENTO");
-        assertThat(observacoes.get(0).getConteudo()).isEqualTo("Evento suprimido pelo conselho paroquial");
+        assertThat(observacoes.getFirst().getTipo()).isEqualTo("CANCELAMENTO");
+        assertThat(observacoes.getFirst().getConteudo()).isEqualTo("Evento suprimido pelo conselho paroquial");
     }
 }

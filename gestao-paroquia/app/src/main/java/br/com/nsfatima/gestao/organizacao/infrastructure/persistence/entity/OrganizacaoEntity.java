@@ -18,20 +18,20 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 255, unique = true)
+    @Column(nullable = false, unique = true)
     private String nome;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
     private TipoOrganizacao tipo;
 
-    @Column(length = 255)
+    @Column()
     private String contato;
 
-    @Column(name = "coordenador", length = 255)
+    @Column(name = "coordenador")
     private String coordenador;
 
-    @Column(name = "vice_coordenador", length = 255)
+    @Column(name = "vice_coordenador")
     private String viceCoordenador;
 
     @Column(nullable = false)

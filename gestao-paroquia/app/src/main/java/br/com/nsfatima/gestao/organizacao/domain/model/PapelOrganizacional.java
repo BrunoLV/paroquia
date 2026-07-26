@@ -12,10 +12,10 @@ public enum PapelOrganizacional {
     PADRE("padre"),
     SECRETARIO("secretario");
 
-    private final String storedValue;
+    private final String storedCode;
 
-    PapelOrganizacional(String storedValue) {
-        this.storedValue = storedValue;
+    PapelOrganizacional(String storedCode) {
+        this.storedCode = storedCode;
     }
 
     public static PapelOrganizacional fromStoredValue(String rawValue) {
@@ -25,7 +25,7 @@ public enum PapelOrganizacional {
 
         String normalized = rawValue.trim().toLowerCase(Locale.ROOT);
         for (PapelOrganizacional role : values()) {
-            if (role.storedValue.equals(normalized)) {
+            if (role.storedCode.equals(normalized)) {
                 return role;
             }
         }
@@ -33,6 +33,6 @@ public enum PapelOrganizacional {
     }
 
     public String storedValue() {
-        return storedValue;
+        return storedCode;
     }
 }

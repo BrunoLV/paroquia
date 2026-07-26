@@ -49,7 +49,7 @@ class ObservacaoMutationAuthorizationIntegrationTest {
                 .andReturn();
 
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
-        UUID observacaoId = UUID.fromString(created.path("id").asText());
+        UUID observacaoId = UUID.fromString(created.path("id").asString());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
                         .header("X-Actor-Role", "membro")

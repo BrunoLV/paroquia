@@ -54,7 +54,7 @@ class CancelEventoAuditTrailIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Gerar trilha de pending\"
+                                  "motivo": "Gerar trilha de pending"
                                 }
                                 """))
                 .andExpect(status().isAccepted())
@@ -69,8 +69,8 @@ class CancelEventoAuditTrailIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"status\": \"APROVADA\",
-                                  \"observacao\": \"Aprovar e executar\"
+                                  "status": "APROVADA",
+                                  "observacao": "Aprovar e executar"
                                 }
                                 """))
                 .andExpect(status().isOk());

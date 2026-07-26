@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.FluentQuery;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -88,8 +89,7 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
                 .filter(e -> e.getEventoId().equals(eventoId)
                         && e.getTipoSolicitacao().equals(tipo)
                         && e.getStatus().equalsIgnoreCase(status))
-                .sorted(Comparator.comparing(AprovacaoEntity::getCriadoEmUtc).reversed())
-                .findFirst();
+                .max(Comparator.comparing(AprovacaoEntity::getCriadoEmUtc));
     }
 
     // Default JPA methods (simplified)
@@ -172,19 +172,21 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     public void deleteAllInBatch() {
     }
 
+    @Deprecated
     @Override
     public AprovacaoEntity getOne(UUID uuid) {
-        return findById(uuid).orElse(null);
+        return Objects.requireNonNull(findById(uuid).orElse(null));
     }
 
+    @Deprecated
     @Override
     public AprovacaoEntity getById(UUID uuid) {
-        return findById(uuid).orElse(null);
+        return Objects.requireNonNull(findById(uuid).orElse(null));
     }
 
     @Override
     public AprovacaoEntity getReferenceById(UUID uuid) {
-        return findById(uuid).orElse(null);
+        return Objects.requireNonNull(findById(uuid).orElse(null));
     }
 
     @Override

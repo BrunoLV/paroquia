@@ -15,10 +15,10 @@ public class ParoquiaConfiguracaoEntity extends BaseVersionedEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String diocese;
 
     @Column(nullable = false, length = 500)

@@ -53,7 +53,7 @@ class CancelEventoApprovalRequestIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Aguardando aprovacao do conselho\"
+                                  "motivo": "Aguardando aprovacao do conselho"
                                 }
                                 """))
                 .andExpect(status().isAccepted())

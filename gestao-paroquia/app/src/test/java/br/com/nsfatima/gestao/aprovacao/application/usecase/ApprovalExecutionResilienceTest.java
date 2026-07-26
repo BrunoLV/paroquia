@@ -28,11 +28,6 @@ class ApprovalExecutionResilienceTest {
 
     private AprovacaoJpaRepository repository;
     private EventoActorContextResolver actorContextResolver;
-    private ApplicationEventPublisher eventPublisher;
-    private ValidateAprovacaoUseCase validateAprovacaoUseCase;
-    private ApprovalActionPayloadMapper payloadMapper;
-    private ApprovalAuditPublisher auditPublisher;
-    private ApprovalMetricsPublisher metricsPublisher;
     private DecideSolicitacaoAprovacaoUseCase decideUseCase;
     private List<ApprovalExecutionStrategy> strategies;
 
@@ -40,11 +35,11 @@ class ApprovalExecutionResilienceTest {
     void setUp() {
         repository = mock(AprovacaoJpaRepository.class);
         actorContextResolver = mock(EventoActorContextResolver.class);
-        eventPublisher = mock(ApplicationEventPublisher.class);
-        validateAprovacaoUseCase = mock(ValidateAprovacaoUseCase.class);
-        payloadMapper = mock(ApprovalActionPayloadMapper.class);
-        auditPublisher = mock(ApprovalAuditPublisher.class);
-        metricsPublisher = mock(ApprovalMetricsPublisher.class);
+        ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+        ValidateAprovacaoUseCase validateAprovacaoUseCase = mock(ValidateAprovacaoUseCase.class);
+        ApprovalActionPayloadMapper payloadMapper = mock(ApprovalActionPayloadMapper.class);
+        ApprovalAuditPublisher auditPublisher = mock(ApprovalAuditPublisher.class);
+        ApprovalMetricsPublisher metricsPublisher = mock(ApprovalMetricsPublisher.class);
 
         ApprovalExecutionStrategy createStrategy = mock(ApprovalExecutionStrategy.class);
         when(createStrategy.supports(TipoSolicitacaoInput.CRIACAO_EVENTO)).thenReturn(true);
@@ -85,9 +80,8 @@ class ApprovalExecutionResilienceTest {
         ApprovalExecutionStrategy strategy = strategies.get(2); // cancel
         when(strategy.execute(any(), any())).thenThrow(new RuntimeException("Crash"));
 
-        assertThrows(ApprovalExecutionFailedException.class, () -> {
-            decideUseCase.decide(id, new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Ready to go"));
-        });
+        assertThrows(ApprovalExecutionFailedException.class, () -> decideUseCase.decide(id,
+                new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Ready to go")));
 
         assertEquals(AprovacaoStatus.FALHA_EXECUCAO.name(), entity.getStatus());
         assertTrue(entity.getMensagemErroExecucao().contains("Crash"));

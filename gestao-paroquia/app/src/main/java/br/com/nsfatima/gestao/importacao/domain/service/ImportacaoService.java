@@ -54,16 +54,20 @@ public class ImportacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(ImportacaoService.class);
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-
+    private static final String TYPE_MEMBRO = "MEMBRO";
+    private static final String TYPE_USUARIO = "USUARIO";
+    private static final String TYPE_ORGANIZACAO = "ORGANIZACAO";
+    private static final String TYPE_EVENTO = "EVENTO";
+    private static final String KEY_NOME = "nome";
+    private static final String ERR_NOME_REQUIRED = "O campo 'nome' é obrigatório.";
+    private static final String KEY_IGREJA_ID = "igrejaId";
     private final CreateMembroUseCase createMembroUseCase;
-    private final MembroJpaRepository membroJpaRepository;
     private final UsuarioJpaRepository usuarioJpaRepository;
     private final OrganizacaoService organizacaoService;
     private final EventoJpaRepository eventoJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
-
     public ImportacaoService(CreateMembroUseCase createMembroUseCase,
                              MembroJpaRepository membroJpaRepository,
                              UsuarioJpaRepository usuarioJpaRepository,
@@ -73,7 +77,6 @@ public class ImportacaoService {
                              OrganizacaoJpaRepository organizacaoJpaRepository,
                              PastoralMovimentoOficialRepository pastoralOficialRepository) {
         this.createMembroUseCase = createMembroUseCase;
-        this.membroJpaRepository = membroJpaRepository;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
         this.eventoJpaRepository = eventoJpaRepository;
@@ -116,14 +119,6 @@ public class ImportacaoService {
         }
         return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
-
-    private static final String TYPE_MEMBRO = "MEMBRO";
-    private static final String TYPE_USUARIO = "USUARIO";
-    private static final String TYPE_ORGANIZACAO = "ORGANIZACAO";
-    private static final String TYPE_EVENTO = "EVENTO";
-    private static final String KEY_NOME = "nome";
-    private static final String ERR_NOME_REQUIRED = "O campo 'nome' é obrigatório.";
-    private static final String KEY_IGREJA_ID = "igrejaId";
 
     private String getHeadersParaTipo(String tipo) {
         return switch (tipo.toUpperCase()) {
@@ -426,7 +421,7 @@ public class ImportacaoService {
                     default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
                 }
             } catch (Exception e) {
-                log.error("Erro ao importar registro de {}: {}", tipo, e.getMessage(), e);
+                log.error("Erro ao importar registro de {}: {}", tipo, e.getMessage());
             }
         }
         return count;
@@ -456,7 +451,7 @@ public class ImportacaoService {
                     .filter(o -> o.getTipo() == TipoOrganizacao.CLERO || o.getTipo() == TipoOrganizacao.MATRIZ)
                     .map(OrganizacaoEntity::getId)
                     .findFirst()
-                    .orElse(all.get(0).getId());
+                    .orElse(all.getFirst().getId());
         }
 
         if (tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CONSELHO_ECONOMICO) {
@@ -466,7 +461,7 @@ public class ImportacaoService {
                             || o.getTipo() == TipoOrganizacao.CLERO)
                     .map(OrganizacaoEntity::getId)
                     .findFirst()
-                    .orElse(all.get(0).getId());
+                    .orElse(all.getFirst().getId());
         }
 
         if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
@@ -474,10 +469,10 @@ public class ImportacaoService {
                     .filter(o -> o.getTipo() == TipoOrganizacao.CONSELHO_PASTORAL)
                     .map(OrganizacaoEntity::getId)
                     .findFirst()
-                    .orElse(all.get(0).getId());
+                    .orElse(all.getFirst().getId());
         }
 
-        return all.get(0).getId();
+        return all.getFirst().getId();
     }
 
     private UUID resolvePastoralOficialId(TipoOrganizacao tipo, String inputId, String orgNome) {
@@ -513,7 +508,7 @@ public class ImportacaoService {
         if (organizacaoJpaRepository != null) {
             List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
             if (all != null && !all.isEmpty()) {
-                return all.get(0).getId();
+                return all.getFirst().getId();
             }
         }
 

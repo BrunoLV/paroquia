@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.calendario.infrastructure.export;
 import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
+import org.jspecify.annotations.NonNull;
 import org.openpdf.text.Document;
 import org.openpdf.text.DocumentException;
 import org.openpdf.text.Font;
@@ -25,11 +26,11 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class PdfCalendarioExporter implements CalendarioExporter {
@@ -94,8 +95,8 @@ public class PdfCalendarioExporter implements CalendarioExporter {
             } else {
                 // Ordena os eventos cronologicamente por início
                 List<EventoEntity> eventosOrdenados = eventos.stream()
-                        .sorted((e1, e2) -> e1.getInicioUtc().compareTo(e2.getInicioUtc()))
-                        .collect(Collectors.toList());
+                        .sorted(Comparator.comparing(EventoEntity::getInicioUtc))
+                        .toList();
 
                 String ultimoMesAno = null;
                 PdfPTable currentTable = null;
@@ -113,7 +114,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
 
                         // Título do Mês
                         String tituloMes = zdt.format(DateTimeFormatter.ofPattern("MMMM 'de' yyyy",
-                                new Locale("pt", "BR"))).toUpperCase();
+                                Locale.of("pt", "BR"))).toUpperCase();
 
                         Font fontMonth = new Font(Font.HELVETICA, 12, Font.BOLD, primaryColor);
                         Paragraph pMonth = new Paragraph(tituloMes, fontMonth);
@@ -242,29 +243,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
 
             // 2. Cabeçalho
             try {
-                PdfPTable headerTable = new PdfPTable(2);
-                headerTable.setTotalWidth(770);
-                headerTable.setWidths(new float[] {1, 25});
-
-                PdfPCell logoCell;
-                if (logoHeader != null) {
-                    logoCell = new PdfPCell(logoHeader);
-                } else {
-                    logoCell = new PdfPCell(new Phrase(""));
-                }
-                logoCell.setBorder(PdfPCell.BOTTOM);
-                logoCell.setBorderColor(Color.LIGHT_GRAY);
-                logoCell.setPaddingBottom(5);
-                logoCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
-                headerTable.addCell(logoCell);
-
-                PdfPCell textCell = new PdfPCell(new Phrase(paroquiaNome, headerFont));
-                textCell.setBorder(PdfPCell.BOTTOM);
-                textCell.setBorderColor(Color.LIGHT_GRAY);
-                textCell.setPaddingBottom(5);
-                textCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
-                textCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-                headerTable.addCell(textCell);
+                PdfPTable headerTable = createHeaderTable();
 
                 headerTable.writeSelectedRows(0, -1, 36, 565, canvasOver);
             } catch (Exception e) {
@@ -287,6 +266,33 @@ public class PdfCalendarioExporter implements CalendarioExporter {
             } catch (Exception e) {
                 // ignore
             }
+        }
+
+        private @NonNull PdfPTable createHeaderTable() {
+            PdfPTable headerTable = new PdfPTable(2);
+            headerTable.setTotalWidth(770);
+            headerTable.setWidths(new float[] {1, 25});
+
+            PdfPCell logoCell;
+            if (logoHeader != null) {
+                logoCell = new PdfPCell(logoHeader);
+            } else {
+                logoCell = new PdfPCell(new Phrase(""));
+            }
+            logoCell.setBorder(PdfPCell.BOTTOM);
+            logoCell.setBorderColor(Color.LIGHT_GRAY);
+            logoCell.setPaddingBottom(5);
+            logoCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+            headerTable.addCell(logoCell);
+
+            PdfPCell textCell = new PdfPCell(new Phrase(paroquiaNome, headerFont));
+            textCell.setBorder(PdfPCell.BOTTOM);
+            textCell.setBorderColor(Color.LIGHT_GRAY);
+            textCell.setPaddingBottom(5);
+            textCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+            textCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+            headerTable.addCell(textCell);
+            return headerTable;
         }
     }
 }

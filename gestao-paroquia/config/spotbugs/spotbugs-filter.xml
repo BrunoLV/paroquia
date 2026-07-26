@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+    xmlns="https://github.com/spotbugs/filter/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://github.com/spotbugs/filter/2.0.0 https://raw.githubusercontent.com/spotbugs/filter/2.0.0/src/site/resources/xsd/filter.xsd">
+
+    <!-- 1. CÓDIGO GERADO AUTOMATICAMENTE: Ignora falsos positivos gerados pelo Lombok -->
+    <Match>
+        <Class name="~.*\.lombok\..*"/>
+    </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+        <!-- Ignora avisos de exposição de representação interna comuns em DTOs/Getters/Setters gerados pelo Lombok -->
+    </Match>
+
+    <!-- 2. CAMADA DE TESTES: Ignora asserções e arquiteturas de teste de unidade/integração -->
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+    <Match>
+        <Class name="~.*IT$"/>
+    </Match>
+
+    <!-- 3. ECOSSISTEMA SPRING: Ajustes para injeção de dependência via Proxy e Fields -->
+    <Match>
+        <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+        <!-- Spring inicializa beans via reflexão tardia; o SpotBugs nativo acha que o campo ficará nulo -->
+    </Match>
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+        <!-- Evita conflito com blocos try-with-resources do Java moderno compilados no bytecode -->
+    </Match>
+</FindBugsFilter>

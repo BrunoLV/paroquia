@@ -121,8 +121,8 @@ class MembroControllerIntegrationTest {
         var userAlice = createUsuario("Alice");
         var userBob = createUsuario("Bob");
 
-        createMembro(userAlice.getId(), ORG_ID);
-        createMembro(userBob.getId(), ORG_ID);
+        createMembro(userAlice.getId());
+        createMembro(userBob.getId());
 
         mockMvc.perform(get("/api/v1/membros")
                         .with(authentication(getAdminAuth()))
@@ -177,11 +177,11 @@ class MembroControllerIntegrationTest {
         return usuarioRepository.saveAndFlush(usuario);
     }
 
-    private void createMembro(UUID usuarioId, UUID orgId) {
+    private void createMembro(UUID usuarioId) {
         var entity = new MembroEntity();
         entity.setId(UUID.randomUUID());
         entity.setUsuarioId(usuarioId);
-        entity.setOrganizacaoId(orgId);
+        entity.setOrganizacaoId(MembroControllerIntegrationTest.ORG_ID);
         entity.setPapel("MEMBRO");
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);

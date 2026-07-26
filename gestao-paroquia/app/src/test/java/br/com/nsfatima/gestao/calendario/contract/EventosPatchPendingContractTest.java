@@ -54,7 +54,7 @@ class EventosPatchPendingContractTest {
                 .andReturn();
 
         String eventoIdStr = objectMapper.readTree(createResult.getResponse().getContentAsString())
-                .get("id").asText();
+                .get("id").asString();
 
         // Contract: PATCH with sensitive field + coordenador/PASTORAL → 202 ACCEPTED
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoIdStr)

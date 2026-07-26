@@ -32,12 +32,12 @@ class EventosContractTest {
     void shouldCreateEventoWithCanonicalEnumNormalization() throws Exception {
         String payload = """
                       {
-                        \"titulo\": \"Missa\",
-                                                \"organizacaoResponsavelId\": \"00000000-0000-0000-0000-0000000000aa\",
-                        \"inicio\": \"2026-03-15T10:00:00Z\",
-                \"fim\": \"2026-03-15T11:00:00Z\",
-                \"status\": \"  adicionado_extra  \",
-                \"adicionadoExtraJustificativa\": \"Cobertura extraordinaria\"
+                        "titulo": "Missa",
+                                                "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                        "inicio": "2026-03-15T10:00:00Z",
+                "fim": "2026-03-15T11:00:00Z",
+                "status": "  adicionado_extra  ",
+                "adicionadoExtraJustificativa": "Cobertura extraordinaria"
                       }
                 """;
 

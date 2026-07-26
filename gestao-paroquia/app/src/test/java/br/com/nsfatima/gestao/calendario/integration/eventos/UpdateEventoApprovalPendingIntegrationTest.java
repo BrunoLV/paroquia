@@ -57,7 +57,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
                 .andReturn();
 
         String eventoIdStr = objectMapper.readTree(createResult.getResponse().getContentAsString())
-                .get("id").asText();
+                .get("id").asString();
         UUID eventoId = UUID.fromString(eventoIdStr);
 
         long aprovacoesBefore = aprovacaoJpaRepository.count();
@@ -83,7 +83,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
         assertThat(aprovacaoJpaRepository.count()).isEqualTo(aprovacoesBefore + 1);
 
         String aprovacaoIdStr = objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText();
+                .get("solicitacaoAprovacaoId").asString();
         var aprovacao = aprovacaoJpaRepository.findById(UUID.fromString(aprovacaoIdStr)).orElseThrow();
         System.err.println("DEBUG ACTUAL ROLE: [" + aprovacao.getSolicitantePapel() + "]");
         assertThat(aprovacao.getEventoId()).isEqualTo(eventoId);
@@ -120,7 +120,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
                 .andReturn();
 
         String eventoIdStr = objectMapper.readTree(createResult.getResponse().getContentAsString())
-                .get("id").asText();
+                .get("id").asString();
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoIdStr)
                         .header("X-Actor-Role", "vice-coordenador")

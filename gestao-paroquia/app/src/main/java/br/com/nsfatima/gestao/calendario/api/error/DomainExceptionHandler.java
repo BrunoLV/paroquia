@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.support.api.v1.error;
+package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.CalendarLockedException;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
@@ -10,6 +10,10 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavel
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
+import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
+import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
+import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;

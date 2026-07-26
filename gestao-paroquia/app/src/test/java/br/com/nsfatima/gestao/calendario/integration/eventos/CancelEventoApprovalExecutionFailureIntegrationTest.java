@@ -62,8 +62,8 @@ class CancelEventoApprovalExecutionFailureIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"status\": \"APROVADA\",
-                                  \"observacao\": \"Tentar executar\"
+                                  "status": "APROVADA",
+                                  "observacao": "Tentar executar"
                                 }
                                 """))
                 .andExpect(status().isConflict())

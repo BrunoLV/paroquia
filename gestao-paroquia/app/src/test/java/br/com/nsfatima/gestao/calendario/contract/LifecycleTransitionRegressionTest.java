@@ -46,7 +46,7 @@ class LifecycleTransitionRegressionTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Nao pode cancelar fora de confirmado\"
+                                  "motivo": "Nao pode cancelar fora de confirmado"
                                 }
                                 """))
                 .andExpect(status().isConflict())
@@ -73,7 +73,7 @@ class LifecycleTransitionRegressionTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
                                 {
-                                  \"status\": \"cancelado\"
+                                  "status": "cancelado"
                                 }
                                 """))
                 .andExpect(status().isAccepted())

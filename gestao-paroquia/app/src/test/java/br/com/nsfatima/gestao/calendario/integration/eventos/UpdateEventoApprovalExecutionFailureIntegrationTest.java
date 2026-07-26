@@ -64,8 +64,7 @@ class UpdateEventoApprovalExecutionFailureIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id")
-                        .asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // Setup approval with invalid/non-existent eventoId in payload
         UUID aprovacaoId = UUID.randomUUID();

@@ -61,8 +61,8 @@ class ApprovalAlreadyDecidedIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"status\": \"APROVADA\",
-                                  \"observacao\": \"tentar decidir novamente\"
+                                  "status": "APROVADA",
+                                  "observacao": "tentar decidir novamente"
                                 }
                                 """))
                 .andExpect(status().isConflict())

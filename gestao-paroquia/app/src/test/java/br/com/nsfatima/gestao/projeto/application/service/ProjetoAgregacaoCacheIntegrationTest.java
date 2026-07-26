@@ -10,6 +10,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ class ProjetoAgregacaoCacheIntegrationTest {
         when(projetoRepository.findById(projetoId)).thenReturn(Optional.of(entity));
 
         // Ensure cache is clear
-        cacheManager.getCache("projectResumo").clear();
+        Objects.requireNonNull(cacheManager.getCache("projectResumo")).clear();
 
         // First call - should hit repository
         service.obterResumo(projetoId);

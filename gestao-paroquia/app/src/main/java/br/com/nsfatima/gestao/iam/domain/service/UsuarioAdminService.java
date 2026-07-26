@@ -15,11 +15,19 @@ import java.util.UUID;
 @Transactional
 public class UsuarioAdminService {
 
+    private static final String AUDIT_ACTOR = "admin";
+    private static final String AUDIT_ACTION = "admin-action";
+    private static final String AUDIT_TARGET = "user";
+    private static final String AUDIT_RESULT = "success";
+    private static final String KEY_RESOURCE_TYPE = "resourceType";
+    private static final String VALUE_RESOURCE_TYPE = "USER";
+    private static final String KEY_RESOURCE_ID = "resourceId";
+    private static final String KEY_USER_ID = "userId";
+    private static final String KEY_ACTION = "action";
     private final UsuarioJpaRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditLogPersistenceService auditLogService;
     private final UsuarioAuthorizationService authorizationService;
-
     public UsuarioAdminService(
             UsuarioJpaRepository usuarioRepository,
             PasswordEncoder passwordEncoder,
@@ -30,16 +38,6 @@ public class UsuarioAdminService {
         this.auditLogService = auditLogService;
         this.authorizationService = authorizationService;
     }
-
-    private static final String AUDIT_ACTOR = "admin";
-    private static final String AUDIT_ACTION = "admin-action";
-    private static final String AUDIT_TARGET = "user";
-    private static final String AUDIT_RESULT = "success";
-    private static final String KEY_RESOURCE_TYPE = "resourceType";
-    private static final String VALUE_RESOURCE_TYPE = "USER";
-    private static final String KEY_RESOURCE_ID = "resourceId";
-    private static final String KEY_USER_ID = "userId";
-    private static final String KEY_ACTION = "action";
 
     @Transactional
     public void toggleActiveStatus(UUID id, boolean enabled) {

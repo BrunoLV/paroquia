@@ -24,7 +24,7 @@ public class AuditoriaOperacaoEntity {
     @Column(name = "recurso_tipo", nullable = false, length = 64)
     private String recursoTipo;
 
-    @Column(name = "recurso_id", nullable = false, length = 255)
+    @Column(name = "recurso_id", nullable = false)
     private String recursoId;
 
     @Column(nullable = false, length = 64)
@@ -33,7 +33,7 @@ public class AuditoriaOperacaoEntity {
     @Column(nullable = false, length = 32)
     private String resultado;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String ator;
 
     @Column(name = "ator_usuario_id")

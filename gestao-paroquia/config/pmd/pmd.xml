@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<ruleset name="Enterprise Market Standard Ruleset"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>
+        Configuração robusta de PMD para Java Moderno e Ecossistema Spring Boot.
+        Foco em segurança, concorrência, performance e manutenibilidade.
+    </description>
+
+    <!-- Exclui arquivos de teste da análise do PMD -->
+    <exclude-pattern>.*/src/test/.*</exclude-pattern>
+
+    <!-- ================================================================= -->
+    <!-- 1. BEST PRACTICES (Boas Práticas de Mercado)                      -->
+    <!-- ================================================================= -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="GuardLogStatement"/>
+        <exclude name="UseCollectionIsEmpty"/>
+        <exclude name="LooseCoupling"/>
+        <exclude name="UnusedLocalVariable"/>
+        <exclude name="UnusedFormalParameter"/>
+        <exclude name="UnusedPrivateMethod"/>
+        <exclude name="PreserveStackTrace"/>
+        <exclude name="MethodReturnsInternalArray"/>
+        <exclude name="ArrayIsStoredDirectly"/>
+        <exclude name="LiteralsFirstInComparisons"/>
+        <exclude name="ImplicitFunctionalInterface"/>
+    </rule>
+
+    <!-- ================================================================= -->
+    <!-- 2. DESIGN & COMPLEXIDADE (Arquitetura e Manutenibilidade)         -->
+    <!-- ================================================================= -->
+    <rule ref="category/java/design.xml">
+        <exclude name="LawOfDemeter"/>
+        <exclude name="TooManyMethods"/>
+        <exclude name="TooManyFields"/>
+        <exclude name="DataClass"/>
+        <exclude name="UseObjectForClearerAPI"/>
+        <exclude name="CognitiveComplexity"/>
+        <exclude name="CyclomaticComplexity"/>
+        <exclude name="NPathComplexity"/>
+        <exclude name="CouplingBetweenObjects"/>
+        <exclude name="GodClass"/>
+        <exclude name="AvoidDeeplyNestedIfStmts"/>
+        <exclude name="AvoidCatchingGenericException"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <exclude name="ExcessiveImports"/>
+        <exclude name="ExcessiveParameterList"/>
+        <exclude name="ExceptionAsFlowControl"/>
+        <exclude name="SimplifyBooleanReturns"/>
+        <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
+        <exclude name="CollapsibleIfStatements"/>
+        <exclude name="SimplifiedTernary"/>
+        <exclude name="NcssCount"/>
+        <exclude name="ImmutableField"/>
+        <exclude name="UseUtilityClass"/>
+        <exclude name="SignatureDeclareThrowsException"/>
+    </rule>
+
+    <!-- ================================================================= -->
+    <!-- 3. ERROR PRONE (Códigos propensos a Bugs Ocultos)                 -->
+    <!-- ================================================================= -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="ReturnEmptyCollectionRatherThanNull"/>
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <exclude name="MissingSerialVersionUID"/>
+        <exclude name="NullAssignment"/>
+        <exclude name="AssignmentInOperand"/>
+        <exclude name="EmptyCatchBlock"/>
+        <exclude name="UnusedNullCheckInEquals"/>
+        <exclude name="AvoidDuplicateLiterals"/>
+        <exclude name="UseLocaleWithCaseConversions"/>
+    </rule>
+    
+    <!-- Crucial para Spring/JPA: Proíbe retornar null em listas/coleções. Força Collections.emptyList() -->
+    <rule ref="category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull"/>
+
+    <!-- ================================================================= -->
+    <!-- 4. PERFORMANCE (Eficiência de Memória e CPU)                      -->
+    <!-- ================================================================= -->
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+        <exclude name="UseStringBufferForStringAppends"/>
+        <exclude name="InsufficientStringBufferDeclaration"/>
+        <exclude name="ConsecutiveAppendsShouldReuse"/>
+        <exclude name="ConsecutiveLiteralAppends"/>
+        <exclude name="InefficientEmptyStringCheck"/>
+        <exclude name="AppendCharacterWithChar"/>
+    </rule>
+
+    <!-- ================================================================= -->
+    <!-- 5. MULTITHREADING (Segurança de Concorrência no Spring)           -->
+    <!-- ================================================================= -->
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="UseConcurrentHashMap"/>
+    </rule>
+
+    <!-- ================================================================= -->
+    <!-- 6. CODE STYLE (Apenas Regras Críticas que o Checkstyle não pega)   -->
+    <!-- ================================================================= -->
+    <rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryModifier"/>
+
+</ruleset>

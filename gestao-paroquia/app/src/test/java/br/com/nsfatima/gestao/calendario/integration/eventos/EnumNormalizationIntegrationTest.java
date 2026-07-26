@@ -23,11 +23,11 @@ class EnumNormalizationIntegrationTest {
     void shouldNormalizeCanonicalEnumOnCreate() throws Exception {
         String payload = """
                 {
-                  \"titulo\": \"Vigilia\",
-                  \"organizacaoResponsavelId\": \"00000000-0000-0000-0000-0000000000bb\",
-                  \"inicio\": \"2026-03-15T10:00:00Z\",
-                  \"fim\": \"2026-03-15T11:00:00Z\",
-                  \"status\": \"  confirmado  \"
+                  "titulo": "Vigilia",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                  "inicio": "2026-03-15T10:00:00Z",
+                  "fim": "2026-03-15T11:00:00Z",
+                  "status": "  confirmado  "
                 }
                 """;
 
@@ -46,7 +46,7 @@ class EnumNormalizationIntegrationTest {
     void shouldRejectLocalizedOrUnsupportedEnumValues() throws Exception {
         String payload = """
                 {
-                  \"status\": \"confirmado_pt\"
+                  "status": "confirmado_pt"
                 }
                 """;
 

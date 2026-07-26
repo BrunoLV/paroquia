@@ -61,7 +61,7 @@ class EventoIdempotencyIntegrationTest {
         JsonNode firstBody = objectMapper.readTree(firstResult.getResponse().getContentAsString());
         JsonNode secondBody = objectMapper.readTree(secondResult.getResponse().getContentAsString());
 
-        assertEquals(firstBody.get("id").asText(), secondBody.get("id").asText());
+        assertEquals(firstBody.get("id").asString(), secondBody.get("id").asString());
     }
 
     @Test

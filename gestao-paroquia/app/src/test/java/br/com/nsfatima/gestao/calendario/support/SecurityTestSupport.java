@@ -6,6 +6,8 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,7 +26,8 @@ public final class SecurityTestSupport {
         MvcResult result = performLogin(mockMvc, username, password);
         Cookie sessionCookie = result.getResponse().getCookie("JSESSIONID");
         if (sessionCookie == null && result.getRequest().getSession(false) != null) {
-            sessionCookie = new Cookie("JSESSIONID", result.getRequest().getSession(false).getId());
+            sessionCookie =
+                    new Cookie("JSESSIONID", Objects.requireNonNull(result.getRequest().getSession(false)).getId());
         }
         assertNotNull(sessionCookie, "Expected JSESSIONID cookie after successful login");
         return sessionCookie;

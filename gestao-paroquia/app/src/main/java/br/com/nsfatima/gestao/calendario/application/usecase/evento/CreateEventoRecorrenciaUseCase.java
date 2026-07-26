@@ -94,7 +94,7 @@ public class CreateEventoRecorrenciaUseCase {
         List<LocalDate> validDates = regra.gerarDatas(startOfSeries, startOfSeries.plusYears(1));
 
         if (!validDates.isEmpty()) {
-            LocalDate firstValidDate = validDates.get(0);
+            LocalDate firstValidDate = validDates.getFirst();
             if (!firstValidDate.equals(startOfSeries)) {
                 // Move base event to the first valid date
                 Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());

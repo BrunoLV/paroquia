@@ -218,8 +218,8 @@ class ProjetoGovernancaIntegrationTest {
         // Verify project is created
         var projects = repository.findAll();
         assertEquals(1, projects.size());
-        assertEquals("Projeto Aprovado Criacao", projects.get(0).getNome());
-        assertEquals(ProjetoStatus.ABERTO.name(), projects.get(0).getStatus());
+        assertEquals("Projeto Aprovado Criacao", projects.getFirst().getNome());
+        assertEquals(ProjetoStatus.ABERTO.name(), projects.getFirst().getStatus());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
@@ -21,7 +22,6 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     private final MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
     private final UsuarioJpaRepository usuarioRepository;
-    private final MembroJpaRepository membroRepository;
 
     public OrganizacaoRepositoryImpl(
             OrganizacaoJpaRepository organizacaoJpaRepository,
@@ -33,7 +33,6 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         this.membroOrganizacaoJpaRepository = membroOrganizacaoJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
         this.usuarioRepository = usuarioRepository;
-        this.membroRepository = membroRepository;
     }
 
     @Override
@@ -102,7 +101,7 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(orgId, papel)
                 .map(m -> {
                     String name = usuarioRepository.findById(m.getUsuarioId())
-                            .map(u -> u.getNome())
+                            .map(UsuarioEntity::getNome)
                             .orElse(fallback);
                     return (name != null && !name.trim().isEmpty()) ? name : fallback;
                 })

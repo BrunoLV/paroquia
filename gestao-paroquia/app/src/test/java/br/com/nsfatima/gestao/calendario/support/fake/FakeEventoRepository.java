@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -68,7 +69,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
 
     @Override
     public List<EventoEntity> findAllByOrderByInicioUtcAscIdAsc() {
-        return storage.stream().sorted((a, b) -> a.getInicioUtc().compareTo(b.getInicioUtc())).toList();
+        return storage.stream().sorted(Comparator.comparing(EventoEntity::getInicioUtc)).toList();
     }
 
     @Override
@@ -241,19 +242,21 @@ public class FakeEventoRepository implements EventoJpaRepository {
     public void deleteAllInBatch() {
     }
 
+    @Deprecated
     @Override
     public EventoEntity getOne(UUID uuid) {
-        return findById(uuid).orElse(null);
+        return Objects.requireNonNull(findById(uuid).orElse(null));
     }
 
+    @Deprecated
     @Override
     public EventoEntity getById(UUID uuid) {
-        return findById(uuid).orElse(null);
+        return Objects.requireNonNull(findById(uuid).orElse(null));
     }
 
     @Override
     public EventoEntity getReferenceById(UUID uuid) {
-        return findById(uuid).orElse(null);
+        return Objects.requireNonNull(findById(uuid).orElse(null));
     }
 
     @Override

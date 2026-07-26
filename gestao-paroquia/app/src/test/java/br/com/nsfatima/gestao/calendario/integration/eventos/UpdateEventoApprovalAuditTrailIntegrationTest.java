@@ -55,7 +55,7 @@ class UpdateEventoApprovalAuditTrailIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(objectMapper.readTree(createResult.getResponse().getContentAsString())
-                .get("id").asText());
+                .get("id").asString());
 
         MvcResult pendingResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
                         .header("X-Actor-Role", "coordenador")
@@ -64,16 +64,16 @@ class UpdateEventoApprovalAuditTrailIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                                {
-                                    "inicio": "2027-04-22T10:00:00Z",
-                                    "fim": "2027-04-22T11:00:00Z"
-                                }
-                                """))
+                                        {
+                                            "inicio": "2027-04-22T10:00:00Z",
+                                            "fim": "2027-04-22T11:00:00Z"
+                                        }
+                                        """))
                 .andExpect(status().isAccepted())
                 .andReturn();
 
         UUID approvalId = UUID.fromString(objectMapper.readTree(pendingResult.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText());
+                .get("solicitacaoAprovacaoId").asString());
 
         var pending = aprovacaoJpaRepository.findById(approvalId).orElseThrow();
         assertThat(pending.getStatus()).isEqualTo("PENDENTE");

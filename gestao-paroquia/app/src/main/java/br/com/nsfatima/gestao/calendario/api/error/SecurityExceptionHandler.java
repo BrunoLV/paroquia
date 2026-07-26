@@ -1,8 +1,12 @@
-package br.com.nsfatima.gestao.support.api.v1.error;
+package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.RoleScopeInvalidException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
+import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
+import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
+import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

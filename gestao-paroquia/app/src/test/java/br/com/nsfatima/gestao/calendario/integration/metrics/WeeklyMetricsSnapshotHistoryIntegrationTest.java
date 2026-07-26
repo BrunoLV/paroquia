@@ -22,22 +22,19 @@ import static org.mockito.Mockito.when;
 
 class WeeklyMetricsSnapshotHistoryIntegrationTest {
 
-    private AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
-
     private WeeklyMetricsSnapshotJob snapshotJob;
 
     @BeforeEach
     void setUp() {
-        auditoriaOperacaoJpaRepository = mock(AuditoriaOperacaoJpaRepository.class);
+        AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository = mock(AuditoriaOperacaoJpaRepository.class);
         when(auditoriaOperacaoJpaRepository
                 .findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
                         any(),
                         any()))
                 .thenReturn(List.of(record(
                         UUID.fromString("00000000-0000-0000-0000-0000000000aa"),
-                        UUID.randomUUID(),
-                        "patch",
-                        "{\"scheduleChanged\":true}")));
+                        UUID.randomUUID()
+                )));
         snapshotJob = new WeeklyMetricsSnapshotJob(
                 new CadastroEventoMetricsPublisher(),
                 new PeriodoOperacionalPolicy(),
@@ -54,18 +51,18 @@ class WeeklyMetricsSnapshotHistoryIntegrationTest {
         assertThat(second).containsEntry("historySize", 2);
     }
 
-    private AuditoriaOperacaoEntity record(UUID organizacaoId, UUID eventoId, String acao, String detalhes) {
+    private AuditoriaOperacaoEntity record(UUID organizacaoId, UUID eventoId) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
         entity.setOrganizacaoId(organizacaoId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
-        entity.setAcao(acao);
+        entity.setAcao("patch");
         entity.setResultado("success");
         entity.setAtor("tester");
         entity.setCorrelationId("corr-history");
-        entity.setDetalhesAuditaveisJson(detalhes);
+        entity.setDetalhesAuditaveisJson("{\"scheduleChanged\":true}");
         entity.setOcorridoEmUtc(Instant.now());
         return entity;
     }

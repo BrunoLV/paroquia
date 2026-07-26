@@ -32,11 +32,11 @@ public class AddParticipanteUseCase {
     }
 
     @Transactional
-    /**
-     * Registra o ingresso de um membro em uma organização, validando a inexistência de duplicidade ativa para
-     * garantir a integridade dos vínculos.
-     *
-     * Exemplo: useCase.execute(membroId, request, "admin_user")
+    /*
+      Registra o ingresso de um membro em uma organização, validando a inexistência de duplicidade ativa para
+      garantir a integridade dos vínculos.
+      <p>
+      Exemplo: useCase.execute(membroId, request, "admin_user")
      */
     public ParticipacaoResponse execute(UUID membroId, ParticipacaoRequest request, String actor) {
         var membro = membroRepository.findById(membroId)

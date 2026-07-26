@@ -40,6 +40,7 @@ import java.util.UUID;
 @Tag(name = "Projetos", description = "Endpoints para gerenciamento de projetos paroquiais")
 public class ProjetoController {
 
+    private static final String RESULT_SUCCESS = "success";
     private final CreateProjetoUseCase createProjetoUseCase;
     private final ListProjetosUseCase listProjetosUseCase;
     private final UpdateProjetoUseCase updateProjetoUseCase;
@@ -47,11 +48,8 @@ public class ProjetoController {
     private final TransitionProjetoUseCase transitionProjetoUseCase;
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
-
     private final ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
     private final ProjetoMapper mapper;
-
-    private static final String RESULT_SUCCESS = "success";
 
     /**
      * Inicializa o controller de projetos com suas dependências necessárias para orquestração de casos de uso e

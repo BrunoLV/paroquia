@@ -55,8 +55,8 @@ class CalendarPayloadCompatibilityContractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"eventoId\": \"%s\",
-                                  \"tipoSolicitacao\": \"alteracao_horario\"
+                                  "eventoId": "%s",
+                                  "tipoSolicitacao": "alteracao_horario"
                                 }
                                 """.formatted(EVENT_ID)))
                 .andExpect(status().isCreated())

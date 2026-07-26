@@ -1,5 +1,7 @@
-package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
+package br.com.nsfatima.gestao.calendario.api.dto.evento;
 
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;

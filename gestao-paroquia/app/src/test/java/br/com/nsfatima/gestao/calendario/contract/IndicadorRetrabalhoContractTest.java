@@ -37,7 +37,7 @@ class IndicadorRetrabalhoContractTest {
         UUID eventoId = UUID.randomUUID();
 
         auditoriaOperacaoJpaRepository.save(reworkRecord(
-                UUID.randomUUID(), organizacaoId, eventoId, "patch", "{\"scheduleChanged\":true}"));
+                UUID.randomUUID(), organizacaoId, eventoId));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
                         .param("organizacaoId", organizacaoId.toString())
@@ -52,19 +52,18 @@ class IndicadorRetrabalhoContractTest {
                 .andExpect(jsonPath("$.denominadorEventosAfetados").value(1));
     }
 
-    private AuditoriaOperacaoEntity reworkRecord(UUID id, UUID organizacaoId, UUID eventoId, String acao,
-                                                 String details) {
+    private AuditoriaOperacaoEntity reworkRecord(UUID id, UUID organizacaoId, UUID eventoId) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(id);
         entity.setOrganizacaoId(organizacaoId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
-        entity.setAcao(acao);
+        entity.setAcao("patch");
         entity.setResultado("success");
         entity.setAtor("tester");
         entity.setCorrelationId("corr-rework");
-        entity.setDetalhesAuditaveisJson(details);
+        entity.setDetalhesAuditaveisJson("{\"scheduleChanged\":true}");
         entity.setOcorridoEmUtc(Instant.parse("2026-10-03T10:15:00Z"));
         return entity;
     }

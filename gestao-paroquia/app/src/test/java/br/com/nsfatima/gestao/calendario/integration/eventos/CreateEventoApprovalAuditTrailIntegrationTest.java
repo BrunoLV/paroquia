@@ -57,7 +57,7 @@ class CreateEventoApprovalAuditTrailIntegrationTest {
                 .andReturn();
 
         UUID approvalId = UUID.fromString(objectMapper.readTree(pendingResult.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText());
+                .get("solicitacaoAprovacaoId").asString());
 
         var pending = aprovacaoJpaRepository.findById(approvalId).orElseThrow();
         assertThat(pending.getStatus()).isEqualTo("PENDENTE");

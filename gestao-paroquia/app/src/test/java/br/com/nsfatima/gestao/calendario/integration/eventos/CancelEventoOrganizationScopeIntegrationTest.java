@@ -47,7 +47,7 @@ class CancelEventoOrganizationScopeIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Fora do escopo\"
+                                  "motivo": "Fora do escopo"
                                 }
                                 """))
                 .andExpect(status().isForbidden())

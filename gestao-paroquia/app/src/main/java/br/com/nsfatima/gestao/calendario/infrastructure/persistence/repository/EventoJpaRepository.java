@@ -27,17 +27,17 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
             @Param("eventoIds") List<UUID> eventoIds);
 
     @Query("""
-            select distinct e from EventoEntity e
-            left join e.envolvidos ee
-            where (:hasInicioUtc = false or e.inicioUtc >= :inicioUtc)
-              and (:hasFimUtc = false or e.fimUtc <= :fimUtc)
-              and (:hasOrganizacaoIds = false or e.organizacaoResponsavelId in :organizacaoIds)
-              and (:hasProjetoId = false or e.projetoId = :projetoId)
-              and (:hasEnvolvidoId = false 
-                          or (e.organizacaoResponsavelId = :envolvidoId or ee.organizacaoId = :envolvidoId))
-              and (:hasCategorias = false or e.categoria in :categorias)
-              and (:hasStatuses = false or e.status in :statuses)
-            """)
+             select distinct e from EventoEntity e
+             left join e.envolvidos ee
+             where (:hasInicioUtc = false or e.inicioUtc >= :inicioUtc)
+               and (:hasFimUtc = false or e.fimUtc <= :fimUtc)
+               and (:hasOrganizacaoIds = false or e.organizacaoResponsavelId in :organizacaoIds)
+               and (:hasProjetoId = false or e.projetoId = :projetoId)
+               and (:hasEnvolvidoId = false\s
+                           or (e.organizacaoResponsavelId = :envolvidoId or ee.organizacaoId = :envolvidoId))
+               and (:hasCategorias = false or e.categoria in :categorias)
+               and (:hasStatuses = false or e.status in :statuses)
+            \s""")
     Page<EventoEntity> findAllWithFilters(
             @Param("inicioUtc") Instant inicioUtc,
             @Param("hasInicioUtc") boolean hasInicioUtc,

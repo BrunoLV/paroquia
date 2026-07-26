@@ -62,7 +62,7 @@ class CreateEventoApprovalPendingIntegrationTest {
         assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore);
 
         String aprovacaoIdStr = objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText();
+                .get("solicitacaoAprovacaoId").asString();
         var aprovacao = aprovacaoJpaRepository.findById(UUID.fromString(aprovacaoIdStr)).orElseThrow();
         assertThat(aprovacao.getEventoId()).isNull();
         assertThat(aprovacao.getActionPayloadJson()).contains("Missa pendente de aprovacao");

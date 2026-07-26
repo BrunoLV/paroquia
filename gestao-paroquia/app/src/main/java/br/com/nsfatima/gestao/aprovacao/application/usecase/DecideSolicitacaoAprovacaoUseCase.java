@@ -35,6 +35,8 @@ import java.util.UUID;
 @Service
 public class DecideSolicitacaoAprovacaoUseCase {
 
+    private static final String KEY_DECISION_STATUS = "decisionStatus";
+    private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
     private final EventoActorContextResolver actorContextResolver;
     private final ValidateAprovacaoUseCase validateAprovacaoUseCase;
@@ -115,9 +117,6 @@ public class DecideSolicitacaoAprovacaoUseCase {
         aprovacao.setAprovadorId(actorContext.usuarioId() != null ? actorContext.usuarioId().toString() : "system");
         aprovacao.setAprovadorPapel(actorContext.role());
     }
-
-    private static final String KEY_DECISION_STATUS = "decisionStatus";
-    private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
 
     private AprovacaoDecisionResponse processRejection(AprovacaoEntity aprovacao, EventoActorContext actorContext) {
         aprovacaoJpaRepository.save(aprovacao);

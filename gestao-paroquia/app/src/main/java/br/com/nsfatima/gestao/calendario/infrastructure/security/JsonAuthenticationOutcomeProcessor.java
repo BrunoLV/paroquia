@@ -5,7 +5,6 @@ import br.com.nsfatima.gestao.observabilidade.domain.service.CorrelationIdFilter
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
@@ -154,7 +153,7 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
     public void onLogoutSuccess(
             HttpServletRequest request,
             HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
+            Authentication authentication) {
         response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 

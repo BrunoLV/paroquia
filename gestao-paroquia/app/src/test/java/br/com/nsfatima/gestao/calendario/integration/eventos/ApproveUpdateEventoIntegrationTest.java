@@ -64,8 +64,7 @@ class ApproveUpdateEventoIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id")
-                        .asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // Step 2: PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
@@ -84,7 +83,7 @@ class ApproveUpdateEventoIntegrationTest {
 
         UUID aprovacaoId = UUID.fromString(
                 objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                        .get("solicitacaoAprovacaoId").asText());
+                        .get("solicitacaoAprovacaoId").asString());
 
         // Event should not be changed yet
         var eventoBeforeApproval = eventoJpaRepository.findById(eventoId).orElseThrow();
@@ -137,8 +136,7 @@ class ApproveUpdateEventoIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id")
-                        .asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // Setup approval directly
         UUID aprovacaoId = UUID.randomUUID();

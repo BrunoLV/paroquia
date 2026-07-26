@@ -41,7 +41,6 @@ public class AprovacaoController {
     private final DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase;
     private final ListAprovacoesUseCase listAprovacoesUseCase;
     private final EventoAuditPublisher eventoAuditPublisher;
-    private final EventoActorContextResolver actorContextResolver;
 
     public AprovacaoController(
             CreateSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase,
@@ -53,7 +52,6 @@ public class AprovacaoController {
         this.decideSolicitacaoAprovacaoUseCase = decideSolicitacaoAprovacaoUseCase;
         this.listAprovacoesUseCase = listAprovacoesUseCase;
         this.eventoAuditPublisher = eventoAuditPublisher;
-        this.actorContextResolver = actorContextResolver;
     }
 
     /**

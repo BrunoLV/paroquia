@@ -12,7 +12,7 @@ public class GestaoParoquiaApplication {
     }
 
 
-    public static void main(String[] args) {
+    static void main(String... args) {
         preloadLoggingClasses();
         SpringApplication.run(GestaoParoquiaApplication.class, args);
     }

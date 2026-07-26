@@ -1,5 +1,7 @@
-package br.com.nsfatima.gestao.aprovacao.api.v1.dto;
+package br.com.nsfatima.gestao.calendario.api.dto.aprovacao;
 
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoCreateRequest;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import jakarta.validation.ConstraintViolation;

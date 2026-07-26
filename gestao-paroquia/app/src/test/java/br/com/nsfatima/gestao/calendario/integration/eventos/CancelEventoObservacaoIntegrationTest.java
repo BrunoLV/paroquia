@@ -65,7 +65,7 @@ class CancelEventoObservacaoIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"status\": \"APROVADA\"
+                                  "status": "APROVADA"
                                 }
                                 """))
                 .andExpect(status().isOk());

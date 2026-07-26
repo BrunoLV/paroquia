@@ -13,12 +13,12 @@ public abstract class ApprovalPendingContractSupport {
     protected static String createEventoPayload() {
         return """
                 {
-                  \"titulo\": \"Missa de teste\",
-                  \"descricao\": \"Fluxo pendente\",
-                  \"organizacaoResponsavelId\": \"00000000-0000-0000-0000-0000000000aa\",
-                  \"inicioUtc\": \"2026-12-01T10:00:00Z\",
-                  \"fimUtc\": \"2026-12-01T11:00:00Z\",
-                  \"status\": \"CONFIRMADO\"
+                  "titulo": "Missa de teste",
+                  "descricao": "Fluxo pendente",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "inicioUtc": "2026-12-01T10:00:00Z",
+                  "fimUtc": "2026-12-01T11:00:00Z",
+                  "status": "CONFIRMADO"
                 }
                 """;
     }
@@ -26,8 +26,8 @@ public abstract class ApprovalPendingContractSupport {
     protected static String patchEventoPayload() {
         return """
                 {
-                  \"inicioUtc\": \"2026-12-01T12:00:00Z\",
-                  \"fimUtc\": \"2026-12-01T13:00:00Z\"
+                  "inicioUtc": "2026-12-01T12:00:00Z",
+                  "fimUtc": "2026-12-01T13:00:00Z"
                 }
                 """;
     }

@@ -73,7 +73,7 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Preservar historico\"
+                                  "motivo": "Preservar historico"
                                 }
                                 """))
                 .andExpect(status().isOk());

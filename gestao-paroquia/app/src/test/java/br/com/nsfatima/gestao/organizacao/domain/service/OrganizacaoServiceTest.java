@@ -18,22 +18,20 @@ import static org.mockito.Mockito.*;
 
 class OrganizacaoServiceTest {
 
+    private final UUID cleroId = UUID.randomUUID();
+    private final UUID matrizId = UUID.randomUUID();
+    private final UUID conselhoId = UUID.randomUUID();
+    private final UUID pastoralOficialId = UUID.randomUUID();
+    private final UUID movimentoOficialId = UUID.randomUUID();
     private OrganizacaoService service;
     private OrganizacaoRepository repository;
     private AuditLogPersistenceService auditLogService;
-    private PastoralMovimentoOficialRepository pastoralOficialRepository;
-
-    private UUID cleroId = UUID.randomUUID();
-    private UUID matrizId = UUID.randomUUID();
-    private UUID conselhoId = UUID.randomUUID();
-    private UUID pastoralOficialId = UUID.randomUUID();
-    private UUID movimentoOficialId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
         repository = mock(OrganizacaoRepository.class);
         auditLogService = mock(AuditLogPersistenceService.class);
-        pastoralOficialRepository = mock(PastoralMovimentoOficialRepository.class);
+        PastoralMovimentoOficialRepository pastoralOficialRepository = mock(PastoralMovimentoOficialRepository.class);
         service = new OrganizacaoService(repository, auditLogService, pastoralOficialRepository);
 
         // Setup mock parents

@@ -13,24 +13,6 @@ import java.util.UUID;
 @Component
 public class EventoAuditPublisher implements ApprovalAuditPublisher {
 
-    private final AuditLogPersistenceService auditLogPersistenceService;
-
-    public EventoAuditPublisher(AuditLogPersistenceService auditLogPersistenceService) {
-        this.auditLogPersistenceService = auditLogPersistenceService;
-    }
-
-    /**
-     * Publishes a simple audit log entry.
-     * <p>
-     * Usage Example:
-     * publisher.publish("admin", "read", "evento:123", "success");
-     */
-    public void publish(String actor, String action, String target, String result) {
-        auditLogPersistenceService.log(actor,
-                action, target, result, withDefaults(resolveResourceType(action), target, Map.of()));
-
-    }
-
     /**
      * Publishes an audit log entry with additional metadata.
      * <p>
@@ -50,6 +32,22 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     private static final String VAL_NONE = "NONE";
     private static final String VAL_UNKNOWN = "UNKNOWN";
     private static final String KEY_CORRELATION_ID = "correlationId";
+    private final AuditLogPersistenceService auditLogPersistenceService;
+    public EventoAuditPublisher(AuditLogPersistenceService auditLogPersistenceService) {
+        this.auditLogPersistenceService = auditLogPersistenceService;
+    }
+
+    /**
+     * Publishes a simple audit log entry.
+     * <p>
+     * Usage Example:
+     * publisher.publish("admin", "read", "evento:123", "success");
+     */
+    public void publish(String actor, String action, String target, String result) {
+        auditLogPersistenceService.log(actor,
+                action, target, result, withDefaults(resolveResourceType(action), target, Map.of()));
+
+    }
 
     public void publish(String actor, String action, String target, String result, Map<String, Object> metadata) {
         String resourceType = metadata != null && metadata.get(KEY_RESOURCE_TYPE) != null

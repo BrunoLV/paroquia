@@ -57,7 +57,7 @@ class RejectUpdateEventoIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
@@ -76,7 +76,7 @@ class RejectUpdateEventoIntegrationTest {
 
         UUID aprovacaoId = UUID.fromString(
                 objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                        .get("solicitacaoAprovacaoId").asText());
+                        .get("solicitacaoAprovacaoId").asString());
 
         // Reject the approval
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)

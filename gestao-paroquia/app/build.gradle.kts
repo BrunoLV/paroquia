@@ -2,15 +2,30 @@ plugins {
     id("java")
     id("jacoco")
     id("checkstyle")
+    id("pmd")
+    alias(libs.plugins.spotbugs)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.flyway)
 }
 
 checkstyle {
-    toolVersion = "13.7.0"
+    toolVersion = "13.8.0"
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
     isIgnoreFailures = false
+}
+
+pmd {
+    toolVersion = "7.16.0"
+    isConsoleOutput = true
+    isIgnoreFailures = false
+    ruleSetFiles = files("${rootDir}/config/pmd/pmd.xml")
+    ruleSets = listOf()
+}
+
+spotbugs {
+    ignoreFailures.set(true)
+    excludeFilter.set(file("${rootDir}/config/spotbugs/spotbugs-filter.xml"))
 }
 
 repositories {
@@ -48,8 +63,21 @@ java {
     }
 }
 
+tasks.withType<com.github.spotbugs.snom.SpotBugsTask> {
+    reports {
+        create("html") {
+            required.set(true)
+        }
+    }
+}
+
+tasks.withType<Pmd> {
+    classpath = files()
+}
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
+    options.compilerArgs.add("-Xlint:deprecation")
 }
 
 tasks.named<Test>("test") {

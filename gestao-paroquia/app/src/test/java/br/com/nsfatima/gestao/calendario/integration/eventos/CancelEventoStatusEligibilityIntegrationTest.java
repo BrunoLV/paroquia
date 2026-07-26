@@ -45,7 +45,7 @@ class CancelEventoStatusEligibilityIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Nao pode cancelar rascunho\"
+                                  "motivo": "Nao pode cancelar rascunho"
                                 }
                                 """))
                 .andExpect(status().isConflict())

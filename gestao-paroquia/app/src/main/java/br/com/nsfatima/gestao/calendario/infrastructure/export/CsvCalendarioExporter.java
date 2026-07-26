@@ -19,6 +19,7 @@ public class CsvCalendarioExporter implements CalendarioExporter {
 
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final String DOUBLE_QUOTE = "\"";
 
     @Override
     public boolean supports(String formato) {
@@ -60,8 +61,6 @@ public class CsvCalendarioExporter implements CalendarioExporter {
         }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
-
-    private static final String DOUBLE_QUOTE = "\"";
 
     private String escapeCsv(Object val) {
         if (val == null) {

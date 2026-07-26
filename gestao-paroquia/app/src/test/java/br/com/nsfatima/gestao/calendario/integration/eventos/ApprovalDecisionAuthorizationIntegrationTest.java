@@ -50,8 +50,7 @@ class ApprovalDecisionAuthorizationIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id")
-                        .asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
@@ -68,7 +67,7 @@ class ApprovalDecisionAuthorizationIntegrationTest {
                 .andReturn();
 
         String aprovacaoIdStr = objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText();
+                .get("solicitacaoAprovacaoId").asString();
 
         // secretario/CONSELHO trying to approve → 403 (not allowed to decide, only
         // coordenador/paroco can)
@@ -102,8 +101,7 @@ class ApprovalDecisionAuthorizationIntegrationTest {
                 .andReturn();
 
         UUID eventoId = UUID.fromString(
-                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id")
-                        .asText());
+                objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
@@ -120,7 +118,7 @@ class ApprovalDecisionAuthorizationIntegrationTest {
                 .andReturn();
 
         String aprovacaoIdStr = objectMapper.readTree(patchResult.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText();
+                .get("solicitacaoAprovacaoId").asString();
 
         // membro/PASTORAL trying to approve → 403 (no authority)
         assertForbiddenApprovalDecision(aprovacaoIdStr, "membro", "PASTORAL", """

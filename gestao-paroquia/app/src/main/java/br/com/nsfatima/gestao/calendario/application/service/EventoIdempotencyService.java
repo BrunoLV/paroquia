@@ -25,6 +25,7 @@ public class EventoIdempotencyService {
     private final EventoIdempotencyJpaRepository idempotencyRepository;
     private final EventoJpaRepository eventoRepository;
     private final EventoMapper eventoMapper;
+
     public EventoIdempotencyService(
             EventoIdempotencyJpaRepository idempotencyRepository,
             EventoJpaRepository eventoRepository,

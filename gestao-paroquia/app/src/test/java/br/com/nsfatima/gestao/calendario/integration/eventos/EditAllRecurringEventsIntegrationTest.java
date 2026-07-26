@@ -42,8 +42,8 @@ class EditAllRecurringEventsIntegrationTest {
         UUID recorrenciaId = UUID.randomUUID();
 
         // 1. Setup multiple event instances first (to be siblings or base)
-        EventoEntity instance1 = createInstance("Occurrence 1", orgId, null, "2026-12-01T10:00:00Z");
-        EventoEntity instance2 = createInstance("Occurrence 2", orgId, null, "2026-12-08T10:00:00Z");
+        EventoEntity instance1 = createInstance("Occurrence 1", orgId, "2026-12-01T10:00:00Z");
+        EventoEntity instance2 = createInstance("Occurrence 2", orgId, "2026-12-08T10:00:00Z");
 
         // 2. Setup recurrence rule linking to instance 1 as base
         EventoRecorrenciaEntity rule = new EventoRecorrenciaEntity();
@@ -79,12 +79,12 @@ class EditAllRecurringEventsIntegrationTest {
         assertEquals("Updated Series Title", eventoJpaRepository.findById(instance2.getId()).get().getTitulo());
     }
 
-    private EventoEntity createInstance(String title, String orgId, UUID recorrenciaId, String start) {
+    private EventoEntity createInstance(String title, String orgId, String start) {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo(title);
         entity.setOrganizacaoResponsavelId(UUID.fromString(orgId));
-        entity.setRecorrenciaId(recorrenciaId);
+        entity.setRecorrenciaId(null);
         entity.setInicioUtc(Instant.parse(start));
         entity.setFimUtc(Instant.parse(start).plusSeconds(3600));
         entity.setStatus("CONFIRMADO");

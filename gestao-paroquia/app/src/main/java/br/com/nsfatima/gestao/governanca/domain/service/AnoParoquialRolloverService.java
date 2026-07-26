@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class AnoParoquialRolloverService {
@@ -21,7 +22,7 @@ public class AnoParoquialRolloverService {
         this.repository = repository;
     }
 
-    public java.util.Optional<AnoParoquialEntity> get(Integer ano) {
+    public Optional<AnoParoquialEntity> get(Integer ano) {
         return repository.findByAno(ano);
     }
 
@@ -63,7 +64,7 @@ public class AnoParoquialRolloverService {
         repository.save(entity);
 
         int nextYear = year + 1;
-        if (!repository.findByAno(nextYear).isPresent()) {
+        if (repository.findByAno(nextYear).isEmpty()) {
             AnoParoquialEntity nextEntity = new AnoParoquialEntity();
             nextEntity.setAno(nextYear);
             nextEntity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO.name());

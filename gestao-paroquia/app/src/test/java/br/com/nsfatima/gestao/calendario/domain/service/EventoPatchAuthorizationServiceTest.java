@@ -62,9 +62,7 @@ class EventoPatchAuthorizationServiceTest {
                 churchId);
 
 
-        assertDoesNotThrow(() -> {
-            service.assertCanCreate(actorContext, orgId, churchId);
-        });
+        assertDoesNotThrow(() -> service.assertCanCreate(actorContext, orgId, churchId));
     }
 
     @Test
@@ -85,9 +83,7 @@ class EventoPatchAuthorizationServiceTest {
                 churchA);
 
 
-        assertThrows(AccessDeniedException.class, () -> {
-            service.assertCanCreate(actorContext, orgId, churchB);
-        });
+        assertThrows(AccessDeniedException.class, () -> service.assertCanCreate(actorContext, orgId, churchB));
     }
 
     @Test
@@ -106,9 +102,7 @@ class EventoPatchAuthorizationServiceTest {
                 PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), orgId, usuarioId, null);
 
 
-        assertDoesNotThrow(() -> {
-            service.assertCanCreate(actorContext, orgId, churchId);
-        });
+        assertDoesNotThrow(() -> service.assertCanCreate(actorContext, orgId, churchId));
     }
 
     @Test
@@ -127,8 +121,6 @@ class EventoPatchAuthorizationServiceTest {
                 null);
 
 
-        assertDoesNotThrow(() -> {
-            service.assertCanCreate(actorContext, orgId, null);
-        });
+        assertDoesNotThrow(() -> service.assertCanCreate(actorContext, orgId, null));
     }
 }

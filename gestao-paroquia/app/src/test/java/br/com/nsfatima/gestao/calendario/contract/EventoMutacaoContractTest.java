@@ -36,7 +36,7 @@ class EventoMutacaoContractTest {
 
         String payload = """
                 {
-                  \"status\": \"confirmado\"
+                  "status": "confirmado"
                 }
                 """;
 
@@ -54,7 +54,7 @@ class EventoMutacaoContractTest {
     void shouldRejectInvalidEnumStatusDeterministically() throws Exception {
         String payload = """
                 {
-                  \"status\": \"quinzenal\"
+                  "status": "quinzenal"
                 }
                 """;
 
@@ -71,8 +71,8 @@ class EventoMutacaoContractTest {
     void shouldRejectInvalidPartialUpdateAtomically() throws Exception {
         String payload = """
                 {
-                  \"titulo\": \"Novo Titulo\",
-                  \"status\": \"inexistente\"
+                  "titulo": "Novo Titulo",
+                  "status": "inexistente"
                 }
                 """;
 
@@ -95,7 +95,7 @@ class EventoMutacaoContractTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
                                 {
-                                        \"motivo\": \"Mudanca administrativa\"
+                                        "motivo": "Mudanca administrativa"
                                 }
                                 """))
                 .andExpect(status().isOk())

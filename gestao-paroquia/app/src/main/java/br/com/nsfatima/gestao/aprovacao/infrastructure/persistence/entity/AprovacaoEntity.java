@@ -39,7 +39,7 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     @Column(name = "executado_em_utc")
     private Instant executadoEmUtc;
 
-    @Column(name = "solicitante_id", length = 255)
+    @Column(name = "solicitante_id")
     private String solicitanteId;
 
     @Column(name = "solicitante_papel", length = 64)
@@ -48,7 +48,7 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     @Column(name = "solicitante_tipo_organizacao", length = 64)
     private String solicitanteTipoOrganizacao;
 
-    @Column(name = "aprovador_id", length = 255)
+    @Column(name = "aprovador_id")
     private String aprovadorId;
 
     @Column(name = "motivo_cancelamento_snapshot", length = 2000)

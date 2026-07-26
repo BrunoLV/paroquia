@@ -66,8 +66,8 @@ class ApproveCancelEventoIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"status\": \"APROVADA\",
-                                  \"observacao\": \"Executar automaticamente\"
+                                  "status": "APROVADA",
+                                  "observacao": "Executar automaticamente"
                                 }
                                 """))
                 .andExpect(status().isOk())

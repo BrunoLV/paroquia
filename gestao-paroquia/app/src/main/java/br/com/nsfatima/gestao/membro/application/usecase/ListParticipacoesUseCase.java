@@ -21,10 +21,10 @@ public class ListParticipacoesUseCase {
     }
 
     @Transactional(readOnly = true)
-    /**
-     * Obtém todos os vínculos ativos de um membro com organizações para mapear sua atuação e engajamento na paróquia.
-     *
-     * Exemplo: useCase.execute(membroId)
+    /*
+      Obtém todos os vínculos ativos de um membro com organizações para mapear sua atuação e engajamento na paróquia.
+      <p>
+      Exemplo: useCase.execute(membroId)
      */
     public List<ParticipacaoResponse> execute(UUID membroId) {
         return repository.findByMembroIdAndAtivoTrue(membroId).stream()

@@ -29,8 +29,8 @@ class AtomicUpdateValidationIntegrationTest {
     void shouldRejectInvalidPartialUpdateWithoutMutationSideEffects() throws Exception {
         String payload = """
                 {
-                  \"titulo\": \"Titulo que nao deve ser aplicado\",
-                  \"status\": \"invalido\"
+                  "titulo": "Titulo que nao deve ser aplicado",
+                  "status": "invalido"
                 }
                 """;
 

@@ -24,11 +24,11 @@ import java.util.List;
 @Order(2)
 public class ApprovalExceptionHandler extends BaseExceptionHandler {
 
+    private static final String FIELD_APROVACAO_ID = "aprovacaoId";
+
     public ApprovalExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
-
-    private static final String FIELD_APROVACAO_ID = "aprovacaoId";
 
     @ExceptionHandler(ApprovalRequiredException.class)
     public ResponseEntity<ValidationErrorResponse> handleApprovalRequired(ApprovalRequiredException ex) {

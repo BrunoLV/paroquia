@@ -46,7 +46,7 @@ class CancelEventoTier1PerformanceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  \"motivo\": \"Medição de latência Tier 1\"
+                                  "motivo": "Medição de latência Tier 1"
                                 }
                                 """))
                 .andExpect(status().isOk());

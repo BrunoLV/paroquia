@@ -136,27 +136,27 @@ public class OrganizacaoController {
     }
 
     private UUID resolveIgrejaVinculoId(Organizacao org) {
-        if (org.getTipo() == TipoOrganizacao.MATRIZ
-                || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
+        if (org.getTipo() == TipoOrganizacao.MATRIZ || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
             return org.getId();
         }
-        if (org.getParentId() != null) {
-            var parentOpt = organizacaoService.getOrganization(org.getParentId());
-            if (parentOpt.isPresent()) {
-                var parent = parentOpt.get();
-                if (parent.getTipo() == TipoOrganizacao.MATRIZ
-                        || parent.getTipo() == TipoOrganizacao.COMUNIDADE) {
-                    return parent.getId();
-                }
-                if (parent.getParentId() != null) {
-                    var grandParentOpt = organizacaoService.getOrganization(parent.getParentId());
-                    if (grandParentOpt.isPresent()
-                            && (grandParentOpt.get().getTipo() == TipoOrganizacao.MATRIZ
-                            || grandParentOpt.get().getTipo() == TipoOrganizacao.COMUNIDADE)) {
-                        return grandParentOpt.get().getId();
-                    }
-                }
-            }
+        if (org.getParentId() == null) {
+            return null;
+        }
+        var parentOpt = organizacaoService.getOrganization(org.getParentId());
+        if (parentOpt.isEmpty()) {
+            return null;
+        }
+        var parent = parentOpt.get();
+        if (parent.getTipo() == TipoOrganizacao.MATRIZ || parent.getTipo() == TipoOrganizacao.COMUNIDADE) {
+            return parent.getId();
+        }
+        if (parent.getParentId() == null) {
+            return null;
+        }
+        var grandParentOpt = organizacaoService.getOrganization(parent.getParentId());
+        if (grandParentOpt.isPresent() && (grandParentOpt.get().getTipo() == TipoOrganizacao.MATRIZ
+                || grandParentOpt.get().getTipo() == TipoOrganizacao.COMUNIDADE)) {
+            return grandParentOpt.get().getId();
         }
         return null;
     }
@@ -166,11 +166,11 @@ public class OrganizacaoController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. " +
             "Cannot delete organizations with active dependencies.")
-    /**
-     * Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências ativas
-     * que impeçam a exclusão segura.
-     *
-     * Exemplo: DELETE /api/v1/organizacoes/{id}
+    /*
+      Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências ativas
+      que impeçam a exclusão segura.
+      <p>
+      Exemplo: DELETE /api/v1/organizacoes/{id}
      */
     public void delete(@PathVariable UUID id) {
         organizacaoService.deleteOrganization(id);
@@ -178,11 +178,11 @@ public class OrganizacaoController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get organization details")
-    /**
-     * Recupera os dados detalhados de uma organização específica para consulta, exibição de perfil ou preparação de
-     * edições.
-     *
-     * Exemplo: GET /api/v1/organizacoes/{id}
+    /*
+      Recupera os dados detalhados de uma organização específica para consulta, exibição de perfil ou preparação de
+      edições.
+      <p>
+      Exemplo: GET /api/v1/organizacoes/{id}
      */
     public ResponseEntity<OrganizacaoResponse> get(@PathVariable UUID id) {
         return organizacaoService.getOrganization(id)
@@ -193,11 +193,11 @@ public class OrganizacaoController {
 
     @GetMapping
     @Operation(summary = "List all organizations")
-    /**
-     * Fornece uma listagem de todas as organizações cadastradas, permitindo a navegação, seleção e visão geral das
-     * entidades paroquiais.
-     *
-     * Exemplo: GET /api/v1/organizacoes
+    /*
+      Fornece uma listagem de todas as organizações cadastradas, permitindo a navegação, seleção e visão geral das
+      entidades paroquiais.
+      <p>
+      Exemplo: GET /api/v1/organizacoes
      */
     public List<OrganizacaoResponse> list() {
         return organizacaoService.listOrganizations().stream()

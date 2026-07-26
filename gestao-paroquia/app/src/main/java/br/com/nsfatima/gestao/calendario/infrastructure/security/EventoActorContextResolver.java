@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
+import java.util.Objects;
 
 @Component
 public class EventoActorContextResolver {
@@ -34,7 +35,8 @@ public class EventoActorContextResolver {
         Object principal = authentication.getPrincipal();
         if (principal instanceof UsuarioDetails usuarioDetails) {
             boolean isAdmin = usuarioDetails.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ADMIN") ||
+                            a.getAuthority().equals("ROLE_ADMIN"));
 
             if (isAdmin) {
                 return new EventoActorContext(

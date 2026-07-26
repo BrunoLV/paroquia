@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.observacoes;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoNotaRevisaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoNotaRevisaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +54,7 @@ class UpdateObservacaoIntegrationTest {
                 .andReturn();
 
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString());
-        UUID observacaoId = UUID.fromString(created.path("id").asText());
+        UUID observacaoId = UUID.fromString(created.path("id").asString());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +65,8 @@ class UpdateObservacaoIntegrationTest {
         assertThat(observacaoNotaRevisaoJpaRepository.findByObservacaoIdOrderByRevisadoEmUtcAscIdAsc(observacaoId))
                 .hasSize(1)
                 .first()
-                .extracting(revisao -> revisao.getConteudoAnterior(), revisao -> revisao.getConteudoNovo())
+                .extracting(ObservacaoNotaRevisaoEntity::getConteudoAnterior,
+                        ObservacaoNotaRevisaoEntity::getConteudoNovo)
                 .containsExactly("Versao 1", "Versao 2");
     }
 }

@@ -47,16 +47,16 @@ public class UsuarioEntity extends BaseVersionedEntity {
     private UUID igrejaId;
 
     @Column(name = "batizado", nullable = false)
-    private boolean batizado = false;
+    private boolean batizado;
 
     @Column(name = "primeira_comunhao", nullable = false)
-    private boolean primeiraComunhao = false;
+    private boolean primeiraComunhao;
 
     @Column(name = "crismado", nullable = false)
-    private boolean crismado = false;
+    private boolean crismado;
 
     @Column(name = "casado_igreja_catolica", nullable = false)
-    private boolean casadoIgrejaCatolica = false;
+    private boolean casadoIgrejaCatolica;
 
     public UUID getId() {
         return id;

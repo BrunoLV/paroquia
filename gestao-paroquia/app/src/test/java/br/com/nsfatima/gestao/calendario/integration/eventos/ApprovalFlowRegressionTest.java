@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ApprovalFlowRegressionSuite {
+class ApprovalFlowRegressionTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,7 +58,7 @@ class ApprovalFlowRegressionSuite {
                 .andReturn();
 
         UUID createApprovalId = UUID.fromString(objectMapper.readTree(createPending.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText());
+                .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", createApprovalId)
                         .header("X-Actor-Role", "coordenador")
@@ -90,7 +90,7 @@ class ApprovalFlowRegressionSuite {
                 .andReturn();
 
         UUID eventId = UUID.fromString(objectMapper.readTree(immediateCreate.getResponse().getContentAsString())
-                .get("id").asText());
+                .get("id").asString());
 
         MvcResult updatePending = mockMvc.perform(patch("/api/v1/eventos/{id}", eventId)
                         .header("X-Actor-Role", "coordenador")
@@ -107,7 +107,7 @@ class ApprovalFlowRegressionSuite {
                 .andReturn();
 
         UUID updateApprovalId = UUID.fromString(objectMapper.readTree(updatePending.getResponse().getContentAsString())
-                .get("solicitacaoAprovacaoId").asText());
+                .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", updateApprovalId)
                         .header("X-Actor-Role", "coordenador")
