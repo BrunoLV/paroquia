@@ -1,0 +1,3 @@
+Task: Criar hook useOrganogramaExport com estrutura inicial
+- Criado arquivo src/hooks/useOrganogramaExport.ts com tipos e interface basica
+- Definidos ExportFormat, UseOrganogramaExportReturn e utilitario generateFilename
