@@ -1,0 +1,3 @@
+Task: Instalar e configurar a biblioteca de captura de DOM (html-to-image)
+- Adicionada biblioteca html-to-image v1.11.1 no package.json do gestao-paroquia-ui
+- Verificada compatibilidade com React 19 e TypeScript
