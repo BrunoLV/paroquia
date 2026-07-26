@@ -192,8 +192,8 @@
 
 ---
 
-- [ ] **Track: Implementar a funcionalidade de importação do organograma para imagem para download**
-*Link: [./tracks/organograma_export_imagem_20260725/](./tracks/organograma_export_imagem_20260725/)*
+- [x] **Track: Implementar a funcionalidade de importação do organograma para imagem para download**
+*Link: [./archive/organograma_export_imagem_20260725/](./archive/organograma_export_imagem_20260725/)*
 
 
 
