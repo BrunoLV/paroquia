@@ -1,0 +1,3 @@
+Task: Escrever testes unitarios para o hook useOrganogramaExport (Red Phase)
+- Criado src/hooks/__tests__/useOrganogramaExport.test.ts com 6 casos de teste
+- Executado via vitest + happy-dom confirmando falhas controladas (4 falhando / 2 passando)
