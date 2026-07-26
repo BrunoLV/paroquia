@@ -1,0 +1,3 @@
+Phase 2 Checkpoint: Hook de Exportacao concluido
+- Testes unitarios do hook useOrganogramaExport implementados e validados
+- Suporte a exportacao em PNG e SVG com html-to-image e download automatico via <a> element
