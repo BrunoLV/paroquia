@@ -417,11 +417,6 @@ const Reports: React.FC = () => {
                     legend: {
                       direction: 'vertical',
                       position: { vertical: 'middle', horizontal: 'end' },
-                      labelStyle: {
-                        fontSize: 12,
-                        fontWeight: 600,
-                        fill: '#37474f',
-                      },
                     },
                   }}
                 />
@@ -464,11 +459,6 @@ const Reports: React.FC = () => {
                     legend: {
                       direction: 'vertical',
                       position: { vertical: 'middle', horizontal: 'end' },
-                      labelStyle: {
-                        fontSize: 12,
-                        fontWeight: 600,
-                        fill: '#37474f',
-                      },
                     },
                   }}
                 />
