@@ -2,12 +2,12 @@
 
 ## Phase 1: Utilitários de Exportação (CSV e PDF)
 
-- [ ] Task 1.1: Criar testes unitários em `exportUtils.test.ts` para funções de exportação CSV e PDF
-- [ ] Task 1.2: Implementar funções utilitárias em `exportUtils.ts` (geração de CSV e disparo de download de PDF)
+- [x] Task 1.1: Criar testes unitários em `exportUtils.test.ts` para funções de exportação CSV e PDF (09aff59)
+- [x] Task 1.2: Implementar funções utilitárias em `exportUtils.ts` (geração de CSV e disparo de download de PDF) (09aff59)
 
 ## Phase 2: Componentes Modulares de Relatório
 
-- [ ] Task 2.1: Criar testes unitários para os componentes `ReportFilters.test.tsx` e `ReportExportButtons.test.tsx`
+- [~] Task 2.1: Criar testes unitários para os componentes `ReportFilters.test.tsx` e `ReportExportButtons.test.tsx`
 - [ ] Task 2.2: Implementar `ReportFilters.tsx` e `ReportExportButtons.tsx` com design system Mariano (0px border-radius)
 
 ## Phase 3: Refatoração e Enriquecimento da Página de Relatórios (`Reports.tsx`)
