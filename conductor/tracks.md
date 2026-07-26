@@ -199,3 +199,9 @@
 
 - [x] **Track: Implementar Tela de Relatórios Gerenciais**
 *Link: [./archive/relatorios_gerenciais_20260726/](./archive/relatorios_gerenciais_20260726/)*
+
+---
+
+- [ ] **Track: Migração do Frontend para Vite & Vitest**
+*Link: [./tracks/vite_migration_20260726/](./tracks/vite_migration_20260726/)*
+
