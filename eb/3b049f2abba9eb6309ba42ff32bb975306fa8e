@@ -1,0 +1,4 @@
+Task: Implementar componente OrganogramaExportButton (Green Phase)
+- Criado componente OrganogramaExportButton com Material UI, paleta Mariana e angulo 0px
+- Suporte a menu dropdown (PNG/SVG) e feedback visual de carregamento (isExporting)
+- Suíte de 6 testes unitarios passando integralmente
