@@ -415,8 +415,8 @@ const Reports: React.FC = () => {
                   margin={{ top: 20, bottom: 20, left: 10, right: 170 }}
                   slotProps={{
                     legend: {
-                      direction: 'column',
-                      position: { vertical: 'middle', horizontal: 'right' },
+                      direction: 'vertical',
+                      position: { vertical: 'middle', horizontal: 'end' },
                       padding: 0,
                       itemMarkWidth: 12,
                       itemMarkHeight: 12,
@@ -467,8 +467,8 @@ const Reports: React.FC = () => {
                   margin={{ top: 30, bottom: 30, left: 20, right: 170 }}
                   slotProps={{
                     legend: {
-                      direction: 'column',
-                      position: { vertical: 'middle', horizontal: 'right' },
+                      direction: 'vertical',
+                      position: { vertical: 'middle', horizontal: 'end' },
                       padding: 0,
                       itemMarkWidth: 12,
                       itemMarkHeight: 12,
