@@ -190,6 +190,12 @@
 - [x] **Track: Unificação do conceito de Membro e Usuário (Membro como vínculo de Usuário com Organização e Papel)**
 *Link: [./archive/unificacao_membro_usuario_20260722/](./archive/unificacao_membro_usuario_20260722/)*
 
+---
+
+- [ ] **Track: Implementar a funcionalidade de importação do organograma para imagem para download**
+*Link: [./tracks/organograma_export_imagem_20260725/](./tracks/organograma_export_imagem_20260725/)*
+
+
 
 
 
