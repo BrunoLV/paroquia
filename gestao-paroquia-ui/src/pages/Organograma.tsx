@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Box,
@@ -29,6 +29,8 @@ import {
 } from '@mui/icons-material';
 import { getOrganograma } from '../api/organizacoes';
 import { OrganogramaNode } from '../api/types';
+import { useOrganogramaExport, ExportFormat } from '../hooks/useOrganogramaExport';
+import { OrganogramaExportButton } from '../components/organograma/OrganogramaExportButton';
 
 const treeStyles = {
   display: 'flex',
@@ -100,6 +102,15 @@ const Organograma: React.FC = () => {
   const [viewMode, setViewMode] = useState<'tree' | 'grid'>('tree');
   const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
   const [zoom, setZoom] = useState<number>(1.0);
+
+  const chartRef = useRef<HTMLDivElement>(null);
+  const { isExporting, exportOrganograma, generateFilename } = useOrganogramaExport();
+
+  const handleExport = async (format: ExportFormat) => {
+    const orgName = organograma?.label || 'paroquia';
+    const filename = generateFilename(orgName, format);
+    await exportOrganograma(chartRef, format, filename);
+  };
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
@@ -514,158 +525,165 @@ const Organograma: React.FC = () => {
           </Box>
         </Box>
 
-        <ToggleButtonGroup
-          value={viewMode}
-          exclusive
-          onChange={(_, nextValue) => nextValue && setViewMode(nextValue)}
-          size="small"
-          sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
-        >
-          <ToggleButton value="tree" aria-label="Visualização em Árvore">
-            <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
-            Árvore
-          </ToggleButton>
-          <ToggleButton value="grid" aria-label="Visualização em Grade">
-            <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
-            Grade
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <OrganogramaExportButton onExport={handleExport} isExporting={isExporting} />
+
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, nextValue) => nextValue && setViewMode(nextValue)}
+            size="small"
+            sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+          >
+            <ToggleButton value="tree" aria-label="Visualização em Árvore">
+              <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
+              Árvore
+            </ToggleButton>
+            <ToggleButton value="grid" aria-label="Visualização em Grade">
+              <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
+              Grade
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
       </Box>
 
-      {viewMode === 'tree' ? (
-        /* Connected Interactive Tree View */
-        <Box>
-          {/* Controle de Zoom */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <ButtonGroup
-              size="small"
-              variant="outlined"
-              sx={{
-                bgcolor: 'white',
-                border: '1px solid #e2e8f0',
-                borderRadius: 0,
-                boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
-              }}
-            >
-              <Button
-                onClick={handleZoomOut}
-                disabled={zoom <= 0.5}
-                title="Diminuir Zoom"
+      {/* Container de captura para exportação de imagem */}
+      <Box ref={chartRef} sx={{ bgcolor: '#ffffff', p: 1 }}>
+        {viewMode === 'tree' ? (
+          /* Connected Interactive Tree View */
+          <Box>
+            {/* Controle de Zoom */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <ButtonGroup
+                size="small"
+                variant="outlined"
                 sx={{
-                  color: '#1a237e',
-                  borderColor: '#e2e8f0',
+                  bgcolor: 'white',
+                  border: '1px solid #e2e8f0',
                   borderRadius: 0,
-                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                 }}
               >
-                <ZoomOutIcon fontSize="small" />
-              </Button>
-              <Button
-                onClick={handleZoomReset}
-                title="Resetar Zoom"
-                sx={{
-                  color: '#1a237e',
-                  borderColor: '#e2e8f0',
-                  fontWeight: 700,
-                  fontSize: '0.75rem',
-                  px: 2,
-                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                }}
-              >
-                {Math.round(zoom * 100)}%
-              </Button>
-              <Button
-                onClick={handleZoomIn}
-                disabled={zoom >= 1.5}
-                title="Aumentar Zoom"
-                sx={{
-                  color: '#1a237e',
-                  borderColor: '#e2e8f0',
-                  borderRadius: 0,
-                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                }}
-              >
-                <ZoomInIcon fontSize="small" />
-              </Button>
-            </ButtonGroup>
+                <Button
+                  onClick={handleZoomOut}
+                  disabled={zoom <= 0.5}
+                  title="Diminuir Zoom"
+                  sx={{
+                    color: '#1a237e',
+                    borderColor: '#e2e8f0',
+                    borderRadius: 0,
+                    '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                  }}
+                >
+                  <ZoomOutIcon fontSize="small" />
+                </Button>
+                <Button
+                  onClick={handleZoomReset}
+                  title="Resetar Zoom"
+                  sx={{
+                    color: '#1a237e',
+                    borderColor: '#e2e8f0',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    px: 2,
+                    '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                  }}
+                >
+                  {Math.round(zoom * 100)}%
+                </Button>
+                <Button
+                  onClick={handleZoomIn}
+                  disabled={zoom >= 1.5}
+                  title="Aumentar Zoom"
+                  sx={{
+                    color: '#1a237e',
+                    borderColor: '#e2e8f0',
+                    borderRadius: 0,
+                    '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                  }}
+                >
+                  <ZoomInIcon fontSize="small" />
+                </Button>
+              </ButtonGroup>
+            </Box>
+
+            <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
+              <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%', zoom: zoom }}>
+                <ul>
+                  {renderTreeNode(cleroRootNode, true)}
+                </ul>
+              </Box>
+            </Box>
           </Box>
+        ) : (
+          /* Grid View Layout organized by hierarchy groups */
+          <>
+            {/* Nível 1: Clero */}
+            {cleroOrgs.length > 0 && (
+              <Box sx={{ mb: 6 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ChurchIcon /> Clero Paroquial
+                </Typography>
+                <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                  {cleroOrgs.map(org => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      {renderOrgNode(org, false)}
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
 
-          <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
-            <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%', zoom: zoom }}>
-              <ul>
-                {renderTreeNode(cleroRootNode, true)}
-              </ul>
-            </Box>
-          </Box>
-        </Box>
-      ) : (
-        /* Grid View Layout organized by hierarchy groups */
-        <>
-          {/* Nível 1: Clero */}
-          {cleroOrgs.length > 0 && (
-            <Box sx={{ mb: 6 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ChurchIcon /> Clero Paroquial
-              </Typography>
-              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {cleroOrgs.map(org => (
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    {renderOrgNode(org, false)}
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          )}
+            {/* Nível 2: Matrizes e Comunidades */}
+            {matrizesOrgs.length > 0 && (
+              <Box sx={{ mb: 6 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ChurchIcon /> Matriz e Comunidades
+                </Typography>
+                <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                  {matrizesOrgs.map(org => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      {renderOrgNode(org, false)}
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
 
-          {/* Nível 2: Matrizes e Comunidades */}
-          {matrizesOrgs.length > 0 && (
-            <Box sx={{ mb: 6 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ChurchIcon /> Matriz e Comunidades
-              </Typography>
-              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {matrizesOrgs.map(org => (
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    {renderOrgNode(org, false)}
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          )}
+            {/* Nível 3: Conselhos */}
+            {conselhoOrgs.length > 0 && (
+              <Box sx={{ mb: 6 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <SupervisorAccountIcon /> Conselhos Paroquiais
+                </Typography>
+                <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                  {conselhoOrgs.map(org => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      {renderOrgNode(org, false)}
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
 
-          {/* Nível 3: Conselhos */}
-          {conselhoOrgs.length > 0 && (
-            <Box sx={{ mb: 6 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SupervisorAccountIcon /> Conselhos Paroquiais
-              </Typography>
-              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {conselhoOrgs.map(org => (
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    {renderOrgNode(org, false)}
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          )}
-
-          {/* Nível 4: Pastorais, Movimentos e outros */}
-          {pastoralOrgs.length > 0 && (
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PeopleIcon /> Pastorais e Movimentos
-              </Typography>
-              <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-                {pastoralOrgs.map(org => (
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    {renderOrgNode(org, false)}
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          )}
-        </>
-      )}
+            {/* Nível 4: Pastorais, Movimentos e outros */}
+            {pastoralOrgs.length > 0 && (
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <PeopleIcon /> Pastorais e Movimentos
+                </Typography>
+                <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                  {pastoralOrgs.map(org => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={org.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                      {renderOrgNode(org, false)}
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
     </Box>
   );
 };
