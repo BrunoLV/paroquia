@@ -195,13 +195,7 @@
 - [x] **Track: Implementar a funcionalidade de importação do organograma para imagem para download**
 *Link: [./archive/organograma_export_imagem_20260725/](./archive/organograma_export_imagem_20260725/)*
 
+---
 
-
-
-
-
-
-
-
-
-
+- [ ] **Track: Implementar Tela de Relatórios Gerenciais**
+*Link: [./tracks/relatorios_gerenciais_20260726/](./tracks/relatorios_gerenciais_20260726/)*

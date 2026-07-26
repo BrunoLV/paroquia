@@ -1,0 +1,21 @@
+# Plan: Implementar Tela de Relatórios Gerenciais
+
+## Phase 1: Utilitários de Exportação (CSV e PDF)
+
+- [ ] Task 1.1: Criar testes unitários em `exportUtils.test.ts` para funções de exportação CSV e PDF
+- [ ] Task 1.2: Implementar funções utilitárias em `exportUtils.ts` (geração de CSV e disparo de download de PDF)
+
+## Phase 2: Componentes Modulares de Relatório
+
+- [ ] Task 2.1: Criar testes unitários para os componentes `ReportFilters.test.tsx` e `ReportExportButtons.test.tsx`
+- [ ] Task 2.2: Implementar `ReportFilters.tsx` e `ReportExportButtons.tsx` com design system Mariano (0px border-radius)
+
+## Phase 3: Refatoração e Enriquecimento da Página de Relatórios (`Reports.tsx`)
+
+- [ ] Task 3.1: Atualizar testes em `Reports.test.tsx` para validar integração com `getDashboardMetrics`, gráficos e exportação
+- [ ] Task 3.2: Refatorar `Reports.tsx` com React Query, KPI Cards, gráficos interativos (`@mui/x-charts`) e integração de filtros/exportação
+
+## Phase 4: Navegação, Verificação de Cobertura e Checkpoint
+
+- [ ] Task 4.1: Verificar e ajustar integração de rota/menu de navegação se necessário e rodar testes de integração
+- [ ] Task 4.2: Executar validação final da suíte de testes (`CI=true npm test`) e registrar checkpoint
