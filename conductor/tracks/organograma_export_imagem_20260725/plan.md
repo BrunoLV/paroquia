@@ -51,7 +51,7 @@
     - [x] Integrar prop `isExporting` para exibir `CircularProgress` e desabilitar botão
     - [x] Aplicar design system do projeto (Marian Blue/Gold palette)
     - [x] Confirmar que todos os testes passam (Green Phase)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Componente de UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Componente de UI' (Protocol in workflow.md)
 
 ## Phase 4: Integração na Página do Organograma
 
