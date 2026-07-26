@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -55,10 +55,59 @@ const Reports: React.FC = () => {
     setEndDate('');
   };
 
+  // Compute filtered metrics based on selected date range
+  const { filteredMetrics, isFiltered } = useMemo(() => {
+    if (!data) {
+      return { filteredMetrics: null, isFiltered: false };
+    }
+
+    const hasFilter = Boolean(startDate || endDate);
+    if (!hasFilter) {
+      return { filteredMetrics: data, isFiltered: false };
+    }
+
+    const startTimestamp = startDate ? new Date(`${startDate}T00:00:00`).getTime() : null;
+    const endTimestamp = endDate ? new Date(`${endDate}T23:59:59`).getTime() : null;
+
+    const filteredEvents = (data.eventosSemana || []).filter((ev) => {
+      if (!ev.inicio) return true;
+      const evDate = new Date(ev.inicio).getTime();
+      if (startTimestamp && evDate < startTimestamp) return false;
+      if (endTimestamp && evDate > endTimestamp) return false;
+      return true;
+    });
+
+    // Recompute distribution of filtered events per organization if events exist
+    const orgCountMap: Record<string, number> = {};
+    filteredEvents.forEach((ev) => {
+      const orgName = ev.organizacaoNome || 'Outros';
+      orgCountMap[orgName] = (orgCountMap[orgName] || 0) + 1;
+    });
+
+    const filteredEventosPorOrganizacao = Object.keys(orgCountMap).length > 0
+      ? Object.entries(orgCountMap).map(([organizacaoNome, quantidadeEventos]) => ({
+          organizacaoNome,
+          quantidadeEventos,
+        }))
+      : data.eventosPorOrganizacao;
+
+    const result: DashboardMetrics = {
+      ...data,
+      resumoGeral: {
+        ...data.resumoGeral,
+        totalEventosMes: filteredEvents.length,
+      },
+      eventosPorOrganizacao: filteredEventosPorOrganizacao,
+      eventosSemana: filteredEvents,
+    };
+
+    return { filteredMetrics: result, isFiltered: true };
+  }, [data, startDate, endDate]);
+
   const handleExportCSV = () => {
-    if (!data) return;
+    if (!filteredMetrics) return;
     try {
-      const csvStr = generateMetricsCSV(data);
+      const csvStr = generateMetricsCSV(filteredMetrics);
       downloadCSV(csvStr, `relatorio-gerencial-${new Date().toISOString().slice(0, 10)}.csv`);
       showSuccess('Relatório CSV exportado com sucesso!');
     } catch (err) {
@@ -102,7 +151,7 @@ const Reports: React.FC = () => {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !filteredMetrics) {
     return (
       <Box sx={{ p: 1 }}>
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: '#1a237e' }}>
@@ -115,7 +164,7 @@ const Reports: React.FC = () => {
     );
   }
 
-  const pieChartData = (data.eventosPorOrganizacao || []).map((item, index) => ({
+  const pieChartData = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
     id: index,
     value: item.quantidadeEventos,
     label: item.organizacaoNome,
@@ -124,22 +173,22 @@ const Reports: React.FC = () => {
 
   const summaryCards = [
     {
-      title: 'Eventos no Mês',
-      value: data.resumoGeral?.totalEventosMes ?? 0,
+      title: isFiltered ? 'Eventos no Período' : 'Eventos no Mês',
+      value: filteredMetrics.resumoGeral?.totalEventosMes ?? 0,
       icon: EventIcon,
       color: '#1a237e',
       bgGradient: 'linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%)',
     },
     {
       title: 'Projetos Ativos',
-      value: data.resumoGeral?.projetosAtivos ?? 0,
+      value: filteredMetrics.resumoGeral?.projetosAtivos ?? 0,
       icon: ProjectIcon,
       color: '#00796b',
       bgGradient: 'linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%)',
     },
     {
       title: 'Solicitações Pendentes',
-      value: data.resumoGeral?.solicitacoesPendentes ?? 0,
+      value: filteredMetrics.resumoGeral?.solicitacoesPendentes ?? 0,
       icon: PendingIcon,
       color: '#f57c00',
       bgGradient: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
@@ -282,7 +331,7 @@ const Reports: React.FC = () => {
               </Box>
             ) : (
               <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-                Nenhum evento registrado por organização.
+                Nenhum evento registrado por organização no período.
               </Typography>
             )}
           </Card>
@@ -304,9 +353,9 @@ const Reports: React.FC = () => {
               Projetos Ativos & Progresso
             </Typography>
 
-            {data.projetosAtivosDetalhes && data.projetosAtivosDetalhes.length > 0 ? (
+            {filteredMetrics.projetosAtivosDetalhes && filteredMetrics.projetosAtivosDetalhes.length > 0 ? (
               <Stack spacing={2.5} sx={{ mt: 1 }}>
-                {data.projetosAtivosDetalhes.map((proj, idx) => (
+                {filteredMetrics.projetosAtivosDetalhes.map((proj, idx) => (
                   <Box key={idx} sx={{ p: 1.5, border: '1px solid #eee', backgroundColor: '#fafafa' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
@@ -358,24 +407,24 @@ const Reports: React.FC = () => {
       </Grid>
 
       {/* Events Table / Timeline Section */}
-      {data.eventosSemana && data.eventosSemana.length > 0 && (
-        <Card
-          elevation={0}
-          sx={{
-            mt: 4,
-            p: 3,
-            borderRadius: 0,
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <AssessmentIcon sx={{ color: '#1a237e' }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
-              Atividades Recentes & Eventos da Semana
-            </Typography>
-          </Box>
+      <Card
+        elevation={0}
+        sx={{
+          mt: 4,
+          p: 3,
+          borderRadius: 0,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <AssessmentIcon sx={{ color: '#1a237e' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
+            Atividades Recentes & Eventos {isFiltered ? 'no Período' : 'da Semana'}
+          </Typography>
+        </Box>
 
+        {filteredMetrics.eventosSemana && filteredMetrics.eventosSemana.length > 0 ? (
           <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #eee', borderRadius: 0 }}>
             <Table size="small">
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
@@ -387,7 +436,7 @@ const Reports: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.eventosSemana.map((ev, idx) => (
+                {filteredMetrics.eventosSemana.map((ev, idx) => (
                   <TableRow key={idx} hover>
                     <TableCell sx={{ fontWeight: 600 }}>{ev.titulo}</TableCell>
                     <TableCell>{ev.organizacaoNome || '-'}</TableCell>
@@ -406,8 +455,12 @@ const Reports: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        </Card>
-      )}
+        ) : (
+          <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+            Nenhum evento encontrado no período selecionado.
+          </Typography>
+        )}
+      </Card>
     </Box>
   );
 };

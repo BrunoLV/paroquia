@@ -135,20 +135,27 @@ describe('Reports Page', () => {
   test('filters dates and clears filter inputs', async () => {
     await renderReports();
 
+    expect(screen.getByText('Reunião de Pais')).toBeInTheDocument();
+
     const startInput = screen.getByLabelText(/data início/i);
     const endInput = screen.getByLabelText(/data fim/i);
     const clearBtn = screen.getByRole('button', { name: /limpar filtros/i });
 
+    // Filter for a past range where event ('2026-07-28') is out of range
     fireEvent.change(startInput, { target: { value: '2026-06-01' } });
     fireEvent.change(endInput, { target: { value: '2026-06-30' } });
 
     expect(startInput).toHaveValue('2026-06-01');
     expect(endInput).toHaveValue('2026-06-30');
 
+    expect(screen.queryByText('Reunião de Pais')).not.toBeInTheDocument();
+    expect(screen.getByText(/Nenhum evento encontrado no período selecionado/i)).toBeInTheDocument();
+
     fireEvent.click(clearBtn);
 
     expect(startInput).toHaveValue('');
     expect(endInput).toHaveValue('');
+    expect(screen.getByText('Reunião de Pais')).toBeInTheDocument();
   });
 
   test('renders error state on API failure', async () => {
