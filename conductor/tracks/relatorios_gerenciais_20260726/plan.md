@@ -17,5 +17,5 @@
 
 ## Phase 4: Navegação, Verificação de Cobertura e Checkpoint
 
-- [~] Task 4.1: Verificar e ajustar integração de rota/menu de navegação se necessário e rodar testes de integração
-- [ ] Task 4.2: Executar validação final da suíte de testes (`CI=true npm test`) e registrar checkpoint
+- [x] Task 4.1: Verificar e ajustar integração de rota/menu de navegação se necessário e rodar testes de integração (5788393)
+- [x] Task 4.2: Executar validação final da suíte de testes (`CI=true npm test`) e registrar checkpoint (5788393)
