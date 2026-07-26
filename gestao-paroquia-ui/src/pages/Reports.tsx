@@ -26,6 +26,7 @@ import {
   PieChart as PieIcon,
   BarChart as BarIcon,
   Warning as WarningIcon,
+  FilterList as FilterIcon,
 } from '@mui/icons-material';
 import { PieChart, BarChart } from '@mui/x-charts';
 import { useQuery } from '@tanstack/react-query';
@@ -59,39 +60,44 @@ const Reports: React.FC = () => {
   };
 
   // Compute filtered metrics based on selected date range
-  const { filteredMetrics, isFiltered } = useMemo(() => {
+  const { filteredMetrics, isFiltered, activeEventsCount } = useMemo(() => {
     if (!data) {
-      return { filteredMetrics: null, isFiltered: false };
+      return { filteredMetrics: null, isFiltered: false, activeEventsCount: 0 };
     }
 
     const hasFilter = Boolean(startDate || endDate);
     if (!hasFilter) {
-      return { filteredMetrics: data, isFiltered: false };
+      return {
+        filteredMetrics: data,
+        isFiltered: false,
+        activeEventsCount: data.resumoGeral?.totalEventosMes ?? 0,
+      };
     }
 
     const startTimestamp = startDate ? new Date(`${startDate}T00:00:00`).getTime() : null;
-    const endTimestamp = endDate ? new Date(`${endDate}T23:59:59`).getTime() : null;
+    const endTimestamp = endDate ? new Date(`${endDate}T23:59:59.999`).getTime() : null;
 
     const filteredEvents = (data.eventosSemana || []).filter((ev) => {
       if (!ev.inicio) return true;
-      const evDate = new Date(ev.inicio).getTime();
-      if (startTimestamp && evDate < startTimestamp) return false;
-      if (endTimestamp && evDate > endTimestamp) return false;
+      const evTime = new Date(ev.inicio).getTime();
+      if (isNaN(evTime)) return true;
+
+      if (startTimestamp !== null && evTime < startTimestamp) return false;
+      if (endTimestamp !== null && evTime > endTimestamp) return false;
       return true;
     });
 
+    // Compute distribution of filtered events per organization
     const orgCountMap: Record<string, number> = {};
     filteredEvents.forEach((ev) => {
-      const orgName = ev.organizacaoNome || 'Outros';
+      const orgName = ev.organizacaoNome || 'Sem Organização';
       orgCountMap[orgName] = (orgCountMap[orgName] || 0) + 1;
     });
 
-    const filteredEventosPorOrganizacao = Object.keys(orgCountMap).length > 0
-      ? Object.entries(orgCountMap).map(([organizacaoNome, quantidadeEventos]) => ({
-          organizacaoNome,
-          quantidadeEventos,
-        }))
-      : data.eventosPorOrganizacao;
+    const filteredEventosPorOrganizacao = Object.entries(orgCountMap).map(([organizacaoNome, quantidadeEventos]) => ({
+      organizacaoNome,
+      quantidadeEventos,
+    }));
 
     const result: DashboardMetrics = {
       ...data,
@@ -103,7 +109,7 @@ const Reports: React.FC = () => {
       eventosSemana: filteredEvents,
     };
 
-    return { filteredMetrics: result, isFiltered: true };
+    return { filteredMetrics: result, isFiltered: true, activeEventsCount: filteredEvents.length };
   }, [data, startDate, endDate]);
 
   // Status breakdown of projects
@@ -189,7 +195,7 @@ const Reports: React.FC = () => {
 
   const summaryCards = [
     {
-      title: isFiltered ? 'Eventos no Período' : 'Eventos no Mês',
+      title: isFiltered ? 'Eventos no Período' : 'Total Eventos no Mês',
       value: filteredMetrics.resumoGeral?.totalEventosMes ?? 0,
       icon: EventIcon,
       color: '#1a237e',
@@ -245,7 +251,7 @@ const Reports: React.FC = () => {
         elevation={0}
         sx={{
           p: 2,
-          mb: 4,
+          mb: 3,
           borderRadius: 0,
           border: '1px solid',
           borderColor: 'divider',
@@ -260,6 +266,20 @@ const Reports: React.FC = () => {
           onClearFilters={handleClearFilters}
         />
       </Card>
+
+      {/* Active Filter Notification Banner */}
+      {isFiltered && (
+        <Alert
+          severity="info"
+          variant="outlined"
+          icon={<FilterIcon />}
+          sx={{ mb: 3, borderRadius: 0, borderLeft: '4px solid #1a237e' }}
+          onClose={handleClearFilters}
+        >
+          Filtro ativo de <strong>{startDate || 'início do registro'}</strong> até{' '}
+          <strong>{endDate || 'data atual'}</strong> — Exibindo <strong>{activeEventsCount}</strong> evento(s) no período selecionado.
+        </Alert>
+      )}
 
       {/* KPI Cards */}
       <Grid container spacing={3}>
@@ -349,8 +369,8 @@ const Reports: React.FC = () => {
                 />
               </Box>
             ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-                Nenhum evento registrado por organização no período.
+              <Typography variant="body2" color="text.secondary" sx={{ py: 6, textAlign: 'center' }}>
+                Nenhum evento encontrado para as organizações no período selecionado.
               </Typography>
             )}
           </Card>
@@ -385,8 +405,8 @@ const Reports: React.FC = () => {
                 />
               </Box>
             ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-                Nenhum dado para o gráfico de barras.
+              <Typography variant="body2" color="text.secondary" sx={{ py: 6, textAlign: 'center' }}>
+                Nenhum dado disponível para exibição no gráfico de barras.
               </Typography>
             )}
           </Card>
