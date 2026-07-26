@@ -1,0 +1,4 @@
+Phase 3 Checkpoint: Componente de UI concluido
+- Componente OrganogramaExportButton criado com Material UI, paleta Mariana e angulo 0px
+- Suporte a menu dropdown (PNG/SVG) e feedback visual de carregamento (isExporting)
+- Testes unitarios validados com sucesso
