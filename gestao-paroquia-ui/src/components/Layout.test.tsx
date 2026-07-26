@@ -78,6 +78,7 @@ describe('Layout component link visibility', () => {
     expect(screen.getByText('Projetos')).toBeInTheDocument();
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Calendário')).toBeInTheDocument();
+    expect(screen.getByText('Relatórios')).toBeInTheDocument();
   });
 
   test('renders "Configurações" link for users with management permissions', () => {
