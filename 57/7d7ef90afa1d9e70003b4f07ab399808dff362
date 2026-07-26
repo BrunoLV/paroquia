@@ -1,0 +1,1 @@
+Bug fix: Removed fallback to original org counts when filter produced empty result, ensuring PieChart, BarChart and KPI cards dynamically reflect filtered date ranges.
