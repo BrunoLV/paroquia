@@ -10,7 +10,7 @@
     - [x] Criar arquivo `src/hooks/useOrganogramaExport.ts` com assinatura do hook
     - [x] Definir tipos TypeScript: `ExportFormat = 'png' | 'svg'` e `ExportState`
     - [x] Definir a interface do hook: `exportOrganograma(ref, format, filename)` e estado `isExporting`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup e Infraestrutura' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Setup e Infraestrutura' (Protocol in workflow.md)
 
 ## Phase 2: Implementação do Hook de Exportação (TDD)
 
