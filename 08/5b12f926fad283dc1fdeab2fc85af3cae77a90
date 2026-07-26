@@ -1,0 +1,4 @@
+Task: Integrar o botao e hook na pagina/componente do Organograma
+- Conectado useOrganogramaExport e OrganogramaExportButton na pagina Organograma.tsx
+- Adicionada ref chartRef ao container principal do organograma para captura de DOM completa
+- Adicionado vitest-env.d.ts para tipagem do tsc
