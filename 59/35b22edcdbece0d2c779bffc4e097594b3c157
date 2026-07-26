@@ -1,0 +1,3 @@
+Task: Escrever testes para o componente OrganogramaExportButton (Red Phase)
+- Criado src/components/organograma/__tests__/OrganogramaExportButton.test.tsx com 6 casos de teste
+- Confirmada falha de importacao no Red Phase pois o componente ainda nao existe
