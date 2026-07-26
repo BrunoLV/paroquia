@@ -197,5 +197,5 @@
 
 ---
 
-- [ ] **Track: Implementar Tela de Relatórios Gerenciais**
+- [~] **Track: Implementar Tela de Relatórios Gerenciais**
 *Link: [./tracks/relatorios_gerenciais_20260726/](./tracks/relatorios_gerenciais_20260726/)*
