@@ -6,10 +6,10 @@
     - [x] Adicionar `html-to-image` ao `package.json` do projeto `gestao-paroquia-ui`
     - [x] Verificar compatibilidade com a versão atual do React e TypeScript
     - [x] Validar que a biblioteca exporta corretamente tipos TypeScript
-- [ ] Task: Criar hook `useOrganogramaExport` com estrutura inicial
-    - [ ] Criar arquivo `src/hooks/useOrganogramaExport.ts` com assinatura do hook
-    - [ ] Definir tipos TypeScript: `ExportFormat = 'png' | 'svg'` e `ExportState`
-    - [ ] Definir a interface do hook: `exportOrganograma(ref, format, filename)` e estado `isExporting`
+- [x] Task: Criar hook `useOrganogramaExport` com estrutura inicial 507218e
+    - [x] Criar arquivo `src/hooks/useOrganogramaExport.ts` com assinatura do hook
+    - [x] Definir tipos TypeScript: `ExportFormat = 'png' | 'svg'` e `ExportState`
+    - [x] Definir a interface do hook: `exportOrganograma(ref, format, filename)` e estado `isExporting`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup e Infraestrutura' (Protocol in workflow.md)
 
 ## Phase 2: Implementação do Hook de Exportação (TDD)
