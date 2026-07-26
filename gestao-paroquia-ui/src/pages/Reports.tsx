@@ -417,9 +417,6 @@ const Reports: React.FC = () => {
                     legend: {
                       direction: 'vertical',
                       position: { vertical: 'middle', horizontal: 'end' },
-                      itemMarkWidth: 12,
-                      itemMarkHeight: 12,
-                      markGap: 8,
                       itemGap: 10,
                       labelStyle: {
                         fontSize: 12,
@@ -468,9 +465,6 @@ const Reports: React.FC = () => {
                     legend: {
                       direction: 'vertical',
                       position: { vertical: 'middle', horizontal: 'end' },
-                      itemMarkWidth: 12,
-                      itemMarkHeight: 12,
-                      markGap: 8,
                       itemGap: 10,
                       labelStyle: {
                         fontSize: 12,
