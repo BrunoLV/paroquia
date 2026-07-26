@@ -553,7 +553,7 @@ const Organograma: React.FC = () => {
           /* Connected Interactive Tree View */
           <Box>
             {/* Controle de Zoom */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <Box className="no-export" sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
               <ButtonGroup
                 size="small"
                 variant="outlined"

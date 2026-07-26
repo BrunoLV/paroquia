@@ -48,12 +48,69 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
 
       setIsExporting(true);
 
+      const modifiedElements: { el: HTMLElement; origZoom: string; origOverflowX: string; origOverflowY: string }[] = [];
+
       try {
+        // Encontrar as maiores dimensões reais de conteúdo unclipped
+        let fullWidth = element.scrollWidth;
+        let fullHeight = element.scrollHeight;
+
+        const allDescendants = element.querySelectorAll('*');
+        allDescendants.forEach((child) => {
+          if (child instanceof HTMLElement) {
+            if (child.scrollWidth > fullWidth) {
+              fullWidth = child.scrollWidth;
+            }
+            if (child.scrollHeight > fullHeight) {
+              fullHeight = child.scrollHeight;
+            }
+          }
+        });
+
+        // Adicionar padding extra de 32px para garantir margens limpas
+        fullWidth = Math.max(fullWidth + 32, element.offsetWidth);
+        fullHeight = Math.max(fullHeight + 32, element.offsetHeight);
+
+        // Temporariamente resetar zoom e remover scrollbars/clipping durante a captura
+        allDescendants.forEach((child) => {
+          if (child instanceof HTMLElement) {
+            const style = child.style;
+            if (style.zoom || style.overflowX || style.overflowY || style.overflow) {
+              modifiedElements.push({
+                el: child,
+                origZoom: style.zoom,
+                origOverflowX: style.overflowX,
+                origOverflowY: style.overflowY,
+              });
+              style.zoom = '1';
+              style.overflowX = 'visible';
+              style.overflowY = 'visible';
+            }
+          }
+        });
+
         const options = {
           quality: 0.95,
           pixelRatio: 2,
           backgroundColor: '#ffffff',
           cacheBust: true,
+          width: fullWidth,
+          height: fullHeight,
+          style: {
+            transform: 'none',
+            zoom: '1',
+            overflow: 'visible',
+            width: `${fullWidth}px`,
+            height: `${fullHeight}px`,
+            maxHeight: 'none',
+            maxWidth: 'none',
+          },
+          filter: (node: Node) => {
+            if (node instanceof HTMLElement && node.classList.contains('no-export')) {
+              return false;
+            }
+            return true;
+          },
         };
 
         let dataUrl: string;
@@ -69,6 +126,13 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
         console.error('Erro ao exportar organograma:', error);
         throw error;
       } finally {
+        // Restaurar os estilos originais dos elementos modificados
+        modifiedElements.forEach(({ el, origZoom, origOverflowX, origOverflowY }) => {
+          el.style.zoom = origZoom;
+          el.style.overflowX = origOverflowX;
+          el.style.overflowY = origOverflowY;
+        });
+
         setIsExporting(false);
       }
     },
