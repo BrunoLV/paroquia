@@ -1,36 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Stack } from '@mui/material';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 interface ReportFiltersProps {
   startDate: string;
   endDate: string;
-  onStartDateChange: (val: string) => void;
-  onEndDateChange: (val: string) => void;
+  onApplyFilters: (startDate: string, endDate: string) => void;
   onClearFilters: () => void;
 }
 
 const ReportFilters: React.FC<ReportFiltersProps> = ({
   startDate,
   endDate,
-  onStartDateChange,
-  onEndDateChange,
+  onApplyFilters,
   onClearFilters,
 }) => {
+  const [localStartDate, setLocalStartDate] = useState(startDate);
+  const [localEndDate, setLocalEndDate] = useState(endDate);
+
+  useEffect(() => {
+    setLocalStartDate(startDate);
+    setLocalEndDate(endDate);
+  }, [startDate, endDate]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onApplyFilters(localStartDate, localEndDate);
+  };
+
   const handleClear = () => {
-    onStartDateChange('');
-    onEndDateChange('');
+    setLocalStartDate('');
+    setLocalEndDate('');
     onClearFilters();
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
         <TextField
           label="Data Início"
           type="date"
-          value={startDate || ''}
-          onChange={(e) => onStartDateChange(e.target.value)}
+          value={localStartDate || ''}
+          onChange={(e) => setLocalStartDate(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
           size="small"
           sx={{
@@ -41,8 +53,8 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
         <TextField
           label="Data Fim"
           type="date"
-          value={endDate || ''}
-          onChange={(e) => onEndDateChange(e.target.value)}
+          value={localEndDate || ''}
+          onChange={(e) => setLocalEndDate(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
           size="small"
           sx={{
@@ -51,6 +63,26 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           }}
         />
         <Button
+          type="submit"
+          variant="contained"
+          size="small"
+          startIcon={<FilterListIcon />}
+          sx={{
+            borderRadius: 0,
+            backgroundColor: '#1a237e',
+            textTransform: 'none',
+            fontWeight: 600,
+            height: 40,
+            px: 2.5,
+            '&:hover': {
+              backgroundColor: '#0d47a1',
+            },
+          }}
+        >
+          Filtrar
+        </Button>
+        <Button
+          type="button"
           variant="outlined"
           color="secondary"
           size="small"

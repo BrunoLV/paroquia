@@ -155,18 +155,20 @@ describe('Reports Page', () => {
     expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-container', 'relatorio-gerencial.pdf');
   });
 
-  test('filters dates and fetches events from backend for the selected range', async () => {
+  test('filters dates and fetches events from backend when Filtrar button is clicked', async () => {
     await renderReports();
 
     expect(screen.getByText('Reunião de Pais')).toBeInTheDocument();
 
     const startInput = screen.getByLabelText(/data início/i);
     const endInput = screen.getByLabelText(/data fim/i);
+    const filterButton = screen.getByRole('button', { name: /^filtrar$/i });
 
-    // Set filter dates for August 2026
+    // Set filter dates for August 2026 and click Filtrar button
     await act(async () => {
       fireEvent.change(startInput, { target: { value: '2026-08-01' } });
       fireEvent.change(endInput, { target: { value: '2026-08-31' } });
+      fireEvent.click(filterButton);
     });
 
     // Wait for API-filtered event to render

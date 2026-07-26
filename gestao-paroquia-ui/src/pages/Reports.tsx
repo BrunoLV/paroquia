@@ -43,8 +43,8 @@ const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [appliedStartDate, setAppliedStartDate] = useState('');
+  const [appliedEndDate, setAppliedEndDate] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
   // Fetch baseline metrics from dashboard endpoint
@@ -73,18 +73,18 @@ const Reports: React.FC = () => {
     return map;
   }, [orgsData]);
 
-  const isFiltered = Boolean(startDate || endDate);
+  const isFiltered = Boolean(appliedStartDate || appliedEndDate);
 
-  // Fetch filtered events when date filter is active
+  // Fetch filtered events when date filter is applied via button
   const {
     data: customEventsData,
     isLoading: isCustomEventsLoading,
   } = useQuery<WeeklyEvent[]>({
-    queryKey: ['reportCustomEvents', startDate, endDate],
+    queryKey: ['reportCustomEvents', appliedStartDate, appliedEndDate],
     queryFn: async () => {
       const params: Record<string, any> = { size: 500 };
-      if (startDate) params.dataInicio = `${startDate}T00:00:00Z`;
-      if (endDate) params.dataFim = `${endDate}T23:59:59Z`;
+      if (appliedStartDate) params.dataInicio = `${appliedStartDate}T00:00:00Z`;
+      if (appliedEndDate) params.dataFim = `${appliedEndDate}T23:59:59Z`;
 
       const response = await apiClient.get<any>('/eventos', { params });
       const rawEvents = Array.isArray(response.data?.content)
@@ -107,9 +107,14 @@ const Reports: React.FC = () => {
     enabled: isFiltered,
   });
 
+  const handleApplyFilters = (start: string, end: string) => {
+    setAppliedStartDate(start);
+    setAppliedEndDate(end);
+  };
+
   const handleClearFilters = () => {
-    setStartDate('');
-    setEndDate('');
+    setAppliedStartDate('');
+    setAppliedEndDate('');
   };
 
   // Combine baseline metrics with custom date filter results
@@ -296,10 +301,9 @@ const Reports: React.FC = () => {
         }}
       >
         <ReportFilters
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
+          startDate={appliedStartDate}
+          endDate={appliedEndDate}
+          onApplyFilters={handleApplyFilters}
           onClearFilters={handleClearFilters}
         />
       </Card>
@@ -313,8 +317,8 @@ const Reports: React.FC = () => {
           sx={{ mb: 3, borderRadius: 0, borderLeft: '4px solid #1a237e' }}
           onClose={handleClearFilters}
         >
-          Filtro ativo de <strong>{startDate || 'início do registro'}</strong> até{' '}
-          <strong>{endDate || 'data atual'}</strong> — Exibindo <strong>{filteredMetrics.eventosSemana.length}</strong> evento(s) no período selecionado.
+          Filtro ativo de <strong>{appliedStartDate || 'início do registro'}</strong> até{' '}
+          <strong>{appliedEndDate || 'data atual'}</strong> — Exibindo <strong>{filteredMetrics.eventosSemana.length}</strong> evento(s) no período selecionado.
         </Alert>
       )}
 
