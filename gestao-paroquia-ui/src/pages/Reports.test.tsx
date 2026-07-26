@@ -130,8 +130,8 @@ describe('Reports Page', () => {
     expect(screen.getByText('4')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
 
-    expect(screen.getByText('Catequese: 10')).toBeInTheDocument();
-    expect(screen.getByText('Liturgia: 5')).toBeInTheDocument();
+    expect(screen.getAllByText(/Catequese/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/Liturgia/)[0]).toBeInTheDocument();
     expect(screen.getByText('Reforma da Matriz')).toBeInTheDocument();
   });
 

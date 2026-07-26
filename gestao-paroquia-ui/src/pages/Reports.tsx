@@ -39,7 +39,7 @@ import ReportExportButtons from '../components/reports/ReportExportButtons';
 import { generateMetricsCSV, downloadCSV, exportElementAsPDF } from '../utils/exportUtils';
 import { useNotification } from '../context/NotificationContext';
 
-const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '#d4af37', '#e91e63'];
+const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '#d4af37', '#e91e63', '#455a64'];
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();
@@ -225,15 +225,20 @@ const Reports: React.FC = () => {
     );
   }
 
+  // Data formatted for PieChart with Marian Palette colors & labels
   const pieChartData = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
     id: index,
     value: item.quantidadeEventos,
-    label: item.organizacaoNome,
+    label: `${item.organizacaoNome} (${item.quantidadeEventos})`,
     color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
   }));
 
-  const barChartXLabels = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.organizacaoNome);
-  const barChartValues = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.quantidadeEventos);
+  // Distinct series per organization for BarChart so every bar has its unique color and legend entry
+  const barChartSeries = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
+    data: [item.quantidadeEventos],
+    label: item.organizacaoNome,
+    color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
+  }));
 
   const summaryCards = [
     {
@@ -394,19 +399,36 @@ const Reports: React.FC = () => {
             </Box>
 
             {pieChartData.length > 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 280 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300, width: '100%' }}>
                 <PieChart
                   series={[
                     {
                       data: pieChartData,
-                      innerRadius: 45,
-                      outerRadius: 100,
-                      paddingAngle: 2,
+                      innerRadius: 35,
+                      outerRadius: 95,
+                      paddingAngle: 3,
                       cornerRadius: 0,
+                      highlightScope: { fade: 'global', highlight: 'item' },
                     },
                   ]}
-                  width={420}
-                  height={260}
+                  height={290}
+                  margin={{ top: 20, bottom: 20, left: 10, right: 170 }}
+                  slotProps={{
+                    legend: {
+                      direction: 'column',
+                      position: { vertical: 'middle', horizontal: 'right' },
+                      padding: 0,
+                      itemMarkWidth: 12,
+                      itemMarkHeight: 12,
+                      markGap: 8,
+                      itemGap: 10,
+                      labelStyle: {
+                        fontSize: 12,
+                        fontWeight: 600,
+                        fill: '#37474f',
+                      },
+                    },
+                  }}
                 />
               </Box>
             ) : (
@@ -436,13 +458,29 @@ const Reports: React.FC = () => {
               </Typography>
             </Box>
 
-            {barChartValues.length > 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 280 }}>
+            {barChartSeries.length > 0 ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300, width: '100%' }}>
                 <BarChart
-                  xAxis={[{ scaleType: 'band', data: barChartXLabels }]}
-                  series={[{ data: barChartValues, color: '#1a237e', label: 'Eventos' }]}
-                  width={440}
-                  height={260}
+                  xAxis={[{ scaleType: 'band', data: ['Quantidade de Eventos'] }]}
+                  series={barChartSeries}
+                  height={290}
+                  margin={{ top: 30, bottom: 30, left: 20, right: 170 }}
+                  slotProps={{
+                    legend: {
+                      direction: 'column',
+                      position: { vertical: 'middle', horizontal: 'right' },
+                      padding: 0,
+                      itemMarkWidth: 12,
+                      itemMarkHeight: 12,
+                      markGap: 8,
+                      itemGap: 10,
+                      labelStyle: {
+                        fontSize: 12,
+                        fontWeight: 600,
+                        fill: '#37474f',
+                      },
+                    },
+                  }}
                 />
               </Box>
             ) : (
