@@ -55,12 +55,12 @@
 
 ## Phase 4: Integração na Página do Organograma
 
-- [ ] Task: Integrar o botão e hook na página/componente do Organograma
-    - [ ] Localizar o componente de página do Organograma em `gestao-paroquia-ui`
-    - [ ] Adicionar `ref` ao container do gráfico do organograma para captura
-    - [ ] Instanciar o hook `useOrganogramaExport` no componente
-    - [ ] Renderizar `OrganogramaExportButton` acima do gráfico, conectado ao hook
-    - [ ] Passar o nome da organização para a geração do nome do arquivo
+- [x] Task: Integrar o botão e hook na página/componente do Organograma 085b12f
+    - [x] Localizar o componente de página do Organograma em `gestao-paroquia-ui`
+    - [x] Adicionar `ref` ao container do gráfico do organograma para captura
+    - [x] Instanciar o hook `useOrganogramaExport` no componente
+    - [x] Renderizar `OrganogramaExportButton` acima do gráfico, conectado ao hook
+    - [x] Passar o nome da organização para a geração do nome do arquivo
 - [ ] Task: Testes de integração e validação manual
     - [ ] Executar suíte completa de testes: `CI=true npm test`
     - [ ] Verificar cobertura de testes > 80% para os novos arquivos
