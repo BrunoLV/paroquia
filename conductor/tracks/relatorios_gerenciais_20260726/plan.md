@@ -7,12 +7,12 @@
 
 ## Phase 2: Componentes Modulares de Relatório
 
-- [~] Task 2.1: Criar testes unitários para os componentes `ReportFilters.test.tsx` e `ReportExportButtons.test.tsx`
-- [ ] Task 2.2: Implementar `ReportFilters.tsx` e `ReportExportButtons.tsx` com design system Mariano (0px border-radius)
+- [x] Task 2.1: Criar testes unitários para os componentes `ReportFilters.test.tsx` e `ReportExportButtons.test.tsx` (2c92c5c)
+- [x] Task 2.2: Implementar `ReportFilters.tsx` e `ReportExportButtons.tsx` com design system Mariano (0px border-radius) (2c92c5c)
 
 ## Phase 3: Refatoração e Enriquecimento da Página de Relatórios (`Reports.tsx`)
 
-- [ ] Task 3.1: Atualizar testes em `Reports.test.tsx` para validar integração com `getDashboardMetrics`, gráficos e exportação
+- [~] Task 3.1: Atualizar testes em `Reports.test.tsx` para validar integração com `getDashboardMetrics`, gráficos e exportação
 - [ ] Task 3.2: Refatorar `Reports.tsx` com React Query, KPI Cards, gráficos interativos (`@mui/x-charts`) e integração de filtros/exportação
 
 ## Phase 4: Navegação, Verificação de Cobertura e Checkpoint
