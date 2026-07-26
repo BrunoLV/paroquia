@@ -233,12 +233,9 @@ const Reports: React.FC = () => {
     color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
   }));
 
-  // Distinct series per organization for BarChart so every bar has its unique color and legend entry
-  const barChartSeries = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
-    data: [item.quantidadeEventos],
-    label: item.organizacaoNome,
-    color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
-  }));
+  // Organization names and counts for BarChart
+  const barChartXLabels = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.organizacaoNome);
+  const barChartValues = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.quantidadeEventos);
 
   const summaryCards = [
     {
@@ -399,24 +396,24 @@ const Reports: React.FC = () => {
             </Box>
 
             {pieChartData.length > 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300, width: '100%' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 320, width: '100%' }}>
                 <PieChart
                   series={[
                     {
                       data: pieChartData,
-                      innerRadius: 35,
+                      innerRadius: 40,
                       outerRadius: 95,
                       paddingAngle: 3,
                       cornerRadius: 0,
                       highlightScope: { fade: 'global', highlight: 'item' },
                     },
                   ]}
-                  height={290}
-                  margin={{ top: 20, bottom: 20, left: 10, right: 170 }}
+                  height={310}
+                  margin={{ top: 20, bottom: 50, left: 20, right: 20 }}
                   slotProps={{
                     legend: {
-                      direction: 'vertical',
-                      position: { vertical: 'middle', horizontal: 'end' },
+                      direction: 'horizontal',
+                      position: { vertical: 'bottom', horizontal: 'center' },
                     },
                   }}
                 />
@@ -448,17 +445,26 @@ const Reports: React.FC = () => {
               </Typography>
             </Box>
 
-            {barChartSeries.length > 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300, width: '100%' }}>
+            {barChartValues.length > 0 ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 320, width: '100%' }}>
                 <BarChart
-                  xAxis={[{ scaleType: 'band', data: ['Quantidade de Eventos'] }]}
-                  series={barChartSeries}
-                  height={290}
-                  margin={{ top: 30, bottom: 30, left: 20, right: 170 }}
+                  xAxis={[{ scaleType: 'band', data: barChartXLabels }]}
+                  series={[
+                    {
+                      data: barChartValues,
+                      label: 'Quantidade de Eventos',
+                      colorMap: {
+                        type: 'ordinal',
+                        colors: MARIAN_PALETTE,
+                      },
+                    },
+                  ]}
+                  height={310}
+                  margin={{ top: 20, bottom: 50, left: 40, right: 20 }}
                   slotProps={{
                     legend: {
-                      direction: 'vertical',
-                      position: { vertical: 'middle', horizontal: 'end' },
+                      direction: 'horizontal',
+                      position: { vertical: 'bottom', horizontal: 'center' },
                     },
                   }}
                 />
