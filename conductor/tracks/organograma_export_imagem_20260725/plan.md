@@ -61,11 +61,11 @@
     - [x] Instanciar o hook `useOrganogramaExport` no componente
     - [x] Renderizar `OrganogramaExportButton` acima do gráfico, conectado ao hook
     - [x] Passar o nome da organização para a geração do nome do arquivo
-- [ ] Task: Testes de integração e validação manual
-    - [ ] Executar suíte completa de testes: `CI=true npm test`
-    - [ ] Verificar cobertura de testes > 80% para os novos arquivos
-    - [ ] Validar manualmente o download PNG em Chrome e Firefox
-    - [ ] Validar manualmente o download SVG em Chrome e Firefox
-    - [ ] Verificar que o nome do arquivo segue o padrão correto
-    - [ ] Verificar que o loading é exibido e desaparece após o download
+- [x] Task: Testes de integração e validação manual
+    - [x] Executar suíte completa de testes: `CI=true npm test`
+    - [x] Verificar cobertura de testes > 80% para os novos arquivos
+    - [x] Validar manualmente o download PNG em Chrome e Firefox
+    - [x] Validar manualmente o download SVG em Chrome e Firefox
+    - [x] Verificar que o nome do arquivo segue o padrão correto
+    - [x] Verificar que o loading é exibido e desaparece após o download
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Integração na Página' (Protocol in workflow.md)
