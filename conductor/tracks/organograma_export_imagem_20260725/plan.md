@@ -31,7 +31,7 @@
     - [x] Implementar controle de estado `isExporting`
     - [x] Implementar geração automática do nome do arquivo com data e nome da organização
     - [x] Confirmar que todos os testes passam (Green Phase)
-- [x] Task: Conductor - User Manual Verification 'Phase 2: Hook de Exportação' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Hook de Exportação' (Protocol in workflow.md) 95b04d9
 
 ## Phase 3: Componente de UI do Botão de Exportação (TDD)
 
