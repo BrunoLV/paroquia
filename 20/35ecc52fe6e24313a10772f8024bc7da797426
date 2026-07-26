@@ -1,0 +1,5 @@
+Task: Implementar logica do hook useOrganogramaExport (Green Phase)
+- Implementado exportToPng e exportToSvg utilizando html-to-image
+- Implementado trigger de download automatico via <a> element
+- Implementado controle de estado isExporting e geracao higienizada do nome do arquivo
+- Todos os 6 testes unitarios passando com sucesso
