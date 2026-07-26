@@ -2,10 +2,10 @@
 
 ## Phase 1: Setup e Infraestrutura
 
-- [ ] Task: Instalar e configurar a biblioteca de captura de DOM (`html-to-image`)
-    - [ ] Adicionar `html-to-image` ao `package.json` do projeto `gestao-paroquia-ui`
-    - [ ] Verificar compatibilidade com a versão atual do React e TypeScript
-    - [ ] Validar que a biblioteca exporta corretamente tipos TypeScript
+- [x] Task: Instalar e configurar a biblioteca de captura de DOM (`html-to-image`) 3737a64
+    - [x] Adicionar `html-to-image` ao `package.json` do projeto `gestao-paroquia-ui`
+    - [x] Verificar compatibilidade com a versão atual do React e TypeScript
+    - [x] Validar que a biblioteca exporta corretamente tipos TypeScript
 - [ ] Task: Criar hook `useOrganogramaExport` com estrutura inicial
     - [ ] Criar arquivo `src/hooks/useOrganogramaExport.ts` com assinatura do hook
     - [ ] Definir tipos TypeScript: `ExportFormat = 'png' | 'svg'` e `ExportState`
