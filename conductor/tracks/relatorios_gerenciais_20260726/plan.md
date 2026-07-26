@@ -12,10 +12,10 @@
 
 ## Phase 3: Refatoração e Enriquecimento da Página de Relatórios (`Reports.tsx`)
 
-- [~] Task 3.1: Atualizar testes em `Reports.test.tsx` para validar integração com `getDashboardMetrics`, gráficos e exportação
-- [ ] Task 3.2: Refatorar `Reports.tsx` com React Query, KPI Cards, gráficos interativos (`@mui/x-charts`) e integração de filtros/exportação
+- [x] Task 3.1: Atualizar testes em `Reports.test.tsx` para validar integração com `getDashboardMetrics`, gráficos e exportação (68391af)
+- [x] Task 3.2: Refatorar `Reports.tsx` com React Query, KPI Cards, gráficos interativos (`@mui/x-charts`) e integração de filtros/exportação (68391af)
 
 ## Phase 4: Navegação, Verificação de Cobertura e Checkpoint
 
-- [ ] Task 4.1: Verificar e ajustar integração de rota/menu de navegação se necessário e rodar testes de integração
+- [~] Task 4.1: Verificar e ajustar integração de rota/menu de navegação se necessário e rodar testes de integração
 - [ ] Task 4.2: Executar validação final da suíte de testes (`CI=true npm test`) e registrar checkpoint
