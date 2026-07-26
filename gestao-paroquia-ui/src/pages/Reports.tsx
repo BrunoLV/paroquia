@@ -23,8 +23,11 @@ import {
   Assignment as ProjectIcon,
   PendingActions as PendingIcon,
   Assessment as AssessmentIcon,
+  PieChart as PieIcon,
+  BarChart as BarIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
-import { PieChart } from '@mui/x-charts';
+import { PieChart, BarChart } from '@mui/x-charts';
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardMetrics } from '../api/dashboard';
 import { DashboardMetrics } from '../api/types';
@@ -33,7 +36,7 @@ import ReportExportButtons from '../components/reports/ReportExportButtons';
 import { generateMetricsCSV, downloadCSV, exportElementAsPDF } from '../utils/exportUtils';
 import { useNotification } from '../context/NotificationContext';
 
-const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '#d4af37'];
+const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '#d4af37', '#e91e63'];
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();
@@ -77,7 +80,6 @@ const Reports: React.FC = () => {
       return true;
     });
 
-    // Recompute distribution of filtered events per organization if events exist
     const orgCountMap: Record<string, number> = {};
     filteredEvents.forEach((ev) => {
       const orgName = ev.organizacaoNome || 'Outros';
@@ -103,6 +105,17 @@ const Reports: React.FC = () => {
 
     return { filteredMetrics: result, isFiltered: true };
   }, [data, startDate, endDate]);
+
+  // Status breakdown of projects
+  const projectStatusBreakdown = useMemo(() => {
+    if (!data?.projetosAtivosDetalhes) return [];
+    const counts: Record<string, number> = {};
+    data.projetosAtivosDetalhes.forEach((p) => {
+      const st = p.status || 'OUTROS';
+      counts[st] = (counts[st] || 0) + 1;
+    });
+    return Object.entries(counts).map(([status, count]) => ({ status, count }));
+  }, [data]);
 
   const handleExportCSV = () => {
     if (!filteredMetrics) return;
@@ -170,6 +183,9 @@ const Reports: React.FC = () => {
     label: item.organizacaoNome,
     color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
   }));
+
+  const barChartXLabels = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.organizacaoNome);
+  const barChartValues = (filteredMetrics.eventosPorOrganizacao || []).map((item) => item.quantidadeEventos);
 
   const summaryCards = [
     {
@@ -309,9 +325,12 @@ const Reports: React.FC = () => {
               borderColor: 'divider',
             }}
           >
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1a237e' }}>
-              Distribuição de Eventos por Organização
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <PieIcon sx={{ color: '#1a237e' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
+                Distribuição de Eventos por Organização
+              </Typography>
+            </Box>
 
             {pieChartData.length > 0 ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 280 }}>
@@ -337,7 +356,7 @@ const Reports: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* Projects Status & Progress */}
+        {/* BarChart - Volume Comparison */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Card
             elevation={0}
@@ -349,56 +368,131 @@ const Reports: React.FC = () => {
               borderColor: 'divider',
             }}
           >
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1a237e' }}>
-              Projetos Ativos & Progresso
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <BarIcon sx={{ color: '#1a237e' }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
+                Volume de Eventos por Organização
+              </Typography>
+            </Box>
 
-            {filteredMetrics.projetosAtivosDetalhes && filteredMetrics.projetosAtivosDetalhes.length > 0 ? (
-              <Stack spacing={2.5} sx={{ mt: 1 }}>
-                {filteredMetrics.projetosAtivosDetalhes.map((proj, idx) => (
-                  <Box key={idx} sx={{ p: 1.5, border: '1px solid #eee', backgroundColor: '#fafafa' }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                        {proj.nome}
-                      </Typography>
-                      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        {proj.emRisco && (
-                          <Chip label="Em Risco" color="error" size="small" sx={{ borderRadius: 0, height: 22, fontSize: '0.7rem' }} />
-                        )}
-                        <Chip
-                          label={proj.status}
-                          size="small"
-                          sx={{ borderRadius: 0, height: 22, fontSize: '0.7rem', backgroundColor: '#e3f2fd', color: '#0d47a1' }}
-                        />
-                      </Stack>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Eventos: {proj.eventosRealizados} / {proj.totalEventos} realizados
-                      </Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                        {Math.round(proj.percentualTempoDecorrido)}% tempo decorrido
-                      </Typography>
-                    </Box>
-
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min(100, Math.max(0, proj.percentualTempoDecorrido))}
-                      sx={{
-                        height: 8,
-                        borderRadius: 0,
-                        backgroundColor: '#e0e0e0',
-                        '& .MuiLinearProgress-bar': {
-                          backgroundColor: proj.emRisco ? '#d32f2f' : '#1a237e',
-                        },
-                      }}
-                    />
-                  </Box>
-                ))}
-              </Stack>
+            {barChartValues.length > 0 ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 280 }}>
+                <BarChart
+                  xAxis={[{ scaleType: 'band', data: barChartXLabels }]}
+                  series={[{ data: barChartValues, color: '#1a237e', label: 'Eventos' }]}
+                  width={440}
+                  height={260}
+                />
+              </Box>
             ) : (
               <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+                Nenhum dado para o gráfico de barras.
+              </Typography>
+            )}
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Projects Status & Progress Section */}
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        <Grid size={{ xs: 12 }}>
+          <Card
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 0,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ProjectIcon sx={{ color: '#1a237e' }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
+                  Acompanhamento de Projetos Ativos & Status
+                </Typography>
+              </Box>
+
+              {projectStatusBreakdown.length > 0 && (
+                <Stack direction="row" spacing={1}>
+                  {projectStatusBreakdown.map((b, i) => (
+                    <Chip
+                      key={i}
+                      label={`${b.status}: ${b.count}`}
+                      size="small"
+                      variant="outlined"
+                      sx={{ borderRadius: 0, fontWeight: 600 }}
+                    />
+                  ))}
+                </Stack>
+              )}
+            </Box>
+
+            {filteredMetrics.projetosAtivosDetalhes && filteredMetrics.projetosAtivosDetalhes.length > 0 ? (
+              <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                {filteredMetrics.projetosAtivosDetalhes.map((proj, idx) => (
+                  <Grid key={idx} size={{ xs: 12, md: 6 }}>
+                    <Box sx={{ p: 2, border: '1px solid #eee', backgroundColor: '#fafafa', height: '100%', boxSizing: 'border-box' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1a237e' }}>
+                          {proj.nome}
+                        </Typography>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                          {proj.emRisco && (
+                            <Chip
+                              icon={<WarningIcon sx={{ fontSize: 14 }} />}
+                              label="Em Risco"
+                              color="error"
+                              size="small"
+                              sx={{ borderRadius: 0, height: 22, fontSize: '0.7rem' }}
+                            />
+                          )}
+                          <Chip
+                            label={proj.status}
+                            size="small"
+                            sx={{ borderRadius: 0, height: 22, fontSize: '0.7rem', backgroundColor: '#e3f2fd', color: '#0d47a1' }}
+                          />
+                        </Stack>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
+                        <Typography variant="caption" color="text.secondary">
+                          Eventos: {proj.eventosRealizados} / {proj.totalEventos} realizados
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                          {Math.round(proj.percentualTempoDecorrido)}% tempo decorrido
+                        </Typography>
+                      </Box>
+
+                      <LinearProgress
+                        variant="determinate"
+                        value={Math.min(100, Math.max(0, proj.percentualTempoDecorrido))}
+                        sx={{
+                          height: 8,
+                          borderRadius: 0,
+                          backgroundColor: '#e0e0e0',
+                          '& .MuiLinearProgress-bar': {
+                            backgroundColor: proj.emRisco ? '#d32f2f' : '#1a237e',
+                          },
+                        }}
+                      />
+
+                      {proj.envolvidos && proj.envolvidos.length > 0 && (
+                        <Box sx={{ mt: 1.5, display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+                            Envolvidos:
+                          </Typography>
+                          {proj.envolvidos.map((env, eIdx) => (
+                            <Chip key={eIdx} label={env} size="small" variant="outlined" sx={{ borderRadius: 0, height: 18, fontSize: '0.65rem' }} />
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
                 Nenhum projeto ativo no momento.
               </Typography>
             )}
