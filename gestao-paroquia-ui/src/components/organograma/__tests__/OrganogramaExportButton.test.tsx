@@ -1,19 +1,16 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom';
 import { OrganogramaExportButton } from '../OrganogramaExportButton';
-
-expect.extend(matchers);
 
 describe('OrganogramaExportButton', () => {
   const defaultProps = {
-    onExport: vi.fn(),
+    onExport: jest.fn(),
     isExporting: false,
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -42,7 +39,7 @@ describe('OrganogramaExportButton', () => {
   });
 
   test('deve chamar onExport("png") ao selecionar PNG', () => {
-    const onExportMock = vi.fn();
+    const onExportMock = jest.fn();
     render(<OrganogramaExportButton {...defaultProps} onExport={onExportMock} />);
 
     fireEvent.click(screen.getByRole('button', { name: /exportar organograma/i }));
@@ -52,7 +49,7 @@ describe('OrganogramaExportButton', () => {
   });
 
   test('deve chamar onExport("svg") ao selecionar SVG', () => {
-    const onExportMock = vi.fn();
+    const onExportMock = jest.fn();
     render(<OrganogramaExportButton {...defaultProps} onExport={onExportMock} />);
 
     fireEvent.click(screen.getByRole('button', { name: /exportar organograma/i }));

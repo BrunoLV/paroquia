@@ -1,11 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as htmlToImage from 'html-to-image';
 import { useOrganogramaExport } from '../useOrganogramaExport';
 
-vi.mock('html-to-image', () => ({
-  toPng: vi.fn(),
-  toSvg: vi.fn(),
+jest.mock('html-to-image', () => ({
+  toPng: jest.fn(),
+  toSvg: jest.fn(),
 }));
 
 describe('useOrganogramaExport', () => {
@@ -13,22 +12,22 @@ describe('useOrganogramaExport', () => {
   let elementRef: { current: HTMLElement | null };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockElement = document.createElement('div');
     elementRef = { current: mockElement };
 
     // Mock HTMLAnchorElement click for downloads
-    vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+    jest.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
       const elem = document.createElementNS('http://www.w3.org/1999/xhtml', tagName);
       if (tagName === 'a') {
-        (elem as HTMLAnchorElement).click = vi.fn();
+        (elem as HTMLAnchorElement).click = jest.fn();
       }
       return elem;
     });
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   test('deve iniciar com isExporting = false', () => {
@@ -48,7 +47,7 @@ describe('useOrganogramaExport', () => {
   });
 
   test('deve definir isExporting = true durante a exportacao e restaurar para false ao completar', async () => {
-    vi.mocked(htmlToImage.toPng).mockImplementation(
+    (htmlToImage.toPng as jest.Mock).mockImplementation(
       () => new Promise((resolve) => setTimeout(() => resolve('data:image/png;base64,fake'), 50))
     );
 
@@ -69,7 +68,7 @@ describe('useOrganogramaExport', () => {
   });
 
   test('deve chamar html-to-image toPng com o elemento e configuracao correta', async () => {
-    vi.mocked(htmlToImage.toPng).mockResolvedValue('data:image/png;base64,fake');
+    (htmlToImage.toPng as jest.Mock).mockResolvedValue('data:image/png;base64,fake');
 
     const { result } = renderHook(() => useOrganogramaExport());
 
@@ -81,7 +80,7 @@ describe('useOrganogramaExport', () => {
   });
 
   test('deve chamar html-to-image toSvg com o elemento e configuracao correta', async () => {
-    vi.mocked(htmlToImage.toSvg).mockResolvedValue('data:image/svg+xml;base64,fake');
+    (htmlToImage.toSvg as jest.Mock).mockResolvedValue('data:image/svg+xml;base64,fake');
 
     const { result } = renderHook(() => useOrganogramaExport());
 
@@ -93,8 +92,8 @@ describe('useOrganogramaExport', () => {
   });
 
   test('deve tratar erro de captura e restaurar isExporting = false', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(htmlToImage.toPng).mockRejectedValue(new Error('Erro ao capturar DOM'));
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    (htmlToImage.toPng as jest.Mock).mockRejectedValue(new Error('Erro ao capturar DOM'));
 
     const { result } = renderHook(() => useOrganogramaExport());
 
