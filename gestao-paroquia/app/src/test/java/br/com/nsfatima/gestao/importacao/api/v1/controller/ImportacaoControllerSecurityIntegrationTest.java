@@ -39,7 +39,10 @@ class ImportacaoControllerSecurityIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     void shouldAllowAdminToValidateFile() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
-                "file", "membros.csv", "text/csv", "nomeCompleto,email\nJoão,joao@email.com".getBytes(StandardCharsets.UTF_8)
+                "file",
+                "membros.csv", "text/csv",
+                "nomeCompleto,email\nJoão,joao@email.com".getBytes(StandardCharsets.UTF_8)
+
         );
 
         mockMvc.perform(multipart("/api/v1/importacao/validar?tipo=MEMBRO").file(file))
@@ -50,7 +53,10 @@ class ImportacaoControllerSecurityIntegrationTest {
     @WithMockUser(roles = "USER")
     void shouldDenyUserFromValidatingFile() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
-                "file", "membros.csv", "text/csv", "nomeCompleto,email\nJoão,joao@email.com".getBytes(StandardCharsets.UTF_8)
+                "file",
+                "membros.csv", "text/csv",
+                "nomeCompleto,email\nJoão,joao@email.com".getBytes(StandardCharsets.UTF_8)
+
         );
 
         mockMvc.perform(multipart("/api/v1/importacao/validar?tipo=MEMBRO").file(file))

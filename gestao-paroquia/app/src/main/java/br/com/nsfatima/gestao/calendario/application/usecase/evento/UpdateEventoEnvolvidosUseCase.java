@@ -1,13 +1,14 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import java.util.List;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidosResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UpdateEventoEnvolvidosUseCase {
@@ -19,8 +20,9 @@ public class UpdateEventoEnvolvidosUseCase {
     }
 
     /**
-     * Synchronizes the list of organizations collaborating on an event, ensuring that the network of participants is always current and accurately reflects logistical plans.
-     * 
+     * Synchronizes the list of organizations collaborating on an event, ensuring that the network of participants is
+     * always current and accurately reflects logistical plans.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, List.of(new EventoEnvolvidoInput(orgId, PapelEnvolvido.APOIO)));
@@ -43,12 +45,13 @@ public class UpdateEventoEnvolvidosUseCase {
             eventoEnvolvidoJpaRepository.saveAll(entities);
         }
 
-        List<EventoEnvolvidosResponse.EventoEnvolvidoOutput> persisted = eventoEnvolvidoJpaRepository.findByEventoId(eventoId)
-                .stream()
-                .map(entity -> new EventoEnvolvidosResponse.EventoEnvolvidoOutput(
-                        entity.getOrganizacaoId(),
-                        entity.getPapelParticipacao()))
-                .toList();
+        List<EventoEnvolvidosResponse.EventoEnvolvidoOutput> persisted =
+                eventoEnvolvidoJpaRepository.findByEventoId(eventoId)
+                        .stream()
+                        .map(entity -> new EventoEnvolvidosResponse.EventoEnvolvidoOutput(
+                                entity.getOrganizacaoId(),
+                                entity.getPapelParticipacao()))
+                        .toList();
 
         return new EventoEnvolvidosResponse(eventoId, persisted);
     }

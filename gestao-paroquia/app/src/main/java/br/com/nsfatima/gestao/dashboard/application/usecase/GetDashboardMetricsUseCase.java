@@ -5,10 +5,12 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.dashboard.api.v1.dto.*;
-import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardMetricsDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventDistributionDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.GeneralSummaryDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.ProjectDetailDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.WeeklyEventDTO;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -18,10 +20,20 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,7 +74,8 @@ public class GetDashboardMetricsUseCase {
 
         // 1. Calculate current month boundaries
         ZonedDateTime startOfMonth = nowZoned.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime endOfMonth = nowZoned.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime endOfMonth =
+                nowZoned.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1).truncatedTo(ChronoUnit.DAYS);
         Instant inicioMes = startOfMonth.toInstant();
         Instant fimMes = endOfMonth.toInstant();
 
@@ -83,22 +96,32 @@ public class GetDashboardMetricsUseCase {
 
         // 4. Count pending approvals
         // Event approvals
-        List<AprovacaoEntity> aprovacoesPendentes = aprovacaoRepository.findByStatusIgnoreCaseOrderByCriadoEmUtcAsc("PENDENTE");
+        List<AprovacaoEntity> aprovacoesPendentes =
+                aprovacaoRepository.findByStatusIgnoreCaseOrderByCriadoEmUtcAsc("PENDENTE");
         long eventApprovalsCount = aprovacoesPendentes.stream()
                 .filter(a -> {
-                    if (!isFilterNeeded) return true;
-                    if (a.getEventoId() == null) return false;
+                    if (!isFilterNeeded) {
+                        return true;
+                    }
+                    if (a.getEventoId() == null) {
+                        return false;
+                    }
                     Optional<EventoEntity> ev = eventoRepository.findById(a.getEventoId());
                     return ev.isPresent() && orgId.equals(ev.get().getOrganizacaoResponsavelId());
                 })
                 .count();
 
         // Project approvals
-        List<ProjetoSolicitacaoAprovacaoEntity> projetoAprovacoesPendentes = projetoAprovacaoRepository.findByStatus("PENDENTE");
+        List<ProjetoSolicitacaoAprovacaoEntity> projetoAprovacoesPendentes =
+                projetoAprovacaoRepository.findByStatus("PENDENTE");
         long projectApprovalsCount = projetoAprovacoesPendentes.stream()
                 .filter(a -> {
-                    if (!isFilterNeeded) return true;
-                    if (a.getProjetoId() == null) return false;
+                    if (!isFilterNeeded) {
+                        return true;
+                    }
+                    if (a.getProjetoId() == null) {
+                        return false;
+                    }
                     Optional<ProjetoEventoEntity> pr = projetoRepository.findById(a.getProjetoId());
                     return pr.isPresent() && orgId.equals(pr.get().getOrganizacaoResponsavelId());
                 })
@@ -132,10 +155,14 @@ public class GetDashboardMetricsUseCase {
                 .map(p -> {
                     int totalEvents = (int) eventoRepository.countByProjetoId(p.getId());
                     int eventsDone = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
-                    int eventsPending = (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
+                    int eventsPending =
+                            (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
 
-                    double percent = projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(), p.getFimUtc());
-                    boolean emRisco = projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(), eventsPending);
+                    double percent = projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(),
+                            p.getFimUtc());
+                    boolean emRisco =
+                            projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(),
+                                    eventsPending);
 
                     List<String> involvedOrgs = eventoRepository.findInvolvedOrganizationNames(p.getId());
 
@@ -153,8 +180,10 @@ public class GetDashboardMetricsUseCase {
 
         // 7. Fetch events for the current week (Monday to Sunday)
         // Find Monday and Sunday of this week
-        ZonedDateTime startOfWeek = nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime endOfWeek = nowZoned.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime startOfWeek =
+                nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime endOfWeek =
+                nowZoned.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1).truncatedTo(ChronoUnit.DAYS);
         Instant inicioSemana = startOfWeek.toInstant();
         Instant fimSemana = endOfWeek.toInstant();
 

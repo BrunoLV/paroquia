@@ -5,8 +5,8 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,9 +44,9 @@ class ProjetosContractTest {
     @Test
     void shouldListProjetos() throws Exception {
         mockMvc.perform(get("/api/v1/projetos")
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "CONSELHO")
-                .header("X-Actor-Org-Id", UUID.randomUUID().toString()))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", UUID.randomUUID().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").isString())
                 .andExpect(jsonPath("$[0].nome").value("Projeto Pastoral"))
@@ -61,19 +61,19 @@ class ProjetosContractTest {
     void shouldCreateProjeto() throws Exception {
         String orgId = UUID.randomUUID().toString();
         mockMvc.perform(post("/api/v1/projetos")
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "CONSELHO")
-                .header("X-Actor-Org-Id", orgId)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content("""
-                        {
-                          "nome": "Semana Santa",
-                          "descricao": "Mutirao liturgico",
-                          "organizacaoResponsavelId": "%s",
-                          "inicio": "2026-03-20T10:00:00Z",
-                          "fim": "2026-03-27T22:00:00Z"
-                        }
-                        """.formatted(orgId)))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", orgId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content("""
+                                {
+                                  "nome": "Semana Santa",
+                                  "descricao": "Mutirao liturgico",
+                                  "organizacaoResponsavelId": "%s",
+                                  "inicio": "2026-03-20T10:00:00Z",
+                                  "fim": "2026-03-27T22:00:00Z"
+                                }
+                                """.formatted(orgId)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Semana Santa"))
                 .andExpect(jsonPath("$.organizacaoResponsavelId").value(orgId))

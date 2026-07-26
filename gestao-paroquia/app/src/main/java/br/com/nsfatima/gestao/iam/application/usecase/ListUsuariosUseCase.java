@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
-import java.util.List;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,8 @@ public class ListUsuariosUseCase {
                             u.getUsername(),
                             u.isEnabled(),
                             u.getRoles() == null ? List.of()
-                                    : Arrays.stream(u.getRoles().split(",")).map(String::trim).collect(Collectors.toList()),
+                                    : Arrays.stream(u.getRoles().split(","))
+                                    .map(String::trim).collect(Collectors.toList()),
                             List.of(),
                             u.getNome(),
                             u.getTelefone(),

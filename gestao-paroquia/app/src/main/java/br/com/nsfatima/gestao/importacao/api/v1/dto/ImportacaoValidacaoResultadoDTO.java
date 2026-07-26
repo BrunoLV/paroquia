@@ -7,4 +7,5 @@ public record ImportacaoValidacaoResultadoDTO(
         int totalValidos,
         int totalInvalidos,
         List<ImportacaoItemResultadoDTO> itens
-) {}
+) {
+}

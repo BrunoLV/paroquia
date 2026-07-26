@@ -1,11 +1,5 @@
 package br.com.nsfatima.gestao.aprovacao.api.v1.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoCreateRequest;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
@@ -16,8 +10,12 @@ import br.com.nsfatima.gestao.aprovacao.application.usecase.DecideSolicitacaoApr
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ListAprovacoesUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import java.util.Map;
-import java.util.UUID;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/aprovacoes")
@@ -57,7 +58,7 @@ public class AprovacaoController {
 
     /**
      * Entry point for requesting formal authorization for event-related actions that require governance oversight.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * AprovacaoCreateRequest request = new AprovacaoCreateRequest(eventoId, TipoSolicitacaoInput.CREATE);
@@ -66,7 +67,8 @@ public class AprovacaoController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Cria uma solicitação de aprovação", description = "Registra uma nova solicitação de aprovação para um evento.")
+    @Operation(summary = "Cria uma solicitação de aprovação", description = "Registra uma nova solicitação de " +
+            "aprovação para um evento.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Solicitação criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
@@ -79,7 +81,7 @@ public class AprovacaoController {
 
     /**
      * Provides visibility into the approval pipeline for administrators and coordinators to monitor pending tasks.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * AprovacaoFiltroRequest filters = new AprovacaoFiltroRequest(eventoId, "PENDENTE");
@@ -87,22 +89,26 @@ public class AprovacaoController {
      * }
      */
     @GetMapping
-    @Operation(summary = "Lista solicitações de aprovação", description = "Retorna uma página de solicitações de aprovação com filtros opcionais.")
+    @Operation(summary = "Lista solicitações de aprovação", description = "Retorna uma página de solicitações de " +
+            "aprovação com filtros opcionais.")
     public Page<AprovacaoResponse> list(AprovacaoFiltroRequest filters, Pageable pageable) {
         return listAprovacoesUseCase.execute(filters.eventoId(), filters.status(), pageable);
     }
 
     /**
-     * Records the final verdict on a request, triggering the subsequent automated actions (e.g., event creation or cancellation) if approved.
-     * 
+     * Records the final verdict on a request, triggering the subsequent automated actions (e.g., event creation or
+     * cancellation) if approved.
+     * <p>
      * Usage Example:
      * {@code
-     * AprovacaoDecisionRequest request = new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Validated by coordination");
+     * AprovacaoDecisionRequest request = new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Validated by
+     * coordination");
      * AprovacaoDecisionResponse response = controller.decide(id, request);
      * }
      */
     @PatchMapping("/{id}")
-    @Operation(summary = "Decide sobre uma solicitação", description = "Aprova ou rejeita uma solicitação de aprovação existente.")
+    @Operation(summary = "Decide sobre uma solicitação", description = "Aprova ou rejeita uma solicitação de " +
+            "aprovação existente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Decisão registrada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),

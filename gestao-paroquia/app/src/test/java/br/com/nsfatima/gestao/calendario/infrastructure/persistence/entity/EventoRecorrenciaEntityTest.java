@@ -1,12 +1,12 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
+import org.junit.jupiter.api.Test;
+
 import java.time.DayOfWeek;
 import java.util.List;
-import java.util.UUID;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EventoRecorrenciaEntityTest {
 

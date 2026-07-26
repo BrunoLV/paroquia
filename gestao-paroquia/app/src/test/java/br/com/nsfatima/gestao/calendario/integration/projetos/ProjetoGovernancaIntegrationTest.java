@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.projetos;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
@@ -8,14 +10,12 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoE
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,8 +25,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,24 +37,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
 class ProjetoGovernancaIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ProjetoEventoJpaRepository repository;
-
-    @Autowired
-    private ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
-
-    @Autowired
-    private AnoParoquialJpaRepository anoParoquialRepository;
-
-    @Autowired
-    private EventoJpaRepository eventRepository;
-
     private static final String PASTORAL_ORG = "00000000-0000-0000-0000-0000000000aa";
     private static final String CONSELHO_ORG = "00000000-0000-0000-0000-0000000000cc";
-
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ProjetoEventoJpaRepository repository;
+    @Autowired
+    private ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
+    @Autowired
+    private AnoParoquialJpaRepository anoParoquialRepository;
+    @Autowired
+    private EventoJpaRepository eventRepository;
     private int testYear;
 
     @BeforeEach

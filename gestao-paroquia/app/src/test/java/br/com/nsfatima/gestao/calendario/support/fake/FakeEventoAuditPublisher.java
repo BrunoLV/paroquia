@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.calendario.support.fake;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +12,6 @@ import java.util.Map;
  */
 public class FakeEventoAuditPublisher extends EventoAuditPublisher {
 
-    public record AuditEvent(String actor, String action, String target, String result, Map<String, Object> metadata) {}
-    
     private final List<AuditEvent> events = new ArrayList<>();
 
     public FakeEventoAuditPublisher() {
@@ -31,15 +29,20 @@ public class FakeEventoAuditPublisher extends EventoAuditPublisher {
     }
 
     @Override
-    public void publishApprovalDecision(String actor, AprovacaoEntity aprovacao, String result, Map<String, Object> metadata) {
+    public void publishApprovalDecision(String actor,
+                                        AprovacaoEntity aprovacao, String result, Map<String, Object> metadata) {
+
         publish(actor, "approval-decision", aprovacao.getId().toString(), result, metadata);
     }
 
     public List<AuditEvent> getEvents() {
         return List.copyOf(events);
     }
-    
+
     public void clear() {
         events.clear();
+    }
+
+    public record AuditEvent(String actor, String action, String target, String result, Map<String, Object> metadata) {
     }
 }

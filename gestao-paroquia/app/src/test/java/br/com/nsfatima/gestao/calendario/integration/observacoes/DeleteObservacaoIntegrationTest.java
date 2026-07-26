@@ -1,22 +1,20 @@
 package br.com.nsfatima.gestao.calendario.integration.observacoes;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,8 +40,8 @@ class DeleteObservacaoIntegrationTest {
     void shouldSoftDeleteAndHideFromFunctionalList() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000bb";
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Para remover\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Para remover\"}"))
                 .andExpect(status().isCreated())
                 .andReturn();
 

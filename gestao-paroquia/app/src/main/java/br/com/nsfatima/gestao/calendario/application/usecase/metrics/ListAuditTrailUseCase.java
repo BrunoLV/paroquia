@@ -2,15 +2,16 @@ package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogQueryService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogQueryService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ListAuditTrailUseCase {
@@ -26,11 +27,13 @@ public class ListAuditTrailUseCase {
     }
 
     /**
-     * Provides a detailed and filtered list of system operations, enabling comprehensive security reviews and activity tracking across the calendar domain.
-     * 
+     * Provides a detailed and filtered list of system operations, enabling comprehensive security reviews and
+     * activity tracking across the calendar domain.
+     * <p>
      * Usage Example:
      * {@code
-     * AuditoriaOperacaoResponse response = useCase.execute(orgId, "mensal", null, null, null, "patch", "success", null);
+     * AuditoriaOperacaoResponse response = useCase.execute(orgId, "mensal", null, null, null, "patch", "success",
+     * null);
      * }
      */
     public AuditoriaOperacaoResponse execute(

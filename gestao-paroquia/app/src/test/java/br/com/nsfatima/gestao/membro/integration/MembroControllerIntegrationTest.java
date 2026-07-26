@@ -1,30 +1,20 @@
 package br.com.nsfatima.gestao.membro.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-
-import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
-import tools.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +22,19 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,22 +42,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class MembroControllerIntegrationTest {
 
+    private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private MembroJpaRepository membroRepository;
-
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
-
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
-
     @Autowired
     private ObjectMapper objectMapper;
-
-    private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
     @BeforeEach
     void setUp() {
@@ -78,7 +76,7 @@ class MembroControllerIntegrationTest {
         UsuarioDetails details = new UsuarioDetails(
                 adminUser.getId(), "admin", "pass", true, "ROLE_ADMIN",
                 List.of(new ExternalMembershipReader.Membership(ORG_ID, "PASTORAL", "coordenador")));
-        
+
         return UsernamePasswordAuthenticationToken.authenticated(details, null, details.getAuthorities());
     }
 
@@ -104,9 +102,9 @@ class MembroControllerIntegrationTest {
         );
 
         mockMvc.perform(post("/api/v1/membros")
-                .with(authentication(getAdminAuth()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .with(authentication(getAdminAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.usuarioNome").value("João da Silva"));
@@ -127,8 +125,8 @@ class MembroControllerIntegrationTest {
         createMembro(userBob.getId(), ORG_ID);
 
         mockMvc.perform(get("/api/v1/membros")
-                .with(authentication(getAdminAuth()))
-                .param("organizacaoId", ORG_ID.toString()))
+                        .with(authentication(getAdminAuth()))
+                        .param("organizacaoId", ORG_ID.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2));
@@ -151,9 +149,9 @@ class MembroControllerIntegrationTest {
         ParticipacaoRequest request = new ParticipacaoRequest(ORG_ID, LocalDate.now());
 
         mockMvc.perform(post("/api/v1/membros/" + membroId + "/organizacoes")
-                .with(authentication(getAdminAuth()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .with(authentication(getAdminAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.organizacaoId").value(ORG_ID.toString()));

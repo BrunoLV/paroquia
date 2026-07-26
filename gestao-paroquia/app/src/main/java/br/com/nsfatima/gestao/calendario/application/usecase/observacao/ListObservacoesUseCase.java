@@ -1,13 +1,14 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
-import java.util.List;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ListObservacoesUseCase {
@@ -23,8 +24,9 @@ public class ListObservacoesUseCase {
     }
 
     /**
-     * Retrieves all active observations for a specific event to support collaborative views and logistical coordination.
-     * 
+     * Retrieves all active observations for a specific event to support collaborative views and logistical
+     * coordination.
+     * <p>
      * Usage Example:
      * {@code
      * List<ObservacaoResponse> all = useCase.execute(eventoId);

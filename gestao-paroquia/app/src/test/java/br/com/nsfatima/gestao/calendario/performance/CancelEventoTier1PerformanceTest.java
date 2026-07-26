@@ -1,19 +1,20 @@
 package br.com.nsfatima.gestao.calendario.performance;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import java.time.Instant;
-import java.util.UUID;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,14 +41,14 @@ class CancelEventoTier1PerformanceTest {
 
         long startNanos = System.nanoTime();
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                          \"motivo\": \"Medição de latência Tier 1\"
-                        }
-                        """))
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  \"motivo\": \"Medição de latência Tier 1\"
+                                }
+                                """))
                 .andExpect(status().isOk());
         long elapsedMillis = (System.nanoTime() - startNanos) / 1_000_000;
 

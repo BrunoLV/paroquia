@@ -2,16 +2,16 @@ package br.com.nsfatima.gestao.calendario.contract;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.support.SecurityTestSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import br.com.nsfatima.gestao.calendario.support.SecurityTestSupport;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -26,14 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
 class CalendarPayloadCompatibilityContractTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private EventoJpaRepository eventoJpaRepository;
-
     private static final UUID EVENT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
     private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-0000000000cc");
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private EventoJpaRepository eventoJpaRepository;
 
     @BeforeEach
     void setUp() {

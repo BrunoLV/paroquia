@@ -1,24 +1,25 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.CalendarLockedException;
-import java.util.List;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
-import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
+import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalidoException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 /**
  * Handles domain-specific business exceptions.
@@ -154,7 +155,8 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
         return buildValidation(
                 HttpStatus.CONFLICT,
                 ErrorCodes.CONFLICT,
-                "Concurrent update conflict: Object of class [%s] with identifier [%s] was updated by another transaction"
+                ("Concurrent update conflict: Object of class [%s] with identifier [%s] was updated by another " +
+                        "transaction")
                         .formatted(ex.getPersistentClassName(), ex.getIdentifier()),
                 List.of(new ValidationErrorItem(
                         ErrorCodes.CONFLICT.name(),

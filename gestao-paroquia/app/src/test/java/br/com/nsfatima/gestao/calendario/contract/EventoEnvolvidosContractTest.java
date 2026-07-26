@@ -5,8 +5,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,14 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
 class EventoEnvolvidosContractTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private EventoJpaRepository eventoRepository;
-
     private static final UUID EVENT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
     private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private EventoJpaRepository eventoRepository;
 
     @BeforeEach
     void setUp() {
@@ -47,8 +45,10 @@ class EventoEnvolvidosContractTest {
     @Test
     void shouldUpdateEnvolvidos() throws Exception {
         mockMvc.perform(put("/api/v1/eventos/{eventoId}/envolvidos", EVENT_ID)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"envolvidos\":[{\"organizacaoId\":\"00000000-0000-0000-0000-0000000000aa\", \"papel\": \"RESPONSAVEL\"}]}"))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                "{\"envolvidos\":[{\"organizacaoId\":\"00000000-0000-0000-0000-0000000000aa\", " +
+                                        "\"papel\": \"RESPONSAVEL\"}]}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventoId").value(EVENT_ID.toString()))
                 .andExpect(jsonPath("$.envolvidos[0].organizacaoId").value("00000000-0000-0000-0000-0000000000aa"))

@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import java.time.Instant;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,8 +45,8 @@ class EventoControllerGetTest {
         eventoJpaRepository.save(entity);
 
         mockMvc.perform(get("/api/v1/eventos/" + eventId)
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(eventId.toString()))
                 .andExpect(jsonPath("$.titulo").value("Evento Teste Get"));
@@ -54,8 +55,8 @@ class EventoControllerGetTest {
     @Test
     void shouldReturnNotFoundWhenEventDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/v1/eventos/" + UUID.randomUUID())
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isNotFound());
     }
 }

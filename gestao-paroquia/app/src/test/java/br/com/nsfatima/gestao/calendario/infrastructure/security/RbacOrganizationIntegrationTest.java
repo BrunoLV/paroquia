@@ -1,15 +1,15 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
+import br.com.nsfatima.gestao.calendario.support.SecurityTestSupport;
+import br.com.nsfatima.gestao.calendario.support.TestAuditOrganizationResolver;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import br.com.nsfatima.gestao.calendario.support.SecurityTestSupport;
-import br.com.nsfatima.gestao.calendario.support.TestAuditOrganizationResolver;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,10 +29,10 @@ class RbacOrganizationIntegrationTest {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "maria.secretaria", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
-                .session(session)
-                .header("Idempotency-Key", "rbac-create-secretaria")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(validCreatePayload("00000000-0000-0000-0000-0000000000cc")))
+                        .session(session)
+                        .header("Idempotency-Key", "rbac-create-secretaria")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validCreatePayload("00000000-0000-0000-0000-0000000000cc")))
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.status").value("PENDENTE"));
     }
@@ -42,10 +42,10 @@ class RbacOrganizationIntegrationTest {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "clara.invalida", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
-                .session(session)
-                .header("Idempotency-Key", "rbac-role-scope-invalid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(validCreatePayload("00000000-0000-0000-0000-0000000000dd")))
+                        .session(session)
+                        .header("Idempotency-Key", "rbac-role-scope-invalid")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validCreatePayload("00000000-0000-0000-0000-0000000000dd")))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorCode").value("ROLE_SCOPE_INVALID"));
     }
@@ -55,10 +55,10 @@ class RbacOrganizationIntegrationTest {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "pedro.membro", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
-                .session(session)
-                .header("Idempotency-Key", "rbac-member-denied")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(validCreatePayload("00000000-0000-0000-0000-0000000000aa")))
+                        .session(session)
+                        .header("Idempotency-Key", "rbac-member-denied")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validCreatePayload("00000000-0000-0000-0000-0000000000aa")))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorCode").value("ACCESS_DENIED"));
     }

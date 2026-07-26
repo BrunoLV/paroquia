@@ -5,8 +5,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -84,7 +84,7 @@ class EventoIntegrationTest {
     void shouldCancelEvent() throws Exception {
         UUID eventoId = UUID.randomUUID();
         String orgId = "00000000-0000-0000-0000-000000000001";
-        
+
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("A ser cancelado");

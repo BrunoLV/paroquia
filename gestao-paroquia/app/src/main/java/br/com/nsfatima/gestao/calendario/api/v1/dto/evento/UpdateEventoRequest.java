@@ -1,13 +1,14 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
-import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 
 @Schema(description = "Solicitação para atualização parcial de um evento")
 public record UpdateEventoRequest(
@@ -53,7 +54,27 @@ public record UpdateEventoRequest(
         @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade) se houver")
         UUID igrejaVinculoId) {
 
-        public boolean isEmptyPayload() {
+    public UpdateEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID organizacaoResponsavelId,
+            List<UUID> participantes,
+            EventoEditScope editScope,
+            UUID projetoId,
+            UUID localId) {
+        this(titulo,
+                descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
+                organizacaoResponsavelId, participantes, editScope, projetoId, localId, null);
+
+    }
+
+    public boolean isEmptyPayload() {
 
         return titulo == null
                 && descricao == null
@@ -71,23 +92,7 @@ public record UpdateEventoRequest(
     }
 
     public boolean changesSensitiveFields() {
-        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO || projetoId != null || localId != null || igrejaVinculoId != null;
-    }
-
-    public UpdateEventoRequest(
-            String titulo,
-            String descricao,
-            CategoriaEvento categoria,
-            Instant inicio,
-            Instant fim,
-            EventoStatusInput status,
-            String adicionadoExtraJustificativa,
-            String canceladoMotivo,
-            UUID organizacaoResponsavelId,
-            List<UUID> participantes,
-            EventoEditScope editScope,
-            UUID projetoId,
-            UUID localId) {
-        this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, organizacaoResponsavelId, participantes, editScope, projetoId, localId, null);
+        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO ||
+                projetoId != null || localId != null || igrejaVinculoId != null;
     }
 }

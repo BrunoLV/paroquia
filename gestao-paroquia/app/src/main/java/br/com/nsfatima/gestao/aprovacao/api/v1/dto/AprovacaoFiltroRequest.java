@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.api.v1.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.UUID;
 
 @Schema(description = "Filtros para listagem de solicitações de aprovação")

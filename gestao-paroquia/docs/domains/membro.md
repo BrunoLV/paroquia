@@ -5,10 +5,13 @@ The **Membro** domain manages information about parish members and their partici
 ## Core Concepts
 
 ### Membro (Member)
+
 Represents a person associated with the parish. It includes personal details and contact information.
 
 ### Participação (Participation)
-Links a **Membro** to one or more **Organizações**. It tracks the member's role and history within pastorals and movements.
+
+Links a **Membro** to one or more **Organizações**. It tracks the member's role and history within pastorals and
+movements.
 
 ## Use Cases
 

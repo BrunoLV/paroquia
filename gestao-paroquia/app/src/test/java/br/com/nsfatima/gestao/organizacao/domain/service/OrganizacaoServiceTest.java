@@ -1,19 +1,20 @@
 package br.com.nsfatima.gestao.organizacao.domain.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizationBusinessException;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class OrganizacaoServiceTest {
 
@@ -36,25 +37,39 @@ class OrganizacaoServiceTest {
         service = new OrganizacaoService(repository, auditLogService, pastoralOficialRepository);
 
         // Setup mock parents
-        Organizacao clero = new Organizacao(cleroId, "Clero", TipoOrganizacao.CLERO, "clero@test.com", "Coordenador", null, true, null, null);
-        Organizacao matriz = new Organizacao(matrizId, "Matriz", TipoOrganizacao.MATRIZ, "matriz@test.com", "Coordenador", null, true, cleroId, null);
-        Organizacao conselho = new Organizacao(conselhoId, "Conselho", TipoOrganizacao.CONSELHO_PASTORAL, "conselho@test.com", "Coordenador", null, true, matrizId, null);
+        Organizacao clero = new Organizacao(cleroId,
+                "Clero", TipoOrganizacao.CLERO, "clero@test.com", "Coordenador", null, true, null, null);
+
+        Organizacao matriz = new Organizacao(matrizId,
+                "Matriz", TipoOrganizacao.MATRIZ, "matriz@test.com", "Coordenador", null, true, cleroId, null);
+
+        Organizacao conselho = new Organizacao(conselhoId,
+                "Conselho", TipoOrganizacao.CONSELHO_PASTORAL, "conselho@test.com", "Coordenador", null, true,
+                matrizId, null);
+
 
         when(repository.findById(cleroId)).thenReturn(Optional.of(clero));
         when(repository.findById(matrizId)).thenReturn(Optional.of(matriz));
         when(repository.findById(conselhoId)).thenReturn(Optional.of(conselho));
 
         // Setup mock official pastorals
-        PastoralMovimentoOficial pastoralOficial = new PastoralMovimentoOficial(pastoralOficialId, "Oficial Pastoral", TipoOrganizacao.PASTORAL);
-        PastoralMovimentoOficial movimentoOficial = new PastoralMovimentoOficial(movimentoOficialId, "Oficial Movimento", TipoOrganizacao.MOVIMENTO);
+        PastoralMovimentoOficial pastoralOficial = new PastoralMovimentoOficial(pastoralOficialId,
+                "Oficial Pastoral", TipoOrganizacao.PASTORAL);
+
+        PastoralMovimentoOficial movimentoOficial = new PastoralMovimentoOficial(movimentoOficialId,
+                "Oficial Movimento", TipoOrganizacao.MOVIMENTO);
+
         when(pastoralOficialRepository.findById(pastoralOficialId)).thenReturn(Optional.of(pastoralOficial));
         when(pastoralOficialRepository.findById(movimentoOficialId)).thenReturn(Optional.of(movimentoOficial));
     }
 
     @Test
     void shouldCreateOrganization() {
-        Organizacao created = service.createOrganization("PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId, movimentoOficialId);
-        
+        Organizacao created = service.createOrganization("PJ",
+                TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId,
+                movimentoOficialId);
+
+
         assertNotNull(created.getId());
         assertEquals("PJ", created.getNome());
         assertEquals("Coordenador A", created.getCoordenador());
@@ -67,10 +82,16 @@ class OrganizacaoServiceTest {
     @Test
     void shouldUpdateOrganization() {
         UUID id = UUID.randomUUID();
-        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true, conselhoId, movimentoOficialId);
+        Organizacao org = new Organizacao(id,
+                "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
+                conselhoId, movimentoOficialId);
+
         when(repository.findById(id)).thenReturn(Optional.of(org));
 
-        service.updateOrganization(id, "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false, conselhoId, pastoralOficialId);
+        service.updateOrganization(id,
+                "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false,
+                conselhoId, pastoralOficialId);
+
 
         assertEquals("PJ Novo", org.getNome());
         assertEquals(TipoOrganizacao.PASTORAL, org.getTipo());
@@ -84,7 +105,10 @@ class OrganizacaoServiceTest {
     @Test
     void shouldThrowExceptionWhenDeletingOrgInUse() {
         UUID id = UUID.randomUUID();
-        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true, conselhoId, movimentoOficialId);
+        Organizacao org = new Organizacao(id,
+                "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
+                conselhoId, movimentoOficialId);
+
         when(repository.findById(id)).thenReturn(Optional.of(org));
         when(repository.hasDependencies(id)).thenReturn(true);
 
@@ -96,7 +120,10 @@ class OrganizacaoServiceTest {
     @Test
     void shouldDeleteOrgWhenNotInUse() {
         UUID id = UUID.randomUUID();
-        Organizacao org = new Organizacao(id, "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true, conselhoId, movimentoOficialId);
+        Organizacao org = new Organizacao(id,
+                "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
+                conselhoId, movimentoOficialId);
+
         when(repository.findById(id)).thenReturn(Optional.of(org));
         when(repository.hasDependencies(id)).thenReturn(false);
 
@@ -107,8 +134,11 @@ class OrganizacaoServiceTest {
 
     @Test
     void shouldCreateOrganizationWithConselhoEconomico() {
-        Organizacao created = service.createOrganization("Conselho Econômico", TipoOrganizacao.CONSELHO_ECONOMICO, "financeiro@test.com", "Pedro Finanças", "Ana Administração", matrizId, null);
-        
+        Organizacao created = service.createOrganization("Conselho Econômico",
+                TipoOrganizacao.CONSELHO_ECONOMICO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
+                matrizId, null);
+
+
         assertNotNull(created.getId());
         assertEquals(TipoOrganizacao.CONSELHO_ECONOMICO, created.getTipo());
     }
@@ -116,47 +146,66 @@ class OrganizacaoServiceTest {
     @Test
     void shouldFailToCreateMatrizWithoutCleroParent() {
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Matriz Sem Pai", TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", null, null)
+                service.createOrganization("Matriz Sem Pai",
+                        TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", null, null)
+
         );
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Matriz Com Pai Incorreto", TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", conselhoId, null)
+                service.createOrganization("Matriz Com Pai Incorreto",
+                        TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", conselhoId, null)
+
         );
     }
 
     @Test
     void shouldFailToCreateCouncilWithoutMatrizOrComunidadeParent() {
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Conselho Sem Pai", TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", null, null)
+                service.createOrganization("Conselho Sem Pai",
+                        TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", null, null)
+
         );
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Conselho Com Pai Incorreto", TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", cleroId, null)
+                service.createOrganization("Conselho Com Pai Incorreto",
+                        TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", cleroId, null)
+
         );
     }
 
     @Test
     void shouldFailToCreatePastoralWithoutCouncilParent() {
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Pastoral Sem Pai", TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
+                service.createOrganization("Pastoral Sem Pai",
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
+
         );
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Pastoral Com Pai Incorreto", TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
+                service.createOrganization("Pastoral Com Pai Incorreto",
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
+
         );
     }
 
     @Test
     void shouldFailToCreateOrgIfParentIsInactive() {
         UUID inactiveId = UUID.randomUUID();
-        Organizacao inactiveParent = new Organizacao(inactiveId, "Conselho Inativo", TipoOrganizacao.CONSELHO_PASTORAL, "conselho@test.com", "Coordenador", null, false, matrizId, null);
+        Organizacao inactiveParent = new Organizacao(inactiveId,
+                "Conselho Inativo", TipoOrganizacao.CONSELHO_PASTORAL, "conselho@test.com", "Coordenador", null,
+                false, matrizId, null);
+
         when(repository.findById(inactiveId)).thenReturn(Optional.of(inactiveParent));
 
         assertThrows(OrganizationBusinessException.class, () ->
-            service.createOrganization("Pastoral Novo", TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
+                service.createOrganization("Pastoral Novo",
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
+
         );
     }
 
     @Test
     void shouldAllowCreatingCleroWithNullParent() {
-        Organizacao created = service.createOrganization("Clero Novo", TipoOrganizacao.CLERO, "clero@test.com", "Coord", "Vice", null, null);
+        Organizacao created = service.createOrganization("Clero Novo",
+                TipoOrganizacao.CLERO, "clero@test.com", "Coord", "Vice", null, null);
+
         assertNotNull(created.getId());
         assertEquals(TipoOrganizacao.CLERO, created.getTipo());
         assertNull(created.getParentId());

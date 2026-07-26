@@ -1,12 +1,13 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
+import org.springframework.stereotype.Service;
+
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EventoCancelamentoAuthorizationService {

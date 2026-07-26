@@ -1,6 +1,7 @@
 # Getting Started
 
-Follow these instructions to get the Gestão Paróquia application running on your local machine for development and testing.
+Follow these instructions to get the Gestão Paróquia application running on your local machine for development and
+testing.
 
 ## Prerequisites
 
@@ -17,6 +18,7 @@ docker-compose up --build
 ```
 
 This will start:
+
 - **PostgreSQL**: Accessible on port `5432`.
 - **SonarQube**: Accessible on port `9000`.
 - **API**: Accessible on port `8080`.

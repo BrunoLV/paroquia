@@ -1,16 +1,16 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.service.ObservacaoMutationPolicyService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DeleteObservacaoUseCase {
@@ -29,8 +29,9 @@ public class DeleteObservacaoUseCase {
     }
 
     /**
-     * Marks an observation as removed in the database, enforcing ownership rules to ensure only authors or authorized personnel can hide specific notes.
-     * 
+     * Marks an observation as removed in the database, enforcing ownership rules to ensure only authors or
+     * authorized personnel can hide specific notes.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, observacaoId, usuarioId, "admin");

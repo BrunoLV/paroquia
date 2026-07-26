@@ -5,13 +5,13 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.UUID;
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,11 +43,13 @@ class ProjetoMutacaoContractTest {
     @Test
     void shouldPatchProjeto() throws Exception {
         mockMvc.perform(patch("/api/v1/projetos/{projetoId}", "00000000-0000-0000-0000-000000000001")
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "CONSELHO")
-                .header("X-Actor-Org-Id", UUID.randomUUID().toString())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"nome\":\"Projeto Atualizado\",\"descricao\":\"Planejamento revisado\",\"status\":\"EM_ANDAMENTO\"}"))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", UUID.randomUUID().toString())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                "{\"nome\":\"Projeto Atualizado\",\"descricao\":\"Planejamento revisado\"," +
+                                        "\"status\":\"EM_ANDAMENTO\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("00000000-0000-0000-0000-000000000001"))
                 .andExpect(jsonPath("$.nome").value("Projeto Atualizado"))

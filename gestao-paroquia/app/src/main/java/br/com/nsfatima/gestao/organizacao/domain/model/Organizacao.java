@@ -13,7 +13,10 @@ public class Organizacao {
     private UUID parentId;
     private UUID pastoralOficialId;
 
-    public Organizacao(UUID id, String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId, UUID pastoralOficialId) {
+    public Organizacao(UUID id,
+                       String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador,
+                       boolean ativo, UUID parentId, UUID pastoralOficialId) {
+
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
@@ -69,7 +72,10 @@ public class Organizacao {
         this.pastoralOficialId = pastoralOficialId;
     }
 
-    public void update(String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo, UUID parentId, UUID pastoralOficialId) {
+    public void update(String nome,
+                       TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
+                       UUID parentId, UUID pastoralOficialId) {
+
         this.nome = nome;
         this.tipo = tipo;
         this.contato = contato;

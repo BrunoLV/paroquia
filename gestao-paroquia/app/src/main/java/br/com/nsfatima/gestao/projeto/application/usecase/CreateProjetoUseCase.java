@@ -1,25 +1,24 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
-import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
+import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
+import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
-import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
-import tools.jackson.databind.ObjectMapper;
-import java.util.UUID;
-import java.time.ZoneOffset;
-import java.time.Instant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.UUID;
 
 @Service
 public class CreateProjetoUseCase {
@@ -53,7 +52,8 @@ public class CreateProjetoUseCase {
     }
 
     /**
-     * Coordena a criação de um novo projeto, garantindo que as regras de negócio sejam aplicadas e a ação seja auditada.
+     * Coordena a criação de um novo projeto, garantindo que as regras de negócio sejam aplicadas e a ação seja
+     * auditada.
      * Se o ano paroquial correspondente estiver fechado ou concluído, a criação é encaminhada para aprovação.
      *
      * @param request Dados para criação do projeto
@@ -97,7 +97,9 @@ public class CreateProjetoUseCase {
             approval.setCriadoEmUtc(Instant.now());
 
             ProjetoSolicitacaoAprovacaoEntity savedApproval = approvalRepository.save(approval);
-            auditPublisher.publish(actorContext.actor(), "request-create-project", savedApproval.getId().toString(), "success");
+            auditPublisher.publish(actorContext.actor(),
+                    "request-create-project", savedApproval.getId().toString(), "success");
+
 
             return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedApproval));
         }
@@ -110,11 +112,11 @@ public class CreateProjetoUseCase {
         entity.setInicioUtc(request.inicio());
         entity.setFimUtc(request.fim());
         entity.setStatus(ProjetoStatus.ABERTO.name());
-        
+
         ProjetoEventoEntity saved = repository.save(entity);
-        
+
         auditPublisher.publishCreateSuccess(actorContext.actor(), saved.getId().toString());
-        
+
         return new ProjetoCreationResult(mapper.toResponse(saved), null);
     }
 }

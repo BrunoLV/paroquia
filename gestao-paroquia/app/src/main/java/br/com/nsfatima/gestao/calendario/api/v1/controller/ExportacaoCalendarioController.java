@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,19 +26,26 @@ public class ExportacaoCalendarioController {
     }
 
     @GetMapping("/exportar")
-    @Operation(summary = "Exportar calendário", description = "Exporta os eventos do calendário nos formatos PDF, Excel ou CSV com base em filtros de período.")
+    @Operation(summary = "Exportar calendário", description = "Exporta os eventos do calendário nos formatos PDF, " +
+            "Excel ou CSV com base em filtros de período.")
     public ResponseEntity<byte[]> exportar(
             @Parameter(description = "Formato de exportação: PDF, EXCEL, CSV") @RequestParam String formato,
             @Parameter(description = "Opção de filtragem: ANO, MES, PERIODO") @RequestParam String opcao,
             @Parameter(description = "Ano para exportação (ex: 2026)") @RequestParam(required = false) Integer ano,
             @Parameter(description = "Mês para exportação (1-12)") @RequestParam(required = false) Integer mes,
-            @Parameter(description = "Data inicial para período customizado (ISO-8601)") @RequestParam(required = false) Instant dataInicio,
-            @Parameter(description = "Data final para período customizado (ISO-8601)") @RequestParam(required = false) Instant dataFim,
-            @Parameter(description = "Filtrar por múltiplas categorias") @RequestParam(required = false) java.util.List<String> categorias,
-            @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false) java.util.List<UUID> organizacaoIds) {
+            @Parameter(description = "Data inicial para período customizado (ISO-8601)") @RequestParam(required = false)
+            Instant dataInicio,
+            @Parameter(description = "Data final para período customizado (ISO-8601)") @RequestParam(required = false)
+            Instant dataFim,
+            @Parameter(description = "Filtrar por múltiplas categorias") @RequestParam(required = false)
+            java.util.List<String> categorias,
+            @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false)
+            java.util.List<UUID> organizacaoIds) {
 
-        byte[] content = exportUseCase.execute(formato, opcao, ano, mes, dataInicio, dataFim, categorias, organizacaoIds);
-        
+        byte[] content = exportUseCase.execute(formato,
+                opcao, ano, mes, dataInicio, dataFim, categorias, organizacaoIds);
+
+
         String filename = "calendario_" + opcao.toLowerCase();
         if ("ANO".equalsIgnoreCase(opcao) && ano != null) {
             filename += "_" + ano;

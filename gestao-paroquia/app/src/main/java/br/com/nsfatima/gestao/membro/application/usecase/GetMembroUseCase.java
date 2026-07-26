@@ -4,9 +4,10 @@ import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class GetMembroUseCase {
@@ -21,8 +22,9 @@ public class GetMembroUseCase {
 
     @Transactional(readOnly = true)
     /**
-     * Recupera as informações detalhadas de um membro pelo seu identificador único para fornecer dados de perfil e histórico.
-     * 
+     * Recupera as informações detalhadas de um membro pelo seu identificador único para fornecer dados de perfil e
+     * histórico.
+     *
      * Exemplo: useCase.execute(membroId)
      */
     public MembroResponse execute(UUID id) {

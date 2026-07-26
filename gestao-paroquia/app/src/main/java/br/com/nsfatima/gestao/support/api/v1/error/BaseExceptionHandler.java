@@ -1,17 +1,17 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for exception handlers providing common utilities for response building and logging.
@@ -26,7 +26,7 @@ public abstract class BaseExceptionHandler {
 
     /**
      * Builds a standardized validation response.
-     * 
+     * <p>
      * Example: buildValidation(HttpStatus.BAD_REQUEST, ErrorCodes.VALIDATION_ERROR, "Invalid data", items);
      */
     protected ResponseEntity<ValidationErrorResponse> buildValidation(

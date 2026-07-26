@@ -12,6 +12,7 @@ public class OrganizationBusinessException extends RuntimeException {
     }
 
     public static OrganizationBusinessException inUse(UUID id) {
-        return new OrganizationBusinessException("Cannot delete organization " + id + " because it has associated members or events.");
+        return new OrganizationBusinessException(
+                "Cannot delete organization " + id + " because it has associated members or events.");
     }
 }

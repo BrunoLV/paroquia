@@ -1,12 +1,13 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
+import br.com.nsfatima.gestao.calendario.domain.policy.CalendarIntegrityPolicy;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-import br.com.nsfatima.gestao.calendario.domain.policy.CalendarIntegrityPolicy;
-import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EventoDomainService {

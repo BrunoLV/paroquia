@@ -1,9 +1,10 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.metrics;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.Instant;
 import java.util.UUID;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "Filtros para consulta da trilha de auditoria")
 public record AuditoriaFiltroRequest(

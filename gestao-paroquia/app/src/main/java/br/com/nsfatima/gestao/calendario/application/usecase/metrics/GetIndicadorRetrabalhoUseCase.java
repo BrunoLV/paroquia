@@ -1,16 +1,17 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
-import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
+import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import java.time.Instant;
-import java.util.UUID;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class GetIndicadorRetrabalhoUseCase {
@@ -26,8 +27,9 @@ public class GetIndicadorRetrabalhoUseCase {
     }
 
     /**
-     * Calculates the operational inefficiency metric for a specific organization, helping leaders understand the frequency of post-planning changes.
-     * 
+     * Calculates the operational inefficiency metric for a specific organization, helping leaders understand the
+     * frequency of post-planning changes.
+     * <p>
      * Usage Example:
      * {@code
      * IndicadorRetrabalhoResponse response = useCase.execute(orgId, "anual", null, null);

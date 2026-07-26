@@ -1,9 +1,10 @@
 package br.com.nsfatima.gestao.aprovacao.api.v1.dto;
 
+import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.Instant;
 import java.util.UUID;
-import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoResponse;
 
 @Schema(description = "Dados detalhados de uma solicitação de aprovação")
 public record AprovacaoResponse(

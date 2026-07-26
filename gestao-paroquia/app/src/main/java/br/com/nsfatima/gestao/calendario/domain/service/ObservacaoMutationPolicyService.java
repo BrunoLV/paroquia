@@ -5,8 +5,9 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavel
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class ObservacaoMutationPolicyService {

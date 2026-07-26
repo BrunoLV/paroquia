@@ -5,18 +5,18 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Job that runs on January 1st to generate EventoEntity instances for all recurring rules.
@@ -61,7 +61,7 @@ public class YearlyRecurrenceGeneratorJob {
 
     /**
      * Generates instances for a specific year.
-     * 
+     * <p>
      * Usage Example:
      * job.executeForYear(2026);
      */
@@ -88,26 +88,30 @@ public class YearlyRecurrenceGeneratorJob {
                 if (date.equals(startOfRecurrence)) {
                     continue;
                 }
-                
+
                 if (date.getYear() == year) {
                     generateInstance(baseEvent, date, ruleEntity);
                 }
             }
         });
     }
+
     private void generateInstance(EventoEntity baseEvent, LocalDate date, EventoRecorrenciaEntity ruleEntity) {
         Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
-        
+
         // Map date to original time
-        Instant baseDateStart = baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+        Instant baseDateStart =
+                baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
         Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
-        
+
         Instant startUtc = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
         Instant endUtc = startUtc.plus(duration);
 
         // Robust de-duplication check: same series and same start time
         if (eventRepository.existsByRecorrenciaIdAndInicioUtc(ruleEntity.getId(), startUtc)) {
-            LOGGER.debug("Instance for {} at {} already exists in series {}, skipping", baseEvent.getTitulo(), startUtc, ruleEntity.getId());
+            LOGGER.debug("Instance for {} at {} already exists in series {}, skipping",
+                    baseEvent.getTitulo(), startUtc, ruleEntity.getId());
+
             return;
         }
 
@@ -123,7 +127,7 @@ public class YearlyRecurrenceGeneratorJob {
         instance.setInicioUtc(startUtc);
         instance.setFimUtc(endUtc);
         instance.setRecorrenciaId(ruleEntity.getId());
-        
+
         eventRepository.save(instance);
     }
 }

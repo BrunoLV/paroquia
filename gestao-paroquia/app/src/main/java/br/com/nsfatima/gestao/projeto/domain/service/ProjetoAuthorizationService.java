@@ -1,13 +1,14 @@
 package br.com.nsfatima.gestao.projeto.domain.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import java.util.Set;
-import java.util.UUID;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class ProjetoAuthorizationService {
@@ -30,10 +31,13 @@ public class ProjetoAuthorizationService {
 
         // Only Paroco or Conselho Coordinators can create projects for any organization.
         // Others can only create for their own organization.
-        boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO 
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+        boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                && (normalizedRole == PapelOrganizacional.COORDENADOR
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
 
-        if (!isHighLevelActor && actorContext.organizationId() != null && !actorContext.organizationId().equals(organizacaoResponsavelId)) {
+        if (!isHighLevelActor && actorContext.organizationId() != null
+                && !actorContext.organizationId().equals(organizacaoResponsavelId)) {
             throw new AccessDeniedException("User cannot create projects for another organization");
         }
     }
@@ -46,10 +50,13 @@ public class ProjetoAuthorizationService {
             throw new ForbiddenOperationException("User does not have permission to edit projects");
         }
 
-        boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO 
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+        boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                && (normalizedRole == PapelOrganizacional.COORDENADOR
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
 
-        if (!isHighLevelActor && actorContext.organizationId() != null && !actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
+        if (!isHighLevelActor && actorContext.organizationId() != null
+                && !actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
             throw new ForbiddenOperationException("User cannot edit projects of another organization");
         }
     }
@@ -57,8 +64,10 @@ public class ProjetoAuthorizationService {
     public boolean isHighLevelActor(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
-        return normalizedRole == PapelOrganizacional.PAROCO 
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL && (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+        return normalizedRole == PapelOrganizacional.PAROCO
+                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                && (normalizedRole == PapelOrganizacional.COORDENADOR
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
     }
 
     public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
@@ -66,8 +75,10 @@ public class ProjetoAuthorizationService {
             return;
         }
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORDENADOR || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
-        if (isOrgLeader && actorContext.organizationId() != null && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
+        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORDENADOR
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
+        if (isOrgLeader && actorContext.organizationId() != null
+                && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
             return;
         }
         throw new ForbiddenOperationException("User does not have permission to perform this project transition");

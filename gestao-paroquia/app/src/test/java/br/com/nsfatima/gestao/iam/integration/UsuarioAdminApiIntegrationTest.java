@@ -4,17 +4,17 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,8 +37,8 @@ class UsuarioAdminApiIntegrationTest {
         usuarioRepository.save(user);
 
         mockMvc.perform(patch("/api/v1/usuarios/" + user.getId() + "/status")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"enabled\": false}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"enabled\": false}"))
                 .andExpect(status().isNoContent());
 
         UsuarioEntity updated = usuarioRepository.findById(user.getId()).orElseThrow();
@@ -50,8 +50,8 @@ class UsuarioAdminApiIntegrationTest {
     @WithMockUser(roles = "USER")
     void shouldDenyAdminActionForRegularUser() throws Exception {
         mockMvc.perform(patch("/api/v1/usuarios/" + UUID.randomUUID() + "/status")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"enabled\": false}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"enabled\": false}"))
                 .andExpect(status().isForbidden());
     }
 }

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
@@ -9,6 +9,12 @@ import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntit
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -17,22 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ExportacaoCalendarioUseCase {
 
+    private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private final EventoJpaRepository eventRepository;
     private final LocalJpaRepository localRepository;
     private final OrganizacaoJpaRepository organizationRepository;
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
     private final List<CalendarioExporter> exporters;
-
-    private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
 
     public ExportacaoCalendarioUseCase(
             EventoJpaRepository eventRepository,
@@ -73,11 +73,11 @@ public class ExportacaoCalendarioUseCase {
 
         // 2. Busca os eventos no período com filtros adicionais
         Pageable pageable = PageRequest.of(
-                0, 
-                100000, 
+                0,
+                100000,
                 Sort.by(Sort.Direction.ASC, "inicioUtc")
         );
-        
+
         List<EventoEntity> eventos = eventRepository.findAllWithFilters(
                 start,
                 true,

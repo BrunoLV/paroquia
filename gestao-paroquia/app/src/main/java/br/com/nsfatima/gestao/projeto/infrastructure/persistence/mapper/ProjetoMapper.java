@@ -1,8 +1,7 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper;
 
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
-import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import org.springframework.stereotype.Component;

@@ -1,16 +1,17 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.domain.exception.ApprovalRequiredException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
-import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ValidateAprovacaoUseCase {
@@ -26,18 +27,20 @@ public class ValidateAprovacaoUseCase {
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
     }
 
+    private static final String ERROR_MSG = "Approval is required for date change or cancellation";
+
     public void validateRequired(UUID eventoId, UUID aprovacaoId) {
         if (aprovacaoId == null) {
-            throw new ApprovalRequiredException("Approval is required for date change or cancellation");
+            throw new ApprovalRequiredException(ERROR_MSG);
         }
 
         AprovacaoEntity aprovacao = aprovacaoJpaRepository
                 .findByIdAndEventoId(aprovacaoId, eventoId)
                 .orElseThrow(
-                        () -> new ApprovalRequiredException("Approval is required for date change or cancellation"));
+                        () -> new ApprovalRequiredException(ERROR_MSG));
 
         if (aprovacao.getStatusEnum() != AprovacaoStatus.APROVADA) {
-            throw new ApprovalRequiredException("Approval is required for date change or cancellation");
+            throw new ApprovalRequiredException(ERROR_MSG);
         }
 
         AprovadorPapel role = aprovacao.getAprovadorPapelEnum();
@@ -48,8 +51,9 @@ public class ValidateAprovacaoUseCase {
     }
 
     /**
-     * Enforces the organizational hierarchy by restricting decision-making power to specific roles within the Council or the Parish Priest.
-     * 
+     * Enforces the organizational hierarchy by restricting decision-making power to specific roles within the
+     * Council or the Parish Priest.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.validateApprovalDecisionRole("COORDENADOR", "CONSELHO");
@@ -63,7 +67,7 @@ public class ValidateAprovacaoUseCase {
         }
         if (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
                 && (normalizedRole == PapelOrganizacional.COORDENADOR
-                        || normalizedRole == PapelOrganizacional.VICE_COORDENADOR)) {
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR)) {
             return;
         }
         throw new ForbiddenOperationException("User does not have permission to decide event approvals");

@@ -1,10 +1,10 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +73,9 @@ public class GetOrganogramaUseCase {
         );
     }
 
-    private OrganogramaNodeResponse buildOrgNodeRecursively(OrganizacaoEntity org, Map<UUID, List<OrganizacaoEntity>> childrenByParentId) {
+    private OrganogramaNodeResponse buildOrgNodeRecursively(OrganizacaoEntity org,
+                                                            Map<UUID, List<OrganizacaoEntity>> childrenByParentId) {
+
         List<OrganizacaoEntity> childOrgs = childrenByParentId.getOrDefault(org.getId(), List.of());
         List<OrganogramaNodeResponse> childNodes = childOrgs.stream()
                 .map(child -> buildOrgNodeRecursively(child, childrenByParentId))
@@ -109,7 +111,8 @@ public class GetOrganogramaUseCase {
         }
         if (viceResponsavelNome == null || viceResponsavelNome.isBlank()) {
             viceResponsavelNome = membros.stream()
-                    .filter(m -> "VICE_COORDENADOR".equalsIgnoreCase(m.papel()) || "VIGARIO".equalsIgnoreCase(m.papel()))
+                    .filter(m -> "VICE_COORDENADOR".equalsIgnoreCase(m.papel())
+                            || "VIGARIO".equalsIgnoreCase(m.papel()))
                     .map(OrganizacaoMembroResponse::usuarioNome)
                     .findFirst()
                     .orElse(null);

@@ -1,26 +1,25 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
-import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
+import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
-import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
+import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
-
-import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.List;
@@ -148,7 +147,8 @@ public class TransitionProjetoUseCase {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         if (!authorizationService.isHighLevelActor(actorContext)) {
-            throw new ForbiddenOperationException("Only ADMIN, PAROCO or CONSELHO coordinators can decide on project requests");
+            throw new ForbiddenOperationException(
+                    "Only ADMIN, PAROCO or CONSELHO coordinators can decide on project requests");
         }
 
         req.setStatus(aprovado ? "APROVADA" : "REJEITADA");

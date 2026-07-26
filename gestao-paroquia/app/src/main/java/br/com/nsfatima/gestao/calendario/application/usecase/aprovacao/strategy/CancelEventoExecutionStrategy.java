@@ -10,9 +10,9 @@ import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelEvento
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import java.util.UUID;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class CancelEventoExecutionStrategy implements ApprovalExecutionStrategy {
@@ -36,12 +36,15 @@ public class CancelEventoExecutionStrategy implements ApprovalExecutionStrategy 
     }
 
     @Override
-    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao, EventoActorContext actorContext) {
+    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
+                                                             EventoActorContext actorContext) {
+
         ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         UUID eventoId = payload.eventoId() != null ? payload.eventoId() : aprovacao.getEventoId();
-        
+
         if (eventoId == null) {
-            throw new IllegalArgumentException("eventoId must be present in approval payload or entity for cancellation");
+            throw new IllegalArgumentException(
+                    "eventoId must be present in approval payload or entity for cancellation");
         }
 
         String motivo = payload.canceladoMotivo();
@@ -74,7 +77,7 @@ public class CancelEventoExecutionStrategy implements ApprovalExecutionStrategy 
             ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
             eventoId = payload.eventoId();
         }
-        
+
         if (eventoId != null) {
             return eventoRepository.findStatusByIdNoLock(eventoId).orElse(null);
         }

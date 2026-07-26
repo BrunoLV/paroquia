@@ -4,8 +4,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.O
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,15 +34,15 @@ class ListMyObservacoesIntegrationTest {
         String eventoId = "00000000-0000-0000-0000-0000000000aa";
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Nota do usuario padrao\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Nota do usuario padrao\"}"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                .header("X-Actor-Role", "membro")
-                .header("X-Actor-Org-Type", "PASTORAL")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Nota de outro usuario\"}"))
+                        .header("X-Actor-Role", "membro")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Nota de outro usuario\"}"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/api/v1/eventos/{eventoId}/observacoes/minhas", eventoId))

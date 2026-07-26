@@ -62,7 +62,7 @@ public class PastoralMovimentoOficialService {
         if (tipo != TipoOrganizacao.PASTORAL && tipo != TipoOrganizacao.MOVIMENTO) {
             throw new PastoralMovimentoOficialBusinessException("Tipo deve ser PASTORAL ou MOVIMENTO");
         }
-        
+
         // Unique name check (case-insensitive or exact)
         if (repository.existsByNome(nome)) {
             // Check if it belongs to the current entity being updated

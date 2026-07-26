@@ -34,7 +34,9 @@ public class CreateEventoExecutionStrategy implements ApprovalExecutionStrategy 
     }
 
     @Override
-    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao, EventoActorContext actorContext) {
+    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
+                                                             EventoActorContext actorContext) {
+
         ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         String idempotencyKey = payload.idempotencyKey() == null
                 ? "approval-exec-" + aprovacao.getId()

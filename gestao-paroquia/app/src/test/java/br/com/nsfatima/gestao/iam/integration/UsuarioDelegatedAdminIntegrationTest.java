@@ -2,14 +2,15 @@ package br.com.nsfatima.gestao.iam.integration;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,9 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,7 +38,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     private MembroOrganizacaoJpaRepository membershipRepository;
 
     @Autowired
-    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
 
     private UUID coordinatorId;
     private UUID memberId;
@@ -106,7 +106,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         UsuarioEntity user = usuarioRepository.findById(userId).orElseThrow();
         UsuarioDetails details = new UsuarioDetails(
                 user.getId(), user.getUsername(), user.getPasswordHash(), user.isEnabled(), roles, List.of());
-        
+
         // Note: In integration tests with MockMvc, we usually use @WithMockUser or manually set context
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities())
@@ -118,8 +118,8 @@ class UsuarioDelegatedAdminIntegrationTest {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
         mockMvc.perform(post("/api/v1/usuarios/" + memberId + "/password-reset")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"newPassword\": \"new-pass\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isNoContent());
     }
 
@@ -128,8 +128,8 @@ class UsuarioDelegatedAdminIntegrationTest {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
         mockMvc.perform(post("/api/v1/usuarios/" + strangerId + "/password-reset")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"newPassword\": \"new-pass\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isForbidden());
     }
 
@@ -138,8 +138,8 @@ class UsuarioDelegatedAdminIntegrationTest {
         authenticateAs(coordinatorId, "ROLE_ADMIN"); // coordinator acting as admin
 
         mockMvc.perform(post("/api/v1/usuarios/" + strangerId + "/password-reset")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"newPassword\": \"new-pass\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isNoContent());
     }
 
@@ -150,8 +150,10 @@ class UsuarioDelegatedAdminIntegrationTest {
         UUID newUser = createUser("new_user");
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"organizacaoId\": \"" + orgId + "\", \"tipo\": \"PASTORAL\", \"papel\": \"MEMBRO\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"organizacaoId\": \"" + orgId
+                                + "\", \"tipo\": \"PASTORAL\", \"papel\": \"MEMBRO\", \"igrejaVinculoId\": \""
+                                + churchId + "\"}"))
                 .andExpect(status().isCreated());
     }
 
@@ -162,8 +164,9 @@ class UsuarioDelegatedAdminIntegrationTest {
         UUID newUser = createUser("new_user");
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"organizacaoId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": \"MEMBRO\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"organizacaoId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
+                                "\"MEMBRO\"}"))
                 .andExpect(status().isForbidden());
     }
 }

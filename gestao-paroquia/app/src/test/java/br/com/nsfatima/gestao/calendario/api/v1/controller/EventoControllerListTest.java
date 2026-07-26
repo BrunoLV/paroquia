@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import java.time.Instant;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,10 +38,10 @@ class EventoControllerListTest {
         }
 
         mockMvc.perform(get("/api/v1/eventos")
-                .param("page", "0")
-                .param("size", "10")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .param("page", "0")
+                        .param("size", "10")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(10))
@@ -54,10 +55,10 @@ class EventoControllerListTest {
         createEvento("Junho Event", Instant.parse("2026-06-15T10:00:00Z"));
 
         mockMvc.perform(get("/api/v1/eventos")
-                .param("dataInicio", "2026-05-01T00:00:00Z")
-                .param("dataFim", "2026-05-31T23:59:59Z")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .param("dataInicio", "2026-05-01T00:00:00Z")
+                        .param("dataFim", "2026-05-31T23:59:59Z")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(1))
                 .andExpect(jsonPath("$.content[0].titulo").value("Maio Event"));

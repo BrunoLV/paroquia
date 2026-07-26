@@ -18,10 +18,6 @@ public enum PapelOrganizacional {
         this.storedValue = storedValue;
     }
 
-    public String storedValue() {
-        return storedValue;
-    }
-
     public static PapelOrganizacional fromStoredValue(String rawValue) {
         if (rawValue == null || rawValue.isBlank()) {
             return null;
@@ -34,5 +30,9 @@ public enum PapelOrganizacional {
             }
         }
         return null;
+    }
+
+    public String storedValue() {
+        return storedValue;
     }
 }

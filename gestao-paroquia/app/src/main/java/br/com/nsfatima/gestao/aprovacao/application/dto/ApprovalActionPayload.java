@@ -1,7 +1,8 @@
 package br.com.nsfatima.gestao.aprovacao.application.dto;
 
-import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +41,9 @@ public record ApprovalActionPayload(
             String motivo,
             List<UUID> participantes,
             UUID localId) {
-        this(idempotencyKey, eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes, localId, null);
+        this(idempotencyKey,
+                eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, inicio, fim, status,
+                adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes, localId, null);
+
     }
 }

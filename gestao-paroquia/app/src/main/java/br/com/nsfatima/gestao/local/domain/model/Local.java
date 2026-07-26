@@ -14,7 +14,10 @@ public class Local {
     private String caracteristicas;
     private boolean ativo;
 
-    public Local(UUID id, String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+    public Local(UUID id,
+                 String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
+                 boolean ativo) {
+
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
@@ -52,7 +55,9 @@ public class Local {
         return ativo;
     }
 
-    public void update(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+    public void update(String nome,
+                       String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+
         this.nome = nome;
         this.tipo = tipo;
         this.endereco = endereco;

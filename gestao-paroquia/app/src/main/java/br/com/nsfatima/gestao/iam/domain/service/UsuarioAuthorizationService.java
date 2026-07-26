@@ -46,7 +46,8 @@ public class UsuarioAuthorizationService {
             throw new AccessDeniedException("Actor is not a coordinator");
         }
 
-        List<MembroOrganizacaoEntity> targetMemberships = membershipRepository.findByUsuarioIdAndAtivoTrue(targetUserId);
+        List<MembroOrganizacaoEntity> targetMemberships =
+                membershipRepository.findByUsuarioIdAndAtivoTrue(targetUserId);
         boolean sharesOrg = targetMemberships.stream()
                 .anyMatch(m -> coordinatorOrgIds.contains(m.getOrganizacaoId()));
 
@@ -80,7 +81,9 @@ public class UsuarioAuthorizationService {
     }
 
     private boolean isCoordinatorRole(String role) {
-        if (role == null) return false;
+        if (role == null) {
+            return false;
+        }
         String normalized = role.trim().toUpperCase().replace("-", "_");
         return "COORDENADOR".equals(normalized) || "VICE_COORDENADOR".equals(normalized);
     }

@@ -4,13 +4,14 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.TaxaEventosExtraResp
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import java.time.Instant;
-import java.util.UUID;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class GetTaxaEventosExtraUseCase {
@@ -26,8 +27,9 @@ public class GetTaxaEventosExtraUseCase {
     }
 
     /**
-     * Provides a quantitative measure of planning quality by calculating the ratio of unplanned events within a specific organizational context and timeframe.
-     * 
+     * Provides a quantitative measure of planning quality by calculating the ratio of unplanned events within a
+     * specific organizational context and timeframe.
+     * <p>
      * Usage Example:
      * {@code
      * TaxaEventosExtraResponse response = useCase.execute(orgId, "mensal", null, null);

@@ -10,4 +10,5 @@ public record ProjetoDecisaoRequest(
 
         @Schema(description = "Observação sobre a decisão")
         @Size(max = 2000) String observacao
-) {}
+) {
+}

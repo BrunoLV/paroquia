@@ -1,31 +1,32 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
-import br.com.nsfatima.gestao.aprovacao.domain.event.ApprovalDecisionEvent;
-import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalExecutionFailedException;
-import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalAlreadyDecidedException;
-import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalNotFoundException;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalMetricsPublisher;
-import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalAuditPublisher;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalAuditPublisher;
+import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalMetricsPublisher;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
+import br.com.nsfatima.gestao.aprovacao.domain.event.ApprovalDecisionEvent;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalAlreadyDecidedException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalExecutionFailedException;
+import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalNotFoundException;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Core use case for processing decisions on pending approval requests.
@@ -63,8 +64,9 @@ public class DecideSolicitacaoAprovacaoUseCase {
     }
 
     /**
-     * Orchestrates the final processing of an approval request, ensuring that only authorized personnel can make decisions and that the resulting actions are executed atomically.
-     * 
+     * Orchestrates the final processing of an approval request, ensuring that only authorized personnel can make
+     * decisions and that the resulting actions are executed atomically.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.decide(aprovacaoId, new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Ready to proceed"));
@@ -74,7 +76,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
     public AprovacaoDecisionResponse decide(UUID aprovacaoId, AprovacaoDecisionRequest request) {
         AprovacaoEntity aprovacao = findAndValidatePending(aprovacaoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        
+
         validateAprovacaoUseCase.validateApprovalDecisionRole(
                 actorContext.role(),
                 actorContext.organizationType());
@@ -98,12 +100,15 @@ public class DecideSolicitacaoAprovacaoUseCase {
 
         if (isExpired(aprovacao)) {
             Instant start = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson()).inicio();
-            throw new ApprovalExecutionFailedException("Approval request has expired (event already started at %s)".formatted(start));
+            throw new ApprovalExecutionFailedException(
+                    "Approval request has expired (event already started at %s)".formatted(start));
         }
         return aprovacao;
     }
 
-    private void applyDecisionState(AprovacaoEntity aprovacao, AprovacaoDecisionRequest request, EventoActorContext actorContext) {
+    private void applyDecisionState(AprovacaoEntity aprovacao,
+                                    AprovacaoDecisionRequest request, EventoActorContext actorContext) {
+
         aprovacao.setStatus(request.status());
         aprovacao.setDecididoEmUtc(Instant.now());
         aprovacao.setDecisionObservacao(request.observacao());
@@ -111,23 +116,26 @@ public class DecideSolicitacaoAprovacaoUseCase {
         aprovacao.setAprovadorPapel(actorContext.role());
     }
 
+    private static final String KEY_DECISION_STATUS = "decisionStatus";
+    private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
+
     private AprovacaoDecisionResponse processRejection(AprovacaoEntity aprovacao, EventoActorContext actorContext) {
         aprovacaoJpaRepository.save(aprovacao);
-        
+
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("decisionStatus", AprovacaoStatus.REPROVADA.name());
+        metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.REPROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put("organizacaoId", actorContext.organizationId());
+            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
             auditPublisher.publishApprovalDecision(actorContext.actor(), aprovacao, "rejected", metadata);
         }
-        
+
         if (metricsPublisher != null) {
             metricsPublisher.publishApprovalFlow(
-                aprovacao.getTipoSolicitacao() == null ? "UNKNOWN" : aprovacao.getTipoSolicitacao(),
-                "REJECTED");
+                    aprovacao.getTipoSolicitacao() == null ? "UNKNOWN" : aprovacao.getTipoSolicitacao(),
+                    "REJECTED");
         }
 
         publishDecisionEvent(aprovacao, null);
@@ -140,7 +148,9 @@ public class DecideSolicitacaoAprovacaoUseCase {
                 .orElse(null);
 
         return new AprovacaoDecisionResponse(aprovacao.getId(), aprovacao.getStatusEnum().name(),
-                new AprovacaoDecisionResponse.ActionExecution("REJECTED", aprovacao.getEventoId(), currentStatus, null));
+                new AprovacaoDecisionResponse.ActionExecution("REJECTED",
+                        aprovacao.getEventoId(), currentStatus, null));
+
     }
 
     private AprovacaoDecisionResponse processApproval(AprovacaoEntity aprovacao, EventoActorContext actorContext) {
@@ -161,17 +171,19 @@ public class DecideSolicitacaoAprovacaoUseCase {
         }
     }
 
-    private void finalizeSuccessfulExecution(AprovacaoEntity aprovacao, AprovacaoDecisionResponse.ActionExecution execution, 
-                                          EventoActorContext actorContext, TipoSolicitacaoInput tipo) {
+    private void finalizeSuccessfulExecution(AprovacaoEntity aprovacao,
+                                             AprovacaoDecisionResponse.ActionExecution execution,
+
+                                             EventoActorContext actorContext, TipoSolicitacaoInput tipo) {
         Instant executedAt = Instant.now();
         aprovacao.setExecutadoEmUtc(executedAt);
         aprovacaoJpaRepository.save(aprovacao);
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("eventoId", execution.eventoId() == null ? "N/A" : execution.eventoId().toString());
-        metadata.put("decisionStatus", AprovacaoStatus.APROVADA.name());
+        metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put("organizacaoId", actorContext.organizationId());
+            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
@@ -181,30 +193,30 @@ public class DecideSolicitacaoAprovacaoUseCase {
         if (metricsPublisher != null) {
             metricsPublisher.publishApprovalFlow(tipo.name(), "EXECUTED");
             if (aprovacao.getDecididoEmUtc() != null) {
-                metricsPublisher.publishApprovalExecutionLatency(tipo.name(), 
+                metricsPublisher.publishApprovalExecutionLatency(tipo.name(),
                         Duration.between(aprovacao.getDecididoEmUtc(), executedAt));
             }
         }
         publishDecisionEvent(aprovacao, null);
     }
 
-    private void handleExecutionFailure(AprovacaoEntity aprovacao, RuntimeException ex, 
-                                       EventoActorContext actorContext, TipoSolicitacaoInput tipo) {
+    private void handleExecutionFailure(AprovacaoEntity aprovacao, RuntimeException ex,
+                                        EventoActorContext actorContext, TipoSolicitacaoInput tipo) {
         aprovacao.setStatus(AprovacaoStatus.FALHA_EXECUCAO);
         aprovacao.setMensagemErroExecucao(ex.getMessage());
         aprovacaoJpaRepository.save(aprovacao);
-        
+
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("error", ex.getClass().getSimpleName());
-        metadata.put("decisionStatus", AprovacaoStatus.APROVADA.name());
+        metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put("organizacaoId", actorContext.organizationId());
+            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
             auditPublisher.publishApprovalDecision(actorContext.actor(), aprovacao, "failed", metadata);
         }
-        
+
         if (metricsPublisher != null) {
             metricsPublisher.publishApprovalFlow(tipo.name(), "FAILED");
         }

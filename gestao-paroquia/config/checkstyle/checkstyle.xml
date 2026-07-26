@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <!-- Formatação de Arquivos (Padrão de Mercado) -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+    <module name="LineLength">
+        <property name="fileExtensions" value="java"/>
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|v_|^ *@.*|^ *\*|^ *//"/>
+    </module>
+
+    <!-- Supressões para arquivos de teste -->
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="MultipleStringLiterals"/>
+        <property name="files" value=".*[/\\]src[/\\]test[/\\].*"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <!-- ================================================================= -->
+        <!-- REGRA CRÍTICA: PROIBIÇÃO DE IMPORT INLINE (FQN)                   -->
+        <!-- ================================================================= -->
+        <!-- Garante que classes não sejam chamadas pelo nome completo no meio -->
+        <!-- do código (ex: java.util.List). Força o uso do import no topo.    -->
+        <module name="IllegalTokenText">
+            <property name="tokens" value="IDENT"/>
+            <!-- Expressão para capturar padrões comuns de FQN de pacotes conhecidos -->
+            <property name="format" value="^(java|javax|jakarta|org\.springframework|org\.hibernate)\.[a-zA-Z0-9_]+\."/>
+            <property name="ignoreCase" value="false"/>
+            <property name="message"
+                      value="Não utilize caminhos completos (FQN / Imports Inline). Importe a classe no topo do arquivo."/>
+        </module>
+
+        <!-- ================================================================= -->
+        <!-- GERENCIAMENTO DE IMPORTS                                         -->
+        <!-- ================================================================= -->
+        <module name="AvoidStarImport">
+            <property name="allowClassImports" value="false"/>
+            <property name="allowStaticMemberImports" value="true"/>
+        </module>
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+
+        <!-- ================================================================= -->
+        <!-- BOAS PRÁTICAS: JAVA & SPRING                                      -->
+        <!-- ================================================================= -->
+        <module name="EqualsHashCode"/> <!-- Sempre implementar ambos juntos (Crucial para entidades JPA) -->
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StringLiteralEquality"/> <!-- Evita 'str == "teste"', força '.equals()' -->
+        <module name="OneStatementPerLine"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="HideUtilityClassConstructor"/> <!-- Classes utilitárias (@UtilityClass ou static) não devem ser instanciadas -->
+        <module name="VisibilityModifier">
+            <property name="packageAllowed" value="true"/>
+            <property name="protectedAllowed" value="true"/>
+        </module>
+
+        <!-- ================================================================= -->
+        <!-- EVITAR STRINGS CONSTANTES E FORÇAR ENUMS                          -->
+        <!-- ================================================================= -->
+        
+        <!-- 1. Proíbe interfaces que servem apenas para guardar constantes (Constant Interface Pattern) -->
+        <!-- O mercado considera isso um antipadrão clássico. Interfaces devem definir comportamento. -->
+        <module name="InterfaceIsType">
+            <property name="allowMarkerInterfaces" value="true"/>
+        </module>
+
+        <!-- 2. Restringe o uso de literais de String soltos no meio do código -->
+        <!-- Força o desenvolvedor a extrair o valor. Se for um tipo/domínio, -->
+        <!-- ele será naturally induzido a criar um Enum. -->
+        <module name="MultipleStringLiterals">
+            <property name="allowedDuplicates" value="2"/> <!-- Permite a mesma string no máximo 2 vezes (ex: em logs) -->
+            <property name="ignoreStringsRegexp" value='^(|""|"true"|"false"|","|";"|"_"|"-"|"/"|"n/a"|"\""|"\"\""|"correlationId"|"authorization"|"requestBody")$'/>
+        </module>
+
+        <!-- ================================================================= -->
+        <!-- VALIDAÇÃO DE JAVADOC (Open JavaDoc Check - Padrão de Mercado)     -->
+        <!-- ================================================================= -->
+        
+        <!-- Exige Javadoc em classes e interfaces públicas/protegidas -->
+        <module name="JavadocType">
+            <property name="scope" value="protected"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, RECORD_DEF"/>
+        </module>
+
+        <!-- Exige Javadoc em métodos públicos importantes -->
+        <module name="JavadocMethod">
+            <property name="validateThrows" value="false"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+        </module>
+
+        <!-- Garante a formatação correta do Javadoc (Estilo Google/Spring) -->
+        <module name="JavadocStyle">
+            <property name="scope" value="protected"/>
+            <property name="checkFirstSentence" value="true"/> <!-- Primeira frase deve terminar com ponto final -->
+            <property name="checkEmptyJavadoc" value="true"/>  <!-- Proíbe blocos /** */ vazios -->
+        </module>
+
+        <!-- Valida as tags @param, @return e @throws -->
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="JavadocTagContinuationIndentation"/>
+
+        <!-- ================================================================= -->
+        <!-- FORMATAÇÃO E BLOCOS (Estilo Google/Spring)                        -->
+        <!-- ================================================================= -->
+        <module name="LeftCurly"/> <!-- Abertura de chaves na mesma linha -->
+        <module name="RightCurly"/>
+        <module name="NeedBraces"/> <!-- Força chaves em 'if', 'else', 'for', 'while' mesmo com uma linha -->
+        <module name="WhitespaceAfter">
+            <property name="tokens"
+                      value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE, LITERAL_WHILE, LITERAL_FOR, LITERAL_DO"/>
+        </module>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+        </module>
+
+        <!-- NOMEAÇÃO (Naming Conventions) -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+        <module name="TypeName"/>
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+        </module>
+        <module name="LocalVariableName"/>
+        <module name="ParameterName"/>
+        <module name="StaticVariableName"/>
+    </module>
+</module>

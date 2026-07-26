@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader.Membership;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.junit.jupiter.api.AfterEach;
@@ -16,8 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class EventoPatchAuthorizationServiceTest {
 
@@ -49,10 +51,16 @@ class EventoPatchAuthorizationServiceTest {
         UUID orgId = UUID.randomUUID();
         UUID churchId = UUID.randomUUID();
 
-        var membership = new Membership(orgId, "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true, PapelOrganizacional.COORDENADOR.name(), churchId);
+        var membership = new Membership(orgId,
+                "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
+                PapelOrganizacional.COORDENADOR.name(), churchId);
+
         mockAuthentication(usuarioId, List.of(membership));
 
-        var actorContext = new EventoActorContext("tester", PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId, churchId);
+        var actorContext = new EventoActorContext("tester",
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
+                churchId);
+
 
         assertDoesNotThrow(() -> {
             service.assertCanCreate(actorContext, orgId, churchId);
@@ -66,10 +74,16 @@ class EventoPatchAuthorizationServiceTest {
         UUID churchA = UUID.randomUUID();
         UUID churchB = UUID.randomUUID();
 
-        var membership = new Membership(orgId, "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true, PapelOrganizacional.COORDENADOR.name(), churchA);
+        var membership = new Membership(orgId,
+                "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
+                PapelOrganizacional.COORDENADOR.name(), churchA);
+
         mockAuthentication(usuarioId, List.of(membership));
 
-        var actorContext = new EventoActorContext("tester", PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId, churchA);
+        var actorContext = new EventoActorContext("tester",
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
+                churchA);
+
 
         assertThrows(AccessDeniedException.class, () -> {
             service.assertCanCreate(actorContext, orgId, churchB);
@@ -82,10 +96,15 @@ class EventoPatchAuthorizationServiceTest {
         UUID orgId = UUID.randomUUID();
         UUID churchId = UUID.randomUUID();
 
-        var membership = new Membership(orgId, "Clero", TipoOrganizacao.CLERO.name(), null, null, null, true, PapelOrganizacional.PAROCO.name(), null);
+        var membership = new Membership(orgId,
+                "Clero", TipoOrganizacao.CLERO.name(), null, null, null, true, PapelOrganizacional.PAROCO.name(),
+                null);
+
         mockAuthentication(usuarioId, List.of(membership));
 
-        var actorContext = new EventoActorContext("tester", PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), orgId, usuarioId, null);
+        var actorContext = new EventoActorContext("tester",
+                PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), orgId, usuarioId, null);
+
 
         assertDoesNotThrow(() -> {
             service.assertCanCreate(actorContext, orgId, churchId);
@@ -97,10 +116,16 @@ class EventoPatchAuthorizationServiceTest {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();
 
-        var membership = new Membership(orgId, "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true, PapelOrganizacional.COORDENADOR.name(), null);
+        var membership = new Membership(orgId,
+                "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
+                PapelOrganizacional.COORDENADOR.name(), null);
+
         mockAuthentication(usuarioId, List.of(membership));
 
-        var actorContext = new EventoActorContext("tester", PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId, null);
+        var actorContext = new EventoActorContext("tester",
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
+                null);
+
 
         assertDoesNotThrow(() -> {
             service.assertCanCreate(actorContext, orgId, null);

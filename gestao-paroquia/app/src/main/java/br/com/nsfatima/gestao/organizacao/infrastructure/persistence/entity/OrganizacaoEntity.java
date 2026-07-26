@@ -1,8 +1,14 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import jakarta.persistence.*;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.util.UUID;
 
 @Entity
@@ -30,6 +36,10 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
 
     @Column(nullable = false)
     private boolean ativo = true;
+    @Column(name = "parent_id")
+    private UUID parentId;
+    @Column(name = "pastoral_oficial_id")
+    private UUID pastoralOficialId;
 
     public UUID getId() {
         return id;
@@ -78,12 +88,6 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     public void setViceCoordenador(String viceCoordenador) {
         this.viceCoordenador = viceCoordenador;
     }
-
-    @Column(name = "parent_id")
-    private UUID parentId;
-
-    @Column(name = "pastoral_oficial_id")
-    private UUID pastoralOficialId;
 
     public UUID getParentId() {
         return parentId;

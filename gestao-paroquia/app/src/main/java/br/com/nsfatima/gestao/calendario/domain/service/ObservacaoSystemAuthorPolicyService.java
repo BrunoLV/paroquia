@@ -1,7 +1,8 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
-import java.util.UUID;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class ObservacaoSystemAuthorPolicyService {

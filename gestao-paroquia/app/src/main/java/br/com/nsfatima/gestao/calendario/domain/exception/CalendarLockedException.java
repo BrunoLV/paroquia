@@ -4,7 +4,8 @@ public class CalendarLockedException extends RuntimeException {
     private final int ano;
 
     public CalendarLockedException(int ano) {
-        super("O calendario para o ano " + ano + " esta fechado. Novos eventos devem ser registrados como ADICIONADO_EXTRA.");
+        super("O calendario para o ano " + ano +
+                " esta fechado. Novos eventos devem ser registrados como ADICIONADO_EXTRA.");
         this.ano = ano;
     }
 

@@ -16,6 +16,8 @@ import org.openpdf.text.pdf.PdfPCell;
 import org.openpdf.text.pdf.PdfPTable;
 import org.openpdf.text.pdf.PdfPageEventHelper;
 import org.openpdf.text.pdf.PdfWriter;
+import org.springframework.stereotype.Component;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +30,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PdfCalendarioExporter implements CalendarioExporter {
@@ -36,18 +37,29 @@ public class PdfCalendarioExporter implements CalendarioExporter {
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    private static Color parseColor(String hex, Color defaultColor) {
+        if (hex == null || hex.isBlank()) {
+            return defaultColor;
+        }
+        try {
+            return Color.decode(hex);
+        } catch (NumberFormatException e) {
+            return defaultColor;
+        }
+    }
+
     @Override
     public boolean supports(String formato) {
         return "PDF".equalsIgnoreCase(formato);
     }
 
     @Override
-    public byte[] export(List<EventoEntity> eventos, 
-                        Map<UUID, String> localMap, 
-                        Map<UUID, String> orgMap, 
-                        Instant start, 
-                        Instant end, 
-                        ParoquiaConfiguracaoEntity config) {
+    public byte[] export(List<EventoEntity> eventos,
+                         Map<UUID, String> localMap,
+                         Map<UUID, String> orgMap,
+                         Instant start,
+                         Instant end,
+                         ParoquiaConfiguracaoEntity config) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Document document = new Document(PageSize.A4.rotate(), 36f, 36f, 60f, 60f); // Margens para cabeçalho/rodapé
             PdfWriter writer = PdfWriter.getInstance(document, out);
@@ -100,7 +112,9 @@ public class PdfCalendarioExporter implements CalendarioExporter {
                         ultimoMesAno = mesAno;
 
                         // Título do Mês
-                        String tituloMes = zdt.format(DateTimeFormatter.ofPattern("MMMM 'de' yyyy", new Locale("pt", "BR"))).toUpperCase();
+                        String tituloMes = zdt.format(DateTimeFormatter.ofPattern("MMMM 'de' yyyy",
+                                new Locale("pt", "BR"))).toUpperCase();
+
                         Font fontMonth = new Font(Font.HELVETICA, 12, Font.BOLD, primaryColor);
                         Paragraph pMonth = new Paragraph(tituloMes, fontMonth);
                         pMonth.setSpacingAfter(8);
@@ -114,7 +128,9 @@ public class PdfCalendarioExporter implements CalendarioExporter {
 
                         // Estilos do Cabeçalho da Tabela
                         Font fontHeader = new Font(Font.HELVETICA, 9, Font.BOLD);
-                        String[] headers = {"Título", "Descrição", "Categoria", "Início", "Fim", "Local", "Organização", "Status"};
+                        String[] headers = {"Título",
+                                "Descrição", "Categoria", "Início", "Fim", "Local", "Organização", "Status"};
+
                         for (String col : headers) {
                             PdfPCell cellHeader = new PdfPCell(new Phrase(col, fontHeader));
                             cellHeader.setBackgroundColor(new Color(220, 220, 220));
@@ -132,7 +148,9 @@ public class PdfCalendarioExporter implements CalendarioExporter {
                     currentTable.addCell(new Phrase(formatInstant(e.getInicioUtc()), fontBody));
                     currentTable.addCell(new Phrase(formatInstant(e.getFimUtc()), fontBody));
                     currentTable.addCell(new Phrase(localMap.getOrDefault(e.getLocalId(), "N/A"), fontBody));
-                    currentTable.addCell(new Phrase(orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), "N/A"), fontBody));
+                    currentTable.addCell(new Phrase(orgMap.getOrDefault(e.getOrganizacaoResponsavelId(),
+                            "N/A"), fontBody));
+
                     currentTable.addCell(new Phrase(e.getStatus(), fontBody));
                 }
 
@@ -148,22 +166,17 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         }
     }
 
-    private static Color parseColor(String hex, Color defaultColor) {
-        if (hex == null || hex.isBlank()) return defaultColor;
-        try {
-            return Color.decode(hex);
-        } catch (NumberFormatException e) {
-            return defaultColor;
-        }
-    }
-
     private String formatInstant(Instant instant) {
-        if (instant == null) return "";
+        if (instant == null) {
+            return "";
+        }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
 
     private String formatInstantDateOnly(Instant instant) {
-        if (instant == null) return "";
+        if (instant == null) {
+            return "";
+        }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
@@ -197,7 +210,8 @@ public class PdfCalendarioExporter implements CalendarioExporter {
 
             String nome = config != null ? config.getNome() : "Paróquia Nossa Senhora de Fátima";
             String diocese = config != null ? config.getDiocese() : "Diocese de São Miguel Paulista";
-            String endereco = config != null ? config.getEndereco() : "Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP";
+            String endereco =
+                    config != null ? config.getEndereco() : "Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP";
             this.paroquiaNome = nome;
             this.footerText = nome + "\nEndereço: " + endereco + ", " + diocese;
 
@@ -230,7 +244,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
             try {
                 PdfPTable headerTable = new PdfPTable(2);
                 headerTable.setTotalWidth(770);
-                headerTable.setWidths(new float[]{1, 25});
+                headerTable.setWidths(new float[] {1, 25});
 
                 PdfPCell logoCell;
                 if (logoHeader != null) {

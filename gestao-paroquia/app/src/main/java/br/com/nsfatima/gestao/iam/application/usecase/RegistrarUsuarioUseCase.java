@@ -3,10 +3,11 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 import br.com.nsfatima.gestao.iam.api.v1.dto.RegistrarUsuarioRequest;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +36,9 @@ public class RegistrarUsuarioUseCase {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdminOrParoco = auth != null && auth.isAuthenticated() && 
-            auth.getAuthorities().stream().anyMatch(a -> 
-                "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
+        boolean isAdminOrParoco = auth != null && auth.isAuthenticated() &&
+                auth.getAuthorities().stream().anyMatch(a ->
+                        "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
 
         if (request.igrejaId() == null) {
             throw new IllegalArgumentException("A igreja/comunidade e obrigatoria para o cadastro do usuario");
@@ -47,8 +48,8 @@ public class RegistrarUsuarioUseCase {
             throw new IllegalArgumentException("Igreja nao encontrada: " + request.igrejaId());
         }
         var igrejaTarget = igrejaTargetOpt.get();
-        if (igrejaTarget.getTipo() != br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
-                && igrejaTarget.getTipo() != br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+        if (igrejaTarget.getTipo() != TipoOrganizacao.MATRIZ
+                && igrejaTarget.getTipo() != TipoOrganizacao.COMUNIDADE) {
             throw new IllegalArgumentException("A igreja selecionada deve ser do tipo MATRIZ ou COMUNIDADE");
         }
 

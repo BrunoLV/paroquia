@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.support.fake;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,6 @@ import java.util.List;
  */
 public class FakeCadastroEventoMetricsPublisher extends CadastroEventoMetricsPublisher {
 
-    public record MetricCall(String name, Object value) {}
-    
     private final List<MetricCall> calls = new ArrayList<>();
 
     @Override
@@ -32,8 +31,11 @@ public class FakeCadastroEventoMetricsPublisher extends CadastroEventoMetricsPub
     public List<MetricCall> getCalls() {
         return List.copyOf(calls);
     }
-    
+
     public void clear() {
         calls.clear();
+    }
+
+    public record MetricCall(String name, Object value) {
     }
 }

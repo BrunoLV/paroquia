@@ -25,7 +25,8 @@ public class DashboardMetricsController {
     }
 
     @GetMapping("/metrics")
-    @Operation(summary = "Obtém as métricas do dashboard", description = "Retorna o resumo geral de eventos, projetos e solicitações no período corrente.")
+    @Operation(summary = "Obtém as métricas do dashboard", description = "Retorna o resumo geral de eventos, projetos" +
+            " e solicitações no período corrente.")
     public DashboardMetricsDTO getMetrics() {
         var context = actorContextResolver.resolveRequired();
         return getDashboardMetricsUseCase.execute(context);

@@ -1,7 +1,5 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListEventosUseCase;
@@ -12,9 +10,6 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -45,7 +46,7 @@ class EventoFiltragemAvancadaIntegrationTest {
     void setup() {
         envolvidoRepository.deleteAll();
         repository.deleteAll();
-        
+
         // Evento 1: Org A Responsavel, Categoria LITURGICO, Status CONFIRMADO
         EventoEntity e1 = createEvent("E1", orgA, CategoriaEvento.LITURGICO, EventoStatusInput.CONFIRMADO);
         repository.save(e1);
@@ -69,27 +70,27 @@ class EventoFiltragemAvancadaIntegrationTest {
         // Org A is responsible for E1 and involved in E2
         EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, orgA, null, null);
         Page<EventoResponse> result = listEventosUseCase.execute(filter, PageRequest.of(0, 10));
-        
+
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getContent()).extracting(EventoResponse::titulo).containsExactlyInAnyOrder("E1", "E2");
     }
 
     @Test
     void shouldFilterByMultipleCategories() {
-        EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, null, 
+        EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, null,
                 List.of(CategoriaEvento.LITURGICO, CategoriaEvento.SOCIAL), null);
         Page<EventoResponse> result = listEventosUseCase.execute(filter, PageRequest.of(0, 10));
-        
+
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getContent()).extracting(EventoResponse::titulo).containsExactlyInAnyOrder("E1", "E3");
     }
 
     @Test
     void shouldFilterByMultipleStatuses() {
-        EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, null, null, 
+        EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, null, null,
                 List.of(EventoStatusInput.RASCUNHO, EventoStatusInput.CANCELADO));
         Page<EventoResponse> result = listEventosUseCase.execute(filter, PageRequest.of(0, 10));
-        
+
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getContent()).extracting(EventoResponse::titulo).containsExactlyInAnyOrder("E2", "E3");
     }

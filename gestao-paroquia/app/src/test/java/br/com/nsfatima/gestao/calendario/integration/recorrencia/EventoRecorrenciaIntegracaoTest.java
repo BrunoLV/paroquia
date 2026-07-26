@@ -1,52 +1,45 @@
 package br.com.nsfatima.gestao.calendario.integration.recorrencia;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.YearlyRecurrenceGeneratorJob;
-import tools.jackson.databind.ObjectMapper;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
 class EventoRecorrenciaIntegracaoTest {
 
+    private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private EventoJpaRepository eventoRepository;
-
     @Autowired
     private EventoRecorrenciaJpaRepository recorrenciaRepository;
-
     @Autowired
     private AprovacaoJpaRepository aprovacaoRepository;
-
     @Autowired
     private YearlyRecurrenceGeneratorJob generationJob;
-
-    private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
 
     @BeforeEach
     void setUp() {
@@ -74,14 +67,15 @@ class EventoRecorrenciaIntegracaoTest {
                     "diasDaSemana": ["SUNDAY"]
                 }
                 """;
-        
+
         mockMvc.perform(put("/api/v1/eventos/{id}/recorrencia", baseId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(rulePayload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(rulePayload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.frequencia").value("SEMANAL"));
 
-        // 3. Verify Instances were generated (2026-05-10 is Sunday, so it's the first. May has 4 Sundays after that: 17, 24, 31)
+        // 3. Verify Instances were generated (2026-05-10 is Sunday, so it's the first. May has 4 Sundays after that:
+        // 17, 24, 31)
         // total count = 1 (base) + some generated. Total generated for 2026 from May 10th should be ~34.
         assertThat(eventoRepository.count()).isGreaterThan(30);
 
@@ -99,13 +93,13 @@ class EventoRecorrenciaIntegracaoTest {
                     "editScope": "ONLY_THIS"
                 }
                 """;
-        
+
         mockMvc.perform(patch("/api/v1/eventos/{id}", instanceId)
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "CONSELHO")
-                .header("X-Actor-Org-Id", ORG_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(patchPayload))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", ORG_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchPayload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.titulo").value("Missa Especial"));
 
@@ -138,10 +132,10 @@ class EventoRecorrenciaIntegracaoTest {
                     "diasDaSemana": ["MONDAY"]
                 }
                 """;
-        
+
         mockMvc.perform(put("/api/v1/eventos/{id}/recorrencia", baseId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(rulePayload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(rulePayload))
                 .andExpect(status().isOk());
 
         UUID oldRuleId = recorrenciaRepository.findAll().get(0).getId();
@@ -159,13 +153,13 @@ class EventoRecorrenciaIntegracaoTest {
                     "editScope": "THIS_AND_FOLLOWING"
                 }
                 """;
-        
+
         mockMvc.perform(patch("/api/v1/eventos/{id}", instanceId)
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "CONSELHO")
-                .header("X-Actor-Org-Id", ORG_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(patchPayload))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", ORG_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchPayload))
                 .andExpect(status().isOk());
 
         // 5. Verify Split

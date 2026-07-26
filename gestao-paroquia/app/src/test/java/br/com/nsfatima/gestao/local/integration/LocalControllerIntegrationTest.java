@@ -1,31 +1,32 @@
 package br.com.nsfatima.gestao.local.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-
+import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.local.api.v1.dto.LocalRequest;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
-import tools.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,16 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class LocalControllerIntegrationTest {
 
+    private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private LocalJpaRepository localRepository;
-
     @Autowired
     private ObjectMapper objectMapper;
-
-    private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
     private UUID existingLocalId;
 
     @BeforeEach
@@ -72,13 +70,13 @@ class LocalControllerIntegrationTest {
         Authentication memberAuth = getAuthForRole("PASTORAL_MEMBRO");
 
         mockMvc.perform(get("/api/v1/locais")
-                .with(authentication(memberAuth)))
+                        .with(authentication(memberAuth)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].nome").value("Igreja Matriz"));
 
         mockMvc.perform(get("/api/v1/locais/" + existingLocalId)
-                .with(authentication(memberAuth)))
+                        .with(authentication(memberAuth)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Igreja Matriz"));
     }
@@ -94,22 +92,24 @@ class LocalControllerIntegrationTest {
             // POST
             LocalRequest request = new LocalRequest("Salão " + role, "SALAO", "Endereço", 200, "Wifi", true);
             mockMvc.perform(post("/api/v1/locais")
-                    .with(authentication(auth))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
+                            .with(authentication(auth))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated());
 
             // PUT
-            LocalRequest updateRequest = new LocalRequest("Igreja Matriz Atualizada", "IGREJA", "Endereço", 600, "Som", true);
+            LocalRequest updateRequest = new LocalRequest("Igreja Matriz Atualizada",
+                    "IGREJA", "Endereço", 600, "Som", true);
+
             mockMvc.perform(put("/api/v1/locais/" + existingLocalId)
-                    .with(authentication(auth))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updateRequest)))
+                            .with(authentication(auth))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isOk());
 
             // DELETE (Inativação lógica)
             mockMvc.perform(delete("/api/v1/locais/" + existingLocalId)
-                    .with(authentication(auth)))
+                            .with(authentication(auth)))
                     .andExpect(status().isNoContent());
 
             // Garantir que o local ainda está lá (remoção lógica) e está inativo
@@ -133,21 +133,21 @@ class LocalControllerIntegrationTest {
             // POST
             LocalRequest request = new LocalRequest("Novo Local Negado", "SALAO", "Endereço", 200, "Wifi", true);
             mockMvc.perform(post("/api/v1/locais")
-                    .with(authentication(auth))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
+                            .with(authentication(auth))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isForbidden());
 
             // PUT
             mockMvc.perform(put("/api/v1/locais/" + existingLocalId)
-                    .with(authentication(auth))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
+                            .with(authentication(auth))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isForbidden());
 
             // DELETE
             mockMvc.perform(delete("/api/v1/locais/" + existingLocalId)
-                    .with(authentication(auth)))
+                            .with(authentication(auth)))
                     .andExpect(status().isForbidden());
         }
     }

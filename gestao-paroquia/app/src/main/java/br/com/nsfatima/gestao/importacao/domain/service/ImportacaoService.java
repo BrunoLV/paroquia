@@ -9,13 +9,18 @@ import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultado
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
+import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +29,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -36,7 +54,7 @@ public class ImportacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(ImportacaoService.class);
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-    
+
     private final CreateMembroUseCase createMembroUseCase;
     private final MembroJpaRepository membroJpaRepository;
     private final UsuarioJpaRepository usuarioJpaRepository;
@@ -46,7 +64,7 @@ public class ImportacaoService {
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
 
-    public ImportacaoService(CreateMembroUseCase createMembroUseCase, 
+    public ImportacaoService(CreateMembroUseCase createMembroUseCase,
                              MembroJpaRepository membroJpaRepository,
                              UsuarioJpaRepository usuarioJpaRepository,
                              OrganizacaoService organizacaoService,
@@ -99,31 +117,40 @@ public class ImportacaoService {
         return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
 
+    private static final String TYPE_MEMBRO = "MEMBRO";
+    private static final String TYPE_USUARIO = "USUARIO";
+    private static final String TYPE_ORGANIZACAO = "ORGANIZACAO";
+    private static final String TYPE_EVENTO = "EVENTO";
+    private static final String KEY_NOME = "nome";
+    private static final String ERR_NOME_REQUIRED = "O campo 'nome' é obrigatório.";
+    private static final String KEY_IGREJA_ID = "igrejaId";
+
     private String getHeadersParaTipo(String tipo) {
         return switch (tipo.toUpperCase()) {
-            case "MEMBRO" -> "usuarioUsername,organizacaoNome,papel,igrejaId";
-            case "USUARIO" -> "nome,username,telefone,dataNascimento,igrejaId,roles,batizado,primeiraComunhao,crismado,casadoIgrejaCatolica";
-            case "ORGANIZACAO" -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
-            case "EVENTO" -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
+            case TYPE_MEMBRO -> "usuarioUsername,organizacaoNome,papel,igrejaId";
+            case TYPE_USUARIO -> "nome,username,telefone,dataNascimento,igrejaId,roles,"
+                    + "batizado,primeiraComunhao,crismado,casadoIgrejaCatolica";
+            case TYPE_ORGANIZACAO -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
+            case TYPE_EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
             default -> throw new IllegalArgumentException("Tipo de importação inválido: " + tipo);
         };
     }
 
     private List<String> getSampleRowsParaTipo(String tipo) {
         return switch (tipo.toUpperCase()) {
-            case "MEMBRO" -> List.of(
+            case TYPE_MEMBRO -> List.of(
                     "joao.silva@email.com,Pastoral da Comunicação,COORDENADOR,",
                     "maria.souza@email.com,Pastoral da Catequese,MEMBRO,"
             );
-            case "USUARIO" -> List.of(
+            case TYPE_USUARIO -> List.of(
                     "Carlos Eduardo,carlos.eduardo@email.com,11977776666,1988-03-10,,ROLE_USER,true,true,true,false",
                     "Ana Beatriz,ana.beatriz@email.com,11966665555,1995-11-25,,ROLE_USER,true,true,false,false"
             );
-            case "ORGANIZACAO" -> List.of(
+            case TYPE_ORGANIZACAO -> List.of(
                     "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,,",
                     "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,Lucas Mendes,Patricia Rocha,,"
             );
-            case "EVENTO" -> List.of(
+            case TYPE_EVENTO -> List.of(
                     "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,,,",
                     "Encontro da Catequese,Formação sobre Sacramentos,2026-08-05 14:00,2026-08-05 16:00,FORMATIVO,,,"
             );
@@ -150,7 +177,11 @@ public class ImportacaoService {
             String errorMsg = validarLinha(tipo, rowData);
             boolean isValido = (errorMsg == null);
 
-            if (isValido) valids++; else invalidos++;
+            if (isValido) {
+                valids++;
+            } else {
+                invalidos++;
+            }
             itens.add(new ImportacaoItemResultadoDTO(linhaNum, isValido, errorMsg, rowData));
         }
 
@@ -161,14 +192,18 @@ public class ImportacaoService {
         List<Map<String, String>> rows = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String headerLine = reader.readLine();
-            if (headerLine == null) return rows;
+            if (headerLine == null) {
+                return rows;
+            }
             if (headerLine.startsWith("\uFEFF")) {
                 headerLine = headerLine.substring(1);
             }
             String[] headers = headerLine.split(",");
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
                 String[] values = line.split(",", -1);
                 Map<String, String> map = new LinkedHashMap<>();
                 for (int i = 0; i < headers.length; i++) {
@@ -185,35 +220,49 @@ public class ImportacaoService {
         try (Workbook workbook = WorkbookFactory.create(is)) {
             Sheet sheet = workbook.getSheetAt(0);
             Row headerRow = sheet.getRow(0);
-            if (headerRow == null) return rows;
+            if (headerRow == null) {
+                return rows;
+            }
             List<String> headers = new ArrayList<>();
             for (Cell cell : headerRow) {
                 String h = getCellValueAsString(cell).trim();
-                if (h.startsWith("\uFEFF")) h = h.substring(1);
+                if (h.startsWith("\uFEFF")) {
+                    h = h.substring(1);
+                }
                 headers.add(h);
             }
             for (int r = 1; r <= sheet.getLastRowNum(); r++) {
                 Row row = sheet.getRow(r);
-                if (row == null) continue;
+                if (row == null) {
+                    continue;
+                }
                 Map<String, String> map = new LinkedHashMap<>();
                 boolean empty = true;
                 for (int c = 0; c < headers.size(); c++) {
                     String val = getCellValueAsString(row.getCell(c)).trim();
-                    if (!val.isEmpty()) empty = false;
+                    if (!val.isEmpty()) {
+                        empty = false;
+                    }
                     map.put(headers.get(c), val);
                 }
-                if (!empty) rows.add(map);
+                if (!empty) {
+                    rows.add(map);
+                }
             }
         }
         return rows;
     }
 
     private String getCellValueAsString(Cell cell) {
-        if (cell == null) return "";
+        if (cell == null) {
+            return "";
+        }
         return switch (cell.getCellType()) {
             case STRING -> cell.getStringCellValue();
             case NUMERIC -> {
-                if (DateUtil.isCellDateFormatted(cell)) yield cell.getLocalDateTimeCellValue().toString();
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    yield cell.getLocalDateTimeCellValue().toString();
+                }
                 double num = cell.getNumericCellValue();
                 yield (num == Math.floor(num)) ? String.valueOf((long) num) : String.valueOf(num);
             }
@@ -234,67 +283,100 @@ public class ImportacaoService {
 
     private String validarMembro(Map<String, String> data) {
         String username = data.getOrDefault("usuarioUsername", "").trim();
-        if (username.isBlank()) return "O campo 'usuarioUsername' é obrigatório.";
+        if (username.isBlank()) {
+            return "O campo 'usuarioUsername' é obrigatório.";
+        }
         var userOpt = usuarioJpaRepository.findByUsernameIgnoreCase(username);
-        if (userOpt.isEmpty()) return "Usuário não encontrado: " + username;
+        if (userOpt.isEmpty()) {
+            return "Usuário não encontrado: " + username;
+        }
 
         String orgNome = data.getOrDefault("organizacaoNome", "").trim();
-        if (orgNome.isBlank()) return "O campo 'organizacaoNome' é obrigatório.";
+        if (orgNome.isBlank()) {
+            return "O campo 'organizacaoNome' é obrigatório.";
+        }
         var orgOpt = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome);
-        if (orgOpt.isEmpty()) return "Organização não encontrada: " + orgNome;
+        if (orgOpt.isEmpty()) {
+            return "Organização não encontrada: " + orgNome;
+        }
 
-        if (data.getOrDefault("papel", "").isBlank()) return "O campo 'papel' é obrigatório.";
+        if (data.getOrDefault("papel", "").isBlank()) {
+            return "O campo 'papel' é obrigatório.";
+        }
         return null;
     }
 
     private String validarUsuario(Map<String, String> data) {
-        if (data.getOrDefault("nome", "").isBlank()) return "O campo 'nome' é obrigatório.";
-        if (data.getOrDefault("username", "").isBlank()) return "O campo 'username' é obrigatório.";
+        if (data.getOrDefault(KEY_NOME, "").isBlank()) {
+            return ERR_NOME_REQUIRED;
+        }
+        if (data.getOrDefault("username", "").isBlank()) {
+            return "O campo 'username' é obrigatório.";
+        }
         return null;
     }
 
     private String validarOrganizacao(Map<String, String> data) {
-        if (data.getOrDefault("nome", "").isBlank()) return "O campo 'nome' é obrigatório.";
-        if (data.getOrDefault("tipo", "").isBlank()) return "O campo 'tipo' é obrigatório.";
+        if (data.getOrDefault(KEY_NOME, "").isBlank()) {
+            return ERR_NOME_REQUIRED;
+        }
+        if (data.getOrDefault("tipo", "").isBlank()) {
+            return "O campo 'tipo' é obrigatório.";
+        }
         return null;
     }
 
     private String validarEvento(Map<String, String> data) {
-        if (data.getOrDefault("nome", "").isBlank()) return "O campo 'nome' é obrigatório.";
-        if (data.getOrDefault("dataInicio", "").isBlank()) return "O campo 'dataInicio' é obrigatório.";
+        if (data.getOrDefault(KEY_NOME, "").isBlank()) {
+            return ERR_NOME_REQUIRED;
+        }
+        if (data.getOrDefault("dataInicio", "").isBlank()) {
+            return "O campo 'dataInicio' é obrigatório.";
+        }
         return null;
     }
 
     @Transactional
-    public int confirmarImportacao(String tipo, List<Map<String, String>> validItems, String actor) {
+    public int confirmarImportacao(
+            String tipo, List<Map<String, String>> validItems, String actor) {
         int count = 0;
         for (Map<String, String> data : validItems) {
             try {
                 switch (tipo.toUpperCase()) {
-                    case "MEMBRO" -> {
+                    case TYPE_MEMBRO -> {
                         String username = data.get("usuarioUsername").trim();
                         String orgNome = data.get("organizacaoNome").trim();
-                        String papel = Optional.ofNullable(data.get("papel")).filter(p -> !p.isBlank()).orElse("MEMBRO");
-                        UUID igrejaId = parseUuid(data.get("igrejaId"));
+                        String papel = Optional.ofNullable(data.get("papel"))
+                                .filter(p -> !p.isBlank()).orElse(TYPE_MEMBRO);
+                        UUID igrejaId = parseUuid(data.get(KEY_IGREJA_ID));
 
                         var user = usuarioJpaRepository.findByUsernameIgnoreCase(username)
-                                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado: " + username));
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                        "Usuário não encontrado: " + username));
                         var org = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome)
-                                .orElseThrow(() -> new IllegalArgumentException("Organização não encontrada: " + orgNome));
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                        "Organização não encontrada: " + orgNome));
 
-                        createMembroUseCase.execute(new MembroRequest(user.getId(), org.getId(), papel, LocalDate.now(), igrejaId, true), actor);
+                        createMembroUseCase.execute(
+                                new MembroRequest(
+                                        user.getId(), org.getId(), papel,
+                                        LocalDate.now(), igrejaId, true),
+                                actor);
                         count++;
                     }
-                    case "USUARIO" -> {
+                    case TYPE_USUARIO -> {
                         UsuarioEntity entity = new UsuarioEntity();
                         entity.setId(UUID.randomUUID());
-                        entity.setNome(data.get("nome"));
+                        entity.setNome(data.get(KEY_NOME));
                         entity.setUsername(data.get("username"));
                         entity.setPasswordHash(passwordEncoder.encode("Mudar123!"));
                         entity.setTelefone(data.get("telefone"));
                         entity.setDataNascimento(parseLocalDate(data.get("dataNascimento")));
-                        entity.setRoles(Optional.ofNullable(data.get("roles")).filter(r -> !r.isBlank()).orElse("ROLE_USER"));
-                        entity.setIgrejaId(parseUuid(data.get("igrejaId")));
+                        entity.setRoles(
+                                Optional.ofNullable(data.get("roles"))
+                                        .filter(r -> !r.isBlank())
+                                        .orElse("ROLE_USER"));
+                        entity.setIgrejaId(parseUuid(data.get(KEY_IGREJA_ID)));
                         entity.setBatizado(parseBoolean(data.get("batizado")));
                         entity.setPrimeiraComunhao(parseBoolean(data.get("primeiraComunhao")));
                         entity.setCrismado(parseBoolean(data.get("crismado")));
@@ -303,14 +385,16 @@ public class ImportacaoService {
                         usuarioJpaRepository.save(entity);
                         count++;
                     }
-                    case "ORGANIZACAO" -> {
+                    case TYPE_ORGANIZACAO -> {
                         TipoOrganizacao tipoOrg = parseTipoOrganizacao(data.get("tipo"));
                         UUID parentId = resolveParentId(tipoOrg, data.get("parentId"));
-                        UUID pastoralOficialId = (tipoOrg == TipoOrganizacao.PASTORAL || tipoOrg == TipoOrganizacao.MOVIMENTO)
-                                ? resolvePastoralOficialId(tipoOrg, data.get("pastoralOficialId"), data.get("nome"))
-                                : null;
+                        UUID pastoralOficialId =
+                                (tipoOrg == TipoOrganizacao.PASTORAL || tipoOrg == TipoOrganizacao.MOVIMENTO)
+                                        ? resolvePastoralOficialId(
+                                        tipoOrg, data.get("pastoralOficialId"), data.get(KEY_NOME))
+                                        : null;
                         organizacaoService.createOrganization(
-                                data.get("nome"),
+                                data.get(KEY_NOME),
                                 tipoOrg,
                                 data.get("contato"),
                                 data.get("coordenador"),
@@ -320,23 +404,26 @@ public class ImportacaoService {
                         );
                         count++;
                     }
-                    case "EVENTO" -> {
+                    case TYPE_EVENTO -> {
                         EventoEntity entity = new EventoEntity();
                         entity.setId(UUID.randomUUID());
-                        entity.setTitulo(data.get("nome"));
+                        entity.setTitulo(data.get(KEY_NOME));
                         entity.setDescricao(data.get("descricao"));
                         Instant inicio = parseInstant(data.get("dataInicio"));
                         Instant fim = parseInstant(data.get("dataFim"));
                         entity.setInicioUtc(inicio != null ? inicio : Instant.now());
                         entity.setFimUtc(fim != null ? fim : entity.getInicioUtc().plusSeconds(3600));
                         entity.setStatus("APROVADO");
-                        entity.setCategoria(Optional.ofNullable(data.get("categoria")).filter(c -> !c.isBlank()).orElse("GERAL"));
+                        entity.setCategoria(
+                                Optional.ofNullable(data.get("categoria"))
+                                        .filter(c -> !c.isBlank()).orElse("GERAL"));
                         entity.setLocalId(parseUuid(data.get("localId")));
-                        entity.setIgrejaVinculoId(parseUuid(data.get("igrejaId")));
+                        entity.setIgrejaVinculoId(parseUuid(data.get(KEY_IGREJA_ID)));
                         entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));
                         eventoJpaRepository.save(entity);
                         count++;
                     }
+                    default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
                 }
             } catch (Exception e) {
                 log.error("Erro ao importar registro de {}: {}", tipo, e.getMessage(), e);
@@ -348,13 +435,21 @@ public class ImportacaoService {
     private UUID resolveParentId(TipoOrganizacao tipo, String inputParentId) {
         UUID id = parseUuid(inputParentId);
         if (id != null) {
-            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) return id;
+            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) {
+                return id;
+            }
         }
 
-        if (organizacaoJpaRepository == null) return null;
+        if (organizacaoJpaRepository == null) {
+            return null;
+        }
         List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
-        if (all == null || all.isEmpty()) return null;
-        if (tipo == TipoOrganizacao.CLERO) return null;
+        if (all == null || all.isEmpty()) {
+            return null;
+        }
+        if (tipo == TipoOrganizacao.CLERO) {
+            return null;
+        }
 
         if (tipo == TipoOrganizacao.MATRIZ || tipo == TipoOrganizacao.COMUNIDADE) {
             return all.stream()
@@ -366,7 +461,9 @@ public class ImportacaoService {
 
         if (tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CONSELHO_ECONOMICO) {
             return all.stream()
-                    .filter(o -> o.getTipo() == TipoOrganizacao.MATRIZ || o.getTipo() == TipoOrganizacao.COMUNIDADE || o.getTipo() == TipoOrganizacao.CLERO)
+                    .filter(o -> o.getTipo() == TipoOrganizacao.MATRIZ
+                            || o.getTipo() == TipoOrganizacao.COMUNIDADE
+                            || o.getTipo() == TipoOrganizacao.CLERO)
                     .map(OrganizacaoEntity::getId)
                     .findFirst()
                     .orElse(all.get(0).getId());
@@ -386,14 +483,20 @@ public class ImportacaoService {
     private UUID resolvePastoralOficialId(TipoOrganizacao tipo, String inputId, String orgNome) {
         UUID id = parseUuid(inputId);
         if (id != null) {
-            if (pastoralOficialRepository == null || pastoralOficialRepository.findById(id).isPresent()) return id;
+            if (pastoralOficialRepository == null || pastoralOficialRepository.findById(id).isPresent()) {
+                return id;
+            }
         }
 
-        if (pastoralOficialRepository == null) return null;
+        if (pastoralOficialRepository == null) {
+            return null;
+        }
         List<PastoralMovimentoOficial> oficiais = pastoralOficialRepository.findAll();
         if (oficiais != null && !oficiais.isEmpty()) {
             Optional<PastoralMovimentoOficial> match = oficiais.stream().filter(p -> p.getTipo() == tipo).findFirst();
-            if (match.isPresent()) return match.get().getId();
+            if (match.isPresent()) {
+                return match.get().getId();
+            }
         }
 
         return null;
@@ -402,43 +505,73 @@ public class ImportacaoService {
     private UUID resolveOrganizacaoResponsavelId(String inputId) {
         UUID id = parseUuid(inputId);
         if (id != null) {
-            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) return id;
+            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) {
+                return id;
+            }
         }
 
         if (organizacaoJpaRepository != null) {
             List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
-            if (all != null && !all.isEmpty()) return all.get(0).getId();
+            if (all != null && !all.isEmpty()) {
+                return all.get(0).getId();
+            }
         }
 
         return null;
     }
 
     private LocalDate parseLocalDate(String input) {
-        if (input == null || input.isBlank()) return null;
-        for (DateTimeFormatter fmt : List.of(DateTimeFormatter.ISO_LOCAL_DATE, DateTimeFormatter.ofPattern("dd/MM/yyyy"))) {
-            try { return LocalDate.parse(input.trim(), fmt); } catch (Exception ignored) {}
+        if (input == null || input.isBlank()) {
+            return null;
+        }
+        for (DateTimeFormatter fmt : List.of(
+                DateTimeFormatter.ISO_LOCAL_DATE,
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"))) {
+            try {
+                return LocalDate.parse(input.trim(), fmt);
+            } catch (Exception ignored) {
+            }
         }
         return null;
     }
 
     private Instant parseInstant(String input) {
-        if (input == null || input.isBlank()) return null;
-        try { return Instant.parse(input.trim()); } catch (Exception ignored) {}
-        try { return LocalDateTime.parse(input.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(ZoneId.systemDefault()).toInstant(); } catch (Exception ignored) {}
+        if (input == null || input.isBlank()) {
+            return null;
+        }
+        try {
+            return Instant.parse(input.trim());
+        } catch (Exception ignored) {
+        }
+        try {
+            return LocalDateTime.parse(input.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                    .atZone(ZoneId.systemDefault()).toInstant();
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
     private UUID parseUuid(String input) {
-        try { return UUID.fromString(input.trim()); } catch (Exception e) { return null; }
+        try {
+            return UUID.fromString(input.trim());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private boolean parseBoolean(String input) {
-        if (input == null || input.isBlank()) return false;
+        if (input == null || input.isBlank()) {
+            return false;
+        }
         String trimmed = input.trim().toLowerCase();
         return "true".equals(trimmed) || "1".equals(trimmed) || "sim".equals(trimmed) || "s".equals(trimmed);
     }
 
     private TipoOrganizacao parseTipoOrganizacao(String input) {
-        try { return TipoOrganizacao.valueOf(input.trim().toUpperCase()); } catch (Exception e) { return TipoOrganizacao.PASTORAL; }
+        try {
+            return TipoOrganizacao.valueOf(input.trim().toUpperCase());
+        } catch (Exception e) {
+            return TipoOrganizacao.PASTORAL;
+        }
     }
 }

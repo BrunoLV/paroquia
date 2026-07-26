@@ -1,9 +1,5 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
@@ -14,9 +10,6 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMap
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
-import java.time.LocalDate;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +17,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MembroUseCaseTest {
@@ -105,7 +106,9 @@ class MembroUseCaseTest {
 
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(user));
         when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
-        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId, organizacaoId)).thenReturn(Optional.empty());
+        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId,
+                organizacaoId)).thenReturn(Optional.empty());
+
         when(repository.save(any(MembroEntity.class))).thenReturn(entity);
         when(mapper.toResponse(any(MembroEntity.class))).thenReturn(response);
 
@@ -131,7 +134,9 @@ class MembroUseCaseTest {
         when(repository.findById(id)).thenReturn(Optional.of(entity));
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(user));
         when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
-        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId, organizacaoId)).thenReturn(Optional.empty());
+        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId,
+                organizacaoId)).thenReturn(Optional.empty());
+
         when(repository.save(any(MembroEntity.class))).thenReturn(entity);
         when(mapper.toResponse(any(MembroEntity.class))).thenReturn(response);
 

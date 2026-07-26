@@ -12,11 +12,11 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import java.time.Instant;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class CreateEventoApprovalRequestUseCase {
@@ -38,8 +38,9 @@ public class CreateEventoApprovalRequestUseCase {
     }
 
     /**
-     * Records a formal request to create a new event that requires higher-level authorization due to its sensitivity or the proposer's role.
-     * 
+     * Records a formal request to create a new event that requires higher-level authorization due to its sensitivity
+     * or the proposer's role.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute("idempotency-key", createRequest);

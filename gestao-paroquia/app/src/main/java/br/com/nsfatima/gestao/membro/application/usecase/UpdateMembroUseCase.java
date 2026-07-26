@@ -44,12 +44,14 @@ public class UpdateMembroUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado: " + request.usuarioId()));
 
         var organizacao = organizacaoRepository.findById(request.organizacaoId())
-                .orElseThrow(() -> new IllegalArgumentException("Organização não encontrada: " + request.organizacaoId()));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Organização não encontrada: " + request.organizacaoId()));
 
         repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(request.usuarioId(), request.organizacaoId())
                 .ifPresent(existing -> {
                     if (!existing.getId().equals(id)) {
-                        throw new IllegalArgumentException("Usuário já possui outro vínculo ativo com esta organização.");
+                        throw new IllegalArgumentException(
+                                "Usuário já possui outro vínculo ativo com esta organização.");
                     }
                 });
 

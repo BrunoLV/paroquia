@@ -1,8 +1,14 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import jakarta.persistence.*;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.util.UUID;
 
 @Entity

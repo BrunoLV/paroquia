@@ -1,8 +1,9 @@
 package br.com.nsfatima.gestao.projeto.domain.service;
 
+import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 import java.time.Instant;
-import org.springframework.stereotype.Service;
 
 /**
  * Serviço de domínio para cálculos relacionados à agregação de projetos.

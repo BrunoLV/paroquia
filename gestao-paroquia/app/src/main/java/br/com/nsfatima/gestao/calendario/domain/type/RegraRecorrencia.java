@@ -104,20 +104,44 @@ public record RegraRecorrencia(
     }
 
     private int getOrdinalFromPosicao(String posicao) {
-        if (posicao == null) return 0;
+        if (posicao == null) {
+            return 0;
+        }
         String p = posicao.toUpperCase().trim();
         switch (p) {
-            case "1": case "1ST": case "FIRST": case "PRIMEIRO": case "PRIMEIRA":
+            case "1":
+            case "1ST":
+            case "FIRST":
+            case "PRIMEIRO":
+            case "PRIMEIRA":
                 return 1;
-            case "2": case "2ND": case "SECOND": case "SEGUNDO": case "SEGUNDA":
+            case "2":
+            case "2ND":
+            case "SECOND":
+            case "SEGUNDO":
+            case "SEGUNDA":
                 return 2;
-            case "3": case "3RD": case "THIRD": case "TERCEIRO": case "TERCEIRA":
+            case "3":
+            case "3RD":
+            case "THIRD":
+            case "TERCEIRO":
+            case "TERCEIRA":
                 return 3;
-            case "4": case "4TH": case "FOURTH": case "QUARTO": case "QUARTA":
+            case "4":
+            case "4TH":
+            case "FOURTH":
+            case "QUARTO":
+            case "QUARTA":
                 return 4;
-            case "5": case "5TH": case "FIFTH": case "QUINTO": case "QUINTA":
+            case "5":
+            case "5TH":
+            case "FIFTH":
+            case "QUINTO":
+            case "QUINTA":
                 return 5;
-            case "LAST": case "ULTIMO": case "ULTIMA":
+            case "LAST":
+            case "ULTIMO":
+            case "ULTIMA":
                 return -1;
             default:
                 try {
@@ -136,7 +160,7 @@ public record RegraRecorrencia(
                     LocalDate dataFixa = LocalDate.of(atual.getYear(), mesDoAno, diaDoMes);
                     if (!dataFixa.isBefore(atual.withDayOfYear(1)) && !dataFixa.isAfter(dataFimReal)) {
                         if (!dataFixa.isBefore(atual)) {
-                             datas.add(dataFixa);
+                            datas.add(dataFixa);
                         }
                     }
                 } catch (Exception e) {

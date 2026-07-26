@@ -1,30 +1,29 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
-import java.util.UUID;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class GetUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
-    private final MembroJpaRepository membroRepository;
-    private final br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository;
+    private final OrganizacaoJpaRepository
+            organizacaoRepository;
 
     public GetUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
-            MembroJpaRepository membroRepository,
-            br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoRepository) {
+            OrganizacaoJpaRepository organizacaoRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.membroRepository = membroRepository;
         this.organizacaoRepository = organizacaoRepository;
     }
 
@@ -41,7 +40,7 @@ public class GetUsuarioUseCase {
                     String igrejaNome = null;
                     if (igrejaId != null) {
                         igrejaNome = organizacaoRepository.findById(igrejaId)
-                                .map(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity::getNome)
+                                .map(OrganizacaoEntity::getNome)
                                 .orElse(null);
                     }
 
@@ -50,7 +49,8 @@ public class GetUsuarioUseCase {
                             u.getUsername(),
                             u.isEnabled(),
                             u.getRoles() == null ? List.of()
-                                    : Arrays.stream(u.getRoles().split(",")).map(String::trim).collect(Collectors.toList()),
+                                    : Arrays.stream(u.getRoles().split(",")).map(String::trim)
+                                    .collect(Collectors.toList()),
                             List.of(),
                             nome,
                             telefone,

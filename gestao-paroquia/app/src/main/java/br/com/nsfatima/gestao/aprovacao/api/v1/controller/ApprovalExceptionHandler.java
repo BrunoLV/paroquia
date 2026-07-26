@@ -4,16 +4,17 @@ import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalAlreadyDecidedE
 import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalExecutionFailedException;
 import br.com.nsfatima.gestao.aprovacao.domain.exception.ApprovalNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ApprovalRequiredException;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
-import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.util.List;
 
 /**
@@ -27,6 +28,8 @@ public class ApprovalExceptionHandler extends BaseExceptionHandler {
         super(auditLogPersistenceService);
     }
 
+    private static final String FIELD_APROVACAO_ID = "aprovacaoId";
+
     @ExceptionHandler(ApprovalRequiredException.class)
     public ResponseEntity<ValidationErrorResponse> handleApprovalRequired(ApprovalRequiredException ex) {
         return buildValidation(
@@ -35,7 +38,7 @@ public class ApprovalExceptionHandler extends BaseExceptionHandler {
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
                         ErrorCodes.APPROVAL_REQUIRED.name(),
-                        "aprovacaoId",
+                        FIELD_APROVACAO_ID,
                         ex.getMessage(),
                         null)));
     }
@@ -48,7 +51,7 @@ public class ApprovalExceptionHandler extends BaseExceptionHandler {
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
                         ErrorCodes.APPROVAL_NOT_FOUND.name(),
-                        "aprovacaoId",
+                        FIELD_APROVACAO_ID,
                         ex.getMessage(),
                         null)));
     }
@@ -61,7 +64,7 @@ public class ApprovalExceptionHandler extends BaseExceptionHandler {
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
                         ErrorCodes.APPROVAL_ALREADY_DECIDED.name(),
-                        "aprovacaoId",
+                        FIELD_APROVACAO_ID,
                         ex.getMessage(),
                         null)));
     }

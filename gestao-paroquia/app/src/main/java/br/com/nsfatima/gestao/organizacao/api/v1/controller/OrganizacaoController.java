@@ -1,20 +1,32 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
-import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
-import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
-import br.com.nsfatima.gestao.organizacao.application.usecase.ListOrganizacaoMembrosUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.GetOrganogramaUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListOrganizacaoMembrosUseCase;
+import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,15 +40,15 @@ public class OrganizacaoController {
     private final OrganizacaoService organizacaoService;
     private final ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase;
     private final GetOrganogramaUseCase getOrganogramaUseCase;
-    private final br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase addMembershipUseCase;
-    private final br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository usuarioRepository;
+    private final AddMembershipUseCase addMembershipUseCase;
+    private final UsuarioJpaRepository usuarioRepository;
 
     public OrganizacaoController(
             OrganizacaoService organizacaoService,
             ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase,
             GetOrganogramaUseCase getOrganogramaUseCase,
-            br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase addMembershipUseCase,
-            br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository usuarioRepository) {
+            AddMembershipUseCase addMembershipUseCase,
+            UsuarioJpaRepository usuarioRepository) {
         this.organizacaoService = organizacaoService;
         this.listOrganizacaoMembrosUseCase = listOrganizacaoMembrosUseCase;
         this.getOrganogramaUseCase = getOrganogramaUseCase;
@@ -50,13 +62,13 @@ public class OrganizacaoController {
     @Operation(summary = "Create a new organization", description = "Only administrators can create organizations.")
     public OrganizacaoResponse create(@RequestBody @Valid OrganizacaoRequest request) {
         Organizacao org = organizacaoService.createOrganization(
-            request.nome(),
-            request.tipo(),
-            request.contato(),
-            request.coordenador(),
-            request.viceCoordenador(),
-            request.parentId(),
-            request.pastoralOficialId()
+                request.nome(),
+                request.tipo(),
+                request.contato(),
+                request.coordenador(),
+                request.viceCoordenador(),
+                request.parentId(),
+                request.pastoralOficialId()
         );
         syncCoordinatorMemberships(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
@@ -64,18 +76,19 @@ public class OrganizacaoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Update an existing organization", description = "Only administrators can update organizations.")
+    @Operation(summary = "Update an existing organization", description = "Only administrators can update " +
+            "organizations.")
     public OrganizacaoResponse update(@PathVariable UUID id, @RequestBody @Valid OrganizacaoRequest request) {
         Organizacao org = organizacaoService.updateOrganization(
-            id,
-            request.nome(),
-            request.tipo(),
-            request.contato(),
-            request.coordenador(),
-            request.viceCoordenador(),
-            request.ativo(),
-            request.parentId(),
-            request.pastoralOficialId()
+                id,
+                request.nome(),
+                request.tipo(),
+                request.contato(),
+                request.coordenador(),
+                request.viceCoordenador(),
+                request.ativo(),
+                request.parentId(),
+                request.pastoralOficialId()
         );
         syncCoordinatorMemberships(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
@@ -83,11 +96,20 @@ public class OrganizacaoController {
 
     private void syncCoordinatorMemberships(Organizacao org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
-        syncSingleRole(org, coordName, br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional.COORDENADOR, igrejaId);
-        syncSingleRole(org, viceCoordName, br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional.VICE_COORDENADOR, igrejaId);
+        syncSingleRole(org,
+                coordName, PapelOrganizacional.COORDENADOR,
+                igrejaId);
+
+        syncSingleRole(org,
+                viceCoordName, PapelOrganizacional.VICE_COORDENADOR,
+                igrejaId);
+
     }
 
-    private void syncSingleRole(Organizacao org, String nameInput, br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional papel, UUID igrejaVinculoId) {
+    private void syncSingleRole(Organizacao org,
+                                String nameInput, PapelOrganizacional papel,
+                                UUID igrejaVinculoId) {
+
         if (nameInput == null || nameInput.trim().isEmpty()) {
             return;
         }
@@ -114,22 +136,23 @@ public class OrganizacaoController {
     }
 
     private UUID resolveIgrejaVinculoId(Organizacao org) {
-        if (org.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
-                || org.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+        if (org.getTipo() == TipoOrganizacao.MATRIZ
+                || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
             return org.getId();
         }
         if (org.getParentId() != null) {
             var parentOpt = organizacaoService.getOrganization(org.getParentId());
             if (parentOpt.isPresent()) {
                 var parent = parentOpt.get();
-                if (parent.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
-                        || parent.getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE) {
+                if (parent.getTipo() == TipoOrganizacao.MATRIZ
+                        || parent.getTipo() == TipoOrganizacao.COMUNIDADE) {
                     return parent.getId();
                 }
                 if (parent.getParentId() != null) {
                     var grandParentOpt = organizacaoService.getOrganization(parent.getParentId());
-                    if (grandParentOpt.isPresent() && (grandParentOpt.get().getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ 
-                            || grandParentOpt.get().getTipo() == br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.COMUNIDADE)) {
+                    if (grandParentOpt.isPresent()
+                            && (grandParentOpt.get().getTipo() == TipoOrganizacao.MATRIZ
+                            || grandParentOpt.get().getTipo() == TipoOrganizacao.COMUNIDADE)) {
                         return grandParentOpt.get().getId();
                     }
                 }
@@ -141,10 +164,12 @@ public class OrganizacaoController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. Cannot delete organizations with active dependencies.")
+    @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. " +
+            "Cannot delete organizations with active dependencies.")
     /**
-     * Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências ativas que impeçam a exclusão segura.
-     * 
+     * Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências ativas
+     * que impeçam a exclusão segura.
+     *
      * Exemplo: DELETE /api/v1/organizacoes/{id}
      */
     public void delete(@PathVariable UUID id) {
@@ -154,28 +179,30 @@ public class OrganizacaoController {
     @GetMapping("/{id}")
     @Operation(summary = "Get organization details")
     /**
-     * Recupera os dados detalhados de uma organização específica para consulta, exibição de perfil ou preparação de edições.
-     * 
+     * Recupera os dados detalhados de uma organização específica para consulta, exibição de perfil ou preparação de
+     * edições.
+     *
      * Exemplo: GET /api/v1/organizacoes/{id}
      */
     public ResponseEntity<OrganizacaoResponse> get(@PathVariable UUID id) {
         return organizacaoService.getOrganization(id)
-            .map(this::toResponse)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+                .map(this::toResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
     @Operation(summary = "List all organizations")
     /**
-     * Fornece uma listagem de todas as organizações cadastradas, permitindo a navegação, seleção e visão geral das entidades paroquiais.
-     * 
+     * Fornece uma listagem de todas as organizações cadastradas, permitindo a navegação, seleção e visão geral das
+     * entidades paroquiais.
+     *
      * Exemplo: GET /api/v1/organizacoes
      */
     public List<OrganizacaoResponse> list() {
         return organizacaoService.listOrganizations().stream()
-            .map(this::toResponse)
-            .collect(Collectors.toList());
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}/membros")
@@ -192,15 +219,15 @@ public class OrganizacaoController {
 
     private OrganizacaoResponse toResponse(Organizacao domain) {
         return new OrganizacaoResponse(
-            domain.getId(),
-            domain.getNome(),
-            domain.getTipo(),
-            domain.getContato(),
-            domain.getCoordenador(),
-            domain.getViceCoordenador(),
-            domain.isAtivo(),
-            domain.getParentId(),
-            domain.getPastoralOficialId()
+                domain.getId(),
+                domain.getNome(),
+                domain.getTipo(),
+                domain.getContato(),
+                domain.getCoordenador(),
+                domain.getViceCoordenador(),
+                domain.isAtivo(),
+                domain.getParentId(),
+                domain.getPastoralOficialId()
         );
     }
 }

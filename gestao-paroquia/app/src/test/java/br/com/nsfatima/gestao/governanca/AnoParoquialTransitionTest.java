@@ -6,8 +6,8 @@ import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.A
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +43,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert: try to set current year to EM_PLANEJAMENTO (allowed)
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"EM_PLANEJAMENTO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"EM_PLANEJAMENTO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk());
     }
 
@@ -57,10 +57,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert: try to set current year to FECHADO (fails)
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"FECHADO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"FECHADO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -72,10 +72,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert: try to set current year to FECHADO (fails because N-2 is not CONCLUIDO)
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"FECHADO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"FECHADO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -86,10 +86,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"EM_PLANEJAMENTO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"EM_PLANEJAMENTO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk());
     }
 
@@ -102,10 +102,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert: try to set future year to FECHADO, should fail because currentYear != currentYear + 1
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + (currentYear + 1))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"FECHADO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"FECHADO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -117,10 +117,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert: transition current year to FECHADO
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"FECHADO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"FECHADO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk());
     }
 
@@ -132,10 +132,10 @@ class AnoParoquialTransitionTest {
 
         // Act & Assert: try to transition back to EM_PLANEJAMENTO, should fail
         mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\": \"EM_PLANEJAMENTO\"}")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"EM_PLANEJAMENTO\"}")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isBadRequest());
     }
 

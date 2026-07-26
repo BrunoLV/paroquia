@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.support.infrastructure.crypto;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class CryptoInitializer {

@@ -1,23 +1,18 @@
 package br.com.nsfatima.gestao.governanca.api.v1.controller;
 
-import br.com.nsfatima.gestao.governanca.api.v1.dto.AnoParoquialResponse;
-import br.com.nsfatima.gestao.governanca.api.v1.dto.UpdateAnoParoquialRequest;
-import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialAuthorizationService;
-import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialRolloverService;
-import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
-import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
-import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.governanca.api.v1.dto.AnoParoquialResponse;
+import br.com.nsfatima.gestao.governanca.api.v1.dto.UpdateAnoParoquialRequest;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
+import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialAuthorizationService;
+import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialRolloverService;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +23,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/anos-paroquiais")
@@ -40,12 +40,13 @@ public class AnoParoquialController {
     private final AnoParoquialRolloverService rolloverService;
 
     /**
-     * Inicializa o controller de governança anual com as dependências para controle de acesso, persistência e transição de ano.
+     * Inicializa o controller de governança anual com as dependências para controle de acesso, persistência e
+     * transição de ano.
      *
-     * @param repository Repositório JPA para gestão de anos paroquiais
+     * @param repository           Repositório JPA para gestão de anos paroquiais
      * @param authorizationService Serviço para validação de privilégios administrativos
      * @param actorContextResolver Resolvedor de contexto do ator da requisição
-     * @param rolloverService Serviço para rollover de ano paroquial
+     * @param rolloverService      Serviço para rollover de ano paroquial
      */
     public AnoParoquialController(
             AnoParoquialJpaRepository repository,
@@ -59,7 +60,8 @@ public class AnoParoquialController {
     }
 
     /**
-     * Recupera o histórico de todos os anos paroquiais para permitir a análise de períodos passados e o planejamento de futuros.
+     * Recupera o histórico de todos os anos paroquiais para permitir a análise de períodos passados e o planejamento
+     * de futuros.
      *
      * <p>Usage Example:
      * {@code GET /api/v1/anos-paroquiais}
@@ -76,7 +78,8 @@ public class AnoParoquialController {
     }
 
     /**
-     * Consulta o estado de um ano específico para verificar se o calendário está aberto para novas edições ou travado para governança.
+     * Consulta o estado de um ano específico para verificar se o calendário está aberto para novas edições ou
+     * travado para governança.
      *
      * <p>Usage Example:
      * {@code GET /api/v1/anos-paroquiais/2026}
@@ -94,12 +97,13 @@ public class AnoParoquialController {
     }
 
     /**
-     * Altera o estado de governança de um ano para controlar o ciclo de vida do planejamento paroquial (abertura/fechamento).
+     * Altera o estado de governança de um ano para controlar o ciclo de vida do planejamento paroquial
+     * (abertura/fechamento).
      *
      * <p>Usage Example:
      * {@code PATCH /api/v1/anos-paroquiais/2026} com corpo {@code { "status": "FECHADO" }}
      *
-     * @param ano O ano a ser atualizado
+     * @param ano     O ano a ser atualizado
      * @param request Novo status pretendido
      * @return Dados atualizados do ano paroquial
      * @throws SecurityException se o ator não tiver privilégios de coordenação
@@ -135,7 +139,8 @@ public class AnoParoquialController {
         // 2. Succession Rule: N can only transition to FECHADO or CONCLUIDO if all prior years are CONCLUIDO
         if (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO) {
             if (repository.existsByAnoLessThanAndStatusNot(ano, AnoParoquialStatus.CONCLUIDO.name())) {
-                throw new IllegalArgumentException("O ano anterior precisa estar concluído antes que este ano possa ser fechado ou concluído.");
+                throw new IllegalArgumentException(
+                        "O ano anterior precisa estar concluído antes que este ano possa ser fechado ou concluído.");
             }
         }
 

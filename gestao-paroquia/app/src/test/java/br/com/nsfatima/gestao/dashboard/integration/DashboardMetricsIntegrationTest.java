@@ -27,7 +27,7 @@ class DashboardMetricsIntegrationTest {
     void shouldDenyUnauthenticatedAccess() throws Exception {
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
         mockMvc.perform(get("/api/v1/dashboard/metrics")
-                .header("X-Test-Anonymous", "true"))
+                        .header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -35,7 +35,7 @@ class DashboardMetricsIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     void shouldReturnDashboardMetricsForAdmin() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/metrics")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral").exists())
                 .andExpect(jsonPath("$.eventosPorOrganizacao").isArray())
@@ -48,8 +48,8 @@ class DashboardMetricsIntegrationTest {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
         mockMvc.perform(get("/api/v1/dashboard/metrics")
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral").exists())
                 .andExpect(jsonPath("$.eventosPorOrganizacao").isArray());

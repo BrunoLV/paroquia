@@ -1,5 +1,10 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
+import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalMetricsPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,11 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalMetricsPublisher;
 
 @Component
 public class CadastroEventoMetricsPublisher implements ApprovalMetricsPublisher {
@@ -49,10 +49,11 @@ public class CadastroEventoMetricsPublisher implements ApprovalMetricsPublisher 
     }
 
     public void publishAdministrativeRework(boolean scheduleChanged, boolean cancellation,
-            boolean responsibleOrgChanged) {
+                                            boolean responsibleOrgChanged) {
         long count = administrativeReworkCount.incrementAndGet();
         LOGGER.info(
-                "metric administrative_rework_indicator count={} scheduleChanged={} cancellation={} responsibleOrgChanged={}",
+                "metric administrative_rework_indicator count={} scheduleChanged={} cancellation={} " +
+                        "responsibleOrgChanged={}",
                 count,
                 scheduleChanged,
                 cancellation,

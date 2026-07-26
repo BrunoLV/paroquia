@@ -11,14 +11,15 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.YearlyRecurrenceGeneratorJob;
 import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Use case responsible for registering a recurrence rule for an existing event and generating instances.
@@ -46,8 +47,9 @@ public class CreateEventoRecorrenciaUseCase {
     }
 
     /**
-     * Transforms a single event into a recurring pattern, automatically populating the future calendar to improve planning efficiency.
-     * 
+     * Transforms a single event into a recurring pattern, automatically populating the future calendar to improve
+     * planning efficiency.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, new RegraRecorrencia("WEEKLY", 1, ...));
@@ -62,7 +64,9 @@ public class CreateEventoRecorrenciaUseCase {
         adjustBaseEventToFirstOccurrence(baseEvent, regra);
 
         if (baseEvent.getProjetoId() != null) {
-            projetoVincularPolicy.validateRecurrence(baseEvent.getProjetoId(), baseEvent.getInicioUtc(), baseEvent.getFimUtc(), regra);
+            projetoVincularPolicy.validateRecurrence(baseEvent.getProjetoId(),
+                    baseEvent.getInicioUtc(), baseEvent.getFimUtc(), regra);
+
         }
 
         EventoRecorrenciaEntity entity = new EventoRecorrenciaEntity();
@@ -94,10 +98,10 @@ public class CreateEventoRecorrenciaUseCase {
             if (!firstValidDate.equals(startOfSeries)) {
                 // Move base event to the first valid date
                 Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
-                
+
                 Instant baseDateStart = startOfSeries.atStartOfDay().toInstant(ZoneOffset.UTC);
                 Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
-                
+
                 Instant newStartUtc = firstValidDate.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
                 Instant newEndUtc = newStartUtc.plus(duration);
 

@@ -1,16 +1,17 @@
 package br.com.nsfatima.gestao.observabilidade.domain.service;
 
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuditLogQueryService {
@@ -38,13 +39,13 @@ public class AuditLogQueryService {
             String resultado,
             String correlationId) {
         return auditoriaOperacaoJpaRepository.findForTrail(
-                organizacaoId,
-                inicio,
-                fim,
-                ator,
-                acao,
-                resultado,
-                correlationId)
+                        organizacaoId,
+                        inicio,
+                        fim,
+                        ator,
+                        acao,
+                        resultado,
+                        correlationId)
                 .stream()
                 .map(this::toItem)
                 .toList();

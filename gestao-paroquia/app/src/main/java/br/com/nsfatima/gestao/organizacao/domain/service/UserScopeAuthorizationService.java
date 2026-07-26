@@ -22,12 +22,14 @@ public class UserScopeAuthorizationService {
         }
 
         // 1. ADMIN, PAROCO and VIGARIO have full general management permissions
-        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO || userRole == PapelOrganizacional.VIGARIO) {
+        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO
+                || userRole == PapelOrganizacional.VIGARIO) {
             return true;
         }
 
         // 2. Read-only / Member roles cannot manage data directly
-        if (userRole == PapelOrganizacional.PADRE || userRole == PapelOrganizacional.SECRETARIO || userRole == PapelOrganizacional.MEMBRO) {
+        if (userRole == PapelOrganizacional.PADRE || userRole == PapelOrganizacional.SECRETARIO
+                || userRole == PapelOrganizacional.MEMBRO) {
             return false;
         }
 
@@ -56,12 +58,14 @@ public class UserScopeAuthorizationService {
             return false;
         }
 
-        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO || userRole == PapelOrganizacional.VIGARIO) {
+        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO
+                || userRole == PapelOrganizacional.VIGARIO) {
             return true;
         }
 
         if ((userRole == PapelOrganizacional.COORDENADOR || userRole == PapelOrganizacional.VICE_COORDENADOR)
-                && (userOrgType == TipoOrganizacao.CONSELHO_PASTORAL || userOrgType == TipoOrganizacao.CONSELHO_ECONOMICO)) {
+                && (userOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                || userOrgType == TipoOrganizacao.CONSELHO_ECONOMICO)) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 

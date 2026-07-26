@@ -1,13 +1,17 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EventoPatchAuthorizationService {
@@ -30,7 +34,9 @@ public class EventoPatchAuthorizationService {
         resolveCreateRequestMode(actorContext, organizacaoResponsavelId, igrejaVinculoId);
     }
 
-    public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext, UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
+    public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext,
+                                                      UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
+
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
@@ -40,27 +46,33 @@ public class EventoPatchAuthorizationService {
 
         if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
             boolean matchesOrg = actorContext.organizationId().equals(organizacaoResponsavelId);
-            boolean matchesChurch = (igrejaVinculoId == null) || (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
+            boolean matchesChurch = (igrejaVinculoId == null) ||
+                    (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
 
             if (!matchesOrg || !matchesChurch) {
-                boolean hasOtherValidMembership = checkUserMembership(organizacaoResponsavelId, igrejaVinculoId, ORG_CREATOR_ROLES);
+                boolean hasOtherValidMembership = checkUserMembership(organizacaoResponsavelId,
+                        igrejaVinculoId, ORG_CREATOR_ROLES);
+
                 if (!hasOtherValidMembership) {
-                    throw new AccessDeniedException("User cannot create events outside the responsible organization scope");
+                    throw new AccessDeniedException(
+                            "User cannot create events outside the responsible organization scope");
                 }
             }
         }
 
         if (normalizedRole == PapelOrganizacional.PAROCO
                 || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                        && (normalizedRole == PapelOrganizacional.COORDENADOR
-                                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR))) {
+                && (normalizedRole == PapelOrganizacional.COORDENADOR
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR))) {
             return CreateRequestMode.IMMEDIATE;
         }
 
         return CreateRequestMode.REQUIRES_APPROVAL;
     }
 
-    public void assertCanEditGeneral(EventoActorContext actorContext, UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
+    public void assertCanEditGeneral(EventoActorContext actorContext,
+                                     UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
+
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (!ORG_EDITOR_ROLES.contains(normalizedRole)) {
             throw new ForbiddenOperationException("User does not have permission for this patch operation");
@@ -68,18 +80,24 @@ public class EventoPatchAuthorizationService {
 
         if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
             boolean matchesOrg = actorContext.organizationId().equals(eventoOrganizacaoResponsavelId);
-            boolean matchesChurch = (eventIgrejaVinculoId == null) || (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(eventIgrejaVinculoId));
+            boolean matchesChurch = (eventIgrejaVinculoId == null) || (actorContext.igrejaVinculoId() != null &&
+                    actorContext.igrejaVinculoId().equals(eventIgrejaVinculoId));
 
             if (!matchesOrg || !matchesChurch) {
-                boolean hasOtherValidMembership = checkUserMembership(eventoOrganizacaoResponsavelId, eventIgrejaVinculoId, ORG_EDITOR_ROLES);
+                boolean hasOtherValidMembership = checkUserMembership(eventoOrganizacaoResponsavelId,
+                        eventIgrejaVinculoId, ORG_EDITOR_ROLES);
+
                 if (!hasOtherValidMembership) {
-                    throw new ForbiddenOperationException("User cannot edit events outside the responsible organization scope");
+                    throw new ForbiddenOperationException(
+                            "User cannot edit events outside the responsible organization scope");
                 }
             }
         }
     }
 
-    public void assertCanManageParticipants(EventoActorContext actorContext, UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
+    public void assertCanManageParticipants(EventoActorContext actorContext,
+                                            UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
+
         assertCanEditGeneral(actorContext, eventoOrganizacaoResponsavelId, eventIgrejaVinculoId);
     }
 
@@ -88,7 +106,7 @@ public class EventoPatchAuthorizationService {
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
         boolean conselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
                 && (normalizedRole == PapelOrganizacional.COORDENADOR
-                        || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
+                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
         boolean parroco = normalizedRole == PapelOrganizacional.PAROCO;
 
         if (!conselhoCoordinator && !parroco) {
@@ -97,17 +115,20 @@ public class EventoPatchAuthorizationService {
         }
     }
 
-    private boolean checkUserMembership(UUID organizacaoResponsavelId, UUID eventIgrejaVinculoId, Set<PapelOrganizacional> allowedRoles) {
-        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+    private boolean checkUserMembership(UUID organizacaoResponsavelId,
+                                        UUID eventIgrejaVinculoId, Set<PapelOrganizacional> allowedRoles) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             return false;
         }
-        if (auth.getPrincipal() instanceof br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails usuarioDetails) {
+        if (auth.getPrincipal() instanceof UsuarioDetails usuarioDetails) {
             return usuarioDetails.getMemberships().stream()
                     .anyMatch(m -> {
                         boolean sameOrg = m.organizationId().equals(organizacaoResponsavelId);
                         boolean roleAllowed = allowedRoles.contains(PapelOrganizacional.fromStoredValue(m.role()));
-                        boolean sameChurch = (eventIgrejaVinculoId == null) || (m.igrejaVinculoId() != null && m.igrejaVinculoId().equals(eventIgrejaVinculoId));
+                        boolean sameChurch = (eventIgrejaVinculoId == null) ||
+                                (m.igrejaVinculoId() != null && m.igrejaVinculoId().equals(eventIgrejaVinculoId));
                         return sameOrg && roleAllowed && sameChurch;
                     });
         }

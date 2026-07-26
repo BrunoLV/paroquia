@@ -1,12 +1,13 @@
 package br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaOperacaoEntity, UUID> {
 
@@ -30,12 +31,14 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
             @Param("resultado") String resultado,
             @Param("correlationId") String correlationId);
 
-    List<AuditoriaOperacaoEntity> findByOrganizacaoIdAndOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
+    List<AuditoriaOperacaoEntity>
+    findByOrganizacaoIdAndOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
             UUID organizacaoId,
             Instant inicioUtc,
             Instant fimUtc);
 
-    List<AuditoriaOperacaoEntity> findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
+    List<AuditoriaOperacaoEntity>
+    findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
             Instant inicioUtc,
             Instant fimUtc);
 

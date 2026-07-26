@@ -1,19 +1,18 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 
 @Repository
 public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
@@ -67,7 +66,9 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     @Override
     public boolean hasDependencies(UUID id) {
         boolean hasMembers = membroOrganizacaoJpaRepository.existsByOrganizacaoId(id);
-        if (hasMembers) return true;
+        if (hasMembers) {
+            return true;
+        }
 
         // Note: EventoJpaRepository needs existsByOrganizacaoResponsavelId
         return eventoJpaRepository.existsByOrganizacaoResponsavelId(id);
@@ -79,8 +80,10 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     }
 
     private Organizacao toDomain(OrganizacaoEntity entity) {
-        String coordName = resolveCoordinatorName(entity.getId(), PapelOrganizacional.COORDENADOR.name(), entity.getCoordenador());
-        String viceName = resolveCoordinatorName(entity.getId(), PapelOrganizacional.VICE_COORDENADOR.name(), entity.getViceCoordenador());
+        String coordName = resolveCoordinatorName(
+                entity.getId(), PapelOrganizacional.COORDENADOR.name(), entity.getCoordenador());
+        String viceName = resolveCoordinatorName(
+                entity.getId(), PapelOrganizacional.VICE_COORDENADOR.name(), entity.getViceCoordenador());
 
         return new Organizacao(
                 entity.getId(),

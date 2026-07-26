@@ -1,23 +1,24 @@
 package br.com.nsfatima.gestao.observabilidade.domain.service;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Service responsible for recording auditable operations and security events.
@@ -44,18 +45,20 @@ public class AuditLogPersistenceService {
 
     public void log(String actor, String action, String target, String result, Map<String, Object> metadata) {
         Map<String, Object> enriched = enrichMetadata(result, metadata);
-        
-        LOGGER.info("audit actor={} action={} target={} result={} metadata={}", 
+
+        LOGGER.info("audit actor={} action={} target={} result={} metadata={}",
                 actor, action, target, result, enriched);
 
         persistAuditableRecord(actor, action, target, result, enriched);
     }
 
+    private static final String KEY_CORRELATION_ID = "correlationId";
+
     private Map<String, Object> enrichMetadata(String result, Map<String, Object> metadata) {
         Map<String, Object> enriched = new LinkedHashMap<>(metadata);
-        String correlationId = MDC.get("correlationId");
+        String correlationId = MDC.get(KEY_CORRELATION_ID);
         if (correlationId != null && !correlationId.isBlank()) {
-            enriched.putIfAbsent("correlationId", correlationId);
+            enriched.putIfAbsent(KEY_CORRELATION_ID, correlationId);
         }
 
         String res = String.valueOf(result).toLowerCase();
@@ -65,8 +68,12 @@ public class AuditLogPersistenceService {
         return enriched;
     }
 
-    private void persistAuditableRecord(String actor, String action, String target, String result, Map<String, Object> enriched) {
-        if (!isAuditableAction(action)) return;
+    private void persistAuditableRecord(String actor,
+                                        String action, String target, String result, Map<String, Object> enriched) {
+
+        if (!isAuditableAction(action)) {
+            return;
+        }
 
         String resType = resolveResourceType(action, enriched);
         String resId = resolveResourceId(target, enriched, resType);
@@ -78,8 +85,8 @@ public class AuditLogPersistenceService {
         }
     }
 
-    private void executeSave(String actor, String action, String result, Map<String, Object> enriched, 
-                            String resType, String resId, UUID contextId, UUID orgId) {
+    private void executeSave(String actor, String action, String result, Map<String, Object> enriched,
+                             String resType, String resId, UUID contextId, UUID orgId) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
         entity.setOrganizacaoId(orgId);
@@ -90,10 +97,10 @@ public class AuditLogPersistenceService {
         entity.setResultado(result);
         entity.setAtor(actor == null || actor.isBlank() ? "anonymous" : actor);
         entity.setAtorUsuarioId(resolveActorUserId(enriched));
-        entity.setCorrelationId((String) enriched.getOrDefault("correlationId", "n/a"));
+        entity.setCorrelationId((String) enriched.getOrDefault(KEY_CORRELATION_ID, "n/a"));
         entity.setOcorridoEmUtc(Instant.now());
         entity.setDetalhesAuditaveisJson(writeDetails(enriched));
-        
+
         try {
             repository.save(entity);
         } catch (RuntimeException ex) {
@@ -103,23 +110,40 @@ public class AuditLogPersistenceService {
 
     private boolean isAuditableAction(String action) {
         return action != null && List.of("create", "patch", "cancel", "approval-decision", "approval-decision-request",
-                "create-observacao", "update-observacao", "delete-observacao", "system-observacao", "read", "list", "admin-action")
+                        "create-observacao",
+                        "update-observacao", "delete-observacao", "system-observacao", "read", "list",
+                        "admin-action")
+
                 .contains(action);
     }
 
     private String resolveResourceType(String action, Map<String, Object> metadata) {
         Object explicit = metadata.get("resourceType");
-        if (explicit != null && !String.valueOf(explicit).isBlank()) return String.valueOf(explicit).toUpperCase();
-        if (action != null && action.contains("observacao")) return "OBSERVACAO";
-        if (action != null && action.startsWith("approval")) return "APROVACAO";
-        if (List.of("create", "patch", "cancel").contains(action)) return "EVENTO";
+        if (explicit != null && !String.valueOf(explicit).isBlank()) {
+            return String.valueOf(explicit).toUpperCase();
+        }
+        if (action != null && action.contains("observacao")) {
+            return "OBSERVACAO";
+        }
+        if (action != null && action.startsWith("approval")) {
+            return "APROVACAO";
+        }
+        if (List.of("create", "patch", "cancel").contains(action)) {
+            return "EVENTO";
+        }
         return "GENERIC";
     }
 
     private String resolveResourceId(String target, Map<String, Object> metadata, String resourceType) {
-        Object explicit = firstNonNull(metadata.get("resourceId"), metadata.get("id"), metadata.get("userId"), metadata.get("organizacaoId"));
-        if (explicit != null && !String.valueOf(explicit).isBlank()) return String.valueOf(explicit);
-        if (target != null && isUuid(target)) return target;
+        Object explicit = firstNonNull(
+                metadata.get("resourceId"), metadata.get("id"),
+                metadata.get("userId"), metadata.get("organizacaoId"));
+        if (explicit != null && !String.valueOf(explicit).isBlank()) {
+            return String.valueOf(explicit);
+        }
+        if (target != null && isUuid(target)) {
+            return target;
+        }
         return null;
     }
 
@@ -133,7 +157,9 @@ public class AuditLogPersistenceService {
 
     private UUID resolveOrganizationId(Map<String, Object> metadata) {
         UUID orgId = parseUuid(firstNonNull(metadata.get("organizacaoId"), metadata.get("organizationId")));
-        if (orgId != null) return orgId;
+        if (orgId != null) {
+            return orgId;
+        }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UsuarioDetails user) {
@@ -144,9 +170,13 @@ public class AuditLogPersistenceService {
 
     private UUID resolveActorUserId(Map<String, Object> metadata) {
         UUID explicit = parseUuid(firstNonNull(metadata.get("userId"), metadata.get("atorUsuarioId")));
-        if (explicit != null) return explicit;
+        if (explicit != null) {
+            return explicit;
+        }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof UsuarioDetails user) return user.getUsuarioId();
+        if (auth != null && auth.getPrincipal() instanceof UsuarioDetails user) {
+            return user.getUsuarioId();
+        }
         return null;
     }
 
@@ -160,13 +190,17 @@ public class AuditLogPersistenceService {
 
     private Object firstNonNull(Object... values) {
         for (Object value : values) {
-            if (value != null) return value;
+            if (value != null) {
+                return value;
+            }
         }
         return null;
     }
 
     private UUID parseUuid(Object value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         try {
             return UUID.fromString(String.valueOf(value));
         } catch (IllegalArgumentException ex) {

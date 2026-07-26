@@ -1,12 +1,13 @@
 package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -101,10 +102,6 @@ public class AprovacaoEntity extends BaseVersionedEntity {
         return aprovadorPapel;
     }
 
-    public AprovadorPapel getAprovadorPapelEnum() {
-        return AprovadorPapel.fromStoredValue(aprovadorPapel);
-    }
-
     public void setAprovadorPapel(String aprovadorPapel) {
         this.aprovadorPapel = aprovadorPapel;
     }
@@ -113,12 +110,12 @@ public class AprovacaoEntity extends BaseVersionedEntity {
         this.aprovadorPapel = aprovadorPapel == null ? null : aprovadorPapel.storedValue();
     }
 
-    public String getStatus() {
-        return status;
+    public AprovadorPapel getAprovadorPapelEnum() {
+        return AprovadorPapel.fromStoredValue(aprovadorPapel);
     }
 
-    public AprovacaoStatus getStatusEnum() {
-        return AprovacaoStatus.fromJson(status);
+    public String getStatus() {
+        return status;
     }
 
     public void setStatus(String status) {
@@ -127,6 +124,10 @@ public class AprovacaoEntity extends BaseVersionedEntity {
 
     public void setStatus(AprovacaoStatus status) {
         this.status = status == null ? null : status.name();
+    }
+
+    public AprovacaoStatus getStatusEnum() {
+        return AprovacaoStatus.fromJson(status);
     }
 
     public Instant getDecididoEmUtc() {

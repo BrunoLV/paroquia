@@ -105,7 +105,9 @@ class ImportacaoServiceTest {
                 "joao@email.com,Pastoral da Música,COORDENADOR\n" +
                 "desconhecido@email.com,Inexistente,MEMBRO\n";
 
-        MockMultipartFile file = new MockMultipartFile("file", "membros.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile file = new MockMultipartFile("file",
+                "membros.csv", "text/csv", csvContent.getBytes(StandardCharsets.UTF_8));
+
 
         ImportacaoValidacaoResultadoDTO resultado = importacaoService.validarArquivo("MEMBRO", file);
 
@@ -139,7 +141,9 @@ class ImportacaoServiceTest {
             xlsxBytes = out.toByteArray();
         }
 
-        MockMultipartFile file = new MockMultipartFile("file", "membros.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", xlsxBytes);
+        MockMultipartFile file = new MockMultipartFile("file",
+                "membros.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", xlsxBytes);
+
 
         ImportacaoValidacaoResultadoDTO resultado = importacaoService.validarArquivo("MEMBRO", file);
 
@@ -183,7 +187,9 @@ class ImportacaoServiceTest {
         );
         int countOrg = importacaoService.confirmarImportacao("ORGANIZACAO", List.of(orgMap), "admin");
         assertEquals(1, countOrg);
-        verify(organizacaoService).createOrganization(eq("Pastoral da Música"), any(), any(), any(), any(), any(), any());
+        verify(organizacaoService).createOrganization(eq("Pastoral da Música"),
+                any(), any(), any(), any(), any(), any());
+
 
         Map<String, String> eventoMap = Map.of(
                 "nome", "Missa Dominical",

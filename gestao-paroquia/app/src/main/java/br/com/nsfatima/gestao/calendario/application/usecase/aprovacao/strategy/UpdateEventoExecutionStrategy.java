@@ -10,8 +10,9 @@ import br.com.nsfatima.gestao.calendario.application.usecase.evento.UpdateEvento
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import java.util.UUID;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class UpdateEventoExecutionStrategy implements ApprovalExecutionStrategy {
@@ -35,7 +36,9 @@ public class UpdateEventoExecutionStrategy implements ApprovalExecutionStrategy 
     }
 
     @Override
-    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao, EventoActorContext actorContext) {
+    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
+                                                             EventoActorContext actorContext) {
+
         ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         UUID eventoId = payload.eventoId() != null ? payload.eventoId() : aprovacao.getEventoId();
 
@@ -63,7 +66,7 @@ public class UpdateEventoExecutionStrategy implements ApprovalExecutionStrategy 
             ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
             eventoId = payload.eventoId();
         }
-        
+
         if (eventoId != null) {
             return eventoRepository.findStatusByIdNoLock(eventoId).orElse(null);
         }

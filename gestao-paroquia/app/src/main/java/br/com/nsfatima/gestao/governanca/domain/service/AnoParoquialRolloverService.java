@@ -17,12 +17,12 @@ public class AnoParoquialRolloverService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnoParoquialRolloverService.class);
     private final AnoParoquialJpaRepository repository;
 
-    public java.util.Optional<AnoParoquialEntity> get(Integer ano) {
-        return repository.findByAno(ano);
-    }
-
     public AnoParoquialRolloverService(AnoParoquialJpaRepository repository) {
         this.repository = repository;
+    }
+
+    public java.util.Optional<AnoParoquialEntity> get(Integer ano) {
+        return repository.findByAno(ano);
     }
 
     /**
@@ -55,7 +55,8 @@ public class AnoParoquialRolloverService {
         }
 
         if (repository.existsByAnoLessThanAndStatusNot(year, AnoParoquialStatus.CONCLUIDO.name())) {
-            throw new IllegalArgumentException("Existe um ano anterior não concluído. O ano " + year + " não pode ser concluído.");
+            throw new IllegalArgumentException(
+                    "Existe um ano anterior não concluído. O ano " + year + " não pode ser concluído.");
         }
 
         entity.setStatus(AnoParoquialStatus.CONCLUIDO.name());
@@ -67,9 +68,15 @@ public class AnoParoquialRolloverService {
             nextEntity.setAno(nextYear);
             nextEntity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO.name());
             repository.save(nextEntity);
-            LOGGER.info("Parish Year rollover completed: Year {} set to CONCLUIDO, initialized Year {} as EM_PLANEJAMENTO", year, nextYear);
+            LOGGER.info(
+                    "Parish Year rollover completed: Year {} set to CONCLUIDO, initialized Year {} as EM_PLANEJAMENTO",
+                    year, nextYear);
+
         } else {
-            LOGGER.info("Parish Year rollover completed: Year {} set to CONCLUIDO. Next year {} was already initialized.", year, nextYear);
+            LOGGER.info(
+                    "Parish Year rollover completed: Year {} set to CONCLUIDO. Next year {} was already initialized.",
+                    year, nextYear);
+
         }
     }
 }

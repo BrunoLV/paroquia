@@ -1,27 +1,25 @@
 package br.com.nsfatima.gestao.calendario.integration.auditoria;
 
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,22 +27,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class AuditoriaIntegradaIntegrationTest {
 
+    private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
-
     @Autowired
     private ProjetoEventoJpaRepository projetoRepository;
-
     @Autowired
     private AprovacaoJpaRepository aprovacaoRepository;
-
     @Autowired
     private EventoJpaRepository eventoRepository;
-
-    private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
 
     @BeforeEach
     void setUp() {
@@ -131,6 +124,7 @@ class AuditoriaIntegradaIntegrationTest {
                         .param("granularidade", "MENSAL")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items[?(@.recursoTipo == 'APROVACAO' && @.acao == 'approval-decision')]").exists());
+                .andExpect(
+                        jsonPath("$.items[?(@.recursoTipo == 'APROVACAO' && @.acao == 'approval-decision')]").exists());
     }
 }

@@ -1,13 +1,13 @@
 package br.com.nsfatima.gestao.support.api.error;
 
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizationBusinessException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
-import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
-import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizationBusinessException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

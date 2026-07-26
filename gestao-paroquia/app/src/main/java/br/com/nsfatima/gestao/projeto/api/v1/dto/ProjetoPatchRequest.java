@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
 import java.time.Instant;
 import java.util.UUID;
 

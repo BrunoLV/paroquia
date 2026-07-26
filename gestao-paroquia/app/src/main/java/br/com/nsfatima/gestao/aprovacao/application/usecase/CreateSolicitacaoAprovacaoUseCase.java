@@ -1,23 +1,21 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
-import br.com.nsfatima.gestao.calendario.domain.policy.AuthorizationPolicy;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
-import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
-import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
-import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoResponse;
-import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
-import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import java.time.Instant;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class CreateSolicitacaoAprovacaoUseCase {
@@ -41,7 +39,7 @@ public class CreateSolicitacaoAprovacaoUseCase {
 
     /**
      * Initiates the governance workflow by persisting a pending request and notifying the auditing system.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * useCase.create(eventoId, TipoSolicitacaoInput.CREATE);
@@ -50,7 +48,9 @@ public class CreateSolicitacaoAprovacaoUseCase {
     @Transactional
     public AprovacaoResponse create(UUID eventoId, TipoSolicitacaoInput tipoSolicitacao) {
         EventoActorContext actorContext = eventoActorContextResolver.resolveRequired();
-        AprovadorPapel aprovadorPapel = AprovadorPapel.resolveForApproval(actorContext.role(), actorContext.organizationType());
+        AprovadorPapel aprovadorPapel = AprovadorPapel.resolveForApproval(actorContext.role(),
+                actorContext.organizationType());
+
 
         AprovacaoEntity entity = new AprovacaoEntity();
         entity.setId(UUID.randomUUID());

@@ -1,21 +1,22 @@
 package br.com.nsfatima.gestao.projeto.application.service;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.MapaColaboracaoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.SaudeTemporalDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.StatusExecucaoDTO;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
-import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
+import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Serviço de aplicação para agregação de dados de projetos.
@@ -65,7 +66,9 @@ public class ProjetoAgregacaoService {
 
         // Saúde Temporal
         double percentual = domainService.calcularPercentualTempoDecorrido(projeto.getInicioUtc(), projeto.getFimUtc());
-        boolean emRisco = domainService.verificarSeEstaEmRisco(projeto.getInicioUtc(), projeto.getFimUtc(), eventosPendentes);
+        boolean emRisco = domainService.verificarSeEstaEmRisco(projeto.getInicioUtc(),
+                projeto.getFimUtc(), eventosPendentes);
+
         SaudeTemporalDTO saudeTemporal = new SaudeTemporalDTO(percentual, emRisco);
 
         return new ProjetoResumoDTO(statusExecucao, mapaColaboracao, saudeTemporal);

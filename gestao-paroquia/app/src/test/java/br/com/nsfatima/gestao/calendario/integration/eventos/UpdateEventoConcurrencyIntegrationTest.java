@@ -2,16 +2,17 @@ package br.com.nsfatima.gestao.calendario.integration.eventos;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -54,11 +55,11 @@ class UpdateEventoConcurrencyIntegrationTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "PASTORAL")
-                .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(payload))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(payload))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorCode").value("CONFLICT"));
     }

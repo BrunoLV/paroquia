@@ -1,28 +1,38 @@
 package br.com.nsfatima.gestao.iam.api.v1.controller;
 
+import br.com.nsfatima.gestao.iam.api.v1.dto.CreateUsuarioRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.RegistrarUsuarioRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
+import br.com.nsfatima.gestao.iam.application.usecase.ApproveUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.GetUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.RegistrarUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.AddMembershipRequest;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.MembershipResponse;
+import br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListMembershipsUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.RemoveMembershipUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.UUID;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.AddMembershipRequest;
-import br.com.nsfatima.gestao.iam.api.v1.dto.RegistrarUsuarioRequest;
-import br.com.nsfatima.gestao.iam.application.usecase.RegistrarUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.api.v1.dto.CreateUsuarioRequest;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.MembershipResponse;
-import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
-import br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.GetUsuarioUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.ListMembershipsUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.RemoveMembershipUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.ApproveUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -67,8 +77,9 @@ public class UsuarioController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR')")
     @Operation(summary = "Lista todos os usuários")
     /**
-     * Fornece uma visão geral de todos os usuários cadastrados no sistema para fins de auditoria e gestão administrativa global.
-     * 
+     * Fornece uma visão geral de todos os usuários cadastrados no sistema para fins de auditoria e gestão
+     * administrativa global.
+     *
      * Exemplo: GET /api/v1/usuarios
      */
     public List<UsuarioResponse> list() {
@@ -81,7 +92,7 @@ public class UsuarioController {
     @Operation(summary = "Cria um novo usuário")
     /**
      * Registra novos usuários no sistema, permitindo que iniciem o processo de integração e obtenção de acessos.
-     * 
+     *
      * Exemplo: POST /api/v1/usuarios { "username": "joao.silva", "password": "SafePassword123" }
      */
     public UUID create(@RequestBody @Valid CreateUsuarioRequest request) {
@@ -100,7 +111,7 @@ public class UsuarioController {
     @Operation(summary = "Obtém detalhes de um usuário")
     /**
      * Recupera as informações detalhadas de um usuário específico para consulta ou preparação de edições.
-     * 
+     *
      * Exemplo: GET /api/v1/usuarios/{id}
      */
     public UsuarioResponse get(@PathVariable UUID id) {
@@ -113,7 +124,7 @@ public class UsuarioController {
     @Operation(summary = "Atualiza um usuário")
     /**
      * Permite a modificação de dados cadastrais de um usuário para manter o registro atualizado e consistente.
-     * 
+     *
      * Exemplo: PATCH /api/v1/usuarios/{id} { "username": "novo_usuario", "enabled": true }
      */
     public void update(@PathVariable UUID id, @RequestBody UsuarioResponse request) {
@@ -132,8 +143,9 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
     @Operation(summary = "Lista associações de um usuário a organizações")
     /**
-     * Lista os vínculos de um usuário com diferentes organizações para mapear seu escopo de atuação e responsabilidades.
-     * 
+     * Lista os vínculos de um usuário com diferentes organizações para mapear seu escopo de atuação e
+     * responsabilidades.
+     *
      * Exemplo: GET /api/v1/usuarios/{id}/membros
      */
     public List<MembershipResponse> listMemberships(@PathVariable UUID id) {
@@ -147,12 +159,14 @@ public class UsuarioController {
     @Operation(summary = "Adiciona associação a organização")
     /**
      * Vincula um usuário a uma organização com um papel e tipo específicos para delegar autoridade e funções.
-     * 
+     *
      * Exemplo: POST /api/v1/usuarios/{id}/membros { "organizacaoId": "...", "tipo": "VOLUNTARIO", "papel": "AUXILIAR" }
      */
     public UUID addMembership(@PathVariable UUID id, @RequestBody @Valid AddMembershipRequest request) {
         authorizationService.requireAdminOrCoordinatorOfOrganization(request.organizacaoId());
-        return addMembershipUseCase.execute(id, request.organizacaoId(), request.tipo(), request.papel(), request.igrejaVinculoId());
+        return addMembershipUseCase.execute(id,
+                request.organizacaoId(), request.tipo(), request.papel(), request.igrejaVinculoId());
+
     }
 
     @DeleteMapping("/{id}/membros/{membershipId}")
@@ -160,8 +174,9 @@ public class UsuarioController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remove associação a organização")
     /**
-     * Encerra o vínculo de um usuário com uma organização específica para revogar acessos e responsabilidades naquele contexto.
-     * 
+     * Encerra o vínculo de um usuário com uma organização específica para revogar acessos e responsabilidades
+     * naquele contexto.
+     *
      * Exemplo: DELETE /api/v1/usuarios/{id}/membros/{membershipId}
      */
     public void removeMembership(@PathVariable UUID id, @PathVariable UUID membershipId) {

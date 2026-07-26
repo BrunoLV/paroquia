@@ -22,8 +22,9 @@ public class ListAprovacoesUseCase {
     }
 
     /**
-     * Retrieves a paginated list of approval requests to support UI components that display governance history and pending tasks.
-     * 
+     * Retrieves a paginated list of approval requests to support UI components that display governance history and
+     * pending tasks.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, "PENDENTE", PageRequest.of(0, 20));

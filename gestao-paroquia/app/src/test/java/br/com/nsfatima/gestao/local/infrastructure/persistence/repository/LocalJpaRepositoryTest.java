@@ -1,19 +1,17 @@
 package br.com.nsfatima.gestao.local.infrastructure.persistence.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import java.util.UUID;
-import java.time.Instant;
+import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
-import org.springframework.context.annotation.Import;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class LocalJpaRepositoryTest {
@@ -38,7 +36,7 @@ class LocalJpaRepositoryTest {
         local.setCapacidade(200);
         local.setCaracteristicas("Possui ar condicionado e projetor");
         local.setAtivo(true);
-        
+
         localRepository.save(local);
         entityManager.flush();
         entityManager.clear();

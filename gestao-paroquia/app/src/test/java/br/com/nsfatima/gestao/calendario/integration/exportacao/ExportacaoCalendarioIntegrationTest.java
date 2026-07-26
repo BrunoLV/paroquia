@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,13 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
 class ExportacaoCalendarioIntegrationTest {
 
+    private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private EventoJpaRepository eventRepository;
-
-    private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
 
     @BeforeEach
     void setUp() {
@@ -57,7 +55,9 @@ class ExportacaoCalendarioIntegrationTest {
                         .param("mes", "5"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8"))
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("attachment; filename=\"calendario_mes_2026_05.csv\"")))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                        containsString("attachment; filename=\"calendario_mes_2026_05.csv\"")))
+
                 .andExpect(content().string(containsString("Missa de Domingo Teste")))
                 .andExpect(content().string(containsString("Título;Descrição;Categoria;")));
     }
@@ -79,8 +79,12 @@ class ExportacaoCalendarioIntegrationTest {
                         .param("opcao", "ANO")
                         .param("ano", "2026"))
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("attachment; filename=\"calendario_ano_2026.xlsx\"")));
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                        containsString("attachment; filename=\"calendario_ano_2026.xlsx\"")));
+
     }
 
     @Test
@@ -102,7 +106,9 @@ class ExportacaoCalendarioIntegrationTest {
                         .param("dataFim", "2026-06-01T00:00:00Z"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/pdf"))
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("attachment; filename=\"calendario_periodo.pdf\"")));
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                        containsString("attachment; filename=\"calendario_periodo.pdf\"")));
+
     }
 
     @Test

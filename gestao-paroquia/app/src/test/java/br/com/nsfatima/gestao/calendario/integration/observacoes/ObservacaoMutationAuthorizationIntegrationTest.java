@@ -2,16 +2,16 @@ package br.com.nsfatima.gestao.calendario.integration.observacoes;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -43,8 +43,8 @@ class ObservacaoMutationAuthorizationIntegrationTest {
     void shouldRejectPatchWhenUserIsNotAuthor() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000bb";
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Nota do autor\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Nota do autor\"}"))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -52,10 +52,10 @@ class ObservacaoMutationAuthorizationIntegrationTest {
         UUID observacaoId = UUID.fromString(created.path("id").asText());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
-                .header("X-Actor-Role", "membro")
-                .header("X-Actor-Org-Type", "PASTORAL")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"conteudo\":\"Tentativa invalida\"}"))
+                        .header("X-Actor-Role", "membro")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"conteudo\":\"Tentativa invalida\"}"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errorCode").value("OBSERVACAO_AUTOR_INVALIDO"));
     }
@@ -74,9 +74,10 @@ class ObservacaoMutationAuthorizationIntegrationTest {
         observacaoEventoJpaRepository.save(systemObservacao);
 
         mockMvc.perform(
-                patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, systemObservacao.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"conteudo\":\"Tentativa invalida\"}"))
+                        patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId,
+                                systemObservacao.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"conteudo\":\"Tentativa invalida\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("OBSERVACAO_TIPO_IMUTAVEL"));
     }

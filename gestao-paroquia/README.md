@@ -13,10 +13,12 @@ API RESTful para o sistema de gestão paroquial.
 ## 🛠️ Desenvolvimento
 
 ### Pré-requisitos
+
 - JDK 17 ou superior (configurado via Gradle Toolchains)
 - Docker (para o banco de dados)
 
 ### Comandos Úteis
+
 ```bash
 # Executar testes
 ./gradlew test
@@ -29,8 +31,11 @@ API RESTful para o sistema de gestão paroquial.
 ```
 
 ## 📂 Estrutura de Pastas
+
 - `app/`: Módulo principal da aplicação Spring Boot.
 - `docker/`: Scripts SQL de inicialização e semente (seed) de dados.
 
 ## 📝 Padrões de Código
-Consulte o arquivo [GEMINI.md](./GEMINI.md) para diretrizes sobre estilo de código, testes e arquitetura (seguindo princípios de SRP e Clean Code).
+
+Consulte o arquivo [GEMINI.md](./GEMINI.md) para diretrizes sobre estilo de código, testes e arquitetura (seguindo
+princípios de SRP e Clean Code).

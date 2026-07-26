@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.support.infrastructure.crypto;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+
 import java.time.LocalDate;
 
 @Converter

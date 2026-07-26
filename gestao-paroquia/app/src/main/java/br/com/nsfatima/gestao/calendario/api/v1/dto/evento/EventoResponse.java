@@ -1,10 +1,11 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusResponse;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusResponse;
-import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 
 public record EventoResponse(
         UUID id,

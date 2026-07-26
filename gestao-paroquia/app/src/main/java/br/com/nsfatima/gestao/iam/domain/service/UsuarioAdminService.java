@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.iam.domain.service;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,16 @@ public class UsuarioAdminService {
         this.authorizationService = authorizationService;
     }
 
+    private static final String AUDIT_ACTOR = "admin";
+    private static final String AUDIT_ACTION = "admin-action";
+    private static final String AUDIT_TARGET = "user";
+    private static final String AUDIT_RESULT = "success";
+    private static final String KEY_RESOURCE_TYPE = "resourceType";
+    private static final String VALUE_RESOURCE_TYPE = "USER";
+    private static final String KEY_RESOURCE_ID = "resourceId";
+    private static final String KEY_USER_ID = "userId";
+    private static final String KEY_ACTION = "action";
+
     @Transactional
     public void toggleActiveStatus(UUID id, boolean enabled) {
         authorizationService.requireAdminOrCoordinatorOf(id);
@@ -40,11 +50,11 @@ public class UsuarioAdminService {
         user.setEnabled(enabled);
         usuarioRepository.save(user);
 
-        auditLogService.log("admin", "admin-action", "user", "success", Map.of(
-                "resourceType", "USER",
-                "resourceId", id,
-                "userId", id,
-                "action", enabled ? "ENABLE" : "DISABLE"
+        auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
+                KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
+                KEY_RESOURCE_ID, id,
+                KEY_USER_ID, id,
+                KEY_ACTION, enabled ? "ENABLE" : "DISABLE"
         ));
     }
 
@@ -57,27 +67,29 @@ public class UsuarioAdminService {
         user.setPasswordHash(passwordEncoder.encode(newRawPassword));
         usuarioRepository.save(user);
 
-        auditLogService.log("admin", "admin-action", "user", "success", Map.of(
-                "resourceType", "USER",
-                "resourceId", id,
-                "userId", id,
-                "action", "PASSWORD_RESET"
+        auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
+                KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
+                KEY_RESOURCE_ID, id,
+                KEY_USER_ID, id,
+                KEY_ACTION, "RESET_PASSWORD"
         ));
     }
 
     @Transactional
     public void updateGlobalRoles(UUID id, String roles) {
+        authorizationService.requireAdminOrCoordinatorOf(id);
+
         UsuarioEntity user = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
         user.setRoles(roles);
         usuarioRepository.save(user);
 
-        auditLogService.log("admin", "admin-action", "user", "success", Map.of(
-                "resourceType", "USER",
-                "resourceId", id,
-                "userId", id,
-                "action", "UPDATE_ROLES",
-                "roles", roles
+        auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
+                KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
+                KEY_RESOURCE_ID, id,
+                KEY_USER_ID, id,
+                KEY_ACTION, "UPDATE_ROLES",
+                "roles", roles != null ? roles : ""
         ));
     }
 }

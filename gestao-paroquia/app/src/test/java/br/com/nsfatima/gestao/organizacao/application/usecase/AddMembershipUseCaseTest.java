@@ -1,17 +1,16 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,7 +41,8 @@ class AddMembershipUseCaseTest {
         useCase = new AddMembershipUseCase(membershipRepository, usuarioRepository, organizacaoRepository);
         originalContext = SecurityContextHolder.getContext();
 
-        var defaultIgreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var defaultIgreja =
+                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
         defaultIgreja.setId(UUID.randomUUID());
         defaultIgreja.setTipo(TipoOrganizacao.MATRIZ);
         defaultIgreja.setNome("Matriz Default");
@@ -80,12 +80,17 @@ class AddMembershipUseCaseTest {
         existing.setPapel(PapelOrganizacional.COORDENADOR.name());
         existing.setAtivo(true);
 
-        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(eq(organizacaoId), eq(PapelOrganizacional.COORDENADOR.name()), any(UUID.class)))
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(eq(organizacaoId),
+                eq(PapelOrganizacional.COORDENADOR.name()), any(UUID.class)))
+
                 .thenReturn(Optional.of(existing));
 
-        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(
+                invocation -> invocation.getArgument(0));
 
-        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID());
+        useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID());
+
 
         assertFalse(existing.isAtivo());
         verify(membershipRepository).save(existing);
@@ -100,7 +105,9 @@ class AddMembershipUseCaseTest {
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
         assertThrows(AccessDeniedException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO_PASTORAL, PapelOrganizacional.COORDENADOR, null)
+                useCase.execute(usuarioId,
+                        organizacaoId, TipoOrganizacao.CONSELHO_PASTORAL, PapelOrganizacional.COORDENADOR, null)
+
         );
     }
 
@@ -114,7 +121,9 @@ class AddMembershipUseCaseTest {
         when(membershipRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO_PASTORAL, PapelOrganizacional.COORDENADOR, null)
+                useCase.execute(usuarioId,
+                        organizacaoId, TipoOrganizacao.CONSELHO_PASTORAL, PapelOrganizacional.COORDENADOR, null)
+
         );
     }
 
@@ -173,7 +182,9 @@ class AddMembershipUseCaseTest {
         when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.empty());
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
+                useCase.execute(usuarioId,
+                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
+
         );
         assertEquals("Igreja de vinculo nao encontrada: " + igrejaId, ex.getMessage());
     }
@@ -186,13 +197,16 @@ class AddMembershipUseCaseTest {
         UUID igrejaId = UUID.randomUUID();
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
-        var invalidIgreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var invalidIgreja =
+                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
         invalidIgreja.setId(igrejaId);
         invalidIgreja.setTipo(TipoOrganizacao.PASTORAL);
         when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.of(invalidIgreja));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
+                useCase.execute(usuarioId,
+                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, igrejaId)
+
         );
         assertEquals("Igreja de vinculo deve ser do tipo MATRIZ ou COMUNIDADE", ex.getMessage());
     }
@@ -207,25 +221,35 @@ class AddMembershipUseCaseTest {
         UUID churchB = UUID.randomUUID();
 
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
-        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchA))
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId,
+                organizacaoId, PapelOrganizacional.MEMBRO.name(), churchA))
+
                 .thenReturn(Optional.empty());
-        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchB))
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId,
+                organizacaoId, PapelOrganizacional.MEMBRO.name(), churchB))
+
                 .thenReturn(Optional.empty());
 
-        var defaultIgrejaA = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var defaultIgrejaA =
+                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
         defaultIgrejaA.setId(churchA);
         defaultIgrejaA.setTipo(TipoOrganizacao.MATRIZ);
         when(organizacaoRepository.findById(churchA)).thenReturn(Optional.of(defaultIgrejaA));
 
-        var defaultIgrejaB = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var defaultIgrejaB =
+                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
         defaultIgrejaB.setId(churchB);
         defaultIgrejaB.setTipo(TipoOrganizacao.COMUNIDADE);
         when(organizacaoRepository.findById(churchB)).thenReturn(Optional.of(defaultIgrejaB));
 
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        assertDoesNotThrow(() -> useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchA));
-        assertDoesNotThrow(() -> useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchB));
+        assertDoesNotThrow(() -> useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchA));
+
+        assertDoesNotThrow(() -> useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchB));
+
     }
 
     @Test
@@ -246,10 +270,14 @@ class AddMembershipUseCaseTest {
         existing.setIgrejaVinculoId(churchId);
         existing.setAtivo(true);
 
-        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchId))
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId,
+                organizacaoId, PapelOrganizacional.MEMBRO.name(), churchId))
+
                 .thenReturn(Optional.of(existing));
 
-        UUID resultId = useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchId);
+        UUID resultId = useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchId);
+
         assertEquals(existing.getId(), resultId);
         verify(membershipRepository, never()).save(any(MembroOrganizacaoEntity.class));
     }
@@ -272,11 +300,15 @@ class AddMembershipUseCaseTest {
         existing.setIgrejaVinculoId(churchId);
         existing.setAtivo(false);
 
-        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId, organizacaoId, PapelOrganizacional.MEMBRO.name(), churchId))
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(usuarioId,
+                organizacaoId, PapelOrganizacional.MEMBRO.name(), churchId))
+
                 .thenReturn(Optional.of(existing));
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        UUID resultId = useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchId);
+        UUID resultId = useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, churchId);
+
         assertEquals(existing.getId(), resultId);
         assertTrue(existing.isAtivo());
         verify(membershipRepository).save(existing);
@@ -300,7 +332,9 @@ class AddMembershipUseCaseTest {
         existing.setIgrejaVinculoId(churchA);
         existing.setAtivo(true);
 
-        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId, PapelOrganizacional.COORDENADOR.name(), churchA))
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
+                PapelOrganizacional.COORDENADOR.name(), churchA))
+
                 .thenReturn(Optional.of(existing));
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -329,9 +363,13 @@ class AddMembershipUseCaseTest {
         existingCoord.setIgrejaVinculoId(churchId);
         existingCoord.setAtivo(true);
 
-        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId, PapelOrganizacional.COORDENADOR.name(), churchId))
+        when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
+                PapelOrganizacional.COORDENADOR.name(), churchId))
+
                 .thenReturn(Optional.of(existingCoord));
-        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(oldCoordId, organizacaoId, "MEMBRO", churchId))
+        when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(oldCoordId,
+                organizacaoId, "MEMBRO", churchId))
+
                 .thenReturn(Optional.empty());
 
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -365,7 +403,9 @@ class AddMembershipUseCaseTest {
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuarioEntity));
 
         var ex = assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, differentChurchId)
+                useCase.execute(usuarioId,
+                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.MEMBRO, differentChurchId)
+
         );
 
         assertTrue(ex.getMessage().contains("O usuário pertence a outra igreja/comunidade"));

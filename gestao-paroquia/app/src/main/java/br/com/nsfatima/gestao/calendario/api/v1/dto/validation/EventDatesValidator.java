@@ -2,8 +2,9 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.time.Instant;
+
 import java.lang.reflect.Method;
+import java.time.Instant;
 
 public class EventDatesValidator implements ConstraintValidator<ValidEventDates, Object> {
 

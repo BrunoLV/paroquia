@@ -10,7 +10,15 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +41,8 @@ public class LocalController {
     }
 
     /**
-     * Registra um novo local físico na paróquia para possibilitar o agendamento de eventos e controle de infraestrutura.
+     * Registra um novo local físico na paróquia para possibilitar o agendamento de eventos e controle de
+     * infraestrutura.
      *
      * <p>Usage Example:
      * {@code POST /api/v1/locais} com corpo JSON contendo nome, tipo, endereço e capacidade.
@@ -62,7 +71,7 @@ public class LocalController {
      * <p>Usage Example:
      * {@code PUT /api/v1/locais/{uuid}} com corpo JSON completo do local atualizado.
      *
-     * @param id ID único do local
+     * @param id      ID único do local
      * @param request Novos dados do local
      * @return Dados atualizados do local
      */
@@ -83,7 +92,8 @@ public class LocalController {
     }
 
     /**
-     * Remove um local do sistema para descontinuar o uso de espaços que não pertencem mais à paróquia ou estão inativos.
+     * Remove um local do sistema para descontinuar o uso de espaços que não pertencem mais à paróquia ou estão
+     * inativos.
      *
      * <p>Usage Example:
      * {@code DELETE /api/v1/locais/{uuid}}
@@ -93,7 +103,8 @@ public class LocalController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Delete a location", description = "Only administrators can delete locations. Cannot delete locations in use.")
+    @Operation(summary = "Delete a location", description = "Only administrators can delete locations. Cannot delete " +
+            "locations in use.")
     public void delete(@PathVariable UUID id) {
         localService.deleteLocal(id);
     }

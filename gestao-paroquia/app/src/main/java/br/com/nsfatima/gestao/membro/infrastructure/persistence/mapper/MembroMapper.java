@@ -3,7 +3,9 @@ package br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
+import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoResponse;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.ParticipanteOrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,9 @@ public class MembroMapper {
     }
 
     public MembroResponse toResponse(MembroEntity entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         String usuarioNome = null;
         String usuarioEmail = null;
@@ -58,9 +62,11 @@ public class MembroMapper {
         );
     }
 
-    public br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoResponse toParticipacaoResponse(br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.ParticipanteOrganizacaoEntity entity) {
-        if (entity == null) return null;
-        return new br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoResponse(
+    public ParticipacaoResponse toParticipacaoResponse(ParticipanteOrganizacaoEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new ParticipacaoResponse(
                 entity.getId(),
                 entity.getMembroId(),
                 entity.getOrganizacaoId(),

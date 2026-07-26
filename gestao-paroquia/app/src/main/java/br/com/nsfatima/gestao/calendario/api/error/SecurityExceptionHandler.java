@@ -1,18 +1,18 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.RoleScopeInvalidException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.infrastructure.security.RoleScopeInvalidException;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 /**
  * Handles security-related exceptions like access denial and authentication failures.

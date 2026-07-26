@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.util.UUID;
 
 @Entity
@@ -28,6 +29,8 @@ public class MembroOrganizacaoEntity extends BaseVersionedEntity {
 
     @Column(nullable = false)
     private boolean ativo = true;
+    @Column(name = "igreja_vinculo_id")
+    private UUID igrejaVinculoId;
 
     public UUID getId() {
         return id;
@@ -68,9 +71,6 @@ public class MembroOrganizacaoEntity extends BaseVersionedEntity {
     public void setPapel(String papel) {
         this.papel = papel;
     }
-
-    @Column(name = "igreja_vinculo_id")
-    private UUID igrejaVinculoId;
 
     public UUID getIgrejaVinculoId() {
         return igrejaVinculoId;

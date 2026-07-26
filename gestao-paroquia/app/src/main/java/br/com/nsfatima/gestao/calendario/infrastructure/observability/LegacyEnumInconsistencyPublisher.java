@@ -1,8 +1,9 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import java.util.Map;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class LegacyEnumInconsistencyPublisher {

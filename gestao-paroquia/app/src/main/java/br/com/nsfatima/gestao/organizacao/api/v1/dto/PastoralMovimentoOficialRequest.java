@@ -8,13 +8,13 @@ import jakarta.validation.constraints.Size;
 
 @Schema(description = "Request to create or update a Pastoral or Movimento Oficial")
 public record PastoralMovimentoOficialRequest(
-    @Schema(description = "Official catalog name", example = "Pastoral da Criança")
-    @NotBlank(message = "Name is required")
-    @Size(max = 150, message = "Name must not exceed 150 characters")
-    String nome,
+        @Schema(description = "Official catalog name", example = "Pastoral da Criança")
+        @NotBlank(message = "Name is required")
+        @Size(max = 150, message = "Name must not exceed 150 characters")
+        String nome,
 
-    @Schema(description = "Type (must be PASTORAL or MOVIMENTO)")
-    @NotNull(message = "Type is required")
-    TipoOrganizacao tipo
+        @Schema(description = "Type (must be PASTORAL or MOVIMENTO)")
+        @NotNull(message = "Type is required")
+        TipoOrganizacao tipo
 ) {
 }

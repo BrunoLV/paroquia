@@ -1,20 +1,13 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 
-import tools.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.springframework.security.core.GrantedAuthority;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import br.com.nsfatima.gestao.observabilidade.domain.service.CorrelationIdFilter;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
-import br.com.nsfatima.gestao.observabilidade.domain.service.CorrelationIdFilter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -32,6 +26,13 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccessHandler,
@@ -124,7 +125,7 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
             AuthenticationException authException) throws IOException {
         boolean hasSessionCookie = request.getCookies() != null
                 && Arrays.stream(request.getCookies())
-                        .anyMatch(cookie -> "JSESSIONID".equals(cookie.getName()));
+                .anyMatch(cookie -> "JSESSIONID".equals(cookie.getName()));
         boolean sessionExpired = (request.getRequestedSessionId() != null && !request.isRequestedSessionIdValid())
                 || hasSessionCookie;
         writeError(

@@ -10,13 +10,16 @@ import java.util.Base64;
 
 public class CryptoUtils {
 
-    private static SecretKeySpec secretKeySpec;
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final int IV_SIZE = 16;
     private static final SecureRandom RANDOM = new SecureRandom();
+    private static SecretKeySpec secretKeySpec;
 
     static {
         setSecretKey("default-dev-fallback-key-should-be-changed-in-prod");
+    }
+
+    private CryptoUtils() {
     }
 
     public static void setSecretKey(String key) {

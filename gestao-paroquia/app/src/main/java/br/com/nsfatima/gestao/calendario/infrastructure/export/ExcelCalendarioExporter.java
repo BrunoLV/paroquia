@@ -3,15 +3,6 @@ package br.com.nsfatima.gestao.calendario.infrastructure.export;
 import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -23,6 +14,16 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class ExcelCalendarioExporter implements CalendarioExporter {
@@ -36,12 +37,12 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
     }
 
     @Override
-    public byte[] export(List<EventoEntity> eventos, 
-                        Map<UUID, String> localMap, 
-                        Map<UUID, String> orgMap, 
-                        Instant start, 
-                        Instant end, 
-                        ParoquiaConfiguracaoEntity config) {
+    public byte[] export(List<EventoEntity> eventos,
+                         Map<UUID, String> localMap,
+                         Map<UUID, String> orgMap,
+                         Instant start,
+                         Instant end,
+                         ParoquiaConfiguracaoEntity config) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Calendário");
 
@@ -96,7 +97,9 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
 
             // Cabeçalho na linha 4
             Row headerRow = sheet.createRow(4);
-            String[] columns = {"Título", "Descrição", "Categoria", "Início", "Fim", "Local", "Organização Responsável", "Status"};
+            String[] columns = {"Título",
+                    "Descrição", "Categoria", "Início", "Fim", "Local", "Organização Responsável", "Status"};
+
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
@@ -137,12 +140,16 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
     }
 
     private String formatInstant(Instant instant) {
-        if (instant == null) return "";
+        if (instant == null) {
+            return "";
+        }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
 
     private String formatInstantDateOnly(Instant instant) {
-        if (instant == null) return "";
+        if (instant == null) {
+            return "";
+        }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 }

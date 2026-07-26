@@ -1,7 +1,8 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import java.time.Instant;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 public class CalendarIntegrityPolicy {

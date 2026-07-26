@@ -7,4 +7,5 @@ public record ImportacaoItemResultadoDTO(
         boolean valido,
         String mensagemErro,
         Map<String, String> dados
-) {}
+) {
+}

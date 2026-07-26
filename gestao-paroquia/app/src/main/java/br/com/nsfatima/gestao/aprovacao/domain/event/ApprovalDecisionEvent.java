@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.domain.event;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+
 import java.util.UUID;
 
 public record ApprovalDecisionEvent(

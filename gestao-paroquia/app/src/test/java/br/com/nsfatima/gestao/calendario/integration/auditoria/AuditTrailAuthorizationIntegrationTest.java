@@ -1,18 +1,19 @@
 package br.com.nsfatima.gestao.calendario.integration.auditoria;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,10 +50,10 @@ class AuditTrailAuthorizationIntegrationTest {
         auditoriaOperacaoJpaRepository.save(entity);
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                .param("organizacaoId", organizacaoId.toString())
-                .param("inicio", "2026-10-01T00:00:00Z")
-                .param("fim", "2026-10-10T00:00:00Z")
-                .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb"))
+                        .param("organizacaoId", organizacaoId.toString())
+                        .param("inicio", "2026-10-01T00:00:00Z")
+                        .param("fim", "2026-10-10T00:00:00Z")
+                        .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb"))
                 .andExpect(status().isForbidden());
     }
 }

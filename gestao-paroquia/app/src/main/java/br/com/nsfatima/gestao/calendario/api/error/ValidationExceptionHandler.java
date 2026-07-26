@@ -1,9 +1,5 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.exc.InvalidFormatException;
-import tools.jackson.databind.exc.UnrecognizedPropertyException;
-import java.util.List;
 import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
@@ -13,11 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
+
+import java.util.List;
 
 /**
  * Handles request validation and JSON mapping exceptions.

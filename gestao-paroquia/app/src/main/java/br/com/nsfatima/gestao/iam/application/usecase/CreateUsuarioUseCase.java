@@ -1,11 +1,12 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
-import java.util.UUID;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class CreateUsuarioUseCase {
@@ -21,7 +22,7 @@ public class CreateUsuarioUseCase {
     @Transactional
     /**
      * Cria uma nova conta de usuário com senha criptografada para permitir o acesso seguro ao sistema.
-     * 
+     *
      * Exemplo: useCase.execute("novo.usuario", "senhaForte")
      */
     public UUID execute(String username, String rawPassword) {

@@ -2,14 +2,15 @@ package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
 import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 @Component
 public class WeeklyMetricsSnapshotJob {

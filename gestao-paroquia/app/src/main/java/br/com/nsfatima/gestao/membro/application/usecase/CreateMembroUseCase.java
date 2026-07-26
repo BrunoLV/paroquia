@@ -7,6 +7,7 @@ import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPub
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,8 @@ public class CreateMembroUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado: " + request.usuarioId()));
 
         var organizacao = organizacaoRepository.findById(request.organizacaoId())
-                .orElseThrow(() -> new IllegalArgumentException("Organização não encontrada: " + request.organizacaoId()));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Organização não encontrada: " + request.organizacaoId()));
 
         repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(request.usuarioId(), request.organizacaoId())
                 .ifPresent(m -> {
@@ -68,7 +70,10 @@ public class CreateMembroUseCase {
         return mapper.toResponse(saved);
     }
 
-    private void syncLeadership(String papel, String nomeUsuario, br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity org) {
+    private void syncLeadership(String papel,
+                                String nomeUsuario,
+                                OrganizacaoEntity org) {
+
         if ("COORDENADOR".equalsIgnoreCase(papel)) {
             org.setCoordenador(nomeUsuario);
             organizacaoRepository.save(org);

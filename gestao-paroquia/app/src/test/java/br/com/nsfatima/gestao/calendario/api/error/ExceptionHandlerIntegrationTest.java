@@ -3,16 +3,17 @@ package br.com.nsfatima.gestao.calendario.api.error;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.dao.DataIntegrityViolationException;
-import java.sql.SQLIntegrityConstraintViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,8 +31,8 @@ class ExceptionHandlerIntegrationTest {
     @Test
     void shouldReturnBadRequestOnTypeMismatch() throws Exception {
         mockMvc.perform(get("/api/v1/eventos/not-a-uuid")
-                .header("X-Actor-Role", "admin")
-                .header("X-Actor-Org-Type", "CONSELHO"))
+                        .header("X-Actor-Role", "admin")
+                        .header("X-Actor-Org-Type", "CONSELHO"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("VALIDATION_FIELD_INVALID"))
                 .andExpect(jsonPath("$.message").value("Tipo de dado inválido para o parâmetro: eventoId"))

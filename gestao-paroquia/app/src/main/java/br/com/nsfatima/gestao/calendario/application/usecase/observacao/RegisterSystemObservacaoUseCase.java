@@ -5,11 +5,12 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterSystemObservacaoUseCase {
@@ -28,8 +29,9 @@ public class RegisterSystemObservacaoUseCase {
     }
 
     /**
-     * Automates the creation of system-level observations (e.g., cancellation reasons) to ensure that important lifecycle changes are always documented.
-     * 
+     * Automates the creation of system-level observations (e.g., cancellation reasons) to ensure that important
+     * lifecycle changes are always documented.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, TipoObservacaoInput.SISTEMA, "Auto-log", null, "system", "cancellation-flow");

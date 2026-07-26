@@ -8,6 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class GestaoParoquiaApplication {
 
+    protected GestaoParoquiaApplication() {
+    }
+
+
     public static void main(String[] args) {
         preloadLoggingClasses();
         SpringApplication.run(GestaoParoquiaApplication.class, args);

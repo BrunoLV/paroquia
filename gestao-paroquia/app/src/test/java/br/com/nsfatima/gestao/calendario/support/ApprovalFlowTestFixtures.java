@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.support;
 
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public final class ApprovalFlowTestFixtures {
     }
 
     public static EventoEntity confirmedEvento(UUID eventoId, String titulo, UUID organizacaoId, Instant inicio,
-            Instant fim) {
+                                               Instant fim) {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo(titulo);
@@ -23,7 +24,7 @@ public final class ApprovalFlowTestFixtures {
     }
 
     public static AprovacaoEntity pendingAprovacao(UUID aprovacaoId, UUID eventoId, String tipoSolicitacao,
-            String aprovadorPapel) {
+                                                   String aprovadorPapel) {
         AprovacaoEntity aprovacao = new AprovacaoEntity();
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(eventoId);

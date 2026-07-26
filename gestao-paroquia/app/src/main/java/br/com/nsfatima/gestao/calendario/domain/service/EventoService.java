@@ -3,17 +3,18 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import java.util.UUID;
-import java.util.List;
-import java.util.Optional;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EventoService {
@@ -29,7 +30,7 @@ public class EventoService {
                 .orElseThrow(() -> new EventoNotFoundException(id));
 
         assertCanView(actorContext, evento.getOrganizacaoResponsavelId());
-        
+
         return evento;
     }
 
@@ -37,7 +38,7 @@ public class EventoService {
         List<String> categories = Optional.ofNullable(filters.categoria())
                 .map(list -> list.stream().map(Enum::name).toList())
                 .orElse(null);
-                
+
         List<String> statuses = Optional.ofNullable(filters.status())
                 .map(list -> list.stream().map(Enum::name).toList())
                 .orElse(null);

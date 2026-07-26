@@ -1,21 +1,13 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEditScope;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEditScope;
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.UpdateEventoApprovalRequestUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
@@ -33,10 +25,19 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Use case responsible for updating event data, handling authorization and approval flows.
@@ -92,7 +93,7 @@ public class UpdateEventoUseCase {
 
     /**
      * Executes the update request. May return 200 OK with the updated event or 202 ACCEPTED if approval is required.
-     * 
+     * <p>
      * Usage Example:
      * useCase.execute(id, new UpdateEventoRequest("New Title", null, ...));
      */
@@ -101,11 +102,13 @@ public class UpdateEventoUseCase {
         validateRequest(request);
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        
+
         validateAuthorization(entity, request, actorContext);
 
         if (request.changesSensitiveFields() && requiresApproval(entity, actorContext)) {
-            return new EventoOperationResult.Pending(approvalRequestUseCase.execute(eventoId, request), HttpStatus.ACCEPTED);
+            return new EventoOperationResult.Pending(approvalRequestUseCase.execute(eventoId,
+                    request), HttpStatus.ACCEPTED);
+
         }
 
         EventoResponse response = performUpdate(entity, request, actorContext, "success", false);
@@ -133,29 +136,43 @@ public class UpdateEventoUseCase {
                 .orElseThrow(() -> new EventoNotFoundException(eventoId));
     }
 
-    private void validateAuthorization(EventoEntity entity, UpdateEventoRequest request, EventoActorContext actorContext) {
-        if (request.organizacaoResponsavelId() != null && !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId())) {
+    private void validateAuthorization(EventoEntity entity,
+                                       UpdateEventoRequest request, EventoActorContext actorContext) {
+
+        if (request.organizacaoResponsavelId() != null &&
+                !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId())) {
             authorizationService.assertCanChangeResponsibleOrganization(actorContext);
         } else {
-            authorizationService.assertCanEditGeneral(actorContext, entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
+            authorizationService.assertCanEditGeneral(actorContext,
+                    entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
+
         }
 
         if (request.participantes() != null) {
-            authorizationService.assertCanManageParticipants(actorContext, entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
+            authorizationService.assertCanManageParticipants(actorContext,
+                    entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
+
         }
     }
 
     private boolean requiresApproval(EventoEntity entity, EventoActorContext actorContext) {
-        return authorizationService.resolveCreateRequestMode(actorContext, entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId()) 
+        return authorizationService.resolveCreateRequestMode(actorContext,
+                entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId())
+
                 == CreateRequestMode.REQUIRES_APPROVAL;
     }
 
-    private EventoResponse performUpdate(EventoEntity entity, UpdateEventoRequest request, EventoActorContext actorContext, String auditResult, boolean isApprovalFlow) {
+    private EventoResponse performUpdate(EventoEntity entity,
+                                         UpdateEventoRequest request, EventoActorContext actorContext,
+                                         String auditResult,
+                                         boolean isApprovalFlow) {
+
         UUID oldProjectId = entity.getProjetoId();
-        EventoStatusInput status = request.status() != null ? request.status() : EventoStatusInput.valueOf(entity.getStatus());
-        
+        EventoStatusInput status =
+                request.status() != null ? request.status() : EventoStatusInput.valueOf(entity.getStatus());
+
         validateDomainRules(entity, request, status);
-        
+
         if (request.editScope() == EventoEditScope.ONLY_THIS) {
             entity.setRecorrenciaId(null);
         } else if (request.editScope() == EventoEditScope.THIS_AND_FOLLOWING && entity.getRecorrenciaId() != null) {
@@ -183,7 +200,7 @@ public class UpdateEventoUseCase {
 
         publishMetrics(entity, request);
         publishAudit(saved, request, actorContext, auditResult, isApprovalFlow);
-        
+
         evictProjectCaches(oldProjectId, saved.getProjetoId());
 
         return mapper.toResponse(saved);
@@ -255,14 +272,16 @@ public class UpdateEventoUseCase {
     private void validateDomainRules(EventoEntity entity, UpdateEventoRequest request, EventoStatusInput status) {
         Instant inicio = request.inicio() != null ? request.inicio() : entity.getInicioUtc();
         Instant fim = request.fim() != null ? request.fim() : entity.getFimUtc();
-        String justificativa = request.adicionadoExtraJustificativa() != null ? request.adicionadoExtraJustificativa() : entity.getAdicionadoExtraJustificativa();
-        
+        String justificativa = request.adicionadoExtraJustificativa() != null ? request.adicionadoExtraJustificativa() :
+                entity.getAdicionadoExtraJustificativa();
+
         domainService.validateEvento(inicio, fim, status, justificativa);
 
-        UUID org = request.organizacaoResponsavelId() != null ? request.organizacaoResponsavelId() : entity.getOrganizacaoResponsavelId();
-        List<UUID> part = request.participantes() != null ? request.participantes() : 
+        UUID org = request.organizacaoResponsavelId() != null ? request.organizacaoResponsavelId() :
+                entity.getOrganizacaoResponsavelId();
+        List<UUID> part = request.participantes() != null ? request.participantes() :
                 involvementRepository.findByEventoId(entity.getId()).stream().map(e -> e.getOrganizacaoId()).toList();
-        
+
         domainService.validateOrganizacaoParticipantes(org, part);
 
         UUID projetoId = request.projetoId() != null ? request.projetoId() : entity.getProjetoId();
@@ -277,7 +296,9 @@ public class UpdateEventoUseCase {
     }
 
     private void applyParticipantChanges(UUID eventoId, List<UUID> participantes) {
-        if (participantes == null) return;
+        if (participantes == null) {
+            return;
+        }
         if (participantes.isEmpty()) {
             clearEnvolvidosUseCase.execute(eventoId);
         } else {
@@ -291,17 +312,22 @@ public class UpdateEventoUseCase {
     private void publishMetrics(EventoEntity entity, UpdateEventoRequest request) {
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
         boolean cancellation = request.status() == EventoStatusInput.CANCELADO;
-        boolean orgChanged = request.organizacaoResponsavelId() != null && !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId());
-        
+        boolean orgChanged = request.organizacaoResponsavelId() != null &&
+                !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId());
+
         if (scheduleChanged || cancellation || orgChanged) {
             metricsPublisher.publishAdministrativeRework(scheduleChanged, cancellation, orgChanged);
         }
     }
 
-    private void publishAudit(EventoEntity saved, UpdateEventoRequest request, EventoActorContext actorContext, String result, boolean approvalFlow) {
+    private void publishAudit(EventoEntity saved,
+                              UpdateEventoRequest request, EventoActorContext actorContext, String result,
+                              boolean approvalFlow) {
+
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
         boolean cancellation = request.status() == EventoStatusInput.CANCELADO;
-        boolean orgChanged = request.organizacaoResponsavelId() != null && !request.organizacaoResponsavelId().equals(saved.getOrganizacaoResponsavelId());
+        boolean orgChanged = request.organizacaoResponsavelId() != null &&
+                !request.organizacaoResponsavelId().equals(saved.getOrganizacaoResponsavelId());
 
         auditPublisher.publish(actorContext.actor(), "patch", saved.getId().toString(), result, Map.of(
                 "organizacaoId", saved.getOrganizacaoResponsavelId(),
@@ -313,16 +339,22 @@ public class UpdateEventoUseCase {
     }
 
     /**
-     * Recovers the original modification intent from an approval record, enabling the system to apply the changes once authorization is granted.
-     * 
+     * Recovers the original modification intent from an approval record, enabling the system to apply the changes
+     * once authorization is granted.
+     * <p>
      * Usage Example:
      * {@code
      * UpdateEventoRequest request = useCase.restoreFromApprovalPayload(payload);
      * }
      */
     public UpdateEventoRequest restoreFromApprovalPayload(ApprovalActionPayload payload) {
-        return new UpdateEventoRequest(payload.titulo(), payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
+        return new UpdateEventoRequest(payload.titulo(),
+                payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
+
                 payload.status(), payload.adicionadoExtraJustificativa(), payload.canceladoMotivo(),
-                payload.organizacaoResponsavelId(), payload.participantes(), null, payload.projetoId(), payload.localId(), payload.igrejaVinculoId());
+                payload.organizacaoResponsavelId(),
+                payload.participantes(), null, payload.projetoId(), payload.localId(),
+                payload.igrejaVinculoId());
+
     }
 }

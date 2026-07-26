@@ -1,13 +1,13 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CacheInfrastructureTest {
@@ -35,7 +35,7 @@ class CacheInfrastructureTest {
         String value = "test-value";
 
         cache.put(key, value);
-        
+
         assertThat(cache.get(key)).isNotNull();
         assertThat(cache.get(key).get()).isEqualTo(value);
     }

@@ -19,6 +19,9 @@ spring:
     baseline-on-migrate: true
     baseline-version: 0
     out-of-order: true
+  threads:
+    virtual:
+      enabled: true
 
 server:
   port: ${PORT:8080}

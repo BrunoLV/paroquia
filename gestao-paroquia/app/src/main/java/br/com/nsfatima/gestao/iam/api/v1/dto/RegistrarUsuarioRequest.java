@@ -3,35 +3,39 @@ package br.com.nsfatima.gestao.iam.api.v1.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
 public record RegistrarUsuarioRequest(
-    @NotBlank(message = "Nome é obrigatório")
-    String nome,
+        @NotBlank(message = "Nome é obrigatório")
+        String nome,
 
-    @NotBlank(message = "E-mail é obrigatório")
-    @Email(message = "E-mail inválido")
-    String username,
+        @NotBlank(message = "E-mail é obrigatório")
+        @Email(message = "E-mail inválido")
+        String username,
 
-    @NotBlank(message = "Senha é obrigatória")
-    String password,
+        @NotBlank(message = "Senha é obrigatória")
+        String password,
 
-    @NotBlank(message = "Telefone é obrigatório")
-    String telefone,
+        @NotBlank(message = "Telefone é obrigatório")
+        String telefone,
 
-    @NotNull(message = "Data de nascimento é obrigatória")
-    LocalDate dataNascimento,
+        @NotNull(message = "Data de nascimento é obrigatória")
+        LocalDate dataNascimento,
 
-    @NotNull(message = "Igreja é obrigatória")
-    UUID igrejaId,
+        @NotNull(message = "Igreja é obrigatória")
+        UUID igrejaId,
 
-    Boolean batizado,
-    Boolean primeiraComunhao,
-    Boolean crismado,
-    Boolean casadoIgrejaCatolica
+        Boolean batizado,
+        Boolean primeiraComunhao,
+        Boolean crismado,
+        Boolean casadoIgrejaCatolica
 ) {
-    public RegistrarUsuarioRequest(String nome, String username, String password, String telefone, LocalDate dataNascimento, UUID igrejaId) {
+    public RegistrarUsuarioRequest(String nome,
+                                   String username, String password, String telefone, LocalDate dataNascimento,
+                                   UUID igrejaId) {
+
         this(nome, username, password, telefone, dataNascimento, igrejaId, false, false, false, false);
     }
 }

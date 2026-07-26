@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "Request to reset user password")
 public record PasswordResetRequest(
-    @Schema(description = "New raw password", example = "newStrongPassword123")
-    @NotBlank(message = "New password is required")
-    String newPassword
+        @Schema(description = "New raw password", example = "newStrongPassword123")
+        @NotBlank(message = "New password is required")
+        String newPassword
 ) {
 }

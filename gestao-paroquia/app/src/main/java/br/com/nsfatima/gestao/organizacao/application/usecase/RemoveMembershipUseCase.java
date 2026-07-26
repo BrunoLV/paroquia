@@ -1,10 +1,11 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
-import java.util.UUID;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class RemoveMembershipUseCase {
@@ -17,8 +18,9 @@ public class RemoveMembershipUseCase {
 
     @Transactional
     /**
-     * Desativa o vínculo de um usuário com uma organização para revogar seus acessos e responsabilidades administrativas naquele contexto específico.
-     * 
+     * Desativa o vínculo de um usuário com uma organização para revogar seus acessos e responsabilidades
+     * administrativas naquele contexto específico.
+     *
      * Exemplo: useCase.execute(membershipId)
      */
     public void execute(UUID membershipId) {

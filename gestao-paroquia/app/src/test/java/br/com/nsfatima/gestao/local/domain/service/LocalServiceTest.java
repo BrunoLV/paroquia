@@ -1,19 +1,16 @@
 package br.com.nsfatima.gestao.local.domain.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class LocalServiceTest {
 
@@ -29,7 +26,7 @@ class LocalServiceTest {
     @Test
     void shouldCreateLocal() {
         Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi");
-        
+
         assertNotNull(created.getId());
         assertEquals("Salão", created.getNome());
         assertTrue(created.isAtivo());
@@ -56,7 +53,7 @@ class LocalServiceTest {
         localRepository.setInUse(id, false);
 
         localService.deleteLocal(id);
-        
+
         Optional<Local> found = localRepository.findById(id);
         assertTrue(found.isPresent());
         assertFalse(found.get().isAtivo());
@@ -70,10 +67,15 @@ class LocalServiceTest {
         localRepository.setInUse(id, true);
 
         localService.deleteLocal(id);
-        
+
         Optional<Local> found = localRepository.findById(id);
         assertTrue(found.isPresent());
         assertFalse(found.get().isAtivo());
+    }
+
+    // Auxiliary assertFalse for completeness in LocalServiceTest
+    private void assertFalse(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition);
     }
 
     private static class FakeLocalRepository implements LocalRepository {
@@ -107,13 +109,11 @@ class LocalServiceTest {
         }
 
         public void setInUse(UUID id, boolean inUse) {
-            if (inUse) inUseIds.add(id);
-            else inUseIds.remove(id);
+            if (inUse) {
+                inUseIds.add(id);
+            } else {
+                inUseIds.remove(id);
+            }
         }
-    }
-    
-    // Auxiliary assertFalse for completeness in LocalServiceTest
-    private void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
     }
 }

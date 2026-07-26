@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
 
@@ -32,7 +33,8 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
               and (:hasFimUtc = false or e.fimUtc <= :fimUtc)
               and (:hasOrganizacaoIds = false or e.organizacaoResponsavelId in :organizacaoIds)
               and (:hasProjetoId = false or e.projetoId = :projetoId)
-              and (:hasEnvolvidoId = false or (e.organizacaoResponsavelId = :envolvidoId or ee.organizacaoId = :envolvidoId))
+              and (:hasEnvolvidoId = false 
+                          or (e.organizacaoResponsavelId = :envolvidoId or ee.organizacaoId = :envolvidoId))
               and (:hasCategorias = false or e.categoria in :categorias)
               and (:hasStatuses = false or e.status in :statuses)
             """)

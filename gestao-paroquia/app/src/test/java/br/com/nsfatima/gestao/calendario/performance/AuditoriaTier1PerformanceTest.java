@@ -1,22 +1,23 @@
 package br.com.nsfatima.gestao.calendario.performance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,19 +51,19 @@ class AuditoriaTier1PerformanceTest {
         for (int sample = 0; sample < SAMPLE_SIZE; sample++) {
             long trilhaStart = System.nanoTime();
             mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                    .param("organizacaoId", organizacaoId.toString())
-                    .param("inicio", "2026-10-01T00:00:00Z")
-                    .param("fim", "2026-10-10T00:00:00Z")
-                    .header("X-Actor-Org-Id", organizacaoId.toString()))
+                            .param("organizacaoId", organizacaoId.toString())
+                            .param("inicio", "2026-10-01T00:00:00Z")
+                            .param("fim", "2026-10-10T00:00:00Z")
+                            .header("X-Actor-Org-Id", organizacaoId.toString()))
                     .andExpect(status().isOk());
             trilhaLatencies.add(toMillis(System.nanoTime() - trilhaStart));
 
             long retrabalhoStart = System.nanoTime();
             mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
-                    .param("organizacaoId", organizacaoId.toString())
-                    .param("inicio", "2026-10-01T00:00:00Z")
-                    .param("fim", "2026-10-10T00:00:00Z")
-                    .header("X-Actor-Org-Id", organizacaoId.toString()))
+                            .param("organizacaoId", organizacaoId.toString())
+                            .param("inicio", "2026-10-01T00:00:00Z")
+                            .param("fim", "2026-10-10T00:00:00Z")
+                            .header("X-Actor-Org-Id", organizacaoId.toString()))
                     .andExpect(status().isOk());
             retrabalhoLatencies.add(toMillis(System.nanoTime() - retrabalhoStart));
         }

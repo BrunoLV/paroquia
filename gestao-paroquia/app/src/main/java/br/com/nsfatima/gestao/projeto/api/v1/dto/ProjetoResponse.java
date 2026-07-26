@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.projeto.api.v1.dto;
 
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.Instant;
 import java.util.UUID;
 

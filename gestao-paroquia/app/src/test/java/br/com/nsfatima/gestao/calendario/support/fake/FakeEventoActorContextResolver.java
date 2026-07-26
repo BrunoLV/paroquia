@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.support.fake;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+
 import java.util.UUID;
 
 public class FakeEventoActorContextResolver extends EventoActorContextResolver {

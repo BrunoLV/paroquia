@@ -1,27 +1,28 @@
 package br.com.nsfatima.gestao.projeto.application.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
+import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProjetoAgregacaoServiceTest {
@@ -43,7 +44,7 @@ class ProjetoAgregacaoServiceTest {
     void deveRetornarResumoDoProjeto() {
         UUID projetoId = UUID.randomUUID();
         Instant agora = Instant.now();
-        
+
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(projetoId);
         projeto.setInicioUtc(agora.minus(10, ChronoUnit.DAYS));
@@ -54,7 +55,7 @@ class ProjetoAgregacaoServiceTest {
         when(eventProvider.countByProjetoIdAndFimUtcLessThan(eq(projetoId), any(Instant.class))).thenReturn(6L);
         when(eventProvider.countByProjetoIdAndFimUtcGreaterThanEqual(eq(projetoId), any(Instant.class))).thenReturn(4L);
         when(eventProvider.findInvolvedOrganizationNames(projetoId)).thenReturn(List.of("Org 1", "Org 2"));
-        
+
         when(domainService.calcularPercentualTempoDecorrido(any(), any())).thenReturn(50.0);
         when(domainService.verificarSeEstaEmRisco(any(), any(), anyInt())).thenReturn(false);
 

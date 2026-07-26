@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.calendario.support;
 
 import java.util.Map;
-import java.util.UUID;
 
 public final class TestAuditOrganizationResolver {
 
@@ -12,6 +11,10 @@ public final class TestAuditOrganizationResolver {
             "ana.conselho", "00000000-0000-0000-0000-0000000000cc",
             "clara.invalida", "00000000-0000-0000-0000-0000000000dd"
     );
+
+
+    private TestAuditOrganizationResolver() {
+    }
 
     public static String resolveOrgId(String username) {
         return USER_ORG_MAP.get(username);

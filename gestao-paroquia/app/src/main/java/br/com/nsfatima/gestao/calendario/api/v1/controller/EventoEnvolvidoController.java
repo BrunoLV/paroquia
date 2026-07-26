@@ -1,16 +1,15 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidosRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidosResponse;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ClearEventoEnvolvidosUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.UpdateEventoEnvolvidosUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/eventos")
-@Tag(name = "Envolvidos no Evento", description = "Endpoints para gerenciar pastorais e movimentos envolvidos em um evento")
+@Tag(name = "Envolvidos no Evento", description = "Endpoints para gerenciar pastorais e movimentos envolvidos em um " +
+        "evento")
 public class EventoEnvolvidoController {
 
     private final UpdateEventoEnvolvidosUseCase updateEventoEnvolvidosUseCase;
@@ -40,8 +42,9 @@ public class EventoEnvolvidoController {
     }
 
     /**
-     * Updates the multi-disciplinary involvement in an event, ensuring all relevant pastorals and groups are correctly linked for logistical coordination.
-     * 
+     * Updates the multi-disciplinary involvement in an event, ensuring all relevant pastorals and groups are
+     * correctly linked for logistical coordination.
+     * <p>
      * Usage Example:
      * {@code
      * controller.putEnvolvidos(eventoId, new EventoEnvolvidosRequest(List.of(...)));
@@ -61,16 +64,19 @@ public class EventoEnvolvidoController {
     }
 
     /**
-     * Resets the involvement list of an event to its default state, used when a collaboration plan is completely overhauled.
-     * 
+     * Resets the involvement list of an event to its default state, used when a collaboration plan is completely
+     * overhauled.
+     * <p>
      * Usage Example:
      * {@code
      * controller.clearEnvolvidos(eventoId);
      * }
      */
     @DeleteMapping("/{eventoId}/envolvidos")
-    @Operation(summary = "Remove todos os envolvidos", description = "Limpa a lista de organizações envolvidas no evento.")
-    public EventoEnvolvidosResponse clearEnvolvidos(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
+    @Operation(summary = "Remove todos os envolvidos", description = "Limpa a lista de organizações envolvidas no " +
+            "evento.")
+    public EventoEnvolvidosResponse clearEnvolvidos(
+            @Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         var response = clearEventoEnvolvidosUseCase.execute(eventoId);
         auditPublisher.publish(context.actor(), "clear-involved", eventoId.toString(), "success");

@@ -1,9 +1,16 @@
 plugins {
     id("java")
     id("jacoco")
+    id("checkstyle")
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.flyway)
+}
+
+checkstyle {
+    toolVersion = "13.7.0"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    isIgnoreFailures = false
 }
 
 repositories {

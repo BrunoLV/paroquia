@@ -4,8 +4,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.O
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,8 +32,8 @@ class CreateListObservacaoIntegrationTest {
     @Test
     void shouldPersistAndListNotaForEvento() throws Exception {
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Contexto operacional\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Contexto operacional\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.tipo").value("NOTA"));
 

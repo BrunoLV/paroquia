@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.contract;
 
-import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.policy.CalendarIntegrityPolicy;
+import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import org.junit.jupiter.api.Test;
 

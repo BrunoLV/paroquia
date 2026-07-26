@@ -7,11 +7,12 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CreateNotaObservacaoUseCase {
@@ -30,8 +31,9 @@ public class CreateNotaObservacaoUseCase {
     }
 
     /**
-     * Persists a manual user-generated observation, ensuring that the observation type is valid for manual entry and that the action is properly audited.
-     * 
+     * Persists a manual user-generated observation, ensuring that the observation type is valid for manual entry and
+     * that the action is properly audited.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, usuarioId, "actor-name", TipoObservacaoInput.NOTA, "Conteúdo");

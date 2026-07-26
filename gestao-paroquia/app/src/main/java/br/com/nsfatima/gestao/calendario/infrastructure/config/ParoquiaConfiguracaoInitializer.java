@@ -2,11 +2,12 @@ package br.com.nsfatima.gestao.calendario.infrastructure.config;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
-import java.io.InputStream;
-import java.util.UUID;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+
+import java.io.InputStream;
+import java.util.UUID;
 
 @Component
 public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {

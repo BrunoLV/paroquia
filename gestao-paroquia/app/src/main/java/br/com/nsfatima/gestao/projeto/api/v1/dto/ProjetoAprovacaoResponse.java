@@ -13,4 +13,5 @@ public record ProjetoAprovacaoResponse(
         Instant decididoEmUtc,
         String actionPayloadJson,
         Boolean cancelarEventosVinculados
-) {}
+) {
+}

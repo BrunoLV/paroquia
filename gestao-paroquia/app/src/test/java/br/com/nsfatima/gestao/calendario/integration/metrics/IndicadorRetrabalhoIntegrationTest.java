@@ -1,19 +1,20 @@
 package br.com.nsfatima.gestao.calendario.integration.metrics;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,10 +43,10 @@ class IndicadorRetrabalhoIntegrationTest {
                 .save(record(organizacaoId, eventoB, "patch", "{\"responsibleOrgChanged\":true}"));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
-                .param("organizacaoId", organizacaoId.toString())
-                .param("inicio", "2026-10-01T00:00:00Z")
-                .param("fim", "2026-10-10T00:00:00Z")
-                .header("X-Actor-Org-Id", organizacaoId.toString()))
+                        .param("organizacaoId", organizacaoId.toString())
+                        .param("inicio", "2026-10-01T00:00:00Z")
+                        .param("fim", "2026-10-10T00:00:00Z")
+                        .header("X-Actor-Org-Id", organizacaoId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.numeradorOcorrenciasElegiveis").value(3))
                 .andExpect(jsonPath("$.denominadorEventosAfetados").value(2))

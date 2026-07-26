@@ -3,6 +3,8 @@ package br.com.nsfatima.gestao.calendario.infrastructure.export;
 import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
+import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -11,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
 @Component
 public class CsvCalendarioExporter implements CalendarioExporter {
@@ -25,12 +26,12 @@ public class CsvCalendarioExporter implements CalendarioExporter {
     }
 
     @Override
-    public byte[] export(List<EventoEntity> eventos, 
-                        Map<UUID, String> localMap, 
-                        Map<UUID, String> orgMap, 
-                        Instant start, 
-                        Instant end, 
-                        ParoquiaConfiguracaoEntity config) {
+    public byte[] export(List<EventoEntity> eventos,
+                         Map<UUID, String> localMap,
+                         Map<UUID, String> orgMap,
+                         Instant start,
+                         Instant end,
+                         ParoquiaConfiguracaoEntity config) {
         StringBuilder sb = new StringBuilder();
         // UTF-8 BOM para garantir acentos corretos no Excel em português
         sb.append('\uFEFF');
@@ -54,15 +55,21 @@ public class CsvCalendarioExporter implements CalendarioExporter {
     }
 
     private String formatInstant(Instant instant) {
-        if (instant == null) return "";
+        if (instant == null) {
+            return "";
+        }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
 
+    private static final String DOUBLE_QUOTE = "\"";
+
     private String escapeCsv(Object val) {
-        if (val == null) return "";
-        String s = val.toString().replace("\"", "\"\"");
-        if (s.contains(";") || s.contains("\n") || s.contains("\r") || s.contains("\"")) {
-            return "\"" + s + "\"";
+        if (val == null) {
+            return "";
+        }
+        String s = val.toString().replace(DOUBLE_QUOTE, "\"\"");
+        if (s.contains(";") || s.contains("\n") || s.contains("\r") || s.contains(DOUBLE_QUOTE)) {
+            return DOUBLE_QUOTE + s + DOUBLE_QUOTE;
         }
         return s;
     }

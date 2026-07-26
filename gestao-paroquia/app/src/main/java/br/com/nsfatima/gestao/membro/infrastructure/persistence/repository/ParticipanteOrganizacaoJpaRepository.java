@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface ParticipanteOrganizacaoJpaRepository extends JpaRepository<ParticipanteOrganizacaoEntity, UUID> {
     List<ParticipanteOrganizacaoEntity> findByMembroIdAndAtivoTrue(UUID membroId);
+
     List<ParticipanteOrganizacaoEntity> findByOrganizacaoIdAndAtivoTrue(UUID organizacaoId);
 }

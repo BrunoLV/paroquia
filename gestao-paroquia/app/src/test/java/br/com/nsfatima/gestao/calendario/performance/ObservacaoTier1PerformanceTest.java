@@ -1,25 +1,24 @@
 package br.com.nsfatima.gestao.calendario.performance;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -54,8 +53,8 @@ class ObservacaoTier1PerformanceTest {
         for (int i = 0; i < SAMPLE_SIZE; i++) {
             long createStart = System.nanoTime();
             MvcResult createResult = mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Perf note " + i + "\"}"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Perf note " + i + "\"}"))
                     .andExpect(status().isCreated())
                     .andReturn();
             createLatencies.add(nanosToMillis(System.nanoTime() - createStart));
@@ -65,8 +64,8 @@ class ObservacaoTier1PerformanceTest {
 
             long editStart = System.nanoTime();
             mockMvc.perform(patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"conteudo\":\"Perf edit " + i + "\"}"))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"conteudo\":\"Perf edit " + i + "\"}"))
                     .andExpect(status().isOk());
             editLatencies.add(nanosToMillis(System.nanoTime() - editStart));
 

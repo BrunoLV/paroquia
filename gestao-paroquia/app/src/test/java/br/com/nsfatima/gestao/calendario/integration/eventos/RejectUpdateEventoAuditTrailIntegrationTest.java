@@ -1,19 +1,20 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
-import tools.jackson.databind.ObjectMapper;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,19 +34,19 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
     void rejectionUpdatesAuditTrailWithDecidoEmUtcNull() throws Exception {
         // Create event
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
-                .header("Idempotency-Key", UUID.randomUUID())
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO")
-                .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                          "titulo": "Evento audit trail",
-                          "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
-                          "inicio": "2027-12-20T10:00:00Z",
-                          "fim": "2027-12-20T11:00:00Z"
-                        }
-                        """))
+                        .header("Idempotency-Key", UUID.randomUUID())
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
+                        .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "titulo": "Evento audit trail",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                                  "inicio": "2027-12-20T10:00:00Z",
+                                  "fim": "2027-12-20T11:00:00Z"
+                                }
+                                """))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -54,15 +55,15 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
 
         // PATCH with sensitive fields → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "PASTORAL")
-                .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                          "inicio": "2027-12-26T10:00:00Z"
-                        }
-                        """))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "inicio": "2027-12-26T10:00:00Z"
+                                }
+                                """))
                 .andExpect(status().isAccepted())
                 .andReturn();
 
@@ -72,15 +73,15 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
 
         // Reject
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                .header("X-Actor-Role", "coordenador")
-                .header("X-Actor-Org-Type", "CONSELHO")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                          "status": "REPROVADA",
-                          "observacao": "Conflita com reuniao"
-                        }
-                        """))
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "status": "REPROVADA",
+                                  "observacao": "Conflita com reuniao"
+                                }
+                                """))
                 .andExpect(status().isOk());
 
         // Verify audit state: REPROVADA + no executadoEmUtc + correct timestamps

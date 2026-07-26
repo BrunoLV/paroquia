@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.domain.type;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+
 import java.util.Locale;
 
 public enum AprovadorPapel {
@@ -13,10 +14,6 @@ public enum AprovadorPapel {
 
     AprovadorPapel(String storedValue) {
         this.storedValue = storedValue;
-    }
-
-    public String storedValue() {
-        return storedValue;
     }
 
     public static AprovadorPapel fromStoredValue(String rawValue) {
@@ -44,5 +41,9 @@ public enum AprovadorPapel {
             return CONSELHO_VICE_COORDENADOR;
         }
         return CONSELHO_COORDENADOR;
+    }
+
+    public String storedValue() {
+        return storedValue;
     }
 }

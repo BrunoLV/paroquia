@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,12 +1,8 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoApprovalPendingResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
@@ -28,7 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.Duration;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +38,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/eventos")
@@ -80,8 +80,9 @@ public class EventoController {
     }
 
     /**
-     * Serves as the primary entry point for adding new activities to the parish calendar, ensuring business rules and governance policies are applied from the start.
-     * 
+     * Serves as the primary entry point for adding new activities to the parish calendar, ensuring business rules
+     * and governance policies are applied from the start.
+     * <p>
      * Usage Example:
      * {@code
      * CreateEventoRequest request = new CreateEventoRequest("Missa de Sábado", Instant.now(), ...);
@@ -89,16 +90,20 @@ public class EventoController {
      * }
      */
     @PostMapping
-    @Operation(summary = "Cria um novo evento", description = "Cria um evento no calendário. Pode exigir aprovação dependendo do papel do usuário.")
+    @Operation(summary = "Cria um novo evento", description = "Cria um evento no calendário. Pode exigir aprovação " +
+            "dependendo do papel do usuário.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Evento criado com sucesso", content = @Content(schema = @Schema(implementation = EventoResponse.class))),
-            @ApiResponse(responseCode = "202", description = "Solicitação de criação enviada para aprovação", content = @Content(schema = @Schema(implementation = EventoApprovalPendingResponse.class))),
+            @ApiResponse(responseCode = "201", description = "Evento criado com sucesso", content = @Content(schema =
+            @Schema(implementation = EventoResponse.class))),
+            @ApiResponse(responseCode = "202", description = "Solicitação de criação enviada para aprovação",
+                    content = @Content(schema = @Schema(implementation = EventoApprovalPendingResponse.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou violação de regras de negócio"),
             @ApiResponse(responseCode = "409", description = "Conflito de idempotência")
     })
     @SuppressWarnings("null")
     public ResponseEntity<Object> create(
-            @Parameter(description = "Chave de idempotência para garantir que a operação não seja repetida acidentalmente")
+            @Parameter(description = "Chave de idempotência para garantir que a operação não seja repetida " +
+                    "acidentalmente")
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @RequestBody @Valid CreateEventoRequest request) {
         EventoOperationResult result = createEventoUseCase.execute(idempotencyKey, request);
@@ -107,7 +112,7 @@ public class EventoController {
 
     /**
      * Facilitates calendar discovery and scheduling by providing a searchable list of events for various stakeholders.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * EventoFiltroRequest filters = new EventoFiltroRequest(null, null, "LITURGICO", null);
@@ -115,7 +120,8 @@ public class EventoController {
      * }
      */
     @GetMapping
-    @Operation(summary = "Lista eventos com filtros", description = "Retorna uma página de eventos baseada nos filtros de data e organização.")
+    @Operation(summary = "Lista eventos com filtros", description = "Retorna uma página de eventos baseada nos " +
+            "filtros de data e organização.")
     public Page<EventoResponse> list(EventoFiltroRequest filters, Pageable pageable) {
         long startedAt = System.nanoTime();
         Page<EventoResponse> response = listEventosUseCase.execute(filters, pageable);
@@ -128,14 +134,15 @@ public class EventoController {
 
     /**
      * Provides full descriptive details of a specific event to support deep-link views and editing interfaces.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * EventoResponse response = controller.get(eventoId);
      * }
      */
     @GetMapping("/{eventoId}")
-    @Operation(summary = "Obtém detalhes de um evento", description = "Retorna os detalhes completos de um evento específico pelo seu ID.")
+    @Operation(summary = "Obtém detalhes de um evento", description = "Retorna os detalhes completos de um evento " +
+            "específico pelo seu ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Evento encontrado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
@@ -143,7 +150,7 @@ public class EventoController {
     public EventoResponse get(@Parameter(description = "ID único do evento") @PathVariable UUID eventoId) {
         long startedAt = System.nanoTime();
         var actorContext = actorContextResolver.resolveRequired();
-        
+
         var entity = eventoService.findById(eventoId, actorContext);
         var response = eventoMapper.toResponse(entity);
 
@@ -156,8 +163,9 @@ public class EventoController {
     }
 
     /**
-     * Allows for incremental updates to event details while maintaining structural integrity and triggering re-approvals when necessary.
-     * 
+     * Allows for incremental updates to event details while maintaining structural integrity and triggering
+     * re-approvals when necessary.
+     * <p>
      * Usage Example:
      * {@code
      * UpdateEventoRequest request = new UpdateEventoRequest("Nova Descrição", null, ...);
@@ -165,7 +173,8 @@ public class EventoController {
      * }
      */
     @PatchMapping("/{eventoId}")
-    @Operation(summary = "Atualiza parcialmente um evento", description = "Atualiza campos específicos de um evento. Alterações em campos sensíveis (como datas) podem exigir aprovação.")
+    @Operation(summary = "Atualiza parcialmente um evento", description = "Atualiza campos específicos de um evento. " +
+            "Alterações em campos sensíveis (como datas) podem exigir aprovação.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Evento atualizado com sucesso"),
             @ApiResponse(responseCode = "202", description = "Solicitação de atualização enviada para aprovação"),
@@ -191,17 +200,19 @@ public class EventoController {
     }
 
     /**
-     * Prevents further occurrences and removes the event from active visibility while maintaining an audit trail of why it was cancelled (Deprecated).
-     * 
+     * Prevents further occurrences and removes the event from active visibility while maintaining an audit trail of
+     * why it was cancelled (Deprecated).
+     * <p>
      * Usage Example:
      * {@code
      * controller.cancel(eventoId, new CancelEventoRequest("Conflito de agenda"));
      * }
-     * 
+     *
      * @deprecated Utilize POST /{eventoId}/cancel para maior resiliência.
      */
     @DeleteMapping("/{eventoId}")
-    @Operation(summary = "Cancela um evento (Depreciado)", description = "Utilize POST /{eventoId}/cancel para maior resiliência.", deprecated = true)
+    @Operation(summary = "Cancela um evento (Depreciado)", description = "Utilize POST /{eventoId}/cancel para maior " +
+            "resiliência.", deprecated = true)
     @Deprecated
     @SuppressWarnings("null")
     public ResponseEntity<Object> cancel(
@@ -215,14 +226,15 @@ public class EventoController {
 
     /**
      * Safely retires an event from the schedule with a mandatory explanation to ensure organizational transparency.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * controller.cancelResilient(eventoId, new CancelarEventoRequest("Necessidade urgente de manutenção"));
      * }
      */
     @PostMapping("/{eventoId}/cancel")
-    @Operation(summary = "Cancela um evento", description = "Marca um evento como cancelado. Exige um motivo para o cancelamento.")
+    @Operation(summary = "Cancela um evento", description = "Marca um evento como cancelado. Exige um motivo para o " +
+            "cancelamento.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Evento cancelado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Motivo não informado"),

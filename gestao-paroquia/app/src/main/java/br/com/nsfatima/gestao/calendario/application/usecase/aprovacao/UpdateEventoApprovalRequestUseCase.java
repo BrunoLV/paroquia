@@ -12,11 +12,12 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UpdateEventoApprovalRequestUseCase {
@@ -38,8 +39,9 @@ public class UpdateEventoApprovalRequestUseCase {
     }
 
     /**
-     * Submits a request to modify critical fields of an existing event, ensuring that changes to dates or core details are vetted by the Parish Council.
-     * 
+     * Submits a request to modify critical fields of an existing event, ensuring that changes to dates or core
+     * details are vetted by the Parish Council.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId, updateRequest);
@@ -59,16 +61,18 @@ public class UpdateEventoApprovalRequestUseCase {
         entity.setSolicitanteTipoOrganizacao(context.organizationType());
         entity.setAprovadorPapel(AprovadorPapel.CONSELHO_COORDENADOR.storedValue());
         entity.setCriadoEmUtc(Instant.now());
-        
+
         ApprovalActionPayload payload = buildPayload(eventoId, request);
         entity.setActionPayloadJson(approvalActionPayloadMapper.toJson(payload));
 
         aprovacaoRepository.save(entity);
 
-        auditPublisher.publish(context.actor(), "approval-decision-request", entity.getId().toString(), "success", Map.of(
-                "tipoSolicitacao", entity.getTipoSolicitacao(),
-                "targetEventId", eventoId
-        ));
+        auditPublisher.publish(context.actor(),
+                "approval-decision-request", entity.getId().toString(), "success", Map.of(
+
+                        "tipoSolicitacao", entity.getTipoSolicitacao(),
+                        "targetEventId", eventoId
+                ));
 
         return new EventoApprovalPendingResponse(
                 entity.getId(),

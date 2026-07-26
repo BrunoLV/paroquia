@@ -1,16 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
-import java.nio.charset.StandardCharsets;
-import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.util.HexFormat;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
+import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoIdempotencyEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
@@ -18,16 +10,21 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.HexFormat;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 @Service
 public class EventoIdempotencyService {
-
-    public record IdempotencyResult(EventoResponse response, boolean replay) {
-    }
 
     private final EventoIdempotencyJpaRepository idempotencyRepository;
     private final EventoJpaRepository eventoRepository;
     private final EventoMapper eventoMapper;
-
     public EventoIdempotencyService(
             EventoIdempotencyJpaRepository idempotencyRepository,
             EventoJpaRepository eventoRepository,
@@ -38,7 +35,7 @@ public class EventoIdempotencyService {
     }
 
     public IdempotencyResult execute(String idempotencyKey, CreateEventoRequest request,
-            Supplier<EventoResponse> createAction) {
+                                     Supplier<EventoResponse> createAction) {
         String key = Objects.requireNonNull(idempotencyKey);
         String requestHash = hashRequest(request);
         Optional<EventoIdempotencyEntity> existing = idempotencyRepository.findById(key);
@@ -88,5 +85,8 @@ public class EventoIdempotencyService {
 
     private String nullSafe(String value) {
         return value == null ? "" : value;
+    }
+
+    public record IdempotencyResult(EventoResponse response, boolean replay) {
     }
 }

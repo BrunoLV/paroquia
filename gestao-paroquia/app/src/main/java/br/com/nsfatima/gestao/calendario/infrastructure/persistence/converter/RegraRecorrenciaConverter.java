@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.converter;
 
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Converter(autoApply = true)
 public class RegraRecorrenciaConverter implements AttributeConverter<RegraRecorrencia, String> {
 
-    private static final ObjectMapper OBJECT_MAPPER = tools.jackson.databind.json.JsonMapper.builder().findAndAddModules().build();
+    private static final ObjectMapper OBJECT_MAPPER =
+            tools.jackson.databind.json.JsonMapper.builder().findAndAddModules().build();
 
     @Override
     public String convertToDatabaseColumn(RegraRecorrencia attribute) {

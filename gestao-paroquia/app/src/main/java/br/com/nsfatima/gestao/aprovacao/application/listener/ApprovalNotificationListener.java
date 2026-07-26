@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.application.listener;
 
-import org.slf4j.Logger;
 import br.com.nsfatima.gestao.aprovacao.domain.event.ApprovalDecisionEvent;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -15,14 +15,16 @@ public class ApprovalNotificationListener {
     @Async
     @EventListener
     public void handleApprovalDecision(ApprovalDecisionEvent event) {
-        LOGGER.info("NOTIFICAÇÃO: Solicitação de aprovação {} para o evento {} foi {}. Solicitante: {}. Decisor: {}. Erro: {}",
+        LOGGER.info(
+                "NOTIFICAÇÃO: Solicitação de aprovação {} para o evento {} foi {}. Solicitante: {}. Decisor: {}. " +
+                        "Erro: {}",
                 event.aprovacaoId(),
                 event.eventoId(),
                 event.status(),
                 event.solicitanteId(),
                 event.decisorId(),
                 event.erroExecucao() != null ? event.erroExecucao() : "Nenhum");
-        
+
         // Espaço para futuras integrações (E-mail, Push, etc.)
     }
 }

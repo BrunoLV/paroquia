@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.aprovacao.application.mapper;
 
-import tools.jackson.core.JacksonException;
 import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class ApprovalActionPayloadMapper {
@@ -24,7 +24,9 @@ public class ApprovalActionPayloadMapper {
 
     public ApprovalActionPayload toPayload(String payloadJson) {
         if (payloadJson == null || payloadJson.isBlank()) {
-            return new ApprovalActionPayload(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            return new ApprovalActionPayload(null,
+                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+
         }
         try {
             return objectMapper.readValue(payloadJson, ApprovalActionPayload.class);

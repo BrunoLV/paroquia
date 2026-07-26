@@ -35,7 +35,7 @@ class AnoParoquialRolloverTest {
     void shouldHaveScheduledCronExpressionForDec31EndOfDay() throws NoSuchMethodException {
         Method method = AnoParoquialRolloverService.class.getMethod("rolloverYearAutomatically");
         Scheduled scheduled = method.getAnnotation(Scheduled.class);
-        
+
         assertThat(scheduled).isNotNull();
         assertThat(scheduled.cron()).isEqualTo("59 59 23 31 12 *");
     }

@@ -1,13 +1,14 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 class ParoquiaConfiguracaoJpaRepositoryTest {
@@ -25,7 +26,7 @@ class ParoquiaConfiguracaoJpaRepositoryTest {
         entity.setEndereco("Rua Teste, 123");
         entity.setCorPrimariaHex("#112233");
         entity.setCorSecundariaHex("#445566");
-        entity.setLogoBytes(new byte[]{1, 2, 3});
+        entity.setLogoBytes(new byte[] {1, 2, 3});
 
         repository.save(entity);
 

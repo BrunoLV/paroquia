@@ -2,10 +2,13 @@ package br.com.nsfatima.gestao.iam.integration;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,15 +33,15 @@ class UsuarioRegistrationIntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoJpaRepository;
+    private OrganizacaoJpaRepository organizacaoJpaRepository;
 
     @Test
     void shouldRegisterNewUserAsDisabledAndEncrypted() throws Exception {
-        br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity igreja = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        OrganizacaoEntity igreja = new OrganizacaoEntity();
         UUID igrejaId = UUID.randomUUID();
         igreja.setId(igrejaId);
         igreja.setNome("Matriz Teste " + UUID.randomUUID());
-        igreja.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ);
+        igreja.setTipo(TipoOrganizacao.MATRIZ);
         igreja.setAtivo(true);
         organizacaoJpaRepository.save(igreja);
 

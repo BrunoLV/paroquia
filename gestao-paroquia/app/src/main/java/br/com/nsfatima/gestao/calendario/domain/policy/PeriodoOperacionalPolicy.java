@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
+import org.springframework.stereotype.Component;
+
 import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -9,7 +11,6 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PeriodoOperacionalPolicy {

@@ -1,12 +1,5 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoCreateRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoUpdateRequest;
@@ -17,6 +10,10 @@ import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListObse
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.UpdateObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/eventos/{eventoId}/observacoes")
@@ -60,8 +61,9 @@ public class ObservacaoController {
     }
 
     /**
-     * Enables qualitative data enrichment for events by allowing users to attach textual notes and technical observations.
-     * 
+     * Enables qualitative data enrichment for events by allowing users to attach textual notes and technical
+     * observations.
+     * <p>
      * Usage Example:
      * {@code
      * controller.create(eventoId, new ObservacaoCreateRequest("NOTA", "Lembrar dos bancos extras"));
@@ -69,7 +71,8 @@ public class ObservacaoController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Adiciona uma observação", description = "Cria uma nova nota ou observação vinculada ao evento informado.")
+    @Operation(summary = "Adiciona uma observação", description = "Cria uma nova nota ou observação vinculada ao " +
+            "evento informado.")
     @Transactional
     public ObservacaoResponse create(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
@@ -85,14 +88,15 @@ public class ObservacaoController {
 
     /**
      * Promotes collaborative transparency by aggregating all relevant comments and notes associated with an event.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * List<ObservacaoResponse> list = controller.list(eventoId);
      * }
      */
     @GetMapping
-    @Operation(summary = "Lista todas as observações", description = "Retorna todas as observações associadas ao evento.")
+    @Operation(summary = "Lista todas as observações", description = "Retorna todas as observações associadas ao " +
+            "evento.")
     public List<ObservacaoResponse> list(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         List<ObservacaoResponse> result = listObservacoesUseCase.execute(eventoId);
@@ -106,14 +110,15 @@ public class ObservacaoController {
 
     /**
      * Allows users to quickly find and manage their own contributions to an event's discussion or documentation.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * List<ObservacaoResponse> minhas = controller.listMinhas(eventoId);
      * }
      */
     @GetMapping("/minhas")
-    @Operation(summary = "Lista minhas observações", description = "Retorna apenas as observações criadas pelo usuário atual no evento.")
+    @Operation(summary = "Lista minhas observações", description = "Retorna apenas as observações criadas pelo " +
+            "usuário atual no evento.")
     public List<ObservacaoResponse> listMinhas(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         List<ObservacaoResponse> result = listMinhasObservacoesUseCase.execute(eventoId, context.usuarioId());
@@ -127,14 +132,15 @@ public class ObservacaoController {
 
     /**
      * Ensures information remains accurate and relevant by allowing authors to refine their previous observations.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * controller.update(eventoId, observacaoId, new ObservacaoUpdateRequest("Conteúdo revisado"));
      * }
      */
     @PatchMapping("/{observacaoId}")
-    @Operation(summary = "Atualiza uma observação", description = "Altera o conteúdo de uma observação existente. Requer que o ator seja o autor.")
+    @Operation(summary = "Atualiza uma observação", description = "Altera o conteúdo de uma observação existente. " +
+            "Requer que o ator seja o autor.")
     @Transactional
     public ObservacaoResponse update(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
@@ -151,7 +157,7 @@ public class ObservacaoController {
 
     /**
      * Maintains data hygiene and privacy by allowing the removal of obsolete or incorrect notes from an event.
-     * 
+     * <p>
      * Usage Example:
      * {@code
      * controller.delete(eventoId, observacaoId);

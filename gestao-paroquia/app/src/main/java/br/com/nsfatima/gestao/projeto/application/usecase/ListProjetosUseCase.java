@@ -18,7 +18,7 @@ public class ListProjetosUseCase {
      * Inicializa o caso de uso com as dependências para consulta e mapeamento de projetos.
      *
      * @param repository Repositório JPA para consulta de projetos
-     * @param mapper Mapeador para conversão de entidades em DTOs de resposta
+     * @param mapper     Mapeador para conversão de entidades em DTOs de resposta
      */
     public ListProjetosUseCase(ProjetoEventoJpaRepository repository, ProjetoMapper mapper) {
         this.repository = repository;
@@ -26,7 +26,8 @@ public class ListProjetosUseCase {
     }
 
     /**
-     * Recupera a lista completa de projetos cadastrados para apoiar a visualização e gestão macro das iniciativas paroquiais.
+     * Recupera a lista completa de projetos cadastrados para apoiar a visualização e gestão macro das iniciativas
+     * paroquiais.
      *
      * <p>Usage Example:
      * {@code List<ProjetoResponse> projetos = listProjetosUseCase.execute()}

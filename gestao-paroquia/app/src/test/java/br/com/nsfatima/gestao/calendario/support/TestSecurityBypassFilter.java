@@ -7,10 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
@@ -21,6 +17,11 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
@@ -102,7 +103,7 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
     private boolean hasSessionCookie(HttpServletRequest request) {
         return request.getCookies() != null
                 && Arrays.stream(request.getCookies())
-                        .anyMatch(cookie -> "JSESSIONID".equals(cookie.getName()));
+                .anyMatch(cookie -> "JSESSIONID".equals(cookie.getName()));
     }
 
     private String headerOrDefault(HttpServletRequest request, String name, String defaultValue) {

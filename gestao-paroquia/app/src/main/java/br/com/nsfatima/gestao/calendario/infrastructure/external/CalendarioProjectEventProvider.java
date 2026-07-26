@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.external;
 
-import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;

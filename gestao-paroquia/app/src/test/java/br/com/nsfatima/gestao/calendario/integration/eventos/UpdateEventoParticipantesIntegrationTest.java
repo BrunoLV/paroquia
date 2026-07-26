@@ -3,15 +3,16 @@ package br.com.nsfatima.gestao.calendario.integration.eventos;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -54,11 +55,11 @@ class UpdateEventoParticipantesIntegrationTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                .header("X-Actor-Role", "vice-coordenador")
-                .header("X-Actor-Org-Type", "PASTORAL")
-                .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(payload))
+                        .header("X-Actor-Role", "vice-coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(payload))
                 .andExpect(status().isOk());
 
         assertThat(eventoEnvolvidoJpaRepository.findByEventoId(eventoId)).hasSize(2);

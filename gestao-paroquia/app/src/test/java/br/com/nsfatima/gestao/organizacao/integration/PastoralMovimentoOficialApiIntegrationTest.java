@@ -6,8 +6,8 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,8 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -77,8 +79,8 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """;
 
         String response = mockMvc.perform(post("/api/v1/pastorais-oficiais")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Pastoral de Teste Oficial"))
                 .andExpect(jsonPath("$.tipo").value("PASTORAL"))
@@ -104,8 +106,8 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """;
 
         mockMvc.perform(post("/api/v1/pastorais-oficiais")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isForbidden());
     }
 
@@ -125,9 +127,9 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """, conselhoId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
-                .with(user("admin").roles("ADMIN"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .with(user("admin").roles("ADMIN"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isConflict());
     }
 
@@ -143,13 +145,15 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """;
 
         String officialResponse = mockMvc.perform(post("/api/v1/pastorais-oficiais")
-                .with(user("admin").roles("ADMIN"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(officialPayload))
+                        .with(user("admin").roles("ADMIN"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(officialPayload))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        String officialId = officialResponse.substring(officialResponse.indexOf("\"id\":\"") + 6, officialResponse.indexOf("\",\"nome\""));
+        String officialId = officialResponse.substring(officialResponse.indexOf("\"id\":\"") + 6,
+                officialResponse.indexOf("\",\"nome\""));
+
 
         String payload = String.format("""
                 {
@@ -165,9 +169,9 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """, conselhoId, officialId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
-                .with(user("admin").roles("ADMIN"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .with(user("admin").roles("ADMIN"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Criança - Comunidade A"))
                 .andExpect(jsonPath("$.pastoralOficialId").value(officialId));

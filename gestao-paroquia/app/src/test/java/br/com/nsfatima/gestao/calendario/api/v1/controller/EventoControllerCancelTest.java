@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import java.time.Instant;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,10 +37,10 @@ class EventoControllerCancelTest {
                 """;
 
         mockMvc.perform(post("/api/v1/eventos/" + eventId + "/cancel")
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isOk());
     }
 

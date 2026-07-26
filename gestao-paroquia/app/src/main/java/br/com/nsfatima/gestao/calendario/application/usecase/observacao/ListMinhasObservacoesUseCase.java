@@ -5,9 +5,10 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ListMinhasObservacoesUseCase {
@@ -23,8 +24,9 @@ public class ListMinhasObservacoesUseCase {
     }
 
     /**
-     * Filters observations to show only those created by the current user, facilitating personal management of notes and technical remarks.
-     * 
+     * Filters observations to show only those created by the current user, facilitating personal management of notes
+     * and technical remarks.
+     * <p>
      * Usage Example:
      * {@code
      * List<ObservacaoResponse> list = useCase.execute(eventoId, usuarioId);

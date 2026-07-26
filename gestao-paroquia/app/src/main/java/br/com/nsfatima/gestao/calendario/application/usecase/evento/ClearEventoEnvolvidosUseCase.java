@@ -1,11 +1,12 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import java.util.Collections;
-import java.util.UUID;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidosResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.UUID;
 
 @Service
 public class ClearEventoEnvolvidosUseCase {
@@ -17,8 +18,9 @@ public class ClearEventoEnvolvidosUseCase {
     }
 
     /**
-     * Resets the collaboration list for an event, removing all pastoral links when the event's logistical requirements are completely reset.
-     * 
+     * Resets the collaboration list for an event, removing all pastoral links when the event's logistical
+     * requirements are completely reset.
+     * <p>
      * Usage Example:
      * {@code
      * useCase.execute(eventoId);

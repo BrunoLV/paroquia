@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.config;
 
-import tools.jackson.databind.DeserializationFeature;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.databind.DeserializationFeature;
 
 @Configuration
 public class JacksonConfig {

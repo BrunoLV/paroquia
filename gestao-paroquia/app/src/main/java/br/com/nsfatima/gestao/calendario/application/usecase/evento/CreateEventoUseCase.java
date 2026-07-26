@@ -1,15 +1,13 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
-import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
+import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CreateEventoApprovalRequestUseCase;
 import br.com.nsfatima.gestao.calendario.domain.policy.CalendarLockPolicy;
-import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
@@ -25,16 +23,18 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.cache.CacheManager;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Use case responsible for creating new events, handling idempotency, authorization, and approval flows.
@@ -90,7 +90,7 @@ public class CreateEventoUseCase {
 
     /**
      * Executes the creation request. Returns 201 CREATED with the event or 202 ACCEPTED if approval is needed.
-     * 
+     * <p>
      * Usage Example:
      * useCase.execute("idemp-001", new CreateEventoRequest("Title", "Desc", ...));
      */
@@ -100,13 +100,19 @@ public class CreateEventoUseCase {
         validateCreationRequest(request);
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext, request.organizacaoResponsavelId(), request.igrejaVinculoId());
+        CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext,
+                request.organizacaoResponsavelId(), request.igrejaVinculoId());
+
 
         if (mode == CreateRequestMode.REQUIRES_APPROVAL) {
-            return new EventoOperationResult.Pending(approvalRequestUseCase.execute(idempotencyKey, request), HttpStatus.ACCEPTED);
+            return new EventoOperationResult.Pending(approvalRequestUseCase.execute(idempotencyKey,
+                    request), HttpStatus.ACCEPTED);
+
         }
 
-        return new EventoOperationResult.Success(createImmediate(idempotencyKey, request, actorContext.actor()), HttpStatus.CREATED);
+        return new EventoOperationResult.Success(createImmediate(idempotencyKey,
+                request, actorContext.actor()), HttpStatus.CREATED);
+
     }
 
     /**
@@ -134,7 +140,9 @@ public class CreateEventoUseCase {
     private EventoResponse createImmediate(String idempotencyKey, CreateEventoRequest request, String actor) {
         validateCreationRequest(request);
         try {
-            EventoIdempotencyService.IdempotencyResult result = idempotencyService.execute(idempotencyKey, request, () -> persistNewEvent(request));
+            EventoIdempotencyService.IdempotencyResult result = idempotencyService.execute(idempotencyKey,
+                    request, () -> persistNewEvent(request));
+
             publishCreationOutcomes(result, request.inicio(), actor);
             evictProjectCache(request.projetoId());
             return result.response();
@@ -154,7 +162,7 @@ public class CreateEventoUseCase {
     private EventoResponse persistNewEvent(CreateEventoRequest request) {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         EventoEntity entity = mapper.toNewEntity(request, status);
-        
+
         boolean hasOverlap = repository.existsByInicioUtcLessThanAndFimUtcGreaterThan(request.fim(), request.inicio());
         entity.setConflictState(domainService.resolveConflictState(hasOverlap));
         entity.setConflictReason(domainService.resolveConflictReason(hasOverlap));
@@ -169,20 +177,22 @@ public class CreateEventoUseCase {
         }
 
         // Manually fetch involvement to ensure response is complete
-        List<EventoEnvolvidoEntity> involvement = 
+        List<EventoEnvolvidoEntity> involvement =
                 involvementRepository.findByEventoId(saved.getId());
         saved.setEnvolvidos(involvement);
 
         return mapper.toResponse(saved);
     }
 
-    private void publishCreationOutcomes(EventoIdempotencyService.IdempotencyResult result, Instant inicio, String actor) {
+    private void publishCreationOutcomes(EventoIdempotencyService.IdempotencyResult result,
+                                         Instant inicio, String actor) {
+
         EventoResponse response = result.response();
         boolean conflictPending = "CONFLICT_PENDING".equals(response.conflictState());
-        
+
         metricsPublisher.publishCreateSuccess(conflictPending, result.replay());
         metricsPublisher.publishEventRegistrationLeadTime(Duration.between(Instant.now(), inicio));
-        
+
         auditPublisher.publishCreateSuccess(actor, response.id().toString(), result.replay(), response.conflictState());
     }
 
@@ -192,8 +202,9 @@ public class CreateEventoUseCase {
     }
 
     /**
-     * Reconstructs the original creation request from stored approval data to allow for final execution after governance vetting.
-     * 
+     * Reconstructs the original creation request from stored approval data to allow for final execution after
+     * governance vetting.
+     * <p>
      * Usage Example:
      * {@code
      * CreateEventoRequest request = useCase.restoreFromApprovalPayload(payload);
@@ -203,9 +214,14 @@ public class CreateEventoUseCase {
         Objects.requireNonNull(payload.organizacaoResponsavelId(), "organizacaoResponsavelId is required");
         Objects.requireNonNull(payload.inicio(), "inicio is required");
         Objects.requireNonNull(payload.fim(), "fim is required");
-        
-        return new CreateEventoRequest(payload.titulo(), payload.descricao(), payload.categoria(), payload.organizacaoResponsavelId(),
-                payload.projetoId(), payload.localId(), payload.igrejaVinculoId(), payload.inicio(), payload.fim(), payload.status(), payload.adicionadoExtraJustificativa(),
+
+        return new CreateEventoRequest(payload.titulo(),
+                payload.descricao(), payload.categoria(), payload.organizacaoResponsavelId(),
+
+                payload.projetoId(),
+                payload.localId(), payload.igrejaVinculoId(), payload.inicio(), payload.fim(),
+                payload.status(), payload.adicionadoExtraJustificativa(),
+
                 payload.participantes());
     }
 }

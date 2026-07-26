@@ -1,10 +1,11 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.observability;
 
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.springframework.stereotype.Component;
-import org.slf4j.MDC;
 
 @Component
 public class ProjetoAuditPublisher {

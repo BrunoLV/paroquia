@@ -9,7 +9,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -27,10 +33,12 @@ public class UsuarioAdminController {
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
-    @Operation(summary = "Enable or disable a user", description = "Global administrators or Organization Coordinators can toggle user status.")
+    @Operation(summary = "Enable or disable a user", description = "Global administrators or Organization " +
+            "Coordinators can toggle user status.")
     /**
-     * Permite que administradores ou coordenadores gerenciem o acesso ao sistema ativando ou desativando contas conforme necessário.
-     * 
+     * Permite que administradores ou coordenadores gerenciem o acesso ao sistema ativando ou desativando contas
+     * conforme necessário.
+     *
      * Exemplo: PATCH /api/v1/usuarios/{id}/status { "enabled": false }
      */
     public void toggleStatus(@PathVariable UUID id, @RequestBody @Valid UserStatusRequest request) {
@@ -42,8 +50,9 @@ public class UsuarioAdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update user global roles", description = "Only global administrators can update roles.")
     /**
-     * Define as permissões globais de um usuário no sistema para controlar seu nível de acesso administrativo em toda a plataforma.
-     * 
+     * Define as permissões globais de um usuário no sistema para controlar seu nível de acesso administrativo em
+     * toda a plataforma.
+     *
      * Exemplo: PATCH /api/v1/usuarios/{id}/roles { "roles": ["ADMIN"] }
      */
     public void updateRoles(@PathVariable UUID id, @RequestBody @Valid RolesUpdateRequest request) {
@@ -53,10 +62,12 @@ public class UsuarioAdminController {
     @PostMapping("/{id}/password-reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
-    @Operation(summary = "Reset user password", description = "Global administrators or Organization Coordinators can reset passwords.")
+    @Operation(summary = "Reset user password", description = "Global administrators or Organization Coordinators can" +
+            " reset passwords.")
     /**
-     * Força a atualização da senha de um usuário quando necessário para manter a segurança ou recuperar acessos perdidos.
-     * 
+     * Força a atualização da senha de um usuário quando necessário para manter a segurança ou recuperar acessos
+     * perdidos.
+     *
      * Exemplo: POST /api/v1/usuarios/{id}/password-reset { "newPassword": "..." }
      */
     public void resetPassword(@PathVariable UUID id, @RequestBody @Valid PasswordResetRequest request) {

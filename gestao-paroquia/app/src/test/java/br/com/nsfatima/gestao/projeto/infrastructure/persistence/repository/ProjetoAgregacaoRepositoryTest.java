@@ -1,18 +1,11 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
-import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -40,7 +40,8 @@ class ProjetoAgregacaoRepositoryTest {
     @BeforeEach
     void setupSchema() {
         // Ensure organizacoes table exists for the native query
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS calendario.organizacoes (id UUID PRIMARY KEY, nome VARCHAR(255))");
+        jdbcTemplate.execute(
+                "CREATE TABLE IF NOT EXISTS calendario.organizacoes (id UUID PRIMARY KEY, nome VARCHAR(255))");
         jdbcTemplate.execute("DELETE FROM calendario.organizacoes");
     }
 
@@ -48,7 +49,7 @@ class ProjetoAgregacaoRepositoryTest {
     @DisplayName("Deve contar eventos por projeto e status corretamente")
     void deveContarEventosPorProjetoEStatus() {
         UUID projetoId = UUID.randomUUID();
-        
+
         // Setup project
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(projetoId);
@@ -104,9 +105,12 @@ class ProjetoAgregacaoRepositoryTest {
         UUID orgEnvolvido1 = UUID.randomUUID();
 
         // Setup organizations in external table
-        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgProjeto + "', 'Pastoral do Projeto')");
-        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgEvento1 + "', 'Pastoral do Evento')");
-        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgEnvolvido1 + "', 'Pastoral Envolvida')");
+        jdbcTemplate.execute(
+                "INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgProjeto + "', 'Pastoral do Projeto')");
+        jdbcTemplate.execute(
+                "INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgEvento1 + "', 'Pastoral do Evento')");
+        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgEnvolvido1 +
+                "', 'Pastoral Envolvida')");
 
         // Setup project
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
@@ -116,7 +120,9 @@ class ProjetoAgregacaoRepositoryTest {
         projetoRepository.save(projeto);
 
         // Event 1 with involved
-        EventoEntity evento1 = saveEvento(projetoId, EventoStatusInput.CONFIRMADO, Instant.now().plus(1, ChronoUnit.DAYS));
+        EventoEntity evento1 = saveEvento(projetoId,
+                EventoStatusInput.CONFIRMADO, Instant.now().plus(1, ChronoUnit.DAYS));
+
         evento1.setOrganizacaoResponsavelId(orgEvento1);
         eventoRepository.save(evento1);
 
@@ -134,7 +140,8 @@ class ProjetoAgregacaoRepositoryTest {
     private EventoEntity saveEvento(UUID projetoId, EventoStatusInput status, Instant inicio) {
         UUID orgId = UUID.randomUUID();
         String uniqueNome = "Org Teste " + orgId;
-        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgId + "', '" + uniqueNome + "')");
+        jdbcTemplate.execute(
+                "INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgId + "', '" + uniqueNome + "')");
 
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());

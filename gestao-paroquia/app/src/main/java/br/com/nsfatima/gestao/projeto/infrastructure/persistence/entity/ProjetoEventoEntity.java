@@ -1,11 +1,12 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -62,16 +63,16 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
         return status;
     }
 
-    public ProjetoStatus getStatusEnum() {
-        return ProjetoStatus.fromJson(status);
-    }
-
     public void setStatus(String status) {
         this.status = status;
     }
 
     public void setStatus(ProjetoStatus status) {
         this.status = status == null ? null : status.name();
+    }
+
+    public ProjetoStatus getStatusEnum() {
+        return ProjetoStatus.fromJson(status);
     }
 
     public UUID getOrganizacaoResponsavelId() {

@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.validation.ValidEventDates;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
-import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 
 @ValidEventDates
 @Schema(description = "Solicitação para criação de um novo evento")
@@ -62,6 +63,9 @@ public record CreateEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             List<UUID> participantes) {
-        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status, adicionadoExtraJustificativa, participantes);
+        this(titulo,
+                descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status,
+                adicionadoExtraJustificativa, participantes);
+
     }
 }

@@ -1,27 +1,36 @@
 package br.com.nsfatima.gestao.membro.api.v1.controller;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.AddParticipanteUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.ListParticipacoesUseCase;
-import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
-import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.GetMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.ListParticipacoesUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.UpdateMembroUseCase;
-import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/membros")
@@ -58,8 +67,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cadastra um novo membro")
     /**
-     * Registra um novo fiel ou paroquiano no sistema para permitir o acompanhamento de sua vida sacramental e participação na comunidade.
-     * 
+     * Registra um novo fiel ou paroquiano no sistema para permitir o acompanhamento de sua vida sacramental e
+     * participação na comunidade.
+     *
      * Exemplo: POST /api/v1/membros { "nomeCompleto": "Maria Oliveira", "email": "maria@example.com", ... }
      */
     public MembroResponse create(@RequestBody @Valid MembroRequest request) {
@@ -71,8 +81,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista membros com filtros e paginação")
     /**
-     * Recupera uma lista paginada de membros, permitindo a aplicação de filtros por nome e status para facilitar a gestão do cadastro.
-     * 
+     * Recupera uma lista paginada de membros, permitindo a aplicação de filtros por nome e status para facilitar a
+     * gestão do cadastro.
+     *
      * Exemplo: GET /api/v1/membros?nome=Maria&ativo=true&page=0&size=20
      */
     public Page<MembroResponse> list(
@@ -88,8 +99,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtém detalhes de um membro")
     /**
-     * Busca as informações completas de um membro específico para consulta detalhada ou preparação de atualização de dados.
-     * 
+     * Busca as informações completas de um membro específico para consulta detalhada ou preparação de atualização de
+     * dados.
+     *
      * Exemplo: GET /api/v1/membros/{id}
      */
     public MembroResponse get(@PathVariable UUID id) {
@@ -100,8 +112,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualiza dados de um membro")
     /**
-     * Atualiza as informações cadastrais de um membro para manter o histórico sacramental e dados de contato fidedignos.
-     * 
+     * Atualiza as informações cadastrais de um membro para manter o histórico sacramental e dados de contato
+     * fidedignos.
+     *
      * Exemplo: PATCH /api/v1/membros/{id} { "telefone": "(11) 99999-9999", "endereco": "Nova Rua, 123" }
      */
     public MembroResponse update(
@@ -116,8 +129,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Ativa ou desativa um membro")
     /**
-     * Altera a situação de atividade de um membro no sistema para refletir sua condição atual de participação na paróquia.
-     * 
+     * Altera a situação de atividade de um membro no sistema para refletir sua condição atual de participação na
+     * paróquia.
+     *
      * Exemplo: PATCH /api/v1/membros/{id}/status?ativo=false
      */
     public void toggleStatus(
@@ -131,8 +145,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista organizações que o membro participa")
     /**
-     * Lista as pastorais, movimentos ou grupos aos quais o membro está vinculado para entender seu engajamento e responsabilidades.
-     * 
+     * Lista as pastorais, movimentos ou grupos aos quais o membro está vinculado para entender seu engajamento e
+     * responsabilidades.
+     *
      * Exemplo: GET /api/v1/membros/{id}/organizacoes
      */
     public List<ParticipacaoResponse> listOrganizacoes(@PathVariable UUID id) {
@@ -144,8 +159,9 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Inscreve um membro em uma organização")
     /**
-     * Vincula um membro a uma organização específica, registrando formalmente o início de sua participação ativa naquele grupo.
-     * 
+     * Vincula um membro a uma organização específica, registrando formalmente o início de sua participação ativa
+     * naquele grupo.
+     *
      * Exemplo: POST /api/v1/membros/{id}/organizacoes { "organizacaoId": "...", "dataInicio": "2023-01-01" }
      */
     public ParticipacaoResponse addOrganizacao(

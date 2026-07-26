@@ -8,16 +8,18 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -44,7 +46,8 @@ class OrganizacaoApiIntegrationTest {
 
         // 0. Official catalog
         pastoralOficialId = UUID.fromString("50000000-0000-0000-0000-000000000014");
-        PastoralMovimentoOficialEntity oficial = pastoralOficialRepository.findById(pastoralOficialId).orElseGet(PastoralMovimentoOficialEntity::new);
+        PastoralMovimentoOficialEntity oficial =
+                pastoralOficialRepository.findById(pastoralOficialId).orElseGet(PastoralMovimentoOficialEntity::new);
         oficial.setId(pastoralOficialId);
         oficial.setNome("Pastoral da Comunicação Oficial");
         oficial.setTipo(TipoOrganizacao.PASTORAL);
@@ -97,8 +100,8 @@ class OrganizacaoApiIntegrationTest {
                 """, conselhoId, pastoralOficialId);
 
         String response = mockMvc.perform(post("/api/v1/organizacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Música"))
                 .andExpect(jsonPath("$.coordenador").value("Pedro Coordenador"))
@@ -133,8 +136,8 @@ class OrganizacaoApiIntegrationTest {
                 """, conselhoId, pastoralOficialId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Acolhida"))
                 .andExpect(jsonPath("$.coordenador").value("Carlos Coordenador"));
@@ -153,8 +156,8 @@ class OrganizacaoApiIntegrationTest {
                 """, pastoralOficialId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isForbidden());
     }
 
@@ -164,7 +167,7 @@ class OrganizacaoApiIntegrationTest {
         // Create a mock UUID
         java.util.UUID orgId = java.util.UUID.randomUUID();
         mockMvc.perform(get("/api/v1/organizacoes/" + orgId + "/membros")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -172,7 +175,7 @@ class OrganizacaoApiIntegrationTest {
     @WithMockUser(roles = "USER")
     void shouldRetrieveOrganogramaTree() throws Exception {
         mockMvc.perform(get("/api/v1/organizacoes/organograma")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.label").value("Clero Paroquial"))
                 .andExpect(jsonPath("$.subtype").value("CLERO"))

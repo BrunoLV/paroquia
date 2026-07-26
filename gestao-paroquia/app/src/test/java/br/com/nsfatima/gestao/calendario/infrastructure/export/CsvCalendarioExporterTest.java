@@ -1,15 +1,16 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.export;
 
 import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
+import org.junit.jupiter.api.Test;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CsvCalendarioExporterTest {
 

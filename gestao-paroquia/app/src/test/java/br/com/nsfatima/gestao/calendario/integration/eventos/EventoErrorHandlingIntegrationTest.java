@@ -4,8 +4,8 @@ import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,8 +33,10 @@ class EventoErrorHandlingIntegrationTest {
                         .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCodes.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.errors[?(@.field == 'titulo')].code").value(ErrorCodes.VALIDATION_REQUIRED_FIELD.name()))
-                .andExpect(jsonPath("$.errors[?(@.field == 'organizacaoResponsavelId')].code").value(ErrorCodes.VALIDATION_REQUIRED_FIELD.name()));
+                .andExpect(jsonPath("$.errors[?(@.field == 'titulo')].code").value(
+                        ErrorCodes.VALIDATION_REQUIRED_FIELD.name()))
+                .andExpect(jsonPath("$.errors[?(@.field == 'organizacaoResponsavelId')].code").value(
+                        ErrorCodes.VALIDATION_REQUIRED_FIELD.name()));
     }
 
     @Test
@@ -57,7 +59,8 @@ class EventoErrorHandlingIntegrationTest {
                         .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCodes.VALIDATION_ERROR.name()))
-                .andExpect(jsonPath("$.errors[?(@.field == 'titulo')].code").value(ErrorCodes.VALIDATION_FIELD_INVALID.name()));
+                .andExpect(jsonPath("$.errors[?(@.field == 'titulo')].code").value(
+                        ErrorCodes.VALIDATION_FIELD_INVALID.name()));
     }
 
     @Test

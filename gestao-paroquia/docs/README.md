@@ -1,10 +1,12 @@
 # Gestão Paróquia
 
-Gestão Paróquia is a monolithic application designed for the NS Fatima parish to provide a robust, reliable, and secure platform for efficient management of parish affairs.
+Gestão Paróquia is a monolithic application designed for the NS Fatima parish to provide a robust, reliable, and secure
+platform for efficient management of parish affairs.
 
 ## Vision
 
-The project aims to centralize administrative themes, starting with calendars and schedules, and expanding to encompass the full range of parish management needs.
+The project aims to centralize administrative themes, starting with calendars and schedules, and expanding to encompass
+the full range of parish management needs.
 
 ## Key Features
 
@@ -17,7 +19,8 @@ The project aims to centralize administrative themes, starting with calendars an
 
 ## Technical Foundation
 
-Built with **Java 21** and **Spring Boot 3**, the application follows **DDD (Domain-Driven Design)** and **Clean Architecture** principles to ensure long-term maintainability and extensibility.
+Built with **Java 21** and **Spring Boot 3**, the application follows **DDD (Domain-Driven Design)** and **Clean
+Architecture** principles to ensure long-term maintainability and extensibility.
 
 ---
 [Getting Started](getting-started.md) | [Architecture](architecture.md)

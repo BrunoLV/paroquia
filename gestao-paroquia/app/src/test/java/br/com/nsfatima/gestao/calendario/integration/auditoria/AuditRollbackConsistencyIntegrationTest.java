@@ -1,34 +1,31 @@
 package br.com.nsfatima.gestao.calendario.integration.auditoria;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
+import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
+import java.util.Objects;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
-import java.time.Instant;
-import java.util.Objects;
-import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -75,11 +72,11 @@ class AuditRollbackConsistencyIntegrationTest {
                 .save(org.mockito.ArgumentMatchers.<AuditoriaOperacaoEntity>any());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                .header("X-Actor-Org-Id", organizacaoId.toString())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{" +
-                        "\"titulo\":\"estado-mutado\"" +
-                        "}"))
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"titulo\":\"estado-mutado\"" +
+                                "}"))
                 .andExpect(status().isConflict());
 
         EventoEntity persisted = eventoJpaRepository.findById(eventoId).orElseThrow();
@@ -107,13 +104,13 @@ class AuditRollbackConsistencyIntegrationTest {
                 .save(any(AuditoriaOperacaoEntity.class));
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
-                .header("X-Actor-Role", "paroco")
-                .header("X-Actor-Org-Type", "CLERO")
-                .header("X-Actor-Org-Id", organizacaoId.toString())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{" +
-                        "\"motivo\":\"cancelamento bloqueado\"" +
-                        "}"))
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"motivo\":\"cancelamento bloqueado\"" +
+                                "}"))
                 .andExpect(status().isConflict());
 
         EventoEntity persisted = eventoJpaRepository.findById(eventoId).orElseThrow();
@@ -137,9 +134,9 @@ class AuditRollbackConsistencyIntegrationTest {
         eventoJpaRepository.save(evento);
 
         var createResult = mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                .header("X-Actor-Org-Id", organizacaoId)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Para rollback\"}"))
+                        .header("X-Actor-Org-Id", organizacaoId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Para rollback\"}"))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -151,7 +148,7 @@ class AuditRollbackConsistencyIntegrationTest {
                 .save(org.mockito.ArgumentMatchers.<AuditoriaOperacaoEntity>any());
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
-                .header("X-Actor-Org-Id", organizacaoId))
+                        .header("X-Actor-Org-Id", organizacaoId))
                 .andExpect(status().isConflict());
 
         assertThat(observacaoEventoJpaRepository.findById(Objects.requireNonNull(observacaoId)))
@@ -161,7 +158,7 @@ class AuditRollbackConsistencyIntegrationTest {
                 .isEqualTo(false);
 
         mockMvc.perform(get("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                .header("X-Actor-Org-Id", organizacaoId))
+                        .header("X-Actor-Org-Id", organizacaoId))
                 .andExpect(status().isOk())
                 .andExpect(status().isOk());
     }
