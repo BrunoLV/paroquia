@@ -17,6 +17,16 @@ type ExtendedCSSStyleDeclaration = CSSStyleDeclaration & {
   zoom?: string;
 };
 
+interface ModifiedElementState {
+  el: HTMLElement;
+  origZoom: string;
+  origOverflowX: string;
+  origOverflowY: string;
+  origOverflow: string;
+  origWidth: string;
+  origMaxWidth: string;
+}
+
 export function useOrganogramaExport(): UseOrganogramaExportReturn {
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
@@ -52,10 +62,10 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
 
       setIsExporting(true);
 
-      const modifiedElements: { el: HTMLElement; origZoom: string; origOverflowX: string; origOverflowY: string }[] = [];
+      const modifiedElements: ModifiedElementState[] = [];
 
       try {
-        // Encontrar as maiores dimensões reais de conteúdo unclipped
+        // 1. Encontrar as maiores dimensões reais de conteúdo unclipped
         let fullWidth = element.scrollWidth;
         let fullHeight = element.scrollHeight;
 
@@ -75,20 +85,45 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
         fullWidth = Math.max(fullWidth + 32, element.offsetWidth);
         fullHeight = Math.max(fullHeight + 32, element.offsetHeight);
 
-        // Temporariamente resetar zoom e remover scrollbars/clipping durante a captura
+        // 2. Desativar qualquer barra de rolagem / overflow em todos os contêineres filhos
+        // e remover limites de largura para impedir que o navegador renderize barras de rolagem
         allDescendants.forEach((child) => {
           if (child instanceof HTMLElement) {
             const style = child.style as ExtendedCSSStyleDeclaration;
-            if (style.zoom || style.overflowX || style.overflowY || style.overflow) {
+            const computedStyle = window.getComputedStyle(child);
+
+            const isScrollContainer =
+              computedStyle.overflowX === 'auto' ||
+              computedStyle.overflowX === 'scroll' ||
+              computedStyle.overflowY === 'auto' ||
+              computedStyle.overflowY === 'scroll' ||
+              computedStyle.overflow === 'auto' ||
+              computedStyle.overflow === 'scroll' ||
+              Boolean(style.overflowX) ||
+              Boolean(style.overflowY) ||
+              Boolean(style.overflow);
+
+            const hasZoom = Boolean(style.zoom);
+
+            if (isScrollContainer || hasZoom) {
               modifiedElements.push({
                 el: child,
                 origZoom: style.zoom || '',
                 origOverflowX: style.overflowX,
                 origOverflowY: style.overflowY,
+                origOverflow: style.overflow,
+                origWidth: style.width,
+                origMaxWidth: style.maxWidth,
               });
+
               style.zoom = '1';
+              style.overflow = 'visible';
               style.overflowX = 'visible';
               style.overflowY = 'visible';
+              if (isScrollContainer) {
+                style.width = 'max-content';
+                style.maxWidth = 'none';
+              }
             }
           }
         });
@@ -130,12 +165,15 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
         console.error('Erro ao exportar organograma:', error);
         throw error;
       } finally {
-        // Restaurar os estilos originais dos elementos modificados
-        modifiedElements.forEach(({ el, origZoom, origOverflowX, origOverflowY }) => {
+        // 3. Restaurar fielmente todos os estilos originais dos elementos
+        modifiedElements.forEach(({ el, origZoom, origOverflowX, origOverflowY, origOverflow, origWidth, origMaxWidth }) => {
           const style = el.style as ExtendedCSSStyleDeclaration;
           style.zoom = origZoom;
           style.overflowX = origOverflowX;
           style.overflowY = origOverflowY;
+          style.overflow = origOverflow;
+          style.width = origWidth;
+          style.maxWidth = origMaxWidth;
         });
 
         setIsExporting(false);
