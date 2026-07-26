@@ -24,13 +24,13 @@
     - [x] Escrever teste: deve restaurar `isExporting = false` após completar
     - [x] Escrever teste: deve tratar erro de captura e restaurar `isExporting = false`
     - [x] Confirmar que todos os testes falham (Red Phase)
-- [ ] Task: Implementar lógica do hook `useOrganogramaExport` (Green Phase)
-    - [ ] Implementar função `exportToPng(ref, filename)` usando `html-to-image`
-    - [ ] Implementar função `exportToSvg(ref, filename)` usando `html-to-image`
-    - [ ] Implementar lógica de download automático via `<a>` element
-    - [ ] Implementar controle de estado `isExporting`
-    - [ ] Implementar geração automática do nome do arquivo com data e nome da organização
-    - [ ] Confirmar que todos os testes passam (Green Phase)
+- [x] Task: Implementar lógica do hook `useOrganogramaExport` (Green Phase) 2035ecc
+    - [x] Implementar função `exportToPng(ref, filename)` usando `html-to-image`
+    - [x] Implementar função `exportToSvg(ref, filename)` usando `html-to-image`
+    - [x] Implementar lógica de download automático via `<a>` element
+    - [x] Implementar controle de estado `isExporting`
+    - [x] Implementar geração automática do nome do arquivo com data e nome da organização
+    - [x] Confirmar que todos os testes passam (Green Phase)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Hook de Exportação' (Protocol in workflow.md)
 
 ## Phase 3: Componente de UI do Botão de Exportação (TDD)
