@@ -13,6 +13,10 @@ export interface UseOrganogramaExportReturn {
   generateFilename: (orgName?: string, format?: ExportFormat) => string;
 }
 
+type ExtendedCSSStyleDeclaration = CSSStyleDeclaration & {
+  zoom?: string;
+};
+
 export function useOrganogramaExport(): UseOrganogramaExportReturn {
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
@@ -74,11 +78,11 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
         // Temporariamente resetar zoom e remover scrollbars/clipping durante a captura
         allDescendants.forEach((child) => {
           if (child instanceof HTMLElement) {
-            const style = child.style;
+            const style = child.style as ExtendedCSSStyleDeclaration;
             if (style.zoom || style.overflowX || style.overflowY || style.overflow) {
               modifiedElements.push({
                 el: child,
-                origZoom: style.zoom,
+                origZoom: style.zoom || '',
                 origOverflowX: style.overflowX,
                 origOverflowY: style.overflowY,
               });
@@ -128,9 +132,10 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
       } finally {
         // Restaurar os estilos originais dos elementos modificados
         modifiedElements.forEach(({ el, origZoom, origOverflowX, origOverflowY }) => {
-          el.style.zoom = origZoom;
-          el.style.overflowX = origOverflowX;
-          el.style.overflowY = origOverflowY;
+          const style = el.style as ExtendedCSSStyleDeclaration;
+          style.zoom = origZoom;
+          style.overflowX = origOverflowX;
+          style.overflowY = origOverflowY;
         });
 
         setIsExporting(false);
