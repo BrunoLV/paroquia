@@ -1,13 +1,47 @@
+export type TipoOrganismoParoquial =
+  | 'MATRIZ'
+  | 'COMUNIDADE'
+  | 'CLERO'
+  | 'CONSELHO_PASTORAL'
+  | 'CONSELHO_ECONOMICO'
+  | 'PASTORAL'
+  | 'MOVIMENTO'
+  | 'OUTRO';
+
+export type SetorPastoral =
+  | 'SANTIFICACAO_LITURGIA'
+  | 'FORMACAO_ENSINAR'
+  | 'SOCIAL_CARIDADE';
+
+export type PapelEclesial =
+  | 'ADMIN'
+  | 'BISPO_DIOCESANO'
+  | 'PAROCO'
+  | 'VIGARIO'
+  | 'DIACONO'
+  | 'PADRE'
+  | 'MEMBRO_CPP'
+  | 'MEMBRO_CAE'
+  | 'COORDENADOR_PASTORAL'
+  | 'COORDENADOR_MOVIMENTO'
+  | 'MEMBRO_PASTORAL'
+  | 'MEMBRO_MOVIMENTO'
+  | 'COORDENADOR'
+  | 'VICE_COORDENADOR'
+  | 'MEMBRO'
+  | 'SECRETARIO';
+
 export interface Organizacao {
   id: string;
   nome: string;
-  tipo: string;
+  tipo: TipoOrganismoParoquial | string;
   contato: string | null;
   coordenador?: string | null;
   viceCoordenador?: string | null;
   ativo: boolean;
   parentId?: string | null;
   pastoralOficialId?: string | null;
+  setorPastoral?: SetorPastoral | null;
 }
 
 export interface PastoralMovimentoOficial {
@@ -37,11 +71,22 @@ export interface Projeto {
   updated?: boolean;
 }
 
+export type CategoriaEvento =
+  | 'SOLENIDADE'
+  | 'PASTORAL'
+  | 'SOCIAL'
+  | 'LITURGICO'
+  | 'ADMINISTRATIVO'
+  | 'SACRAMENTAL'
+  | 'FORMATIVO'
+  | 'ASSISTENCIAL'
+  | 'MOVIMENTO';
+
 export interface Evento {
   id: string;
   titulo: string;
   descricao: string;
-  categoria: string;
+  categoria: CategoriaEvento | string;
   organizacaoResponsavelId: string;
   projetoId: string | null;
   nomeProjeto: string | null;
@@ -60,6 +105,11 @@ export interface Evento {
   pendingSolicitanteId?: string;
   pendingTipoSolicitacao?: string;
   pendingActionType?: string;
+  /** Nível de prioridade da agenda (1=Solenidade, 2=Preceito, 3=Pastoral, 4=Movimento) */
+  nivelPrioridade?: 1 | 2 | 3 | 4;
+  /** Liberado pelo Conselho Pastoral Paroquial (CPP) para conflitos de agenda */
+  autorizadoPeloCpp?: boolean;
+  setorPastoral?: SetorPastoral | null;
 }
 
 export interface AprovacaoResponse {

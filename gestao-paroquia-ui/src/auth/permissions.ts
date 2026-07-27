@@ -16,55 +16,82 @@ export interface User {
   organizations?: Organization[];
 }
 
+// ─── Eclesial Role Predicates ────────────────────────────────────────────────
+
+const PAROCO_ROLES = ['PAROCO', 'BISPO_DIOCESANO'] as const;
+const CPP_ROLES = ['MEMBRO_CPP'] as const;
+const CAE_ROLES = ['MEMBRO_CAE'] as const;
+const CLERO_ROLES = ['VIGARIO', 'DIACONO', 'PADRE'] as const;
+const COORDENADOR_ROLES = [
+  'COORDENADOR_PASTORAL',
+  'COORDENADOR_MOVIMENTO',
+  'COORDENADOR',
+  'VICE_COORDENADOR',
+] as const;
+const MEMBRO_ROLES = ['MEMBRO_PASTORAL', 'MEMBRO_MOVIMENTO', 'MEMBRO'] as const;
+
+const hasRole = (user: User | null, ...roles: string[]): boolean => {
+  if (!user) return false;
+  return user.roles.some((r) =>
+    roles.some((allowed) =>
+      r === allowed ||
+      r === `ROLE_${allowed}` ||
+      r.endsWith(`_${allowed}`)
+    )
+  );
+};
+
+
+// ─── Public Permission Functions ─────────────────────────────────────────────
+
 export const isAdmin = (user: User | null): boolean => {
   if (!user) return false;
   return user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN');
 };
 
+/** Pároco ou Bispo: palavra deliberativa final */
+export const isParoco = (user: User | null): boolean => hasRole(user, ...PAROCO_ROLES);
+
+/** Membro do Conselho Pastoral Paroquial (CPP) */
+export const isMembroCpp = (user: User | null): boolean => hasRole(user, ...CPP_ROLES);
+
+/** Membro do Conselho Econômico Paroquial (CAE) */
+export const isMembroCae = (user: User | null): boolean => hasRole(user, ...CAE_ROLES);
+
+/** Clero paroquial (Vigário, Diácono, Padre) */
+export const isClero = (user: User | null): boolean => hasRole(user, ...CLERO_ROLES);
+
+/** Coordenador de Pastoral ou Movimento */
+export const isCoordenador = (user: User | null): boolean => hasRole(user, ...COORDENADOR_ROLES);
+
+/** Membro de Pastoral ou Movimento */
+export const isMembro = (user: User | null): boolean => hasRole(user, ...MEMBRO_ROLES);
+
 export const canManageProjects = (user: User | null): boolean => {
   if (!user) return false;
-  return user.roles.some((role: string) => 
-    role === 'ADMIN' || 
-    role === 'ROLE_ADMIN' ||
-    role === 'PAROCO' ||
-    role === 'PADRE' ||
-    role === 'VIGARIO' ||
-    role.endsWith('_COORDENADOR') || 
-    role.endsWith('_VICE_COORDENADOR') ||
-    role.endsWith('_PAROCO') || 
-    role.endsWith('_VIGARIO') ||
-    role.endsWith('_PADRE') ||
-    role.startsWith('COORDENADOR_') ||
-    role.startsWith('VICE_COORDENADOR_')
-  );
+  return isAdmin(user) || isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
 export const isGlobalCreator = (user: User | null): boolean => {
   if (!user) return false;
-  return user.roles.some((role: string) => 
-    role === 'ADMIN' || 
-    role === 'ROLE_ADMIN' ||
-    role === 'PAROCO' ||
-    role.endsWith('_PAROCO') ||
-    role.includes('CONSELHO_COORDENADOR') || 
-    role.includes('CONSELHO_VICE_COORDENADOR') ||
-    role === 'COORDENADOR_CONSELHO' ||
-    role === 'VICE_COORDENADOR_CONSELHO'
+  return (
+    isAdmin(user) ||
+    isParoco(user) ||
+    isMembroCpp(user) ||
+    user.roles.some((r) =>
+      r.includes('CONSELHO_COORDENADOR') ||
+      r.includes('CONSELHO_VICE_COORDENADOR') ||
+      r === 'COORDENADOR_CONSELHO' ||
+      r === 'VICE_COORDENADOR_CONSELHO'
+    )
   );
 };
 
 export const canTransitionProject = (user: User | null, projectOrgId: string): boolean => {
   if (!user) return false;
-  
   if (isGlobalCreator(user)) return true;
 
-  const isOrgLeader = user.roles.some((role: string) => 
-    role.endsWith('_COORDENADOR') || 
-    role.endsWith('_VICE_COORDENADOR') ||
-    role.startsWith('COORDENADOR_') ||
-    role.startsWith('VICE_COORDENADOR_')
-  );
-  if (isOrgLeader && Array.isArray(user.organizations)) {
+  if (isCoordenador(user) && Array.isArray(user.organizations)) {
     return user.organizations.some((org: any) => org.id === projectOrgId);
   }
   return false;
@@ -73,101 +100,69 @@ export const canTransitionProject = (user: User | null, projectOrgId: string): b
 /**
  * Determines if a user can manage (edit or cancel) an event.
  */
-export const canManageEvent = (user: User | null, eventOrgId: string): boolean => {
+export const canManageEvent = (user: User | null, _eventOrgId: string): boolean => {
   if (!user) return false;
-
-  // 1. Global Admin
-  if (isAdmin(user)) {
-    return true;
-  }
-
-  // 2. Organizational Editor Roles
-  // We look for roles that signify editor status (COORDENADOR or VICE_COORDENADOR)
-  const isEditor = user.roles.some(role => 
-    role === 'PAROCO' ||
-    role === 'PADRE' ||
-    role === 'VIGARIO' ||
-    role.endsWith('_COORDENADOR') || 
-    role.endsWith('_VICE_COORDENADOR') ||
-    role.endsWith('_PAROCO') ||
-    role.endsWith('_VIGARIO') ||
-    role.endsWith('_PADRE') ||
-    role.startsWith('COORDENADOR_') ||
-    role.startsWith('VICE_COORDENADOR_')
-  );
-
-  return isEditor;
+  if (isAdmin(user)) return true;
+  return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
 export const canApprove = (user: User | null): boolean => {
   if (!user) return false;
-
-  return user.roles.some(role => 
-    role === 'ADMIN' || 
-    role === 'ROLE_ADMIN' ||
-    role.includes('CONSELHO_COORDENADOR') || 
-    role.includes('PAROCO') ||
-    role === 'COORDENADOR_CONSELHO' ||
-    role === 'VICE_COORDENADOR_CONSELHO' ||
-    role === 'PAROCO'
+  return (
+    isAdmin(user) ||
+    isParoco(user) ||
+    isMembroCpp(user) ||
+    user.roles.some((r) =>
+      r.includes('CONSELHO_COORDENADOR') ||
+      r === 'COORDENADOR_CONSELHO' ||
+      r === 'VICE_COORDENADOR_CONSELHO'
+    )
   );
 };
 
 export const canManageAnoParoquial = (user: User | null): boolean => {
   if (!user) return false;
-
-  return user.roles.some(role =>
-    role === 'ADMIN' ||
-    role === 'ROLE_ADMIN' ||
-    role === 'ROLE_CLERO_PAROCO' ||
-    role === 'ROLE_CONSELHO_COORDENADOR' ||
-    role === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
-    role === 'PAROCO' ||
-    role === 'COORDENADOR_CONSELHO' ||
-    role === 'VICE_COORDENADOR_CONSELHO'
-  );
+  return isAdmin(user) || isParoco(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
 export const canManageLocais = (user: User | null): boolean => {
   if (!user) return false;
-
-  return user.roles.some(role =>
-    role === 'ADMIN' ||
-    role === 'ROLE_ADMIN' ||
-    role === 'ROLE_CLERO_PAROCO' ||
-    role === 'ROLE_CONSELHO_COORDENADOR' ||
-    role === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
-    role === 'PAROCO' ||
-    role === 'COORDENADOR_CONSELHO' ||
-    role === 'VICE_COORDENADOR_CONSELHO'
+  return (
+    isAdmin(user) ||
+    isParoco(user) ||
+    isMembroCpp(user) ||
+    user.roles.some((r) =>
+      r === 'ROLE_CONSELHO_COORDENADOR' ||
+      r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
+      r === 'COORDENADOR_CONSELHO' ||
+      r === 'VICE_COORDENADOR_CONSELHO'
+    )
   );
 };
 
 export const canManageOrganizacoes = (user: User | null): boolean => {
   if (!user) return false;
-
-  return user.roles.some(role =>
-    role === 'ADMIN' ||
-    role === 'ROLE_ADMIN' ||
-    role === 'ROLE_CLERO_PAROCO' ||
-    role === 'ROLE_CONSELHO_COORDENADOR' ||
-    role === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
-    role === 'PAROCO' ||
-    role === 'COORDENADOR_CONSELHO' ||
-    role === 'VICE_COORDENADOR_CONSELHO'
+  return (
+    isAdmin(user) ||
+    isParoco(user) ||
+    isMembroCpp(user) ||
+    user.roles.some((r) =>
+      r === 'ROLE_CONSELHO_COORDENADOR' ||
+      r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
+      r === 'COORDENADOR_CONSELHO' ||
+      r === 'VICE_COORDENADOR_CONSELHO'
+    )
   );
 };
 
 export const canAddObservation = (user: User | null, targetOrgId: string): boolean => {
   if (!user) return false;
 
-  const isOnlyMember = user.roles.length > 0 && user.roles.every(r => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
-  if (!isOnlyMember) {
-    return true;
-  }
+  const isOnlyMember = user.roles.length > 0 && user.roles.every((r) => isMembro({ ...user, roles: [r] }));
+  if (!isOnlyMember) return true;
 
   if (Array.isArray(user.organizations)) {
-    return user.organizations.some(org => org.id === targetOrgId);
+    return user.organizations.some((org) => org.id === targetOrgId);
   }
 
   return false;
@@ -175,26 +170,26 @@ export const canAddObservation = (user: User | null, targetOrgId: string): boole
 
 export const canViewPendingEvents = (user: User | null): boolean => {
   if (!user) return false;
-  const isOnlyMember = user.roles.length > 0 && user.roles.every(r => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
+  const isOnlyMember = user.roles.length > 0 && user.roles.every((r) => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
   return !isOnlyMember;
 };
 
 export const isUnlinkedUser = (user: User | null): boolean => {
   if (!user) return false;
 
-  const isLeaderOrClero = user.roles.some(r =>
-    r === 'ADMIN' || r === 'ROLE_ADMIN' ||
-    r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO' ||
-    r === 'VIGARIO' || r === 'PADRE' || r === 'SECRETARIO' ||
-    r === 'ROLE_CONSELHO_COORDENADOR' || r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
-    r === 'COORDENADOR_CONSELHO' || r === 'VICE_COORDENADOR_CONSELHO' ||
-    r === 'ROLE_PASTORAL_COORDENADOR' || r === 'ROLE_PASTORAL_VICE_COORDENADOR' ||
-    r === 'COORDENADOR' || r === 'VICE_COORDENADOR'
-  );
+  const isLeaderOrClero =
+    isAdmin(user) ||
+    isParoco(user) ||
+    isClero(user) ||
+    isMembroCpp(user) ||
+    isMembroCae(user) ||
+    isCoordenador(user) ||
+    user.roles.some((r) => r === 'SECRETARIO' || r === 'ADMIN');
+
   if (isLeaderOrClero) return false;
 
-  const isRegularUserOrMember = user.roles.every(r =>
-    r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO' || r === 'ROLE_USER' || r === 'USER'
+  const isRegularUserOrMember = user.roles.every(
+    (r) => r === 'MEMBRO' || r === 'MEMBRO_PASTORAL' || r === 'MEMBRO_MOVIMENTO' || r === 'ROLE_PASTORAL_MEMBRO' || r === 'ROLE_USER' || r === 'USER'
   );
 
   if (isRegularUserOrMember && Array.isArray(user.organizations) && user.organizations.length === 0) {

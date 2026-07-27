@@ -26,7 +26,8 @@ describe('OrganizacaoFormModal', () => {
     { id: 'org-clero', nome: 'Clero Paroquial', tipo: 'CLERO', contato: '', ativo: true },
     { id: 'org-matriz', nome: 'Igreja Matriz', tipo: 'MATRIZ', contato: '', parentId: 'org-clero', ativo: true },
     { id: 'org-comunidade', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: '', parentId: 'org-clero', ativo: true },
-    { id: 'org-conselho', nome: 'Conselho Pastoral', tipo: 'CONSELHO_PASTORAL', contato: '', parentId: 'org-matriz', ativo: true },
+    { id: 'org-conselho', nome: 'Conselho Pastoral Paroquial (CPP)', tipo: 'CONSELHO_PASTORAL', contato: '', parentId: 'org-matriz', ativo: true },
+
     { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true },
     { id: 'org-inativo-conselho', nome: 'Conselho Inativo', tipo: 'CONSELHO_PASTORAL', contato: '', parentId: 'org-matriz', ativo: false },
   ];
@@ -93,7 +94,8 @@ describe('OrganizacaoFormModal', () => {
     fireEvent.mouseDown(parentSelect);
 
     expect(screen.getByRole('option', { name: 'Clero Paroquial' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Conselho Pastoral' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' })).not.toBeInTheDocument();
+
   });
 
   test('displays only active organizations as parent options', () => {
@@ -103,7 +105,8 @@ describe('OrganizacaoFormModal', () => {
     const parentSelect = screen.getByLabelText(/Organização Pai/i);
     fireEvent.mouseDown(parentSelect);
 
-    expect(screen.getByRole('option', { name: 'Conselho Pastoral' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' })).toBeInTheDocument();
+
     expect(screen.queryByRole('option', { name: 'Conselho Inativo' })).not.toBeInTheDocument();
   });
 
@@ -119,7 +122,8 @@ describe('OrganizacaoFormModal', () => {
     // Open parent dropdown and select Conselho Pastoral
     const parentSelect = screen.getByLabelText(/Organização Pai/i);
     fireEvent.mouseDown(parentSelect);
-    fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' }));
+
 
     fireEvent.submit(screen.getByRole('button', { name: /Cadastrar/i }));
 

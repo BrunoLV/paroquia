@@ -208,8 +208,9 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                   <MenuItem value="CLERO">Clero</MenuItem>
                   <MenuItem value="MATRIZ">Matriz</MenuItem>
                   <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
-                  <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral</MenuItem>
-                  <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico</MenuItem>
+                  <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
+                  <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
+
                   <MenuItem value="OUTRO">Outro</MenuItem>
                 </Select>
               </FormControl>

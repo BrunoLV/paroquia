@@ -506,9 +506,9 @@ const Settings = () => {
       case 'CLERO':
         return 'Clero';
       case 'CONSELHO_PASTORAL':
-        return 'Conselho Pastoral';
+        return 'Conselho Pastoral Paroquial (CPP)';
       case 'CONSELHO_ECONOMICO':
-        return 'Conselho Econômico';
+        return 'Conselho Econômico Paroquial (CAE)';
       case 'MATRIZ':
         return 'Matriz';
       case 'COMUNIDADE':

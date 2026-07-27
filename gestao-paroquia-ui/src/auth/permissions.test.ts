@@ -7,10 +7,130 @@ import {
     canManageOrganizacoes,
     canManageProjects,
     canTransitionProject,
+    isAdmin,
+    isClero,
+    isCoordenador,
     isGlobalCreator,
+    isMembro,
+    isMembroCae,
+    isMembroCpp,
+    isParoco,
     isUnlinkedUser,
     User
 } from './permissions';
+
+// ─── isParoco ────────────────────────────────────────────────────────────────
+
+describe('isParoco', () => {
+  it('allows PAROCO role', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] };
+    expect(isParoco(user)).toBe(true);
+  });
+
+  it('allows BISPO_DIOCESANO role', () => {
+    const user: User = { id: '1', username: 'b', name: 'Bispo', roles: ['BISPO_DIOCESANO'] };
+    expect(isParoco(user)).toBe(true);
+  });
+
+  it('denies VIGARIO', () => {
+    const user: User = { id: '1', username: 'v', name: 'Vigario', roles: ['VIGARIO'] };
+    expect(isParoco(user)).toBe(false);
+  });
+});
+
+// ─── isMembroCpp ─────────────────────────────────────────────────────────────
+
+describe('isMembroCpp', () => {
+  it('allows MEMBRO_CPP role', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'Membro CPP', roles: ['MEMBRO_CPP'] };
+    expect(isMembroCpp(user)).toBe(true);
+  });
+
+  it('denies MEMBRO_CAE', () => {
+    const user: User = { id: '1', username: 'cae', name: 'Membro CAE', roles: ['MEMBRO_CAE'] };
+    expect(isMembroCpp(user)).toBe(false);
+  });
+});
+
+// ─── isMembroCae ─────────────────────────────────────────────────────────────
+
+describe('isMembroCae', () => {
+  it('allows MEMBRO_CAE role', () => {
+    const user: User = { id: '1', username: 'cae', name: 'Membro CAE', roles: ['MEMBRO_CAE'] };
+    expect(isMembroCae(user)).toBe(true);
+  });
+
+  it('denies MEMBRO_CPP', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'Membro CPP', roles: ['MEMBRO_CPP'] };
+    expect(isMembroCae(user)).toBe(false);
+  });
+});
+
+// ─── isClero ─────────────────────────────────────────────────────────────────
+
+describe('isClero', () => {
+  it('allows VIGARIO', () => {
+    expect(isClero({ id: '1', username: 'v', name: 'V', roles: ['VIGARIO'] })).toBe(true);
+  });
+
+  it('allows DIACONO', () => {
+    expect(isClero({ id: '1', username: 'd', name: 'D', roles: ['DIACONO'] })).toBe(true);
+  });
+
+  it('allows PADRE', () => {
+    expect(isClero({ id: '1', username: 'p', name: 'P', roles: ['PADRE'] })).toBe(true);
+  });
+
+  it('denies MEMBRO_CPP', () => {
+    expect(isClero({ id: '1', username: 'c', name: 'C', roles: ['MEMBRO_CPP'] })).toBe(false);
+  });
+});
+
+// ─── isCoordenador ───────────────────────────────────────────────────────────
+
+describe('isCoordenador', () => {
+  it('allows COORDENADOR_PASTORAL', () => {
+    expect(isCoordenador({ id: '1', username: 'c', name: 'C', roles: ['COORDENADOR_PASTORAL'] })).toBe(true);
+  });
+
+  it('allows COORDENADOR_MOVIMENTO', () => {
+    expect(isCoordenador({ id: '1', username: 'c', name: 'C', roles: ['COORDENADOR_MOVIMENTO'] })).toBe(true);
+  });
+
+  it('allows COORDENADOR', () => {
+    expect(isCoordenador({ id: '1', username: 'c', name: 'C', roles: ['COORDENADOR'] })).toBe(true);
+  });
+
+  it('allows VICE_COORDENADOR', () => {
+    expect(isCoordenador({ id: '1', username: 'c', name: 'C', roles: ['VICE_COORDENADOR'] })).toBe(true);
+  });
+
+  it('denies MEMBRO_PASTORAL', () => {
+    expect(isCoordenador({ id: '1', username: 'c', name: 'C', roles: ['MEMBRO_PASTORAL'] })).toBe(false);
+  });
+});
+
+// ─── isMembro ────────────────────────────────────────────────────────────────
+
+describe('isMembro', () => {
+  it('allows MEMBRO_PASTORAL', () => {
+    expect(isMembro({ id: '1', username: 'm', name: 'M', roles: ['MEMBRO_PASTORAL'] })).toBe(true);
+  });
+
+  it('allows MEMBRO_MOVIMENTO', () => {
+    expect(isMembro({ id: '1', username: 'm', name: 'M', roles: ['MEMBRO_MOVIMENTO'] })).toBe(true);
+  });
+
+  it('allows MEMBRO', () => {
+    expect(isMembro({ id: '1', username: 'm', name: 'M', roles: ['MEMBRO'] })).toBe(true);
+  });
+
+  it('denies COORDENADOR_PASTORAL', () => {
+    expect(isMembro({ id: '1', username: 'c', name: 'C', roles: ['COORDENADOR_PASTORAL'] })).toBe(false);
+  });
+});
+
+// ─── canManageEvent ──────────────────────────────────────────────────────────
 
 describe('canManageEvent', () => {
   const orgId = 'org-1';
@@ -24,61 +144,43 @@ describe('canManageEvent', () => {
     expect(canManageEvent(user, orgId)).toBe(true);
   });
 
-  it('allows ROLE_ADMIN users to manage any event', () => {
-    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ROLE_ADMIN'] };
-    expect(canManageEvent(user, orgId)).toBe(true);
-  });
-
-  it('allows COORDENADOR to manage event', () => {
-    const user: User = { 
-      id: '2', 
-      username: 'coord', 
-      name: 'Coord', 
-      roles: ['ROLE_PASTORAL_COORDENADOR'] 
-    };
-    expect(canManageEvent(user, orgId)).toBe(true);
-  });
-
-  it('allows VICE_COORDENADOR to manage event', () => {
-    const user: User = { 
-      id: '2', 
-      username: 'coord', 
-      name: 'Coord', 
-      roles: ['ROLE_MOVIMENTO_VICE_COORDENADOR'] 
-    };
-    expect(canManageEvent(user, orgId)).toBe(true);
-  });
-
   it('allows PAROCO to manage event', () => {
-    const user: User = { 
-      id: '2', 
-      username: 'padre', 
-      name: 'Padre', 
-      roles: ['ROLE_CLERO_PAROCO'] 
-    };
+    const user: User = { id: '2', username: 'padre', name: 'Padre', roles: ['PAROCO'] };
     expect(canManageEvent(user, orgId)).toBe(true);
   });
 
-  it('denies MEMBRO from managing event', () => {
-    const user: User = { 
-      id: '3', 
-      username: 'membro', 
-      name: 'Membro', 
-      roles: ['ROLE_PASTORAL_MEMBRO'] 
-    };
+  it('allows BISPO_DIOCESANO to manage event', () => {
+    const user: User = { id: '2', username: 'bispo', name: 'Bispo', roles: ['BISPO_DIOCESANO'] };
+    expect(canManageEvent(user, orgId)).toBe(true);
+  });
+
+  it('allows MEMBRO_CPP to manage event', () => {
+    const user: User = { id: '2', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CPP'] };
+    expect(canManageEvent(user, orgId)).toBe(true);
+  });
+
+  it('allows COORDENADOR_PASTORAL to manage event', () => {
+    const user: User = { id: '2', username: 'coord', name: 'Coord', roles: ['COORDENADOR_PASTORAL'] };
+    expect(canManageEvent(user, orgId)).toBe(true);
+  });
+
+  it('allows COORDENADOR_MOVIMENTO to manage event', () => {
+    const user: User = { id: '2', username: 'coord', name: 'Coord', roles: ['COORDENADOR_MOVIMENTO'] };
+    expect(canManageEvent(user, orgId)).toBe(true);
+  });
+
+  it('denies MEMBRO_PASTORAL from managing event', () => {
+    const user: User = { id: '3', username: 'membro', name: 'Membro', roles: ['MEMBRO_PASTORAL'] };
     expect(canManageEvent(user, orgId)).toBe(false);
   });
 
-  it('denies SECRETARIO from managing event (per backend rules, they can create but not edit/patch usually, or wait...)', () => {
-    const user: User = { 
-      id: '4', 
-      username: 'sec', 
-      name: 'Secretario', 
-      roles: ['ROLE_CONSELHO_SECRETARIO'] 
-    };
+  it('denies MEMBRO_MOVIMENTO from managing event', () => {
+    const user: User = { id: '3', username: 'membro', name: 'Membro', roles: ['MEMBRO_MOVIMENTO'] };
     expect(canManageEvent(user, orgId)).toBe(false);
   });
 });
+
+// ─── canApprove ──────────────────────────────────────────────────────────────
 
 describe('canApprove', () => {
   it('returns false if user is null', () => {
@@ -90,21 +192,33 @@ describe('canApprove', () => {
     expect(canApprove(user)).toBe(true);
   });
 
+  it('allows PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] };
+    expect(canApprove(user)).toBe(true);
+  });
+
+  it('allows BISPO_DIOCESANO', () => {
+    const user: User = { id: '1', username: 'b', name: 'Bispo', roles: ['BISPO_DIOCESANO'] };
+    expect(canApprove(user)).toBe(true);
+  });
+
+  it('allows MEMBRO_CPP', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CPP'] };
+    expect(canApprove(user)).toBe(true);
+  });
+
   it('allows ROLE_CONSELHO_COORDENADOR', () => {
     const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_CONSELHO_COORDENADOR'] };
     expect(canApprove(user)).toBe(true);
   });
 
-  it('allows ROLE_CLERO_PAROCO', () => {
-    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['ROLE_CLERO_PAROCO'] };
-    expect(canApprove(user)).toBe(true);
-  });
-
-  it('denies other roles like COORDENADOR or MEMBRO', () => {
-    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_PASTORAL_MEMBRO'] };
+  it('denies COORDENADOR_PASTORAL without CPP role', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['COORDENADOR_PASTORAL'] };
     expect(canApprove(user)).toBe(false);
   });
 });
+
+// ─── canManageAnoParoquial ───────────────────────────────────────────────────
 
 describe('canManageAnoParoquial', () => {
   it('returns false if user is null', () => {
@@ -116,75 +230,96 @@ describe('canManageAnoParoquial', () => {
     expect(canManageAnoParoquial(user)).toBe(true);
   });
 
-  it('allows ROLE_ADMIN', () => {
-    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ROLE_ADMIN'] };
+  it('allows PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] };
     expect(canManageAnoParoquial(user)).toBe(true);
   });
 
-  it('allows ROLE_CLERO_PAROCO', () => {
-    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['ROLE_CLERO_PAROCO'] };
+  it('allows MEMBRO_CPP', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CPP'] };
     expect(canManageAnoParoquial(user)).toBe(true);
   });
 
-  it('allows ROLE_CONSELHO_COORDENADOR', () => {
-    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_CONSELHO_COORDENADOR'] };
+  it('allows COORDENADOR_PASTORAL', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['COORDENADOR_PASTORAL'] };
     expect(canManageAnoParoquial(user)).toBe(true);
   });
 
-  it('allows ROLE_CONSELHO_VICE_COORDENADOR', () => {
-    const user: User = { id: '1', username: 'vc', name: 'Vice Coord', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] };
-    expect(canManageAnoParoquial(user)).toBe(true);
-  });
-
-  it('denies other roles like secretarios, membros or regular pastoral leaders', () => {
-    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_CONSELHO_SECRETARIO'] };
+  it('denies MEMBRO_PASTORAL', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['MEMBRO_PASTORAL'] };
     expect(canManageAnoParoquial(user)).toBe(false);
   });
 });
+
+// ─── canManageProjects ───────────────────────────────────────────────────────
 
 describe('canManageProjects', () => {
   it('returns false if user is null', () => {
     expect(canManageProjects(null)).toBe(false);
   });
 
-  it('allows ADMIN, ROLE_ADMIN, PAROCO, PADRE, VIGARIO', () => {
+  it('allows ADMIN', () => {
     expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ADMIN'] })).toBe(true);
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_ADMIN'] })).toBe(true);
+  });
+
+  it('allows PAROCO', () => {
     expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['PAROCO'] })).toBe(true);
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CLERO_PAROCO'] })).toBe(true);
   });
 
-  it('allows coordinators and vice-coordinators (global or membership)', () => {
+  it('allows BISPO_DIOCESANO', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['BISPO_DIOCESANO'] })).toBe(true);
+  });
+
+  it('allows MEMBRO_CPP', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['MEMBRO_CPP'] })).toBe(true);
+  });
+
+  it('allows COORDENADOR_PASTORAL', () => {
     expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_PASTORAL'] })).toBe(true);
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_PASTORAL_COORDENADOR'] })).toBe(true);
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['VICE_COORDENADOR_CONSELHO'] })).toBe(true);
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] })).toBe(true);
   });
 
-  it('denies regular members', () => {
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['ROLE_PASTORAL_MEMBRO'] })).toBe(false);
-    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['MEMBRO_CONSELHO'] })).toBe(false);
+  it('allows COORDENADOR_MOVIMENTO', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_MOVIMENTO'] })).toBe(true);
+  });
+
+  it('denies MEMBRO_PASTORAL', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['MEMBRO_PASTORAL'] })).toBe(false);
+  });
+
+  it('denies MEMBRO_MOVIMENTO', () => {
+    expect(canManageProjects({ id: '1', username: 'a', name: 'A', roles: ['MEMBRO_MOVIMENTO'] })).toBe(false);
   });
 });
+
+// ─── isGlobalCreator ─────────────────────────────────────────────────────────
 
 describe('isGlobalCreator', () => {
   it('returns false if user is null', () => {
     expect(isGlobalCreator(null)).toBe(false);
   });
 
-  it('allows ADMIN, ROLE_ADMIN, PAROCO, and conselho coordinators/vice-coordinators', () => {
+  it('allows ADMIN', () => {
     expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ADMIN'] })).toBe(true);
-    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_CONSELHO'] })).toBe(true);
-    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CONSELHO_COORDENADOR'] })).toBe(true);
-    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['VICE_COORDENADOR_CONSELHO'] })).toBe(true);
-    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] })).toBe(true);
   });
 
-  it('denies pastoral coordinators or general members', () => {
+  it('allows PAROCO', () => {
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['PAROCO'] })).toBe(true);
+  });
+
+  it('allows MEMBRO_CPP', () => {
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['MEMBRO_CPP'] })).toBe(true);
+  });
+
+  it('allows COORDENADOR_CONSELHO', () => {
+    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_CONSELHO'] })).toBe(true);
+  });
+
+  it('denies COORDENADOR_PASTORAL alone', () => {
     expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['COORDENADOR_PASTORAL'] })).toBe(false);
-    expect(isGlobalCreator({ id: '1', username: 'a', name: 'A', roles: ['ROLE_PASTORAL_COORDENADOR'] })).toBe(false);
   });
 });
+
+// ─── canTransitionProject ────────────────────────────────────────────────────
 
 describe('canTransitionProject', () => {
   const targetOrgId = 'org-catequese';
@@ -198,28 +333,30 @@ describe('canTransitionProject', () => {
     expect(canTransitionProject(adminUser, targetOrgId)).toBe(true);
   });
 
-  it('allows local coordinators linked to the project organization', () => {
+  it('allows COORDENADOR_PASTORAL linked to the project organization', () => {
     const localCoord = {
       id: '1',
       username: 'a',
       name: 'A',
-      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      roles: ['COORDENADOR_PASTORAL'],
       organizations: [{ id: targetOrgId, nome: 'Catequese', tipo: 'PASTORAL', contato: null, ativo: true }]
     };
     expect(canTransitionProject(localCoord, targetOrgId)).toBe(true);
   });
 
-  it('denies local coordinators of a different organization', () => {
+  it('denies COORDENADOR_PASTORAL linked to a different organization', () => {
     const otherCoord = {
       id: '1',
       username: 'a',
       name: 'A',
-      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      roles: ['COORDENADOR_PASTORAL'],
       organizations: [{ id: 'other-org', nome: 'Liturgia', tipo: 'PASTORAL', contato: null, ativo: true }]
     };
     expect(canTransitionProject(otherCoord, targetOrgId)).toBe(false);
   });
 });
+
+// ─── canManageLocais ─────────────────────────────────────────────────────────
 
 describe('canManageLocais', () => {
   it('returns false if user is null', () => {
@@ -231,13 +368,13 @@ describe('canManageLocais', () => {
     expect(canManageLocais(user)).toBe(true);
   });
 
-  it('allows ROLE_ADMIN', () => {
-    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ROLE_ADMIN'] };
+  it('allows PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] };
     expect(canManageLocais(user)).toBe(true);
   });
 
-  it('allows ROLE_CLERO_PAROCO', () => {
-    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['ROLE_CLERO_PAROCO'] };
+  it('allows MEMBRO_CPP', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CPP'] };
     expect(canManageLocais(user)).toBe(true);
   });
 
@@ -246,16 +383,13 @@ describe('canManageLocais', () => {
     expect(canManageLocais(user)).toBe(true);
   });
 
-  it('allows ROLE_CONSELHO_VICE_COORDENADOR', () => {
-    const user: User = { id: '1', username: 'vc', name: 'Vice Coord', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] };
-    expect(canManageLocais(user)).toBe(true);
-  });
-
-  it('denies other roles like secretarios, membros or regular pastoral leaders', () => {
-    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_CONSELHO_SECRETARIO'] };
+  it('denies COORDENADOR_PASTORAL alone', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['COORDENADOR_PASTORAL'] };
     expect(canManageLocais(user)).toBe(false);
   });
 });
+
+// ─── canManageOrganizacoes ───────────────────────────────────────────────────
 
 describe('canManageOrganizacoes', () => {
   it('returns false if user is null', () => {
@@ -267,31 +401,23 @@ describe('canManageOrganizacoes', () => {
     expect(canManageOrganizacoes(user)).toBe(true);
   });
 
-  it('allows ROLE_ADMIN', () => {
-    const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ROLE_ADMIN'] };
+  it('allows PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] };
     expect(canManageOrganizacoes(user)).toBe(true);
   });
 
-  it('allows ROLE_CLERO_PAROCO', () => {
-    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['ROLE_CLERO_PAROCO'] };
+  it('allows MEMBRO_CPP', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CPP'] };
     expect(canManageOrganizacoes(user)).toBe(true);
   });
 
-  it('allows ROLE_CONSELHO_COORDENADOR', () => {
-    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_CONSELHO_COORDENADOR'] };
-    expect(canManageOrganizacoes(user)).toBe(true);
-  });
-
-  it('allows ROLE_CONSELHO_VICE_COORDENADOR', () => {
-    const user: User = { id: '1', username: 'vc', name: 'Vice Coord', roles: ['ROLE_CONSELHO_VICE_COORDENADOR'] };
-    expect(canManageOrganizacoes(user)).toBe(true);
-  });
-
-  it('denies other roles like secretarios, membros or regular pastoral leaders', () => {
-    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['ROLE_PASTORAL_COORDENADOR', 'ROLE_CONSELHO_SECRETARIO'] };
+  it('denies COORDENADOR_PASTORAL alone', () => {
+    const user: User = { id: '1', username: 'c', name: 'Coord', roles: ['COORDENADOR_PASTORAL'] };
     expect(canManageOrganizacoes(user)).toBe(false);
   });
 });
+
+// ─── canAddObservation ───────────────────────────────────────────────────────
 
 describe('canAddObservation', () => {
   const targetOrgId = 'org-music';
@@ -328,22 +454,55 @@ describe('canAddObservation', () => {
   });
 });
 
+// ─── isAdmin ─────────────────────────────────────────────────────────────────
+
+describe('isAdmin', () => {
+  it('allows ADMIN role', () => {
+    expect(isAdmin({ id: '1', username: 'a', name: 'A', roles: ['ADMIN'] })).toBe(true);
+  });
+
+  it('allows ROLE_ADMIN role', () => {
+    expect(isAdmin({ id: '1', username: 'a', name: 'A', roles: ['ROLE_ADMIN'] })).toBe(true);
+  });
+
+  it('denies PAROCO', () => {
+    expect(isAdmin({ id: '1', username: 'p', name: 'P', roles: ['PAROCO'] })).toBe(false);
+  });
+});
+
+// ─── isUnlinkedUser ──────────────────────────────────────────────────────────
+
 describe('isUnlinkedUser', () => {
   it('returns false if user is null', () => {
     expect(isUnlinkedUser(null)).toBe(false);
   });
 
-  it('returns false for admin or clero roles regardless of organization memberships', () => {
+  it('returns false for ADMIN regardless of organization memberships', () => {
     const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'], organizations: [] };
     expect(isUnlinkedUser(user)).toBe(false);
   });
 
-  it('returns true for member users with no active organizations', () => {
+  it('returns false for PAROCO', () => {
+    const user: User = { id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'], organizations: [] };
+    expect(isUnlinkedUser(user)).toBe(false);
+  });
+
+  it('returns false for MEMBRO_CPP', () => {
+    const user: User = { id: '1', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CPP'], organizations: [] };
+    expect(isUnlinkedUser(user)).toBe(false);
+  });
+
+  it('returns true for MEMBRO_PASTORAL users with no active organizations', () => {
+    const user: User = { id: '2', username: 'membro', name: 'Membro', roles: ['MEMBRO_PASTORAL'], organizations: [] };
+    expect(isUnlinkedUser(user)).toBe(true);
+  });
+
+  it('returns true for MEMBRO users with no active organizations', () => {
     const user: User = { id: '2', username: 'membro', name: 'Membro', roles: ['MEMBRO'], organizations: [] };
     expect(isUnlinkedUser(user)).toBe(true);
   });
 
-  it('returns false for member users with at least one active organization', () => {
+  it('returns false for MEMBRO users with at least one organization', () => {
     const user: User = {
       id: '2',
       username: 'membro',
@@ -354,6 +513,3 @@ describe('isUnlinkedUser', () => {
     expect(isUnlinkedUser(user)).toBe(false);
   });
 });
-
-
-
