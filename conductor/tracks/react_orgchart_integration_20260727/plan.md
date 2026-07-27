@@ -1,8 +1,11 @@
 # Implementation Plan: Integração do `@dabeng/react-orgchart` no Sistema de Organograma
 
 ## Phase 1: Dependências & Preparação do Ambiente
-- [ ] Task: Instalar dependência `@dabeng/react-orgchart` no pacote `gestao-paroquia-ui`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup' (Protocol in workflow.md)
+- [x] Task: Instalar dependência `@dabeng/react-orgchart` no pacote `gestao-paroquia-ui` 8189804
+
+
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Setup' (Protocol in workflow.md)
+
 
 ## Phase 2: Refatoração do Hook de Exportação & Testes
 - [ ] Task: Atualizar `useOrganogramaExport.ts` para redefinir matrizes de transformação de zoom durante a captura de tela (PNG/SVG)
