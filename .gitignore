@@ -1,38 +1,59 @@
 # Monorepo Root .gitignore
 
-# IDEs and System files
+# IDEs & Editor Configuration
 .vscode/
 .idea/
 *.swp
 *.tmp
+*.bak
+
+# OS System Files
 .DS_Store
 Thumbs.db
 
-# Java / Gradle (gestao-paroquia)
-gestao-paroquia/.gradle/
-gestao-paroquia/build/
-gestao-paroquia/bin/
-gestao-paroquia/*.jar
-gestao-paroquia/*.class
-
-# Node / React (gestao-paroquia-ui)
-gestao-paroquia-ui/node_modules/
-gestao-paroquia-ui/build/
-gestao-paroquia-ui/coverage/
-gestao-paroquia-ui/.pnp
-gestao-paroquia-ui/.pnp.js
-gestao-paroquia-ui/npm-debug.log*
-gestao-paroquia-ui/yarn-debug.log*
-gestao-paroquia-ui/yarn-error.log*
-
-# Environment and Secrets
-*.env
-*.env.local
-*.env.*.local
-
-# General patterns (recursive)
-node_modules/
-build/
+# Java & Gradle (gestao-paroquia)
 .gradle/
+**/.gradle/
+build/
+**/build/
+bin/
+**/bin/
 target/
+**/target/
+out/
+**/out/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Node, React & Vite (gestao-paroquia-ui)
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+coverage/
+**/coverage/
+.vite/
+**/.vite/
+.pnp
+.pnp.js
+*.tsbuildinfo
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Agent Scratch Files
+.specify/
+specs/

@@ -1,28 +1,35 @@
-# Ignore Gradle project-specific cache directory
-.gradle
-
-# Ignore Gradle build output directory
-build
-
-# Java and Gradle artifacts
+# Gradle & Build Output
 .gradle/
-target/
-*.class
-*.jar
-!gradle/wrapper/gradle-wrapper.jar
+**/.gradle/
+build/
+**/build/
 bin/
 **/bin/
+target/
+**/target/
+out/
+**/out/
 
-# Environment and logs
+# Java Compilation Artifacts
+*.class
+*.jar
+*.war
+*.ear
+!gradle/wrapper/gradle-wrapper.jar
+
+# Logs & Environment Secrets
 *.log
-.env*
+.env
+.env.*
 
-# IDE and OS files
+# IDEs & System Files
 .vscode/
 .idea/
+*.swp
+*.tmp
 .DS_Store
 Thumbs.db
-*.tmp
-*.swp
+
+# Agent & Skill Specs Scratch
 .specify/
-specs
+specs/
