@@ -1,0 +1,8 @@
+{
+  "track_id": "vite_migration_20260726",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-07-26T12:47:05Z",
+  "updated_at": "2026-07-26T12:47:05Z",
+  "description": "Migração do Create React App (react-scripts) para Vite e Vitest no frontend (gestao-paroquia-ui)"
+}
