@@ -75,9 +75,11 @@ class ImportacaoServiceTest {
                 eventoJpaRepository,
                 passwordEncoder,
                 organizacaoJpaRepository,
-                pastoralOficialRepository
+                pastoralOficialRepository,
+                new ImportacaoFileParser()
         );
     }
+
 
     @Test
     void shouldGerarCsvTemplateParaMembro() throws IOException {
