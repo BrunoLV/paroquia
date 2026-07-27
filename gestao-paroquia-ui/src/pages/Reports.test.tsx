@@ -90,7 +90,7 @@ describe('Reports Page', () => {
     expect(screen.getByText(/Relatórios & Métricas/i)).toBeInTheDocument();
     expect(screen.getByText('Exportar CSV')).toBeInTheDocument();
     expect(screen.getByText('Exportar PDF')).toBeInTheDocument();
-    expect(screen.getByText('Filtros do Relatório')).toBeInTheDocument();
+    expect(screen.getByLabelText('Data Início')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('15')).toBeInTheDocument();
@@ -137,10 +137,15 @@ describe('Reports Page', () => {
       expect(screen.getByText('15')).toBeInTheDocument();
     });
 
+    const startDateInput = screen.getByLabelText('Data Início');
+    fireEvent.change(startDateInput, { target: { value: '2026-01-01' } });
+
     const filterButton = screen.getByText('Filtrar');
     fireEvent.click(filterButton);
 
-    expect(mockedApiClient.get).toHaveBeenCalledWith('/eventos', expect.any(Object));
+    await waitFor(() => {
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/eventos', expect.any(Object));
+    });
   });
 
   test('renders error state on API failure', async () => {
@@ -168,4 +173,5 @@ describe('Reports Page', () => {
     });
   });
 });
+
 
