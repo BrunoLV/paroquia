@@ -27,71 +27,12 @@ import {
     ZoomIn as ZoomInIcon,
     ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
+import OrganizationChart from '@dabeng/react-orgchart';
+import '@dabeng/react-orgchart/dist/ChartContainer.css';
 import {getOrganograma} from '../api/organizacoes';
 import {OrganogramaNode} from '../api/types';
 import {ExportFormat, useOrganogramaExport} from '../hooks/useOrganogramaExport';
 import {OrganogramaExportButton} from '../components/organograma/OrganogramaExportButton';
-
-const treeStyles = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  overflowX: 'auto',
-  py: 4,
-  px: 4,
-  width: '100%',
-  '& ul': {
-    display: 'flex',
-    justifyContent: 'center',
-    position: 'relative',
-    paddingTop: '24px',
-    listStyleType: 'none',
-    paddingLeft: 0,
-    margin: 0,
-    gap: 0,
-  },
-  '& li': {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    position: 'relative',
-    padding: '24px 16px 0 16px',
-  },
-  /* Line connector from child to parent horizontal bar */
-  '& li::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: '50%',
-    borderLeft: '2px solid #1a237e',
-    height: '24px',
-    width: 0,
-    transform: 'translateX(-50%)',
-  },
-  /* Horizontal bar connecting sibling nodes */
-  '& li::after': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    borderTop: '2px solid #1a237e',
-  },
-  /* Adjust horizontal lines for first and last siblings */
-  '& li:first-of-type::after': {
-    left: '50%',
-  },
-  '& li:last-of-type::after': {
-    right: '50%',
-  },
-  /* Remove connectors for single child */
-  '& li:only-child::after, & li:only-child::before': {
-    display: 'none',
-  },
-  '& li:only-child': {
-    paddingTop: 0,
-  },
-};
 
 const Organograma: React.FC = () => {
   const { data: organograma, isLoading, isError } = useQuery({
@@ -246,23 +187,25 @@ const Organograma: React.FC = () => {
   const renderOrgNode = (org: OrganogramaNode, isInsideTree: boolean = false) => {
     if (!org) return null;
     const isExpanded = expandedMap[org.id] ?? false;
-    const members = org.children || [];
+    const members = org.orgChildren || org.children || [];
 
     const coord = org.responsavelNome;
     const vice = org.viceResponsavelNome;
 
     const ordinaryMembers = members.filter(
-      m =>
+      (m: OrganogramaNode) =>
         m &&
         m.type === 'MEMBRO' &&
         !equalsIgnoreCase(m.label, coord) &&
         !equalsIgnoreCase(m.label, vice)
     );
 
+
     const headerStyle = getOrgHeaderStyle(org.subtype);
     const HeaderIcon = headerStyle.icon;
 
-    const cardContent = (
+
+    return (
       <Card
         sx={{
           height: '100%',
@@ -348,7 +291,8 @@ const Organograma: React.FC = () => {
 
               <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                 <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column' }}>
-                  {ordinaryMembers.map(m => renderMemberNode(m, org.subtype))}
+                  {ordinaryMembers.map((m: OrganogramaNode) => renderMemberNode(m, org.subtype))}
+
                 </Box>
               </Collapse>
             </Box>
@@ -356,8 +300,23 @@ const Organograma: React.FC = () => {
         </CardContent>
       </Card>
     );
+  };
 
-    return cardContent;
+  const transformToOrgchartData = (node: OrganogramaNode): any => {
+    if (!node) return null;
+    const childrenOrgs = (node.children || []).filter(c => c && c.type === 'ORGANIZACAO');
+    return {
+      ...node,
+      name: node.label,
+      title: node.subtype,
+      orgChildren: node.children,
+      children: childrenOrgs.map(c => transformToOrgchartData(c)),
+    };
+  };
+
+
+  const OrgchartNodeTemplate = ({ nodeData }: { nodeData: any }) => {
+    return renderOrgNode(nodeData, true);
   };
 
   if (isLoading) {
@@ -411,103 +370,6 @@ const Organograma: React.FC = () => {
     }
   }
 
-  const renderTreeNode = (node: OrganogramaNode, isRoot: boolean = false) => {
-    if (!node) return null;
-    const childrenOrgs = (node.children || []).filter(c => c && c.type === 'ORGANIZACAO');
-    const hasChildren = childrenOrgs.length > 0;
-
-    return (
-      <li key={node.id}>
-        {isRoot ? (
-          <Box sx={{ position: 'relative', pb: hasChildren ? '24px' : 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Card
-              sx={{
-                width: 260,
-                borderRadius: 0,
-                background: 'linear-gradient(135deg, #1a237e 0%, #311b92 100%)',
-                color: 'white',
-                boxShadow: '0 6px 20px rgba(26, 35, 126, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: -15,
-                  right: -15,
-                  width: 70,
-                  height: 70,
-                  borderRadius: '50%',
-                  bgcolor: 'rgba(255,255,255,0.05)',
-                }}
-              />
-              <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
-                <ChurchIcon sx={{ fontSize: 36, mb: 0.5, color: 'rgba(255,255,255,0.9)' }} />
-                <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                  {node.label || 'Clero Paroquial'}
-                </Typography>
-                <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.65rem', display: 'block', mb: 1 }}>
-                  Administração Geral
-                </Typography>
-                {node.responsavelNome && (
-                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>
-                      Pároco: {node.responsavelNome}
-                    </Typography>
-                    {node.viceResponsavelNome && (
-                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem', display: 'block' }}>
-                        Vigário: {node.viceResponsavelNome}
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-            {hasChildren && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  borderLeft: '2px solid #1a237e',
-                  height: '24px',
-                  width: 0,
-                }}
-              />
-            )}
-          </Box>
-        ) : (
-          hasChildren ? (
-            <Box sx={{ position: 'relative', pb: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {renderOrgNode(node, true)}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  borderLeft: '2px solid #1a237e',
-                  height: '24px',
-                  width: 0,
-                }}
-              />
-            </Box>
-          ) : (
-            renderOrgNode(node, true)
-          )
-        )}
-
-        {hasChildren && (
-          <ul>
-            {childrenOrgs.map(child => renderTreeNode(child, false))}
-          </ul>
-        )}
-      </li>
-    );
-  };
-
   return (
     <Box sx={{ mt: 3, mb: 4, px: { xs: 2, md: 4 } }}>
       <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
@@ -550,7 +412,7 @@ const Organograma: React.FC = () => {
       {/* Container de captura para exportação de imagem */}
       <Box ref={chartRef} sx={{ bgcolor: '#ffffff', p: 1 }}>
         {viewMode === 'tree' ? (
-          /* Connected Interactive Tree View */
+          /* Connected Interactive Tree View powered by @dabeng/react-orgchart */
           <Box>
             {/* Controle de Zoom */}
             <Box className="no-export" sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
@@ -608,10 +470,14 @@ const Organograma: React.FC = () => {
             </Box>
 
             <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
-              <Box sx={{ ...treeStyles, width: 'max-content', minWidth: '100%', zoom: zoom }}>
-                <ul>
-                  {renderTreeNode(cleroRootNode, true)}
-                </ul>
+              <Box sx={{ width: 'max-content', minWidth: '100%', zoom: zoom }}>
+                <OrganizationChart
+                  datasource={transformToOrgchartData(cleroRootNode)}
+                  NodeTemplate={OrgchartNodeTemplate}
+                  pan={true}
+                  zoom={true}
+                  chartClass="paroquia-orgchart"
+                />
               </Box>
             </Box>
           </Box>
@@ -687,6 +553,7 @@ const Organograma: React.FC = () => {
     </Box>
   );
 };
+
 
 const equalsIgnoreCase = (a: string | null | undefined, b: string | null | undefined): boolean => {
   if (a === null || a === undefined || b === null || b === undefined) {

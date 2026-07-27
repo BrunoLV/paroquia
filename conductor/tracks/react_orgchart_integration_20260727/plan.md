@@ -14,6 +14,7 @@
 
 
 ## Phase 3: Integração do Componente & Limpeza de Código Legado
-- [ ] Task: Integrar `@dabeng/react-orgchart` em `Organograma.tsx` com `NodeTemplate` customizado e suporte a pan/zoom
-- [ ] Task: Remover código legado (`treeStyles`, `renderTreeNode`) e atualizar a suíte de testes `Organograma.test.tsx`
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Component Integration' (Protocol in workflow.md)
+- [x] Task: Integrar `@dabeng/react-orgchart` em `Organograma.tsx` com `NodeTemplate` customizado e suporte a pan/zoom
+- [x] Task: Remover código legado (`treeStyles`, `renderTreeNode`) e atualizar a suíte de testes `Organograma.test.tsx`
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Component Integration' (Protocol in workflow.md)
+

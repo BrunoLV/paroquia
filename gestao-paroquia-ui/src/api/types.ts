@@ -167,4 +167,6 @@ export interface OrganogramaNode {
   responsavelPapel: string | null;
   viceResponsavelNome: string | null;
   children: OrganogramaNode[];
+  orgChildren?: OrganogramaNode[];
 }
+
