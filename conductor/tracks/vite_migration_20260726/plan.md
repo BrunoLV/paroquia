@@ -16,8 +16,8 @@
 ## Phase 3: Adaptação dos Testes para Vitest e Execução da Suíte
 
 - [x] Task 3.1: Ajustar `src/setupTests.ts` e Mocks Globais para compatibilidade total com o Vitest (fbc3f59)
-- [ ] Task 3.2: Executar e validar a suíte de testes completa (`CI=true npm test`) para garantir 100% de passagem nos 243 testes
-- [ ] Task 3.3: Conductor - User Manual Verification 'Phase 3: Adaptação dos Testes e Validação da Suíte' (Protocol in workflow.md)
+- [x] Task 3.2: Executar e validar a suíte de testes completa (`npm test`) para garantir 100% de passagem nos 243 testes
+- [x] Task 3.3: Conductor - User Manual Verification 'Phase 3: Adaptação dos Testes e Validação da Suíte' (Protocol in workflow.md)
 
 ## Phase 4: Validação do Build de Produção e Checkpoint Final
 
