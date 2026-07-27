@@ -57,4 +57,6 @@
 
 ### Media Utilities
 - **`html-to-image`:** Exporting interactive parish organogram views to PNG images.
+- **`@dabeng/react-orgchart`:** Interactive hierarchical tree rendering and zoom/pan organogram view.
+
 
