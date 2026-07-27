@@ -7,7 +7,6 @@ cd "$SCRIPT_DIR"
 
 # Script para reiniciar, reconstruir e subir o ambiente Docker do projeto paróquia
 
-# Exibe ajuda
 show_help() {
     echo "Uso: ./restart-docker.sh [OPÇÕES]"
     echo ""
@@ -20,14 +19,13 @@ show_help() {
 }
 
 CLEAN=false
-NO_CACHE=""
+NO_CACHE=false
 BUILD=true
 
-# Trata argumentos
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -c|--clean) CLEAN=true ;;
-        --no-cache) NO_CACHE="--no-cache" ;;
+        --no-cache) NO_CACHE=true ;;
         -r|--no-build) BUILD=false ;;
         -h|--help) show_help; exit 0 ;;
         *) echo "Opção desconhecida: $1"; show_help; exit 1 ;;
@@ -41,7 +39,7 @@ echo "========================================="
 
 echo "Step 1: Parando e limpando containers..."
 if [ "$CLEAN" = true ]; then
-    echo "-> Removendo containers e volumes (banco de dados e caches do Gradle)..."
+    echo "-> Removendo containers e volumes (banco de dados postgres_data, shared_volume e gradle_cache)..."
     docker compose down -v
 else
     echo "-> Parando e removendo apenas os containers..."
@@ -51,10 +49,12 @@ fi
 echo ""
 if [ "$BUILD" = true ]; then
     echo "Step 2: Reconstruindo as imagens..."
-    if [ -n "$NO_CACHE" ]; then
+    BUILD_FLAGS=()
+    if [ "$NO_CACHE" = true ]; then
         echo "-> Construindo sem cache (--no-cache)..."
+        BUILD_FLAGS+=("--no-cache")
     fi
-    docker compose build $NO_CACHE
+    docker compose build "${BUILD_FLAGS[@]}"
 else
     echo "Step 2: Pulando reconstrução das imagens (--no-build)..."
 fi
@@ -67,12 +67,14 @@ echo ""
 echo "========================================="
 echo "   AMBIENTE INICIALIZADO COM SUCESSO!    "
 echo "========================================="
-echo "Para acompanhar o processo de build do backend e inicialização da API, execute:"
-echo "  docker compose logs -f builder api"
+echo "Para acompanhar o processo de build do backend e inicialização dos serviços, execute:"
+echo "  docker compose logs -f builder api ui"
 echo ""
 echo "Serviços:"
-echo "  - Frontend UI:  http://localhost:3000"
-echo "  - API Backend:  http://localhost:8080"
-echo "  - PgAdmin:      http://localhost:5050 (User: admin@admin.com / Senha: admin)"
-echo "  - Postgres DB:  localhost:5432 (User: postgres / Senha: password)"
+echo "  - Frontend UI (Vite): http://localhost:3000"
+echo "  - API Backend (v1):   http://localhost:8080/api/v1"
+echo "  - Swagger UI / Docs: http://localhost:8080/swagger-ui.html"
+echo "  - Health Check API:  http://localhost:8080/actuator/health"
+echo "  - PgAdmin 4:         http://localhost:5050 (User: admin@admin.com / Senha: admin)"
+echo "  - Postgres DB 16:    localhost:5432 (User: postgres / Senha: password / DB: calendario)"
 echo "========================================="
