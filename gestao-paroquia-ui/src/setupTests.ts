@@ -1,12 +1,11 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-import React from 'react';
+import { vi } from 'vitest';
 
-// Global mock for @mui/x-charts to avoid jsdom and ES module parsing errors in tests
-jest.mock('@mui/x-charts', () => {
+// Alias global jest to vi for seamless compatibility with Jest tests
+(globalThis as any).jest = vi;
+
+// Global mock for @mui/x-charts to avoid jsdom and ES module rendering issues in tests
+vi.mock('@mui/x-charts', () => {
   const React = require('react');
   return {
     PieChart: ({ series }: any) => {
@@ -14,6 +13,12 @@ jest.mock('@mui/x-charts', () => {
         React.createElement('span', { key: d.label }, `${d.label}: ${d.value}`)
       ) || [];
       return React.createElement('div', { 'data-testid': 'mock-pie-chart' }, ...children);
-    }
+    },
+    BarChart: ({ series }: any) => {
+      const children = series?.map((s: any) =>
+        React.createElement('span', { key: s.label }, `${s.label}: ${s.data?.[0]}`)
+      ) || [];
+      return React.createElement('div', { 'data-testid': 'mock-bar-chart' }, ...children);
+    },
   };
 });
