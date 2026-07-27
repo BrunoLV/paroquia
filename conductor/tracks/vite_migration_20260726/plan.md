@@ -10,7 +10,7 @@
 ## Phase 2: Migração de Variáveis de Ambiente e Configuração de Tipos
 
 - [x] Task 2.1: Atualizar `src/react-app-env.d.ts` / `src/vite-env.d.ts` para tipagem do `import.meta.env` (bfc2103)
-- [ ] Task 2.2: Refatorar referências no código de `process.env.REACT_APP_*` para `import.meta.env.VITE_*` e atualizar arquivos de ambiente `.env`
+- [x] Task 2.2: Refatorar referências no código de `process.env.REACT_APP_*` para `import.meta.env.VITE_*` e atualizar arquivos de ambiente `.env` (0be7988)
 - [ ] Task 2.3: Conductor - User Manual Verification 'Phase 2: Migração de Variáveis de Ambiente' (Protocol in workflow.md)
 
 ## Phase 3: Adaptação dos Testes para Vitest e Execução da Suíte
