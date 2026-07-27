@@ -1,19 +1,63 @@
-.gradle
-build
-bin
-out
-.idea
-.vscode
+# Monorepo Root .dockerignore
+
+# Version Control & Tooling Configs
 .git
-.gemini
+.gitignore
 .github
-*.log
-Dockerfile*
-docker-compose.yml
+.gemini
+.specify
+specs
+
+# IDEs & OS Files
+.vscode
+.idea
+*.swp
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Java & Gradle Build Artifacts (gestao-paroquia)
+.gradle
+**/.gradle
+build
+**/build
+bin
+**/bin
+out
+**/out
+target
+**/target
+*.class
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Node, React & Vite Build Artifacts (gestao-paroquia-ui)
 node_modules
-npm-debug.log
-yarn-debug.log
-yarn-error.log
+**/node_modules
+dist
+**/dist
+dist-ssr
+**/dist-ssr
+coverage
+**/coverage
+.vite
+**/.vite
+.pnp
+.pnp.js
+
+# Docker & Compose Files
+Dockerfile*
+docker-compose*.yml
+
+# Environment & Secrets
 .env
 .env.local
 .env.*.local
+*.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

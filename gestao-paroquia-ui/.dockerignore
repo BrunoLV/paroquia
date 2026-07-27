@@ -1,7 +1,33 @@
+# Dependencies & Build Outputs
 node_modules
 dist
+dist-ssr
+build
+coverage
+.vite
+.pnp
+.pnp.js
+
+# Version Control & IDEs
 .git
+.gitignore
 .vscode
 .idea
+*.swp
+*.tmp
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
