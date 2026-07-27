@@ -21,5 +21,5 @@ ENV SONAR_TOKEN=
 # Ensure shared directory exists
 RUN mkdir -p /shared
 
-# The entrypoint will run the build, then copy the jar to the shared volume
-ENTRYPOINT ["/bin/sh", "-c", "./gradlew :app:build && cp app/build/libs/app.jar /shared/app.jar"]
+# The entrypoint will run the build skipping tests (for fast container startup), then copy the jar to the shared volume
+ENTRYPOINT ["/bin/sh", "-c", "./gradlew :app:bootJar -x test --build-cache && cp app/build/libs/app.jar /shared/app.jar"]
