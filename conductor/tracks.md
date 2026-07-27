@@ -242,7 +242,9 @@
 
 ---
 
-- [ ] **Track: Integração do @dabeng/react-orgchart no Sistema de Organograma**
+- [x] **Track: Integração do @dabeng/react-orgchart no Sistema de Organograma**
+
+
 *Link: [./tracks/react_orgchart_integration_20260727/](./tracks/react_orgchart_integration_20260727/)*
 
 
