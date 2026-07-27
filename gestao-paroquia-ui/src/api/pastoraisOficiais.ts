@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { PastoralMovimentoOficial } from './types';
+import {PastoralMovimentoOficial} from './types';
 
 export const getPastoraisOficiais = async (): Promise<PastoralMovimentoOficial[]> => {
   const response = await apiClient.get<PastoralMovimentoOficial[]>('/pastorais-oficiais');

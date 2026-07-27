@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-  Chip,
-  Switch,
-  Collapse,
-  FormControlLabel,
-  FormHelperText,
+    Box,
+    Button,
+    Chip,
+    Collapse,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    FormControlLabel,
+    FormHelperText,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Select,
+    Switch,
+    TextField,
 } from '@mui/material';
-import { useAuth } from '../auth/AuthContext';
-import { useNotification } from '../context/NotificationContext';
-import { Evento, Organizacao, Local, Projeto } from '../api/types';
-import RecurrenceForm, { RecurrenceRule } from './RecurrenceForm';
+import {useAuth} from '../auth/AuthContext';
+import {useNotification} from '../context/NotificationContext';
+import {Evento, Local, Organizacao, Projeto} from '../api/types';
+import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 
 const CATEGORIES = [
   'PASTORAL',

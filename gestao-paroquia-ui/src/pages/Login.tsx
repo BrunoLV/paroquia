@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Checkbox,
-  FormControlLabel
+    Box,
+    Button,
+    Checkbox,
+    Container,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    TextField,
+    Typography
 } from '@mui/material';
 
-import { useAuth } from '../auth/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useNotification } from '../context/NotificationContext';
+import {useAuth} from '../auth/AuthContext';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {useNotification} from '../context/NotificationContext';
 import apiClient from '../api/client';
-import { getOrganizacoes } from '../api/organizacoes';
-import { Organizacao } from '../api/types';
+import {getOrganizacoes} from '../api/organizacoes';
+import {Organizacao} from '../api/types';
 
 const Login = () => {
   const [isRegistering, setIsRegistering] = useState(false);

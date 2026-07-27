@@ -1,6 +1,10 @@
 import React from 'react';
-import { Card, CardContent, Typography, Grid, Box } from '@mui/material';
-import { CalendarMonth as CalendarIcon, Assignment as ProjectIcon, HourglassEmpty as PendingIcon } from '@mui/icons-material';
+import {Box, Card, CardContent, Grid, Typography} from '@mui/material';
+import {
+    Assignment as ProjectIcon,
+    CalendarMonth as CalendarIcon,
+    HourglassEmpty as PendingIcon
+} from '@mui/icons-material';
 
 interface SummaryCardsProps {
   metrics?: {

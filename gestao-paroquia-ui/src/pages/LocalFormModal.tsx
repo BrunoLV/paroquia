@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
 } from '@mui/material';
-import { Local } from '../api/types';
+import {Local} from '../api/types';
 
 interface LocalFormModalProps {
   open: boolean;

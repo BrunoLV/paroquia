@@ -1,7 +1,7 @@
 import React from 'react';
-import { Paper, Typography, Box, Grid, LinearProgress, Chip, Stack } from '@mui/material';
-import { Warning as WarningIcon, AccessTime as TimeIcon, CalendarToday as EventIcon } from '@mui/icons-material';
-import { ProjectDetail } from '../../api/types';
+import {Box, Chip, Grid, LinearProgress, Paper, Stack, Typography} from '@mui/material';
+import {AccessTime as TimeIcon, CalendarToday as EventIcon, Warning as WarningIcon} from '@mui/icons-material';
+import {ProjectDetail} from '../../api/types';
 
 interface ActiveProjectsProgressListProps {
   projects: ProjectDetail[];

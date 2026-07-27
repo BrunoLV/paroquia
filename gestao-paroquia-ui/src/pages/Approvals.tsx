@@ -1,35 +1,34 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, {useEffect, useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {
-  Container,
-  Typography,
-  Box,
-  Tabs,
-  Tab,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  Chip,
-  CircularProgress,
-  TablePagination,
-  Alert,
-  Drawer,
-  IconButton,
-  Divider,
-  TextField,
+    Alert,
+    Box,
+    Button,
+    Chip,
+    CircularProgress,
+    Container,
+    Divider,
+    Drawer,
+    IconButton,
+    Paper,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TablePagination,
+    TableRow,
+    Tabs,
+    TextField,
+    Typography,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
-import { getApprovals, decideApproval } from '../api/approvals';
-import { getProjectApprovals, decideProjectApproval } from '../api/projects';
-import { AprovacaoResponse, ProjetoAprovacaoResponse, Projeto } from '../api/types';
-import { useNotification } from '../context/NotificationContext';
+import {Close as CloseIcon} from '@mui/icons-material';
+import {decideApproval, getApprovals} from '../api/approvals';
+import {decideProjectApproval, getProjectApprovals} from '../api/projects';
+import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
+import {useNotification} from '../context/NotificationContext';
 import apiClient from '../api/client';
-import { useEffect } from 'react';
 
 const Approvals = () => {
   const { showError, showSuccess } = useNotification();

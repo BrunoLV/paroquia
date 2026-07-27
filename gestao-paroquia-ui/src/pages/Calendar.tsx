@@ -1,48 +1,48 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  CircularProgress,
-  IconButton,
-  Alert,
-  Chip,
-  Card,
-  CardContent,
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    Grid,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    Typography,
 } from '@mui/material';
 import {
-  ChevronLeft,
-  ChevronRight,
-  Add as AddIcon,
-  CalendarMonth as CalendarIcon,
-  FormatListBulleted as ListIcon,
-  Refresh as RefreshIcon,
-  Business as BusinessIcon,
-  Schedule as ScheduleIcon,
-  Description as DescriptionIcon,
-  LocationOn as LocationIcon,
-  Groups as PeopleIcon,
-  Download as DownloadIcon,
+    Add as AddIcon,
+    Business as BusinessIcon,
+    CalendarMonth as CalendarIcon,
+    ChevronLeft,
+    ChevronRight,
+    Description as DescriptionIcon,
+    Download as DownloadIcon,
+    FormatListBulleted as ListIcon,
+    Groups as PeopleIcon,
+    LocationOn as LocationIcon,
+    Refresh as RefreshIcon,
+    Schedule as ScheduleIcon,
 } from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
+import {useAuth} from '../auth/AuthContext';
 import apiClient from '../api/client';
-import { useNotification } from '../context/NotificationContext';
+import {useNotification} from '../context/NotificationContext';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import EventCancelDialog from '../components/EventCancelDialog';
-import EditScopeDialog, { EditScope } from '../components/EditScopeDialog';
-import { ExportCalendarDialog } from '../components/ExportCalendarDialog';
+import EditScopeDialog, {EditScope} from '../components/EditScopeDialog';
+import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
-import { Evento, Organizacao, Local, Projeto } from '../api/types';
+import {Evento, Local, Organizacao, Projeto} from '../api/types';
 
 interface CalendarDay {
   date: Date;

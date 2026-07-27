@@ -1,12 +1,12 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryProvider } from '../api/QueryProvider';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {QueryProvider} from '../api/QueryProvider';
 import Approvals from './Approvals';
-import { getApprovals, decideApproval } from '../api/approvals';
-import { getProjectApprovals, decideProjectApproval } from '../api/projects';
-import { MemoryRouter } from 'react-router-dom';
-import { NotificationProvider } from '../context/NotificationContext';
+import {decideApproval, getApprovals} from '../api/approvals';
+import {decideProjectApproval, getProjectApprovals} from '../api/projects';
+import {MemoryRouter} from 'react-router-dom';
+import {NotificationProvider} from '../context/NotificationContext';
 
 vi.mock('../api/approvals', () => ({
   getApprovals: jest.fn(),

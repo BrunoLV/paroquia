@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { AprovacaoResponse, AprovacaoDecisionRequest, AprovacaoDecisionResponse } from './types';
+import {AprovacaoDecisionRequest, AprovacaoDecisionResponse, AprovacaoResponse} from './types';
 
 export interface PaginatedResponse<T> {
   content: T[];

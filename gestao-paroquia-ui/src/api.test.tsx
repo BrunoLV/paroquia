@@ -1,9 +1,7 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render } from '@testing-library/react';
+import {render} from '@testing-library/react';
 import App from './App';
-import apiClient from './api/client';
-import axios from 'axios';
 
 vi.mock('axios', async (importOriginal) => {
   const actualAxios: any = await importOriginal();

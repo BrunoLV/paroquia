@@ -1,7 +1,7 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import apiClient from './client';
 // @ts-ignore
-import { getApprovals, decideApproval } from './approvals';
+import {decideApproval, getApprovals} from './approvals';
 
 vi.mock('./client', () => ({
   __esModule: true,

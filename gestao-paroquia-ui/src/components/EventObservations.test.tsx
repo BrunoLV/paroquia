@@ -1,11 +1,11 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
 // @ts-ignore
 import EventObservations from './EventObservations';
-import { getObservacoes, createObservacao, updateObservacao, deleteObservacao } from '../api/observacoes';
-import { ThemeProvider } from '@mui/material/styles';
+import {createObservacao, getObservacoes} from '../api/observacoes';
+import {ThemeProvider} from '@mui/material/styles';
 import theme from '../theme';
 
 // Mock API client methods

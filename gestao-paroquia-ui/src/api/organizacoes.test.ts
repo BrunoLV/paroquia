@@ -1,7 +1,7 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import apiClient from './client';
-import { getOrganizacoes, createOrganizacao, updateOrganizacao, deleteOrganizacao, getOrganograma } from './organizacoes';
-import { Organizacao, OrganogramaNode } from './types';
+import {createOrganizacao, deleteOrganizacao, getOrganizacoes, getOrganograma, updateOrganizacao} from './organizacoes';
+import {Organizacao, OrganogramaNode} from './types';
 
 vi.mock('./client', () => ({
   __esModule: true,

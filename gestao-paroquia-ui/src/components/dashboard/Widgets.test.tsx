@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import SummaryCards from './SummaryCards';
 import UpcomingEvents from './UpcomingEvents';
-import { ThemeProvider } from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import theme from '../../theme';
 
 describe('Dashboard Widgets', () => {

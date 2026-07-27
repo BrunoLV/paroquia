@@ -1,43 +1,43 @@
-import React, { useState, useMemo } from 'react';
+import React, {useMemo, useState} from 'react';
 import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Skeleton,
-  Alert,
-  Stack,
-  LinearProgress,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
+    Alert,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    Grid,
+    LinearProgress,
+    Paper,
+    Skeleton,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
 } from '@mui/material';
 import {
-  Event as EventIcon,
-  Assignment as ProjectIcon,
-  PendingActions as PendingIcon,
-  Assessment as AssessmentIcon,
-  PieChart as PieIcon,
-  BarChart as BarIcon,
-  Warning as WarningIcon,
-  FilterList as FilterIcon,
+    Assessment as AssessmentIcon,
+    Assignment as ProjectIcon,
+    BarChart as BarIcon,
+    Event as EventIcon,
+    FilterList as FilterIcon,
+    PendingActions as PendingIcon,
+    PieChart as PieIcon,
+    Warning as WarningIcon,
 } from '@mui/icons-material';
-import { PieChart, BarChart } from '@mui/x-charts';
-import { useQuery } from '@tanstack/react-query';
-import { getDashboardMetrics } from '../api/dashboard';
-import { getOrganizacoes } from '../api/organizacoes';
+import {BarChart, PieChart} from '@mui/x-charts';
+import {useQuery} from '@tanstack/react-query';
+import {getDashboardMetrics} from '../api/dashboard';
+import {getOrganizacoes} from '../api/organizacoes';
 import apiClient from '../api/client';
-import { DashboardMetrics, Organizacao, WeeklyEvent } from '../api/types';
+import {DashboardMetrics, Organizacao, WeeklyEvent} from '../api/types';
 import ReportFilters from '../components/reports/ReportFilters';
 import ReportExportButtons from '../components/reports/ReportExportButtons';
-import { generateMetricsCSV, downloadCSV, exportElementAsPDF } from '../utils/exportUtils';
-import { useNotification } from '../context/NotificationContext';
+import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from '../utils/exportUtils';
+import {useNotification} from '../context/NotificationContext';
 
 const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '#d4af37', '#e91e63', '#455a64'];
 

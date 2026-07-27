@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import React from 'react';
-import { vi } from 'vitest';
+import {vi} from 'vitest';
 
 // Provide global jest alias for Vitest
 (globalThis as any).jest = vi;

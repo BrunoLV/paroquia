@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Local } from './types';
+import {Local} from './types';
 
 export const getLocais = async (): Promise<Local[]> => {
   const response = await apiClient.get<Local[]>('/locais');

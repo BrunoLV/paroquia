@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Snackbar, Alert } from '@mui/material';
+import React, {createContext, ReactNode, useContext, useState} from 'react';
+import {Alert, Snackbar} from '@mui/material';
 
 type NotificationSeverity = 'success' | 'error' | 'warning' | 'info';
 

@@ -1,4 +1,4 @@
-import { DashboardMetrics } from '../api/types';
+import {DashboardMetrics} from '../api/types';
 import * as htmlToImage from 'html-to-image';
 
 /**

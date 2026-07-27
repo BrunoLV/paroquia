@@ -1,13 +1,13 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, act, fireEvent, within } from '@testing-library/react';
+import {act, fireEvent, render, screen, within} from '@testing-library/react';
 import Dashboard from './Dashboard';
-import { ThemeProvider } from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import theme from '../theme';
-import { MemoryRouter } from 'react-router-dom';
+import {MemoryRouter} from 'react-router-dom';
 import apiClient from '../api/client';
-import { AuthProvider } from '../auth/AuthContext';
-import { QueryProvider } from '../api/QueryProvider';
+import {AuthProvider} from '../auth/AuthContext';
+import {QueryProvider} from '../api/QueryProvider';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;

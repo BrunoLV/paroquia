@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 import ProtectedRoute from './auth/ProtectedRoute';
 import Login from './pages/Login';
 import Calendar from './pages/Calendar';
@@ -10,8 +10,8 @@ import Settings from './pages/Settings';
 import Organograma from './pages/Organograma';
 import Reports from './pages/Reports';
 import Layout from './components/Layout';
-import { useAuth } from './auth/AuthContext';
-import { canApprove, canManageAnoParoquial, canManageLocais } from './auth/permissions';
+import {useAuth} from './auth/AuthContext';
+import {canApprove, canManageAnoParoquial, canManageLocais} from './auth/permissions';
 
 const ApprovalsRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();

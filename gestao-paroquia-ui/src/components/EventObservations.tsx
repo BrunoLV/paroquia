@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  IconButton,
-  Paper,
-  Stack,
-  Avatar,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  CircularProgress,
-  Chip,
+    Avatar,
+    Box,
+    Button,
+    Chip,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Divider,
+    IconButton,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
 } from '@mui/material';
 import {
-  Send as SendIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Check as CheckIcon,
-  Close as CloseIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon,
+    Send as SendIcon,
 } from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
-import { useNotification } from '../context/NotificationContext';
-import { Observacao } from '../api/types';
-import { getObservacoes, createObservacao, updateObservacao, deleteObservacao as deleteObsApi } from '../api/observacoes';
+import {useAuth} from '../auth/AuthContext';
+import {useNotification} from '../context/NotificationContext';
+import {Observacao} from '../api/types';
+import {createObservacao, deleteObservacao as deleteObsApi, getObservacoes, updateObservacao} from '../api/observacoes';
 
 interface EventObservationsProps {
   eventoId: string;

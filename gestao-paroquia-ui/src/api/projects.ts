@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Projeto, ProjetoAprovacaoResponse } from './types';
+import {Projeto, ProjetoAprovacaoResponse} from './types';
 
 export const getProjectApprovals = async (status?: string): Promise<ProjetoAprovacaoResponse[]> => {
   const response = await apiClient.get<ProjetoAprovacaoResponse[]>('/projetos/solicitacoes', {

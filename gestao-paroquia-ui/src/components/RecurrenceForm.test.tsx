@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import RecurrenceForm, { RecurrenceRule } from './RecurrenceForm';
+import {fireEvent, render, screen} from '@testing-library/react';
+import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 
 describe('RecurrenceForm', () => {
   const mockOnChange = jest.fn();

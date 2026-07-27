@@ -1,7 +1,7 @@
 import React from 'react';
-import { Paper, Typography, Box } from '@mui/material';
-import { PieChart } from '@mui/x-charts';
-import { EventDistribution } from '../../api/types';
+import {Box, Paper, Typography} from '@mui/material';
+import {PieChart} from '@mui/x-charts';
+import {EventDistribution} from '../../api/types';
 
 interface EventDistributionPieChartProps {
   data: EventDistribution[];

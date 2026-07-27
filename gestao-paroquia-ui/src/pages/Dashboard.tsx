@@ -1,12 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Grid,
-  Typography,
-  Box,
-  Stack,
-  Alert,
-  Skeleton,
-} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Alert, Box, Grid, Skeleton, Stack, Typography,} from '@mui/material';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import UpcomingEvents from '../components/dashboard/UpcomingEvents';
 import QuickActions from '../components/dashboard/QuickActions';
@@ -16,11 +9,11 @@ import ActiveProjectsProgressList from '../components/dashboard/ActiveProjectsPr
 import WeeklyTimeline from '../components/dashboard/WeeklyTimeline';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
-import { useAuth } from '../auth/AuthContext';
-import { useNotification } from '../context/NotificationContext';
-import { Evento, Organizacao, Local, Projeto, DashboardMetrics } from '../api/types';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDashboardMetrics } from '../api/dashboard';
+import {useAuth} from '../auth/AuthContext';
+import {useNotification} from '../context/NotificationContext';
+import {DashboardMetrics, Evento, Local, Organizacao, Projeto} from '../api/types';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {getDashboardMetrics} from '../api/dashboard';
 
 const Dashboard = () => {
   const { user } = useAuth();

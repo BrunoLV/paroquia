@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
+import {Divider, List, ListItem, ListItemText, Paper, Typography} from '@mui/material';
 
 interface Event {
   id: string;

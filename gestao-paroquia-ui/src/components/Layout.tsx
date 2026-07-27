@@ -1,37 +1,37 @@
 import React from 'react';
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  IconButton,
-  Container,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Tooltip,
-  Paper,
-  useTheme,
-  useMediaQuery,
+    AppBar,
+    Box,
+    Container,
+    Divider,
+    Drawer,
+    IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Paper,
+    Toolbar,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
-  Logout as LogoutIcon,
-  Dashboard as DashboardIcon,
-  CalendarMonth as CalendarIcon,
-  FactCheck as FactCheckIcon,
-  Assignment as WorkIcon,
-  Settings as SettingsIcon,
-  AccountTree as AccountTreeIcon,
-  Assessment as AssessmentIcon,
+    AccountTree as AccountTreeIcon,
+    Assessment as AssessmentIcon,
+    Assignment as WorkIcon,
+    CalendarMonth as CalendarIcon,
+    Dashboard as DashboardIcon,
+    FactCheck as FactCheckIcon,
+    Logout as LogoutIcon,
+    Menu as MenuIcon,
+    Settings as SettingsIcon,
 } from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser } from '../auth/permissions';
+import {useAuth} from '../auth/AuthContext';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser} from '../auth/permissions';
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -1,54 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Chip,
-  Drawer,
-  Divider,
-  Alert,
-  LinearProgress,
-  Grid,
-  CircularProgress,
+    Alert,
+    Box,
+    Button,
+    Checkbox,
+    Chip,
+    CircularProgress,
+    Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    Drawer,
+    FormControl,
+    FormControlLabel,
+    Grid,
+    IconButton,
+    InputLabel,
+    LinearProgress,
+    MenuItem,
+    Paper,
+    Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
 } from '@mui/material';
 import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Visibility as VisibilityIcon,
-  Info as InfoIcon,
-  Business as BusinessIcon,
-  CalendarToday as CalendarIcon,
-  Warning as WarningIcon,
+    Add as AddIcon,
+    Business as BusinessIcon,
+    CalendarToday as CalendarIcon,
+    Edit as EditIcon,
+    Info as InfoIcon,
+    Visibility as VisibilityIcon,
+    Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
-import { 
-  canManageProjects as userCanManageProjects, 
-  isGlobalCreator as userIsGlobalCreator, 
-  canTransitionProject as userCanTransitionProject 
+import {useAuth} from '../auth/AuthContext';
+import {
+    canManageProjects as userCanManageProjects,
+    canTransitionProject as userCanTransitionProject,
+    isGlobalCreator as userIsGlobalCreator
 } from '../auth/permissions';
 import apiClient from '../api/client';
-import { Projeto, Organizacao } from '../api/types';
-import { useNotification } from '../context/NotificationContext';
-import { iniciarProjeto, concluirProjeto, cancelarProjeto } from '../api/projects';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import {Organizacao, Projeto} from '../api/types';
+import {useNotification} from '../context/NotificationContext';
+import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '../api/projects';
 
 // DTO interfaces for project summaries
 interface StatusExecucao {

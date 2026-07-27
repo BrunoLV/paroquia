@@ -1,14 +1,14 @@
 import React from 'react';
-import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import Reports from './Reports';
-import { ThemeProvider } from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import theme from '../theme';
-import { MemoryRouter } from 'react-router-dom';
+import {MemoryRouter} from 'react-router-dom';
 import apiClient from '../api/client';
-import { AuthProvider } from '../auth/AuthContext';
-import { QueryProvider } from '../api/QueryProvider';
+import {AuthProvider} from '../auth/AuthContext';
+import {QueryProvider} from '../api/QueryProvider';
 import * as exportUtils from '../utils/exportUtils';
-import { vi } from 'vitest';
+import {vi} from 'vitest';
 
 vi.mock('../api/client');
 const mockedApiClient = vi.mocked(apiClient);

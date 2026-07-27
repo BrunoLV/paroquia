@@ -1,9 +1,9 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ImportModal from './ImportModal';
-import { downloadTemplate, validarImportacao, confirmarImportacao } from '../api/importacao';
+import {confirmarImportacao, downloadTemplate, validarImportacao} from '../api/importacao';
 
 vi.mock('../api/importacao', () => ({
   downloadTemplate: jest.fn(),

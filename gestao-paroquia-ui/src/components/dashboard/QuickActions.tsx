@@ -1,7 +1,7 @@
 import React from 'react';
-import { Paper, Typography, Button, Stack } from '@mui/material';
-import { Add as AddIcon, CalendarMonth as CalendarIcon } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import {Button, Paper, Stack, Typography} from '@mui/material';
+import {Add as AddIcon, CalendarMonth as CalendarIcon} from '@mui/icons-material';
+import {useNavigate} from 'react-router-dom';
 
 interface QuickActionsProps {
   onNewEvent?: () => void;

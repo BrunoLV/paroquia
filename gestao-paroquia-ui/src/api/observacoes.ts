@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Observacao } from './types';
+import {Observacao} from './types';
 
 export const getObservacoes = async (eventoId: string): Promise<Observacao[]> => {
   const response = await apiClient.get<Observacao[]>(`/eventos/${eventoId}/observacoes`);

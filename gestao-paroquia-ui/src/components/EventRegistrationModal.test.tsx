@@ -1,8 +1,8 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import {fireEvent, render, screen, within} from '@testing-library/react';
 import EventRegistrationModal from './EventRegistrationModal';
-import { useAuth } from '../auth/AuthContext';
+import {useAuth} from '../auth/AuthContext';
 
 vi.mock('../auth/AuthContext');
 const mockedUseAuth = vi.mocked(useAuth);

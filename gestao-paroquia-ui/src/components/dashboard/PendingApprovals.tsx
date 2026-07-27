@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography } from '@mui/material';
+import {Paper, Typography} from '@mui/material';
 
 const PendingApprovals = () => {
   return (

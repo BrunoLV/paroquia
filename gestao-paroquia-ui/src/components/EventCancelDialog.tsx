@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    TextField,
 } from '@mui/material';
-import { useNotification } from '../context/NotificationContext';
+import {useNotification} from '../context/NotificationContext';
 
 interface EventCancelDialogProps {
   open: boolean;

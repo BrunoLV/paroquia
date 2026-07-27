@@ -1,0 +1,15 @@
+{
+  "short_name": "Gestão Paróquia",
+  "name": "Sistema de Gestão - Paróquia Nossa Senhora de Fátima",
+  "icons": [
+    {
+      "src": "logo-paroquia.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1A237E",
+  "background_color": "#ffffff"
+}

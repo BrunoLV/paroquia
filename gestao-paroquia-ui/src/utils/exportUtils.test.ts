@@ -1,7 +1,7 @@
-import { generateMetricsCSV, downloadCSV, exportElementAsPDF } from './exportUtils';
-import { DashboardMetrics } from '../api/types';
-import { toPng } from 'html-to-image';
-import { vi } from 'vitest';
+import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from './exportUtils';
+import {DashboardMetrics} from '../api/types';
+import {toPng} from 'html-to-image';
+import {vi} from 'vitest';
 
 vi.mock('html-to-image', () => ({
   toPng: vi.fn(),

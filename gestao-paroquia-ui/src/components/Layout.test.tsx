@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import {render, screen} from '@testing-library/react';
+import {MemoryRouter} from 'react-router-dom';
 import Layout from './Layout';
-import { useAuth } from '../auth/AuthContext';
-import { QueryProvider } from '../api/QueryProvider';
-import { vi } from 'vitest';
+import {useAuth} from '../auth/AuthContext';
+import {QueryProvider} from '../api/QueryProvider';
+import {vi} from 'vitest';
 
 vi.mock('../auth/AuthContext', async () => {
   const actual = await vi.importActual('../auth/AuthContext');

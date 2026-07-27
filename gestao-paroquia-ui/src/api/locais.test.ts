@@ -1,7 +1,7 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import apiClient from './client';
-import { getLocais, createLocal, updateLocal, deleteLocal } from './locais';
-import { Local } from './types';
+import {createLocal, deleteLocal, getLocais, updateLocal} from './locais';
+import {Local} from './types';
 
 vi.mock('./client', () => ({
   __esModule: true,

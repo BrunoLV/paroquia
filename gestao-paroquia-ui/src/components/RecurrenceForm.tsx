@@ -1,19 +1,19 @@
 import React from 'react';
 import {
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Grid,
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  FormLabel,
+    Box,
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    FormGroup,
+    FormLabel,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Radio,
+    RadioGroup,
+    Select,
+    TextField,
+    Typography,
 } from '@mui/material';
 
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';

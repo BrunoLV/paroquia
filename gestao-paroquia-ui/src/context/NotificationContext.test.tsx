@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { NotificationProvider, useNotification } from './NotificationContext';
+import {act, fireEvent, render, screen} from '@testing-library/react';
+import {NotificationProvider, useNotification} from './NotificationContext';
 
 const TestComponent = () => {
   const { showSuccess, showError } = useNotification();

@@ -1,15 +1,15 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, act, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import {act, render, waitFor} from '@testing-library/react';
+import {MemoryRouter} from 'react-router-dom';
+import {ThemeProvider} from '@mui/material/styles';
 import theme from '../theme';
-import { AuthProvider } from '../auth/AuthContext';
+import {AuthProvider} from '../auth/AuthContext';
 import apiClient from '../api/client';
 import Dashboard from './Dashboard';
 import Calendar from './Calendar';
-import { NotificationProvider } from '../context/NotificationContext';
-import { QueryProvider } from '../api/QueryProvider';
+import {NotificationProvider} from '../context/NotificationContext';
+import {QueryProvider} from '../api/QueryProvider';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;

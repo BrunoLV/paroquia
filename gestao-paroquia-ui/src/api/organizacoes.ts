@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Organizacao, OrganogramaNode } from './types';
+import {Organizacao, OrganogramaNode} from './types';
 
 export const getOrganizacoes = async (): Promise<Organizacao[]> => {
   const response = await apiClient.get<Organizacao[]>('/organizacoes');

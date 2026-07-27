@@ -1,6 +1,6 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import EventCancelDialog from './EventCancelDialog';
 
 const mockShowError = jest.fn();

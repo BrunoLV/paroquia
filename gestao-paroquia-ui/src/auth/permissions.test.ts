@@ -1,16 +1,15 @@
-import { 
-  canManageEvent, 
-  canApprove, 
-  canManageAnoParoquial, 
-  canManageLocais,
-  canManageOrganizacoes,
-  canManageProjects, 
-  isGlobalCreator, 
-  canTransitionProject, 
-  canAddObservation,
-  canViewPendingEvents,
-  isUnlinkedUser,
-  User 
+import {
+    canAddObservation,
+    canApprove,
+    canManageAnoParoquial,
+    canManageEvent,
+    canManageLocais,
+    canManageOrganizacoes,
+    canManageProjects,
+    canTransitionProject,
+    isGlobalCreator,
+    isUnlinkedUser,
+    User
 } from './permissions';
 
 describe('canManageEvent', () => {

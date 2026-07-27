@@ -1,8 +1,8 @@
-import { vi } from "vitest";
+import {vi} from "vitest";
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './AuthContext';
+import {act, render, screen} from '@testing-library/react';
+import {MemoryRouter, Route, Routes} from 'react-router-dom';
+import {AuthProvider} from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import apiClient from '../api/client';
 

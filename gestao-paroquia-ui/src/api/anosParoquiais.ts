@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { AnoParoquial, AnoParoquialStatus } from './types';
+import {AnoParoquial, AnoParoquialStatus} from './types';
 
 export const getAnosParoquiais = async (): Promise<AnoParoquial[]> => {
   const response = await apiClient.get<AnoParoquial[]>('/anos-paroquiais');

@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { useTheme, ThemeProvider } from '@mui/material/styles';
+import {render, screen} from '@testing-library/react';
+import {ThemeProvider, useTheme} from '@mui/material/styles';
 import theme from './theme';
 
 const ThemeColorChecker = () => {

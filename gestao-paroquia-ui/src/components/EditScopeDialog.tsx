@@ -1,22 +1,18 @@
 import React from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
 } from '@mui/material';
-import {
-  Event as EventIcon,
-  EventRepeat as EventRepeatIcon,
-  Update as UpdateIcon,
-} from '@mui/icons-material';
+import {Event as EventIcon, EventRepeat as EventRepeatIcon, Update as UpdateIcon,} from '@mui/icons-material';
 
 export type EditScope = 'ONLY_THIS' | 'THIS_AND_FOLLOWING' | 'EDIT_ALL';
 

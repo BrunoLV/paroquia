@@ -1,15 +1,20 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import { QueryProvider } from '../api/QueryProvider';
+import {fireEvent, render, screen, waitFor, within} from '@testing-library/react';
+import {QueryProvider} from '../api/QueryProvider';
 import Settings from './Settings';
-import { getAnosParoquiais, updateAnoParoquialStatus } from '../api/anosParoquiais';
-import { getLocais, createLocal, updateLocal, deleteLocal } from '../api/locais';
-import { getOrganizacoes, createOrganizacao, updateOrganizacao, getOrganizacaoMembros } from '../api/organizacoes';
-import { getUsuarios, approveUsuario, getMemberships, addMembership, removeMembership } from '../api/usuarios';
-import { getPastoraisOficiais, createPastoralOficial, updatePastoralOficial, deletePastoralOficial } from '../api/pastoraisOficiais';
-import { MemoryRouter } from 'react-router-dom';
-import { NotificationProvider } from '../context/NotificationContext';
-import { useAuth } from '../auth/AuthContext';
-import { vi } from 'vitest';
+import {getAnosParoquiais, updateAnoParoquialStatus} from '../api/anosParoquiais';
+import {createLocal, deleteLocal, getLocais, updateLocal} from '../api/locais';
+import {createOrganizacao, getOrganizacaoMembros, getOrganizacoes, updateOrganizacao} from '../api/organizacoes';
+import {addMembership, approveUsuario, getMemberships, getUsuarios, removeMembership} from '../api/usuarios';
+import {
+    createPastoralOficial,
+    deletePastoralOficial,
+    getPastoraisOficiais,
+    updatePastoralOficial
+} from '../api/pastoraisOficiais';
+import {MemoryRouter} from 'react-router-dom';
+import {NotificationProvider} from '../context/NotificationContext';
+import {useAuth} from '../auth/AuthContext';
+import {vi} from 'vitest';
 
 vi.mock('../api/anosParoquiais', () => ({
   getAnosParoquiais: vi.fn(),
