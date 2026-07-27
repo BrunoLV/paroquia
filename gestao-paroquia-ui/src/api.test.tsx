@@ -5,18 +5,21 @@ import App from './App';
 import apiClient from './api/client';
 import axios from 'axios';
 
-vi.mock('axios', () => {
-  const actualAxios = jest.requireActual('axios');
+vi.mock('axios', async (importOriginal) => {
+  const actualAxios: any = await importOriginal();
   return {
     ...actualAxios,
-    create: jest.fn(() => ({
-      ...actualAxios.create(),
-      interceptors: {
-        request: { use: jest.fn(), eject: jest.fn() },
-        response: { use: jest.fn(), eject: jest.fn() },
-      },
-      get: jest.fn(),
-    })),
+    default: {
+      ...actualAxios.default,
+      create: vi.fn(() => ({
+        interceptors: {
+          request: { use: vi.fn(), eject: vi.fn() },
+          response: { use: vi.fn(), eject: vi.fn() },
+        },
+        get: vi.fn(),
+        post: vi.fn(),
+      })),
+    },
   };
 });
 

@@ -22,6 +22,10 @@ vi.mock('../context/NotificationContext', () => ({
   NotificationProvider: ({ children }: any) => <div>{children}</div>,
 }));
 
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 
 test('renders login form', async () => {
   mockedApiClient.get.mockResolvedValueOnce({ data: null });

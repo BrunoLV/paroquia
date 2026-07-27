@@ -8,10 +8,13 @@ import { Organizacao } from '../api/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getOrganizacaoMembros } from '../api/organizacoes';
 
-vi.mock('../api/organizacoes', () => ({
-  ...jest.requireActual('../api/organizacoes'),
-  getOrganizacaoMembros: jest.fn(),
-}));
+vi.mock('../api/organizacoes', async (importOriginal) => {
+  const actual: any = await importOriginal();
+  return {
+    ...actual,
+    getOrganizacaoMembros: vi.fn(),
+  };
+});
 
 const mockGetOrganizacaoMembros = vi.mocked(getOrganizacaoMembros);
 
