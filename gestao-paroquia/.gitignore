@@ -11,6 +11,7 @@ target/
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
 bin/
+**/bin/
 
 # Environment and logs
 *.log
