@@ -1,8 +1,9 @@
+import { vi } from "vitest";
 import apiClient from './client';
 import { getOrganizacoes, createOrganizacao, updateOrganizacao, deleteOrganizacao, getOrganograma } from './organizacoes';
 import { Organizacao, OrganogramaNode } from './types';
 
-jest.mock('./client', () => ({
+vi.mock('./client', () => ({
   __esModule: true,
   default: {
     get: jest.fn(),

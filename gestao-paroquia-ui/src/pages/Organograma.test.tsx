@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, act, fireEvent } from '@testing-library/react';
 import Organograma from './Organograma';
@@ -8,7 +9,7 @@ import apiClient from '../api/client';
 import { AuthProvider } from '../auth/AuthContext';
 import { QueryProvider } from '../api/QueryProvider';
 
-jest.mock('../api/client');
+vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 describe('Organograma Page', () => {

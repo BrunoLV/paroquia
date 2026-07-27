@@ -1,8 +1,9 @@
+import { vi } from "vitest";
 import apiClient from './client';
 // @ts-ignore
 import { getDashboardMetrics } from './dashboard';
 
-jest.mock('./client', () => ({
+vi.mock('./client', () => ({
   __esModule: true,
   default: {
     get: jest.fn(),

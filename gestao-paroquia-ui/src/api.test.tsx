@@ -1,10 +1,11 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render } from '@testing-library/react';
 import App from './App';
 import apiClient from './api/client';
 import axios from 'axios';
 
-jest.mock('axios', () => {
+vi.mock('axios', () => {
   const actualAxios = jest.requireActual('axios');
   return {
     ...actualAxios,

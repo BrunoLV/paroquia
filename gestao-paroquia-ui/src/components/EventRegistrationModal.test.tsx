@@ -1,13 +1,14 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import EventRegistrationModal from './EventRegistrationModal';
 import { useAuth } from '../auth/AuthContext';
 
-jest.mock('../auth/AuthContext');
-const mockedUseAuth = useAuth as jest.Mock;
+vi.mock('../auth/AuthContext');
+const mockedUseAuth = vi.mocked(useAuth);
 
 const mockShowError = jest.fn();
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
   }),

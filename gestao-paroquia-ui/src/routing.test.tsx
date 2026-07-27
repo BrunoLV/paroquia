@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -6,15 +7,15 @@ import apiClient from './api/client';
 import { AuthProvider } from './auth/AuthContext';
 import { QueryProvider } from './api/QueryProvider';
 
-jest.mock('./api/client');
+vi.mock('./api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 // Mock components to simplify tests
-jest.mock('./pages/Calendar', () => () => <div data-testid="calendar-page">Calendar Page</div>);
-jest.mock('./pages/Login', () => () => <div data-testid="login-page">Login Page</div>);
-jest.mock('./pages/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
-jest.mock('./pages/Approvals', () => () => <div data-testid="approvals-page">Approvals Page</div>);
-jest.mock('./pages/Settings', () => () => <div data-testid="settings-page">Settings Page</div>);
+vi.mock('./pages/Calendar', () => () => <div data-testid="calendar-page">Calendar Page</div>);
+vi.mock('./pages/Login', () => () => <div data-testid="login-page">Login Page</div>);
+vi.mock('./pages/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
+vi.mock('./pages/Approvals', () => () => <div data-testid="approvals-page">Approvals Page</div>);
+vi.mock('./pages/Settings', () => () => <div data-testid="settings-page">Settings Page</div>);
 
 describe('Routing', () => {
   beforeEach(() => {

@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import Calendar from './Calendar';
@@ -7,12 +8,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 import apiClient from '../api/client';
 
-jest.mock('../api/client');
+vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const mockShowError = jest.fn();
 const mockShowSuccess = jest.fn();
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
     showSuccess: mockShowSuccess,

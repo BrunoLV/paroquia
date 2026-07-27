@@ -9,65 +9,66 @@ import { getPastoraisOficiais, createPastoralOficial, updatePastoralOficial, del
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
 import { useAuth } from '../auth/AuthContext';
+import { vi } from 'vitest';
 
-jest.mock('../api/anosParoquiais', () => ({
-  getAnosParoquiais: jest.fn(),
-  updateAnoParoquialStatus: jest.fn(),
+vi.mock('../api/anosParoquiais', () => ({
+  getAnosParoquiais: vi.fn(),
+  updateAnoParoquialStatus: vi.fn(),
 }));
 
-jest.mock('../api/locais', () => ({
-  getLocais: jest.fn(),
-  createLocal: jest.fn(),
-  updateLocal: jest.fn(),
-  deleteLocal: jest.fn(),
+vi.mock('../api/locais', () => ({
+  getLocais: vi.fn(),
+  createLocal: vi.fn(),
+  updateLocal: vi.fn(),
+  deleteLocal: vi.fn(),
 }));
 
-jest.mock('../api/organizacoes', () => ({
-  getOrganizacoes: jest.fn(),
-  createOrganizacao: jest.fn(),
-  updateOrganizacao: jest.fn(),
-  getOrganizacaoMembros: jest.fn(),
+vi.mock('../api/organizacoes', () => ({
+  getOrganizacoes: vi.fn(),
+  createOrganizacao: vi.fn(),
+  updateOrganizacao: vi.fn(),
+  getOrganizacaoMembros: vi.fn(),
 }));
 
-jest.mock('../api/usuarios', () => ({
-  getUsuarios: jest.fn(),
-  approveUsuario: jest.fn(),
-  getMemberships: jest.fn(),
-  addMembership: jest.fn(),
-  removeMembership: jest.fn(),
+vi.mock('../api/usuarios', () => ({
+  getUsuarios: vi.fn(),
+  approveUsuario: vi.fn(),
+  getMemberships: vi.fn(),
+  addMembership: vi.fn(),
+  removeMembership: vi.fn(),
 }));
 
-jest.mock('../auth/AuthContext', () => ({
-  useAuth: jest.fn(),
+vi.mock('../auth/AuthContext', () => ({
+  useAuth: vi.fn(),
 }));
 
-jest.mock('../api/pastoraisOficiais', () => ({
-  getPastoraisOficiais: jest.fn(),
-  createPastoralOficial: jest.fn(),
-  updatePastoralOficial: jest.fn(),
-  deletePastoralOficial: jest.fn(),
+vi.mock('../api/pastoraisOficiais', () => ({
+  getPastoraisOficiais: vi.fn(),
+  createPastoralOficial: vi.fn(),
+  updatePastoralOficial: vi.fn(),
+  deletePastoralOficial: vi.fn(),
 }));
 
-const mockGetAnosParoquiais = getAnosParoquiais as jest.Mock;
-const mockUpdateAnoParoquialStatus = updateAnoParoquialStatus as jest.Mock;
-const mockGetLocais = getLocais as jest.Mock;
-const mockCreateLocal = createLocal as jest.Mock;
-const mockUpdateLocal = updateLocal as jest.Mock;
-const mockDeleteLocal = deleteLocal as jest.Mock;
-const mockGetOrganizacoes = getOrganizacoes as jest.Mock;
-const mockCreateOrganizacao = createOrganizacao as jest.Mock;
-const mockUpdateOrganizacao = updateOrganizacao as jest.Mock;
-const mockGetOrganizacaoMembros = getOrganizacaoMembros as jest.Mock;
-const mockGetUsuarios = getUsuarios as jest.Mock;
-const mockApproveUsuario = approveUsuario as jest.Mock;
-const mockGetMemberships = getMemberships as jest.Mock;
-const mockAddMembership = addMembership as jest.Mock;
-const mockRemoveMembership = removeMembership as jest.Mock;
-const mockUseAuth = useAuth as jest.Mock;
-const mockGetPastoraisOficiais = getPastoraisOficiais as jest.Mock;
-const mockCreatePastoralOficial = createPastoralOficial as jest.Mock;
-const mockUpdatePastoralOficial = updatePastoralOficial as jest.Mock;
-const mockDeletePastoralOficial = deletePastoralOficial as jest.Mock;
+const mockGetAnosParoquiais = vi.mocked(getAnosParoquiais);
+const mockUpdateAnoParoquialStatus = vi.mocked(updateAnoParoquialStatus);
+const mockGetLocais = vi.mocked(getLocais);
+const mockCreateLocal = vi.mocked(createLocal);
+const mockUpdateLocal = vi.mocked(updateLocal);
+const mockDeleteLocal = vi.mocked(deleteLocal);
+const mockGetOrganizacoes = vi.mocked(getOrganizacoes);
+const mockCreateOrganizacao = vi.mocked(createOrganizacao);
+const mockUpdateOrganizacao = vi.mocked(updateOrganizacao);
+const mockGetOrganizacaoMembros = vi.mocked(getOrganizacaoMembros);
+const mockGetUsuarios = vi.mocked(getUsuarios);
+const mockApproveUsuario = vi.mocked(approveUsuario);
+const mockGetMemberships = vi.mocked(getMemberships);
+const mockAddMembership = vi.mocked(addMembership);
+const mockRemoveMembership = vi.mocked(removeMembership);
+const mockUseAuth = vi.mocked(useAuth);
+const mockGetPastoraisOficiais = vi.mocked(getPastoraisOficiais);
+const mockCreatePastoralOficial = vi.mocked(createPastoralOficial);
+const mockUpdatePastoralOficial = vi.mocked(updatePastoralOficial);
+const mockDeletePastoralOficial = vi.mocked(deletePastoralOficial);
 
 const mockAnos = [
   {
@@ -201,7 +202,7 @@ const mockLocais = [
 ];
 
 describe('Settings page - Locais CRUD', () => {
-  const mockUseAuth = useAuth as jest.Mock;
+  const mockUseAuth = vi.mocked(useAuth);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -425,7 +426,7 @@ describe('Settings page - Locais CRUD', () => {
 });
 
 describe('Settings page - Membros / Usuários', () => {
-  const mockUseAuth = useAuth as jest.Mock;
+  const mockUseAuth = vi.mocked(useAuth);
 
   const mockUsers = [
     {
@@ -511,7 +512,7 @@ describe('Settings page - Membros / Usuários', () => {
 });
 
 describe('Settings page - Membros por Pastoral', () => {
-  const mockUseAuth = useAuth as jest.Mock;
+  const mockUseAuth = vi.mocked(useAuth);
 
   const mockOrgs = [
     {

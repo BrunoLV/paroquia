@@ -1,8 +1,9 @@
+import { vi } from "vitest";
 import apiClient from './client';
 import { getLocais, createLocal, updateLocal, deleteLocal } from './locais';
 import { Local } from './types';
 
-jest.mock('./client', () => ({
+vi.mock('./client', () => ({
   __esModule: true,
   default: {
     get: jest.fn(),

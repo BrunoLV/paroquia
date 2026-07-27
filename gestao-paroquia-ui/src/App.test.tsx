@@ -2,9 +2,10 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import App from './App';
 import apiClient from './api/client';
+import { vi } from 'vitest';
 
-jest.mock('./api/client');
-const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
+vi.mock('./api/client');
+const mockedApiClient = vi.mocked(apiClient);
 
 test('renders Gestão Paróquia heading', async () => {
   mockedApiClient.get.mockResolvedValueOnce({ data: null });

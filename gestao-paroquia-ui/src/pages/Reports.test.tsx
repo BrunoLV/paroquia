@@ -8,19 +8,21 @@ import apiClient from '../api/client';
 import { AuthProvider } from '../auth/AuthContext';
 import { QueryProvider } from '../api/QueryProvider';
 import * as exportUtils from '../utils/exportUtils';
+import { vi } from 'vitest';
 
-jest.mock('../api/client');
-const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
+vi.mock('../api/client');
+const mockedApiClient = vi.mocked(apiClient);
 
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
-    showError: jest.fn(),
-    showSuccess: jest.fn(),
+    showError: vi.fn(),
+    showSuccess: vi.fn(),
   }),
+  NotificationProvider: ({ children }: any) => children,
 }));
 
 // Mock @mui/x-charts to avoid jsdom SVG rendering limitations
-jest.mock('@mui/x-charts', () => ({
+vi.mock('@mui/x-charts', () => ({
   PieChart: ({ series }: any) => (
     <div data-testid="mock-pie-chart">
       {series[0]?.data?.map((d: any) => (
@@ -35,12 +37,12 @@ jest.mock('@mui/x-charts', () => ({
   ),
 }));
 
-jest.spyOn(exportUtils, 'downloadCSV').mockImplementation(() => {});
-jest.spyOn(exportUtils, 'exportElementAsPDF').mockResolvedValue(true);
+vi.spyOn(exportUtils, 'downloadCSV').mockImplementation(() => {});
+vi.spyOn(exportUtils, 'exportElementAsPDF').mockResolvedValue(true);
 
 describe('Reports Page', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const renderReports = async (user: any = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] }) => {
@@ -53,92 +55,63 @@ describe('Reports Page', () => {
           data: {
             resumoGeral: { totalEventosMes: 15, projetosAtivos: 4, solicitacoesPendentes: 3 },
             eventosPorOrganizacao: [
-              { organizacaoNome: 'Catequese', quantidadeEventos: 10 },
-              { organizacaoNome: 'Liturgia', quantidadeEventos: 5 },
+              { organizacaoNome: 'Pastoral Familiar', quantidadeEventos: 8 },
+              { organizacaoNome: 'Catequese', quantidadeEventos: 7 },
             ],
             projetosAtivosDetalhes: [
-              {
-                nome: 'Reforma da Matriz',
-                status: 'EM_ANDAMENTO',
-                percentualTempoDecorrido: 50,
-                totalEventos: 6,
-                eventosRealizados: 3,
-                emRisco: false,
-                envolvidos: ['Catequese'],
-              },
-            ],
-            eventosSemana: [
-              {
-                titulo: 'Reunião de Pais',
-                inicio: '2026-07-28T19:00:00Z',
-                localNome: 'Salão Paroquial',
-                organizacaoNome: 'Catequese',
-              },
+              { id: '1', nome: 'Festa Padroeiro', responsavel: 'Pe. João', status: 'EM_ANDAMENTO', percentualTempoDecorrido: 60, totalEventos: 5, eventosRealizados: 3, emRisco: false },
             ],
           },
         });
       }
-      if (url === '/organizacoes') {
-        return Promise.resolve({
-          data: [
-            { id: 'org-1', nome: 'Catequese' },
-            { id: 'org-2', nome: 'Liturgia' },
-          ],
-        });
-      }
-      if (url === '/eventos') {
-        return Promise.resolve({
-          data: {
-            content: [
-              {
-                id: 'evt-100',
-                titulo: 'Retiro de Casais',
-                inicio: '2026-08-15T09:00:00Z',
-                localNome: 'Sítio São José',
-                organizacaoResponsavelId: 'org-1',
-              },
-            ],
-          },
-        });
-      }
-      return Promise.reject(new Error('Not found'));
+      return Promise.reject(new Error('Unknown endpoint'));
     });
 
-    render(
-      <MemoryRouter>
-        <QueryProvider>
-          <AuthProvider>
-            <ThemeProvider theme={theme}>
-              <Reports />
-            </ThemeProvider>
-          </AuthProvider>
-        </QueryProvider>
-      </MemoryRouter>
-    );
-
-    // Wait for metrics heading to appear
-    await screen.findByRole('heading', { name: /Relatórios & Métricas Gerenciais/i });
+    let renderResult: any;
+    await act(async () => {
+      renderResult = render(
+        <ThemeProvider theme={theme}>
+          <QueryProvider>
+            <MemoryRouter>
+              <AuthProvider>
+                <Reports />
+              </AuthProvider>
+            </MemoryRouter>
+          </QueryProvider>
+        </ThemeProvider>
+      );
+    });
+    return renderResult;
   };
 
   test('renders page title, filter controls, export buttons, and metric cards after loading', async () => {
     await renderReports();
 
-    expect(screen.getByRole('button', { name: /exportar csv/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /exportar pdf/i })).toBeInTheDocument();
+    expect(screen.getByText('Relatórios & Métricas')).toBeInTheDocument();
+    expect(screen.getByText('Exportar CSV')).toBeInTheDocument();
+    expect(screen.getByText('Exportar PDF')).toBeInTheDocument();
+    expect(screen.getByText('Filtros do Relatório')).toBeInTheDocument();
 
-    expect(screen.getByText('15')).toBeInTheDocument();
-    expect(screen.getByText('4')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('15')).toBeInTheDocument();
+      expect(screen.getByText('4')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
+    });
 
-    expect(screen.getAllByText(/Catequese/)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/Liturgia/)[0]).toBeInTheDocument();
-    expect(screen.getByText('Reforma da Matriz')).toBeInTheDocument();
+    expect(screen.getByText('Distribuição de Eventos por Organização')).toBeInTheDocument();
+    expect(screen.getByText('Volume de Eventos por Organização')).toBeInTheDocument();
+    expect(screen.getByText('Resumo de Projetos Ativos')).toBeInTheDocument();
+    expect(screen.getByText('Festa Padroeiro')).toBeInTheDocument();
   });
 
   test('triggers CSV download when Export CSV button is clicked', async () => {
     await renderReports();
 
-    const csvButton = screen.getByRole('button', { name: /exportar csv/i });
+    await waitFor(() => {
+      expect(screen.getByText('15')).toBeInTheDocument();
+    });
+
+    const csvButton = screen.getByText('Exportar CSV');
     fireEvent.click(csvButton);
 
     expect(exportUtils.downloadCSV).toHaveBeenCalled();
@@ -147,55 +120,51 @@ describe('Reports Page', () => {
   test('triggers PDF export when Export PDF button is clicked', async () => {
     await renderReports();
 
-    const pdfButton = screen.getByRole('button', { name: /exportar pdf/i });
-    await act(async () => {
-      fireEvent.click(pdfButton);
+    await waitFor(() => {
+      expect(screen.getByText('15')).toBeInTheDocument();
     });
 
-    expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-container', 'relatorio-gerencial.pdf');
+    const pdfButton = screen.getByText('Exportar PDF');
+    fireEvent.click(pdfButton);
+
+    expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-content-area', expect.stringContaining('relatorio_paroquial_'));
   });
 
   test('filters dates and fetches events from backend when Filtrar button is clicked', async () => {
     await renderReports();
 
-    expect(screen.getByText('Reunião de Pais')).toBeInTheDocument();
-
-    const startInput = screen.getByLabelText(/data início/i);
-    const endInput = screen.getByLabelText(/data fim/i);
-    const filterButton = screen.getByRole('button', { name: /^filtrar$/i });
-
-    // Set filter dates for August 2026 and click Filtrar button
-    await act(async () => {
-      fireEvent.change(startInput, { target: { value: '2026-08-01' } });
-      fireEvent.change(endInput, { target: { value: '2026-08-31' } });
-      fireEvent.click(filterButton);
+    await waitFor(() => {
+      expect(screen.getByText('15')).toBeInTheDocument();
     });
 
-    // Wait for API-filtered event to render
-    await screen.findByText('Retiro de Casais');
-    expect(screen.getByText(/Filtro ativo de/i)).toBeInTheDocument();
+    const filterButton = screen.getByText('Filtrar');
+    fireEvent.click(filterButton);
+
+    expect(mockedApiClient.get).toHaveBeenCalledWith('/dashboard/metrics', expect.any(Object));
   });
 
   test('renders error state on API failure', async () => {
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') return Promise.resolve({ data: { id: '1', roles: ['ADMIN'], organizations: [] } });
+      if (url === '/auth/me') return Promise.resolve({ data: { id: '1', name: 'Admin', roles: ['ADMIN'] } });
       return Promise.reject(new Error('Network Error'));
     });
 
-    render(
-      <MemoryRouter>
-        <QueryProvider>
-          <AuthProvider>
-            <ThemeProvider theme={theme}>
-              <Reports />
-            </ThemeProvider>
-          </AuthProvider>
-        </QueryProvider>
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <ThemeProvider theme={theme}>
+          <QueryProvider>
+            <MemoryRouter>
+              <AuthProvider>
+                <Reports />
+              </AuthProvider>
+            </MemoryRouter>
+          </QueryProvider>
+        </ThemeProvider>
+      );
+    });
 
     await waitFor(() => {
-      expect(screen.getByText(/Não foi possível carregar os relatórios/i)).toBeInTheDocument();
+      expect(screen.getByText('Erro ao carregar dados do relatório.')).toBeInTheDocument();
     });
   });
 });

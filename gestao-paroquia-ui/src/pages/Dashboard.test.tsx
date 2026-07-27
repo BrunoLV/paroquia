@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, act, fireEvent, within } from '@testing-library/react';
 import Dashboard from './Dashboard';
@@ -8,10 +9,10 @@ import apiClient from '../api/client';
 import { AuthProvider } from '../auth/AuthContext';
 import { QueryProvider } from '../api/QueryProvider';
 
-jest.mock('../api/client');
+vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: jest.fn(),
     showSuccess: jest.fn(),
@@ -19,7 +20,7 @@ jest.mock('../context/NotificationContext', () => ({
 }));
 
 // Mock @mui/x-charts components to avoid jsdom rendering errors
-jest.mock('@mui/x-charts', () => ({
+vi.mock('@mui/x-charts', () => ({
   PieChart: ({ series }: any) => (
     <div data-testid="mock-pie-chart">
       {series[0]?.data?.map((d: any) => (

@@ -2,6 +2,9 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { vi } from 'vitest';
 
+// Provide global jest alias for Vitest
+(globalThis as any).jest = vi;
+
 // Global mock for @mui/x-charts to avoid jsdom rendering issues in tests
 vi.mock('@mui/x-charts', () => {
   return {

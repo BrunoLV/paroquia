@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -10,7 +11,7 @@ import Calendar from './Calendar';
 import { NotificationProvider } from '../context/NotificationContext';
 import { QueryProvider } from '../api/QueryProvider';
 
-jest.mock('../api/client');
+vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 describe('Data Fetching Requirements', () => {

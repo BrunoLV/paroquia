@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, act, fireEvent, within } from '@testing-library/react';
 import Projects from './Projects';
@@ -7,12 +8,12 @@ import { MemoryRouter } from 'react-router-dom';
 import apiClient from '../api/client';
 import { AuthProvider } from '../auth/AuthContext';
 
-jest.mock('../api/client');
+vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const mockShowError = jest.fn();
 const mockShowSuccess = jest.fn();
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
     showSuccess: mockShowSuccess,

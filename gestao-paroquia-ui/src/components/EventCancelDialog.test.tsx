@@ -1,9 +1,10 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import EventCancelDialog from './EventCancelDialog';
 
 const mockShowError = jest.fn();
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
   }),

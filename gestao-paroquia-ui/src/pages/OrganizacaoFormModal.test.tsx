@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
@@ -7,12 +8,12 @@ import { Organizacao } from '../api/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getOrganizacaoMembros } from '../api/organizacoes';
 
-jest.mock('../api/organizacoes', () => ({
+vi.mock('../api/organizacoes', () => ({
   ...jest.requireActual('../api/organizacoes'),
   getOrganizacaoMembros: jest.fn(),
 }));
 
-const mockGetOrganizacaoMembros = getOrganizacaoMembros as jest.Mock;
+const mockGetOrganizacaoMembros = vi.mocked(getOrganizacaoMembros);
 
 describe('OrganizacaoFormModal', () => {
   const mockOnSave = jest.fn();

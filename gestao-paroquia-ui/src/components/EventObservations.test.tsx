@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -8,7 +9,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 
 // Mock API client methods
-jest.mock('../api/observacoes', () => ({
+vi.mock('../api/observacoes', () => ({
   getObservacoes: jest.fn(),
   createObservacao: jest.fn(),
   updateObservacao: jest.fn(),
@@ -16,7 +17,7 @@ jest.mock('../api/observacoes', () => ({
 }));
 
 // Mock Notification Context
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: jest.fn(),
     showSuccess: jest.fn(),
@@ -25,7 +26,7 @@ jest.mock('../context/NotificationContext', () => ({
 
 // Mock Auth Context directly to return logged-in user
 const mockUser = { id: 'usr-1', name: 'Padre Pedro', username: 'padre.pedro', roles: ['ADMIN'], organizations: [] };
-jest.mock('../auth/AuthContext', () => ({
+vi.mock('../auth/AuthContext', () => ({
   useAuth: () => ({
     user: mockUser,
     isLoading: false,

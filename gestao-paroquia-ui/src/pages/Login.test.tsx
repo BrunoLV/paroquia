@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import Login from './Login';
@@ -8,12 +9,12 @@ import theme from '../theme';
 import apiClient from '../api/client';
 import { Organizacao } from '../api/types';
 
-jest.mock('../api/client');
+vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const mockShowError = jest.fn();
 const mockShowSuccess = jest.fn();
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
     showSuccess: mockShowSuccess,

@@ -1,10 +1,11 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ImportModal from './ImportModal';
 import { downloadTemplate, validarImportacao, confirmarImportacao } from '../api/importacao';
 
-jest.mock('../api/importacao', () => ({
+vi.mock('../api/importacao', () => ({
   downloadTemplate: jest.fn(),
   validarImportacao: jest.fn(),
   confirmarImportacao: jest.fn(),
@@ -13,16 +14,16 @@ jest.mock('../api/importacao', () => ({
 const mockShowSuccess = jest.fn();
 const mockShowError = jest.fn();
 
-jest.mock('../context/NotificationContext', () => ({
+vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showSuccess: mockShowSuccess,
     showError: mockShowError,
   }),
 }));
 
-const mockDownloadTemplate = downloadTemplate as jest.Mock;
-const mockValidarImportacao = validarImportacao as jest.Mock;
-const mockConfirmarImportacao = confirmarImportacao as jest.Mock;
+const mockDownloadTemplate = vi.mocked(downloadTemplate);
+const mockValidarImportacao = vi.mocked(validarImportacao);
+const mockConfirmarImportacao = vi.mocked(confirmarImportacao);
 
 const createTestQueryClient = () => new QueryClient({
   defaultOptions: { queries: { retry: false }, mutations: { retry: false } },

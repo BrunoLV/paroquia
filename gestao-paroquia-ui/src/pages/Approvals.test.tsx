@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryProvider } from '../api/QueryProvider';
@@ -7,27 +8,27 @@ import { getProjectApprovals, decideProjectApproval } from '../api/projects';
 import { MemoryRouter } from 'react-router-dom';
 import { NotificationProvider } from '../context/NotificationContext';
 
-jest.mock('../api/approvals', () => ({
+vi.mock('../api/approvals', () => ({
   getApprovals: jest.fn(),
   decideApproval: jest.fn(),
 }));
 
-jest.mock('../api/projects', () => ({
+vi.mock('../api/projects', () => ({
   getProjectApprovals: jest.fn(),
   decideProjectApproval: jest.fn(),
 }));
 
-jest.mock('../api/client', () => ({
+vi.mock('../api/client', () => ({
   __esModule: true,
   default: {
     get: jest.fn(() => Promise.resolve({ data: [] })),
   },
 }));
 
-const mockGetApprovals = getApprovals as jest.Mock;
-const mockDecideApproval = decideApproval as jest.Mock;
-const mockGetProjectApprovals = getProjectApprovals as jest.Mock;
-const mockDecideProjectApproval = decideProjectApproval as jest.Mock;
+const mockGetApprovals = vi.mocked(getApprovals);
+const mockDecideApproval = vi.mocked(decideApproval);
+const mockGetProjectApprovals = vi.mocked(getProjectApprovals);
+const mockDecideProjectApproval = vi.mocked(decideProjectApproval);
 
 const mockApprovals = [
   {
