@@ -66,7 +66,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
             PdfWriter writer = PdfWriter.getInstance(document, out);
 
             // Registra o helper de eventos de página
-            writer.setPageEvent(new PdfHeaderFooterWatermarkHelper(config));
+            writer.setPageEvent(new PdfHeaderFooterWatermarkPageListener(config));
 
             document.open();
 
@@ -181,7 +181,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
-    private static class PdfHeaderFooterWatermarkHelper extends PdfPageEventHelper {
+    private static class PdfHeaderFooterWatermarkPageListener extends PdfPageEventHelper {
         private final Image logoWatermark;
         private final Image logoHeader;
         private final Font headerFont;
@@ -189,7 +189,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         private final String paroquiaNome;
         private final String footerText;
 
-        public PdfHeaderFooterWatermarkHelper(ParoquiaConfiguracaoEntity config) {
+        public PdfHeaderFooterWatermarkPageListener(ParoquiaConfiguracaoEntity config) {
             Image tempWatermark = null;
             Image logoHeaderImg = null;
             byte[] logoBytes = config != null ? config.getLogoBytes() : null;

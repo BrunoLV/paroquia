@@ -1,49 +1,51 @@
-## Code style
+# AGENTS.md - Frontend Engineering Standards & Guidelines
 
-* **Types over Strings:** Always prefer `enum` or TypeScript `type` unions (`'success' | 'error'`) over standardized `String` to represent states, categories, or fixed values.
-* **Components & Functions:** 10-60 lines for components, 4-20 lines for pure functions. Split if longer.
-* **Files:** under 300 lines (frontend files grow fast with JSX). Split by responsibility (logic vs. UI).
-* **One thing per function/component:** One logical task per hook/function, one visual/structural responsibility per component.
-* **Names:** specific and unique. Avoid generic names like `data`, `handler`, `Manager`, `Component`. Prefer names that return less than 5 grep hits in the codebase.
-* **Types:** strict and explicit. No `any`, no `unknown` without narrowing, no untyped props or functions.
-* **No code duplication:** Extract shared logic into custom hooks (`useSomething`) or utility functions, and UI repetition into reusable primitives.
-* **Early returns over nested ifs:** Especially inside JSX and hooks. Max 2 levels of indentation.
-* **Error Boundaries & Messages:** Error messages and UI crash fallbacks must include the context of the failure and expected state.
+## Architecture & State Management (React & TypeScript)
+- **Domain-Driven UI:** Keep business logic separated from visual representation. Heavy data transformations, validation logic, and state management belong inside custom hooks (`hooks/`), keeping components focused on presentation.
+- **Strict Typing:** Never use `any`. Avoid `unknown` without immediate type narrowing. All component props, custom hooks, and API responses must have explicit, immutable TypeScript `type` or `interface` definitions.
+- **Types over Strings:** Always prefer TypeScript `enum` or strict template literal union types (e.g., `'success' | 'error' | 'pending'`) over raw `string` to represent states, categories, status, or fixed domains.
+- **Component & Function Constraints:** React components must be between 10-60 lines. Pure functions and hooks should remain between 4-20 lines. Split logic early into child components or modular hooks if limits are exceeded.
+- **Naming Conventions:** Names must be specific, unique, and domain-driven. ABSOLUTELY BANNED generic terms: `Data`, `Handler`, `Manager`, `Helper`, `Utility`, `Component`. Prefer precise names that return less than 5 grep hits in the codebase.
+- **Control Flow:** Prefer early returns and guard clauses over nested `if-else` blocks or deeply nested JSX ternary operators. Maximum allowed indentation depth is 2 levels within any block.
 
-## Comments
+## Data Privacy & Compliance (LGPD Mandate)
+- **Strict Compliance Routing:** This project handles personal data and is for internal use only. The agent ABSOLUTELY MUST read, internalize, and strictly enforce the privacy and security boundaries defined in the `docs/ia/regras_duras_lgpd.md` file before authoring UI components, exposing data contracts, or handling client-side persistence/logs.
 
-* Keep your own comments. Don't strip them on refactor — they carry intent and provenance.
-* Write WHY, not WHAT. Skip `// set loading to true` above `setIsLoading(true)`.
-* JSDoc on public utilities/hooks: intent + one usage example.
-* Reference issue numbers / commit SHAs when a line exists because of a specific bug or browser-specific layout hack.
+## Agent Capabilities & Custom Skills
+- **Skill Alignment:** Specialized behavioral skills, tools, and execution capabilities for this agent are defined inside `.agents/skills`. The agent must strictly consult and adapt its logic according to the context and functions provisioned within that directory before proceeding with generation tasks.
 
-## Tests
+## Static Analysis, Linters & Tools
+- **Tooling Compliance:** The codebase strictly enforces quality gates via **ESLint**, **TypeScript (`tsc`)**, and **Prettier**. All generated or refactored code must comply fully with these configurations.
+- **Zero Warnings Policy:** No compilation warnings, code smells, or style violations should be introduced. The agent must verify that the code compiles perfectly (`npm run build`) and passes all linting/formatting validations before finalizing changes.
+- **Framework Stack:** Strictly adhere to the project's core framework stack: **Vite** as the bundler/dev server, **React 19**, **Material UI (MUI 9)** for design system/components, **Axios** for HTTP client execution, and **TanStack React Query (v5)** for server-state caching.
 
-* Tests run with a single command: `npm test` (or `yarn test` / `pnpm test`).
-* Every new hook/utility gets a unit test. Every critical user flow gets a component/integration test (React Testing Library). Bug fixes get a regression test.
-* Mock external I/O (API calls, browser storage, window methods) using MSW (Mock Service Worker) or named fakes, not messy inline stubs.
-* Tests must be F.I.R.S.T: fast, independent, repeatable, self-validating, timely.
+## Documentation Architecture
+- **API & Query Documentation:** Every custom hook wrapping a TanStack Query (`useQuery` / `useMutation`) must include JSDoc detailing the network contract, query key invalidation strategy, and expected data shape.
+- **Component JSDoc:** Public reusable UI primitives and complex structural components must have a Javadoc/JSDoc block stating their primary visual intent, accessibility requirements, and exactly one valid JSX usage example.
+- **Intent over Mechanism:** Comments within the code must explain the **WHY**, not the **WHAT**. Do not comment self-explanatory code (e.g., skip `// set loading to true` above `setIsLoading(true)`).
+- **Preserve Context:** Retain existing comments during refactoring; they carry historical intent and provenance.
 
-## Dependencies
+## Imports & Path Hygiene
+- **Absolute Mappings:** ALWAYS use absolute path mappings (e.g., `@/components/Button` or `@/hooks/useAuth`) instead of relative paths (e.g., `../../../../components/Button`). Deeply nested relative paths are strictly prohibited.
+- **Clean Imports:** Group imports logically: React/Third-party libraries first, absolute project components/hooks second, styles/types last.
 
-* **State & Props:** Inject dependencies and configurations through Props or Context, avoid relying on global window variables or scattered state singletons.
-* **Third-party wrappers:** Wrap heavy or highly volatile third-party UI libraries or fetching clients behind a thin interface owned by this project.
+## Test Harness & TDD Mandate
+- **Strict TDD Enforcement:** Test-Driven Development (TDD) is the absolute foundation of frontend safety in this project. You MUST write the test before writing any production UI logic, utility, or hook (Red-Green-Refactor cycle).
+- **Execution:** All tests across all levels must run cleanly via the root command: `npm test` (powered by **Vitest** and **jsdom**).
+- **Mandatory Test Suite Layers:** For every new feature, page, or hook, the agent MUST implement three distinct testing layers:
+    1. **Unit Tests:** Isolated tests for utility functions, pure domain logic, and custom hooks (using `@testing-library/react`'s `renderHook`).
+    2. **Component/Integration Tests:** Behavioral testing of UI components using **React Testing Library** and `@testing-library/user-event` to simulate real user interactions.
+    3. **End-to-End (E2E) / Full-Slice Tests:** Verifying full user journeys, route transitions via `react-router-dom`, and complete component trees interacting with mocked network boundaries.
+- **Strict I/O Isolation:** Mock all external HTTP network layers using named API fakes or mocking tools. Never let a frontend test perform actual network activity against the real backend.
+- **F.I.R.S.T. Principles:** Tests must be Fast, Independent, Repeatable, Self-Validating, and Timely.
 
-## Structure
+## Dependency Management & Decoupling
+- **Props & Context Over Globals:** Inject all state, configurations, and external handlers explicitly through Props or React Context. Relying on global `window` objects or scattered unmanaged singletons is forbidden.
+- **Third-Party UI Isolation:** Wrap heavy or highly volatile third-party libraries (such as charting engines or complex utilities) behind a thin interface or custom hook owned by this project before using them inside components.
 
-* Follow the framework's convention (**Vite / Next.js / Remix** architecture).
-* **Colocation:** Keep tests, styles, and child components close to the route or parent component that uses them, rather than in distant global folders.
-* Predictable paths: `components/`, `hooks/`, `pages/` (or `app/`), `utils/`, `__tests__/`.
+## Structure & Topology
+- **Strict Component Colocation:** Keep tests (`__tests__/`), styles, and child components close to the route or parent component that uses them, rather than in distant global folders.
+- **Predictable Topology:** Adhere strictly to the project structure: `src/components/`, `src/hooks/`, `src/pages/`, `src/utils/`.
 
-## Formatting
-
-* Use the project's default formatter (**Prettier + ESLint** strict rules). Don't discuss code style or bike-shed formatting beyond what the automated tools enforce.
-
-## Logging & Observability
-
-* **Error Tracking:** Structured logs sent to your observability tool (e.g., Sentry, LogRocket) for production errors.
-* **Console hygiene:** `console.log` is for local development only. Clean them up before committing. Never leak technical logs to the user-facing browser console in production.
-
-## Engineering Standards
-
-* **Imports:** ALWAYS use absolute path mappings (e.g., `@/components/Button` instead of `../../../../components/Button`) to maintain readability and simplify refactoring. Avoid deeply nested relative paths.
+## Observability & Logging
+- **Console Hygiene:** `console.log` is for local development only. Clean them up completely before committing. Never leak technical logs, raw stack traces, or API error payloads to the user-facing browser console in production.

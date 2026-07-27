@@ -7,8 +7,18 @@
 
 ---
 
+- [x] **Track: Implementação da tela de cadastro de evento a partir da tela de agendamento**
+*Link: [./archive/event_registration_20260520/](./archive/event_registration_20260520/)*
+
+---
+
 - [x] **Track: Criar tela de dashboard do sistema. Será a tela inicial do sistema após login. Atualmente é tela de calendario, mas agora será a tela de dashboard. A Tela de Calendario será acessada normalmente via menu.**
 *Link: [./archive/dashboard_screen_20260521/](./archive/dashboard_screen_20260521/)*
+
+---
+
+- [x] **Track: Customização da identidade visual e sistema de cores da Paróquia Nossa Senhora de Fátima**
+*Link: [./archive/visual_theme_ns_fatima_20260521/](./archive/visual_theme_ns_fatima_20260521/)*
 
 ---
 
@@ -52,6 +62,16 @@
 
 ---
 
+- [x] **Track: Padronização do layout da UI para estilo quadrado/angulado (0px border-radius) em todos os componentes**
+*Link: [./archive/square_ui_layout_20260531/](./archive/square_ui_layout_20260531/)*
+
+---
+
+- [x] **Track: Ajuste fino da paleta de cores Marianas (Azul, Ouro, Vermelho Carmim) de Nossa Senhora de Fátima**
+*Link: [./archive/visual_theme_fatima_colors_20260531/](./archive/visual_theme_fatima_colors_20260531/)*
+
+---
+
 - [x] **Track: implementar regra de cadastro vinculado a projeto, onde o evento só pode ser vinculado se o mesmo estiver definido dentro do periodo definido no projeto.**
 *Link: [./archive/event_project_date_validation_20260531/](./archive/event_project_date_validation_20260531/)*
 
@@ -64,6 +84,11 @@
 
 - [x] **Track: Implementar a funcionalidade relacionada ao ano paroquial.**
 *Link: [./archive/ano_paroquial_gestao_20260531/](./archive/ano_paroquial_gestao_20260531/)*
+
+---
+
+- [x] **Track: Modernização da stack do backend para Java 25, Spring Boot 3 e atualização de dependências**
+*Link: [./archive/java_modernization_20260601/](./archive/java_modernization_20260601/)*
 
 ---
 
@@ -82,6 +107,11 @@
 
 ---
 
+- [x] **Track: Refatoração e realocação de classes Exporter para os pacotes de infraestrutura adequados**
+*Link: [./archive/relocate_exporters_20260603/](./archive/relocate_exporters_20260603/)*
+
+---
+
 - [x] **Track: revisar o codigo e estrutra de pacotes para ficar condizente com os padrões de DDD e Hexagonal Architecture, SOLID e Clean Archtecture**
 *Link: [./archive/align_architecture_packages_20260603/](./archive/align_architecture_packages_20260603/)*
 
@@ -94,6 +124,11 @@
 
 - [x] **Track: Implementar a funcionalidade de adicionar, editar e remover observações dos eventos conforme já implementado na api.**
 *Link: [./archive/event_observations_management_20260613/](./archive/event_observations_management_20260613/)*
+
+---
+
+- [x] **Track: CRUD completo de cadastro, edição, exclusão e listagem de Locais/Espaços Paroquiais**
+*Link: [./archive/locais_crud_20260616/](./archive/locais_crud_20260616/)*
 
 ---
 
@@ -204,4 +239,5 @@
 
 - [x] **Track: Migração do Frontend para Vite & Vitest**
 *Link: [./archive/vite_migration_20260726/](./archive/vite_migration_20260726/)*
+
 
