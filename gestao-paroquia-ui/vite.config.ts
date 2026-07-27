@@ -12,15 +12,20 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
-    open: true,
+    host: '0.0.0.0',
+    port: Number(process.env.PORT) || 3000,
+    open: false,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },
     },
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: Number(process.env.PORT) || 3000,
   },
   test: {
     globals: true,
