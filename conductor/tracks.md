@@ -240,4 +240,10 @@
 - [x] **Track: Migração do Frontend para Vite & Vitest**
 *Link: [./archive/vite_migration_20260726/](./archive/vite_migration_20260726/)*
 
+---
+
+- [ ] **Track: Integração do @dabeng/react-orgchart no Sistema de Organograma**
+*Link: [./tracks/react_orgchart_integration_20260727/](./tracks/react_orgchart_integration_20260727/)*
+
+
 
