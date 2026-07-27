@@ -249,7 +249,8 @@
 
 ---
 
-- [ ] **Track: RBAC Eclesial e Governança Paroquial (CPP & CAE)**
+- [~] **Track: RBAC Eclesial e Governança Paroquial (CPP & CAE)**
+
 *Link: [./tracks/rbac_eclesial_governanca_20260727/](./tracks/rbac_eclesial_governanca_20260727/)*
 
 
