@@ -19,15 +19,16 @@ describe('exportUtils', () => {
       { organizacaoNome: 'Catequese', quantidadeEventos: 10 },
       { organizacaoNome: 'Pastoral da Família', quantidadeEventos: 5 },
     ],
+    eventosSemana: [],
     projetosAtivosDetalhes: [
       {
-        id: '1',
         nome: 'Reforma da Igreja',
         status: 'EM_ANDAMENTO',
         percentualTempoDecorrido: 75,
         totalEventos: 4,
         eventosRealizados: 3,
         emRisco: false,
+        envolvidos: [],
       },
     ],
   };
@@ -47,6 +48,7 @@ describe('exportUtils', () => {
         resumoGeral: { totalEventosMes: 0, projetosAtivos: 0, solicitacoesPendentes: 0 },
         eventosPorOrganizacao: [],
         projetosAtivosDetalhes: [],
+        eventosSemana: [],
       };
       const csv = generateMetricsCSV(emptyMetrics);
       expect(csv).toContain('RESUMO GERAL DE METRICAS');

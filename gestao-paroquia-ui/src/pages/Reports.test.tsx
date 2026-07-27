@@ -46,7 +46,7 @@ describe('Reports Page', () => {
   });
 
   const renderReports = async (user: any = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] }) => {
-    mockedApiClient.get.mockImplementation((url) => {
+    mockedApiClient.get.mockImplementation((url: string) => {
       if (url === '/auth/me') {
         return Promise.resolve({ data: user });
       }
@@ -149,7 +149,7 @@ describe('Reports Page', () => {
   });
 
   test('renders error state on API failure', async () => {
-    mockedApiClient.get.mockImplementation((url) => {
+    mockedApiClient.get.mockImplementation((url: string) => {
       if (url === '/auth/me') return Promise.resolve({ data: { id: '1', name: 'Admin', roles: ['ADMIN'] } });
       return Promise.reject(new Error('Network Error'));
     });

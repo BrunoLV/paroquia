@@ -3,7 +3,7 @@ import React from 'react';
 import {render} from '@testing-library/react';
 import App from './App';
 
-vi.mock('axios', async (importOriginal) => {
+vi.mock('axios', async (importOriginal: any) => {
   const actualAxios: any = await importOriginal();
   return {
     ...actualAxios,

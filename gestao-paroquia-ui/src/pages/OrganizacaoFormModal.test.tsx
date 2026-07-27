@@ -8,7 +8,7 @@ import {Organizacao} from '../api/types';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {getOrganizacaoMembros} from '../api/organizacoes';
 
-vi.mock('../api/organizacoes', async (importOriginal) => {
+vi.mock('../api/organizacoes', async (importOriginal: any) => {
   const actual: any = await importOriginal();
   return {
     ...actual,
