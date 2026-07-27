@@ -12,8 +12,10 @@
 - [x] Task: Atualizar `src/api/types.ts` e `src/auth/permissions.ts` para mapear "Organismo Paroquial", novos papéis eclesiais e flags de validação de eventos (`nivelPrioridade`, `autorizadoPeloCpp`)
 - [x] Task: Padronizar nomes e rótulos oficiais ("Conselho Pastoral Paroquial (CPP)", "Conselho Econômico Paroquial (CAE)", "Organismo Paroquial") e incluir a indicação de prioridade/setores em `Organograma.tsx`, `Settings.tsx`, `OrganizacaoFormModal.tsx` e modal de eventos (`EventRegistrationModal.tsx`)
 - [x] Task: Atualizar suíte de testes frontend em `permissions.test.ts`, `Organograma.test.tsx`, `Settings.test.tsx`, `EventRegistrationModal.test.tsx` e `OrganizacaoFormModal.test.tsx`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI & Event Modal' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend UI & Event Modal' (Protocol in workflow.md)
+
 
 ## Phase 3: Validação Completa da Aplicação & Regressão Zero
-- [ ] Task: Executar validação E2E com `./gradlew check` no backend e `npm run build && npm test` no frontend garantindo zero regressões
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+- [x] Task: Execução do suite completo de testes backend (`./gradlew check`) e frontend (`npm run build && npm test`) confirmando zero regressões
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+
