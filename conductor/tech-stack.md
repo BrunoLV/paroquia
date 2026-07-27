@@ -3,8 +3,8 @@
 ## Primary Language
 - **TypeScript:** Strongly typed language built on JavaScript, providing excellent developer experience, improved maintainability, and robust type safety for the React application.
 
-## Core Framework
-- **React (via Create React App):** The foundational library for building the user interface, initialized using the classic and standard Create React App setup for a robust single-page application structure.
+## Core Framework & Bundler
+- **React (via Vite):** The foundational library for building the user interface, bundled and served using Vite for lightning-fast HMR, instant startup, and modern ES module builds.
 
 ## UI Component Library & Styling
 - **Material UI:** A comprehensive suite of pre-built React components that follow Google's Material Design guidelines, enabling rapid development of a professional, consistent, and accessible interface.
@@ -16,3 +16,6 @@
 
 ## Routing
 - **React Router (v6):** Used for client-side routing, managing navigation between pages (e.g., Login, Dashboard) and implementing protected routes.
+
+## Testing Framework
+- **Vitest:** Blazing fast unit and component test runner natively integrated with Vite, jsdom, and React Testing Library.
