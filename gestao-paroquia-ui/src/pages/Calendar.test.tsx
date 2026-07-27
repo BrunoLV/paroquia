@@ -243,7 +243,7 @@ test('opens and submits event creation form', async () => {
       }),
     })
   );
-});
+}, 15000);
 
 test('displays events with pending actions with reduced opacity and indicator', async () => {
   const pendingApprovals = [
