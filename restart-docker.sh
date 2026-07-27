@@ -1,4 +1,9 @@
 #!/bin/bash
+set -euo pipefail
+
+# Garante navegação para a raiz do projeto independente do diretório de chamada
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # Script para reiniciar, reconstruir e subir o ambiente Docker do projeto paróquia
 
