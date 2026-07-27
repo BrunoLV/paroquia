@@ -21,5 +21,5 @@
 
 ## Phase 4: Validação do Build de Produção e Checkpoint Final
 
-- [ ] Task 4.1: Executar build de produção (`npm run build`) e testar execução do preview (`npm run preview`)
-- [ ] Task 4.2: Executar verificação final e criar o commit de checkpoint da track
+- [x] Task 4.1: Executar build de produção (`npm run build`) e testar execução do preview (`npm run preview`) (43fa107)
+- [x] Task 4.2: Executar verificação final e criar o commit de checkpoint da track
