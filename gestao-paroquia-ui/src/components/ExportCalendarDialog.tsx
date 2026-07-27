@@ -49,7 +49,7 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const handleExport = () => {
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
     let url = `${API_URL}/eventos/exportar?formato=${formato}&opcao=${opcao}`;
 
     if (opcao === 'ANO') {

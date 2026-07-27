@@ -34,7 +34,7 @@ npm run build
 
 ## 🌍 Variáveis de Ambiente
 O projeto utiliza um arquivo `.env` para configurações:
-- `REACT_APP_API_URL`: URL base da API (padrão: `http://localhost:8080/api/v1`)
+- `VITE_API_URL`: URL base da API (padrão: `http://localhost:8080/api/v1`)
 
 ## 📂 Estrutura de Pastas
 - `src/api/`: Serviços e hooks de integração com o backend.
