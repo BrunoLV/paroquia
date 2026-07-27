@@ -1,11 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # demo_mvp.sh - A complete lifecycle demonstration of the NS Fatima Calendar MVP
 # This script interacts with the API and generates a rich HTML report.
 # Default is http://localhost:8080/api/v1 (standard local/docker mapping)
 # Requires: curl, jq, uuidgen
-
-set -e
 
 # --- Configuration & Setup ---
 BASE_URL="${API_BASE_URL:-http://localhost:8080/api/v1}"
@@ -78,7 +80,7 @@ html_init() {
         .step { margin-top: 30px; border-left: 4px solid #3498db; padding-left: 15px; }
         .step-title { font-size: 1.2em; font-weight: bold; color: #2980b9; margin-bottom: 10px; text-transform: uppercase; }
         .interaction { background: #fafafa; border: 1px solid #eee; border-radius: 4px; padding: 15px; margin-bottom: 15px; }
-        .interaction-header { font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .interaction-header { font-weight: bold; margin-bottom: 10px; display: flex; justify-space-between; align-items: center; }
         .method { background: #3498db; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 0.8em; margin-right: 10px; }
         .payload-box, .response-box { margin-top: 10px; }
         label { font-size: 0.8em; font-weight: bold; color: #95a5a6; display: block; margin-bottom: 3px; }
