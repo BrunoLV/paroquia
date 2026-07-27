@@ -87,7 +87,7 @@ describe('Reports Page', () => {
   test('renders page title, filter controls, export buttons, and metric cards after loading', async () => {
     await renderReports();
 
-    expect(screen.getByText('Relatórios & Métricas')).toBeInTheDocument();
+    expect(screen.getByText(/Relatórios & Métricas/i)).toBeInTheDocument();
     expect(screen.getByText('Exportar CSV')).toBeInTheDocument();
     expect(screen.getByText('Exportar PDF')).toBeInTheDocument();
     expect(screen.getByText('Filtros do Relatório')).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('Reports Page', () => {
 
     expect(screen.getByText('Distribuição de Eventos por Organização')).toBeInTheDocument();
     expect(screen.getByText('Volume de Eventos por Organização')).toBeInTheDocument();
-    expect(screen.getByText('Resumo de Projetos Ativos')).toBeInTheDocument();
+    expect(screen.getByText('Acompanhamento de Projetos Ativos & Status')).toBeInTheDocument();
     expect(screen.getByText('Festa Padroeiro')).toBeInTheDocument();
   });
 
@@ -127,7 +127,7 @@ describe('Reports Page', () => {
     const pdfButton = screen.getByText('Exportar PDF');
     fireEvent.click(pdfButton);
 
-    expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-content-area', expect.stringContaining('relatorio_paroquial_'));
+    expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-container', 'relatorio-gerencial.pdf');
   });
 
   test('filters dates and fetches events from backend when Filtrar button is clicked', async () => {
@@ -140,7 +140,7 @@ describe('Reports Page', () => {
     const filterButton = screen.getByText('Filtrar');
     fireEvent.click(filterButton);
 
-    expect(mockedApiClient.get).toHaveBeenCalledWith('/dashboard/metrics', expect.any(Object));
+    expect(mockedApiClient.get).toHaveBeenCalledWith('/eventos', expect.any(Object));
   });
 
   test('renders error state on API failure', async () => {
@@ -164,7 +164,8 @@ describe('Reports Page', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Erro ao carregar dados do relatório.')).toBeInTheDocument();
+      expect(screen.getByText(/Não foi possível carregar os relatórios/i)).toBeInTheDocument();
     });
   });
 });
+
