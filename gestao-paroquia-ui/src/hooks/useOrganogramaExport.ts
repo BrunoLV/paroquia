@@ -145,11 +145,17 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
             maxWidth: 'none',
           },
           filter: (node: Node) => {
-            if (node instanceof HTMLElement && node.classList.contains('no-export')) {
-              return false;
+            if (node instanceof HTMLElement) {
+              if (
+                node.classList.contains('no-export') ||
+                node.classList.contains('oc-export-btn')
+              ) {
+                return false;
+              }
             }
             return true;
           },
+
         };
 
         let dataUrl: string;

@@ -8,9 +8,10 @@
 
 
 ## Phase 2: Refatoração do Hook de Exportação & Testes
-- [ ] Task: Atualizar `useOrganogramaExport.ts` para redefinir matrizes de transformação de zoom durante a captura de tela (PNG/SVG)
-- [ ] Task: Atualizar testes em `useOrganogramaExport.test.ts` garantindo zero regressões
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Export Logic' (Protocol in workflow.md)
+- [x] Task: Atualizar `useOrganogramaExport.ts` para redefinir matrizes de transformação de zoom durante a captura de tela (PNG/SVG)
+- [x] Task: Atualizar testes em `useOrganogramaExport.test.ts` garantindo zero regressões
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Export Logic' (Protocol in workflow.md)
+
 
 ## Phase 3: Integração do Componente & Limpeza de Código Legado
 - [ ] Task: Integrar `@dabeng/react-orgchart` em `Organograma.tsx` com `NodeTemplate` customizado e suporte a pan/zoom
