@@ -34,14 +34,18 @@ public enum AprovadorPapel {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(role);
         TipoOrganizacao tipoOrganizacao = TipoOrganizacao.fromStoredValue(organizationType);
 
-        if (papel == PapelOrganizacional.PAROCO) {
+        if (papel == PapelOrganizacional.PAROCO || papel == PapelOrganizacional.BISPO_DIOCESANO) {
             return PAROCO;
         }
-        if (tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL && papel == PapelOrganizacional.VICE_COORDENADOR) {
+        boolean isViceOrMembroCpp = papel == PapelOrganizacional.VICE_COORDENADOR
+                || papel == PapelOrganizacional.MEMBRO_CPP;
+        if (tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL && isViceOrMembroCpp) {
             return CONSELHO_VICE_COORDENADOR;
         }
+
         return CONSELHO_COORDENADOR;
     }
+
 
     public String storedValue() {
         return storedCode;

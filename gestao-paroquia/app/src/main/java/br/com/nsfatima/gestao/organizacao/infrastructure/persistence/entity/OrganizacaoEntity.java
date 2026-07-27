@@ -41,7 +41,11 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     @Column(name = "pastoral_oficial_id")
     private UUID pastoralOficialId;
 
+    @Column(name = "setor_pastoral", length = 64)
+    private String setorPastoral;
+
     public UUID getId() {
+
         return id;
     }
 
@@ -112,4 +116,13 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
+
+    public String getSetorPastoral() {
+        return setorPastoral;
+    }
+
+    public void setSetorPastoral(String setorPastoral) {
+        this.setorPastoral = setorPastoral;
+    }
 }
+

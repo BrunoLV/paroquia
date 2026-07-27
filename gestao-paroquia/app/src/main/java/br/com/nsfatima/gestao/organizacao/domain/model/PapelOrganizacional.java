@@ -4,13 +4,22 @@ import java.util.Locale;
 
 public enum PapelOrganizacional {
     ADMIN("admin"),
+    BISPO_DIOCESANO("bispo-diocesano"),
+    PAROCO("paroco"),
+    VIGARIO("vigario"),
+    DIACONO("diacono"),
+    PADRE("padre"),
+    MEMBRO_CPP("membro-cpp"),
+    MEMBRO_CAE("membro-cae"),
+    COORDENADOR_PASTORAL("coordenador-pastoral"),
+    COORDENADOR_MOVIMENTO("coordenador-movimento"),
+    MEMBRO_PASTORAL("membro-pastoral"),
+    MEMBRO_MOVIMENTO("membro-movimento"),
     COORDENADOR("coordenador"),
     VICE_COORDENADOR("vice-coordenador"),
     MEMBRO("membro"),
-    PAROCO("paroco"),
-    VIGARIO("vigario"),
-    PADRE("padre"),
     SECRETARIO("secretario");
+
 
     private final String storedCode;
 

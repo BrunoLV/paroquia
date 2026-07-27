@@ -65,6 +65,16 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "igreja_vinculo_id")
     private UUID igrejaVinculoId;
 
+    @Column(name = "nivel_prioridade", nullable = false)
+    private Integer nivelPrioridade = 4;
+
+    @Column(name = "autorizado_pelo_cpp", nullable = false)
+    private Boolean autorizadoPeloCpp = false;
+
+    @Column(name = "setor_pastoral", length = 64)
+    private String setorPastoral;
+
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "evento_id", insertable = false, updatable = false)
     private List<EventoEnvolvidoEntity> envolvidos;
@@ -204,4 +214,29 @@ public class EventoEntity extends BaseVersionedEntity {
     public void setIgrejaVinculoId(UUID igrejaVinculoId) {
         this.igrejaVinculoId = igrejaVinculoId;
     }
+
+    public Integer getNivelPrioridade() {
+        return nivelPrioridade;
+    }
+
+    public void setNivelPrioridade(Integer nivelPrioridade) {
+        this.nivelPrioridade = nivelPrioridade;
+    }
+
+    public Boolean getAutorizadoPeloCpp() {
+        return autorizadoPeloCpp;
+    }
+
+    public void setAutorizadoPeloCpp(Boolean autorizadoPeloCpp) {
+        this.autorizadoPeloCpp = autorizadoPeloCpp;
+    }
+
+    public String getSetorPastoral() {
+        return setorPastoral;
+    }
+
+    public void setSetorPastoral(String setorPastoral) {
+        this.setorPastoral = setorPastoral;
+    }
 }
+
