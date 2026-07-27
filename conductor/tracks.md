@@ -202,6 +202,6 @@
 
 ---
 
-- [ ] **Track: Migração do Frontend para Vite & Vitest**
+- [~] **Track: Migração do Frontend para Vite & Vitest**
 *Link: [./tracks/vite_migration_20260726/](./tracks/vite_migration_20260726/)*
 
