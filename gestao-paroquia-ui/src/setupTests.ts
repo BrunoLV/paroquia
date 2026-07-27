@@ -1,10 +1,25 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Alias global jest to vi for seamless compatibility with Jest tests
-(globalThis as any).jest = vi;
+// Polyfill jest global for complete compatibility with existing Jest tests
+if (typeof (globalThis as any).jest === 'undefined' || (globalThis as any).jest === vi) {
+  (globalThis as any).jest = {
+    fn: (...args: any[]) => vi.fn(...args),
+    spyOn: (...args: any[]) => (vi.spyOn as any)(...args),
+    mock: (...args: any[]) => (vi.mock as any)(...args),
+    unmock: (...args: any[]) => (vi.unmock as any)(...args),
+    clearAllMocks: () => vi.clearAllMocks(),
+    resetAllMocks: () => vi.resetAllMocks(),
+    restoreAllMocks: () => vi.restoreAllMocks(),
+    useFakeTimers: () => vi.useFakeTimers(),
+    useRealTimers: () => vi.useRealTimers(),
+    advanceTimersByTime: (ms: number) => vi.advanceTimersByTime(ms),
+    runAllTimers: () => vi.runAllTimers(),
+    requireActual: (importPath: string) => vi.importActual(importPath),
+  };
+}
 
-// Global mock for @mui/x-charts to avoid jsdom and ES module rendering issues in tests
+// Global mock for @mui/x-charts to avoid jsdom rendering issues in tests
 vi.mock('@mui/x-charts', () => {
   const React = require('react');
   return {
