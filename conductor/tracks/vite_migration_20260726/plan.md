@@ -2,7 +2,7 @@
 
 ## Phase 1: Instalação de Dependências e Configuração Base do Vite & Vitest
 
-- [ ] Task 1.1: Atualizar `package.json` removendo `react-scripts` e adicionando `vite`, `@vitejs/plugin-react`, `vitest`, `jsdom` e `@testing-library/jest-dom`
+- [x] Task 1.1: Atualizar `package.json` removendo `react-scripts` e adicionando `vite`, `@vitejs/plugin-react`, `vitest`, `jsdom` e `@testing-library/jest-dom` (2d9aca2)
 - [ ] Task 1.2: Criar arquivo de configuração `vite.config.ts` com suporte a React, Vitest (`jsdom`), aliases de caminhos e proxy de API para `http://localhost:8080`
 - [ ] Task 1.3: Mover e refatorar `index.html` para a raiz de `gestao-paroquia-ui/`, adicionando a tag de módulo JS `/src/index.tsx` e removendo `%PUBLIC_URL%`
 - [ ] Task 1.4: Conductor - User Manual Verification 'Phase 1: Instalação de Dependências e Configuração Base' (Protocol in workflow.md)
