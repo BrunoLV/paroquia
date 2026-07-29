@@ -6,7 +6,7 @@
 - [x] Task: Adicionar campo `bypassAgendaConflict` nos DTOs `CreateEventoRequest` e `UpdateEventoRequest`. (f6bd0f1)
 
 ## Phase 2: Serviço de Validação e Auto-Cancelamento
-- [ ] Task: Criar `AgendaPriorityValidatorService` implementando as regras dos Níveis 1 a 4.
+- [x] Task: Criar `AgendaPriorityValidatorService` implementando as regras dos Níveis 1 a 4. (3dabb19)
 - [ ] Task: Implementar lógica de auto-cancelamento/bloqueio para eventos Nível 1.
 - [ ] Task: Integrar a validação em `CreateEventoUseCase` e `UpdateEventoUseCase`.
 - [ ] Task: Validar permissão da role `PAROCO` ao processar `bypassAgendaConflict == true`.
