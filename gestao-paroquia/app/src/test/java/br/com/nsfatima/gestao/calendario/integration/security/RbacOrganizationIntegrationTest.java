@@ -14,6 +14,6 @@ class RbacOrganizationIntegrationTest {
     void shouldEnforceRoleCatalogByOrganizationType() {
         assertTrue(policy.isRoleAllowed("CONSELHO_PASTORAL", "secretario"));
         assertFalse(policy.isRoleAllowed("CLERO", "secretario"));
-        assertTrue(policy.isRoleAllowed("PASTORAL", "coordenador"));
+        assertTrue(policy.isRoleAllowed("PASTORAL", "coordenador-pastoral-local"));
     }
 }

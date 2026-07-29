@@ -35,10 +35,14 @@ class AuditTrailQueryIntegrationTest {
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
 
+    @Autowired
+    private br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository aprovacaoJpaRepository;
+
     @BeforeEach
     void setUp() {
         auditoriaOperacaoJpaRepository.deleteAll();
         observacaoEventoJpaRepository.deleteAll();
+        aprovacaoJpaRepository.deleteAll();
         eventoJpaRepository.deleteAll();
     }
 

@@ -51,7 +51,7 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
             return;
         }
 
-        String role = headerOrDefault(request, "X-Actor-Role", "coordenador");
+        String role = headerOrDefault(request, "X-Actor-Role", "coordenador-pastoral-local");
         String organizationType = headerOrDefault(request, "X-Actor-Org-Type", "PASTORAL");
         UUID organizationId = resolveOrganizationId(request.getHeader("X-Actor-Org-Id"));
 
@@ -124,14 +124,14 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
     private UUID resolveUserId(String role, String organizationType) {
         String normalizedRole = role == null ? "" : role.trim().toLowerCase();
         String normalizedType = organizationType == null ? "" : organizationType.trim().toLowerCase();
-        if ("membro".equals(normalizedRole)) {
+        if ("membro".equals(normalizedRole) || "voluntario-pastoral-local".equals(normalizedRole)) {
             return UUID.fromString("00000000-0000-0000-0000-000000000003");
         }
-        if ("secretario".equals(normalizedRole) && "conselho".equals(normalizedType)) {
+        if ("secretario".equals(normalizedRole) && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
             return UUID.fromString("00000000-0000-0000-0000-000000000002");
         }
-        if (("coordenador".equals(normalizedRole) || "vice-coordenador".equals(normalizedRole))
-                && "conselho".equals(normalizedType)) {
+        if (("coordenador".equals(normalizedRole) || "presidente-cpc".equals(normalizedRole) || "mesa-diretora-cpp".equals(normalizedRole))
+                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType))) {
             return UUID.fromString("00000000-0000-0000-0000-000000000004");
         }
         return UUID.fromString("00000000-0000-0000-0000-000000000001");
@@ -140,14 +140,14 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
     private String resolveUsername(String role, String organizationType) {
         String normalizedRole = role == null ? "" : role.trim().toLowerCase();
         String normalizedType = organizationType == null ? "" : organizationType.trim().toLowerCase();
-        if ("membro".equals(normalizedRole)) {
+        if ("membro".equals(normalizedRole) || "voluntario-pastoral-local".equals(normalizedRole)) {
             return "pedro.membro";
         }
-        if ("secretario".equals(normalizedRole) && "conselho".equals(normalizedType)) {
+        if ("secretario".equals(normalizedRole) && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
             return "maria.secretaria";
         }
-        if (("coordenador".equals(normalizedRole) || "vice-coordenador".equals(normalizedRole))
-                && "conselho".equals(normalizedType)) {
+        if (("coordenador".equals(normalizedRole) || "presidente-cpc".equals(normalizedRole) || "mesa-diretora-cpp".equals(normalizedRole))
+                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType))) {
             return "ana.conselho";
         }
         return "joao.silva";

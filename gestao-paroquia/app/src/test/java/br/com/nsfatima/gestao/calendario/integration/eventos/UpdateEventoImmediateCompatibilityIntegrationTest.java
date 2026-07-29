@@ -58,7 +58,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
         // PATCH with sensitive fields by coordenador/CONSELHO → 200 OK (immediately
         // applied)
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
         // PATCH with sensitive fields by vice-coordenador/CONSELHO → 200 OK
         // (immediately applied)
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "vice-coordenador")
+                        .header("X-Actor-Role", "mesa-diretora-cpp")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)

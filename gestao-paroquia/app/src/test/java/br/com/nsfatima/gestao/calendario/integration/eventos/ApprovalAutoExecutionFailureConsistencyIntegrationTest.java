@@ -79,7 +79,7 @@ class ApprovalAutoExecutionFailureConsistencyIntegrationTest {
         aprovacaoJpaRepository.save(approval);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -150,14 +150,14 @@ class ApprovalAutoExecutionFailureConsistencyIntegrationTest {
         approval.setStatus("PENDENTE");
         approval.setCriadoEmUtc(Instant.now());
         approval.setSolicitanteId(UUID.randomUUID().toString());
-        approval.setSolicitantePapel("coordenador");
+        approval.setSolicitantePapel("coordenador-pastoral-local");
         approval.setSolicitanteTipoOrganizacao("PASTORAL");
         approval.setCorrelationId(approvalId.toString());
         approval.setActionPayloadJson(approvalActionPayloadMapper.toJson(invalidPayload));
         aprovacaoJpaRepository.save(approval);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

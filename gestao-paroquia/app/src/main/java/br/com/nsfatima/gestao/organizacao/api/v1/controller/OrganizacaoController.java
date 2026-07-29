@@ -96,14 +96,12 @@ public class OrganizacaoController {
 
     private void syncCoordinatorMemberships(Organizacao org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
-        syncSingleRole(org,
-                coordName, PapelOrganizacional.COORDENADOR,
-                igrejaId);
+        PapelOrganizacional papel = org.getTipo() == TipoOrganizacao.MOVIMENTO
+                ? PapelOrganizacional.COORDENADOR_MOVIMENTO
+                : PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL;
 
-        syncSingleRole(org,
-                viceCoordName, PapelOrganizacional.VICE_COORDENADOR,
-                igrejaId);
-
+        syncSingleRole(org, coordName, papel, igrejaId);
+        syncSingleRole(org, viceCoordName, papel, igrejaId);
     }
 
     private void syncSingleRole(Organizacao org,

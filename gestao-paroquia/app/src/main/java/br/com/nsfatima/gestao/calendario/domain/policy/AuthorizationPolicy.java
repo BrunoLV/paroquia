@@ -16,16 +16,27 @@ public class AuthorizationPolicy {
         }
 
         return switch (normalizedOrg) {
-            case PASTORAL, MOVIMENTO, MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORDENADOR
-                    || normalizedRole == PapelOrganizacional.VICE_COORDENADOR
-                    || normalizedRole == PapelOrganizacional.MEMBRO;
+            case PASTORAL -> normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
+                    || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+                    || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL
+                    || normalizedRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
+                    || normalizedRole == PapelOrganizacional.MEMBRO_PASTORAL;
+            case MOVIMENTO -> normalizedRole == PapelOrganizacional.COORDENADOR_MOVIMENTO
+                    || normalizedRole == PapelOrganizacional.MEMBRO_MOVIMENTO;
+            case MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+                    || normalizedRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
+                    || normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                    || normalizedRole == PapelOrganizacional.MEMBRO_CPC;
             case CLERO -> normalizedRole == PapelOrganizacional.PAROCO
                     || normalizedRole == PapelOrganizacional.VIGARIO
-                    || normalizedRole == PapelOrganizacional.PADRE;
-            case CONSELHO_PASTORAL, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.COORDENADOR
-                    || normalizedRole == PapelOrganizacional.VICE_COORDENADOR
-                    || normalizedRole == PapelOrganizacional.SECRETARIO
-                    || normalizedRole == PapelOrganizacional.MEMBRO;
+                    || normalizedRole == PapelOrganizacional.PADRE
+                    || normalizedRole == PapelOrganizacional.DIACONO;
+            case CPP, CPC, CONSELHO_PASTORAL, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                    || normalizedRole == PapelOrganizacional.MEMBRO_CPC
+                    || normalizedRole == PapelOrganizacional.MEMBRO_CPP
+                    || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                    || normalizedRole == PapelOrganizacional.MEMBRO_CAE
+                    || normalizedRole == PapelOrganizacional.SECRETARIO;
             case OUTRO -> false;
         };
     }

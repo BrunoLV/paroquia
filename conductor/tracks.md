@@ -253,7 +253,7 @@
 
 ---
 
-- [ ] **Track: Reformulação do RBAC e Eliminação de Papéis Genéricos**
+- [x] **Track: Reformulação do RBAC e Eliminação de Papéis Genéricos**
 *Link: [./tracks/rbac_especifico_eclesial_20260728/index.md](./tracks/rbac_especifico_eclesial_20260728/index.md)*
 
 ---

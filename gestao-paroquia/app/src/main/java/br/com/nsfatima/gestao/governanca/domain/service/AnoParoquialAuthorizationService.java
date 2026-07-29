@@ -20,10 +20,13 @@ public class AnoParoquialAuthorizationService {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
-        boolean isParoco = normalizedRole == PapelOrganizacional.PAROCO;
-        boolean isConselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR ||
-                normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
+        boolean isParoco = normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN;
+        boolean isConselhoCoordinator = (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                || normalizedOrgType == TipoOrganizacao.CPP
+                || normalizedOrgType == TipoOrganizacao.CPC)
+                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL);
 
         if (!isParoco && !isConselhoCoordinator) {
             throw new AccessDeniedException("Apenas o Paroco ou o Coordenador do Conselho podem gerir o Ano Paroquial");

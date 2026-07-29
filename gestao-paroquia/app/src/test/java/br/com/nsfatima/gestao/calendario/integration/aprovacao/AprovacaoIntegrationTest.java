@@ -56,7 +56,7 @@ class AprovacaoIntegrationTest {
 
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON)

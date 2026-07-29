@@ -32,7 +32,7 @@ class CancelEventoAuthorizationIntegrationTest {
 
     static Stream<Arguments> forbiddenActors() {
         return Stream.of(
-                Arguments.of("membro", "PASTORAL"),
+                Arguments.of("voluntario-pastoral-local", "PASTORAL"),
                 Arguments.of("secretario", "CONSELHO"),
                 Arguments.of("padre", "CLERO"));
     }

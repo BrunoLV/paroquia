@@ -37,9 +37,11 @@ public enum AprovadorPapel {
         if (papel == PapelOrganizacional.PAROCO || papel == PapelOrganizacional.BISPO_DIOCESANO) {
             return PAROCO;
         }
-        boolean isViceOrMembroCpp = papel == PapelOrganizacional.VICE_COORDENADOR
-                || papel == PapelOrganizacional.MEMBRO_CPP;
-        if (tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL && isViceOrMembroCpp) {
+        boolean isViceOrMembroCpp = papel == PapelOrganizacional.MEMBRO_CPP
+                || papel == PapelOrganizacional.MEMBRO_CPC
+                || papel == PapelOrganizacional.MESA_DIRETORA_CPP;
+        if ((tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL || tipoOrganizacao == TipoOrganizacao.CPP || tipoOrganizacao == TipoOrganizacao.CPC)
+                && isViceOrMembroCpp) {
             return CONSELHO_VICE_COORDENADOR;
         }
 

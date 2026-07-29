@@ -56,7 +56,7 @@ class ApprovalAlreadyDecidedIntegrationTest {
         aprovacaoJpaRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

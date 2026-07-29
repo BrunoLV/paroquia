@@ -26,9 +26,29 @@ class EventoControllerListTest {
     @Autowired
     private EventoJpaRepository eventoJpaRepository;
 
+    @Autowired
+    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoJpaRepository;
+
+    @Autowired
+    private br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
+
+    @Autowired
+    private br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository aprovacaoJpaRepository;
+
     @BeforeEach
     void setup() {
+        observacaoEventoJpaRepository.deleteAll();
+        aprovacaoJpaRepository.deleteAll();
         eventoJpaRepository.deleteAll();
+        UUID orgId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        if (!organizacaoJpaRepository.existsById(orgId)) {
+            var org = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+            org.setId(orgId);
+            org.setNome("Organizacao Default");
+            org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
+            org.setAtivo(true);
+            organizacaoJpaRepository.save(org);
+        }
     }
 
     @Test

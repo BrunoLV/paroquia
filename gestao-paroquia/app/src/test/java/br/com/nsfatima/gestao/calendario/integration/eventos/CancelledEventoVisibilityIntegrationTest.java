@@ -44,7 +44,7 @@ class CancelledEventoVisibilityIntegrationTest {
                 .andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/api/v1/eventos?size=100")
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa"))
                 .andExpect(status().isOk())

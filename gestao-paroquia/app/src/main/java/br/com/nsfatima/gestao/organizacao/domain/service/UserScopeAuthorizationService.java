@@ -27,22 +27,31 @@ public class UserScopeAuthorizationService {
             return true;
         }
 
-        // 2. Read-only / Member roles cannot manage data directly
-        if (userRole == PapelOrganizacional.PADRE || userRole == PapelOrganizacional.SECRETARIO
-                || userRole == PapelOrganizacional.MEMBRO) {
-            return false;
+        // 2. Global Pastoral Coordinator: Master of that pastoral across all communities
+        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL) {
+            return Objects.equals(userOrgId, targetOrgId);
         }
 
-        // 3. COORDENADOR & VICE_COORDENADOR
-        if (userRole == PapelOrganizacional.COORDENADOR || userRole == PapelOrganizacional.VICE_COORDENADOR) {
-            if (userOrgType == TipoOrganizacao.CONSELHO_PASTORAL || userOrgType == TipoOrganizacao.CONSELHO_ECONOMICO) {
-                // Conseil pastoral/economico leadership can manage items within their own community/matriz scope
-                return Objects.equals(userOrgId, targetOrgId) || Objects.equals(userOrgId, targetCommunityId);
-            }
-            if (userOrgType == TipoOrganizacao.PASTORAL || userOrgType == TipoOrganizacao.MOVIMENTO) {
-                // Pastoral/Movimento leadership can only manage items of their exact pastoral/movimento
-                return Objects.equals(userOrgId, targetOrgId);
-            }
+        // 3. Local Pastoral Coordinator: Local admin restricted to their exact pastoral
+        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL) {
+            return Objects.equals(userOrgId, targetOrgId);
+        }
+
+        // 4. Movement Coordinator: Charismatic affinity management
+        if (userRole == PapelOrganizacional.COORDENADOR_MOVIMENTO) {
+            return Objects.equals(userOrgId, targetOrgId);
+        }
+
+        // 5. Council Leadership (CPC / CPP / CAE)
+        if (userRole == PapelOrganizacional.PRESIDENTE_CPC
+                || userRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || userRole == PapelOrganizacional.MEMBRO_CPP) {
+            return Objects.equals(userOrgId, targetOrgId) || Objects.equals(userOrgId, targetCommunityId);
+        }
+
+        // Legacy compatibility for transition
+        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL) {
+            return Objects.equals(userOrgId, targetOrgId);
         }
 
         return false;
@@ -63,9 +72,14 @@ public class UserScopeAuthorizationService {
             return true;
         }
 
-        if ((userRole == PapelOrganizacional.COORDENADOR || userRole == PapelOrganizacional.VICE_COORDENADOR)
+        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
+                || userRole == PapelOrganizacional.MESA_DIRETORA_CPP) {
+            return Objects.equals(userOrgId, targetOrgId);
+        }
+
+        if (userRole == PapelOrganizacional.PRESIDENTE_CPC
                 && (userOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                || userOrgType == TipoOrganizacao.CONSELHO_ECONOMICO)) {
+                || userOrgType == TipoOrganizacao.CPC)) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
@@ -83,19 +97,22 @@ public class UserScopeAuthorizationService {
             return false;
         }
 
-        // All users except MEMBRO can add observations globally
-        if (userRole != PapelOrganizacional.MEMBRO) {
-            return true;
+        // Member roles need participant status or matching org
+        if (userRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
+                || userRole == PapelOrganizacional.MEMBRO_PASTORAL
+                || userRole == PapelOrganizacional.MEMBRO_MOVIMENTO) {
+            return Objects.equals(userOrgId, targetOrgId) || isParticipant;
         }
 
-        // MEMBRO can add observation if targetOrg is their own pastoral or they are participant
-        return Objects.equals(userOrgId, targetOrgId) || isParticipant;
+        return true;
     }
 
     public boolean canViewPendingEvents(PapelOrganizacional userRole) {
         if (userRole == null) {
             return false;
         }
-        return userRole != PapelOrganizacional.MEMBRO;
+        return userRole != PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
+                && userRole != PapelOrganizacional.MEMBRO_PASTORAL
+                && userRole != PapelOrganizacional.MEMBRO_MOVIMENTO;
     }
 }

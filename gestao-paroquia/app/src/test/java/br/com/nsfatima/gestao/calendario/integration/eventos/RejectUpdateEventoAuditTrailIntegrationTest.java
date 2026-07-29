@@ -55,7 +55,7 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
 
         // PATCH with sensitive fields → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +73,7 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
 
         // Reject
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

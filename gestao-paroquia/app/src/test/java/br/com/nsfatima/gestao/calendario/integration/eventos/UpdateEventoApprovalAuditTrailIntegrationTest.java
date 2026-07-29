@@ -58,7 +58,7 @@ class UpdateEventoApprovalAuditTrailIntegrationTest {
                 .get("id").asString());
 
         MvcResult pendingResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000cc")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -82,7 +82,7 @@ class UpdateEventoApprovalAuditTrailIntegrationTest {
         assertThat(pending.getDecididoEmUtc()).isNull();
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

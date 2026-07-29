@@ -11,6 +11,8 @@ public enum TipoOrganizacao {
     CLERO,
     CONSELHO_PASTORAL,
     CONSELHO_ECONOMICO,
+    CPP,
+    CPC,
     OUTRO;
 
     @JsonCreator

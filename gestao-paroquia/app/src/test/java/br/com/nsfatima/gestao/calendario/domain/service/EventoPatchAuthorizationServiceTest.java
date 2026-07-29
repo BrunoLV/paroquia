@@ -53,12 +53,12 @@ class EventoPatchAuthorizationServiceTest {
 
         var membership = new Membership(orgId,
                 "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
-                PapelOrganizacional.COORDENADOR.name(), churchId);
+                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name(), churchId);
 
         mockAuthentication(usuarioId, List.of(membership));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
+                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
                 churchId);
 
 
@@ -74,12 +74,12 @@ class EventoPatchAuthorizationServiceTest {
 
         var membership = new Membership(orgId,
                 "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
-                PapelOrganizacional.COORDENADOR.name(), churchA);
+                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name(), churchA);
 
         mockAuthentication(usuarioId, List.of(membership));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
+                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
                 churchA);
 
 
@@ -112,12 +112,12 @@ class EventoPatchAuthorizationServiceTest {
 
         var membership = new Membership(orgId,
                 "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
-                PapelOrganizacional.COORDENADOR.name(), null);
+                PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL.name(), null);
 
         mockAuthentication(usuarioId, List.of(membership));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
+                PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
                 null);
 
 

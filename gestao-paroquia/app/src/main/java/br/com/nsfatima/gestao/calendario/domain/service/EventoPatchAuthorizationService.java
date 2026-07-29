@@ -17,14 +17,24 @@ import java.util.UUID;
 public class EventoPatchAuthorizationService {
 
     private static final Set<PapelOrganizacional> ORG_EDITOR_ROLES = Set.of(
-            PapelOrganizacional.COORDENADOR,
-            PapelOrganizacional.VICE_COORDENADOR,
+            PapelOrganizacional.ADMIN,
+            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
+            PapelOrganizacional.COORDENADOR_MOVIMENTO,
+            PapelOrganizacional.COORDENADOR_PASTORAL,
+            PapelOrganizacional.PRESIDENTE_CPC,
+            PapelOrganizacional.MESA_DIRETORA_CPP,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
             PapelOrganizacional.PADRE);
     private static final Set<PapelOrganizacional> ORG_CREATOR_ROLES = Set.of(
-            PapelOrganizacional.COORDENADOR,
-            PapelOrganizacional.VICE_COORDENADOR,
+            PapelOrganizacional.ADMIN,
+            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
+            PapelOrganizacional.COORDENADOR_MOVIMENTO,
+            PapelOrganizacional.COORDENADOR_PASTORAL,
+            PapelOrganizacional.PRESIDENTE_CPC,
+            PapelOrganizacional.MESA_DIRETORA_CPP,
             PapelOrganizacional.SECRETARIO,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
@@ -61,9 +71,12 @@ public class EventoPatchAuthorizationService {
         }
 
         if (normalizedRole == PapelOrganizacional.PAROCO
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR))) {
+                || ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                || normalizedOrgType == TipoOrganizacao.CPP
+                || normalizedOrgType == TipoOrganizacao.CPC)
+                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL))) {
             return CreateRequestMode.IMMEDIATE;
         }
 
@@ -104,9 +117,12 @@ public class EventoPatchAuthorizationService {
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
-        boolean conselhoCoordinator = normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
+        boolean conselhoCoordinator = (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                || normalizedOrgType == TipoOrganizacao.CPP
+                || normalizedOrgType == TipoOrganizacao.CPC)
+                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL);
         boolean parroco = normalizedRole == PapelOrganizacional.PAROCO;
 
         if (!conselhoCoordinator && !parroco) {

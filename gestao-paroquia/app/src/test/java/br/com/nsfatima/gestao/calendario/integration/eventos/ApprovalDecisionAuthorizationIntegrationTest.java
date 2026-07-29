@@ -54,7 +54,7 @@ class ApprovalDecisionAuthorizationIntegrationTest {
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +105,7 @@ class ApprovalDecisionAuthorizationIntegrationTest {
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
                         .contentType(MediaType.APPLICATION_JSON)

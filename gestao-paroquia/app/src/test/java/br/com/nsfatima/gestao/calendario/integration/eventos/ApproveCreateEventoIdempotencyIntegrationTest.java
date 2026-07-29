@@ -74,7 +74,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
 
         // First approval attempt
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -87,7 +87,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
 
         // Attempting to approve again must fail with APPROVAL_ALREADY_DECIDED (409)
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

@@ -74,7 +74,7 @@ class CreateEventoApprovalPendingIntegrationTest {
     void coordenadorPastoralRoleReturnsPendingApproval() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
                         .contentType(MediaType.APPLICATION_JSON)

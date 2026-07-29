@@ -13,8 +13,12 @@ import java.util.UUID;
 public class EventoCancelamentoAuthorizationService {
 
     private static final Set<PapelOrganizacional> LEADERSHIP_ROLES = Set.of(
-            PapelOrganizacional.COORDENADOR,
-            PapelOrganizacional.VICE_COORDENADOR);
+            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
+            PapelOrganizacional.COORDENADOR_MOVIMENTO,
+            PapelOrganizacional.PRESIDENTE_CPC,
+            PapelOrganizacional.MESA_DIRETORA_CPP,
+            PapelOrganizacional.COORDENADOR_PASTORAL);
     private static final Set<TipoOrganizacao> LOCAL_SCOPED_ORG_TYPES = Set.of(
             TipoOrganizacao.PASTORAL);
 

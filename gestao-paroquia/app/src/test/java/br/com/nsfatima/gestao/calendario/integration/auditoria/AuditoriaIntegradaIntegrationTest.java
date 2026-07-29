@@ -52,7 +52,7 @@ class AuditoriaIntegradaIntegrationTest {
     void shouldAuditProjectOperations() throws Exception {
         // 1. Create Project
         String createResponse = mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ class AuditoriaIntegradaIntegrationTest {
 
         // 2. Patch Project
         mockMvc.perform(patch("/api/v1/projetos/{id}", projectId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ class AuditoriaIntegradaIntegrationTest {
         aprovacaoRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)

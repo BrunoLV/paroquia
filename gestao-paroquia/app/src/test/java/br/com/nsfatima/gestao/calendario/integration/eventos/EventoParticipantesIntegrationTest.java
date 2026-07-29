@@ -53,7 +53,7 @@ class EventoParticipantesIntegrationTest {
 
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ class EventoParticipantesIntegrationTest {
                 """.formatted(newParticipanteId);
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -52,7 +52,7 @@ class ObservacaoMutationAuthorizationIntegrationTest {
         UUID observacaoId = UUID.fromString(created.path("id").asString());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
-                        .header("X-Actor-Role", "membro")
+                        .header("X-Actor-Role", "voluntario-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"conteudo\":\"Tentativa invalida\"}"))

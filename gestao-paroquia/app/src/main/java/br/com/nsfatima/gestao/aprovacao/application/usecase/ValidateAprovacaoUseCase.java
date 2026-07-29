@@ -60,12 +60,15 @@ public class ValidateAprovacaoUseCase {
     public void validateApprovalDecisionRole(String role, String organizationType) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(organizationType);
-        if (normalizedRole == PapelOrganizacional.PAROCO) {
+        if (normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN) {
             return;
         }
-        if (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR)) {
+        if ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP || normalizedOrgType == TipoOrganizacao.CPC)
+                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL)) {
             return;
         }
         throw new ForbiddenOperationException("User does not have permission to decide event approvals");

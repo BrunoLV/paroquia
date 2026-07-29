@@ -84,8 +84,10 @@ public class UsuarioAuthorizationService {
         if (role == null) {
             return false;
         }
-        String normalized = role.trim().toUpperCase().replace("-", "_");
-        return "COORDENADOR".equals(normalized) || "VICE_COORDENADOR".equals(normalized);
+        String normalized = role.trim().toLowerCase().replace("_", "-");
+        return normalized.contains("coordenador")
+                || normalized.contains("presidente")
+                || normalized.contains("mesa-diretora");
     }
 
     private boolean isAdmin(Authentication auth) {

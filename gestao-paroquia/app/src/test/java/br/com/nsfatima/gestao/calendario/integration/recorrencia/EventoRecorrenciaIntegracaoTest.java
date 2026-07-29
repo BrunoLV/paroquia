@@ -95,8 +95,8 @@ class EventoRecorrenciaIntegracaoTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", instanceId)
-                        .header("X-Actor-Role", "coordenador")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "coordenador-pastoral-global")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patchPayload))
@@ -155,8 +155,8 @@ class EventoRecorrenciaIntegracaoTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", instanceId)
-                        .header("X-Actor-Role", "coordenador")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "coordenador-pastoral-global")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patchPayload))

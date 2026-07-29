@@ -82,10 +82,10 @@ public class EventoActorContextResolver {
 
         return new EventoActorContext(
                 authentication.getName(),
-                PapelOrganizacional.COORDENADOR.storedValue(),
+                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.storedValue(),
                 TipoOrganizacao.PASTORAL.name(),
                 null,
-                null,
+                java.util.UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 null);
     }
 }

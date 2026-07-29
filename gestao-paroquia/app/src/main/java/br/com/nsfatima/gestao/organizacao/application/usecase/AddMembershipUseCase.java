@@ -70,10 +70,13 @@ public class AddMembershipUseCase {
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
         boolean isParoco = auth.getAuthorities().stream().anyMatch(a -> "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
 
-        // Hierarchy rule: COORDENADOR and VICE of CONSELHO / CONSELHO_ECONOMICO can only be defined by PAROCO or ADMIN
-        if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CONSELHO_ECONOMICO)
-                && (papel == PapelOrganizacional.COORDENADOR
-                || papel == PapelOrganizacional.VICE_COORDENADOR)) {
+        // Hierarchy rule: Leadership of CONSELHO / CPP / CPC / CONSELHO_ECONOMICO can only be defined by PAROCO or ADMIN
+        if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CPP || tipo == TipoOrganizacao.CPC || tipo == TipoOrganizacao.CONSELHO_ECONOMICO)
+                && (papel == PapelOrganizacional.PRESIDENTE_CPC
+                || papel == PapelOrganizacional.MESA_DIRETORA_CPP
+                || papel == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+                || papel == PapelOrganizacional.COORDENADOR_PASTORAL)) {
             if (!isAdmin && !isParoco) {
                 throw new AccessDeniedException(
                         "Apenas o Pároco ou Admin podem definir coordenador e vice do Conselho");
@@ -102,9 +105,14 @@ public class AddMembershipUseCase {
             }
         }
 
-        // Unicity rule: Organizations can only have 1 coordinator and 1 vice-coordinator active at a time per church
-        // context
-        if (papel == PapelOrganizacional.COORDENADOR || papel == PapelOrganizacional.VICE_COORDENADOR) {
+        // Unicity rule: Organizations can only have 1 coordinator active at a time per church context
+        boolean isCoordinatorRole = papel == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+                || papel == PapelOrganizacional.COORDENADOR_MOVIMENTO
+                || papel == PapelOrganizacional.COORDENADOR_PASTORAL
+                || papel == PapelOrganizacional.PRESIDENTE_CPC;
+
+        if (isCoordinatorRole) {
             java.util.Optional<MembroOrganizacaoEntity> existing;
             if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
                 existing = membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
@@ -119,9 +127,10 @@ public class AddMembershipUseCase {
                 old.setAtivo(false);
                 membershipRepository.save(old);
 
-                // Transition: Demote previous coordinator to MEMBRO role
+                // Transition: Demote previous coordinator to member role
+                String demotedRole = tipo == TipoOrganizacao.MOVIMENTO ? "MEMBRO_MOVIMENTO" : "VOLUNTARIO_PASTORAL_LOCAL";
                 var oldMembroOpt = membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
-                        old.getUsuarioId(), organizacaoId, "MEMBRO", igrejaVinculoId);
+                        old.getUsuarioId(), organizacaoId, demotedRole, igrejaVinculoId);
                 if (oldMembroOpt.isPresent()) {
                     var m = oldMembroOpt.get();
                     m.setAtivo(true);
@@ -132,7 +141,7 @@ public class AddMembershipUseCase {
                     demoted.setUsuarioId(old.getUsuarioId());
                     demoted.setOrganizacaoId(organizacaoId);
                     demoted.setTipoOrganizacao(tipo.name());
-                    demoted.setPapel("MEMBRO");
+                    demoted.setPapel(demotedRole);
                     demoted.setIgrejaVinculoId(igrejaVinculoId);
                     demoted.setAtivo(true);
                     membershipRepository.save(demoted);

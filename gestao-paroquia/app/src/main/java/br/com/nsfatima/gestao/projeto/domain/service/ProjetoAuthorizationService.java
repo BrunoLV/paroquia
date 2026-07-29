@@ -14,8 +14,13 @@ import java.util.UUID;
 public class ProjetoAuthorizationService {
 
     private static final Set<PapelOrganizacional> PROJECT_EDITOR_ROLES = Set.of(
-            PapelOrganizacional.COORDENADOR,
-            PapelOrganizacional.VICE_COORDENADOR,
+            PapelOrganizacional.ADMIN,
+            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
+            PapelOrganizacional.COORDENADOR_MOVIMENTO,
+            PapelOrganizacional.COORDENADOR_PASTORAL,
+            PapelOrganizacional.PRESIDENTE_CPC,
+            PapelOrganizacional.MESA_DIRETORA_CPP,
             PapelOrganizacional.SECRETARIO,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
@@ -31,10 +36,7 @@ public class ProjetoAuthorizationService {
 
         // Only Paroco or Conselho Coordinators can create projects for any organization.
         // Others can only create for their own organization.
-        boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+        boolean isHighLevelActor = isHighLevelActor(actorContext);
 
         if (!isHighLevelActor && actorContext.organizationId() != null
                 && !actorContext.organizationId().equals(organizacaoResponsavelId)) {
@@ -44,16 +46,12 @@ public class ProjetoAuthorizationService {
 
     public void assertCanEdit(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
         if (!PROJECT_EDITOR_ROLES.contains(normalizedRole)) {
             throw new ForbiddenOperationException("User does not have permission to edit projects");
         }
 
-        boolean isHighLevelActor = normalizedRole == PapelOrganizacional.PAROCO
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+        boolean isHighLevelActor = isHighLevelActor(actorContext);
 
         if (!isHighLevelActor && actorContext.organizationId() != null
                 && !actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
@@ -65,9 +63,11 @@ public class ProjetoAuthorizationService {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
         return normalizedRole == PapelOrganizacional.PAROCO
-                || (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                && (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR));
+                || normalizedRole == PapelOrganizacional.ADMIN
+                || ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP || normalizedOrgType == TipoOrganizacao.CPC)
+                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL));
     }
 
     public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
@@ -75,8 +75,11 @@ public class ProjetoAuthorizationService {
             return;
         }
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORDENADOR
-                || normalizedRole == PapelOrganizacional.VICE_COORDENADOR);
+        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+                || normalizedRole == PapelOrganizacional.COORDENADOR_MOVIMENTO
+                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL
+                || normalizedRole == PapelOrganizacional.PRESIDENTE_CPC);
         if (isOrgLeader && actorContext.organizationId() != null
                 && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
             return;

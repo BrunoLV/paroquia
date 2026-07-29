@@ -9,15 +9,18 @@ public enum PapelOrganizacional {
     VIGARIO("vigario"),
     DIACONO("diacono"),
     PADRE("padre"),
+    MESA_DIRETORA_CPP("mesa-diretora-cpp"),
     MEMBRO_CPP("membro-cpp"),
     MEMBRO_CAE("membro-cae"),
+    PRESIDENTE_CPC("presidente-cpc"),
+    MEMBRO_CPC("membro-cpc"),
+    COORDENADOR_PASTORAL_GLOBAL("coordenador-pastoral-global"),
+    COORDENADOR_PASTORAL_LOCAL("coordenador-pastoral-local"),
     COORDENADOR_PASTORAL("coordenador-pastoral"),
     COORDENADOR_MOVIMENTO("coordenador-movimento"),
+    VOLUNTARIO_PASTORAL_LOCAL("voluntario-pastoral-local"),
     MEMBRO_PASTORAL("membro-pastoral"),
     MEMBRO_MOVIMENTO("membro-movimento"),
-    COORDENADOR("coordenador"),
-    VICE_COORDENADOR("vice-coordenador"),
-    MEMBRO("membro"),
     SECRETARIO("secretario");
 
 
@@ -32,7 +35,7 @@ public enum PapelOrganizacional {
             return null;
         }
 
-        String normalized = rawValue.trim().toLowerCase(Locale.ROOT);
+        String normalized = rawValue.trim().toLowerCase(Locale.ROOT).replace("_", "-");
         for (PapelOrganizacional role : values()) {
             if (role.storedCode.equals(normalized)) {
                 return role;

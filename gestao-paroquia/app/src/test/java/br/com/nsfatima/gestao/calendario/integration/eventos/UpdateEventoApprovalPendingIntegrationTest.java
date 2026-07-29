@@ -64,7 +64,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +90,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
         assertThat(aprovacao.getTipoSolicitacao()).isEqualTo("EDICAO_EVENTO");
         assertThat(aprovacao.getStatus()).isEqualTo("PENDENTE");
         assertThat(aprovacao.getActionPayloadJson()).contains("2027-06-02");
-        assertThat(aprovacao.getSolicitantePapel()).isEqualTo("coordenador");
+        assertThat(aprovacao.getSolicitantePapel()).isEqualTo("coordenador-pastoral-local");
         assertThat(aprovacao.getSolicitanteTipoOrganizacao()).isEqualTo("PASTORAL");
 
         // Event should not be modified yet
@@ -123,7 +123,7 @@ class UpdateEventoApprovalPendingIntegrationTest {
                 .get("id").asString();
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoIdStr)
-                        .header("X-Actor-Role", "vice-coordenador")
+                        .header("X-Actor-Role", "coordenador-movimento")
                         .header("X-Actor-Org-Type", "MOVIMENTO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)

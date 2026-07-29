@@ -67,7 +67,7 @@ class CreateEventoApprovalAuditTrailIntegrationTest {
         assertThat(pending.getActionPayloadJson()).contains("Evento trilha create");
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

@@ -79,10 +79,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     }
 
     private Organizacao toDomain(OrganizacaoEntity entity) {
-        String coordName = resolveCoordinatorName(
-                entity.getId(), PapelOrganizacional.COORDENADOR.name(), entity.getCoordenador());
-        String viceName = resolveCoordinatorName(
-                entity.getId(), PapelOrganizacional.VICE_COORDENADOR.name(), entity.getViceCoordenador());
+        String coordName = resolveRoleMemberName(entity.getId(), "coordenador", entity.getCoordenador());
+        String viceName = resolveRoleMemberName(entity.getId(), "vice", entity.getViceCoordenador());
 
         return new Organizacao(
                 entity.getId(),
@@ -97,8 +95,10 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         );
     }
 
-    private String resolveCoordinatorName(UUID orgId, String papel, String fallback) {
-        return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndPapelAndAtivoTrue(orgId, papel)
+    private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {
+        return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
+                .filter(m -> m.getPapel() != null && m.getPapel().toLowerCase().contains(roleKeyword.toLowerCase()))
+                .findFirst()
                 .map(m -> {
                     String name = usuarioRepository.findById(m.getUsuarioId())
                             .map(UsuarioEntity::getNome)

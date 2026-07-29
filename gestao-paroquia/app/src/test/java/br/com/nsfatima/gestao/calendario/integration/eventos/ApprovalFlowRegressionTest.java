@@ -61,7 +61,7 @@ class ApprovalFlowRegressionTest {
                 .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", createApprovalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -93,7 +93,7 @@ class ApprovalFlowRegressionTest {
                 .get("id").asString());
 
         MvcResult updatePending = mockMvc.perform(patch("/api/v1/eventos/{id}", eventId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000dd")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ class ApprovalFlowRegressionTest {
                 .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", updateApprovalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -125,7 +125,7 @@ class ApprovalFlowRegressionTest {
         assertThat(unchanged.getInicioUtc().toString()).contains("2027-08-10");
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", createApprovalId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

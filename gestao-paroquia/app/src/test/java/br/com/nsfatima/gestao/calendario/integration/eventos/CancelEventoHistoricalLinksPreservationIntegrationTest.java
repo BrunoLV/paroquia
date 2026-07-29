@@ -68,7 +68,7 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
         eventoEnvolvidoJpaRepository.save(envolvido);
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
