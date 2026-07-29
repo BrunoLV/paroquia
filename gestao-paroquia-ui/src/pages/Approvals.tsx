@@ -23,7 +23,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import {Close as CloseIcon, FactCheck as FactCheckIcon} from '@mui/icons-material';
+import {Close as CloseIcon, EventNote as EventNoteIcon, FactCheck as FactCheckIcon, WorkHistory as WorkHistoryIcon} from '@mui/icons-material';
 import {decideApproval, getApprovals} from '../api/approvals';
 import {decideProjectApproval, getProjectApprovals} from '../api/projects';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
@@ -229,6 +229,40 @@ const Approvals = () => {
           </Tabs>
 
           {/* EVENT APPROVALS VIEW */}
+          {approvalsType === 'EVENTOS' && (
+            <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                <EventNoteIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+              </Box>
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                  Solicitações de Eventos Paroquiais
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                  Gerencie e analise pedidos de inclusão, alteração e cancelamento de eventos no calendário.
+                </Typography>
+              </Box>
+            </Box>
+          )}
+
+          {/* PROJECT APPROVALS VIEW */}
+          {approvalsType === 'PROJETOS' && (
+            <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                <WorkHistoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+              </Box>
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                  Solicitações de Projetos Pastorais
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                  Analise as propostas de novos projetos pastorais submetidos para aprovação paroquial.
+                </Typography>
+              </Box>
+            </Box>
+          )}
+
+          {/* EVENT APPROVALS CONTENT */}
           {approvalsType === 'EVENTOS' && (
             isLoading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>

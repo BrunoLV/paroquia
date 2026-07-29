@@ -589,8 +589,19 @@ const Calendar = () => {
         </Box>
       </Box>
 
-      {/* Toolbar / Controls Card */}
-      <Card sx={{ mb: 4, borderRadius: 0, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)', overflow: 'visible' }}>
+      {/* Toolbar / Controls Card Padronizado */}
+      <Card
+        elevation={0}
+        sx={{
+          p: 1,
+          mb: 3,
+          borderRadius: 0,
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: '#fafafa',
+          overflow: 'visible',
+        }}
+      >
         <CardContent sx={{ p: { xs: 2, md: 3 } }}>
           <Grid container spacing={2} sx={{ alignItems: 'center' }}>
             {/* Top Line: Month Navigation (Left) & Action Buttons (Right) */}

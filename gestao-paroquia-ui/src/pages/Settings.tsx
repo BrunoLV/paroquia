@@ -4,6 +4,7 @@ import {
     Alert,
     Box,
     Button,
+    Card,
     Checkbox,
     Chip,
     CircularProgress,
@@ -863,29 +864,41 @@ const Settings = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                <TextField
-                  placeholder="Pesquisar por nome, tipo ou coordenador..."
-                  variant="outlined"
-                  size="small"
-                  value={orgSearch}
-                  onChange={(e) => setOrgSearch(e.target.value)}
-                  sx={{ minWidth: 300, '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-                />
-                {isAuthorizedOrgs && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      setSelectedOrg(null);
-                      setOrgModalOpen(true);
-                    }}
-                    sx={{ borderRadius: 0, fontWeight: 600 }}
-                  >
-                    Nova Pastoral / Movimento
-                  </Button>
-                )}
-              </Box>
+              <Card
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mb: 1,
+                  borderRadius: 0,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  backgroundColor: '#fafafa',
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                  <TextField
+                    placeholder="Pesquisar por nome, tipo ou coordenador..."
+                    variant="outlined"
+                    size="small"
+                    value={orgSearch}
+                    onChange={(e) => setOrgSearch(e.target.value)}
+                    sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { borderRadius: 0, bgcolor: '#fff' } }}
+                  />
+                  {isAuthorizedOrgs && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setSelectedOrg(null);
+                        setOrgModalOpen(true);
+                      }}
+                      sx={{ borderRadius: 0, fontWeight: 600 }}
+                    >
+                      Nova Pastoral / Movimento
+                    </Button>
+                  )}
+                </Box>
+              </Card>
 
               <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
