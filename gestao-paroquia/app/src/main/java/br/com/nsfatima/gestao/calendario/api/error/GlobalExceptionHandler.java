@@ -24,6 +24,21 @@ public class GlobalExceptionHandler extends BaseExceptionHandler {
         super(auditLogPersistenceService);
     }
 
+    @ExceptionHandler(br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException.class)
+    public ResponseEntity<ValidationErrorResponse> handleConflitoAgendaEclesial(
+            br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException ex) {
+        String msg = ex.getMessage() != null ? ex.getMessage() : "Conflito de Agenda Eclesial";
+        return buildValidation(
+                HttpStatus.BAD_REQUEST,
+                ErrorCodes.CONFLITO_AGENDA_ECLESIAL,
+                msg,
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.CONFLITO_AGENDA_ECLESIAL.name(),
+                        "agenda",
+                        msg,
+                        null)));
+    }
+
     /**
      * Handles any unexpected system exceptions that were not caught by specific handlers.
      */
