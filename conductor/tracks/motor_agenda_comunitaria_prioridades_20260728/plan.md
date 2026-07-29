@@ -7,7 +7,7 @@
 
 ## Phase 2: Serviço de Validação e Auto-Cancelamento
 - [x] Task: Criar `AgendaPriorityValidatorService` implementando as regras dos Níveis 1 a 4. (3dabb19)
-- [ ] Task: Implementar lógica de auto-cancelamento/bloqueio para eventos Nível 1.
+- [x] Task: Implementar lógica de auto-cancelamento/bloqueio para eventos Nível 1. (8bb9c8e)
 - [ ] Task: Integrar a validação em `CreateEventoUseCase` e `UpdateEventoUseCase`.
 - [ ] Task: Validar permissão da role `PAROCO` ao processar `bypassAgendaConflict == true`.
 
