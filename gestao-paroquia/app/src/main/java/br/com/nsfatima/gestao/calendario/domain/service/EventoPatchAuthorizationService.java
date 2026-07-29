@@ -44,6 +44,28 @@ public class EventoPatchAuthorizationService {
         resolveCreateRequestMode(actorContext, organizacaoResponsavelId, igrejaVinculoId);
     }
 
+    public void assertCanBypassAgendaConflict(EventoActorContext actorContext) {
+        PapelOrganizacional normalizedRole = actorContext != null
+                ? PapelOrganizacional.fromStoredValue(actorContext.role())
+                : null;
+
+        boolean isParoco = normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN;
+
+        if (!isParoco) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getAuthorities() != null) {
+                isParoco = auth.getAuthorities().stream().anyMatch(a ->
+                        "ROLE_CLERO_PAROCO".equalsIgnoreCase(a.getAuthority()) ||
+                        "ROLE_PAROCO".equalsIgnoreCase(a.getAuthority()) ||
+                        "ROLE_ADMIN".equalsIgnoreCase(a.getAuthority()));
+            }
+        }
+
+        if (!isParoco) {
+            throw new AccessDeniedException("Apenas o Pároco possui permissão para utilizar o bypass de conflito de agenda eclesial");
+        }
+    }
+
     public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext,
                                                       UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
 

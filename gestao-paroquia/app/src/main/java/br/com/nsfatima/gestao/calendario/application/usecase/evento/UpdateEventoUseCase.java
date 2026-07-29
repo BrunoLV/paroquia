@@ -157,6 +157,10 @@ public class UpdateEventoUseCase {
                     entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
 
         }
+
+        if (request.isBypassAgendaConflict()) {
+            authorizationService.assertCanBypassAgendaConflict(actorContext);
+        }
     }
 
     private boolean requiresApproval(EventoEntity entity, EventoActorContext actorContext) {

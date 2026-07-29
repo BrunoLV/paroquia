@@ -106,6 +106,24 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
+    void shouldAllowBypassWhenUserIsParoco() {
+        UUID usuarioId = UUID.randomUUID();
+        var actorContext = new EventoActorContext("tester",
+                PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), UUID.randomUUID(), usuarioId, null);
+
+        assertDoesNotThrow(() -> service.assertCanBypassAgendaConflict(actorContext));
+    }
+
+    @Test
+    void shouldDenyBypassWhenUserIsNotParoco() {
+        UUID usuarioId = UUID.randomUUID();
+        var actorContext = new EventoActorContext("tester",
+                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), UUID.randomUUID(), usuarioId, null);
+
+        assertThrows(AccessDeniedException.class, () -> service.assertCanBypassAgendaConflict(actorContext));
+    }
+
+    @Test
     void shouldAllowEventCreationWhenUserIsCoordinatorOfPastoralWithoutChurchLink() {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();

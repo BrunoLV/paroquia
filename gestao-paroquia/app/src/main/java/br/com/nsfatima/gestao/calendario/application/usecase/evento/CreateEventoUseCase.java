@@ -104,6 +104,9 @@ public class CreateEventoUseCase {
         validateCreationRequest(request);
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
+        if (request.isBypassAgendaConflict()) {
+            authorizationService.assertCanBypassAgendaConflict(actorContext);
+        }
         CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext,
                 request.organizacaoResponsavelId(), request.igrejaVinculoId());
 
