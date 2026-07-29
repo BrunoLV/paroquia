@@ -258,7 +258,7 @@
 
 ---
 
-- [ ] **Track: Escopo Territorial e Vínculo Obrigatório (community_id)**
+- [x] **Track: Escopo Territorial e Vínculo Obrigatório (community_id)**
 *Link: [./tracks/escopo_territorial_community_id_20260728/index.md](./tracks/escopo_territorial_community_id_20260728/index.md)*
 
 ---
