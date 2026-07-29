@@ -24,28 +24,36 @@ import {
     Assignment as WorkIcon,
     CalendarMonth as CalendarIcon,
     Dashboard as DashboardIcon,
+    Description as DescriptionIcon,
     FactCheck as FactCheckIcon,
     Logout as LogoutIcon,
     Menu as MenuIcon,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
-import {useAuth} from '../auth/AuthContext';
-import {useLocation, useNavigate} from 'react-router-dom';
-import {canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser} from '../auth/permissions';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import { canApprove } from '../auth/permissions';
+import { ScopeSelector } from './ScopeSelector';
+import { isUnlinkedUser } from '../auth/permissions';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, logout } = useAuth();
+export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
-
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(true);
+
+  const canManageAnoParoquial = (u: any) => {
+    if (!u) return false;
+    return u.roles?.some((r: string) => ['ADMIN', 'ROLE_ADMIN', 'CLERO_PAROCO', 'ROLE_CLERO_PAROCO', 'PAROCO', 'ROLE_PAROCO', 'CONSELHO_COORDENADOR', 'ROLE_CONSELHO_COORDENADOR'].includes(r));
+  };
+
+  const canManageLocais = (u: any) => {
+    if (!u) return false;
+    return u.roles?.some((r: string) => ['ADMIN', 'ROLE_ADMIN', 'CLERO_PAROCO', 'ROLE_CLERO_PAROCO', 'PAROCO', 'ROLE_PAROCO', 'CONSELHO_COORDENADOR', 'ROLE_CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR', 'ROLE_CONSELHO_VICE_COORDENADOR'].includes(r));
+  };
 
   const handleMobileDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -69,6 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
     { label: 'Projetos', path: '/projects', icon: <WorkIcon /> },
     { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon /> },
+    { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
     { label: 'Relatórios', path: '/reports', icon: <AssessmentIcon /> },
   ];
 
