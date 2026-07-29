@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CreateEventoApprovalRequestUseCase;
 import br.com.nsfatima.gestao.calendario.domain.policy.CalendarLockPolicy;
+import br.com.nsfatima.gestao.calendario.domain.service.AgendaPriorityValidatorService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
@@ -55,6 +56,7 @@ public class CreateEventoUseCase {
     private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
     private final ProjetoVincularPolicy projetoVincularPolicy;
     private final CalendarLockPolicy calendarLockPolicy;
+    private final AgendaPriorityValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
 
     public CreateEventoUseCase(
@@ -71,6 +73,7 @@ public class CreateEventoUseCase {
             UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
             ProjetoVincularPolicy projetoVincularPolicy,
             CalendarLockPolicy calendarLockPolicy,
+            AgendaPriorityValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager) {
         this.domainService = domainService;
         this.repository = repository;
@@ -85,6 +88,7 @@ public class CreateEventoUseCase {
         this.updateEnvolvidosUseCase = updateEnvolvidosUseCase;
         this.projetoVincularPolicy = projetoVincularPolicy;
         this.calendarLockPolicy = calendarLockPolicy;
+        this.agendaPriorityValidatorService = agendaPriorityValidatorService;
         this.cacheManager = cacheManager;
     }
 
@@ -135,6 +139,16 @@ public class CreateEventoUseCase {
         calendarLockPolicy.checkLock(request.inicio(), status);
         domainService.validateOrganizacaoParticipantes(request.organizacaoResponsavelId(), request.participantes());
         projetoVincularPolicy.validateLink(request.projetoId(), request.inicio(), request.fim());
+
+        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validatePriorityAndConflicts(
+                request.categoria(),
+                request.inicio(),
+                request.fim(),
+                request.localId(),
+                request.igrejaVinculoId(),
+                null,
+                request.isBypassAgendaConflict());
+        agendaPriorityValidatorService.processAutoCancellation(autoCancel, "Cancelado automaticamente devido a agendamento de Solenidade Global / Evento de Maior Prioridade");
     }
 
     private EventoResponse createImmediate(String idempotencyKey, CreateEventoRequest request, String actor) {

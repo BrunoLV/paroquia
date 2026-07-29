@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.UpdateEventoApprovalRequestUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
+import br.com.nsfatima.gestao.calendario.domain.service.AgendaPriorityValidatorService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
@@ -58,6 +59,7 @@ public class UpdateEventoUseCase {
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final UpdateEventoApprovalRequestUseCase approvalRequestUseCase;
     private final EventoAuditPublisher auditPublisher;
+    private final AgendaPriorityValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
 
     public UpdateEventoUseCase(
@@ -74,6 +76,7 @@ public class UpdateEventoUseCase {
             CadastroEventoMetricsPublisher metricsPublisher,
             UpdateEventoApprovalRequestUseCase approvalRequestUseCase,
             EventoAuditPublisher auditPublisher,
+            AgendaPriorityValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager) {
         this.domainService = domainService;
         this.repository = repository;
@@ -88,6 +91,7 @@ public class UpdateEventoUseCase {
         this.metricsPublisher = metricsPublisher;
         this.approvalRequestUseCase = approvalRequestUseCase;
         this.auditPublisher = auditPublisher;
+        this.agendaPriorityValidatorService = agendaPriorityValidatorService;
         this.cacheManager = cacheManager;
     }
 
@@ -293,6 +297,22 @@ public class UpdateEventoUseCase {
         } else {
             projetoVincularPolicy.validateLink(projetoId, inicio, fim);
         }
+
+        br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento cat = request.categoria() != null
+                ? request.categoria()
+                : br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento.fromValue(entity.getCategoria());
+        UUID local = request.localId() != null ? request.localId() : entity.getLocalId();
+        UUID igreja = request.igrejaVinculoId() != null ? request.igrejaVinculoId() : entity.getIgrejaVinculoId();
+
+        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validatePriorityAndConflicts(
+                cat,
+                inicio,
+                fim,
+                local,
+                igreja,
+                entity.getId(),
+                request.isBypassAgendaConflict());
+        agendaPriorityValidatorService.processAutoCancellation(autoCancel, "Cancelado automaticamente devido a agendamento de Solenidade Global / Evento de Maior Prioridade");
     }
 
     private void applyParticipantChanges(UUID eventoId, List<UUID> participantes) {
