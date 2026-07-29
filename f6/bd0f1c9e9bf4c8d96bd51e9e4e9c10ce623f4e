@@ -1,0 +1,1 @@
+Task: Adicionar campo bypassAgendaConflict nos DTOs CreateEventoRequest e UpdateEventoRequest.
