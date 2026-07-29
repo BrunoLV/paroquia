@@ -250,3 +250,23 @@
 
 - [x] **Track: RBAC Eclesial e Governança Paroquial (CPP & CAE)**
 *Link: [./archive/rbac_eclesial_governanca_20260727/](./archive/rbac_eclesial_governanca_20260727/)*
+
+---
+
+- [ ] **Track: Reformulação do RBAC e Eliminação de Papéis Genéricos**
+*Link: [./tracks/rbac_especifico_eclesial_20260728/index.md](./tracks/rbac_especifico_eclesial_20260728/index.md)*
+
+---
+
+- [ ] **Track: Escopo Territorial e Vínculo Obrigatório (community_id)**
+*Link: [./tracks/escopo_territorial_community_id_20260728/index.md](./tracks/escopo_territorial_community_id_20260728/index.md)*
+
+---
+
+- [ ] **Track: Governança dos Conselhos (CPP e CPC) e Homologação de Atas**
+*Link: [./tracks/governanca_conselhos_cpp_cpc_20260728/index.md](./tracks/governanca_conselhos_cpp_cpc_20260728/index.md)*
+
+---
+
+- [ ] **Track: Motor de Validação da Agenda Comunitária (Níveis de Prioridade 1-4 & Bypass)**
+*Link: [./tracks/motor_agenda_comunitaria_prioridades_20260728/index.md](./tracks/motor_agenda_comunitaria_prioridades_20260728/index.md)*
