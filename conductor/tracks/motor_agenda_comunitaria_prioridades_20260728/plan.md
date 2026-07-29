@@ -1,7 +1,7 @@
 # Implementation Plan: Motor de Validação da Agenda Comunitária (Níveis de Prioridade 1-4 & Bypass)
 
 ## Phase 1: Mapeamento de Prioridade e Exceção Customizada
-- [ ] Task: Mapear níveis de prioridade (1 a 4) em `CategoriaEvento`.
+- [x] Task: Mapear níveis de prioridade (1 a 4) em `CategoriaEvento`. (6f4ee8f)
 - [ ] Task: Criar exceção `ConflitoAgendaEclesialException` e tratá-la em `GlobalExceptionHandler` para retornar HTTP 400.
 - [ ] Task: Adicionar campo `bypassAgendaConflict` nos DTOs `CreateEventoRequest` e `UpdateEventoRequest`.
 
