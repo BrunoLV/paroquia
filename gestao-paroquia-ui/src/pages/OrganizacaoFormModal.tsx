@@ -166,14 +166,14 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="md"
-      sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
+      PaperProps={{ sx: { borderRadius: 0 } }}
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
+        <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1.5, color: 'primary.main' }}>
           {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
         </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={2} sx={{ mt: 0.5 }}>
+        <DialogContent dividers sx={{ p: 3 }}>
+          <Grid container spacing={2.5}>
             <Grid size={{ xs: 12 }}>
               <TextField
                 label="Nome"
@@ -319,8 +319,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
-          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none' }}>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid', borderColor: 'divider', gap: 1 }}>
+          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}>
             Cancelar
           </Button>
           <Button
@@ -328,7 +328,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             variant="contained"
             color="primary"
             disabled={isPending}
-            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none' }}
+            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none', px: 3, py: 1 }}
           >
             {organizacao ? 'Salvar Alterações' : 'Cadastrar'}
           </Button>

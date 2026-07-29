@@ -54,21 +54,20 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      slotProps={{ paper: { sx: { borderRadius: 0 } } }}
+      PaperProps={{ sx: { borderRadius: 0 } }}
     >
-      <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1, color: 'primary.main' }}>
+      <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1.5, color: 'primary.main' }}>
         Registrar Ata / Decisão de Conselho (CPC / CPP)
       </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent dividers sx={{ p: 3 }}>
-          <Box display="flex" flexDirection="column" gap={3}>
-            <Typography variant="body2" color="text.secondary">
+          <Box display="flex" flexDirection="column" gap={2.5}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               Preencha os dados da reunião e as deliberações aprovadas pelo conselho. O documento ficará pendente de homologação pelo Pároco / Mesa Diretora do CPP.
             </Typography>
 
             <TextField
               label="Título da Ata / Decisão"
-              size="small"
               fullWidth
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
@@ -77,39 +76,39 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
-            <FormControl fullWidth size="small" required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
-              <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP)</InputLabel>
-              <Select
-                labelId="cpc-comunidade-label"
-                value={comunidadeId}
-                label="Comunidade de Origem (CPC/CPP)"
-                onChange={(e) => setComunidadeId(e.target.value)}
-                disabled={isSubmitting}
-              >
-                {communities.map((c) => (
-                  <MenuItem key={c.id} value={c.id}>
-                    {c.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.5 }}>
+              <FormControl fullWidth required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP)</InputLabel>
+                <Select
+                  labelId="cpc-comunidade-label"
+                  value={comunidadeId}
+                  label="Comunidade de Origem (CPC/CPP)"
+                  onChange={(e) => setComunidadeId(e.target.value)}
+                  disabled={isSubmitting}
+                >
+                  {communities.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      {c.nome}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-            <TextField
-              label="Data da Reunião"
-              type="date"
-              size="small"
-              fullWidth
-              value={dataReuniao}
-              onChange={(e) => setDataReuniao(e.target.value)}
-              slotProps={{ inputLabel: { shrink: true } }}
-              required
-              disabled={isSubmitting}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-            />
+              <TextField
+                label="Data da Reunião"
+                type="date"
+                fullWidth
+                value={dataReuniao}
+                onChange={(e) => setDataReuniao(e.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+                required
+                disabled={isSubmitting}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+              />
+            </Box>
 
             <TextField
               label="Pauta e Deliberações (Descrição Detalhada)"
-              size="small"
               fullWidth
               multiline
               rows={4}
@@ -121,7 +120,7 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2.5, gap: 1 }}>
+        <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
           <Button onClick={onClose} disabled={isSubmitting} color="inherit" sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}>
             Cancelar
           </Button>

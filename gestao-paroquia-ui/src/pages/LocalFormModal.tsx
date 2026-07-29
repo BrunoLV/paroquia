@@ -76,15 +76,15 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="sm"
-      sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
+      maxWidth="md"
+      PaperProps={{ sx: { borderRadius: 0 } }}
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
+        <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1.5, color: 'primary.main' }}>
           {local ? 'Editar Local' : 'Novo Local'}
         </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={2} sx={{ mt: 0.5 }}>
+        <DialogContent dividers sx={{ p: 3 }}>
+          <Grid container spacing={2.5}>
             <Grid size={{ xs: 12 }}>
               <TextField
                 label="Nome do Local"
@@ -104,7 +104,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth required>
+              <FormControl fullWidth required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
                 <InputLabel id="tipo-local-label">Tipo</InputLabel>
                 <Select
                   labelId="tipo-local-label"
@@ -112,7 +112,6 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value as string)}
                   disabled={isPending}
-                  sx={{ borderRadius: 0 }}
                 >
                   <MenuItem value="IGREJA">Igreja</MenuItem>
                   <MenuItem value="SALAO">Salão</MenuItem>
@@ -166,8 +165,8 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
-          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none' }}>
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid', borderColor: 'divider', gap: 1 }}>
+          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}>
             Cancelar
           </Button>
           <Button
@@ -175,7 +174,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             variant="contained"
             color="primary"
             disabled={isPending}
-            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none' }}
+            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none', px: 3, py: 1 }}
           >
             {local ? 'Salvar Alterações' : 'Cadastrar'}
           </Button>
