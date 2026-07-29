@@ -12,6 +12,6 @@
 - [x] Task: Validar permissão da role `PAROCO` ao processar `bypassAgendaConflict == true`. (2bde991)
 
 ## Phase 3: Testes de Integração e Validação E2E
-- [ ] Task: Escrever testes unitários e de integração cobrindo os 4 níveis de prioridade e o fluxo de bypass.
+- [x] Task: Escrever testes unitários e de integração cobrindo os 4 níveis de prioridade e o fluxo de bypass. (f65afc8)
 - [ ] Task: Executar suite completa de testes (`./gradlew test`).
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md).
