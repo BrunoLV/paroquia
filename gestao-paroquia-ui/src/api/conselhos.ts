@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import apiClient from './client';
 import { CpcDecisao, StatusHomologacao } from './types';
 
 export const getCpcDecisoes = async (params?: { comunidadeId?: string; status?: StatusHomologacao }): Promise<CpcDecisao[]> => {
