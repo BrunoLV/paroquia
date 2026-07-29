@@ -59,7 +59,7 @@ public class UpdateEventoApprovalRequestUseCase {
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
         entity.setSolicitanteTipoOrganizacao(context.organizationType());
-        entity.setAprovadorPapel(AprovadorPapel.CONSELHO_COORDENADOR.storedValue());
+        entity.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
 
         ApprovalActionPayload payload = buildPayload(eventoId, request);

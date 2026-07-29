@@ -189,7 +189,7 @@ public class CancelEventoUseCase {
         aprovacao.setId(UUID.randomUUID());
         aprovacao.setEventoId(evento.getId());
         aprovacao.setTipoSolicitacao(TipoSolicitacaoInput.CANCELAMENTO.name());
-        aprovacao.setAprovadorPapel(AprovadorPapel.CONSELHO_COORDENADOR);
+        aprovacao.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO);
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId().toString());
