@@ -24,6 +24,7 @@ import {Evento, Local, Organizacao, Projeto} from '../api/types';
 import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 
 const CATEGORIES = [
+  'SOLENIDADE',
   'PASTORAL',
   'SOCIAL',
   'LITURGICO',
@@ -31,7 +32,20 @@ const CATEGORIES = [
   'SACRAMENTAL',
   'FORMATIVO',
   'ASSISTENCIAL',
+  'MOVIMENTO',
 ];
+
+const CATEGORY_PRIORITIES: Record<string, { label: string; priority: number; color: 'error' | 'warning' | 'primary' | 'default' }> = {
+  SOLENIDADE: { label: 'Solenidade (Nível 1 - Global)', priority: 1, color: 'error' },
+  LITURGICO: { label: 'Litúrgico (Nível 2 - Territorial)', priority: 2, color: 'warning' },
+  SACRAMENTAL: { label: 'Sacramental (Nível 2 - Territorial)', priority: 2, color: 'warning' },
+  PASTORAL: { label: 'Pastoral (Nível 3 - Orgânico)', priority: 3, color: 'primary' },
+  FORMATIVO: { label: 'Formativo (Nível 3 - Orgânico)', priority: 3, color: 'primary' },
+  ADMINISTRATIVO: { label: 'Administrativo (Nível 3 - Orgânico)', priority: 3, color: 'primary' },
+  ASSISTENCIAL: { label: 'Assistencial (Nível 3 - Orgânico)', priority: 3, color: 'primary' },
+  SOCIAL: { label: 'Social (Nível 3 - Orgânico)', priority: 3, color: 'primary' },
+  MOVIMENTO: { label: 'Movimento (Nível 4 - Grupo)', priority: 4, color: 'default' },
+};
 
 const STATUSES = ['RASCUNHO', 'CONFIRMADO', 'ADICIONADO_EXTRA', 'CANCELADO'];
 
@@ -77,11 +91,17 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const [justification, setJustification] = useState('');
   const [participantes, setParticipantes] = useState<string[]>([]);
   const [isRecurring, setIsRecurring] = useState(false);
+  const [bypassAgendaConflict, setBypassAgendaConflict] = useState(false);
   const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule>({
     frequencia: 'SEMANAL',
     intervalo: 1,
     diasDaSemana: [],
   });
+
+  const isParoco = useMemo(() => {
+    if (!user) return false;
+    return user.roles?.some(r => r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO' || r === 'ADMIN' || r === 'ROLE_ADMIN') || false;
+  }, [user]);
 
   const churches = useMemo(() => {
     return organizations.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'));
@@ -303,6 +323,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       status,
       adicionadoExtraJustificativa: justification || null,
       recurrence: isRecurring ? recurrenceRule : null,
+      bypassAgendaConflict: isParoco ? bypassAgendaConflict : false,
     });
   };
 
@@ -548,7 +569,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                       disabled={isSubmitting}
                     />
                   }
-                  label="Repetir este evento"
+                  label="Evento Recorrente"
                 />
 
                 <Collapse in={isRecurring}>
@@ -560,6 +581,22 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                     />
                   </Box>
                 </Collapse>
+
+                {isParoco && (
+                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #ccc' }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={bypassAgendaConflict}
+                          onChange={(e) => setBypassAgendaConflict(e.target.checked)}
+                          color="warning"
+                          disabled={isSubmitting}
+                        />
+                      }
+                      label="Ignorar Conflitos de Agenda Eclesial (Bypass Pároco)"
+                    />
+                  </Box>
+                )}
               </>
             )}
 

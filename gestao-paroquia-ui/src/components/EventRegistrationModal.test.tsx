@@ -408,4 +408,22 @@ describe('EventRegistrationModal', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(submitButton).toBeInTheDocument();
   });
+
+  it('renders bypass conflict switch when user is PAROCO', () => {
+    mockedUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Paroco User', roles: ['PAROCO', 'ROLE_CLERO_PAROCO'], organizations: [] }
+    });
+
+    render(<EventRegistrationModal {...defaultProps} />);
+    expect(screen.getByText(/Ignorar Conflitos de Agenda/i)).toBeInTheDocument();
+  });
+
+  it('does not render bypass conflict switch when user is NOT PAROCO', () => {
+    mockedUseAuth.mockReturnValue({
+      user: { id: '2', name: 'Pastoral User', roles: ['COORD_PASTORAL_LOCAL'], organizations: [] }
+    });
+
+    render(<EventRegistrationModal {...defaultProps} />);
+    expect(screen.queryByText(/Ignorar Conflitos de Agenda/i)).not.toBeInTheDocument();
+  });
 });
