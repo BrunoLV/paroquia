@@ -9,7 +9,7 @@
 - [x] Task: Criar `AgendaPriorityValidatorService` implementando as regras dos Níveis 1 a 4. (3dabb19)
 - [x] Task: Implementar lógica de auto-cancelamento/bloqueio para eventos Nível 1. (8bb9c8e)
 - [x] Task: Integrar a validação em `CreateEventoUseCase` e `UpdateEventoUseCase`. (beb43d1)
-- [ ] Task: Validar permissão da role `PAROCO` ao processar `bypassAgendaConflict == true`.
+- [x] Task: Validar permissão da role `PAROCO` ao processar `bypassAgendaConflict == true`. (2bde991)
 
 ## Phase 3: Testes de Integração e Validação E2E
 - [ ] Task: Escrever testes unitários e de integração cobrindo os 4 níveis de prioridade e o fluxo de bypass.
