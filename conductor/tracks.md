@@ -263,7 +263,7 @@
 
 ---
 
-- [ ] **Track: Governança dos Conselhos (CPP e CPC) e Homologação de Atas**
+- [x] **Track: Governança dos Conselhos (CPP e CPC) e Homologação de Atas**
 *Link: [./tracks/governanca_conselhos_cpp_cpc_20260728/index.md](./tracks/governanca_conselhos_cpp_cpc_20260728/index.md)*
 
 ---
