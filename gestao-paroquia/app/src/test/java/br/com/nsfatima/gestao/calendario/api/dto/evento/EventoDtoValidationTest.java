@@ -144,4 +144,21 @@ class EventoDtoValidationTest {
         Set<ConstraintViolation<CreateEventoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for invalid dates");
     }
+
+    @Test
+    @DisplayName("CreateEventoRequest e UpdateEventoRequest: devem suportar campo bypassAgendaConflict")
+    void dto_BypassAgendaConflictField() {
+        CreateEventoRequest createReq = new CreateEventoRequest(
+                "Titulo", "Desc", null, UUID.randomUUID(), null, null, null,
+                Instant.now(), Instant.now().plusSeconds(3600), EventoStatusInput.RASCUNHO,
+                null, null, true
+        );
+        assertTrue(createReq.isBypassAgendaConflict());
+
+        UpdateEventoRequest updateReq = new UpdateEventoRequest(
+                "Titulo", "Desc", null, Instant.now(), Instant.now().plusSeconds(3600),
+                EventoStatusInput.RASCUNHO, null, null, UUID.randomUUID(), null, null, null, null, null, true
+        );
+        assertTrue(updateReq.isBypassAgendaConflict());
+    }
 }

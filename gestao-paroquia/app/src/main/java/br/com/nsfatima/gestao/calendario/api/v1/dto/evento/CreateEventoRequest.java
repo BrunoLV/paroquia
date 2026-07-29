@@ -49,7 +49,10 @@ public record CreateEventoRequest(
         String adicionadoExtraJustificativa,
 
         @Schema(description = "Lista de IDs das organizações participantes")
-        List<UUID> participantes) {
+        List<UUID> participantes,
+
+        @Schema(description = "Flag de bypass para liberar conflito de agenda (apenas Pároco)")
+        Boolean bypassAgendaConflict) {
 
     public CreateEventoRequest(
             String titulo,
@@ -65,11 +68,34 @@ public record CreateEventoRequest(
             List<UUID> participantes) {
         this(titulo,
                 descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status,
-                adicionadoExtraJustificativa, participantes);
+                adicionadoExtraJustificativa, participantes, false);
+
+    }
+
+    public CreateEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID organizacaoResponsavelId,
+            UUID projetoId,
+            UUID localId,
+            UUID igrejaVinculoId,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            List<UUID> participantes) {
+        this(titulo,
+                descricao, categoria, organizacaoResponsavelId, projetoId, localId, igrejaVinculoId, inicio, fim, status,
+                adicionadoExtraJustificativa, participantes, false);
 
     }
 
     public UUID communityId() {
         return igrejaVinculoId;
+    }
+
+    public boolean isBypassAgendaConflict() {
+        return Boolean.TRUE.equals(bypassAgendaConflict);
     }
 }

@@ -52,7 +52,10 @@ public record UpdateEventoRequest(
         UUID localId,
 
         @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade) se houver")
-        UUID igrejaVinculoId) {
+        UUID igrejaVinculoId,
+
+        @Schema(description = "Flag de bypass para liberar conflito de agenda (apenas Pároco)")
+        Boolean bypassAgendaConflict) {
 
     public UpdateEventoRequest(
             String titulo,
@@ -70,7 +73,28 @@ public record UpdateEventoRequest(
             UUID localId) {
         this(titulo,
                 descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                organizacaoResponsavelId, participantes, editScope, projetoId, localId, null);
+                organizacaoResponsavelId, participantes, editScope, projetoId, localId, null, false);
+
+    }
+
+    public UpdateEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID organizacaoResponsavelId,
+            List<UUID> participantes,
+            EventoEditScope editScope,
+            UUID projetoId,
+            UUID localId,
+            UUID igrejaVinculoId) {
+        this(titulo,
+                descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
+                organizacaoResponsavelId, participantes, editScope, projetoId, localId, igrejaVinculoId, false);
 
     }
 
@@ -88,11 +112,16 @@ public record UpdateEventoRequest(
                 && participantes == null
                 && projetoId == null
                 && localId == null
-                && igrejaVinculoId == null;
+                && igrejaVinculoId == null
+                && bypassAgendaConflict == null;
     }
 
     public boolean changesSensitiveFields() {
         return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO ||
                 projetoId != null || localId != null || igrejaVinculoId != null;
+    }
+
+    public boolean isBypassAgendaConflict() {
+        return Boolean.TRUE.equals(bypassAgendaConflict);
     }
 }
