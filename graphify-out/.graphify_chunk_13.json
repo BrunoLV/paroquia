@@ -1,0 +1,569 @@
+{
+  "nodes": [
+    {
+      "id": "gestao_paroquia_docs_ia_regra_dura_lgpd_regra_dura_lgpd",
+      "label": "regra_dura_lgpd.md",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_docs_ia_regra_dura_lgpd_manual_de_regras_duras_de_compliance_e_privacidade",
+      "label": "MANUAL DE REGRAS DURAS DE COMPLIANCE E PRIVACIDADE",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_docs_ia_regra_dura_lgpd_diretrizes_mandat_rias_de_engenharia_de_software_e_tratamento_de_dados_sob_a_lgpd__lei_n__13_709_2018",
+      "label": "Diretrizes Mandatórias de Engenharia de Software e Tratamento de Dados sob a LGPD (Lei nº 13.709/2018)",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_docs_ia_regra_dura_lgpd_1__objetivo_e_diretriz_estrutural",
+      "label": "1. OBJETIVO E DIRETRIZ ESTRUTURAL",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_docs_ia_regra_dura_lgpd_2__regras_duras__entrada_e_armazenamento__input___db_architecture",
+      "label": "2. REGRAS DURAS: ENTRADA E ARMAZENAMENTO (INPUT & DB ARCHITECTURE)",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_docs_ia_regra_dura_lgpd___regra_dura_01__segrega__o_e_bloqueio_de_acesso_a_dados_pessoais_sens_veis",
+      "label": "🚨 REGRA DURA 01: Segregação e Bloqueio de Acesso a Dados Pessoais Sensíveis",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_docs_index_index",
+      "label": "index.html",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "label": "logo-paroquia.png",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia__8t_a_h_________8________yh3__7ty__o_pxx__rwc_90fcj__h0_6zld__l_b___k______k__c__vde__p__fh______rga3_p_c4__f___lt5p______2____u_txc_o6cu_5__a__q___pk__8_zj__hy___61s___gw_gs_ls_0_c____o32________1r_oli__s_a_e__b__b__1__ofu_________b_k_l_e1___i8qs__l_e___1_____x_nnn__3",
+      "label": "\u00108t\u0000A(H\f\u0018!&\u0001@:\u0006\\8\\\"\u0013\u0004ր`Ȅ\u0016yH3\u0017˳7Ty/ĦO|pXx\u0007'rWcʁ90FCJ\u0006\u001eH0\u00016ZlD\u001a@L\u0000B*\f:k%#%\u001f}_k\u0002\u0014C\u0010\u0010VDE\n\u000bp\"\u000bFh\u0019;\u0007մ}`RGA3\u000ep\u000bc4\u0004\u0010F\u0003\f`lT5p\u0000\u0019\u0014Ɓë2#\u000e|<U\u000eTxc\u0003o6Cu\u000e5\u0015\u0016A&\u0005q\u0010\u001a\u001bpk!'8\u0010Zj@[HY\u0000\u000b\u000761S\u0005`:GW~gS\tls\u001e0\u0005c_)\u0018\u0007o32\u0018 ,\u0000(\u0018 .1r@oLIǶ@s\fA^E(\u0010B\u0002\u0010B߈}1\u001c<ofu.\u001e~'Ͼֵ\"\u0007`b\u0017k-lʟE1\u0019\u0004\u0001i8Qs@`L!Eݑ_|1=\u0007\u001f}x\u001ennn.\u00003>",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia_z__fh__h_tx_m_____4__zq_r7ro_l_kt__c",
+      "label": "z(\u0014FH)\u0016H\u001fTx¢M#\n;ϒ#4!!zQ\u0018r7ro\u0000l޶kt{{c",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia___j____________g_6x_b____x____6_oq__f_3r__8___o__i___g_d____20zx_gd_y___1b___b_br69pk___c_jghz__z________n____t__yqd__r_______j_pj___ib__a___0m____1___jz___y__kd___h",
+      "label": "\u000eӥj\u000e\u0010)%'ˡ, ,մ\u001eG\u00146X\tB \u001dȐ`X\u000f\u0019ϣЋ6\u0011OQ\u0014\u0001F\u000e3rǳ_8֛\u001a\u000bO!~i\u001b\u0001\u001ag\u0002D\b\u0007 #20zx=gd֮y\u0007[;1B\u0001\u0012@B\u001abr69pK,\u0015&c{JGhz\u0017.z ٙ\n\t\t\t\t\u001fN'_ڐ\\T \u0014YQd\u0014\bR)\\.\u000e\"\b$J)PJ)ɣ\"IB/\u0019A\u0007.*0m\u0004\u0015׮^1?֮#jz\u000fԦ{y*\u000fkd؞Ř<H\u0005",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia_3__ff0__q___h_jf_____c__il1c___2___g____a_____pek_z1__y___z___yhe1_0_0___oo_gycs_j",
+      "label": "3}\u001fFf0\u0004!q\u0019\u001f&h\fJFۥ\u0006\u0002?ðc\u000eڵiL1C\u0007!\u001d2Ҿ%+G\n*;>a\u0015\u0015\u0015`!Pek z1,=Y___Z[[;yhe1\f0\f0Ϯ-ŏOo~gycs\u0000J",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia__ot__e_u___xk__xh__b__33sss5_304b______3_gad______p__s_ro_l__aj___t__________nlhdfpgum___o_m___t6____c__6_vu_0___q__sa_______s_a2__m7yw______idj_m___o_i_jzc_________3_____o_o_kj__y_d__o______nvtw____4h____mtww_wmyu__qss___3q__uqs____y__x8__e_ll___j5___k__69_vjnsja__ic____fff__y__x___999__o___q__wy_p__kr__4444a_l__w__8_____z",
+      "label": "\u001aOt}\u0015E{U쨪(ݱxK\u0002\u0010xhƬƦB\n\u001333sSs5\u0013304b\n\u0002\u000e|-\u00033(GAD*\u0010.\u0012\u0012\u0004p\u000b܁S\"ROխL.ߓaJ\u0004\u0004\u0000t\u0010@\u000f%\u0000\u0019\u0011Ш@\u0003NlHDFPGUm\u0001\u0016-O^m'\u0016 t6\u001e:>\bC!\n6\u0012vu\u00100\u0005 \u0012q\n*sA\u0015`\u000e \u0005\u001c=s\u0016A2}M7yw\u0002\u001e\b}[|idj}M\u001d܊\fO)i{JzC\f\u001f,+\u0003\u0007\u000e >3ݹ/\\\u0013o.o\\KJ&\"y\u0007d\u0014\\Oך\u001e\u001e\u001e\u001e\u001fNVTw_ɑ#4h\\'<¶mtww;wmyU{\u0016QSS}ݣ\n3Q\u0007 Uqs\u000e<ݳ)Y}ٶX8\u000e\u0014e`ll\fǏ\u001fj5\n\u000bkϖ69=vJnSJA\\~ic\u0004&['FFF\u001a\"Y\\\\X[\u0007\u0000999\u0018\u000eO\u0016|\bQӘ*wy\\Pѩ!kR\u0001\u00044444A\tL\u0002\u0007wӉى8,@$*+zҕ",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia__staty_l_w",
+      "label": "\\StATY\u0005l>w\u0013+",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia____5__0_2__8_a___q_s___6___6_x__wl_0___zn_cj__y_lqcx_z_y_b_a4y__mh__l__fk_4_i____c_an_pg___4__828q_c_vc_ap_l_c_rs__vu_b__________s____6__j_r___y__j____v",
+      "label": "[\u001e_5>>0<2<<8:A>.\u0013q\u000bS*Ĕƙ6/^˖6$X_\u000fWl\\0ۥ\t\u0000Zn¢CJ\u0014ły\u000fLqCX{z˳Y\nb\u0001A4y_\u0013Mh@\u0003L\u0003!fk\n4Ιiތ)\u0019\u0013C{an\u0002pG\u0001<\n4\u0000\u0000828q\u001cC\bvc,ap$l\u001ec\u0000RS(\u0015vu\u0011B\u0010/,< \u001c$\u0016&\u0014S Д\u0000ځ6\u0000@j}R\u0012\n\u0012y\u0017\u0018j\u0018\u0014\u0018\tV͚",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia____r_wz",
+      "label": "-\u0012%R\"WZ",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo_paroquia______j_p6_k_v1za_hjd__e_____d_e___s___m__b70b____ooj_og4zw______1f0____cgu___sy_kdu_______s______k_0m_y__a_h_et__n____fr___c__uo_i_wc_ql_j_g_c_j_r__e______y_q_fx_m_z__gnn9__a2qi__f__qxj7___wkehr_ftw__0r_nh_c",
+      "label": "#Ӂ',\u0005j\u0006p6*KV1zA>HJD\u0004\u001dE\u001c.%D\u001aE&)\nS,\u0004ƈm׶\u0003b70b\u0004|+\u001eOoj\u0013OG4ZW!\u0001('\u0004:1f0\u0017\u001a;\u000ecGU<}\u0015Sy|Kdu\bⰨ>\u0013\u0012+*s-{[^{%K~0m_y>_A\u001aH\u0014et\\,N( |\nFRȗ\f\bc\u0013\u001cUOݘI=wc*Ql\u0015JՕG\u001bC\u0014J\nR\u0010\u0019e>\u0018) .@Y\u0000q\u0007Fx*mˇzӑӿGnn9!\fA2QI\u000f\u001cF\u0018\nQXJ7?;ӍwKeHRġFtw%ٜ0R`NH(c",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo192_logo192",
+      "label": "logo192.png",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo192.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_public_logo512_logo512",
+      "label": "logo512.png",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo512.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_ui_src_logo_logo",
+      "label": "logo.svg",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/src/logo.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "label": "logo-paroquia.png",
+      "file_type": "document",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia__8t_a_h_________8________yh3__7ty__o_pxx__rwc_90fcj__h0_6zld__l_b___k______k__c__vde__p__fh______rga3_p_c4__f___lt5p______2____u_txc_o6cu_5__a__q___pk__8_zj__hy___61s___gw_gs_ls_0_c____o32________1r_oli__s_a_e__b__b__1__ofu_________b_k_l_e1___i8qs__l_e___1_____x_nnn__3",
+      "label": "\u00108t\u0000A(H\f\u0018!&\u0001@:\u0006\\8\\\"\u0013\u0004ր`Ȅ\u0016yH3\u0017˳7Ty/ĦO|pXx\u0007'rWcʁ90FCJ\u0006\u001eH0\u00016ZlD\u001a@L\u0000B*\f:k%#%\u001f}_k\u0002\u0014C\u0010\u0010VDE\n\u000bp\"\u000bFh\u0019;\u0007մ}`RGA3\u000ep\u000bc4\u0004\u0010F\u0003\f`lT5p\u0000\u0019\u0014Ɓë2#\u000e|<U\u000eTxc\u0003o6Cu\u000e5\u0015\u0016A&\u0005q\u0010\u001a\u001bpk!'8\u0010Zj@[HY\u0000\u000b\u000761S\u0005`:GW~gS\tls\u001e0\u0005c_)\u0018\u0007o32\u0018 ,\u0000(\u0018 .1r@oLIǶ@s\fA^E(\u0010B\u0002\u0010B߈}1\u001c<ofu.\u001e~'Ͼֵ\"\u0007`b\u0017k-lʟE1\u0019\u0004\u0001i8Qs@`L!Eݑ_|1=\u0007\u001f}x\u001ennn.\u00003>",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia_z__fh__h_tx_m_____4__zq_r7ro_l_kt__c",
+      "label": "z(\u0014FH)\u0016H\u001fTx¢M#\n;ϒ#4!!zQ\u0018r7ro\u0000l޶kt{{c",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia___j____________g_6x_b____x____6_oq__f_3r__8___o__i___g_d____20zx_gd_y___1b___b_br69pk___c_jghz__z________n____t__yqd__r_______j_pj___ib__a___0m____1___jz___y__kd___h",
+      "label": "\u000eӥj\u000e\u0010)%'ˡ, ,մ\u001eG\u00146X\tB \u001dȐ`X\u000f\u0019ϣЋ6\u0011OQ\u0014\u0001F\u000e3rǳ_8֛\u001a\u000bO!~i\u001b\u0001\u001ag\u0002D\b\u0007 #20zx=gd֮y\u0007[;1B\u0001\u0012@B\u001abr69pK,\u0015&c{JGhz\u0017.z ٙ\n\t\t\t\t\u001fN'_ڐ\\T \u0014YQd\u0014\bR)\\.\u000e\"\b$J)PJ)ɣ\"IB/\u0019A\u0007.*0m\u0004\u0015׮^1?֮#jz\u000fԦ{y*\u000fkd؞Ř<H\u0005",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia_3__ff0__q___h_jf_____c__il1c___2___g____a_____pek_z1__y___z___yhe1_0_0___oo_gycs_j",
+      "label": "3}\u001fFf0\u0004!q\u0019\u001f&h\fJFۥ\u0006\u0002?ðc\u000eڵiL1C\u0007!\u001d2Ҿ%+G\n*;>a\u0015\u0015\u0015`!Pek z1,=Y___Z[[;yhe1\f0\f0Ϯ-ŏOo~gycs\u0000J",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia__ot__e_u___xk__xh__b__33sss5_304b______3_gad______p__s_ro_l__aj___t__________nlhdfpgum___o_m___t6____c__6_vu_0___q__sa_______s_a2__m7yw______idj_m___o_i_jzc_________3_____o_o_kj__y_d__o______nvtw____4h____mtww_wmyu__qss___3q__uqs____y__x8__e_ll___j5___k__69_vjnsja__ic____fff__y__x___999__o___q__wy_p__kr__4444a_l__w__8_____z",
+      "label": "\u001aOt}\u0015E{U쨪(ݱxK\u0002\u0010xhƬƦB\n\u001333sSs5\u0013304b\n\u0002\u000e|-\u00033(GAD*\u0010.\u0012\u0012\u0004p\u000b܁S\"ROխL.ߓaJ\u0004\u0004\u0000t\u0010@\u000f%\u0000\u0019\u0011Ш@\u0003NlHDFPGUm\u0001\u0016-O^m'\u0016 t6\u001e:>\bC!\n6\u0012vu\u00100\u0005 \u0012q\n*sA\u0015`\u000e \u0005\u001c=s\u0016A2}M7yw\u0002\u001e\b}[|idj}M\u001d܊\fO)i{JzC\f\u001f,+\u0003\u0007\u000e >3ݹ/\\\u0013o.o\\KJ&\"y\u0007d\u0014\\Oך\u001e\u001e\u001e\u001e\u001fNVTw_ɑ#4h\\'<¶mtww;wmyU{\u0016QSS}ݣ\n3Q\u0007 Uqs\u000e<ݳ)Y}ٶX8\u000e\u0014e`ll\fǏ\u001fj5\n\u000bkϖ69=vJnSJA\\~ic\u0004&['FFF\u001a\"Y\\\\X[\u0007\u0000999\u0018\u000eO\u0016|\bQӘ*wy\\Pѩ!kR\u0001\u00044444A\tL\u0002\u0007wӉى8,@$*+zҕ",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia__staty_l_w",
+      "label": "\\StATY\u0005l>w\u0013+",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia____5__0_2__8_a___q_s___6___6_x__wl_0___zn_cj__y_lqcx_z_y_b_a4y__mh__l__fk_4_i____c_an_pg___4__828q_c_vc_ap_l_c_rs__vu_b__________s____6__j_r___y__j____v",
+      "label": "[\u001e_5>>0<2<<8:A>.\u0013q\u000bS*Ĕƙ6/^˖6$X_\u000fWl\\0ۥ\t\u0000Zn¢CJ\u0014ły\u000fLqCX{z˳Y\nb\u0001A4y_\u0013Mh@\u0003L\u0003!fk\n4Ιiތ)\u0019\u0013C{an\u0002pG\u0001<\n4\u0000\u0000828q\u001cC\bvc,ap$l\u001ec\u0000RS(\u0015vu\u0011B\u0010/,< \u001c$\u0016&\u0014S Д\u0000ځ6\u0000@j}R\u0012\n\u0012y\u0017\u0018j\u0018\u0014\u0018\tV͚",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia____r_wz",
+      "label": "-\u0012%R\"WZ",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gestao_paroquia_app_src_main_resources_logo_paroquia______j_p6_k_v1za_hjd__e_____d_e___s___m__b70b____ooj_og4zw______1f0____cgu___sy_kdu_______s______k_0m_y__a_h_et__n____fr___c__uo_i_wc_ql_j_g_c_j_r__e______y_q_fx_m_z__gnn9__a2qi__f__qxj7___wkehr_ftw__0r_nh_c",
+      "label": "#Ӂ',\u0005j\u0006p6*KV1zA>HJD\u0004\u001dE\u001c.%D\u001aE&)\nS,\u0004ƈm׶\u0003b70b\u0004|+\u001eOoj\u0013OG4ZW!\u0001('\u0004:1f0\u0017\u001a;\u000ecGU<}\u0015Sy|Kdu\bⰨ>\u0013\u0012+*s-{[^{%K~0m_y>_A\u001aH\u0014et\\,N( |\nFRȗ\f\bc\u0013\u001cUOݘI=wc*Ql\u0015JՕG\u001bC\u0014J\nR\u0010\u0019e>\u0018) .@Y\u0000q\u0007Fx*mˇzӑӿGnn9!\fA2QI\u000f\u001cF\u0018\nQXJ7?;ӍwKeHRġFtw%ٜ0R`NH(c",
+      "file_type": "concept",
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "gestao_paroquia_docs_ia_regra_dura_lgpd_regra_dura_lgpd",
+      "target": "gestao_paroquia_docs_ia_regra_dura_lgpd_manual_de_regras_duras_de_compliance_e_privacidade",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_docs_ia_regra_dura_lgpd_regra_dura_lgpd",
+      "target": "gestao_paroquia_docs_ia_regra_dura_lgpd_diretrizes_mandat_rias_de_engenharia_de_software_e_tratamento_de_dados_sob_a_lgpd__lei_n__13_709_2018",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_docs_ia_regra_dura_lgpd_regra_dura_lgpd",
+      "target": "gestao_paroquia_docs_ia_regra_dura_lgpd_1__objetivo_e_diretriz_estrutural",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_docs_ia_regra_dura_lgpd_regra_dura_lgpd",
+      "target": "gestao_paroquia_docs_ia_regra_dura_lgpd_2__regras_duras__entrada_e_armazenamento__input___db_architecture",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_docs_ia_regra_dura_lgpd_regra_dura_lgpd",
+      "target": "gestao_paroquia_docs_ia_regra_dura_lgpd___regra_dura_01__segrega__o_e_bloqueio_de_acesso_a_dados_pessoais_sens_veis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/docs/ia/regra_dura_lgpd.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia__8t_a_h_________8________yh3__7ty__o_pxx__rwc_90fcj__h0_6zld__l_b___k______k__c__vde__p__fh______rga3_p_c4__f___lt5p______2____u_txc_o6cu_5__a__q___pk__8_zj__hy___61s___gw_gs_ls_0_c____o32________1r_oli__s_a_e__b__b__1__ofu_________b_k_l_e1___i8qs__l_e___1_____x_nnn__3",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia_z__fh__h_tx_m_____4__zq_r7ro_l_kt__c",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia___j____________g_6x_b____x____6_oq__f_3r__8___o__i___g_d____20zx_gd_y___1b___b_br69pk___c_jghz__z________n____t__yqd__r_______j_pj___ib__a___0m____1___jz___y__kd___h",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia_3__ff0__q___h_jf_____c__il1c___2___g____a_____pek_z1__y___z___yhe1_0_0___oo_gycs_j",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia__ot__e_u___xk__xh__b__33sss5_304b______3_gad______p__s_ro_l__aj___t__________nlhdfpgum___o_m___t6____c__6_vu_0___q__sa_______s_a2__m7yw______idj_m___o_i_jzc_________3_____o_o_kj__y_d__o______nvtw____4h____mtww_wmyu__qss___3q__uqs____y__x8__e_ll___j5___k__69_vjnsja__ic____fff__y__x___999__o___q__wy_p__kr__4444a_l__w__8_____z",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia__staty_l_w",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia____5__0_2__8_a___q_s___6___6_x__wl_0___zn_cj__y_lqcx_z_y_b_a4y__mh__l__fk_4_i____c_an_pg___4__828q_c_vc_ap_l_c_rs__vu_b__________s____6__j_r___y__j____v",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia____r_wz",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_ui_public_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_ui_public_logo_paroquia______j_p6_k_v1za_hjd__e_____d_e___s___m__b70b____ooj_og4zw______1f0____cgu___sy_kdu_______s______k_0m_y__a_h_et__n____fr___c__uo_i_wc_ql_j_g_c_j_r__e______y_q_fx_m_z__gnn9__a2qi__f__qxj7___wkehr_ftw__0r_nh_c",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/public/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia__8t_a_h_________8________yh3__7ty__o_pxx__rwc_90fcj__h0_6zld__l_b___k______k__c__vde__p__fh______rga3_p_c4__f___lt5p______2____u_txc_o6cu_5__a__q___pk__8_zj__hy___61s___gw_gs_ls_0_c____o32________1r_oli__s_a_e__b__b__1__ofu_________b_k_l_e1___i8qs__l_e___1_____x_nnn__3",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia_z__fh__h_tx_m_____4__zq_r7ro_l_kt__c",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia___j____________g_6x_b____x____6_oq__f_3r__8___o__i___g_d____20zx_gd_y___1b___b_br69pk___c_jghz__z________n____t__yqd__r_______j_pj___ib__a___0m____1___jz___y__kd___h",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia_3__ff0__q___h_jf_____c__il1c___2___g____a_____pek_z1__y___z___yhe1_0_0___oo_gycs_j",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia__ot__e_u___xk__xh__b__33sss5_304b______3_gad______p__s_ro_l__aj___t__________nlhdfpgum___o_m___t6____c__6_vu_0___q__sa_______s_a2__m7yw______idj_m___o_i_jzc_________3_____o_o_kj__y_d__o______nvtw____4h____mtww_wmyu__qss___3q__uqs____y__x8__e_ll___j5___k__69_vjnsja__ic____fff__y__x___999__o___q__wy_p__kr__4444a_l__w__8_____z",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia__staty_l_w",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia____5__0_2__8_a___q_s___6___6_x__wl_0___zn_cj__y_lqcx_z_y_b_a4y__mh__l__fk_4_i____c_an_pg___4__828q_c_vc_ap_l_c_rs__vu_b__________s____6__j_r___y__j____v",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia____r_wz",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gestao_paroquia_app_src_main_resources_logo_paroquia_logo_paroquia",
+      "target": "gestao_paroquia_app_src_main_resources_logo_paroquia______j_p6_k_v1za_hjd__e_____d_e___s___m__b70b____ooj_og4zw______1f0____cgu___sy_kdu_______s______k_0m_y__a_h_et__n____fr___c__uo_i_wc_ql_j_g_c_j_r__e______y_q_fx_m_z__gnn9__a2qi__f__qxj7___wkehr_ftw__0r_nh_c",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/app/src/main/resources/logo-paroquia.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
