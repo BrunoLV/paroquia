@@ -30,7 +30,14 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
+import {
+  CalendarMonth as CalendarIcon,
+  Category as CategoryIcon,
+  Groups as GroupsIcon,
+  LocationOn as LocationIcon,
+  People as PeopleIcon,
+  Settings as SettingsIcon,
+} from '@mui/icons-material';
 
 import {getAnosParoquiais, updateAnoParoquialStatus} from '../api/anosParoquiais';
 import {createLocal, deleteLocal, getLocais, updateLocal} from '../api/locais';
@@ -619,12 +626,19 @@ const Settings = () => {
             </Alert>
           ) : (
             <Box>
-              <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
-                Gestão do Ano Paroquial
-              </Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
-                Controle as fases de planejamento e fechamento do calendário paroquial.
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                  <CalendarIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+                </Box>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                    Gestão do Ano Paroquial
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                    Controle as fases de planejamento e fechamento do calendário paroquial.
+                  </Typography>
+                </Box>
+              </Box>
 
               <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
@@ -714,14 +728,19 @@ const Settings = () => {
             </Alert>
           ) : (
             <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                    Gestão de Locais (Espaços Físicos)
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
-                    Cadastre e gerencie os espaços disponíveis na paróquia para a realização de eventos.
-                  </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                    <LocationIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                      Gestão de Locais (Espaços Físicos)
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                      Cadastre e gerencie os espaços disponíveis na paróquia para a realização de eventos.
+                    </Typography>
+                  </Box>
                 </Box>
                 {isAuthorizedLocais && (
                   <Button
@@ -828,6 +847,22 @@ const Settings = () => {
             </Alert>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                    <GroupsIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                      Gestão de Pastorais e Movimentos
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                      Cadastre e organize as pastorais, movimentos e organismos da paróquia.
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                 <TextField
                   placeholder="Pesquisar por nome, tipo ou coordenador..."
@@ -958,19 +993,32 @@ const Settings = () => {
                 Erro ao carregar os usuários.
               </Alert>
             ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {user && user.roles.some(r => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => setIsAdminRegisterModalOpen(true)}
-                      sx={{ borderRadius: 0, fontWeight: 600 }}
-                    >
-                      Cadastrar Usuário
-                    </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                    <PeopleIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                   </Box>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                      Gestão de Membros e Usuários
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                      Gerencie o acesso, permissões e papéis dos usuários e membros cadastrados no sistema.
+                    </Typography>
+                  </Box>
+                </Box>
+                {user && user.roles.some(r => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIsAdminRegisterModalOpen(true)}
+                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                  >
+                    Cadastrar Usuário
+                  </Button>
                 )}
+              </Box>
                 <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                   <Table>
                     <TableHead sx={{ bgcolor: 'grey.100' }}>
@@ -1075,10 +1123,20 @@ const Settings = () => {
               </Alert>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                    Catálogo Oficial de Pastorais e Movimentos
-                  </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                      <CategoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+                    </Box>
+                    <Box>
+                      <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                        Catálogo Oficial de Pastorais e Movimentos
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                        Mantenha o catálogo oficial padronizado de pastorais e movimentos da diocese.
+                      </Typography>
+                    </Box>
+                  </Box>
                   <Button
                     variant="contained"
                     color="primary"
