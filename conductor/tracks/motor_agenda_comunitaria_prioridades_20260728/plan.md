@@ -13,5 +13,7 @@
 
 ## Phase 3: Testes de Integração e Validação E2E
 - [x] Task: Escrever testes unitários e de integração cobrindo os 4 níveis de prioridade e o fluxo de bypass. (f65afc8)
-- [ ] Task: Executar suite completa de testes (`./gradlew test`).
+- [x] Task: Atualizar tipagens TypeScript (`types.ts`) com `bypassAgendaConflict`. (efa6ecc)
+- [ ] Task: Atualizar componente `EventRegistrationModal.tsx` para suporte ao bypass (apenas role Pároco) e tratamento de erros de conflito.
+- [ ] Task: Executar suite completa de testes (`./gradlew test` e `npm test`).
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md).
