@@ -244,16 +244,9 @@
 
 - [x] **Track: Integração do @dabeng/react-orgchart no Sistema de Organograma**
 
-
 *Link: [./archive/react_orgchart_integration_20260727/](./archive/react_orgchart_integration_20260727/)*
 
 ---
 
-- [~] **Track: RBAC Eclesial e Governança Paroquial (CPP & CAE)**
-
-*Link: [./tracks/rbac_eclesial_governanca_20260727/](./tracks/rbac_eclesial_governanca_20260727/)*
-
-
-
-
-
+- [x] **Track: RBAC Eclesial e Governança Paroquial (CPP & CAE)**
+*Link: [./archive/rbac_eclesial_governanca_20260727/](./archive/rbac_eclesial_governanca_20260727/)*
