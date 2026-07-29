@@ -1258,9 +1258,16 @@ const Settings = () => {
                     label="Papel"
                     onChange={(e) => setNewMembershipPapel(e.target.value)}
                   >
-                    <MenuItem value="COORDENADOR">Coordenador</MenuItem>
-                    <MenuItem value="VICE_COORDENADOR">Vice-Coordenador</MenuItem>
-                    <MenuItem value="MEMBRO">Membro</MenuItem>
+                    <MenuItem value="COORDENADOR_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
+                    <MenuItem value="COORDENADOR_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
+                    <MenuItem value="COORDENADOR_MOVIMENTO">Coordenador de Movimento</MenuItem>
+                    <MenuItem value="VOLUNTARIO_PASTORAL_LOCAL">Voluntário Pastoral Local</MenuItem>
+                    <MenuItem value="MEMBRO_MOVIMENTO">Membro de Movimento</MenuItem>
+                    <MenuItem value="PRESIDENTE_CPC">Presidente CPC</MenuItem>
+                    <MenuItem value="MEMBRO_CPC">Membro CPC</MenuItem>
+                    <MenuItem value="MESA_DIRETORA_CPP">Mesa Diretora CPP</MenuItem>
+                    <MenuItem value="MEMBRO_CPP">Membro CPP</MenuItem>
+                    <MenuItem value="MEMBRO_CAE">Membro CAE</MenuItem>
                     <MenuItem value="PAROCO">Pároco</MenuItem>
                     <MenuItem value="VIGARIO">Vigário</MenuItem>
                     <MenuItem value="PADRE">Padre</MenuItem>
@@ -1452,10 +1459,16 @@ const Settings = () => {
                     label="Papel"
                     onChange={(e) => setNewOrgMemberPapel(e.target.value)}
                   >
-                    <MenuItem value="COORDENADOR">Coordenador</MenuItem>
-                    <MenuItem value="VICE_COORDENADOR">Vice-Coordenador</MenuItem>
-                    <MenuItem value="MEMBRO">Membro</MenuItem>
-                    <MenuItem value="TESOUREIRO">Tesoureiro</MenuItem>
+                    <MenuItem value="COORDENADOR_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
+                    <MenuItem value="COORDENADOR_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
+                    <MenuItem value="COORDENADOR_MOVIMENTO">Coordenador de Movimento</MenuItem>
+                    <MenuItem value="VOLUNTARIO_PASTORAL_LOCAL">Voluntário Pastoral Local</MenuItem>
+                    <MenuItem value="MEMBRO_MOVIMENTO">Membro de Movimento</MenuItem>
+                    <MenuItem value="PRESIDENTE_CPC">Presidente CPC</MenuItem>
+                    <MenuItem value="MEMBRO_CPC">Membro CPC</MenuItem>
+                    <MenuItem value="MESA_DIRETORA_CPP">Mesa Diretora CPP</MenuItem>
+                    <MenuItem value="MEMBRO_CPP">Membro CPP</MenuItem>
+                    <MenuItem value="MEMBRO_CAE">Membro CAE</MenuItem>
                     <MenuItem value="SECRETARIO">Secretário</MenuItem>
                   </Select>
                 </FormControl>

@@ -19,16 +19,25 @@ export interface User {
 // ─── Eclesial Role Predicates ────────────────────────────────────────────────
 
 const PAROCO_ROLES = ['PAROCO', 'BISPO_DIOCESANO'] as const;
-const CPP_ROLES = ['MEMBRO_CPP'] as const;
+const CPP_ROLES = ['MEMBRO_CPP', 'MESA_DIRETORA_CPP'] as const;
 const CAE_ROLES = ['MEMBRO_CAE'] as const;
 const CLERO_ROLES = ['VIGARIO', 'DIACONO', 'PADRE'] as const;
 const COORDENADOR_ROLES = [
+  'COORDENADOR_PASTORAL_GLOBAL',
+  'COORDENADOR_PASTORAL_LOCAL',
   'COORDENADOR_PASTORAL',
   'COORDENADOR_MOVIMENTO',
+  'PRESIDENTE_CPC',
   'COORDENADOR',
   'VICE_COORDENADOR',
 ] as const;
-const MEMBRO_ROLES = ['MEMBRO_PASTORAL', 'MEMBRO_MOVIMENTO', 'MEMBRO'] as const;
+const MEMBRO_ROLES = [
+  'VOLUNTARIO_PASTORAL_LOCAL',
+  'MEMBRO_PASTORAL',
+  'MEMBRO_MOVIMENTO',
+  'MEMBRO_CPC',
+  'MEMBRO',
+] as const;
 
 const hasRole = (user: User | null, ...roles: string[]): boolean => {
   if (!user) return false;
