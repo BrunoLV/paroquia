@@ -52,22 +52,22 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
-      PaperProps={{ sx: { borderRadius: 0 } }}
+      slotProps={{ paper: { sx: { borderRadius: 0 } } }}
     >
-      <DialogTitle sx={{ fontWeight: 600 }}>
+      <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1, color: 'primary.main' }}>
         Registrar Ata / Decisão de Conselho (CPC / CPP)
       </DialogTitle>
       <form onSubmit={handleSubmit}>
-        <DialogContent dividers sx={{ py: 3 }}>
-          <Box display="flex" flexDirection="column" gap={2.5}>
-            <Typography variant="body2" color="textSecondary">
+        <DialogContent dividers sx={{ p: 3 }}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            <Typography variant="body2" color="text.secondary">
               Preencha os dados da reunião e as deliberações aprovadas pelo conselho. O documento ficará pendente de homologação pelo Pároco / Mesa Diretora do CPP.
             </Typography>
 
             <TextField
-              label="Título da Ata / Decisão *"
+              label="Título da Ata / Decisão"
               size="small"
               fullWidth
               value={titulo}
@@ -78,11 +78,11 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             />
 
             <FormControl fullWidth size="small" required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
-              <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP) *</InputLabel>
+              <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP)</InputLabel>
               <Select
                 labelId="cpc-comunidade-label"
                 value={comunidadeId}
-                label="Comunidade de Origem (CPC/CPP) *"
+                label="Comunidade de Origem (CPC/CPP)"
                 onChange={(e) => setComunidadeId(e.target.value)}
                 disabled={isSubmitting}
               >
@@ -95,7 +95,7 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             </FormControl>
 
             <TextField
-              label="Data da Reunião *"
+              label="Data da Reunião"
               type="date"
               size="small"
               fullWidth
@@ -108,7 +108,7 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             />
 
             <TextField
-              label="Pauta e Deliberações (Descrição Detalhada) *"
+              label="Pauta e Deliberações (Descrição Detalhada)"
               size="small"
               fullWidth
               multiline
@@ -121,11 +121,11 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose} disabled={isSubmitting} color="inherit" sx={{ borderRadius: 0 }}>
+        <DialogActions sx={{ p: 2.5, gap: 1 }}>
+          <Button onClick={onClose} disabled={isSubmitting} color="inherit" sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ borderRadius: 0 }}>
+          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}>
             Submeter Ata para Homologação
           </Button>
         </DialogActions>
