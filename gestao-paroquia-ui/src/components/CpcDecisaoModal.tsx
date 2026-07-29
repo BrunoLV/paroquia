@@ -11,6 +11,7 @@ import {
   Select,
   TextField,
   Box,
+  Typography,
 } from '@mui/material';
 import { Organizacao } from '../api/types';
 
@@ -48,11 +49,23 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Registrar Ata / Decisão de Conselho (CPC / CPP)</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ sx: { borderRadius: 0 } }}
+    >
+      <DialogTitle sx={{ fontWeight: 600 }}>
+        Registrar Ata / Decisão de Conselho (CPC / CPP)
+      </DialogTitle>
       <form onSubmit={handleSubmit}>
-        <DialogContent dividers>
-          <Box display="flex" flexDirection="column" gap={2}>
+        <DialogContent dividers sx={{ py: 3 }}>
+          <Box display="flex" flexDirection="column" gap={2.5}>
+            <Typography variant="body2" color="textSecondary">
+              Preencha os dados da reunião e as deliberações aprovadas pelo conselho. O documento ficará pendente de homologação pelo Pároco / Mesa Diretora do CPP.
+            </Typography>
+
             <TextField
               label="Título da Ata / Decisão *"
               size="small"
@@ -61,9 +74,10 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               onChange={(e) => setTitulo(e.target.value)}
               required
               disabled={isSubmitting}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
-            <FormControl fullWidth size="small" required>
+            <FormControl fullWidth size="small" required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
               <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP) *</InputLabel>
               <Select
                 labelId="cpc-comunidade-label"
@@ -87,9 +101,10 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               fullWidth
               value={dataReuniao}
               onChange={(e) => setDataReuniao(e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
               required
               disabled={isSubmitting}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
             <TextField
@@ -102,14 +117,15 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               onChange={(e) => setPautaDescricao(e.target.value)}
               required
               disabled={isSubmitting}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose} disabled={isSubmitting} color="inherit">
+          <Button onClick={onClose} disabled={isSubmitting} color="inherit" sx={{ borderRadius: 0 }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ borderRadius: 0 }}>
             Submeter Ata para Homologação
           </Button>
         </DialogActions>

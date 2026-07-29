@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Paper,
@@ -29,6 +28,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
 import DescriptionIcon from '@mui/icons-material/Description';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { getCpcDecisoes, createCpcDecisao, homologarCpcDecisao } from '../api/conselhos';
@@ -134,11 +134,11 @@ export const ConselhosAtas: React.FC = () => {
   const getStatusChip = (status: StatusHomologacao) => {
     switch (status) {
       case 'HOMOLOGADO':
-        return <Chip label="Homologado" color="success" size="small" sx={{ fontWeight: 'bold' }} />;
+        return <Chip label="Homologado" color="success" size="small" sx={{ fontWeight: 600, borderRadius: 0 }} />;
       case 'VETADO':
-        return <Chip label="Vetado" color="error" size="small" sx={{ fontWeight: 'bold' }} />;
+        return <Chip label="Vetado" color="error" size="small" sx={{ fontWeight: 600, borderRadius: 0 }} />;
       default:
-        return <Chip label="Pendente de Homologação" color="warning" size="small" sx={{ fontWeight: 'bold' }} />;
+        return <Chip label="Pendente de Homologação" color="warning" size="small" sx={{ fontWeight: 600, borderRadius: 0 }} />;
     }
   };
 
@@ -147,82 +147,97 @@ export const ConselhosAtas: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box display="flex" alignItems="center" gap={1.5}>
-          <DescriptionIcon color="primary" sx={{ fontSize: 32 }} />
-          <Typography variant="h5" fontWeight="bold">
-            Governança dos Conselhos (CPP & CPC)
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
+        <Box>
+          <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
+            <DescriptionIcon color="primary" sx={{ fontSize: 32 }} />
+            <Typography variant="h4" fontWeight={600} color="primary.main">
+              Governança dos Conselhos (CPP & CPC)
+            </Typography>
+          </Box>
+          <Typography variant="body1" color="textSecondary">
+            Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação.
           </Typography>
         </Box>
 
         <Button
           variant="contained"
+          color="primary"
           startIcon={<AddIcon />}
           onClick={() => setIsModalOpen(true)}
-          sx={{ borderRadius: 0 }}
+          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
         >
           Nova Ata / Decisão
         </Button>
       </Box>
 
-      {/* Filtros */}
-      <Paper sx={{ p: 2, mb: 3, borderRadius: 0 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Filtrar por Comunidade</InputLabel>
-              <Select
-                value={selectedComunidade}
-                label="Filtrar por Comunidade"
-                onChange={(e) => setSelectedComunidade(e.target.value)}
-              >
-                <MenuItem value="">Todas as Comunidades</MenuItem>
-                {communities.map((c) => (
-                  <MenuItem key={c.id} value={c.id}>
-                    {c.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Filtrar por Status</InputLabel>
-              <Select
-                value={selectedStatus}
-                label="Filtrar por Status"
-                onChange={(e) => setSelectedStatus(e.target.value)}
-              >
-                <MenuItem value="">Todos os Status</MenuItem>
-                <MenuItem value="PENDENTE_HOMOLOGACAO">Pendente de Homologação</MenuItem>
-                <MenuItem value="HOMOLOGADO">Homologado</MenuItem>
-                <MenuItem value="VETADO">Vetado</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
+      {/* Painel de Filtros */}
+      <Paper sx={{ p: 2.5, mb: 4, borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+        <Box display="flex" alignItems="center" gap={1} mb={2}>
+          <FilterListIcon fontSize="small" color="primary" />
+          <Typography variant="subtitle2" fontWeight={600} color="textSecondary">
+            Filtros de Pesquisa
+          </Typography>
+        </Box>
+
+        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
+          <FormControl fullWidth size="small">
+            <InputLabel id="filter-comunidade-label">Comunidade de Origem</InputLabel>
+            <Select
+              labelId="filter-comunidade-label"
+              value={selectedComunidade}
+              label="Comunidade de Origem"
+              onChange={(e) => setSelectedComunidade(e.target.value)}
+              sx={{ borderRadius: 0 }}
+            >
+              <MenuItem value="">Todas as Comunidades</MenuItem>
+              {communities.map((c) => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.nome}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth size="small">
+            <InputLabel id="filter-status-label">Status de Homologação</InputLabel>
+            <Select
+              labelId="filter-status-label"
+              value={selectedStatus}
+              label="Status de Homologação"
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              sx={{ borderRadius: 0 }}
+            >
+              <MenuItem value="">Todos os Status</MenuItem>
+              <MenuItem value="PENDENTE_HOMOLOGACAO">Pendente de Homologação</MenuItem>
+              <MenuItem value="HOMOLOGADO">Homologado</MenuItem>
+              <MenuItem value="VETADO">Vetado</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Paper>
 
       {/* Tabela de Atas/Decisões */}
-      <TableContainer component={Paper} sx={{ borderRadius: 0 }}>
+      <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
         <Table>
           <TableHead sx={{ backgroundColor: 'action.hover' }}>
             <TableRow>
-              <TableCell fontWeight="bold">Título</TableCell>
-              <TableCell fontWeight="bold">Comunidade</TableCell>
-              <TableCell fontWeight="bold">Data Reunião</TableCell>
-              <TableCell fontWeight="bold">Status Homologação</TableCell>
-              <TableCell fontWeight="bold" align="center">
-                Ações
+              <TableCell sx={{ fontWeight: 600 }}>Título / Pauta</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Comunidade</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Data da Reunião</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Status Homologação</TableCell>
+              <TableCell sx={{ fontWeight: 600 }} align="center">
+                Ações de Homologação
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {decisoes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
-                  <Typography variant="body2" color="text.secondary">
+                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                  <Typography variant="body1" color="text.secondary">
                     Nenhuma ata ou decisão registrada para os filtros selecionados.
                   </Typography>
                 </TableCell>
@@ -230,16 +245,16 @@ export const ConselhosAtas: React.FC = () => {
             ) : (
               decisoes.map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell>
-                    <Typography variant="subtitle2" fontWeight="bold">
+                  <TableCell sx={{ maxW: 400 }}>
+                    <Typography variant="subtitle2" fontWeight={600}>
                       {item.titulo}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
                       {item.pautaDescricao}
                     </Typography>
                     {item.motivoVeto && (
-                      <Typography variant="caption" display="block" color="error.main" sx={{ mt: 0.5 }}>
-                        Motivo Veto: {item.motivoVeto}
+                      <Typography variant="caption" display="block" color="error.main" sx={{ mt: 0.5, fontWeight: 500 }}>
+                        Motivo do Veto: {item.motivoVeto}
                       </Typography>
                     )}
                   </TableCell>
@@ -293,10 +308,16 @@ export const ConselhosAtas: React.FC = () => {
       />
 
       {/* Dialog de Veto */}
-      <Dialog open={!!vetoDialogItem} onClose={() => setVetoDialogItem(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>Vetar Ata / Decisão de Conselho</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+      <Dialog
+        open={!!vetoDialogItem}
+        onClose={() => setVetoDialogItem(null)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Vetar Ata / Decisão de Conselho</DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body2" sx={{ mb: 2 }} color="textSecondary">
             Informe o motivo do veto para a ata "{vetoDialogItem?.titulo}". Esta justificativa será gravada de forma auditável.
           </Typography>
           <TextField
@@ -307,13 +328,14 @@ export const ConselhosAtas: React.FC = () => {
             value={motivoVeto}
             onChange={(e) => setMotivoVeto(e.target.value)}
             required
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
           />
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setVetoDialogItem(null)} color="inherit">
+          <Button onClick={() => setVetoDialogItem(null)} color="inherit" sx={{ borderRadius: 0 }}>
             Cancelar
           </Button>
-          <Button onClick={handleConfirmVeto} variant="contained" color="error">
+          <Button onClick={handleConfirmVeto} variant="contained" color="error" sx={{ borderRadius: 0 }}>
             Confirmar Veto
           </Button>
         </DialogActions>
