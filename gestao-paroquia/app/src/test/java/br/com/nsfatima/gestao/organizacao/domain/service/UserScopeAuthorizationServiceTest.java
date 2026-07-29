@@ -183,4 +183,27 @@ class UserScopeAuthorizationServiceTest {
             assertThat(service.canViewPendingEvents(PapelOrganizacional.ADMIN)).isTrue();
         }
     }
+
+    @Nested
+    @DisplayName("Territorial Scope Permissions")
+    class TerritorialScopePermissions {
+
+        @Test
+        @DisplayName("Global roles have cross-community access")
+        void globalRolesHaveCrossCommunityAccess() {
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.ADMIN, matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.PAROCO, matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_GLOBAL, matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_MOVIMENTO, matrizId, comunidadeBId)).isTrue();
+        }
+
+        @Test
+        @DisplayName("Local roles are restricted strictly to their community")
+        void localRolesRestrictedToCommunity() {
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId, matrizId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId, comunidadeBId)).isFalse();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, matrizId, comunidadeBId)).isFalse();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.PRESIDENTE_CPC, matrizId, comunidadeBId)).isFalse();
+        }
+    }
 }

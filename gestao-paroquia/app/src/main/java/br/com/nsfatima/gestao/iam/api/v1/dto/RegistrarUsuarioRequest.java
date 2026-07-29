@@ -38,6 +38,10 @@ public record RegistrarUsuarioRequest(
 
         this(nome, username, password, telefone, dataNascimento, igrejaId, false, false, false, false);
     }
+
+    public UUID communityId() {
+        return igrejaId;
+    }
 }
 
 

@@ -12,4 +12,7 @@ public record AddMembershipRequest(
         @NotNull PapelOrganizacional papel,
         UUID igrejaVinculoId
 ) {
+    public UUID communityId() {
+        return igrejaVinculoId;
+    }
 }

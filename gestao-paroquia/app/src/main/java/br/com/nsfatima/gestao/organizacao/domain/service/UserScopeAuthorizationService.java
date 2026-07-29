@@ -115,4 +115,31 @@ public class UserScopeAuthorizationService {
                 && userRole != PapelOrganizacional.MEMBRO_PASTORAL
                 && userRole != PapelOrganizacional.MEMBRO_MOVIMENTO;
     }
+
+    /**
+     * Validates whether the given user role and community context allow interaction with targetCommunityId.
+     * - Global roles (ADMIN, PAROCO, VIGARIO, BISPO_DIOCESANO, COORD_PASTORAL_GLOBAL, COORD_MOVIMENTO) have cross-community access.
+     * - Local roles (COORD_PASTORAL_LOCAL, VOLUNTARIO_PASTORAL_LOCAL, PRESIDENTE_CPC) require userCommunityId == targetCommunityId.
+     */
+    public boolean hasTerritorialAccess(
+            PapelOrganizacional userRole,
+            UUID userCommunityId,
+            UUID targetCommunityId
+    ) {
+        if (userRole == null) {
+            return false;
+        }
+
+        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO
+                || userRole == PapelOrganizacional.VIGARIO || userRole == PapelOrganizacional.BISPO_DIOCESANO
+                || userRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL || userRole == PapelOrganizacional.COORD_MOVIMENTO) {
+            return true;
+        }
+
+        if (userCommunityId == null || targetCommunityId == null) {
+            return true;
+        }
+
+        return Objects.equals(userCommunityId, targetCommunityId);
+    }
 }

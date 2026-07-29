@@ -222,11 +222,16 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         setEndTime('10:00');
       }
 
-      if (!initialEvent && filteredOrganizations.length > 0) {
-        setOrgId(filteredOrganizations[0].id);
+      if (!initialEvent) {
+        if (filteredOrganizations.length > 0 && !orgId) {
+          setOrgId(filteredOrganizations[0].id);
+        }
+        if (churches.length > 0 && !igrejaVinculoId) {
+          setIgrejaVinculoId(churches[0].id);
+        }
       }
     }
-  }, [open, initialDate, initialEvent, filteredOrganizations]);
+  }, [open, initialDate, initialEvent, filteredOrganizations, churches]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -269,6 +274,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
 
     if (status === 'ADICIONADO_EXTRA' && (!justification || !justification.trim())) {
       showError('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
+      return;
+    }
+
+    if (churches.length > 0 && !igrejaVinculoId) {
+      showError('A comunidade/igreja de vínculo é obrigatória.');
       return;
     }
 
@@ -383,18 +393,18 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               </Select>
             </FormControl>
 
-            <FormControl fullWidth size="small">
-              <InputLabel id="new-igreja-vinculo-label">Igreja de Atuação (Opcional)</InputLabel>
+            <FormControl fullWidth size="small" required error={!igrejaVinculoId}>
+              <InputLabel id="new-igreja-vinculo-label">Comunidade / Igreja de Atuação *</InputLabel>
               <Select
                 labelId="new-igreja-vinculo-label"
                 value={igrejaVinculoId}
-                label="Igreja de Atuação (Opcional)"
+                label="Comunidade / Igreja de Atuação *"
                 onChange={(e) => setIgrejaVinculoId(e.target.value)}
                 disabled={isSubmitting}
                 data-testid="event-church-select"
               >
-                <MenuItem value="">
-                  <em>Nenhuma (Paróquia / Geral)</em>
+                <MenuItem value="" disabled>
+                  <em>Selecione a Comunidade / Igreja</em>
                 </MenuItem>
                 {churches.map((ch) => (
                   <MenuItem key={ch.id} value={ch.id}>

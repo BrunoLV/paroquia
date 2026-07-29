@@ -33,7 +33,7 @@ public record CreateEventoRequest(
         @Schema(description = "ID do local onde o evento ocorrerá")
         UUID localId,
 
-        @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade) se houver")
+        @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade)")
         UUID igrejaVinculoId,
 
         @Schema(description = "Data e hora de início do evento (UTC)")
@@ -67,5 +67,9 @@ public record CreateEventoRequest(
                 descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status,
                 adicionadoExtraJustificativa, participantes);
 
+    }
+
+    public UUID communityId() {
+        return igrejaVinculoId;
     }
 }
