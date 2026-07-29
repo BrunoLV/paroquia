@@ -23,12 +23,14 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  Stack,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { getCpcDecisoes, createCpcDecisao, homologarCpcDecisao } from '../api/conselhos';
@@ -131,6 +133,11 @@ export const ConselhosAtas: React.FC = () => {
     }
   };
 
+  const handleClearFilters = () => {
+    setSelectedComunidade('');
+    setSelectedStatus('');
+  };
+
   const getStatusChip = (status: StatusHomologacao) => {
     switch (status) {
       case 'HOMOLOGADO':
@@ -148,42 +155,43 @@ export const ConselhosAtas: React.FC = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
-        <Box>
-          <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
-            <DescriptionIcon color="primary" sx={{ fontSize: 32 }} />
-            <Typography variant="h4" fontWeight={600} color="primary.main">
-              Governança dos Conselhos (CPP & CPC)
-            </Typography>
-          </Box>
-          <Typography variant="body1" color="textSecondary">
-            Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação.
+      {/* Header com Título e Descrição */}
+      <Box mb={3}>
+        <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
+          <DescriptionIcon color="primary" sx={{ fontSize: 32 }} />
+          <Typography variant="h4" fontWeight={600} color="primary.main">
+            Governança dos Conselhos (CPP & CPC)
           </Typography>
         </Box>
-
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => setIsModalOpen(true)}
-          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-        >
-          Nova Ata / Decisão
-        </Button>
+        <Typography variant="body1" color="textSecondary">
+          Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação.
+        </Typography>
       </Box>
 
-      {/* Painel de Filtros */}
-      <Paper sx={{ p: 2.5, mb: 4, borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-        <Box display="flex" alignItems="center" gap={1} mb={2}>
-          <FilterListIcon fontSize="small" color="primary" />
-          <Typography variant="subtitle2" fontWeight={600} color="textSecondary">
-            Filtros de Pesquisa
-          </Typography>
-        </Box>
+      {/* Toolbar Única: Filtros Inline + Ação de Nova Ata */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 3,
+          borderRadius: 0,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        {/* Lado Esquerdo: Filtros Horizontais */}
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap" sx={{ flexGrow: 1 }}>
+          <Box display="flex" alignItems="center" gap={0.8} color="text.secondary">
+            <FilterListIcon fontSize="small" color="primary" />
+            <Typography variant="subtitle2" fontWeight={600}>
+              Filtros:
+            </Typography>
+          </Box>
 
-        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
-          <FormControl fullWidth size="small">
+          <FormControl size="small" sx={{ minWidth: 240, flex: { xs: 1, sm: 'initial' } }}>
             <InputLabel id="filter-comunidade-label">Comunidade de Origem</InputLabel>
             <Select
               labelId="filter-comunidade-label"
@@ -201,7 +209,7 @@ export const ConselhosAtas: React.FC = () => {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth size="small">
+          <FormControl size="small" sx={{ minWidth: 220, flex: { xs: 1, sm: 'initial' } }}>
             <InputLabel id="filter-status-label">Status de Homologação</InputLabel>
             <Select
               labelId="filter-status-label"
@@ -216,7 +224,26 @@ export const ConselhosAtas: React.FC = () => {
               <MenuItem value="VETADO">Vetado</MenuItem>
             </Select>
           </FormControl>
-        </Box>
+
+          {(selectedComunidade || selectedStatus) && (
+            <Tooltip title="Limpar Filtros">
+              <IconButton size="small" onClick={handleClearFilters} color="default">
+                <FilterAltOffIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
+
+        {/* Lado Direito: Botão de Ação Principal */}
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => setIsModalOpen(true)}
+          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 0.8, whiteSpace: 'nowrap' }}
+        >
+          Nova Ata / Decisão
+        </Button>
       </Paper>
 
       {/* Tabela de Atas/Decisões */}
