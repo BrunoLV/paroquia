@@ -79,4 +79,30 @@ class AgendaPriorityValidatorServiceTest {
                 )
         );
     }
+
+    @Test
+    @DisplayName("Nível 1 (SOLENIDADE) deve retornar e auto-cancelar eventos de menor prioridade (Níveis 2, 3 e 4)")
+    void nivel1_DeveAutoCancelarEventosDeMenorPrioridade() {
+        Instant inicio = Instant.now();
+        Instant fim = inicio.plusSeconds(3600);
+
+        EventoEntity eventoNivel3 = new EventoEntity();
+        eventoNivel3.setId(UUID.randomUUID());
+        eventoNivel3.setCategoria(CategoriaEvento.PASTORAL.name());
+        eventoNivel3.setStatus("CONFIRMADO");
+
+        when(eventoJpaRepository.findOverlappingEvents(any(), any(), any()))
+                .thenReturn(List.of(eventoNivel3));
+
+        List<EventoEntity> cancelados = validatorService.validatePriorityAndConflicts(
+                CategoriaEvento.SOLENIDADE, inicio, fim, null, null, null, false
+        );
+
+        assertEquals(1, cancelados.size());
+
+        validatorService.processAutoCancellation(cancelados, "Cancelamento automático por Solenidade Global");
+        assertEquals("CANCELADO", eventoNivel3.getStatus());
+        assertEquals("Cancelamento automático por Solenidade Global", eventoNivel3.getCanceladoMotivo());
+        verify(eventoJpaRepository).saveAll(cancelados);
+    }
 }

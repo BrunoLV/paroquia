@@ -89,4 +89,22 @@ public class AgendaPriorityValidatorService {
 
         return eventsToAutoCancel;
     }
+
+    @Transactional
+    public void processAutoCancellation(List<EventoEntity> eventsToCancel, String motivo) {
+        if (eventsToCancel == null || eventsToCancel.isEmpty()) {
+            return;
+        }
+
+        String motivoFinal = (motivo != null && !motivo.isBlank())
+                ? motivo
+                : "Cancelado automaticamente devido a conflito de prioridade de agenda eclesial";
+
+        for (EventoEntity evento : eventsToCancel) {
+            evento.setStatus("CANCELADO");
+            evento.setCanceladoMotivo(motivoFinal);
+        }
+
+        eventoJpaRepository.saveAll(eventsToCancel);
+    }
 }
