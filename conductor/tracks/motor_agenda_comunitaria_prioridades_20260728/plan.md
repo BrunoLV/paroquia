@@ -15,5 +15,5 @@
 - [x] Task: Escrever testes unitários e de integração cobrindo os 4 níveis de prioridade e o fluxo de bypass. (f65afc8)
 - [x] Task: Atualizar tipagens TypeScript (`types.ts`) com `bypassAgendaConflict`. (efa6ecc)
 - [x] Task: Atualizar componente `EventRegistrationModal.tsx` para suporte ao bypass (apenas role Pároco) e tratamento de erros de conflito. (0d2c277)
-- [ ] Task: Executar suite completa de testes (`./gradlew test` e `npm test`).
+- [x] Task: Executar suite completa de testes (`./gradlew test` e `npm test`).
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md).
