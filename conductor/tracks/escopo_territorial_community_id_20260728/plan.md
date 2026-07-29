@@ -1,16 +1,18 @@
 # Implementation Plan: Escopo Territorial e Vínculo Obrigatório (community_id)
 
-## Phase 1: Shield de Validação e Padronização DTO
+## Phase 1: Backend - Shield de Validação e Regras de Autorização por Escopo
 - [ ] Task: Adicionar validação `@NotNull` para `community_id` em `CreateUsuarioRequest`, `RegistrarUsuarioRequest` e `CreateEventoRequest`.
-- [ ] Task: Garantir mapeamento/aliasing nos DTOs para o campo `community_id`.
-- [ ] Task: Unit & Validation Tests para o shield de cadastro.
+- [ ] Task: Garantir mapeamento/aliasing nos DTOs para o campo `community_id` e tratamento de exceções de validação.
+- [ ] Task: Refatorar `UserScopeAuthorizationService` para trava estrita de `COORD_PASTORAL_LOCAL` na sua comunidade.
+- [ ] Task: Implementar bypass multicomunidade para `COORD_PASTORAL_GLOBAL` e busca por afinidade em `COORD_MOVIMENTO`.
+- [ ] Task: Unit & Integration Tests para o backend (`./gradlew test`).
 
-## Phase 2: Regras de Isolamento em UserScopeAuthorizationService
-- [ ] Task: Implementar trava estrita por `community_id` para `COORDENADOR_PASTORAL_LOCAL`.
-- [ ] Task: Implementar bypass multicomunidade para `COORDENADOR_PASTORAL_GLOBAL`.
-- [ ] Task: Implementar busca por afinidade carismática para `COORDENADOR_MOVIMENTO` em `ListMembrosUseCase`.
-- [ ] Task: Integration Tests cobrindo isolamento local vs visão global vs movimentos.
+## Phase 2: Frontend (UI) - Vínculo Obrigatório, Componentes e Filtros de Escopo
+- [ ] Task: Atualizar formulários (`EventRegistrationModal`, `EventEditModal`, formulários de usuários/membros em `Settings`) para tornar o campo de comunidade (`community_id` / `igrejaVinculoId`) obrigatório e validado.
+- [ ] Task: Implementar regras de UI para perfis de escopo local (`COORD_PASTORAL_LOCAL`), fixando a comunidade do usuário logado e desabilitando troca não autorizada.
+- [ ] Task: Ajustar componentes de filtro e listagem de eventos/membros para respeitar a visualização por escopo (local vs global vs movimentos).
+- [ ] Task: Vitest Unit & Component Tests no frontend (`npm test`).
 
-## Phase 3: Validação E2E
-- [ ] Task: Executar suite completa de testes de autorização e escopo (`./gradlew test`).
+## Phase 3: Validação E2E e Checkpoint
+- [ ] Task: Executar suíte completa de verificação no monorepo (`./gradlew test` e `npm test`).
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md).
