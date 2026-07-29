@@ -1,0 +1,1 @@
+Task: Criar exceção ConflitoAgendaEclesialException e tratá-la em GlobalExceptionHandler para retornar HTTP 400.
