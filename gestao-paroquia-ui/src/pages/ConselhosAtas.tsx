@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  Card,
   Chip,
   Container,
   Dialog,
@@ -154,35 +155,46 @@ export const ConselhosAtas: React.FC = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header com Título e Descrição */}
-      <Box mb={3}>
-        <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
-          <DescriptionIcon color="primary" sx={{ fontSize: 32 }} />
-          <Typography variant="h4" fontWeight={600} color="primary.main">
-            Governança dos Conselhos (CPP & CPC)
-          </Typography>
+      {/* Header Padronizado com Ícone Inline em Box, Título, Descrição e Botão Principal à Direita */}
+      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+            <DescriptionIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
+              Governança dos Conselhos (CPP & CPC)
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação.
+            </Typography>
+          </Box>
         </Box>
-        <Typography variant="body1" color="textSecondary">
-          Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação.
-        </Typography>
+
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => setIsModalOpen(true)}
+          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+        >
+          Nova Ata / Decisão
+        </Button>
       </Box>
 
-      {/* Toolbar Única: Filtros Inline + Ação de Nova Ata */}
-      <Paper
+      {/* Card de Filtros Padronizado do Sistema */}
+      <Card
+        elevation={0}
         sx={{
           p: 2,
           mb: 3,
           borderRadius: 0,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: '#fafafa',
         }}
       >
-        {/* Lado Esquerdo: Filtros Horizontais */}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap" sx={{ flexGrow: 1 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap">
           <FormControl size="small" sx={{ minWidth: 240, flex: { xs: 1, sm: 'initial' } }}>
             <InputLabel id="filter-comunidade-label">Comunidade de Origem</InputLabel>
             <Select
@@ -225,18 +237,7 @@ export const ConselhosAtas: React.FC = () => {
             </Tooltip>
           )}
         </Stack>
-
-        {/* Lado Direito: Botão de Ação Principal */}
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => setIsModalOpen(true)}
-          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 0.8, whiteSpace: 'nowrap' }}
-        >
-          Nova Ata / Decisão
-        </Button>
-      </Paper>
+      </Card>
 
       {/* Tabela de Atas/Decisões */}
       <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
