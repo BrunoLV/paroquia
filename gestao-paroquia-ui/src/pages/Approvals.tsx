@@ -23,7 +23,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import {Close as CloseIcon} from '@mui/icons-material';
+import {Close as CloseIcon, FactCheck as FactCheckIcon} from '@mui/icons-material';
 import {decideApproval, getApprovals} from '../api/approvals';
 import {decideProjectApproval, getProjectApprovals} from '../api/projects';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
@@ -177,14 +177,23 @@ const Approvals = () => {
   };
 
   return (
-    <Container maxWidth="xl">
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
-          Solicitações de Aprovação
-        </Typography>
-        <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-          Gerencie e analise as solicitações de alteração e novos eventos ou projetos no calendário paroquial.
-        </Typography>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header Padronizado */}
+      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+            <FactCheckIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
+              Solicitações de Aprovação
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Gerencie e analise as solicitações de alteração e novos eventos ou projetos no calendário paroquial.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
 
         {/* TOP LEVEL TAB SELECTOR */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
@@ -364,11 +373,10 @@ const Approvals = () => {
                     ))}
                   </TableBody>
                 </Table>
-              </TableContainer>
-            )
-          )}
+                </TableContainer>
+              )
+            )}
         </Paper>
-      </Box>
 
       {/* Details Drawer */}
       <Drawer

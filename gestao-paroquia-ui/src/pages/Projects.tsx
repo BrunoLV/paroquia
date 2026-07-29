@@ -33,6 +33,8 @@ import {
 } from '@mui/material';
 import {
     Add as AddIcon,
+    Assignment as WorkIcon,
+    Cancel as CancelIcon,
     Business as BusinessIcon,
     CalendarToday as CalendarIcon,
     Edit as EditIcon,
@@ -334,18 +336,30 @@ const Projects = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'primary.main' }}>
-          Projetos Paroquiais
-        </Typography>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header Padronizado */}
+      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+            <WorkIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
+              Projetos Paroquiais
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais.
+            </Typography>
+          </Box>
+        </Box>
+
         {canManageProjects() && (
           <Button
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
             onClick={handleOpenCreate}
-            sx={{ textTransform: 'none' }}
+            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
           >
             Novo Projeto
           </Button>

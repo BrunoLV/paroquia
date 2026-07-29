@@ -572,6 +572,23 @@ const Calendar = () => {
 
   return (
     <Box>
+      {/* Header Padronizado */}
+      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+            <CalendarIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
+              Calendário Paroquial
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Agendamento de eventos, celebrações e atividades pastorais da paróquia.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
       {/* Toolbar / Controls Card */}
       <Card sx={{ mb: 4, borderRadius: 0, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)', overflow: 'visible' }}>
         <CardContent sx={{ p: { xs: 2, md: 3 } }}>

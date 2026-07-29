@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Box, Grid, Skeleton, Stack, Typography,} from '@mui/material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import UpcomingEvents from '../components/dashboard/UpcomingEvents';
 import QuickActions from '../components/dashboard/QuickActions';
@@ -231,9 +232,22 @@ const Dashboard = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 700, color: '#37474f' }}>
-        Dashboard
-      </Typography>
+      {/* Header Padronizado */}
+      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+            <DashboardIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
+              Dashboard
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Visão geral e indicadores consolidados das atividades, projetos e eventos da paróquia.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
 
       {errorMsg && <Alert severity="error" sx={{ mb: 3 }}>{errorMsg}</Alert>}
 

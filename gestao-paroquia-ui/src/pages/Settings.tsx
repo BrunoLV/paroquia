@@ -30,6 +30,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import {getAnosParoquiais, updateAnoParoquialStatus} from '../api/anosParoquiais';
 import {createLocal, deleteLocal, getLocais, updateLocal} from '../api/locais';
@@ -564,28 +565,33 @@ const Settings = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header Padronizado */}
+      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+            <SettingsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          </Box>
           <Box>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#37474f' }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
               Configurações do Sistema
             </Typography>
-            <Typography variant="body1" color="textSecondary">
-              Gerencie os parâmetros globais do sistema, como o calendário paroquial e os locais físicos.
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Gerencie os parâmetros globais do sistema, como o calendário paroquial, os locais físicos e pastorais.
             </Typography>
           </Box>
-          {isAdmin(user) && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setIsImportModalOpen(true)}
-              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
-            >
-              Importar em Lote (CSV/Excel)
-            </Button>
-          )}
         </Box>
+        {isAdmin(user) && (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setIsImportModalOpen(true)}
+            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+          >
+            Importar em Lote (CSV/Excel)
+          </Button>
+        )}
+      </Box>
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="Abas de Configurações">
@@ -1140,7 +1146,6 @@ const Settings = () => {
             )}
           </CustomTabPanel>
         )}
-      </Box>
 
       {/* User Memberships Dialog */}
       <Dialog
