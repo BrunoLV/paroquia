@@ -157,6 +157,15 @@ public class FakeEventoRepository implements EventoJpaRepository {
         return List.of(); // Requires cross-repository join, typically mocked or not needed in simple unit tests
     }
 
+    @Override
+    public List<EventoEntity> findOverlappingEvents(Instant inicioUtc, Instant fimUtc, UUID excludeId) {
+        return storage.stream()
+                .filter(e -> !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> excludeId == null || !excludeId.equals(e.getId()))
+                .filter(e -> e.getInicioUtc().isBefore(fimUtc) && e.getFimUtc().isAfter(inicioUtc))
+                .toList();
+    }
+
     // Default JPA methods
     @Override
     public List<EventoEntity> findAll() {

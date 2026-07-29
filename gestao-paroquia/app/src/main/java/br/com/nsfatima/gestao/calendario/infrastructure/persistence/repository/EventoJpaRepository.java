@@ -124,4 +124,16 @@ public interface EventoJpaRepository extends JpaRepository<EventoEntity, UUID> {
     List<EventoEntity> findAllInPeriod(
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc);
+
+    @Query("""
+            select e from EventoEntity e
+            where e.status != 'CANCELADO'
+              and (:excludeId is null or e.id != :excludeId)
+              and e.inicioUtc < :fimUtc
+              and e.fimUtc > :inicioUtc
+            """)
+    List<EventoEntity> findOverlappingEvents(
+            @Param("inicioUtc") Instant inicioUtc,
+            @Param("fimUtc") Instant fimUtc,
+            @Param("excludeId") UUID excludeId);
 }
