@@ -8,16 +8,25 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum que define as categorias de eventos da paróquia.
  */
 public enum CategoriaEvento {
-    SOLENIDADE,
-    PASTORAL,
-    SOCIAL,
-    LITURGICO,
-    ADMINISTRATIVO,
-    SACRAMENTAL,
-    FORMATIVO,
-    ASSISTENCIAL,
-    MOVIMENTO;
+    SOLENIDADE(1),
+    LITURGICO(2),
+    SACRAMENTAL(2),
+    PASTORAL(3),
+    FORMATIVO(3),
+    ADMINISTRATIVO(3),
+    ASSISTENCIAL(3),
+    SOCIAL(3),
+    MOVIMENTO(4);
 
+    private final int nivelPrioridade;
+
+    CategoriaEvento(int nivelPrioridade) {
+        this.nivelPrioridade = nivelPrioridade;
+    }
+
+    public int getNivelPrioridade() {
+        return nivelPrioridade;
+    }
 
     @JsonCreator
     public static CategoriaEvento fromValue(String value) {

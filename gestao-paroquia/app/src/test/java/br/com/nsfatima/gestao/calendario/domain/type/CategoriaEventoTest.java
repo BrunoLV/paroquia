@@ -34,4 +34,18 @@ class CategoriaEventoTest {
     void deveLancarexcecaoParaValorInvalido() {
         assertThrows(IllegalArgumentException.class, () -> CategoriaEvento.fromValue("INVALIDO"));
     }
+
+    @Test
+    @DisplayName("Deve retornar o nível de prioridade correto para cada categoria de evento")
+    void deveRetornarNivelPrioridadeCorreto() {
+        assertEquals(1, CategoriaEvento.SOLENIDADE.getNivelPrioridade());
+        assertEquals(2, CategoriaEvento.LITURGICO.getNivelPrioridade());
+        assertEquals(2, CategoriaEvento.SACRAMENTAL.getNivelPrioridade());
+        assertEquals(3, CategoriaEvento.PASTORAL.getNivelPrioridade());
+        assertEquals(3, CategoriaEvento.FORMATIVO.getNivelPrioridade());
+        assertEquals(3, CategoriaEvento.ADMINISTRATIVO.getNivelPrioridade());
+        assertEquals(3, CategoriaEvento.ASSISTENCIAL.getNivelPrioridade());
+        assertEquals(3, CategoriaEvento.SOCIAL.getNivelPrioridade());
+        assertEquals(4, CategoriaEvento.MOVIMENTO.getNivelPrioridade());
+    }
 }
