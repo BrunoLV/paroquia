@@ -19,10 +19,14 @@ export interface User {
 // ─── Eclesial Role Predicates ────────────────────────────────────────────────
 
 const PAROCO_ROLES = ['PAROCO', 'BISPO_DIOCESANO'] as const;
-const CPP_ROLES = ['MEMBRO_CPP', 'MESA_DIRETORA_CPP'] as const;
+const CPP_ROLES = ['MEMBRO_CPP', 'MESA_CPP', 'MESA_DIRETORA_CPP'] as const;
 const CAE_ROLES = ['MEMBRO_CAE'] as const;
 const CLERO_ROLES = ['VIGARIO', 'DIACONO', 'PADRE'] as const;
 const COORDENADOR_ROLES = [
+  'COORD_PASTORAL_GLOBAL',
+  'COORD_PASTORAL_LOCAL',
+  'COORD_PASTORAL',
+  'COORD_MOVIMENTO',
   'COORDENADOR_PASTORAL_GLOBAL',
   'COORDENADOR_PASTORAL_LOCAL',
   'COORDENADOR_PASTORAL',
@@ -90,6 +94,8 @@ export const isGlobalCreator = (user: User | null): boolean => {
     user.roles.some((r) =>
       r.includes('CONSELHO_COORDENADOR') ||
       r.includes('CONSELHO_VICE_COORDENADOR') ||
+      r.includes('COORD_CONSELHO') ||
+      r.includes('VICE_COORD_CONSELHO') ||
       r === 'COORDENADOR_CONSELHO' ||
       r === 'VICE_COORDENADOR_CONSELHO'
     )
@@ -123,6 +129,7 @@ export const canApprove = (user: User | null): boolean => {
     isMembroCpp(user) ||
     user.roles.some((r) =>
       r.includes('CONSELHO_COORDENADOR') ||
+      r.includes('COORD_CONSELHO') ||
       r === 'COORDENADOR_CONSELHO' ||
       r === 'VICE_COORDENADOR_CONSELHO'
     )
@@ -143,6 +150,8 @@ export const canManageLocais = (user: User | null): boolean => {
     user.roles.some((r) =>
       r === 'ROLE_CONSELHO_COORDENADOR' ||
       r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
+      r === 'ROLE_COORD_CONSELHO' ||
+      r === 'ROLE_VICE_COORD_CONSELHO' ||
       r === 'COORDENADOR_CONSELHO' ||
       r === 'VICE_COORDENADOR_CONSELHO'
     )
@@ -158,6 +167,8 @@ export const canManageOrganizacoes = (user: User | null): boolean => {
     user.roles.some((r) =>
       r === 'ROLE_CONSELHO_COORDENADOR' ||
       r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
+      r === 'ROLE_COORD_CONSELHO' ||
+      r === 'ROLE_VICE_COORD_CONSELHO' ||
       r === 'COORDENADOR_CONSELHO' ||
       r === 'VICE_COORDENADOR_CONSELHO'
     )

@@ -6,14 +6,16 @@ import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import java.util.Locale;
 
 public enum AprovadorPapel {
-    PAROCO("paroco"),
-    CONSELHO_COORDENADOR("conselho-coordenador"),
-    CONSELHO_VICE_COORDENADOR("conselho-vice-coordenador");
+    PAROCO("paroco", "Pároco"),
+    COORD_CONSELHO("conselho-coordenador", "Coordenador do Conselho"),
+    VICE_COORD_CONSELHO("conselho-vice-coordenador", "Vice-Coordenador do Conselho");
 
     private final String storedCode;
+    private final String descricao;
 
-    AprovadorPapel(String storedCode) {
+    AprovadorPapel(String storedCode, String descricao) {
         this.storedCode = storedCode;
+        this.descricao = descricao;
     }
 
     public static AprovadorPapel fromStoredValue(String rawValue) {
@@ -21,9 +23,17 @@ public enum AprovadorPapel {
             return null;
         }
 
-        String normalized = rawValue.trim().toLowerCase(Locale.ROOT);
+        String normalized = rawValue.trim().toLowerCase(Locale.ROOT).replace("_", "-");
+
+        if ("conselho-coordenador".equals(normalized) || "conselho_coordenador".equalsIgnoreCase(rawValue.trim())) {
+            return COORD_CONSELHO;
+        }
+        if ("conselho-vice-coordenador".equals(normalized) || "conselho_vice_coordenador".equalsIgnoreCase(rawValue.trim())) {
+            return VICE_COORD_CONSELHO;
+        }
+
         for (AprovadorPapel value : values()) {
-            if (value.storedCode.equals(normalized)) {
+            if (value.storedCode.equals(normalized) || value.name().equalsIgnoreCase(rawValue.trim())) {
                 return value;
             }
         }
@@ -42,14 +52,17 @@ public enum AprovadorPapel {
                 || papel == PapelOrganizacional.MESA_CPP;
         if ((tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL || tipoOrganizacao == TipoOrganizacao.CPP || tipoOrganizacao == TipoOrganizacao.CPC)
                 && isViceOrMembroCpp) {
-            return CONSELHO_VICE_COORDENADOR;
+            return VICE_COORD_CONSELHO;
         }
 
-        return CONSELHO_COORDENADOR;
+        return COORD_CONSELHO;
     }
-
 
     public String storedValue() {
         return storedCode;
+    }
+
+    public String getDescricao() {
+        return descricao;
     }
 }

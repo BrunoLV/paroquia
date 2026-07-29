@@ -18,8 +18,8 @@ public class ValidateAprovacaoUseCase {
 
     private static final Set<AprovadorPapel> ALLOWED_APPROVER_ROLES = Set.of(
             AprovadorPapel.PAROCO,
-            AprovadorPapel.CONSELHO_COORDENADOR,
-            AprovadorPapel.CONSELHO_VICE_COORDENADOR);
+            AprovadorPapel.COORD_CONSELHO,
+            AprovadorPapel.VICE_COORD_CONSELHO);
     private static final String ERROR_MSG = "Approval is required for date change or cancellation";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
 

@@ -51,7 +51,7 @@ import {
     getPastoraisOficiais,
     updatePastoralOficial
 } from '../api/pastoraisOficiais';
-import {AnoParoquialStatus, Local, Organizacao, PastoralMovimentoOficial} from '../api/types';
+import {AnoParoquialStatus, Local, Organizacao, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
 import {useAuth} from '../auth/AuthContext';
 import {canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin} from '../auth/permissions';
@@ -1186,7 +1186,7 @@ const Settings = () => {
                         <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome || orgs.find((o) => o.id === m.organizacaoId)?.nome || '-'}</TableCell>
                         <TableCell>{m.igrejaVinculoNome || orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
                         <TableCell>{getOrgTipoLabel(m.tipoOrganizacao)}</TableCell>
-                        <TableCell>{m.papel}</TableCell>
+                        <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
                         <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
                         <TableCell align="right">
                           <Button
@@ -1258,14 +1258,14 @@ const Settings = () => {
                     label="Papel"
                     onChange={(e) => setNewMembershipPapel(e.target.value)}
                   >
-                    <MenuItem value="COORDENADOR_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
-                    <MenuItem value="COORDENADOR_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
-                    <MenuItem value="COORDENADOR_MOVIMENTO">Coordenador de Movimento</MenuItem>
+                    <MenuItem value="COORD_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
+                    <MenuItem value="COORD_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
+                    <MenuItem value="COORD_MOVIMENTO">Coordenador de Movimento</MenuItem>
                     <MenuItem value="VOLUNTARIO_PASTORAL_LOCAL">Voluntário Pastoral Local</MenuItem>
                     <MenuItem value="MEMBRO_MOVIMENTO">Membro de Movimento</MenuItem>
                     <MenuItem value="PRESIDENTE_CPC">Presidente CPC</MenuItem>
                     <MenuItem value="MEMBRO_CPC">Membro CPC</MenuItem>
-                    <MenuItem value="MESA_DIRETORA_CPP">Mesa Diretora CPP</MenuItem>
+                    <MenuItem value="MESA_CPP">Mesa Diretora CPP</MenuItem>
                     <MenuItem value="MEMBRO_CPP">Membro CPP</MenuItem>
                     <MenuItem value="MEMBRO_CAE">Membro CAE</MenuItem>
                     <MenuItem value="PAROCO">Pároco</MenuItem>
@@ -1389,7 +1389,7 @@ const Settings = () => {
                         {selectedOrgForMembers && (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') && (
                           <TableCell>{orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
                         )}
-                        <TableCell>{m.papel}</TableCell>
+                        <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
                         <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
                         <TableCell align="right">
                           <Button
@@ -1459,14 +1459,14 @@ const Settings = () => {
                     label="Papel"
                     onChange={(e) => setNewOrgMemberPapel(e.target.value)}
                   >
-                    <MenuItem value="COORDENADOR_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
-                    <MenuItem value="COORDENADOR_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
-                    <MenuItem value="COORDENADOR_MOVIMENTO">Coordenador de Movimento</MenuItem>
+                    <MenuItem value="COORD_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
+                    <MenuItem value="COORD_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
+                    <MenuItem value="COORD_MOVIMENTO">Coordenador de Movimento</MenuItem>
                     <MenuItem value="VOLUNTARIO_PASTORAL_LOCAL">Voluntário Pastoral Local</MenuItem>
                     <MenuItem value="MEMBRO_MOVIMENTO">Membro de Movimento</MenuItem>
                     <MenuItem value="PRESIDENTE_CPC">Presidente CPC</MenuItem>
                     <MenuItem value="MEMBRO_CPC">Membro CPC</MenuItem>
-                    <MenuItem value="MESA_DIRETORA_CPP">Mesa Diretora CPP</MenuItem>
+                    <MenuItem value="MESA_CPP">Mesa Diretora CPP</MenuItem>
                     <MenuItem value="MEMBRO_CPP">Membro CPP</MenuItem>
                     <MenuItem value="MEMBRO_CAE">Membro CAE</MenuItem>
                     <MenuItem value="SECRETARIO">Secretário</MenuItem>

@@ -20,19 +20,48 @@ export type PapelEclesial =
   | 'VIGARIO'
   | 'DIACONO'
   | 'PADRE'
-  | 'MESA_DIRETORA_CPP'
+  | 'MESA_CPP'
   | 'MEMBRO_CPP'
   | 'MEMBRO_CAE'
   | 'PRESIDENTE_CPC'
   | 'MEMBRO_CPC'
-  | 'COORDENADOR_PASTORAL_GLOBAL'
-  | 'COORDENADOR_PASTORAL_LOCAL'
-  | 'COORDENADOR_PASTORAL'
-  | 'COORDENADOR_MOVIMENTO'
+  | 'COORD_PASTORAL_GLOBAL'
+  | 'COORD_PASTORAL_LOCAL'
+  | 'COORD_PASTORAL'
+  | 'COORD_MOVIMENTO'
   | 'VOLUNTARIO_PASTORAL_LOCAL'
   | 'MEMBRO_PASTORAL'
   | 'MEMBRO_MOVIMENTO'
   | 'SECRETARIO';
+
+export const PAPEL_ECLESIAL_LABELS: Record<string, string> = {
+  ADMIN: 'Administrador do Sistema',
+  BISPO_DIOCESANO: 'Bispo Diocesano',
+  PAROCO: 'Pároco',
+  VIGARIO: 'Vigário Paroquial',
+  DIACONO: 'Diácono',
+  PADRE: 'Padre',
+  MESA_CPP: 'Mesa Diretora do CPP',
+  MEMBRO_CPP: 'Membro do CPP',
+  MEMBRO_CAE: 'Membro do CAE',
+  PRESIDENTE_CPC: 'Presidente do CPC',
+  MEMBRO_CPC: 'Membro do CPC',
+  COORD_PASTORAL_GLOBAL: 'Coordenador Pastoral Global',
+  COORD_PASTORAL_LOCAL: 'Coordenador Pastoral Local',
+  COORD_PASTORAL: 'Coordenador Pastoral',
+  COORD_MOVIMENTO: 'Coordenador de Movimento',
+  VOLUNTARIO_PASTORAL_LOCAL: 'Voluntário Pastoral Local',
+  MEMBRO_PASTORAL: 'Membro de Pastoral',
+  MEMBRO_MOVIMENTO: 'Membro de Movimento',
+  SECRETARIO: 'Secretário',
+
+  // Aliases for stored values / legacy compatibility
+  MESA_DIRETORA_CPP: 'Mesa Diretora do CPP',
+  COORDENADOR_PASTORAL_GLOBAL: 'Coordenador Pastoral Global',
+  COORDENADOR_PASTORAL_LOCAL: 'Coordenador Pastoral Local',
+  COORDENADOR_PASTORAL: 'Coordenador Pastoral',
+  COORDENADOR_MOVIMENTO: 'Coordenador de Movimento',
+};
 
 export interface Organizacao {
   id: string;
