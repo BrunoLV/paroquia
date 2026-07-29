@@ -587,6 +587,27 @@ const Calendar = () => {
             </Typography>
           </Box>
         </Box>
+
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<DownloadIcon />}
+            onClick={() => setIsExportOpen(true)}
+            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+          >
+            Exportar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenCreate()}
+            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+          >
+            Novo Evento
+          </Button>
+        </Box>
       </Box>
 
       {/* Toolbar / Controls Card Padronizado */}
@@ -615,7 +636,7 @@ const Calendar = () => {
               <IconButton onClick={handleNextMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
                 <ChevronRight />
               </IconButton>
-              <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none' }}>
+              <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none', borderRadius: 0 }}>
                 Hoje
               </Button>
             </Grid>
@@ -641,24 +662,6 @@ const Calendar = () => {
                   <ListIcon />
                 </IconButton>
               </Box>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<DownloadIcon />}
-                onClick={() => setIsExportOpen(true)}
-                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
-              >
-                Exportar
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => handleOpenCreate()}
-                sx={{ textTransform: 'none', px: 2, fontWeight: 500, whiteSpace: 'nowrap' }}
-              >
-                Novo Evento
-              </Button>
             </Grid>
 
             {/* Line Below: Filtering Controls */}
