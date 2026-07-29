@@ -142,6 +142,24 @@ export interface Evento {
   /** Liberado pelo Conselho Pastoral Paroquial (CPP) para conflitos de agenda */
   autorizadoPeloCpp?: boolean;
   setorPastoral?: SetorPastoral | null;
+  /** Permite ao Pároco ignorar conflitos de agenda eclesial */
+  bypassAgendaConflict?: boolean;
+}
+
+export interface CreateEventoPayload {
+  titulo: string;
+  descricao?: string;
+  categoria: string;
+  organizacaoResponsavelId: string;
+  projetoId?: string | null;
+  localId?: string | null;
+  inicio: string;
+  fim: string;
+  status?: string;
+  participantes?: string[];
+  adicionadoExtraJustificativa?: string | null;
+  igrejaVinculoId?: string | null;
+  bypassAgendaConflict?: boolean;
 }
 
 export interface AprovacaoResponse {
