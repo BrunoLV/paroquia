@@ -2,7 +2,7 @@
 
 ## Phase 1: Mapeamento de Prioridade e Exceção Customizada
 - [x] Task: Mapear níveis de prioridade (1 a 4) em `CategoriaEvento`. (6f4ee8f)
-- [ ] Task: Criar exceção `ConflitoAgendaEclesialException` e tratá-la em `GlobalExceptionHandler` para retornar HTTP 400.
+- [x] Task: Criar exceção `ConflitoAgendaEclesialException` e tratá-la em `GlobalExceptionHandler` para retornar HTTP 400. (2321875)
 - [ ] Task: Adicionar campo `bypassAgendaConflict` nos DTOs `CreateEventoRequest` e `UpdateEventoRequest`.
 
 ## Phase 2: Serviço de Validação e Auto-Cancelamento
