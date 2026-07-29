@@ -29,7 +29,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
 import DescriptionIcon from '@mui/icons-material/Description';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
@@ -184,13 +183,6 @@ export const ConselhosAtas: React.FC = () => {
       >
         {/* Lado Esquerdo: Filtros Horizontais */}
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap" sx={{ flexGrow: 1 }}>
-          <Box display="flex" alignItems="center" gap={0.8} color="text.secondary">
-            <FilterListIcon fontSize="small" color="primary" />
-            <Typography variant="subtitle2" fontWeight={600}>
-              Filtros:
-            </Typography>
-          </Box>
-
           <FormControl size="small" sx={{ minWidth: 240, flex: { xs: 1, sm: 'initial' } }}>
             <InputLabel id="filter-comunidade-label">Comunidade de Origem</InputLabel>
             <Select
