@@ -76,7 +76,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         m1.setUsuarioId(coord.getId());
         m1.setOrganizacaoId(org.getId());
         m1.setTipoOrganizacao(TipoOrganizacao.PASTORAL.name());
-        m1.setPapel(PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name());
+        m1.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         m1.setAtivo(true);
         membershipRepository.save(m1);
 

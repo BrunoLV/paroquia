@@ -16,14 +16,14 @@ public class AuthorizationPolicy {
         }
 
         return switch (normalizedOrg) {
-            case PASTORAL -> normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
-                    || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
-                    || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL
+            case PASTORAL -> normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                    || normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
+                    || normalizedRole == PapelOrganizacional.COORD_PASTORAL
                     || normalizedRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
                     || normalizedRole == PapelOrganizacional.MEMBRO_PASTORAL;
-            case MOVIMENTO -> normalizedRole == PapelOrganizacional.COORDENADOR_MOVIMENTO
+            case MOVIMENTO -> normalizedRole == PapelOrganizacional.COORD_MOVIMENTO
                     || normalizedRole == PapelOrganizacional.MEMBRO_MOVIMENTO;
-            case MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
+            case MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
                     || normalizedRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
                     || normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                     || normalizedRole == PapelOrganizacional.MEMBRO_CPC;
@@ -34,7 +34,7 @@ public class AuthorizationPolicy {
             case CPP, CPC, CONSELHO_PASTORAL, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                     || normalizedRole == PapelOrganizacional.MEMBRO_CPC
                     || normalizedRole == PapelOrganizacional.MEMBRO_CPP
-                    || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                    || normalizedRole == PapelOrganizacional.MESA_CPP
                     || normalizedRole == PapelOrganizacional.MEMBRO_CAE
                     || normalizedRole == PapelOrganizacional.SECRETARIO;
             case OUTRO -> false;

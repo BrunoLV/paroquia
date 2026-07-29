@@ -25,8 +25,8 @@ public class AnoParoquialAuthorizationService {
                 || normalizedOrgType == TipoOrganizacao.CPP
                 || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL);
+                || normalizedRole == PapelOrganizacional.MESA_CPP
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL);
 
         if (!isParoco && !isConselhoCoordinator) {
             throw new AccessDeniedException("Apenas o Paroco ou o Coordenador do Conselho podem gerir o Ano Paroquial");

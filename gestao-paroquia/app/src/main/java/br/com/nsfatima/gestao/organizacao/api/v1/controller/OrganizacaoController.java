@@ -97,8 +97,8 @@ public class OrganizacaoController {
     private void syncCoordinatorMemberships(Organizacao org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
         PapelOrganizacional papel = org.getTipo() == TipoOrganizacao.MOVIMENTO
-                ? PapelOrganizacional.COORDENADOR_MOVIMENTO
-                : PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL;
+                ? PapelOrganizacional.COORD_MOVIMENTO
+                : PapelOrganizacional.COORD_PASTORAL_LOCAL;
 
         syncSingleRole(org, coordName, papel, igrejaId);
         syncSingleRole(org, viceCoordName, papel, igrejaId);

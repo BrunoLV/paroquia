@@ -73,10 +73,10 @@ public class AddMembershipUseCase {
         // Hierarchy rule: Leadership of CONSELHO / CPP / CPC / CONSELHO_ECONOMICO can only be defined by PAROCO or ADMIN
         if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CPP || tipo == TipoOrganizacao.CPC || tipo == TipoOrganizacao.CONSELHO_ECONOMICO)
                 && (papel == PapelOrganizacional.PRESIDENTE_CPC
-                || papel == PapelOrganizacional.MESA_DIRETORA_CPP
-                || papel == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
-                || papel == PapelOrganizacional.COORDENADOR_PASTORAL)) {
+                || papel == PapelOrganizacional.MESA_CPP
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
+                || papel == PapelOrganizacional.COORD_PASTORAL)) {
             if (!isAdmin && !isParoco) {
                 throw new AccessDeniedException(
                         "Apenas o Pároco ou Admin podem definir coordenador e vice do Conselho");
@@ -106,10 +106,10 @@ public class AddMembershipUseCase {
         }
 
         // Unicity rule: Organizations can only have 1 coordinator active at a time per church context
-        boolean isCoordinatorRole = papel == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
-                || papel == PapelOrganizacional.COORDENADOR_MOVIMENTO
-                || papel == PapelOrganizacional.COORDENADOR_PASTORAL
+        boolean isCoordinatorRole = papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
+                || papel == PapelOrganizacional.COORD_MOVIMENTO
+                || papel == PapelOrganizacional.COORD_PASTORAL
                 || papel == PapelOrganizacional.PRESIDENTE_CPC;
 
         if (isCoordinatorRole) {

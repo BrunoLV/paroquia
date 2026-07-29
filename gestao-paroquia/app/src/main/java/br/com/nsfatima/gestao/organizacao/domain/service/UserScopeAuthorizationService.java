@@ -28,29 +28,29 @@ public class UserScopeAuthorizationService {
         }
 
         // 2. Global Pastoral Coordinator: Master of that pastoral across all communities
-        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL) {
+        if (userRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
         // 3. Local Pastoral Coordinator: Local admin restricted to their exact pastoral
-        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL) {
+        if (userRole == PapelOrganizacional.COORD_PASTORAL_LOCAL) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
         // 4. Movement Coordinator: Charismatic affinity management
-        if (userRole == PapelOrganizacional.COORDENADOR_MOVIMENTO) {
+        if (userRole == PapelOrganizacional.COORD_MOVIMENTO) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
         // 5. Council Leadership (CPC / CPP / CAE)
         if (userRole == PapelOrganizacional.PRESIDENTE_CPC
-                || userRole == PapelOrganizacional.MESA_DIRETORA_CPP
+                || userRole == PapelOrganizacional.MESA_CPP
                 || userRole == PapelOrganizacional.MEMBRO_CPP) {
             return Objects.equals(userOrgId, targetOrgId) || Objects.equals(userOrgId, targetCommunityId);
         }
 
         // Legacy compatibility for transition
-        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL) {
+        if (userRole == PapelOrganizacional.COORD_PASTORAL) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
@@ -72,8 +72,8 @@ public class UserScopeAuthorizationService {
             return true;
         }
 
-        if (userRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
-                || userRole == PapelOrganizacional.MESA_DIRETORA_CPP) {
+        if (userRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || userRole == PapelOrganizacional.MESA_CPP) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 

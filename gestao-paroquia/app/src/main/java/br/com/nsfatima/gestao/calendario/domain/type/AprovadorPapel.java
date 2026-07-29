@@ -39,7 +39,7 @@ public enum AprovadorPapel {
         }
         boolean isViceOrMembroCpp = papel == PapelOrganizacional.MEMBRO_CPP
                 || papel == PapelOrganizacional.MEMBRO_CPC
-                || papel == PapelOrganizacional.MESA_DIRETORA_CPP;
+                || papel == PapelOrganizacional.MESA_CPP;
         if ((tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL || tipoOrganizacao == TipoOrganizacao.CPP || tipoOrganizacao == TipoOrganizacao.CPC)
                 && isViceOrMembroCpp) {
             return CONSELHO_VICE_COORDENADOR;

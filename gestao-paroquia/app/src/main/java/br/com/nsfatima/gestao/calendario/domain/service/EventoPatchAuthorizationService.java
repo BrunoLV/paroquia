@@ -18,23 +18,23 @@ public class EventoPatchAuthorizationService {
 
     private static final Set<PapelOrganizacional> ORG_EDITOR_ROLES = Set.of(
             PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
-            PapelOrganizacional.COORDENADOR_MOVIMENTO,
-            PapelOrganizacional.COORDENADOR_PASTORAL,
+            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            PapelOrganizacional.COORD_MOVIMENTO,
+            PapelOrganizacional.COORD_PASTORAL,
             PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_DIRETORA_CPP,
+            PapelOrganizacional.MESA_CPP,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
             PapelOrganizacional.PADRE);
     private static final Set<PapelOrganizacional> ORG_CREATOR_ROLES = Set.of(
             PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
-            PapelOrganizacional.COORDENADOR_MOVIMENTO,
-            PapelOrganizacional.COORDENADOR_PASTORAL,
+            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            PapelOrganizacional.COORD_MOVIMENTO,
+            PapelOrganizacional.COORD_PASTORAL,
             PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_DIRETORA_CPP,
+            PapelOrganizacional.MESA_CPP,
             PapelOrganizacional.SECRETARIO,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
@@ -75,8 +75,8 @@ public class EventoPatchAuthorizationService {
                 || normalizedOrgType == TipoOrganizacao.CPP
                 || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL))) {
+                || normalizedRole == PapelOrganizacional.MESA_CPP
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL))) {
             return CreateRequestMode.IMMEDIATE;
         }
 
@@ -121,8 +121,8 @@ public class EventoPatchAuthorizationService {
                 || normalizedOrgType == TipoOrganizacao.CPP
                 || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL);
+                || normalizedRole == PapelOrganizacional.MESA_CPP
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL);
         boolean parroco = normalizedRole == PapelOrganizacional.PAROCO;
 
         if (!conselhoCoordinator && !parroco) {

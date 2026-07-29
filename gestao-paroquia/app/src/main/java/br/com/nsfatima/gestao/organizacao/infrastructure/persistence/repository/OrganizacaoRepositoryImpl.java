@@ -97,7 +97,18 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 
     private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {
         return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
-                .filter(m -> m.getPapel() != null && m.getPapel().toLowerCase().contains(roleKeyword.toLowerCase()))
+                .filter(m -> {
+                    if (m.getPapel() == null) return false;
+                    String p = m.getPapel().toLowerCase();
+                    if ("coordenador".equalsIgnoreCase(roleKeyword)) {
+                        return (p.contains("coord") || p.contains("coordenador") || p.contains("presidente") || p.contains("mesa"))
+                                && !p.contains("vice");
+                    }
+                    if ("vice".equalsIgnoreCase(roleKeyword)) {
+                        return p.contains("vice");
+                    }
+                    return p.contains(roleKeyword.toLowerCase());
+                })
                 .findFirst()
                 .map(m -> {
                     String name = usuarioRepository.findById(m.getUsuarioId())

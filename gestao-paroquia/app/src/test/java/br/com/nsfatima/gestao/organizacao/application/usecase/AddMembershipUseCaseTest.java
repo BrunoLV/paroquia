@@ -77,11 +77,11 @@ class AddMembershipUseCaseTest {
         existing.setId(UUID.randomUUID());
         existing.setUsuarioId(UUID.randomUUID());
         existing.setOrganizacaoId(organizacaoId);
-        existing.setPapel(PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name());
+        existing.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         existing.setAtivo(true);
 
         when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(eq(organizacaoId),
-                eq(PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name()), any(UUID.class)))
+                eq(PapelOrganizacional.COORD_PASTORAL_LOCAL.name()), any(UUID.class)))
 
                 .thenReturn(Optional.of(existing));
 
@@ -89,7 +89,7 @@ class AddMembershipUseCaseTest {
                 invocation -> invocation.getArgument(0));
 
         useCase.execute(usuarioId,
-                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL, UUID.randomUUID());
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL, UUID.randomUUID());
 
 
         assertFalse(existing.isAtivo());
@@ -328,17 +328,17 @@ class AddMembershipUseCaseTest {
         existing.setId(UUID.randomUUID());
         existing.setUsuarioId(UUID.randomUUID());
         existing.setOrganizacaoId(organizacaoId);
-        existing.setPapel(PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name());
+        existing.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         existing.setIgrejaVinculoId(churchA);
         existing.setAtivo(true);
 
         when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
-                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name(), churchA))
+                PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchA))
 
                 .thenReturn(Optional.of(existing));
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL, churchA);
+        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL, churchA);
 
         assertFalse(existing.isAtivo());
         verify(membershipRepository).save(existing);
@@ -359,12 +359,12 @@ class AddMembershipUseCaseTest {
         existingCoord.setId(UUID.randomUUID());
         existingCoord.setUsuarioId(oldCoordId);
         existingCoord.setOrganizacaoId(organizacaoId);
-        existingCoord.setPapel(PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name());
+        existingCoord.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         existingCoord.setIgrejaVinculoId(churchId);
         existingCoord.setAtivo(true);
 
         when(membershipRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
-                PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL.name(), churchId))
+                PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchId))
 
                 .thenReturn(Optional.of(existingCoord));
         when(membershipRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(oldCoordId,
@@ -374,7 +374,7 @@ class AddMembershipUseCaseTest {
 
         when(membershipRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        useCase.execute(newCoordId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL, churchId);
+        useCase.execute(newCoordId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL, churchId);
 
         assertFalse(existingCoord.isAtivo());
         // Verify demoted VOLUNTARIO membership was created and saved

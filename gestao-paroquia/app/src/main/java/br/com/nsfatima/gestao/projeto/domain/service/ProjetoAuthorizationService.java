@@ -15,12 +15,12 @@ public class ProjetoAuthorizationService {
 
     private static final Set<PapelOrganizacional> PROJECT_EDITOR_ROLES = Set.of(
             PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL,
-            PapelOrganizacional.COORDENADOR_MOVIMENTO,
-            PapelOrganizacional.COORDENADOR_PASTORAL,
+            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
+            PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            PapelOrganizacional.COORD_MOVIMENTO,
+            PapelOrganizacional.COORD_PASTORAL,
             PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_DIRETORA_CPP,
+            PapelOrganizacional.MESA_CPP,
             PapelOrganizacional.SECRETARIO,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
@@ -66,8 +66,8 @@ public class ProjetoAuthorizationService {
                 || normalizedRole == PapelOrganizacional.ADMIN
                 || ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL));
+                || normalizedRole == PapelOrganizacional.MESA_CPP
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL));
     }
 
     public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
@@ -75,10 +75,10 @@ public class ProjetoAuthorizationService {
             return;
         }
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
-                || normalizedRole == PapelOrganizacional.COORDENADOR_MOVIMENTO
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL
+        boolean isOrgLeader = (normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
+                || normalizedRole == PapelOrganizacional.COORD_MOVIMENTO
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL
                 || normalizedRole == PapelOrganizacional.PRESIDENTE_CPC);
         if (isOrgLeader && actorContext.organizationId() != null
                 && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {

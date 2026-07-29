@@ -65,10 +65,10 @@ public class ValidateAprovacaoUseCase {
         }
         if ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_DIRETORA_CPP
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_GLOBAL
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL_LOCAL
-                || normalizedRole == PapelOrganizacional.COORDENADOR_PASTORAL)) {
+                || normalizedRole == PapelOrganizacional.MESA_CPP
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL)) {
             return;
         }
         throw new ForbiddenOperationException("User does not have permission to decide event approvals");
