@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -76,105 +77,116 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="md"
-      PaperProps={{ sx: { borderRadius: 0 } }}
+      maxWidth="sm"
+      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
-      <form onSubmit={handleSubmit}>
-        <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1.5, color: 'primary.main' }}>
+      <form onSubmit={handleSubmit} noValidate>
+        <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
           {local ? 'Editar Local' : 'Novo Local'}
         </DialogTitle>
-        <DialogContent dividers sx={{ p: 3 }}>
-          <Grid container spacing={2.5}>
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Nome do Local"
-                variant="outlined"
-                fullWidth
-                required
-                value={nome}
-                onChange={(e) => {
-                  setNome(e.target.value);
-                  if (e.target.value.trim()) setErrors({});
-                }}
-                error={!!errors.nome}
-                helperText={errors.nome}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
-            </Grid>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <TextField
+              label="Nome do Local"
+              variant="outlined"
+              fullWidth
+              required
+              size="small"
+              value={nome}
+              onChange={(e) => {
+                setNome(e.target.value);
+                if (e.target.value.trim()) setErrors({});
+              }}
+              error={!!errors.nome}
+              helperText={errors.nome}
+              disabled={isPending}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+            />
 
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
-                <InputLabel id="tipo-local-label">Tipo</InputLabel>
-                <Select
-                  labelId="tipo-local-label"
-                  label="Tipo"
-                  value={tipo}
-                  onChange={(e) => setTipo(e.target.value as string)}
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth required size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                  <InputLabel id="tipo-local-label">Tipo</InputLabel>
+                  <Select
+                    labelId="tipo-local-label"
+                    label="Tipo"
+                    value={tipo}
+                    onChange={(e) => setTipo(e.target.value as string)}
+                    disabled={isPending}
+                  >
+                    <MenuItem value="IGREJA">Igreja</MenuItem>
+                    <MenuItem value="SALAO">Salão</MenuItem>
+                    <MenuItem value="SALA">Sala</MenuItem>
+                    <MenuItem value="OUTRO">Outro</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Capacidade"
+                  type="number"
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={capacidade}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCapacidade(val === '' ? '' : Math.max(0, parseInt(val, 10)));
+                  }}
                   disabled={isPending}
-                >
-                  <MenuItem value="IGREJA">Igreja</MenuItem>
-                  <MenuItem value="SALAO">Salão</MenuItem>
-                  <MenuItem value="SALA">Sala</MenuItem>
-                  <MenuItem value="OUTRO">Outro</MenuItem>
-                </Select>
-              </FormControl>
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                />
+              </Grid>
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Capacidade"
-                type="number"
-                variant="outlined"
-                fullWidth
-                value={capacidade}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setCapacidade(val === '' ? '' : Math.max(0, parseInt(val, 10)));
-                }}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
-            </Grid>
+            <TextField
+              label="Endereço"
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={endereco}
+              onChange={(e) => setEndereco(e.target.value)}
+              disabled={isPending}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+            />
 
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Endereço"
-                variant="outlined"
-                fullWidth
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Características / Recursos"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={3}
-                placeholder="Ex: Ar condicionado, Projetor, Som, etc."
-                value={caracteristicas}
-                onChange={(e) => setCaracteristicas(e.target.value)}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
-            </Grid>
-          </Grid>
+            <TextField
+              label="Características / Recursos"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={3}
+              size="small"
+              placeholder="Ex: Ar condicionado, Projetor, Som, etc."
+              value={caracteristicas}
+              onChange={(e) => setCaracteristicas(e.target.value)}
+              disabled={isPending}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+            />
+          </Box>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid', borderColor: 'divider', gap: 1 }}>
-          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}>
+        <DialogActions sx={{ borderTop: '1px solid #eee', pt: 2, pb: 2, px: 3 }}>
+          <Button
+            onClick={onClose}
+            disabled={isPending}
+            sx={{ textTransform: 'none', fontWeight: 600, color: '#d97706' }}
+          >
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             disabled={isPending}
-            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none', px: 3, py: 1 }}
+            sx={{
+              bgcolor: '#1a237e',
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 600,
+              borderRadius: 0,
+              px: 3,
+              '&:hover': { bgcolor: '#0d47a1' },
+            }}
           >
             {local ? 'Salvar Alterações' : 'Cadastrar'}
           </Button>

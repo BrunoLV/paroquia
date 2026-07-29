@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -165,170 +166,175 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="md"
-      PaperProps={{ sx: { borderRadius: 0 } }}
+      maxWidth="sm"
+      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
-      <form onSubmit={handleSubmit}>
-        <DialogTitle sx={{ fontWeight: 700, px: 3, pt: 3, pb: 1.5, color: 'primary.main' }}>
+      <form onSubmit={handleSubmit} noValidate>
+        <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
           {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
         </DialogTitle>
-        <DialogContent dividers sx={{ p: 3 }}>
-          <Grid container spacing={2.5}>
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Nome"
-                variant="outlined"
-                fullWidth
-                required
-                value={nome}
-                onChange={(e) => {
-                  setNome(e.target.value);
-                  if (e.target.value.trim()) setErrors({});
-                }}
-                error={!!errors.nome}
-                helperText={errors.nome}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
-            </Grid>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <TextField
+              label="Nome"
+              variant="outlined"
+              fullWidth
+              required
+              size="small"
+              value={nome}
+              onChange={(e) => {
+                setNome(e.target.value);
+                if (e.target.value.trim()) setErrors({});
+              }}
+              error={!!errors.nome}
+              helperText={errors.nome}
+              disabled={isPending}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+            />
 
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth required>
-                <InputLabel id="tipo-org-label">Tipo</InputLabel>
-                <Select
-                  labelId="tipo-org-label"
-                  label="Tipo"
-                  value={tipo}
-                  onChange={(e) => setTipo(e.target.value as string)}
-                  disabled={isPending}
-                  sx={{ borderRadius: 0 }}
-                >
-                  <MenuItem value="PASTORAL">Pastoral</MenuItem>
-                  <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-                  <MenuItem value="CLERO">Clero</MenuItem>
-                  <MenuItem value="MATRIZ">Matriz</MenuItem>
-                  <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
-                  <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
-                  <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
-
-                  <MenuItem value="OUTRO">Outro</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {(tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && (
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <FormControl fullWidth required error={!!errors.pastoralOficialId}>
-                  <InputLabel id="pastoral-oficial-label">Tipo Oficial / Movimento</InputLabel>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? 6 : 12 }}>
+                <FormControl fullWidth required size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                  <InputLabel id="tipo-org-label">Tipo</InputLabel>
                   <Select
-                    labelId="pastoral-oficial-label"
-                    label="Tipo Oficial / Movimento"
-                    value={pastoralOficialId}
-                    onChange={(e) => {
-                      setPastoralOficialId(e.target.value as string);
-                      setErrors(prev => ({ ...prev, pastoralOficialId: undefined }));
-                    }}
+                    labelId="tipo-org-label"
+                    label="Tipo"
+                    value={tipo}
+                    onChange={(e) => setTipo(e.target.value as string)}
                     disabled={isPending}
-                    sx={{ borderRadius: 0 }}
                   >
-                    <MenuItem value=""><em>Selecione...</em></MenuItem>
-                    {pastoraisOficiais
-                      .filter(po => po.tipo === tipo)
-                      .map(po => (
-                        <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
-                      ))}
+                    <MenuItem value="PASTORAL">Pastoral</MenuItem>
+                    <MenuItem value="MOVIMENTO">Movimento</MenuItem>
+                    <MenuItem value="CLERO">Clero</MenuItem>
+                    <MenuItem value="MATRIZ">Matriz</MenuItem>
+                    <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
+                    <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
+                    <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
+                    <MenuItem value="OUTRO">Outro</MenuItem>
                   </Select>
-                  {errors.pastoralOficialId && (
-                    <span style={{ color: '#d32f2f', fontSize: '0.75rem', marginTop: '3px', marginLeft: '14px' }}>
-                      {errors.pastoralOficialId}
-                    </span>
-                  )}
                 </FormControl>
               </Grid>
-            )}
+
+              {(tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && (
+                <Grid size={{ xs: 6 }}>
+                  <FormControl fullWidth required size="small" error={!!errors.pastoralOficialId} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                    <InputLabel id="pastoral-oficial-label">Tipo Oficial / Movimento</InputLabel>
+                    <Select
+                      labelId="pastoral-oficial-label"
+                      label="Tipo Oficial / Movimento"
+                      value={pastoralOficialId}
+                      onChange={(e) => {
+                        setPastoralOficialId(e.target.value as string);
+                        setErrors(prev => ({ ...prev, pastoralOficialId: undefined }));
+                      }}
+                      disabled={isPending}
+                    >
+                      <MenuItem value=""><em>Selecione...</em></MenuItem>
+                      {pastoraisOficiais
+                        .filter(po => po.tipo === tipo)
+                        .map(po => (
+                          <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
+                        ))}
+                    </Select>
+                    {errors.pastoralOficialId && (
+                      <span style={{ color: '#d32f2f', fontSize: '0.75rem', marginTop: '3px', marginLeft: '14px' }}>
+                        {errors.pastoralOficialId}
+                      </span>
+                    )}
+                  </FormControl>
+                </Grid>
+              )}
+            </Grid>
 
             {tipo !== 'CLERO' && (
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="parent-org-label">Organização Pai</InputLabel>
+              <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                <InputLabel id="parent-org-label">Organização Pai</InputLabel>
+                <Select
+                  labelId="parent-org-label"
+                  label="Organização Pai"
+                  value={parentId}
+                  onChange={(e) => setParentId(e.target.value as string)}
+                  disabled={isPending}
+                >
+                  <MenuItem value=""><em>Nenhuma</em></MenuItem>
+                  {parentOptions.map(org => (
+                    <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+
+            <TextField
+              label="Contato (E-mail/Tel)"
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={contato}
+              onChange={(e) => setContato(e.target.value)}
+              disabled={isPending}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+            />
+
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                  <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
                   <Select
-                    labelId="parent-org-label"
-                    label="Organização Pai"
-                    value={parentId}
-                    onChange={(e) => setParentId(e.target.value as string)}
+                    labelId="coordenador-select-label"
+                    label="Coordenador"
+                    value={coordenador}
+                    onChange={(e) => setCoordenador(e.target.value as string)}
                     disabled={isPending}
-                    sx={{ borderRadius: 0 }}
                   >
-                    <MenuItem value=""><em>Nenhuma</em></MenuItem>
-                    {parentOptions.map(org => (
-                      <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
+                    <MenuItem value=""><em>Nenhum</em></MenuItem>
+                    {coordinatorOptions.map(opt => (
+                      <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
-            )}
 
-            <Grid size={{ xs: 12, sm: tipo === 'CLERO' ? 6 : 12 }}>
-              <TextField
-                label="Contato (E-mail/Tel)"
-                variant="outlined"
-                fullWidth
-                value={contato}
-                onChange={(e) => setContato(e.target.value)}
-                disabled={isPending}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-              />
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                  <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
+                  <Select
+                    labelId="vice-coordenador-select-label"
+                    label="Vice-Coordenador"
+                    value={viceCoordenador}
+                    onChange={(e) => setViceCoordenador(e.target.value as string)}
+                    disabled={isPending}
+                  >
+                    <MenuItem value=""><em>Nenhum</em></MenuItem>
+                    {coordinatorOptions.map(opt => (
+                      <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth>
-                <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
-                <Select
-                  labelId="coordenador-select-label"
-                  label="Coordenador"
-                  value={coordenador}
-                  onChange={(e) => setCoordenador(e.target.value as string)}
-                  disabled={isPending}
-                  sx={{ borderRadius: 0 }}
-                >
-                  <MenuItem value=""><em>Nenhum</em></MenuItem>
-                  {coordinatorOptions.map(opt => (
-                    <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth>
-                <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
-                <Select
-                  labelId="vice-coordenador-select-label"
-                  label="Vice-Coordenador"
-                  value={viceCoordenador}
-                  onChange={(e) => setViceCoordenador(e.target.value as string)}
-                  disabled={isPending}
-                  sx={{ borderRadius: 0 }}
-                >
-                  <MenuItem value=""><em>Nenhum</em></MenuItem>
-                  {coordinatorOptions.map(opt => (
-                    <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
+          </Box>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid', borderColor: 'divider', gap: 1 }}>
-          <Button onClick={onClose} color="inherit" disabled={isPending} sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}>
+        <DialogActions sx={{ borderTop: '1px solid #eee', pt: 2, pb: 2, px: 3 }}>
+          <Button
+            onClick={onClose}
+            disabled={isPending}
+            sx={{ textTransform: 'none', fontWeight: 600, color: '#d97706' }}
+          >
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             disabled={isPending}
-            sx={{ borderRadius: 0, fontWeight: 600, textTransform: 'none', px: 3, py: 1 }}
+            sx={{
+              bgcolor: '#1a237e',
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 600,
+              borderRadius: 0,
+              px: 3,
+              '&:hover': { bgcolor: '#0d47a1' },
+            }}
           >
             {organizacao ? 'Salvar Alterações' : 'Cadastrar'}
           </Button>
