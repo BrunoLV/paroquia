@@ -25,8 +25,10 @@ public class LocalService {
     }
 
     @Transactional
-    public Local createLocal(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, UUID organizacaoId) {
-        Local local = new Local(UUID.randomUUID(), nome, tipo, endereco, capacidade, caracteristicas, true, organizacaoId);
+    public Local createLocal(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
+                             UUID organizacaoId) {
+        Local local = new Local(UUID.randomUUID(), nome, tipo, endereco, capacidade, caracteristicas, true,
+                organizacaoId);
         localRepository.save(local);
         return local;
     }
@@ -56,8 +58,8 @@ public class LocalService {
     public void deleteLocal(UUID id) {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
-        local.update(local.getNome(),
-                local.getTipo(), local.getEndereco(), local.getCapacidade(), local.getCaracteristicas(), false, local.getOrganizacaoId());
+        local.update(local.getNome(), local.getTipo(), local.getEndereco(),
+                local.getCapacidade(), local.getCaracteristicas(), false, local.getOrganizacaoId());
 
         localRepository.save(local);
     }

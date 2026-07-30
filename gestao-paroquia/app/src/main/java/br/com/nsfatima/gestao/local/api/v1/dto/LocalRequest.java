@@ -34,7 +34,8 @@ public record LocalRequest(
         @Schema(description = "ID da organização (Matriz ou Comunidade) de subordinação")
         UUID organizacaoId
 ) {
-    public LocalRequest(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+    public LocalRequest(String nome, String tipo, String endereco, Integer capacidade,
+                        String caracteristicas, boolean ativo) {
         this(nome, tipo, endereco, capacidade, caracteristicas, ativo, null);
     }
 }

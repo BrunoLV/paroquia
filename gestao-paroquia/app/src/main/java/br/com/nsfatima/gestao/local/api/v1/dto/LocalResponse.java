@@ -25,7 +25,8 @@ public record LocalResponse(
         @Schema(description = "Nome da organização (Matriz/Comunidade) de subordinação")
         String organizacaoNome
 ) {
-    public LocalResponse(UUID id, String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+    public LocalResponse(UUID id, String nome, String tipo, String endereco,
+                         Integer capacidade, String caracteristicas, boolean ativo) {
         this(id, nome, tipo, endereco, capacidade, caracteristicas, ativo, null, null);
     }
 }
