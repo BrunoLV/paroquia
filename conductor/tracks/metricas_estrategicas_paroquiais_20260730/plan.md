@@ -37,10 +37,10 @@
 - [x] Task: Criar Serviços API e Custom Hooks em React Query 7edd240
     - [x] Implementar `metricasService.ts` e hook `useMetricasEstrategicas` em `gestao-paroquia-ui`
     - [x] Escrever testes unitários em Vitest para `metricasService`
-- [ ] Task: Implementar Alerta Preventivo de Concorrência Interpastoral nos Modais
-    - [ ] Integrar verificação de sobreposição no modal de cadastro/homologação de eventos
-    - [ ] Adicionar componente de alerta visual (MUI Alert / Banner) informando potencial conflito antes de salvar
-    - [ ] Escrever testes unitários em Vitest para o componente de alerta
+- [x] Task: Implementar Alerta Preventivo de Concorrência Interpastoral nos Modais 8682df1
+    - [x] Integrar verificação de sobreposição no modal de cadastro/homologação de eventos
+    - [x] Adicionar componente de alerta visual (MUI Alert / Banner) informando potencial conflito antes de salvar
+    - [x] Escrever testes unitários em Vitest para o componente de alerta
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)' (Protocol in workflow.md)
 
 ## Phase 4: Frontend Strategic Metrics Dashboard & Executive Reports UI
