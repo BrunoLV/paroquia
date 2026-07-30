@@ -8,6 +8,7 @@ import PendingApprovals from '../components/dashboard/PendingApprovals';
 import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
 import ActiveProjectsProgressList from '../components/dashboard/ActiveProjectsProgressList';
 import WeeklyTimeline from '../components/dashboard/WeeklyTimeline';
+import MetricasEstrategicasWidget from '../components/dashboard/MetricasEstrategicasWidget';
 import apiClient from '../api/client';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import {useAuth} from '../auth/AuthContext';
@@ -257,6 +258,10 @@ const Dashboard = () => {
             Visão Geral
           </Typography>
           <SummaryCards metrics={summaryMetrics} />
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <MetricasEstrategicasWidget />
         </Grid>
 
         {/* Charts & Project Progress */}
