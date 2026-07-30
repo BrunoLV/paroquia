@@ -28,9 +28,9 @@
 - [x] Task: Implementar UseCase de Índice de Ociosidade Patrimonial a8067ff
     - [x] Criar testes unitários TDD em `CalcularOciosidadePatrimonialUseCaseTest`
     - [x] Implementar `CalcularOciosidadePatrimonialUseCase` calculando horas vagas de espaços paroquiais
-- [ ] Task: Expor Controller REST `MetricaEstrategicaController` com OpenAPI/Swagger
-    - [ ] Criar endpoints REST para consulta das 6 métricas com DTOs anonimizados (LGPD)
-    - [ ] Criar testes de integração `@SpringBootTest` com H2 cobrindo todos os endpoints
+- [x] Task: Expor Controller REST `MetricaEstrategicaController` com OpenAPI/Swagger 8ae5b19
+    - [x] Criar endpoints REST para consulta das 6 métricas com DTOs anonimizados (LGPD)
+    - [x] Criar testes de integração `@SpringBootTest` com H2 cobrindo todos os endpoints
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Analytics Engine & Metric Use Cases (TDD)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)
