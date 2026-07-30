@@ -1,0 +1,1 @@
+Phase 1: Segregated UsuarioJpaRepository into UsuarioAutenticacaoJpaRepository and UsuarioPerfilJpaRepository
