@@ -11,7 +11,9 @@
 ## Data Privacy & Compliance (LGPD Mandate)
 - **Strict Compliance Routing:** This project handles personal data and is for internal use only. The agent ABSOLUTELY MUST read, internalize, and strictly enforce the privacy and security boundaries defined in the `docs/ia/regras_duras_lgpd.md` file before authoring UI components, exposing data contracts, or handling client-side persistence/logs.
 
-## Agent Capabilities & Custom Skills
+## Agent Capabilities, Custom Skills & Graphify Mandate
+- **Graphify Codebase Exploration:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar componentes UI, páginas ou hooks via buscas manuais.
+- **Economia de Tokens:** É proibida a leitura em lote de múltiplos arquivos fonte inteiros quando a estrutura de dependências puder ser obtida diretamente via consulta aos artefatos do Graphify, garantindo economia de tokens e navegação precisa.
 - **Skill Alignment:** Specialized behavioral skills, tools, and execution capabilities for this agent are defined inside `.agents/skills`. The agent must strictly consult and adapt its logic according to the context and functions provisioned within that directory before proceeding with generation tasks.
 
 ## Static Analysis, Linters & Tools

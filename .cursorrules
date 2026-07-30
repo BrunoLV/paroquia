@@ -1,0 +1,6 @@
+# Cursor Rules & AI Agent Directives
+
+- MANDATO GRAPHIFY: A pasta `graphify-out/` contém os grafos de dependência e relatórios (`GRAPH_REPORT.md`). Antes de explorar o código via buscas manuais ou leitura cega de arquivos, consulte obrigatoriamente os grafos do Graphify para ir diretamente aos componentes/classes necessários.
+- ECONOMIA DE TOKENS: Não faça varredura manual de código nem leitura em massa de arquivos completos sem direcionamento prévio pelo grafo.
+- NO INLINE IMPORTS: É estritamente proibido o uso de FQN inline imports no código (ex: `br.com.nsfatima...`). Declare todos os imports no topo dos arquivos.
+- RESPEITO AO AGENTS.MD: Consulte sempre o `AGENTS.md` da raiz e dos subprojetos (`gestao-paroquia` e `gestao-paroquia-ui`).

@@ -21,6 +21,10 @@
 - **Proposição Estrita de Imports (No Inline FQN Imports):** É estritamente proibida a utilização de FQN inline imports no código (ex: `br.com.nsfatima...LiturgicalEngine`). Todos os tipos e classes devem obrigatoriamente ser declarados através de instruções `import` no topo do arquivo.
 - **Global TDD Framework Alignment:** Across the entire monorepo, Test-Driven Development (TDD) remains the absolute foundation of code safety. The agent must systematically deliver the testing specifications (Unit, Integration, and E2E layers as dictated by child guidelines) alongside or prior to production changes.
 
+## Graphify Navigation & Token Optimization Mandate
+- **Obrigatoriedade do Graphify:** A pasta `graphify-out/` contendo os grafos de conhecimento, AST e dependências da aplicação está disponível na raiz. Todos os agentes de IA que atuarem neste repositório DEVEM obrigatoriamente priorizar a consulta aos artefatos do `graphify` (`graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.json`, detecção de comunidades, god nodes e análise de impacto) para compreender a arquitetura e rastrear dependências antes de efetuar buscas manuais cegas.
+- **Navegação Inteligente & Economia de Tokens:** É estritamente proibido realizar varredura cega ou leitura em massa de múltiplos arquivos desnecessários (`view_file` em lote sem filtro prévio). O agente deve obrigatoriamente utilizar o conhecimento estruturado do grafo para ir diretamente aos arquivos afetados e trechos específicos de código, otimizando o consumo de tokens e garantindo precisão contextual.
+
 ## Security, Privacy & Global Constraints
 - **Absolute Privacy Isolation:** This entire monorepo handles personal data and is strictly for internal use. The agent must strictly defer to `docs/ia/regras_duras_lgpd.md` before writing data structures, logging events, or structuring network responses. PII leak prevention is globally enforced.
 - **Shared Skills Directory:** Global agent behaviors, custom tool operational paradigms, and generic skills are located within `.agents/skill`. Review these global capabilities alongside local child skills to ensure cohesive execution.
