@@ -162,6 +162,24 @@ export interface CreateEventoPayload {
   bypassAgendaConflict?: boolean;
 }
 
+export interface UpdateEventoPayload {
+  titulo?: string;
+  descricao?: string;
+  categoria?: string;
+  inicio?: string;
+  fim?: string;
+  status?: string;
+  adicionadoExtraJustificativa?: string | null;
+  canceladoMotivo?: string | null;
+  organizacaoResponsavelId?: string;
+  participantes?: string[];
+  editScope?: 'THIS_EVENT' | 'THIS_AND_FUTURE' | 'ALL_EVENTS';
+  projetoId?: string | null;
+  localId?: string | null;
+  igrejaVinculoId?: string | null;
+  bypassAgendaConflict?: boolean;
+}
+
 export interface AprovacaoResponse {
   id: string;
   eventoId: string | null;
