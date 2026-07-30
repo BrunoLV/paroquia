@@ -32,4 +32,4 @@
 - [x] Task: Implementar Indicadores Litúrgicos Visuais no Calendário e Dashboard 4b55326
     - [x] Exibir Chip do Ano Litúrgico Nominal (Ex: "Ano C (2026)") e selo de status de ano fechado no cabeçalho do calendário
     - [x] Executar testes no frontend com Vitest (284/284 passando)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Calendar Lock, Liturgical Indicators & Executive Dashboard UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Calendar Lock, Liturgical Indicators & Executive Dashboard UI' (Protocol in workflow.md) 7a15c28
