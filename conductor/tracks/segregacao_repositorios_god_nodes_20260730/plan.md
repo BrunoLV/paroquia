@@ -4,13 +4,13 @@ Refatoração e segregação dos repositórios God Nodes (`UsuarioJpaRepository`
 
 ## Phase 1: Segregação do Domínio e Repositórios de Usuário (`gestao-paroquia`)
 
-- [ ] Task: Escrever/atualizar testes unitários e de integração para os submódulos de Usuário (TDD Red)
-    - [ ] Criar especificações de teste para as novas sub-interfaces (ex: `UsuarioAutenticacaoRepository`, `UsuarioPerfilRepository`).
-- [ ] Task: Implementar sub-interfaces de repositório e refatorar injeções de Usuário (TDD Green)
-    - [ ] Criar sub-interfaces de repositório focadas para Usuário.
-    - [ ] Atualizar injeções de dependência em controllers, services e use cases de Usuário.
-    - [ ] Executar `./gradlew test` e validar o módulo de Usuário.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Segregação do Domínio e Repositórios de Usuário' (Protocol in workflow.md)
+- [x] Task: Escrever/atualizar testes unitários e de integração para os submódulos de Usuário (TDD Red) 08441cb
+    - [x] Criar especificações de teste para as novas sub-interfaces (ex: `UsuarioAutenticacaoRepository`, `UsuarioPerfilRepository`).
+- [x] Task: Implementar sub-interfaces de repositório e refatorar injeções de Usuário (TDD Green) 08441cb
+    - [x] Criar sub-interfaces de repositório focadas para Usuário.
+    - [x] Atualizar injeções de dependência em controllers, services e use cases de Usuário.
+    - [x] Executar `./gradlew test` e validar o módulo de Usuário.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Segregação do Domínio e Repositórios de Usuário' (Protocol in workflow.md)
 
 ## Phase 2: Segregação do Domínio e Repositórios de Evento (`gestao-paroquia`)
 
