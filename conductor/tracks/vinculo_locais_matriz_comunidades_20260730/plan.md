@@ -11,15 +11,15 @@ Refatorar a entidade `Local` na API (`gestao-paroquia`), no banco PostgreSQL (vi
 
 ## Phase 2: Backend Domain & API Implementation (`gestao-paroquia`)
 
-- [ ] Task: Escrever testes unitários e de integração que falham para Local com Organização (TDD Red)
-    - [ ] Atualizar testes em `LocalServiceTest`, `LocalControllerTest` e repositórios com asserções para `organizacaoId` e `organizacaoNome`.
-    - [ ] Executar os testes e confirmar que falham conforme esperado.
-- [ ] Task: Implementar alterações no domínio, persistência e endpoints REST (TDD Green)
-    - [ ] Atualizar o modelo de domínio `Local` e a entidade `LocalEntity` para suportar `organizacaoId`.
-    - [ ] Atualizar DTOs `LocalRequest` e `LocalResponse` e seus mappers.
-    - [ ] Atualizar `LocalService` e `LocalController` para persistência e filtragem por `organizacaoId`.
-    - [ ] Reexecutar a suíte de testes do backend (`./gradlew test`) e garantir 100% de aprovação em verde.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Domain & API Implementation' (Protocol in workflow.md)
+- [x] Task: Escrever testes unitários e de integração que falham para Local com Organização (TDD Red) 73ebb53
+    - [x] Atualizar testes em `LocalServiceTest`, `LocalControllerTest` e repositórios com asserções para `organizacaoId` e `organizacaoNome`.
+    - [x] Executar os testes e confirmar que falham conforme esperado.
+- [x] Task: Implementar alterações no domínio, persistência e endpoints REST (TDD Green) 73ebb53
+    - [x] Atualizar o modelo de domínio `Local` e a entidade `LocalEntity` para suportar `organizacaoId`.
+    - [x] Atualizar DTOs `LocalRequest` e `LocalResponse` e seus mappers.
+    - [x] Atualizar `LocalService` e `LocalController` para persistência e filtragem por `organizacaoId`.
+    - [x] Reexecutar a suíte de testes do backend (`./gradlew test`) e garantir 100% de aprovação em verde.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Domain & API Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Interface & Types Implementation (`gestao-paroquia-ui`)
 
