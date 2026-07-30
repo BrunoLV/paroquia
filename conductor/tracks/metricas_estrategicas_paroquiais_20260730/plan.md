@@ -13,9 +13,9 @@
 - [x] Task: Implementar UseCase de Índice de Sazonalidade Litúrgica (Predictive Analytics) 8aa6732
     - [x] Criar testes unitários TDD em `CalcularSazonalidadeLiturgicaUseCaseTest`
     - [x] Implementar `CalcularSazonalidadeLiturgicaUseCase` cruzando histórico de eventos com calendário litúrgico
-- [ ] Task: Implementar UseCase de Taxa de Conclusão e Abandono de Projetos
-    - [ ] Criar testes unitários TDD em `CalcularTaxaProjetosUseCaseTest`
-    - [ ] Implementar `CalcularTaxaProjetosUseCase` calculando percentual concluído/cancelado/em andamento
+- [x] Task: Implementar UseCase de Taxa de Conclusão e Abandono de Projetos 27d3470
+    - [x] Criar testes unitários TDD em `CalcularTaxaProjetosUseCaseTest`
+    - [x] Implementar `CalcularTaxaProjetosUseCase` calculando percentual concluído/cancelado/em andamento
 - [ ] Task: Implementar UseCase de SLA de Despacho Pastoral
     - [ ] Criar testes unitários TDD em `CalcularSlaDespachoPastoralUseCaseTest`
     - [ ] Implementar `CalcularSlaDespachoPastoralUseCase` medindo tempo médio de aprovação
