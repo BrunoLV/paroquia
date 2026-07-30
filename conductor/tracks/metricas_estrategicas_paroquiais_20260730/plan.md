@@ -31,7 +31,7 @@
 - [x] Task: Expor Controller REST `MetricaEstrategicaController` com OpenAPI/Swagger 8ae5b19
     - [x] Criar endpoints REST para consulta das 6 métricas com DTOs anonimizados (LGPD)
     - [x] Criar testes de integração `@SpringBootTest` com H2 cobrindo todos os endpoints
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Analytics Engine & Metric Use Cases (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Analytics Engine & Metric Use Cases (TDD)' (Protocol in workflow.md) 29f3d40
 
 ## Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)
 - [ ] Task: Criar Serviços API e Custom Hooks em React Query
