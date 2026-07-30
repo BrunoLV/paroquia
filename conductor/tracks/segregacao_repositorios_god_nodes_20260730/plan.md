@@ -24,13 +24,13 @@ Refatoração e segregação dos repositórios God Nodes (`UsuarioJpaRepository`
 
 ## Phase 3: Segregação do Domínio e Repositórios de Organização (`gestao-paroquia`)
 
-- [ ] Task: Escrever/atualizar testes unitários e de integração para os submódulos de Organização (TDD Red)
-    - [ ] Criar especificações de teste para as novas sub-interfaces (ex: `OrganizacaoConsultaRepository`, `OrganizacaoGestaoRepository`).
-- [ ] Task: Implementar sub-interfaces de repositório e refatorar injeções de Organização (TDD Green)
-    - [ ] Criar sub-interfaces de repositório focadas para Organização.
-    - [ ] Atualizar injeções de dependência em controllers, services e use cases de Organização.
-    - [ ] Executar `./gradlew test` e validar o módulo de Organização.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Segregação do Domínio e Repositórios de Organização' (Protocol in workflow.md)
+- [x] Task: Escrever/atualizar testes unitários e de integração para os submódulos de Organização (TDD Red) 14bf768
+    - [x] Criar especificações de teste para as novas sub-interfaces (ex: `OrganizacaoConsultaRepository`, `OrganizacaoGestaoRepository`).
+- [x] Task: Implementar sub-interfaces de repositório e refatorar injeções de Organização (TDD Green) 14bf768
+    - [x] Criar sub-interfaces de repositório focadas para Organização.
+    - [x] Atualizar injeções de dependência em controllers, services e use cases de Organização.
+    - [x] Executar `./gradlew test` e validar o módulo de Organização.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Segregação do Domínio e Repositórios de Organização' (Protocol in workflow.md)
 
 ## Phase 4: Validação Integrada do Monorepo e Qualidade Estática
 
