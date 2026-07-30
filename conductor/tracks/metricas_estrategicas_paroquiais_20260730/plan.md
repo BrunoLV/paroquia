@@ -19,9 +19,9 @@
 - [x] Task: Implementar UseCase de SLA de Despacho Pastoral 54098ec
     - [x] Criar testes unitários TDD em `CalcularSlaDespachoPastoralUseCaseTest`
     - [x] Implementar `CalcularSlaDespachoPastoralUseCase` medindo tempo médio de aprovação
-- [ ] Task: Implementar UseCase de Coeficiente de Impacto Social (Pastoral em Saída)
-    - [ ] Criar testes unitários TDD em `CalcularImpactoSocialUseCaseTest`
-    - [ ] Implementar `CalcularImpactoSocialUseCase` agregando eventos sociais vs institucionais
+- [x] Task: Implementar UseCase de Coeficiente de Impacto Social (Pastoral em Saída) bc5f4c2
+    - [x] Criar testes unitários TDD em `CalcularImpactoSocialUseCaseTest`
+    - [x] Implementar `CalcularImpactoSocialUseCase` agregando eventos sociais vs institucionais
 - [ ] Task: Implementar Motor e UseCase de Alerta de Concorrência Interpastoral (Overlap Conflict)
     - [ ] Criar testes unitários TDD em `VerificarConcorrenciaInterpastoralUseCaseTest`
     - [ ] Implementar `VerificarConcorrenciaInterpastoralUseCase` e endpoint de validação preventiva
