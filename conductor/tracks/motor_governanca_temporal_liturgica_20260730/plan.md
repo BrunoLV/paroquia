@@ -17,12 +17,12 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Domain, Schema, Liturgical Engine & Database Seed' (Protocol in workflow.md) c794437
 
 ## Phase 2: Use Cases Integration, Calendar Lock & Silent Import Resolution
-- [ ] Task: Integrar Resolução Litúrgica e Lock Policy nos Use Cases de Evento (TDD)
-    - [ ] Atualizar `CreateProjetoEventoUseCase` / `ProjetoEventoService` para validar `CalendarLockPolicy` e associar `anoLiturgicoRef` e `cicloLiturgicoId`
-    - [ ] Escrever testes unitários/integração TDD cobrindo criação em anos abertos/fechados
-- [ ] Task: Implementar Ingestão em Lote e Resolução Silenciosa de Conflitos em `LiturgicalImportService` (TDD)
-    - [ ] Implementar tratamento para importação CSV/XLSX em ano paroquial fechado (conversão para status `PENDENTE` e fila de aprovação sem quebrar o lote)
-    - [ ] Escrever testes unitários em `LiturgicalImportServiceTest`
+- [x] Task: Integrar Resolução Litúrgica e Lock Policy nos Use Cases de Evento (TDD) 6b21838
+    - [x] Atualizar `CreateProjetoEventoUseCase` / `ProjetoEventoService` para validar `CalendarLockPolicy` e associar `anoLiturgicoRef` e `cicloLiturgicoId`
+    - [x] Escrever testes unitários/integração TDD cobrindo criação em anos abertos/fechados
+- [x] Task: Implementar Ingestão em Lote e Resolução Silenciosa de Conflitos em `LiturgicalImportService` (TDD) 6b21838
+    - [x] Implementar tratamento para importação CSV/XLSX em ano paroquial fechado (conversão para status `PENDENTE` e fila de aprovação sem quebrar o lote)
+    - [x] Escrever testes unitários em `LiturgicalImportServiceTest`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Use Cases Integration, Calendar Lock & Silent Import Resolution' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Calendar Lock, Liturgical Indicators & Executive Dashboard UI
