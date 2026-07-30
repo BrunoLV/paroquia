@@ -30,7 +30,8 @@ public class AnoLiturgicoEntity {
     public AnoLiturgicoEntity() {
     }
 
-    public AnoLiturgicoEntity(Integer ano, String cicloLetra, Instant dataInicioAdvento, Instant dataFimComum, Instant atualizadoEmUtc) {
+    public AnoLiturgicoEntity(Integer ano, String cicloLetra,
+                              Instant dataInicioAdvento, Instant dataFimComum, Instant atualizadoEmUtc) {
         this.ano = ano;
         this.cicloLetra = cicloLetra;
         this.dataInicioAdvento = dataInicioAdvento;

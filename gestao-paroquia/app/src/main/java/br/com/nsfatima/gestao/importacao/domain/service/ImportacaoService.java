@@ -309,7 +309,9 @@ public class ImportacaoService {
             entity.setAnoLiturgicoRef(anoLiturgicoRef);
         }
         if (cicloLiturgicoRepository != null) {
-            cicloLiturgicoRepository.findAll().stream().findFirst().ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
+            cicloLiturgicoRepository.findAll().stream()
+                    .findFirst()
+                    .ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
         }
 
         eventoJpaRepository.save(entity);
