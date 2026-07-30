@@ -268,5 +268,5 @@
 
 ---
 
-- [ ] **Track: Motor de Validação da Agenda Comunitária (Níveis de Prioridade 1-4 & Bypass)**
+- [x] **Track: Motor de Validação da Agenda Comunitária (Níveis de Prioridade 1-4 & Bypass)**
 *Link: [./tracks/motor_agenda_comunitaria_prioridades_20260728/index.md](./tracks/motor_agenda_comunitaria_prioridades_20260728/index.md)*
