@@ -8,7 +8,7 @@
 ## Phase 2: Auditoria e Validação do Formulário de Eventos, Projetos e Recorrência na UI
 - [x] Task: Auditar `EventRegistrationModal.tsx` e `RecurrenceForm.tsx` garantindo preenchimento, limites de caracteres e transmissão de campos obrigatórios (`igrejaVinculoId`, `bypassAgendaConflict`). (0d2c277)
 - [x] Task: Auditar validações de vínculo com Projetos em `EventRegistrationModal.tsx` e `Projects.tsx`, garantindo bloqueio quando a data do evento/recorrência extrapola as datas do projeto. (abf74dd)
-- [ ] Task: Auditar `EventCancelDialog.tsx` e `EventObservations.tsx` garantindo tratamento e confirmação visual de status de cancelamento/justificativas.
+- [x] Task: Auditar `EventCancelDialog.tsx` e `EventObservations.tsx` garantindo tratamento e confirmação visual de status de cancelamento/justificativas. (1228ms)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Auditoria e Validação do Formulário de Eventos, Projetos e Recorrência na UI' (Protocol in workflow.md)
 
 ## Phase 3: Testes de Integração E2E e Validação da Suíte Completa
