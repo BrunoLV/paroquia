@@ -44,9 +44,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)' (Protocol in workflow.md) 8a2ff36
 
 ## Phase 4: Frontend Strategic Metrics Dashboard & Executive Reports UI
-- [ ] Task: Implementar Aba "Métricas Estratégicas" na Tela de Relatórios Gerenciais
-    - [ ] Criar componente `MetricasEstrategicasTab.tsx` com gráficos interativos (`@mui/x-charts`)
-    - [ ] Renderizar Sazonalidade Litúrgica, Taxa de Projetos, SLA de Despacho, Impacto Social, Concorrência e Ociosidade Patrimonial
+- [x] Task: Implementar Aba "Métricas Estratégicas" na Tela de Relatórios Gerenciais 5ebfcc1
+    - [x] Criar componente `MetricasEstrategicasTab.tsx` com gráficos interativos (`@mui/x-charts`)
+    - [x] Renderizar Sazonalidade Litúrgica, Taxa de Projetos, SLA de Despacho, Impacto Social, Concorrência e Ociosidade Patrimonial
 - [ ] Task: Implementar Widgets de Destaque Executivo no Dashboard Principal
     - [ ] Criar widgets de resumo executivo em `DashboardPage.tsx` para Clero e Conselhos (CPP/CAE)
 - [ ] Task: Testes de Integração e Verificação End-to-End da UI
