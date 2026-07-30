@@ -2,7 +2,7 @@
 
 ## Phase 1: Auditoria e Alinhamento de DTOs, Eventos e Regras de Validação no Backend e Frontend
 - [x] Task: Auditar DTOs de solicitação (`CreateEventoRequest`, `UpdateEventoRequest`, `RecorrenciaRequest`) e garantir correspondência 1:1 com os tipos TypeScript (`types.ts`). (38824c7)
-- [ ] Task: Verificar mapeamento de exceções e respostas de erro (`ConflitoAgendaEclesialException`, `ConflitoAgendaException`, `ValidationErrorResponse`) no handler global.
+- [x] Task: Verificar mapeamento de exceções e respostas de erro (`ConflitoAgendaEclesialException`, `ConflitoAgendaException`, `ValidationErrorResponse`) no handler global. (818b600)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Auditoria e Alinhamento de DTOs e Regras de Validação' (Protocol in workflow.md)
 
 ## Phase 2: Auditoria e Validação do Formulário de Eventos, Projetos e Recorrência na UI
