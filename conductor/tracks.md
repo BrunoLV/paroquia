@@ -276,3 +276,9 @@
 - [x] **Track: Auditoria, Consistência e Alinhamento do Cadastro de Eventos, Projetos e Recorrência (API x UI)**
 *Link: [./archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md](./archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md)*
 
+---
+
+- [ ] **Track: Vinculação de Locais (Espaços Paroquiais) a Matriz/Comunidades na API, UI e Banco de Dados (com ajuste de seed)**
+*Link: [./tracks/vinculo_locais_matriz_comunidades_20260730/index.md](./tracks/vinculo_locais_matriz_comunidades_20260730/index.md)*
+
+
