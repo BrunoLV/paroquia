@@ -25,9 +25,9 @@
 - [x] Task: Implementar Motor e UseCase de Alerta de Concorrência Interpastoral (Overlap Conflict) 6273bf5
     - [x] Criar testes unitários TDD em `VerificarConcorrenciaInterpastoralUseCaseTest`
     - [x] Implementar `VerificarConcorrenciaInterpastoralUseCase` e endpoint de validação preventiva
-- [ ] Task: Implementar UseCase de Índice de Ociosidade Patrimonial
-    - [ ] Criar testes unitários TDD em `CalcularOciosidadePatrimonialUseCaseTest`
-    - [ ] Implementar `CalcularOciosidadePatrimonialUseCase` calculando horas vagas de espaços paroquiais
+- [x] Task: Implementar UseCase de Índice de Ociosidade Patrimonial a8067ff
+    - [x] Criar testes unitários TDD em `CalcularOciosidadePatrimonialUseCaseTest`
+    - [x] Implementar `CalcularOciosidadePatrimonialUseCase` calculando horas vagas de espaços paroquiais
 - [ ] Task: Expor Controller REST `MetricaEstrategicaController` com OpenAPI/Swagger
     - [ ] Criar endpoints REST para consulta das 6 métricas com DTOs anonimizados (LGPD)
     - [ ] Criar testes de integração `@SpringBootTest` com H2 cobrindo todos os endpoints
