@@ -285,3 +285,9 @@
 
 - [x] **Track: Otimização de Arquitetura Identificada pelo Grafo (Segregação de God Nodes)**
 *Link: [./archive/segregacao_repositorios_god_nodes_20260730/index.md](./archive/segregacao_repositorios_god_nodes_20260730/index.md)*
+
+---
+
+- [ ] **Track: Métricas Estratégicas e Preditivas de Gestão Paroquial (Sazonalidade Litúrgica, SLA de Despacho, Taxa de Projetos, Impacto Social, Concorrência e Ociosidade Patrimonial)**
+*Link: [./tracks/metricas_estrategicas_paroquiais_20260730/](./tracks/metricas_estrategicas_paroquiais_20260730/)*
+
