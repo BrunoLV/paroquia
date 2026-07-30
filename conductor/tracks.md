@@ -279,4 +279,4 @@
 ---
 
 - [x] **Track: Vinculação de Locais (Espaços Paroquiais) a Matriz/Comunidades na API, UI e Banco de Dados (com ajuste de seed)**
-*Link: [./tracks/vinculo_locais_matriz_comunidades_20260730/index.md](./tracks/vinculo_locais_matriz_comunidades_20260730/index.md)*
+*Link: [./archive/vinculo_locais_matriz_comunidades_20260730/index.md](./archive/vinculo_locais_matriz_comunidades_20260730/index.md)*
