@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Domain, Schema & Liturgical Calendar Infrastructure' (Protocol in workflow.md) 3f63f93
 
 ## Phase 2: Backend Analytics Engine & Metric Use Cases (TDD)
-- [ ] Task: Implementar UseCase de Índice de Sazonalidade Litúrgica (Predictive Analytics)
-    - [ ] Criar testes unitários TDD em `CalcularSazonalidadeLiturgicaUseCaseTest`
-    - [ ] Implementar `CalcularSazonalidadeLiturgicaUseCase` cruzando histórico de eventos com calendário litúrgico
+- [x] Task: Implementar UseCase de Índice de Sazonalidade Litúrgica (Predictive Analytics) 8aa6732
+    - [x] Criar testes unitários TDD em `CalcularSazonalidadeLiturgicaUseCaseTest`
+    - [x] Implementar `CalcularSazonalidadeLiturgicaUseCase` cruzando histórico de eventos com calendário litúrgico
 - [ ] Task: Implementar UseCase de Taxa de Conclusão e Abandono de Projetos
     - [ ] Criar testes unitários TDD em `CalcularTaxaProjetosUseCaseTest`
     - [ ] Implementar `CalcularTaxaProjetosUseCase` calculando percentual concluído/cancelado/em andamento
