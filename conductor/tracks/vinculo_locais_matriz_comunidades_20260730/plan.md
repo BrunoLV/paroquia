@@ -4,10 +4,10 @@ Refatorar a entidade `Local` na API (`gestao-paroquia`), no banco PostgreSQL (vi
 
 ## Phase 1: Database Migration & Seed Data Updates
 
-- [ ] Task: Criar migração Flyway e ajustar scripts de Seed do Docker
-    - [ ] Criar arquivo `V048__add_organizacao_id_to_locais.sql` adicionando a coluna `organizacao_id UUID REFERENCES calendario.organizacoes(id)`.
-    - [ ] Atualizar scripts/arquivos de seed Docker vinculando os locais iniciais à Matriz e Comunidades de teste.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Seed Data Updates' (Protocol in workflow.md)
+- [x] Task: Criar migração Flyway e ajustar scripts de Seed do Docker a188cbf
+    - [x] Criar arquivo `V048__add_organizacao_id_to_locais.sql` adicionando a coluna `organizacao_id UUID REFERENCES calendario.organizacoes(id)`.
+    - [x] Atualizar scripts/arquivos de seed Docker vinculando os locais iniciais à Matriz e Comunidades de teste.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Database Migration & Seed Data Updates' (Protocol in workflow.md)
 
 ## Phase 2: Backend Domain & API Implementation (`gestao-paroquia`)
 
