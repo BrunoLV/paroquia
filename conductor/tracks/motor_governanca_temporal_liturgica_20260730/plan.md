@@ -5,9 +5,9 @@
 ---
 
 ## Phase 1: Backend Domain, Schema, Liturgical Engine & Database Seed
-- [ ] Task: Criar migração Flyway `V050__create_tabela_anos_liturgicos.sql` e atualizar Docker seed
-    - [ ] Criar tabela `calendario.anos_liturgicos` com FKs em `calendario.eventos` / `tb_projeto_evento`
-    - [ ] Adicionar seed inicial Flyway e Docker seed com no mínimo 10 Anos Litúrgicos (2026 a 2035, ciclos A, B, C) e a malha de ciclos litúrgicos correspondentes
+- [x] Task: Criar migração Flyway `V050__create_tabela_anos_liturgicos.sql` e atualizar Docker seed cee6f9c
+    - [x] Criar tabela `calendario.anos_liturgicos` com FKs em `calendario.eventos` / `tb_projeto_evento`
+    - [x] Adicionar seed inicial Flyway e Docker seed com no mínimo 10 Anos Litúrgicos (2026 a 2035, ciclos A, B, C) e a malha de ciclos litúrgicos correspondentes
 - [ ] Task: Implementar Entidade JPA `AnoLiturgicoEntity` e Repositório `AnoLiturgicoRepository`
     - [ ] Criar record `AnoLiturgico`, JPA Entity `AnoLiturgicoEntity` e repositório Spring Data JPA
     - [ ] Escrever testes de integração em `@SpringBootTest` com H2 para `AnoLiturgicoRepository`
