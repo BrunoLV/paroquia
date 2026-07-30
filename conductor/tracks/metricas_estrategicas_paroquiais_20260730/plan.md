@@ -41,7 +41,7 @@
     - [x] Integrar verificação de sobreposição no modal de cadastro/homologação de eventos
     - [x] Adicionar componente de alerta visual (MUI Alert / Banner) informando potencial conflito antes de salvar
     - [x] Escrever testes unitários em Vitest para o componente de alerta
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)' (Protocol in workflow.md) 8a2ff36
 
 ## Phase 4: Frontend Strategic Metrics Dashboard & Executive Reports UI
 - [ ] Task: Implementar Aba "Métricas Estratégicas" na Tela de Relatórios Gerenciais
