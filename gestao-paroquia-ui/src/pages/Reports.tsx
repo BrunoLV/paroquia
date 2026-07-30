@@ -17,7 +17,10 @@ import {
     TableHead,
     TableRow,
     Typography,
+    Tabs,
+    Tab,
 } from '@mui/material';
+import MetricasEstrategicasTab from '../components/reports/MetricasEstrategicasTab';
 import {
     Assessment as AssessmentIcon,
     Assignment as ProjectIcon,
@@ -46,6 +49,7 @@ const Reports: React.FC = () => {
   const [appliedStartDate, setAppliedStartDate] = useState('');
   const [appliedEndDate, setAppliedEndDate] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [currentTab, setCurrentTab] = useState(0);
 
   // Fetch baseline metrics from dashboard endpoint
   const {
@@ -297,6 +301,25 @@ const Reports: React.FC = () => {
           isExporting={isExporting}
         />
       </Box>
+
+      {/* Tabs de Seleção de Relatório */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs
+          value={currentTab}
+          onChange={(_, val) => setCurrentTab(val)}
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Indicadores Operacionais" sx={{ fontWeight: 600 }} />
+          <Tab label="Métricas Estratégicas & Preditivas" sx={{ fontWeight: 600 }} />
+        </Tabs>
+      </Box>
+
+      {currentTab === 1 ? (
+        <MetricasEstrategicasTab />
+      ) : (
+        <>
+
 
       {/* Filter Bar */}
       <Card
@@ -639,6 +662,8 @@ const Reports: React.FC = () => {
           </Typography>
         )}
       </Card>
+      </>
+      )}
     </Box>
   );
 };
