@@ -283,5 +283,5 @@
 
 ---
 
-- [ ] **Track: Otimização de Arquitetura Identificada pelo Grafo (Segregação de God Nodes)**
+- [x] **Track: Otimização de Arquitetura Identificada pelo Grafo (Segregação de God Nodes)**
 *Link: [./tracks/segregacao_repositorios_god_nodes_20260730/index.md](./tracks/segregacao_repositorios_god_nodes_20260730/index.md)*
