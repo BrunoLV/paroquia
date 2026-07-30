@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,7 +61,8 @@ public class LocalController {
                 request.tipo(),
                 request.endereco(),
                 request.capacidade(),
-                request.caracteristicas()
+                request.caracteristicas(),
+                request.organizacaoId()
         );
         return toResponse(local);
     }
@@ -86,7 +88,8 @@ public class LocalController {
                 request.endereco(),
                 request.capacidade(),
                 request.caracteristicas(),
-                request.ativo()
+                request.ativo(),
+                request.organizacaoId()
         );
         return toResponse(local);
     }
@@ -137,8 +140,8 @@ public class LocalController {
      */
     @GetMapping
     @Operation(summary = "List all locations")
-    public List<LocalResponse> list() {
-        return localService.listLocais().stream()
+    public List<LocalResponse> list(@RequestParam(required = false) UUID organizacaoId) {
+        return localService.listLocais(organizacaoId).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -151,7 +154,9 @@ public class LocalController {
                 domain.getEndereco(),
                 domain.getCapacidade(),
                 domain.getCaracteristicas(),
-                domain.isAtivo()
+                domain.isAtivo(),
+                domain.getOrganizacaoId(),
+                domain.getOrganizacaoNome()
         );
     }
 }

@@ -32,6 +32,9 @@ public class LocalEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean ativo = true;
 
+    @Column(name = "organizacao_id")
+    private UUID organizacaoId;
+
     public UUID getId() {
         return id;
     }
@@ -86,5 +89,13 @@ public class LocalEntity extends BaseVersionedEntity {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
+    }
+
+    public void setOrganizacaoId(UUID organizacaoId) {
+        this.organizacaoId = organizacaoId;
     }
 }

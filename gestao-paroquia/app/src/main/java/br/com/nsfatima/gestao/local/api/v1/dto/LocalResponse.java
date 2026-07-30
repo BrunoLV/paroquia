@@ -19,6 +19,13 @@ public record LocalResponse(
         @Schema(description = "Características adicionais")
         String caracteristicas,
         @Schema(description = "Indica se o local está ativo")
-        boolean ativo
+        boolean ativo,
+        @Schema(description = "ID da organização (Matriz/Comunidade) de subordinação")
+        UUID organizacaoId,
+        @Schema(description = "Nome da organização (Matriz/Comunidade) de subordinação")
+        String organizacaoNome
 ) {
+    public LocalResponse(UUID id, String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+        this(id, nome, tipo, endereco, capacidade, caracteristicas, ativo, null, null);
+    }
 }

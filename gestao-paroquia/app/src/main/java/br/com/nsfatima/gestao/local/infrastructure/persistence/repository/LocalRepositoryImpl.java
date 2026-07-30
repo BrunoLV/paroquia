@@ -4,6 +4,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,10 +18,14 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     private final LocalJpaRepository localJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
+    private final OrganizacaoJpaRepository organizacaoJpaRepository;
 
-    public LocalRepositoryImpl(LocalJpaRepository localJpaRepository, EventoJpaRepository eventoJpaRepository) {
+    public LocalRepositoryImpl(LocalJpaRepository localJpaRepository,
+                                EventoJpaRepository eventoJpaRepository,
+                                OrganizacaoJpaRepository organizacaoJpaRepository) {
         this.localJpaRepository = localJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
+        this.organizacaoJpaRepository = organizacaoJpaRepository;
     }
 
     @Override
@@ -36,6 +42,13 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public List<Local> findAll() {
         return localJpaRepository.findAll().stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Local> findByOrganizacaoId(UUID organizacaoId) {
+        return localJpaRepository.findByOrganizacaoId(organizacaoId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
@@ -59,10 +72,18 @@ public class LocalRepositoryImpl implements LocalRepository {
         entity.setCapacidade(domain.getCapacidade());
         entity.setCaracteristicas(domain.getCaracteristicas());
         entity.setAtivo(domain.isAtivo());
+        entity.setOrganizacaoId(domain.getOrganizacaoId());
         return entity;
     }
 
     private Local toDomain(LocalEntity entity) {
+        String organizacaoNome = null;
+        if (entity.getOrganizacaoId() != null) {
+            organizacaoNome = organizacaoJpaRepository.findById(entity.getOrganizacaoId())
+                    .map(OrganizacaoEntity::getNome)
+                    .orElse(null);
+        }
+
         return new Local(
                 entity.getId(),
                 entity.getNome(),
@@ -70,7 +91,9 @@ public class LocalRepositoryImpl implements LocalRepository {
                 entity.getEndereco(),
                 entity.getCapacidade(),
                 entity.getCaracteristicas(),
-                entity.isAtivo()
+                entity.isAtivo(),
+                entity.getOrganizacaoId(),
+                organizacaoNome
         );
     }
 }

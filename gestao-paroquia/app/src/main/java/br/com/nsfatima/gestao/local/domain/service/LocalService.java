@@ -21,7 +21,12 @@ public class LocalService {
 
     @Transactional
     public Local createLocal(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas) {
-        Local local = new Local(UUID.randomUUID(), nome, tipo, endereco, capacidade, caracteristicas, true);
+        return createLocal(nome, tipo, endereco, capacidade, caracteristicas, null);
+    }
+
+    @Transactional
+    public Local createLocal(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, UUID organizacaoId) {
+        Local local = new Local(UUID.randomUUID(), nome, tipo, endereco, capacidade, caracteristicas, true, organizacaoId);
         localRepository.save(local);
         return local;
     }
@@ -31,10 +36,18 @@ public class LocalService {
                              String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
                              boolean ativo) {
 
+        return updateLocal(id, nome, tipo, endereco, capacidade, caracteristicas, ativo, null);
+    }
+
+    @Transactional
+    public Local updateLocal(UUID id,
+                             String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
+                             boolean ativo, UUID organizacaoId) {
+
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
 
-        local.update(nome, tipo, endereco, capacidade, caracteristicas, ativo);
+        local.update(nome, tipo, endereco, capacidade, caracteristicas, ativo, organizacaoId);
         localRepository.save(local);
         return local;
     }
@@ -44,7 +57,7 @@ public class LocalService {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
         local.update(local.getNome(),
-                local.getTipo(), local.getEndereco(), local.getCapacidade(), local.getCaracteristicas(), false);
+                local.getTipo(), local.getEndereco(), local.getCapacidade(), local.getCaracteristicas(), false, local.getOrganizacaoId());
 
         localRepository.save(local);
     }
@@ -56,6 +69,14 @@ public class LocalService {
 
     @Transactional(readOnly = true)
     public List<Local> listLocais() {
+        return listLocais(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Local> listLocais(UUID organizacaoId) {
+        if (organizacaoId != null) {
+            return localRepository.findByOrganizacaoId(organizacaoId);
+        }
         return localRepository.findAll();
     }
 }

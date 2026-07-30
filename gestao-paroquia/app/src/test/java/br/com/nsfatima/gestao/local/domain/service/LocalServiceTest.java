@@ -24,6 +24,18 @@ class LocalServiceTest {
     }
 
     @Test
+    void shouldCreateLocalWithOrganizacao() {
+        UUID orgId = UUID.randomUUID();
+        Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi", orgId);
+
+        assertNotNull(created.getId());
+        assertEquals("Salão", created.getNome());
+        assertEquals(orgId, created.getOrganizacaoId());
+        assertTrue(created.isAtivo());
+        assertTrue(localRepository.findById(created.getId()).isPresent());
+    }
+
+    @Test
     void shouldCreateLocal() {
         Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi");
 
@@ -35,13 +47,15 @@ class LocalServiceTest {
 
     @Test
     void shouldUpdateLocal() {
+        UUID orgId = UUID.randomUUID();
         Local local = new Local(UUID.randomUUID(), "Velho Nome", "SALA", "End", 10, "Nada", true);
         localRepository.save(local);
 
-        Local updated = localService.updateLocal(local.getId(), "Novo Nome", "SALÃO", "Novo End", 20, "Ar", false);
+        Local updated = localService.updateLocal(local.getId(), "Novo Nome", "SALÃO", "Novo End", 20, "Ar", false, orgId);
 
         assertEquals("Novo Nome", updated.getNome());
         assertEquals(20, updated.getCapacidade());
+        assertEquals(orgId, updated.getOrganizacaoId());
         assertFalse(updated.isAtivo());
     }
 
@@ -96,6 +110,11 @@ class LocalServiceTest {
         @Override
         public List<Local> findAll() {
             return new ArrayList<>(storage);
+        }
+
+        @Override
+        public List<Local> findByOrganizacaoId(UUID organizacaoId) {
+            return storage.stream().filter(l -> organizacaoId != null && organizacaoId.equals(l.getOrganizacaoId())).toList();
         }
 
         @Override

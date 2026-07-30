@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.UUID;
+
 @Schema(description = "Dados para criação ou atualização de um Local")
 public record LocalRequest(
         @Schema(description = "Nome do local", example = "Salão Paroquial")
@@ -27,6 +29,12 @@ public record LocalRequest(
         String caracteristicas,
 
         @Schema(description = "Status do local", example = "true")
-        boolean ativo
+        boolean ativo,
+
+        @Schema(description = "ID da organização (Matriz ou Comunidade) de subordinação")
+        UUID organizacaoId
 ) {
+    public LocalRequest(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
+        this(nome, tipo, endereco, capacidade, caracteristicas, ativo, null);
+    }
 }

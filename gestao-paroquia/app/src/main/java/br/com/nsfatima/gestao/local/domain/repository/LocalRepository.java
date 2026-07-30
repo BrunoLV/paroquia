@@ -13,6 +13,8 @@ public interface LocalRepository {
 
     List<Local> findAll();
 
+    List<Local> findByOrganizacaoId(UUID organizacaoId);
+
     boolean isLocalInUse(UUID id);
 
     void delete(UUID id);
