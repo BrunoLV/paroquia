@@ -274,5 +274,5 @@
 ---
 
 - [x] **Track: Auditoria, Consistência e Alinhamento do Cadastro de Eventos, Projetos e Recorrência (API x UI)**
-*Link: [./tracks/alinhamento_eventos_projetos_recorrencia_20260730/index.md](./tracks/alinhamento_eventos_projetos_recorrencia_20260730/index.md)*
+*Link: [./archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md](./archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md)*
 
