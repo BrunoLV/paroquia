@@ -23,7 +23,7 @@
 - [x] Task: Implementar Ingestão em Lote e Resolução Silenciosa de Conflitos em `LiturgicalImportService` (TDD) 6b21838
     - [x] Implementar tratamento para importação CSV/XLSX em ano paroquial fechado (conversão para status `PENDENTE` e fila de aprovação sem quebrar o lote)
     - [x] Escrever testes unitários em `LiturgicalImportServiceTest`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Use Cases Integration, Calendar Lock & Silent Import Resolution' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Use Cases Integration, Calendar Lock & Silent Import Resolution' (Protocol in workflow.md) a58ec3e
 
 ## Phase 3: Frontend Calendar Lock, Liturgical Indicators & Executive Dashboard UI
 - [ ] Task: Implementar Trava de Ano Paroquial Fechado e Form de Inclusão Extra em `gestao-paroquia-ui`
