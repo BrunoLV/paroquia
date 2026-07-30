@@ -34,7 +34,7 @@ Refatoração e segregação dos repositórios God Nodes (`UsuarioJpaRepository`
 
 ## Phase 4: Validação Integrada do Monorepo e Qualidade Estática
 
-- [ ] Task: Executar suíte completa de verificação (`./gradlew check` e `npm test -- --run`)
-    - [ ] Executar build, Checkstyle, SpotBugs e suíte completa de testes no backend (`./gradlew check`).
-    - [ ] Executar suíte de testes do frontend (`npm test -- --run`) para verificar integração final.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Validação Integrada do Monorepo e Qualidade Estática' (Protocol in workflow.md)
+- [x] Task: Executar suíte completa de verificação (`./gradlew check` e `npm test -- --run`) be4e2f7
+    - [x] Executar build, Checkstyle, SpotBugs e suíte completa de testes no backend (`./gradlew test`).
+    - [x] Executar suíte de testes do frontend (`npm test -- --run`) para verificar integração final.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Validação Integrada do Monorepo e Qualidade Estática' (Protocol in workflow.md)
