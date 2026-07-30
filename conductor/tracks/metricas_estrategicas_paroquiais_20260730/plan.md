@@ -7,7 +7,7 @@
 - [x] Task: Implementar Entidades JPA e Repositórios com Clean Architecture 7d4d65a
     - [x] Criar entidade `CicloLiturgico` e enum `TipoCicloLiturgico`
     - [x] Criar repositório Spring Data JPA `CicloLiturgicoRepository` e testes unitários/integração
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Domain, Schema & Liturgical Calendar Infrastructure' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Domain, Schema & Liturgical Calendar Infrastructure' (Protocol in workflow.md) 3f63f93
 
 ## Phase 2: Backend Analytics Engine & Metric Use Cases (TDD)
 - [ ] Task: Implementar UseCase de Índice de Sazonalidade Litúrgica (Predictive Analytics)
