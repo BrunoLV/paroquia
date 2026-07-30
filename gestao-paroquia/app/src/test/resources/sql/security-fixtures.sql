@@ -1,21 +1,16 @@
-DELETE
-FROM calendario.eventos_envolvidos;
-DELETE
-FROM calendario.aprovacoes;
-DELETE
-FROM calendario.auditoria_operacoes;
-DELETE
-FROM calendario.eventos;
-DELETE
-FROM calendario.eventos_recorrencia;
-DELETE
-FROM calendario.projetos_eventos;
-DELETE
-FROM calendario.membros_organizacao;
-DELETE
-FROM calendario.usuarios;
-DELETE
-FROM calendario.organizacoes;
+DELETE FROM calendario.eventos_envolvidos;
+DELETE FROM calendario.aprovacoes;
+DELETE FROM calendario.observacoes_evento;
+DELETE FROM calendario.auditoria_operacoes;
+DELETE FROM calendario.eventos;
+DELETE FROM calendario.eventos_recorrencia;
+DELETE FROM calendario.projetos_eventos;
+DELETE FROM calendario.membros_organizacao;
+DELETE FROM calendario.membros;
+DELETE FROM calendario.usuarios;
+DELETE FROM calendario.locais;
+DELETE FROM calendario.organizacoes;
+DELETE FROM calendario.pastorais_movimentos_oficiais;
 
 INSERT INTO calendario.organizacoes (id, nome)
 VALUES ('00000000-0000-0000-0000-000000000001', 'Organizacao Default'),

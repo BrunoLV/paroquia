@@ -15,28 +15,83 @@ END $$;
 -- 1. SEED DATA
 -- ============================================================================
 
+-- Pastorais e Movimentos Oficiais
+INSERT INTO calendario.pastorais_movimentos_oficiais (id, nome, tipo, version)
+VALUES
+    -- Ação Sociotransformadora
+    ('50000000-0000-0000-0000-000000000001', 'Pastoral da Criança', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000002', 'Pastoral da Pessoa Idosa', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000003', 'Pastoral Carcerária', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000004', 'Pastoral da Saúde', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000005', 'Pastoral da Sobriedade', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000006', 'Pastoral Afro-Brasileira', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000007', 'Pastoral do Migrante', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000008', 'Pastoral dos Brasileiros no Exterior', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000009', 'Pastoral da Aids', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000010', 'Pastoral da Mulher Marginalizada', 'PASTORAL', 0),
+    -- Ação Evangelizadora (Setores Específicos)
+    ('50000000-0000-0000-0000-000000000011', 'Pastoral Familiar', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000012', 'Pastoral da Juventude (PJ)', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000013', 'Pastoral da Educação', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000014', 'Pastoral da Comunicação (PASCOM)', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000015', 'Pastoral da Cultura', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000016', 'Pastoral Universitária', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000017', 'Pastoral do Menor', 'PASTORAL', 0),
+    -- Ação Litúrgica e Espiritual
+    ('50000000-0000-0000-0000-000000000018', 'Pastoral Litúrgica', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000019', 'Pastoral da Música', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000020', 'Pastoral do Batismo', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000021', 'Pastoral da Catequese (Iniciação à Vida Cristã)', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000022', 'Pastoral da Acolhida', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000023', 'Pastoral dos Coroinhas e Cerimoniários', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000024', 'Pastoral dos Noivos', 'PASTORAL', 0),
+    -- Serviços de Apoio e Espiritualidade
+    ('50000000-0000-0000-0000-000000000025', 'Pastoral do Dízimo', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000026', 'Pastoral Vocacional', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000027', 'Pastoral da Esperança', 'PASTORAL', 0),
+    ('50000000-0000-0000-0000-000000000028', 'Pastoral Social', 'PASTORAL', 0),
+    -- Movimentos (Espiritualidade e Devoção)
+    ('50000000-0000-0000-0000-000000000101', 'Renovação Carismática Católica (RCC)', 'MOVIMENTO', 0),
+    ('50000000-0000-0000-0000-000000000102', 'Apostolado da Oração', 'MOVIMENTO', 0),
+    ('50000000-0000-0000-0000-000000000103', 'Movimento de Schoenstatt', 'MOVIMENTO', 0),
+    ('50000000-0000-0000-0000-000000000104', 'Legião de Maria', 'MOVIMENTO', 0),
+    -- Família e Casais
+    ('50000000-0000-0000-0000-000000000105', 'Encontro de Casais com Cristo (ECC)', 'MOVIMENTO', 0),
+    ('50000000-0000-0000-0000-000000000106', 'Movimento Familiar Cristão (MFC)', 'MOVIMENTO', 0),
+    -- Formação e Evangelização
+    ('50000000-0000-0000-0000-000000000107', 'Movimento de Cursilhos de Cristandade (MCC)', 'MOVIMENTO', 0),
+    ('50000000-0000-0000-0000-000000000108', 'Movimento dos Focolares (Obra de Maria)', 'MOVIMENTO', 0),
+    -- Oração e Engajamento de Homens e Mulheres
+    ('50000000-0000-0000-0000-000000000109', 'Terço dos Homens', 'MOVIMENTO', 0),
+    ('50000000-0000-0000-0000-000000000110', 'Oficinas de Oração e Vida', 'MOVIMENTO', 0)
+ON CONFLICT (id) DO NOTHING;
+
 -- Organizations (Organizacoes)
 INSERT INTO calendario.organizacoes (id, nome, tipo, contato, coordenador, vice_coordenador, ativo, parent_id, pastoral_oficial_id, version)
 VALUES 
+    -- Raízes (parent = NULL)
     ('00000000-0000-0000-0000-000000000001', 'Paróquia Nossa Senhora de Fátima', 'CLERO', 'contato@nsfatima.com', 'Pedro da Silva (Padre)', 'João Batista (Vigário)', TRUE, NULL, NULL, 0),
+    ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', 'Pedro da Silva (Padre)', 'João Batista (Vigário)', TRUE, NULL, NULL, 0),
+    -- Filhos do Clero Paroquial
     ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000dd', NULL, 0),
     ('00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000dd', NULL, 0),
     ('00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000dd', NULL, 0),
-    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
-    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', 'Pedro Junior', 'Lucas dos Santos', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000012', 0),
+    -- Conselhos Paroquiais (filhos da Igreja Matriz)
     ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO_PASTORAL', 'cpp@nsfatima.com', 'Maria do Conselho', 'José do Conselho', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
-    ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', 'Pedro da Silva (Padre)', 'João Batista (Vigário)', TRUE, NULL, NULL, 0),
-    ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', 'Maria Oliveira', 'Lúcia de Oliveira', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000021', 0),
-    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000020', 0),
     ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', 'Pedro Finanças', 'Ana Administração', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
-    -- Comunidade São José Allamano
+    -- Conselhos Comunitários (filhos das Comunidades)
     ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO_PASTORAL', 'cpc.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
     ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO_ECONOMICO', 'cec.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000022', 0),
-    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000025', 0),
-    -- Comunidade Santo Agostinho
     ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO_PASTORAL', 'cpc.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
     ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO_ECONOMICO', 'cec.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    -- Pastorais Paroquiais (filhas do CPP)
+    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
+    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', 'Pedro Junior', 'Lucas dos Santos', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000012', 0),
+    ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', 'Maria Oliveira', 'Lúcia de Oliveira', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000021', 0),
+    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000020', 0),
+    -- Pastorais Comunitárias (filhas dos CPCs)
+    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000022', 0),
+    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000025', 0),
     ('00000000-0000-0000-0000-0000000003a1', 'Pastoral da Liturgia - Santo Agostinho', 'PASTORAL', 'liturgia.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000018', 0),
     ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
 ON CONFLICT (id) DO NOTHING;
@@ -47,7 +102,8 @@ VALUES
     ('00000000-0000-0000-0000-000000000001', 'Igreja Principal', 'IGREJA', 500, TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-000000000002', 'Salão Paroquial', 'SALAO', 300, TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-000000000003', 'Sala de Catequese 1', 'SALA', 30, TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 10, TRUE, '00000000-0000-0000-0000-000000000100', 0);
+    ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 10, TRUE, '00000000-0000-0000-0000-000000000100', 0)
+ON CONFLICT (id) DO NOTHING;
 
 
 -- Users (Usuarios)
@@ -133,7 +189,12 @@ VALUES
     ('40000000-0000-0000-0000-000000000008', 'Reunião Ordinária do CPP', 'Planejamento pastoral', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-06-10T20:00:00Z', '2026-06-10T21:30:00Z', NULL, 0),
     ('40000000-0000-0000-0000-000000000009', 'Live de Pentecostes', 'Transmissão ao vivo', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000001', 'SOCIAL', 'CONFIRMADO', '2026-06-05T19:00:00Z', '2026-06-05T20:30:00Z', NULL, 0),
     ('40000000-0000-0000-0000-000000000010', 'Grupo de Jovens Sentinelas', 'Momento de partilha e oração', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-06-06T17:00:00Z', '2026-06-06T18:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000011', 'Missa dos Catequistas', 'Celebração com benção dos catequistas', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-07T10:00:00Z', '2026-06-07T11:30:00Z', NULL, 0);
+    ('40000000-0000-0000-0000-000000000011', 'Missa dos Catequistas', 'Celebração com benção dos catequistas', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-07T10:00:00Z', '2026-06-07T11:30:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000012', 'Missa Dominical de Julho', 'Missa com a comunidade paroquial', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-26T18:00:00Z', '2026-07-26T19:30:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000013', 'Reunião de Planejamento Pastoral', 'Avaliando o semestre', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-07-28T19:30:00Z', '2026-07-28T21:00:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000014', 'Missa de São Pedro e São Paulo', 'Celebração solene', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-30T19:00:00Z', '2026-07-30T20:30:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000015', 'Encontro de Jovens de Férias', 'Momento de oração e lazer', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'SOCIAL', 'CONFIRMADO', '2026-07-31T17:00:00Z', '2026-07-31T19:00:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000016', 'Missa da Família - Agosto', 'Abertura da semana da família', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-08-02T10:00:00Z', '2026-08-02T11:30:00Z', NULL, 0);
 
 -- Event with Extra Status
 INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version)
