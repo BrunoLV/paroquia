@@ -6,7 +6,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Auditoria e Alinhamento de DTOs e Regras de Validação' (Protocol in workflow.md)
 
 ## Phase 2: Auditoria e Validação do Formulário de Eventos, Projetos e Recorrência na UI
-- [ ] Task: Auditar `EventRegistrationModal.tsx` e `RecurrenceForm.tsx` garantindo preenchimento, limites de caracteres e transmissão de campos obrigatórios (`igrejaVinculoId`, `bypassAgendaConflict`).
+- [x] Task: Auditar `EventRegistrationModal.tsx` e `RecurrenceForm.tsx` garantindo preenchimento, limites de caracteres e transmissão de campos obrigatórios (`igrejaVinculoId`, `bypassAgendaConflict`). (0d2c277)
 - [ ] Task: Auditar validações de vínculo com Projetos em `EventRegistrationModal.tsx` e `Projects.tsx`, garantindo bloqueio quando a data do evento/recorrência extrapola as datas do projeto.
 - [ ] Task: Auditar `EventCancelDialog.tsx` e `EventObservations.tsx` garantindo tratamento e confirmação visual de status de cancelamento/justificativas.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Auditoria e Validação do Formulário de Eventos, Projetos e Recorrência na UI' (Protocol in workflow.md)
