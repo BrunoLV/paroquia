@@ -1,7 +1,7 @@
 # Implementation Plan: Auditoria, Consistência e Alinhamento do Cadastro de Eventos, Projetos e Recorrência (API x UI)
 
 ## Phase 1: Auditoria e Alinhamento de DTOs, Eventos e Regras de Validação no Backend e Frontend
-- [ ] Task: Auditar DTOs de solicitação (`CreateEventoRequest`, `UpdateEventoRequest`, `RecorrenciaRequest`) e garantir correspondência 1:1 com os tipos TypeScript (`types.ts`).
+- [x] Task: Auditar DTOs de solicitação (`CreateEventoRequest`, `UpdateEventoRequest`, `RecorrenciaRequest`) e garantir correspondência 1:1 com os tipos TypeScript (`types.ts`). (38824c7)
 - [ ] Task: Verificar mapeamento de exceções e respostas de erro (`ConflitoAgendaEclesialException`, `ConflitoAgendaException`, `ValidationErrorResponse`) no handler global.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Auditoria e Alinhamento de DTOs e Regras de Validação' (Protocol in workflow.md)
 
