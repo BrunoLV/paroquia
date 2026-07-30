@@ -23,15 +23,14 @@ Refatorar a entidade `Local` na API (`gestao-paroquia`), no banco PostgreSQL (vi
 
 ## Phase 3: Frontend Interface & Types Implementation (`gestao-paroquia-ui`)
 
-- [ ] Task: Escrever testes unitários para a interface de Locais (TDD Red)
-    - [ ] Atualizar os testes em `src/api/locais.test.ts` e `src/pages/Settings.test.tsx` para validação do vínculo de Organização.
-    - [ ] Confirmar que os testes falham.
-- [ ] Task: Implementar formulário e tabela de Locais com vínculo de Organização (TDD Green)
-    - [ ] Atualizar as interfaces TypeScript em `src/api/types.ts` e `src/api/locais.ts`.
-    - [ ] Atualizar `LocalFormModal.tsx` adicionando Select de Organizações (Matriz / Comunidades).
-    - [ ] Atualizar a tabela de locais em `src/pages/Settings.tsx` exibindo a coluna "Matriz / Comunidade".
-    - [ ] Reexecutar os testes do frontend (`npm test`) e garantir 100% de aprovação em verde.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Interface & Types Implementation' (Protocol in workflow.md)
+- [x] Task: Escrever testes unitários para a interface de Locais (TDD Red) 9c70e2f
+    - [x] Atualizar os testes em `LocalFormModal.test.tsx` / `Settings.test.tsx` / `locais.test.ts` para cobrir o campo `organizacaoId` / `organizacaoNome`.
+- [x] Task: Implementar formulário e tabela de Locais com vínculo de Organização (TDD Green) 9c70e2f
+    - [x] Atualizar a interface `Local` em `types.ts`.
+    - [x] Adicionar o componente `<Select>` para escolha da Matriz ou Comunidade (`organizacaoId`) em `LocalFormModal.tsx`.
+    - [x] Adicionar a coluna "Matriz / Comunidade" (`organizacaoNome`) na tabela de Locais em `Settings.tsx`.
+    - [x] Executar a suíte de testes do frontend (`npm test -- --run`) e garantir aprovação em verde.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Interface & Types Implementation' (Protocol in workflow.md)
 
 ## Phase 4: Full System Integration & Final Quality Check
 
