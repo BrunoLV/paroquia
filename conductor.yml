@@ -16,6 +16,7 @@ pipeline:
       - "GIT SYNC: Before initiating any spec or code generation, the agent MUST fetch and pull the latest changes from the remote tracking branch to avoid drift."
       - "READ and internalize the root AGENTS.md and the target child project's AGENTS.md before creating any specification."
       - "CONSULT the global privacy boundaries in gestao-paroquia/docs/ia/regra_dura_lgpd.md. Spec definitions must NEVER expose or outline PII (Personally Identifiable Information) patterns."
+      - "CONSULT graphify to better understanding de project"
       - "ALIGN with the specialized agent capabilities defined inside .agents/skills/."
       - "MANDATORY SKILL UTILIZATION: The agent MUST explicitly leverage the pre-defined skills in `.agents/skills/` and honor all constraints defined in this configuration file to implement any and all project features."
 
@@ -28,6 +29,7 @@ pipeline:
       - "PORTS & ADAPTERS ENFORCEMENT: Core domain specs must only define abstractions (interfaces/ports). Infrastructure dependencies (SQL, HTTP clients) must be isolated in adapter structures."
       - "ALWAYS-VALID OBJECTS: Enforce that entities and value objects self-validate upon instantiation. Illegal domain states must throw explicit domain exceptions immediately."
       - "DATA MINIMIZATION: Specifications must strictly outline fields essential to the business process. Storage or processing of non-essential personal identifiers is prohibited."
+      - "ALWAYS: Consult graphify to better understanding de project"
 
   post_generation:
     lifecycle_hooks:
@@ -57,6 +59,7 @@ pipeline:
     rules:
       - "The agent is STRICTLY FORBIDDEN from bypassing defined skills or configuring alternative environments outside the specified lifecycle hooks."
       - "AUDITABILITY: Any spec introducing state changes to sensitive aggregates (e.g., permissions, finance) MUST explicitly dictate the emission of an immutable Audit Event."
+      - "ALWAYS: Consult graphify to better understanding de project"
 
   git_delivery:
     commit_format: "conventional"
