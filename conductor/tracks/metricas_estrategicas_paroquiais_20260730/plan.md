@@ -22,9 +22,9 @@
 - [x] Task: Implementar UseCase de Coeficiente de Impacto Social (Pastoral em Saída) bc5f4c2
     - [x] Criar testes unitários TDD em `CalcularImpactoSocialUseCaseTest`
     - [x] Implementar `CalcularImpactoSocialUseCase` agregando eventos sociais vs institucionais
-- [ ] Task: Implementar Motor e UseCase de Alerta de Concorrência Interpastoral (Overlap Conflict)
-    - [ ] Criar testes unitários TDD em `VerificarConcorrenciaInterpastoralUseCaseTest`
-    - [ ] Implementar `VerificarConcorrenciaInterpastoralUseCase` e endpoint de validação preventiva
+- [x] Task: Implementar Motor e UseCase de Alerta de Concorrência Interpastoral (Overlap Conflict) 6273bf5
+    - [x] Criar testes unitários TDD em `VerificarConcorrenciaInterpastoralUseCaseTest`
+    - [x] Implementar `VerificarConcorrenciaInterpastoralUseCase` e endpoint de validação preventiva
 - [ ] Task: Implementar UseCase de Índice de Ociosidade Patrimonial
     - [ ] Criar testes unitários TDD em `CalcularOciosidadePatrimonialUseCaseTest`
     - [ ] Implementar `CalcularOciosidadePatrimonialUseCase` calculando horas vagas de espaços paroquiais
