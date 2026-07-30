@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {
+    Alert,
     Box,
     Button,
     Chip,
@@ -20,7 +21,7 @@ import {
 } from '@mui/material';
 import {useAuth} from '../auth/AuthContext';
 import {useNotification} from '../context/NotificationContext';
-import {Evento, Local, Organizacao, Projeto} from '../api/types';
+import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 
 const CATEGORIES = [
@@ -60,6 +61,7 @@ interface EventRegistrationModalProps {
   organizations: Organizacao[];
   locais?: Local[];
   projetos?: Projeto[];
+  anosParoquiais?: AnoParoquial[];
   initialDate?: Date;
   initialEvent?: Evento | null;
 }
@@ -72,6 +74,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   organizations = [],
   locais = [],
   projetos = [],
+  anosParoquiais = [],
   initialDate,
   initialEvent,
 }) => {
@@ -97,6 +100,18 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     intervalo: 1,
     diasDaSemana: [],
   });
+
+  const selectedYear = useMemo(() => {
+    if (!startDate) return new Date().getFullYear();
+    const d = new Date(startDate);
+    return isNaN(d.getTime()) ? new Date().getFullYear() : d.getFullYear();
+  }, [startDate]);
+
+  const isClosedYear = useMemo(() => {
+    if (!anosParoquiais || anosParoquiais.length === 0) return false;
+    const anoConfig = anosParoquiais.find(a => a.ano === selectedYear);
+    return anoConfig?.status === 'FECHADO';
+  }, [anosParoquiais, selectedYear]);
 
   const isParoco = useMemo(() => {
     if (!user) return false;
@@ -292,6 +307,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       return;
     }
 
+    if (isClosedYear && (!justification || !justification.trim())) {
+      showError(`A justificativa é obrigatória pois o Ano Paroquial de ${selectedYear} está FECHADO.`);
+      return;
+    }
+
     if (status === 'ADICIONADO_EXTRA' && (!justification || !justification.trim())) {
       showError('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
       return;
@@ -320,7 +340,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       participantes,
       inicio: startDate ? new Date(startDate).toISOString() : '',
       fim: finalEndDate ? new Date(finalEndDate).toISOString() : '',
-      status,
+      status: isClosedYear && status !== 'RASCUNHO' ? 'ADICIONADO_EXTRA' : status,
       adicionadoExtraJustificativa: justification || null,
       recurrence: isRecurring ? recurrenceRule : null,
       bypassAgendaConflict: isParoco ? bypassAgendaConflict : false,
@@ -335,6 +355,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            {isClosedYear && (
+              <Alert severity="warning" sx={{ borderRadius: 0 }}>
+                <strong>Ano Paroquial Fechado ({selectedYear}):</strong> Este ano administrativo está travado para auditoria. Inclusões serão registradas como <strong>ADICIONADO_EXTRA</strong> (requer justificativa obrigatória abaixo).
+              </Alert>
+            )}
             <TextField
               label="Título do Evento"
               required

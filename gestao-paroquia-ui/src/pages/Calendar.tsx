@@ -42,7 +42,8 @@ import EventCancelDialog from '../components/EventCancelDialog';
 import EditScopeDialog, {EditScope} from '../components/EditScopeDialog';
 import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
-import {Evento, Local, Organizacao, Projeto} from '../api/types';
+import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
+import {getAnosParoquiais} from '../api/anosParoquiais';
 
 interface CalendarDay {
   date: Date;
@@ -115,6 +116,7 @@ const Calendar = () => {
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
   const [locais, setLocais] = useState<Local[]>([]);
   const [projetos, setProjetos] = useState<Projeto[]>([]);
+  const [anosParoquiais, setAnosParoquiais] = useState<AnoParoquial[]>([]);
 
   // Filtering states
   const [selectedOrgFilter, setSelectedOrgFilter] = useState<string>('');
@@ -146,9 +148,21 @@ const Calendar = () => {
   // Export states
   const [isExportOpen, setIsExportOpen] = useState(false);
 
-  // Get current year and month
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
+
+  const liturgicalInfo = useMemo(() => {
+    const remainder = ((currentYear - 2026) % 3 + 3) % 3;
+    const cycleLetter = remainder === 0 ? 'C' : remainder === 1 ? 'A' : 'B';
+    const anoConfig = anosParoquiais.find(a => a.ano === currentYear);
+    const isClosed = anoConfig?.status === 'FECHADO';
+    return {
+      year: currentYear,
+      cycle: `Ano ${cycleLetter} (${currentYear})`,
+      letter: cycleLetter,
+      isClosed,
+    };
+  }, [currentYear, anosParoquiais]);
 
   // Permissions check (simple for now, matches backend logic)
   const canEditEvent = (event: Evento) => {
@@ -319,7 +333,18 @@ const Calendar = () => {
         }
       };
 
-      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), fetchApprovals()]);
+      const fetchAnosParoquiais = async () => {
+        try {
+          const anos = await getAnosParoquiais();
+          if (Array.isArray(anos)) {
+            setAnosParoquiais(anos);
+          }
+        } catch (err) {
+          console.warn('Could not fetch anos paroquiais:', err);
+        }
+      };
+
+      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), fetchApprovals(), fetchAnosParoquiais()]);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       const errMsg = 'Não foi possível carregar as informações do calendário.';
@@ -639,6 +664,21 @@ const Calendar = () => {
               <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none', borderRadius: 0 }}>
                 Hoje
               </Button>
+              <Chip
+                label={`Ano Litúrgico: ${liturgicalInfo.cycle}`}
+                color="primary"
+                variant="outlined"
+                size="small"
+                sx={{ borderRadius: 0, fontWeight: 700, border: '1px solid #1a237e' }}
+              />
+              {liturgicalInfo.isClosed && (
+                <Chip
+                  label="ANO FECHADO"
+                  color="error"
+                  size="small"
+                  sx={{ borderRadius: 0, fontWeight: 700 }}
+                />
+              )}
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
