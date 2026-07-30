@@ -14,13 +14,13 @@ Refatoração e segregação dos repositórios God Nodes (`UsuarioJpaRepository`
 
 ## Phase 2: Segregação do Domínio e Repositórios de Evento (`gestao-paroquia`)
 
-- [ ] Task: Escrever/atualizar testes unitários e de integração para os submódulos de Evento (TDD Red)
-    - [ ] Criar especificações de teste para as novas sub-interfaces (ex: `EventoConsultaRepository`, `EventoAgendamentoRepository`).
-- [ ] Task: Implementar sub-interfaces de repositório e refatorar injeções de Evento (TDD Green)
-    - [ ] Criar sub-interfaces de repositório focadas para Evento.
-    - [ ] Atualizar injeções de dependência em controllers, services e use cases de Evento.
-    - [ ] Executar `./gradlew test` e validar o módulo de Evento.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Segregação do Domínio e Repositórios de Evento' (Protocol in workflow.md)
+- [x] Task: Escrever/atualizar testes unitários e de integração para os submódulos de Evento (TDD Red) 672069b
+    - [x] Criar especificações de teste para as novas sub-interfaces (ex: `EventoConsultaRepository`, `EventoAgendamentoRepository`).
+- [x] Task: Implementar sub-interfaces de repositório e refatorar injeções de Evento (TDD Green) 672069b
+    - [x] Criar sub-interfaces de repositório focadas para Evento.
+    - [x] Atualizar injeções de dependência em controllers, services e use cases de Evento.
+    - [x] Executar `./gradlew test` e validar o módulo de Evento.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Segregação do Domínio e Repositórios de Evento' (Protocol in workflow.md)
 
 ## Phase 3: Segregação do Domínio e Repositórios de Organização (`gestao-paroquia`)
 
