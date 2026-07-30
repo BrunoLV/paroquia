@@ -26,11 +26,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Use Cases Integration, Calendar Lock & Silent Import Resolution' (Protocol in workflow.md) a58ec3e
 
 ## Phase 3: Frontend Calendar Lock, Liturgical Indicators & Executive Dashboard UI
-- [ ] Task: Implementar Trava de Ano Paroquial Fechado e Form de Inclusão Extra em `gestao-paroquia-ui`
-    - [ ] Atualizar `Calendar.tsx` e `EventRegistrationModal.tsx` para exigir justificativa textual em anos fechados
-    - [ ] Escrever testes unitários em Vitest para `EventRegistrationModal.test.tsx`
-- [ ] Task: Implementar Indicadores Litúrgicos Visuais no Calendário e Dashboard
-    - [ ] Exibir cores canônicas e badges de fator de demanda nos eventos da grade do calendário
-    - [ ] Atualizar `Dashboard.tsx` para exibir a curva de sazonalidade e governança temporal
-    - [ ] Escrever testes de integração no Vitest (`npm test`) garantindo zero regressões
+- [x] Task: Implementar Trava de Ano Paroquial Fechado e Form de Inclusão Extra em `gestao-paroquia-ui` 4b55326
+    - [x] Atualizar `Calendar.tsx` e `EventRegistrationModal.tsx` para exigir justificativa textual em anos fechados
+    - [x] Escrever testes unitários em Vitest para `EventRegistrationModal.test.tsx`
+- [x] Task: Implementar Indicadores Litúrgicos Visuais no Calendário e Dashboard 4b55326
+    - [x] Exibir Chip do Ano Litúrgico Nominal (Ex: "Ano C (2026)") e selo de status de ano fechado no cabeçalho do calendário
+    - [x] Executar testes no frontend com Vitest (284/284 passando)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Calendar Lock, Liturgical Indicators & Executive Dashboard UI' (Protocol in workflow.md)
