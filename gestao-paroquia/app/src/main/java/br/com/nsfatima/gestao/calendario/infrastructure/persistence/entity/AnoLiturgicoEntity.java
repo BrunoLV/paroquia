@@ -15,7 +15,7 @@ public class AnoLiturgicoEntity {
     @Column(name = "ano", nullable = false)
     private Integer ano;
 
-    @Column(name = "ciclo_letra", length = 1, nullable = false)
+    @Column(name = "ciclo_letra", length = 1, nullable = false, columnDefinition = "CHAR(1)")
     private String cicloLetra;
 
     @Column(name = "data_inicio_advento", nullable = false)
