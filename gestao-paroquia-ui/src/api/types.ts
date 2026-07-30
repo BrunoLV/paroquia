@@ -90,6 +90,18 @@ export interface Local {
   capacidade: number | null;
   caracteristicas: string | null;
   ativo: boolean;
+  organizacaoId?: string | null;
+  organizacaoNome?: string | null;
+}
+
+export interface LocalFormValues {
+  nome: string;
+  tipo: string;
+  endereco?: string;
+  capacidade?: number | null;
+  caracteristicas?: string;
+  ativo?: boolean;
+  organizacaoId?: string | null;
 }
 
 export interface Projeto {

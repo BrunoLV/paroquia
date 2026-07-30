@@ -194,6 +194,7 @@ const mockLocais = [
     endereco: 'Praça da Matriz, 1',
     caracteristicas: 'Altar, Som, Bancos',
     ativo: true,
+    organizacaoId: null,
   },
   {
     id: 'loc-2',
@@ -203,6 +204,7 @@ const mockLocais = [
     endereco: 'Rua Lateral, 50',
     caracteristicas: 'Cozinha, Mesas',
     ativo: false,
+    organizacaoId: null,
   },
 ];
 
@@ -302,6 +304,7 @@ describe('Settings page - Locais CRUD', () => {
         endereco: '2º Andar',
         caracteristicas: null,
         ativo: true,
+        organizacaoId: null,
       });
     });
   });
@@ -348,6 +351,7 @@ describe('Settings page - Locais CRUD', () => {
         endereco: 'Praça da Matriz, 1',
         caracteristicas: 'Altar, Som, Bancos',
         ativo: true,
+        organizacaoId: null,
       });
     });
   });
@@ -396,6 +400,7 @@ describe('Settings page - Locais CRUD', () => {
         endereco: 'Rua Lateral, 50',
         caracteristicas: 'Cozinha, Mesas',
         ativo: true,
+        organizacaoId: null,
       });
     });
   });

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {useQuery} from '@tanstack/react-query';
 import {
     Box,
     Button,
@@ -14,6 +15,7 @@ import {
     TextField,
 } from '@mui/material';
 import {Local} from '../api/types';
+import {getOrganizacoes} from '../api/organizacoes';
 
 interface LocalFormModalProps {
   open: boolean;
@@ -35,7 +37,18 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
   const [endereco, setEndereco] = useState('');
   const [capacidade, setCapacidade] = useState<number | ''>('');
   const [caracteristicas, setCaracteristicas] = useState('');
+  const [organizacaoId, setOrganizacaoId] = useState('');
   const [errors, setErrors] = useState<{ nome?: string }>({});
+
+  const { data: orgs = [] } = useQuery({
+    queryKey: ['organizacoes'],
+    queryFn: getOrganizacoes,
+    enabled: open,
+  });
+
+  const matrizComunidades = orgs.filter(
+    (o) => o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE' || o.tipo === 'CLERO'
+  );
 
   useEffect(() => {
     if (local) {
@@ -44,12 +57,14 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
       setEndereco(local.endereco || '');
       setCapacidade(local.capacidade !== null ? local.capacidade : '');
       setCaracteristicas(local.caracteristicas || '');
+      setOrganizacaoId(local.organizacaoId || '');
     } else {
       setNome('');
       setTipo('OUTRO');
       setEndereco('');
       setCapacidade('');
       setCaracteristicas('');
+      setOrganizacaoId('');
     }
     setErrors({});
   }, [local, open]);
@@ -69,6 +84,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
       capacidade: capacidade === '' ? null : Number(capacidade),
       caracteristicas: caracteristicas.trim() || null,
       ativo: local ? local.ativo : true,
+      organizacaoId: organizacaoId || null,
     });
   };
 
@@ -102,6 +118,26 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
               disabled={isPending}
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
+
+            <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+              <InputLabel id="organizacao-local-label">Matriz / Comunidade (Subordinação)</InputLabel>
+              <Select
+                labelId="organizacao-local-label"
+                label="Matriz / Comunidade (Subordinação)"
+                value={organizacaoId}
+                onChange={(e) => setOrganizacaoId(e.target.value as string)}
+                disabled={isPending}
+              >
+                <MenuItem value="">
+                  <em>Sem vínculo específico</em>
+                </MenuItem>
+                {matrizComunidades.map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.nome} ({org.tipo === 'MATRIZ' ? 'Matriz' : org.tipo === 'COMUNIDADE' ? 'Comunidade' : 'Paróquia'})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>

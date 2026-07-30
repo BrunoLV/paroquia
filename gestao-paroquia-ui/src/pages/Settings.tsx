@@ -765,6 +765,7 @@ const Settings = () => {
                       <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Capacidade</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Matriz / Comunidade</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Endereço</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                       {isAuthorizedLocais && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
@@ -776,6 +777,7 @@ const Settings = () => {
                         <TableCell sx={{ fontWeight: 500 }}>{local.nome}</TableCell>
                         <TableCell>{getTipoLabel(local.tipo)}</TableCell>
                         <TableCell>{local.capacidade !== null ? local.capacidade : '-'}</TableCell>
+                        <TableCell>{local.organizacaoNome || '-'}</TableCell>
                         <TableCell>{local.endereco || '-'}</TableCell>
                         <TableCell>
                           <Box

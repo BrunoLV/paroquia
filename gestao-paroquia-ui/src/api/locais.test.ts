@@ -26,6 +26,8 @@ describe('Locais API Client', () => {
     capacidade: 150,
     caracteristicas: 'Ar condicionado',
     ativo: true,
+    organizacaoId: 'org-uuid-1',
+    organizacaoNome: 'Igreja Matriz',
   };
 
   test('getLocais should fetch locations', async () => {
@@ -45,6 +47,7 @@ describe('Locais API Client', () => {
       capacidade: 150,
       caracteristicas: 'Ar condicionado',
       ativo: true,
+      organizacaoId: 'org-uuid-1',
     };
     (apiClient.post as jest.Mock).mockResolvedValue({ data: mockLocal });
 
