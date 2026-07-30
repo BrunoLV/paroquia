@@ -87,11 +87,6 @@ class LocalServiceTest {
         assertFalse(found.get().isAtivo());
     }
 
-    // Auxiliary assertFalse for completeness in LocalServiceTest
-    private void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
-    }
-
     private static class FakeLocalRepository implements LocalRepository {
         private final List<Local> storage = new ArrayList<>();
         private final List<UUID> inUseIds = new ArrayList<>();
