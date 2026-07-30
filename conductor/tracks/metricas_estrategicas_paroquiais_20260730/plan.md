@@ -34,9 +34,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Analytics Engine & Metric Use Cases (TDD)' (Protocol in workflow.md) 29f3d40
 
 ## Phase 3: Frontend API Services & Real-time Conflict Warning Modal (TDD)
-- [ ] Task: Criar Serviços API e Custom Hooks em React Query
-    - [ ] Implementar `metricasService.ts` e hook `useMetricasEstrategicas` em `gestao-paroquia-ui`
-    - [ ] Escrever testes unitários em Vitest para `metricasService`
+- [x] Task: Criar Serviços API e Custom Hooks em React Query 7edd240
+    - [x] Implementar `metricasService.ts` e hook `useMetricasEstrategicas` em `gestao-paroquia-ui`
+    - [x] Escrever testes unitários em Vitest para `metricasService`
 - [ ] Task: Implementar Alerta Preventivo de Concorrência Interpastoral nos Modais
     - [ ] Integrar verificação de sobreposição no modal de cadastro/homologação de eventos
     - [ ] Adicionar componente de alerta visual (MUI Alert / Banner) informando potencial conflito antes de salvar
