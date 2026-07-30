@@ -54,6 +54,9 @@ public class ImportacaoService {
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final ImportacaoFileParser importacaoFileParser;
+    private final br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository anoParoquialJpaRepository;
+    private final br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine liturgicalEngine;
+    private final br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository cicloLiturgicoRepository;
 
     public ImportacaoService(CreateMembroUseCase createMembroUseCase,
                               MembroJpaRepository membroJpaRepository,
@@ -63,7 +66,10 @@ public class ImportacaoService {
                               PasswordEncoder passwordEncoder,
                               OrganizacaoJpaRepository organizacaoJpaRepository,
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
-                              ImportacaoFileParser importacaoFileParser) {
+                              ImportacaoFileParser importacaoFileParser,
+                              br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository anoParoquialJpaRepository,
+                              br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine liturgicalEngine,
+                              br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository cicloLiturgicoRepository) {
         this.createMembroUseCase = createMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
@@ -72,6 +78,9 @@ public class ImportacaoService {
         this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.pastoralOficialRepository = pastoralOficialRepository;
         this.importacaoFileParser = importacaoFileParser;
+        this.anoParoquialJpaRepository = anoParoquialJpaRepository;
+        this.liturgicalEngine = liturgicalEngine;
+        this.cicloLiturgicoRepository = cicloLiturgicoRepository;
     }
 
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
@@ -259,13 +268,47 @@ public class ImportacaoService {
         Instant fim = parseInstant(data.get("dataFim"));
         entity.setInicioUtc(inicio != null ? inicio : Instant.now());
         entity.setFimUtc(fim != null ? fim : entity.getInicioUtc().plusSeconds(3600));
-        entity.setStatus("APROVADO");
+
+        // Checar trava de Ano Paroquial Fechado e aplicar Resolução Silenciosa
+        int anoCivil = entity.getInicioUtc().atZone(java.time.ZoneOffset.UTC).getYear();
+        boolean isAnoFechado = anoParoquialJpaRepository != null &&
+                anoParoquialJpaRepository.findByAno(anoCivil)
+                        .map(a -> "FECHADO".equals(a.getStatus()))
+                        .orElse(false);
+
+        String inputStatus = Optional.ofNullable(data.get("status")).orElse("APROVADO").toUpperCase();
+        if (isAnoFechado) {
+            if ("ADICIONADO_EXTRA".equals(inputStatus)) {
+                entity.setStatus("ADICIONADO_EXTRA");
+                entity.setAdicionadoExtraJustificativa(
+                        Optional.ofNullable(data.get("adicionadoExtraJustificativa"))
+                                .orElse("Inclusão extra via importação em lote"));
+            } else {
+                // Resolução Silenciosa: Converte para PENDENTE em ano fechado sem estourar rollback no lote
+                entity.setStatus("PENDENTE");
+                entity.setConflictState("PENDING_APPROVAL");
+                entity.setConflictReason("Importado em lote durante Ano Paroquial Fechado - aguardando homologação");
+            }
+        } else {
+            entity.setStatus(inputStatus);
+        }
+
         entity.setCategoria(
                 Optional.ofNullable(data.get("categoria"))
                         .filter(c -> !c.isBlank()).orElse("GERAL"));
         entity.setLocalId(parseUuid(data.get("localId")));
         entity.setIgrejaVinculoId(parseUuid(data.get(KEY_IGREJA_ID)));
         entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));
+
+        // Resolução Litúrgica
+        if (liturgicalEngine != null) {
+            int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(entity.getInicioUtc());
+            entity.setAnoLiturgicoRef(anoLiturgicoRef);
+        }
+        if (cicloLiturgicoRepository != null) {
+            cicloLiturgicoRepository.findAll().stream().findFirst().ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
+        }
+
         eventoJpaRepository.save(entity);
     }
 

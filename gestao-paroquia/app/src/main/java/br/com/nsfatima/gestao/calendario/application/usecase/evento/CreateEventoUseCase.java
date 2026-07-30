@@ -12,6 +12,7 @@ import br.com.nsfatima.gestao.calendario.domain.service.AgendaPriorityValidatorS
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
@@ -20,6 +21,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAudi
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -58,6 +60,8 @@ public class CreateEventoUseCase {
     private final CalendarLockPolicy calendarLockPolicy;
     private final AgendaPriorityValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
+    private final LiturgicalEngine liturgicalEngine;
+    private final CicloLiturgicoRepository cicloLiturgicoRepository;
 
     public CreateEventoUseCase(
             EventoDomainService domainService,
@@ -74,7 +78,9 @@ public class CreateEventoUseCase {
             ProjetoVincularPolicy projetoVincularPolicy,
             CalendarLockPolicy calendarLockPolicy,
             AgendaPriorityValidatorService agendaPriorityValidatorService,
-            CacheManager cacheManager) {
+            CacheManager cacheManager,
+            br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine liturgicalEngine,
+            br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository cicloLiturgicoRepository) {
         this.domainService = domainService;
         this.repository = repository;
         this.involvementRepository = involvementRepository;
@@ -90,6 +96,8 @@ public class CreateEventoUseCase {
         this.calendarLockPolicy = calendarLockPolicy;
         this.agendaPriorityValidatorService = agendaPriorityValidatorService;
         this.cacheManager = cacheManager;
+        this.liturgicalEngine = liturgicalEngine;
+        this.cicloLiturgicoRepository = cicloLiturgicoRepository;
     }
 
     /**
@@ -179,6 +187,10 @@ public class CreateEventoUseCase {
     private EventoResponse persistNewEvent(CreateEventoRequest request) {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         EventoEntity entity = mapper.toNewEntity(request, status);
+
+        int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(request.inicio());
+        entity.setAnoLiturgicoRef(anoLiturgicoRef);
+        cicloLiturgicoRepository.findAll().stream().findFirst().ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
 
         boolean hasOverlap = repository.existsByInicioUtcLessThanAndFimUtcGreaterThan(request.fim(), request.inicio());
         entity.setConflictState(domainService.resolveConflictState(hasOverlap));

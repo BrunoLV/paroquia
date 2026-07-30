@@ -46,6 +46,17 @@ public class CicloLiturgicoEntity extends BaseVersionedEntity {
     @Column(length = 500)
     private String descricao;
 
+    @Column(name = "ano_liturgico_ref")
+    private Integer anoLiturgicoRef;
+
+    public Integer getAnoLiturgicoRef() {
+        return anoLiturgicoRef;
+    }
+
+    public void setAnoLiturgicoRef(Integer anoLiturgicoRef) {
+        this.anoLiturgicoRef = anoLiturgicoRef;
+    }
+
     public UUID getId() {
         return id;
     }

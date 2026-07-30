@@ -76,7 +76,10 @@ class ImportacaoServiceTest {
                 passwordEncoder,
                 organizacaoJpaRepository,
                 pastoralOficialRepository,
-                new ImportacaoFileParser()
+                new ImportacaoFileParser(),
+                null,
+                null,
+                null
         );
     }
 
@@ -202,5 +205,33 @@ class ImportacaoServiceTest {
         int countEvento = importacaoService.confirmarImportacao("EVENTO", List.of(eventoMap), "admin");
         assertEquals(1, countEvento);
         verify(eventoJpaRepository).save(any());
+    }
+
+    @Test
+    void testShouldRealizarResolucaoSilenciosaEmAnoFechado() {
+        var anoRepoMock = org.mockito.Mockito.mock(br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository.class);
+        var anoFechado = new br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity();
+        anoFechado.setAno(2026);
+        anoFechado.setStatus("FECHADO");
+
+        when(anoRepoMock.findByAno(2026)).thenReturn(Optional.of(anoFechado));
+
+        ImportacaoService serviceComAno = new ImportacaoService(
+                createMembroUseCase, membroJpaRepository, usuarioJpaRepository, organizacaoService,
+                eventoJpaRepository, passwordEncoder, organizacaoJpaRepository, pastoralOficialRepository,
+                new ImportacaoFileParser(), anoRepoMock, null, null
+        );
+
+        Map<String, String> eventoMap = Map.of(
+                "nome", "Missa em Ano Fechado",
+                "dataInicio", "2026-08-02 09:00",
+                "status", "CONFIRMADO"
+        );
+
+        int count = serviceComAno.confirmarImportacao("EVENTO", List.of(eventoMap), "admin");
+        assertEquals(1, count);
+        verify(eventoJpaRepository, org.mockito.Mockito.atLeastOnce()).save(org.mockito.ArgumentMatchers.argThat(entity ->
+                "PENDENTE".equals(entity.getStatus()) && "PENDING_APPROVAL".equals(entity.getConflictState())
+        ));
     }
 }

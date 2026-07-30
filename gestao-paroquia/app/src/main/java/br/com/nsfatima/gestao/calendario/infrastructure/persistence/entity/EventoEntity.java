@@ -59,6 +59,12 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "categoria", length = 32)
     private String categoria;
 
+    @Column(name = "ano_liturgico_ref")
+    private Integer anoLiturgicoRef;
+
+    @Column(name = "ciclo_liturgico_id")
+    private UUID cicloLiturgicoId;
+
     @Column(name = "local_id")
     private UUID localId;
 
@@ -237,6 +243,22 @@ public class EventoEntity extends BaseVersionedEntity {
 
     public void setSetorPastoral(String setorPastoral) {
         this.setorPastoral = setorPastoral;
+    }
+
+    public Integer getAnoLiturgicoRef() {
+        return anoLiturgicoRef;
+    }
+
+    public void setAnoLiturgicoRef(Integer anoLiturgicoRef) {
+        this.anoLiturgicoRef = anoLiturgicoRef;
+    }
+
+    public UUID getCicloLiturgicoId() {
+        return cicloLiturgicoId;
+    }
+
+    public void setCicloLiturgicoId(UUID cicloLiturgicoId) {
+        this.cicloLiturgicoId = cicloLiturgicoId;
     }
 }
 
