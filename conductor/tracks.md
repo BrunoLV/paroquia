@@ -270,3 +270,9 @@
 
 - [x] **Track: Motor de Validação da Agenda Comunitária (Níveis de Prioridade 1-4 & Bypass)**
 *Link: [./archive/motor_agenda_comunitaria_prioridades_20260728/index.md](./archive/motor_agenda_comunitaria_prioridades_20260728/index.md)*
+
+---
+
+- [ ] **Track: Auditoria, Consistência e Alinhamento do Cadastro de Eventos, Projetos e Recorrência (API x UI)**
+*Link: [./tracks/alinhamento_eventos_projetos_recorrencia_20260730/index.md](./tracks/alinhamento_eventos_projetos_recorrencia_20260730/index.md)*
+

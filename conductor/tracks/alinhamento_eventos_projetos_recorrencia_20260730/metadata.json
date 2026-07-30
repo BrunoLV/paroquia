@@ -1,0 +1,8 @@
+{
+  "track_id": "alinhamento_eventos_projetos_recorrencia_20260730",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-07-30T02:38:40Z",
+  "updated_at": "2026-07-30T02:38:40Z",
+  "description": "Identificar se cadastro de Eventos, Projetos e Recorrência está consistente com regras e a relação API x UI"
+}
