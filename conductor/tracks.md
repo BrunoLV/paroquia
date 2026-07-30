@@ -293,7 +293,7 @@
 
 ---
 
-- [~] **Track: Motor de Governança Temporal e Sazonalidade Litúrgica (Ano Paroquial, Ano Litúrgico, Ciclos Litúrgicos 10 anos, Lock Policy e Importação Silenciosa)**
-*Link: [./tracks/motor_governanca_temporal_liturgica_20260730/](./tracks/motor_governanca_temporal_liturgica_20260730/)*
+- [x] **Track: Motor de Governança Temporal e Sazonalidade Litúrgica (Ano Paroquial, Ano Litúrgico, Ciclos Litúrgicos 10 anos, Lock Policy e Importação Silenciosa)**
+*Link: [./archive/motor_governanca_temporal_liturgica_20260730/index.md](./archive/motor_governanca_temporal_liturgica_20260730/index.md)*
 
 
