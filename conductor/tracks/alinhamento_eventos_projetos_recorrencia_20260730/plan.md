@@ -14,4 +14,4 @@
 ## Phase 3: Testes de Integração E2E e Validação da Suíte Completa
 - [x] Task: Escrever testes unitários e de integração (Vitest e JUnit) simulando divergências de payloads, erros de concorrência e bypass de agenda. (f65afc8)
 - [x] Task: Executar suite completa de testes (`./gradlew test` e `npm test`).
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Testes de Integração E2E e Validação da Suíte Completa' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Testes de Integração E2E e Validação da Suíte Completa' (Protocol in workflow.md)
