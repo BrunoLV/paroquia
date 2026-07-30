@@ -16,9 +16,9 @@
 - [x] Task: Implementar UseCase de Taxa de Conclusão e Abandono de Projetos 27d3470
     - [x] Criar testes unitários TDD em `CalcularTaxaProjetosUseCaseTest`
     - [x] Implementar `CalcularTaxaProjetosUseCase` calculando percentual concluído/cancelado/em andamento
-- [ ] Task: Implementar UseCase de SLA de Despacho Pastoral
-    - [ ] Criar testes unitários TDD em `CalcularSlaDespachoPastoralUseCaseTest`
-    - [ ] Implementar `CalcularSlaDespachoPastoralUseCase` medindo tempo médio de aprovação
+- [x] Task: Implementar UseCase de SLA de Despacho Pastoral 54098ec
+    - [x] Criar testes unitários TDD em `CalcularSlaDespachoPastoralUseCaseTest`
+    - [x] Implementar `CalcularSlaDespachoPastoralUseCase` medindo tempo médio de aprovação
 - [ ] Task: Implementar UseCase de Coeficiente de Impacto Social (Pastoral em Saída)
     - [ ] Criar testes unitários TDD em `CalcularImpactoSocialUseCaseTest`
     - [ ] Implementar `CalcularImpactoSocialUseCase` agregando eventos sociais vs institucionais
