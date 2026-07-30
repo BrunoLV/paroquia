@@ -1,9 +1,9 @@
 # Implementation Plan: Métricas Estratégicas e Preditivas de Gestão Paroquial
 
 ## Phase 1: Backend Domain, Schema & Liturgical Calendar Infrastructure
-- [ ] Task: Criar migração Flyway para tabela de Ciclos/Festas Litúrgicas (`tb_ciclo_liturgico`) e metadados de eventos/projetos
-    - [ ] Criar arquivo V...__create_tabela_ciclo_liturgico.sql com chave estrangeira e restrições
-    - [ ] Adicionar seed inicial com os principais períodos litúrgicos (Advento, Natal, Quaresma, Páscoa, Tempo Comum, Festas Padroeiras)
+- [x] Task: Criar migração Flyway para tabela de Ciclos/Festas Litúrgicas (`tb_ciclo_liturgico`) e metadados de eventos/projetos 9675d8a
+    - [x] Criar arquivo V...__create_tabela_ciclo_liturgico.sql com chave estrangeira e restrições
+    - [x] Adicionar seed inicial com os principais períodos litúrgicos (Advento, Natal, Quaresma, Páscoa, Tempo Comum, Festas Padroeiras)
 - [ ] Task: Implementar Entidades JPA e Repositórios com Clean Architecture
     - [ ] Criar entidade `CicloLiturgico` e enum `TipoCicloLiturgico`
     - [ ] Criar repositório Spring Data JPA `CicloLiturgicoRepository` e testes unitários/integração
