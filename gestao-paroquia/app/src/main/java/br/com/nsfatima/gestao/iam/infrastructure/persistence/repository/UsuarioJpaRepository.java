@@ -4,12 +4,9 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UsuarioJpaRepository extends JpaRepository<UsuarioEntity, UUID> {
-    Optional<UsuarioEntity> findByUsernameIgnoreCase(String username);
-
-    Optional<UsuarioEntity> findByNomeIgnoreCase(String nome);
+public interface UsuarioJpaRepository extends JpaRepository<UsuarioEntity, UUID>,
+        UsuarioAutenticacaoJpaRepository, UsuarioPerfilJpaRepository {
 }
