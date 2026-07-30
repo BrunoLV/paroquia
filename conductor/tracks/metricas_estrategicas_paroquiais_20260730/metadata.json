@@ -1,8 +1,7 @@
 {
   "track_id": "metricas_estrategicas_paroquiais_20260730",
   "type": "feature",
-  "status": "new",
-  "created_at": "2026-07-30T12:14:20-03:00",
-  "updated_at": "2026-07-30T12:14:20-03:00",
+  "status": "complete",
+  "updated_at": "2026-07-30T13:06:35-03:00",
   "description": "Métricas Estratégicas e Preditivas de Gestão Paroquial (Sazonalidade Litúrgica, SLA de Despacho, Taxa de Projetos, Impacto Social, Concorrência e Ociosidade Patrimonial)"
 }

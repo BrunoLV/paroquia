@@ -51,4 +51,4 @@
     - [x] Criar widgets de resumo executivo em `DashboardPage.tsx` para Clero e Conselhos (CPP/CAE)
 - [x] Task: Testes de Integração e Verificação End-to-End da UI 9c2d394
     - [x] Executar suíte de testes Vitest (`npm test`) garantindo zero regressão e >80% coverage
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Frontend Strategic Metrics Dashboard & Executive Reports UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend Strategic Metrics Dashboard & Executive Reports UI' (Protocol in workflow.md) f6c3656
