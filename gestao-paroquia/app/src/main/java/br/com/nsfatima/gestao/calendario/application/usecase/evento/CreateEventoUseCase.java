@@ -79,8 +79,8 @@ public class CreateEventoUseCase {
             CalendarLockPolicy calendarLockPolicy,
             AgendaPriorityValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager,
-            br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine liturgicalEngine,
-            br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository cicloLiturgicoRepository) {
+            LiturgicalEngine liturgicalEngine,
+            CicloLiturgicoRepository cicloLiturgicoRepository) {
         this.domainService = domainService;
         this.repository = repository;
         this.involvementRepository = involvementRepository;

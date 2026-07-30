@@ -15,6 +15,9 @@ import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOfi
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,9 +57,9 @@ public class ImportacaoService {
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final ImportacaoFileParser importacaoFileParser;
-    private final br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository anoParoquialJpaRepository;
-    private final br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine liturgicalEngine;
-    private final br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository cicloLiturgicoRepository;
+    private final AnoParoquialJpaRepository anoParoquialJpaRepository;
+    private final LiturgicalEngine liturgicalEngine;
+    private final CicloLiturgicoRepository cicloLiturgicoRepository;
 
     public ImportacaoService(CreateMembroUseCase createMembroUseCase,
                               MembroJpaRepository membroJpaRepository,
@@ -67,9 +70,9 @@ public class ImportacaoService {
                               OrganizacaoJpaRepository organizacaoJpaRepository,
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
                               ImportacaoFileParser importacaoFileParser,
-                              br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository anoParoquialJpaRepository,
-                              br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine liturgicalEngine,
-                              br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository cicloLiturgicoRepository) {
+                              AnoParoquialJpaRepository anoParoquialJpaRepository,
+                              LiturgicalEngine liturgicalEngine,
+                              CicloLiturgicoRepository cicloLiturgicoRepository) {
         this.createMembroUseCase = createMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;

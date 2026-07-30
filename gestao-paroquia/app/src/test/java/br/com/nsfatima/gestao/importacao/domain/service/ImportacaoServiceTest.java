@@ -32,6 +32,11 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -209,8 +214,8 @@ class ImportacaoServiceTest {
 
     @Test
     void testShouldRealizarResolucaoSilenciosaEmAnoFechado() {
-        var anoRepoMock = org.mockito.Mockito.mock(br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository.class);
-        var anoFechado = new br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity();
+        var anoRepoMock = mock(AnoParoquialJpaRepository.class);
+        var anoFechado = new AnoParoquialEntity();
         anoFechado.setAno(2026);
         anoFechado.setStatus("FECHADO");
 
@@ -230,7 +235,7 @@ class ImportacaoServiceTest {
 
         int count = serviceComAno.confirmarImportacao("EVENTO", List.of(eventoMap), "admin");
         assertEquals(1, count);
-        verify(eventoJpaRepository, org.mockito.Mockito.atLeastOnce()).save(org.mockito.ArgumentMatchers.argThat(entity ->
+        verify(eventoJpaRepository, atLeastOnce()).save(argThat(entity ->
                 "PENDENTE".equals(entity.getStatus()) && "PENDING_APPROVAL".equals(entity.getConflictState())
         ));
     }

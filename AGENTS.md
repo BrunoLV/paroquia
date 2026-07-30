@@ -18,6 +18,7 @@
 ## Unified Quality & Monorepo Validation Gates
 - **Comprehensive Verification:** Before finalizing any task, the agent must run the validation commands across all affected child projects to ensure a zero-regression state.
 - **Pre-Commit Hygiene:** The agent must pre-evaluate syntax and formatting using the local tooling configurations. No code with lint errors, static analysis warnings (Checkstyle, PMD, SpotBugs, ESLint), or broken compilation states (`tsc`, Gradle build) may be proposed.
+- **Proposição Estrita de Imports (No Inline FQN Imports):** É estritamente proibida a utilização de FQN inline imports no código (ex: `br.com.nsfatima...LiturgicalEngine`). Todos os tipos e classes devem obrigatoriamente ser declarados através de instruções `import` no topo do arquivo.
 - **Global TDD Framework Alignment:** Across the entire monorepo, Test-Driven Development (TDD) remains the absolute foundation of code safety. The agent must systematically deliver the testing specifications (Unit, Integration, and E2E layers as dictated by child guidelines) alongside or prior to production changes.
 
 ## Security, Privacy & Global Constraints
