@@ -14,7 +14,7 @@
 - [x] Task: Implementar Motor Litúrgico `LiturgicalEngine` (TDD) 97d8e93
     - [x] Escrever testes unitários em `LiturgicalEngineTest` cobrindo cálculo da Páscoa (Meeus/Jones/Butcher) e início do Advento
     - [x] Implementar `LiturgicalEngine` para calcular/resolver o Ano Litúrgico e Ciclo Litúrgico sazonal a partir de datas UTC
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Domain, Schema, Liturgical Engine & Database Seed' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Domain, Schema, Liturgical Engine & Database Seed' (Protocol in workflow.md) c794437
 
 ## Phase 2: Use Cases Integration, Calendar Lock & Silent Import Resolution
 - [ ] Task: Integrar Resolução Litúrgica e Lock Policy nos Use Cases de Evento (TDD)
