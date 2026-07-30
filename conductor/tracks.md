@@ -254,17 +254,17 @@
 ---
 
 - [x] **Track: Reformulação do RBAC e Eliminação de Papéis Genéricos**
-*Link: [./tracks/rbac_especifico_eclesial_20260728/index.md](./tracks/rbac_especifico_eclesial_20260728/index.md)*
+*Link: [./archive/rbac_especifico_eclesial_20260728/index.md](./archive/rbac_especifico_eclesial_20260728/index.md)*
 
 ---
 
 - [x] **Track: Escopo Territorial e Vínculo Obrigatório (community_id)**
-*Link: [./tracks/escopo_territorial_community_id_20260728/index.md](./tracks/escopo_territorial_community_id_20260728/index.md)*
+*Link: [./archive/escopo_territorial_community_id_20260728/index.md](./archive/escopo_territorial_community_id_20260728/index.md)*
 
 ---
 
 - [x] **Track: Governança dos Conselhos (CPP e CPC) e Homologação de Atas**
-*Link: [./tracks/governanca_conselhos_cpp_cpc_20260728/index.md](./tracks/governanca_conselhos_cpp_cpc_20260728/index.md)*
+*Link: [./archive/governanca_conselhos_cpp_cpc_20260728/index.md](./archive/governanca_conselhos_cpp_cpc_20260728/index.md)*
 
 ---
 
