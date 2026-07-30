@@ -1,0 +1,8 @@
+{
+  "track_id": "segregacao_repositorios_god_nodes_20260730",
+  "type": "refactor",
+  "status": "new",
+  "created_at": "2026-07-30T03:31:00Z",
+  "updated_at": "2026-07-30T03:31:00Z",
+  "description": "Otimização de Arquitetura Identificada pelo Grafo: Segregação dos Repositórios God Nodes (Usuario, Evento, Organizacao) e Injeções de Dependência por Caso de Uso"
+}

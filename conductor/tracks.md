@@ -280,3 +280,8 @@
 
 - [x] **Track: Vinculação de Locais (Espaços Paroquiais) a Matriz/Comunidades na API, UI e Banco de Dados (com ajuste de seed)**
 *Link: [./archive/vinculo_locais_matriz_comunidades_20260730/index.md](./archive/vinculo_locais_matriz_comunidades_20260730/index.md)*
+
+---
+
+- [ ] **Track: Otimização de Arquitetura Identificada pelo Grafo (Segregação de God Nodes)**
+*Link: [./tracks/segregacao_repositorios_god_nodes_20260730/index.md](./tracks/segregacao_repositorios_god_nodes_20260730/index.md)*
