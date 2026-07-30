@@ -291,3 +291,9 @@
 - [x] **Track: Métricas Estratégicas e Preditivas de Gestão Paroquial (Sazonalidade Litúrgica, SLA de Despacho, Taxa de Projetos, Impacto Social, Concorrência e Ociosidade Patrimonial)**
 *Link: [./tracks/metricas_estrategicas_paroquiais_20260730/](./tracks/metricas_estrategicas_paroquiais_20260730/)*
 
+---
+
+- [ ] **Track: Motor de Governança Temporal e Sazonalidade Litúrgica (Ano Paroquial, Ano Litúrgico, Ciclos Litúrgicos 10 anos, Lock Policy e Importação Silenciosa)**
+*Link: [./tracks/motor_governanca_temporal_liturgica_20260730/](./tracks/motor_governanca_temporal_liturgica_20260730/)*
+
+
