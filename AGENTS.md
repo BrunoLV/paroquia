@@ -25,6 +25,18 @@
 - **Obrigatoriedade do Graphify:** A pasta `graphify-out/` contendo os grafos de conhecimento, AST e dependências da aplicação está disponível na raiz. Todos os agentes de IA que atuarem neste repositório DEVEM obrigatoriamente priorizar a consulta aos artefatos do `graphify` (`graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.json`, detecção de comunidades, god nodes e análise de impacto) para compreender a arquitetura e rastrear dependências antes de efetuar buscas manuais cegas.
 - **Navegação Inteligente & Economia de Tokens:** É estritamente proibido realizar varredura cega ou leitura em massa de múltiplos arquivos desnecessários (`view_file` em lote sem filtro prévio). O agente deve obrigatoriamente utilizar o conhecimento estruturado do grafo para ir diretamente aos arquivos afetados e trechos específicos de código, otimizando o consumo de tokens e garantindo precisão contextual.
 
+## Mandatory Project Skills Consultation & Best Practices Alignment
+- **Consulta Obrigatória de Skills:** Todo agente de IA DEVE obrigatoriamente consultar os guias de skills localizados nas pastas `.agents/skills` de cada módulo (`gestao-paroquia/.agents/skills/` e `gestao-paroquia-ui/.agents/skills/`) antes de arquitetar, implementar ou refatorar qualquer código, garantindo alinhamento estrito com as melhores práticas adotadas no projeto.
+- **Skills Backend (`gestao-paroquia/.agents/skills/`):**
+  - `ddd.md`: Modelagem rica de domínio, agregados, Value Objects e bounded contexts.
+  - `java.md`: Padrões Java 25, uso de records, imutabilidade e type-safety.
+  - `solid.md`: Princípios de responsabilidade única, inversão de dependência e arquitetura limpa.
+  - `tdd.md` & `tdd_2.md`: Ciclo TDD (Red-Green-Refactor) e pirâmide de testes.
+  - `flyway.md` & `sql.md`: Governança de migrações e consultas SQL de alta performance.
+  - `gradle.md`: Gestão de dependências e automação de build.
+- **Skills Frontend (`gestao-paroquia-ui/.agents/skills/`):**
+  - `react-frontend.md`: Padrões de React 19, custom hooks, TypeScript estrito (sem `any`), MUI 9, TanStack Query e Vitest.
+
 ## Security, Privacy & Global Constraints
 - **Absolute Privacy Isolation:** This entire monorepo handles personal data and is strictly for internal use. The agent must strictly defer to `docs/ia/regras_duras_lgpd.md` before writing data structures, logging events, or structuring network responses. PII leak prevention is globally enforced.
-- **Shared Skills Directory:** Global agent behaviors, custom tool operational paradigms, and generic skills are located within `.agents/skill`. Review these global capabilities alongside local child skills to ensure cohesive execution.
+- **Shared Skills Directory:** Global agent behaviors, custom tool operational paradigms, and generic skills are located within `.agents/skill` e `.agents/skills`. Review these global capabilities alongside local child skills to ensure cohesive execution.

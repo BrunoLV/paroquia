@@ -14,7 +14,7 @@
 ## Agent Capabilities, Custom Skills & Graphify Mandate
 - **Graphify Codebase Exploration:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar classes, pacotes ou repositories do backend via buscas manuais.
 - **Economia de Tokens:** É proibida a leitura em lote de múltiplos arquivos fonte inteiros quando a estrutura de dependências puder ser obtida diretamente via consulta aos artefatos do Graphify, garantindo economia de tokens e navegação precisa.
-- **Skill Alignment:** Specialized behavioral skills, tools, and execution capabilities for this agent are defined inside `.agents/skills`. The agent must strictly consult and adapt its logic according to the context and functions provisioned within that directory before proceeding with generation tasks.
+- **Mandatory Project Skills Alignment:** O agente DEVE obrigatoriamente consultar e aplicar as diretrizes contidas nos guias de skill em `.agents/skills/` (`ddd.md`, `java.md`, `solid.md`, `tdd.md`, `tdd_2.md`, `flyway.md`, `sql.md` e `gradle.md`) antes de gerar ou refatorar qualquer código no backend.
 
 ## Code Style & Architecture (Java & Type Safety)
 - **Types over Strings:** Always prefer Java `enum`, `sealed classes`, or strongly-typed object wrappers (Value Objects) over raw `String` to represent states, categories, or fixed domains.

@@ -14,7 +14,7 @@
 ## Agent Capabilities, Custom Skills & Graphify Mandate
 - **Graphify Codebase Exploration:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar componentes UI, páginas ou hooks via buscas manuais.
 - **Economia de Tokens:** É proibida a leitura em lote de múltiplos arquivos fonte inteiros quando a estrutura de dependências puder ser obtida diretamente via consulta aos artefatos do Graphify, garantindo economia de tokens e navegação precisa.
-- **Skill Alignment:** Specialized behavioral skills, tools, and execution capabilities for this agent are defined inside `.agents/skills`. The agent must strictly consult and adapt its logic according to the context and functions provisioned within that directory before proceeding with generation tasks.
+- **Mandatory Project Skills Alignment:** O agente DEVE obrigatoriamente consultar e aplicar as diretrizes contidas nos guias de skill em `.agents/skills/` (`react-frontend.md`) antes de gerar ou refatorar qualquer componente, hook ou página no frontend.
 
 ## Static Analysis, Linters & Tools
 - **Tooling Compliance:** The codebase strictly enforces quality gates via **ESLint**, **TypeScript (`tsc`)**, and **Prettier**. All generated or refactored code must comply fully with these configurations.
