@@ -1,9 +1,9 @@
 # AGENTS.md - Monorepo Root Engineering Governance & Standards
 
 ## Monorepo Architecture & Rule Delegation
-- **Consciência de Contexto (Context Awareness):** Este repositório é um Monorepo. Antes de modificar, refatorar ou introduzir código dentro de um subdiretório específico de uma aplicação, o agente DEVE ABSOLUTAMENTE ler, respeitar e aplicar estritamente o arquivo `AGENTS.md` local encontrado dentro da pasta desse projeto filho (ex: pastas de serviço backend ou frontend).
+- **Consciência de Contexto (Context Awareness):** Este repositório é um Monorepo. Antes de modificar, refatorar ou introduzir código dentro de um subdiretório específico de uma aplicação, o agente DEVE ABSOLUTAMENTE ler, respeitar e aplicar estritamente as regras de governança locais encontradas dentro da pasta do projeto filho (ex: `gestao-paroquia/` para o backend Java ou `gestao-paroquia-ui/` para o frontend React).
 - **Sem Contaminação Cruzada (No Cross-Contamination):** Nunca importe componentes internos da aplicação, tipos ou lógica de negócio entre projetos filhos, a menos que o compartilhamento seja feito explicitamente por meio de um pacote de workspace comum/compartilhado (shared) designado.
-- **Isolamento de Dependências:** As dependências em nível de raiz (root-level) devem gerenciar estritamente o ferramental do monorepo, linting ou configurações globais de build. As dependências específicas da aplicação pertencem exclusivamente aos arquivos de configuração de seus respectivos projetos filhos.
+- **Isolamento de Dependências:** As dependências em nível de raiz (root-level) devem gerenciar estritamente o ferramental do monorepo, linting ou configurações globais de build. As dependências específicas da aplicação pertencem exclusivamente aos arquivos de configuração de seus respectivos projetos filhos (ex: `build.gradle` no backend e `package.json` no frontend).
 
 ## Generalized Engineering Standards & Git Hygiene
 - **Commits Atômicos:** As alterações de código devem ser divididas em commits pequenos e logicamente atômicos. Um único commit deve abordar exatamente uma intenção (ex: uma correção de bug, uma adição de funcionalidade discreta ou uma refatoração isolada).
@@ -22,25 +22,23 @@
 - **Alinhamento Global com o Framework TDD:** Em todo o monorepo, o Desenvolvimento Orientado a Testes (TDD) continua sendo a base absoluta da segurança do código. O agente deve entregar sistematicamente as especificações de teste (camadas de Unidade, Integração e E2E, conforme ditado pelas diretrizes dos projetos filhos) juntamente com ou antes das alterações de produção.
 
 ## Graphify Navigation & Token Optimization Mandate
-- **Obrigatoriedade do Graphify:** A pasta `graphify-out/` contendo os grafos de conhecimento, AST e dependências da aplicação está disponível na raiz. Todos os agentes de IA que atuarem neste repositório DEVEM obrigatoriamente priorizar a consulta aos artefatos do `graphify` (`graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.json`, detecção de comunidades, god nodes e análise de impacto) para compreender a arquitetura e rastrear dependências antes de efetuar buscas manuais cegas.
-- **Navegação Inteligente & Economia de Tokens:** É estritamente proibido realizar varredura cega ou leitura em massa de múltiplos arquivos desnecessários (`view_file` em lote sem filtro prévio). O agente deve obrigatoriamente utilizar o conhecimento estruturado do grafo para ir diretamente aos arquivos afetados e trechos específicos de código, otimizando o consumo de tokens e garantindo precisão contextual.
+- **Obrigatoriedade do Graphify:** A pasta `graphify-out/` contendo os grafos de conhecimento, AST e dependências da aplicação está disponível na raiz. Todos os agentes de IA que atuarem neste repositório DEVEM obrigatoriamente priorizar a consulta aos artefatos do `graphify` (como o cache semântico em `graphify-out/cache/semantic/`) para compreender a arquitetura e rastrear dependências antes de efetuar buscas manuais cegas.
+- **Navegação Inteligente & Economia de Tokens:** É estritamente proibido realizar varredura cega ou leitura em massa de múltiplos arquivos desnecessários. O agente deve obrigatoriamente utilizar o conhecimento estruturado do grafo para ir diretamente aos arquivos afetados e trechos específicos de código, otimizando o consumo de tokens e garantindo precisão contextual.
 
 ## Otimização de Janela de Contexto
-- **Consulta Prévia Mandatória:** Sempre consulte `graphify-out/graph.json` ou execute buscas semânticas locais antes de abrir múltiplos arquivos de código.
-- **Eficiência de Tokens:** Nunca consuma tokens carregando arquivos inteiros se a relação mapeada pelo Graphify exigir modificações em apenas algumas linhas isoladas.
+- **Consulta Prévia Mandatória:** Sempre consulte a estrutura analítica gerada ou execute buscas semânticas locais em `graphify-out/` antes de abrir múltiplos arquivos de código.
+- **Eficiência de Tokens:** Nunca consuma tokens carregando arquivos inteiros se a relação mapeada exigir modificações em apenas algumas linhas isoladas.
 
 ## Mandatory Project Skills Consultation & Best Practices Alignment
-- **Consulta Obrigatória de Skills:** Todo agente de IA DEVE obrigatoriamente consultar os guias de skills localizados nas pastas `.agents/skills` de cada módulo (`gestao-paroquia/.agents/skills/` e `gestao-paroquia-ui/.agents/skills/`) antes de arquitetar, implementar ou refatorar qualquer código, garantindo alinhamento estrito com as melhores práticas adotadas no projeto.
-- **Skills Backend (`gestao-paroquia/.agents/skills/`):**
-  - `ddd.md`: Modelagem rica de domínio, agregados, Value Objects e bounded contexts.
-  - `java.md`: Padrões Java 25, uso de records, imutabilidade e type-safety.
-  - `solid.md`: Princípios de responsabilidade única, inversão de dependência e arquitetura limpa.
-  - `tdd.md` & `tdd_2.md`: Ciclo TDD (Red-Green-Refactor) e pirâmide de testes.
-  - `flyway.md` & `sql.md`: Governança de migrações e consultas SQL de alta performance.
-  - `gradle.md`: Gestão de dependências e automação de build.
-- **Skills Frontend (`gestao-paroquia-ui/.agents/skills/`):**
-  - `react-frontend.md`: Padrões de React 19, custom hooks, TypeScript estrito (sem `any`), MUI 9, TanStack Query e Vitest.
+- **Consulta Obrigatória de Diretrizes:** Todo agente de IA DEVE obrigatoriamente consultar os guias de estilo e padrões arquiteturais localizados nos diretórios de governança de cada módulo antes de arquitetar, implementar ou refatorar qualquer código, garantindo alinhamento estrito com as melhores práticas adotadas no projeto.
+- **Diretrizes Backend (`gestao-paroquia/conductor/code_styleguides/` & `gestao-paroquia/docs/`):**
+  - **DDD & Arquitetura Limpa:** Modelagem rica de domínio, agregados, Value Objects, bounded contexts e separação rígida de portas/adaptadores (conforme visto na estrutura estruturada em `api/v1/controller`, `application/usecase`, `domain/model` e `infrastructure/persistence`).
+  - **Java Moderno:** Padrões modernos de desenvolvimento Java, uso de records, imutabilidade e type-safety (validado via SpotBugs, PMD e Checkstyle configurados em `gestao-paroquia/config/`).
+  - **TDD Rigoroso:** Ciclo Red-Green-Refactor com suite completa de testes unitários, de integração e de contratos (localizados em `src/test/java/br/com/nsfatima/gestao/`).
+  - **Database Governance:** Controle estrito de migrações via Flyway (armazenadas em `db/migration/`) e consultas SQL de alta performance.
+- **Diretrizes Frontend (`gestao-paroquia-ui/conductor/code_styleguides/`):**
+  - **React Frontend:** Padrões de React, custom hooks, TypeScript estrito, arquitetura de componentes reutilizáveis (MUI, TanStack Query) e cobertura de testes robusta usando Vitest (conforme mapeado na árvore de `src/components/`, `src/hooks/` e `src/context/`).
 
 ## Security, Privacy & Global Constraints
-- **Isolamento de Privacidade Absoluto (Absolute Privacy Isolation):** Todo este monorepo manipula dados pessoais e é estritamente para uso interno. O agente deve se reportar e aderir estritamente ao arquivo `docs/ia/regras_duras_lgpd.md` antes de escrever estruturas de dados, registrar eventos de log ou estruturar respostas de rede. A prevenção contra o vazamento de informações de identificação pessoal (PII) é aplicada globalmente.
-- **Diretório de Skills Compartilhado:** Os comportamentos globais do agente, os paradigmas operacionais de ferramentas customizadas e as skills genéricas estão localizados em `.agents/skill` e `.agents/skills`. Revise essas capacidades globais juntamente com as skills locais dos projetos filhos para garantir uma execução coesa.
+- **Isolamento de Privacidade Absoluto (Absolute Privacy Isolation):** Todo este monorepo manipula dados e regras de negócio eclesiais internos e sensíveis. O agente deve se reportar e aderir estritamente às diretrizes de privacidade e LGPD mapeadas em `gestao-paroquia/docs/ia/` antes de escrever estruturas de dados, registrar eventos de log ou estruturar respostas de rede. A prevenção contra o vazamento de informações de identificação pessoal (PII) é aplicada globalmente em todo o código produtivo.
+- **Rastreabilidade de Alterações:** Toda modificação histórica e refinamento técnico deve ser documentada nos respectivos trackers de progresso dentro de `conductor/tracks/` e nas pastas `conductor/` locais das aplicações.

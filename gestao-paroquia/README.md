@@ -12,52 +12,56 @@ O projeto adota estritamente os princípios de **Domain-Driven Design (DDD)** e 
 
 A aplicação está dividida em 12 domínios explicados sob o pacote raiz `br.com.nsfatima.gestao`:
 
-- **`calendario`**: Gestão do ciclo de vida de eventos paroquiais, solicitações de agendamento e regras de recorrência.
-- **`aprovacao`**: Workflows de aprovação de eventos e solicitações com histórico e pareceres.
-- **`local`**: Cadastro e controle de espaços físicos (salas, auditórios, capacidade e atributos).
-- **`iam`**: Identidade e Gestão de Acesso (Usuários, Roles, Permissões, perfis e Autenticação JWT).
-- **`governanca`**: Registros de auditoria, políticas de segurança, controle de acesso e rastreabilidade.
-- **`organizacao`**: Hierarquia organizacional da paróquia (Pastorais, Movimentos, Setores, Conselho e Comunidades).
-- **`membro`**: Cadastro, fichas cadastrais e acompanhamento de fiéis e membros atuantes.
-- **`projeto`**: Vinculação de eventos a projetos paroquiais com consolidação de métricas e status.
-- **`importacao`**: Processamento batch de importação e exportação de dados (relatórios em Excel via Apache POI e PDF via OpenPDF).
-- **`dashboard`**: Métricas executivas, estatísticas gerais e visão consolidada para a gestão paroquial.
-- **`observabilidade`**: Emissão de logs estruturados em formato JSON com MDC, telemetria e healthchecks.
-- **`support`**: Utilitários transversais, tratamento global de exceções e abstrações de infraestrutura compartilhada.
+* **`calendario`**: Gestão do ciclo de vida de eventos paroquiais, solicitações de agendamento e regras de recorrência.
+* **`aprovacao`**: Workflows de aprovação de eventos e solicitações com histórico e pareceres.
+* **`local`**: Cadastro e controle de espaços físicos (salas, auditórios, capacidade e atributos).
+* **`iam`**: Identidade e Gestão de Acesso (Usuários, Roles, Permissões, perfis e Autenticação JWT).
+* **`governanca`**: Registros de auditoria, políticas de segurança, controle de acesso e rastreabilidade.
+* **`organizacao`**: Hierarquia organizacional da paróquia (Pastorais, Movimentos, Setores, Conselho e Comunidades).
+* **`membro`**: Cadastro, fichas cadastrais e acompanhamento de fiéis e membros atuantes.
+* **`projeto`**: Vinculação de eventos a projetos paroquiais com consolidação de métricas e status.
+* **`importacao`**: Processamento batch de importação e exportação de dados (relatórios em Excel via Apache POI e PDF via OpenPDF).
+* **`dashboard`**: Métricas executivas, estatísticas gerais e visão consolidada para a gestão paroquial.
+* **`observabilidade`**: Emissão de logs estruturados em formato JSON com MDC, telemetria e healthchecks.
+* **`support`**: Utilitários transversais, tratamento global de exceções e abstrações de infraestrutura compartilhada.
 
 ---
 
 ## 🛠️ Tecnologias e Ferramentas
 
-- **Linguagem & Runtime:** **Java 25** (gerenciado nativamente via Gradle Toolchains / Foojay Resolver)
-- **Framework Principal:** **Spring Boot 3.x**
-  - **Spring Data JPA:** Persistência de dados ORM
-  - **Spring Security:** Autenticação stateless (JWT), autorização baseada em roles e controle de acesso fino
-  - **Spring Web (MVC):** API RESTful declarativa e tipada
-  - **Spring Boot Actuator:** Healthchecks e métricas da aplicação
-  - **Spring Cache + Caffeine:** Caching de alto desempenho em memória
-- **Banco de Dados:** PostgreSQL 16 (Produção/Docker) & H2 Database (Testes Automatizados)
-- **Migrations:** Flyway Database Migrations
-- **Documentação de API:** Springdoc OpenAPI 2.x / Swagger UI
-- **Relatórios & Exportação:** Apache POI (Excel) & OpenPDF (PDF)
-- **Qualidade de Código & Linters (Quality Gates):**
-  - **Checkstyle 13.8.0** (padronização de código, layout e importações explícitas)
-  - **PMD 7.16.0** (análise estática, otimizações e prevenção de erros)
-  - **SpotBugs** (detecção de falhas de segurança e riscos de ponteiro nulo)
-  - **JaCoCo** (relatórios de cobertura de código da suíte de testes)
+* **Linguagem & Runtime:** **Java 25** (gerenciado nativamente via Gradle Toolchains / Foojay Resolver)
+* **Framework Principal:** **Spring Boot 3.x**
+* **Spring Data JPA:** Persistência de dados ORM
+* **Spring Security:** Autenticação stateless (JWT), autorização baseada em roles e controle de acesso fino
+* **Spring Web (MVC):** API RESTful declarativa e tipada
+* **Spring Boot Actuator:** Healthchecks e métricas da aplicação
+* **Spring Cache + Caffeine:** Caching de alto desempenho em memória
+
+
+* **Banco de Dados:** PostgreSQL 16 (Produção/Docker) & H2 Database (Testes Automatizados)
+* **Migrations:** Flyway Database Migrations
+* **Documentação de API:** Springdoc OpenAPI 2.x / Swagger UI
+* **Relatórios & Exportação:** Apache POI (Excel) & OpenPDF (PDF)
+* **Qualidade de Código & Linters (Quality Gates):**
+* **Checkstyle 13.8.0** (padronização de código, layout e importações explícitas)
+* **PMD 7.16.0** (análise estática, otimizações e prevenção de erros)
+* **SpotBugs** (detecção de falhas de segurança e riscos de ponteiro nulo)
+* **JaCoCo** (relatórios de cobertura de código da suíte de testes)
+
+
 
 ---
 
 ## 📏 Diretrizes de Engenharia e Padrões (`AGENTS.md`)
 
-O desenvolvimento no backend deve respeitar rigorosamente as normas de engenharia definidas em [`AGENTS.md`](./AGENTS.md):
+O desenvolvimento no backend deve respeitar rigorosamente as normas de engenharia definidas em [`AGENTS.md`](https://www.google.com/search?q=./AGENTS.md):
 
-- **Tipos Fortes sobre Strings:** Uso obrigatório de `enum`, `sealed classes` e Value Objects (`record`) em vez de `String` genéricas para representar estados ou domínios fixos.
-- **Value Objects Imutáveis:** Implementados obrigatoriamente utilizando Java `record` (ex: Email, CPF, Endereço).
-- **Limites de Métodos e Arquivos:** Métodos devem ter entre **4 e 20 linhas**. Arquivos devem ter menos de **500 linhas**.
-- **Nomenclatura Domínio-Guiada:** Nomes específicos e proibição estrita dos termosgenéricos: `Data`, `Handler`, `Manager`, `Helper`, `Utility`.
-- **Indentação e Fluxo:** Máximo de 2 níveis de aninhamento por bloco. Preferência por *early returns* e *guard clauses*.
-- **Sem Wildcards em Imports:** Proibido uso de wildcards (ex: `import java.util.*`). Importações devem ser explícitas.
+* **Tipos Fortes sobre Strings:** Uso obrigatório de `enum`, `sealed classes` e Value Objects (`record`) em vez de `String` genéricas para representar estados ou domínios fixos.
+* **Value Objects Imutáveis:** Implementados obrigatoriamente utilizando Java `record` (ex: Email, CPF, Endereço).
+* **Limites de Métodos e Arquivos:** Métodos devem ter entre **4 e 20 linhas**. Arquivos devem ter menos de **500 linhas**.
+* **Nomenclatura Domínio-Guiada:** Nomes específicos e proibição estrita dos termos genéricos: `Data`, `Handler`, `Manager`, `Helper`, `Utility`.
+* **Indentação e Fluxo:** Máximo de 2 níveis de aninhamento por bloco. Preferência por *early returns* e *guard clauses*.
+* **Sem Wildcards em Imports:** Proibido uso de wildcards (ex: `import java.util.*`). Importações devem ser explícitas.
 
 ---
 
@@ -74,7 +78,7 @@ A cobertura de testes é estruturada em três camadas obrigatórias (mão dupla 
 ## 🔒 Privacidade e Conformidade (LGPD)
 
 A aplicação manipula dados pessoais e sensíveis sob rígidas regras em conformidade com a LGPD (Lei Geral de Proteção de Dados).
-Consulte a documentação mandatória em [`docs/ia/regra_dura_lgpd.md`](./docs/ia/regra_dura_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs.
+Consulte a documentação mandatória em [`docs/ia/regras_duras_lgpd.md`](https://www.google.com/search?q=./docs/ia/regras_duras_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs.
 
 ---
 
@@ -97,6 +101,7 @@ Todos os comandos devem ser executados na raiz do diretório `gestao-paroquia`:
 
 # Executar a demonstração automatizada do ciclo de vida do MVP (gera relatório HTML)
 ./demo_mvp.sh
+
 ```
 
 ---
@@ -117,18 +122,20 @@ gestao-paroquia/
 │   └── seed-data.sql           # Dados de semente para ambiente local/dev
 ├── docs/                       # Portal de documentação técnica, arquitetura e LGPD
 └── AGENTS.md                   # Diretrizes completas de engenharia do backend
+
 ```
 
 ---
 
 ## 📚 Links e Referências Úteis
 
-- **Swagger UI (com a API em execução):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-- **OpenAPI Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-- **Documentação do Sistema:** [`docs/README.md`](./docs/README.md)
-  - [Visão Geral da Arquitetura](./docs/architecture.md)
-  - [Guia de Início Rápido](./docs/getting-started.md)
-  - [Documentação dos Domínios](./docs/domains/)
-  - [Regra Dura LGPD](./docs/ia/regra_dura_lgpd.md)
-- **Padrões de Engenharia Backend:** [`AGENTS.md`](./AGENTS.md)
+* **Swagger UI (com a API em execução):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+* **OpenAPI Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+* **Documentação do Sistema:** [`docs/README.md`](https://www.google.com/search?q=./docs/README.md)
+* [Visão Geral da Arquitetura](https://www.google.com/search?q=./docs/architecture.md)
+* [Guia de Início Rápido](https://www.google.com/search?q=./docs/getting-started.md)
+* [Documentação dos Domínios](https://www.google.com/search?q=./docs/domains/)
+* [Regra Dura LGPD](https://www.google.com/search?q=./docs/ia/regras_duras_lgpd.md)
 
+
+* **Padrões de Engenharia Backend:** [`AGENTS.md`](https://www.google.com/search?q=./AGENTS.md)
