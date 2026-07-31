@@ -43,15 +43,14 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
-      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
       <form onSubmit={(e) => { e.preventDefault(); handleConfirm(); }} noValidate>
-        <DialogTitle sx={{ fontWeight: 700, color: '#d32f2f' }}>
+        <DialogTitle sx={{ color: 'error.main' }}>
           Cancelar Evento
         </DialogTitle>
         <DialogContent>
@@ -73,7 +72,7 @@ const EventCancelDialog: React.FC<EventCancelDialogProps> = ({
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+        <DialogActions>
           <Button onClick={handleClose} disabled={isSubmitting} color="secondary">
             Voltar
           </Button>

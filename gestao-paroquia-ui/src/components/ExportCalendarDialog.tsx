@@ -9,6 +9,7 @@ import {
     FormControl,
     FormControlLabel,
     FormLabel,
+    Grid,
     InputLabel,
     MenuItem,
     Radio,
@@ -76,10 +77,10 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
-      <DialogTitle sx={{ fontWeight: 600, color: '#37474f' }}>Exportar Calendário</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>Exportar Calendário</DialogTitle>
       <DialogContent dividers>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
           
           <FormControl>
             <FormLabel sx={{ fontWeight: 600, fontSize: '0.75rem', mb: 0.5 }}>Formato de Saída:</FormLabel>
@@ -113,67 +114,74 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
             )}
 
             {opcao === 'MES' && (
-              <Box sx={{ display: 'flex', gap: 1.5 }}>
-                <FormControl fullWidth size="small">
-                  <InputLabel id="export-month-label">Mês</InputLabel>
-                  <Select
-                    labelId="export-month-label"
-                    value={mes}
-                    label="Mês"
-                    onChange={(e) => setMes(Number(e.target.value))}
-                  >
-                    <MenuItem value={1}>Janeiro</MenuItem>
-                    <MenuItem value={2}>Fevereiro</MenuItem>
-                    <MenuItem value={3}>Março</MenuItem>
-                    <MenuItem value={4}>Abril</MenuItem>
-                    <MenuItem value={5}>Maio</MenuItem>
-                    <MenuItem value={6}>Junho</MenuItem>
-                    <MenuItem value={7}>Julho</MenuItem>
-                    <MenuItem value={8}>Agosto</MenuItem>
-                    <MenuItem value={9}>Setembro</MenuItem>
-                    <MenuItem value={10}>Outubro</MenuItem>
-                    <MenuItem value={11}>Novembro</MenuItem>
-                    <MenuItem value={12}>Dezembro</MenuItem>
-                  </Select>
-                </FormControl>
-                
-                <TextField
-                  label="Ano"
-                  type="number"
-                  value={ano}
-                  onChange={(e) => setAno(parseInt(e.target.value) || currentYear)}
-                  fullWidth
-                  size="small"
-                  slotProps={{ htmlInput: { min: 2000, max: 2100 } }}
-                />
-              </Box>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="export-month-label">Mês</InputLabel>
+                    <Select
+                      labelId="export-month-label"
+                      value={mes}
+                      label="Mês"
+                      onChange={(e) => setMes(Number(e.target.value))}
+                    >
+                      <MenuItem value={1}>Janeiro</MenuItem>
+                      <MenuItem value={2}>Fevereiro</MenuItem>
+                      <MenuItem value={3}>Março</MenuItem>
+                      <MenuItem value={4}>Abril</MenuItem>
+                      <MenuItem value={5}>Maio</MenuItem>
+                      <MenuItem value={6}>Junho</MenuItem>
+                      <MenuItem value={7}>Julho</MenuItem>
+                      <MenuItem value={8}>Agosto</MenuItem>
+                      <MenuItem value={9}>Setembro</MenuItem>
+                      <MenuItem value={10}>Outubro</MenuItem>
+                      <MenuItem value={11}>Novembro</MenuItem>
+                      <MenuItem value={12}>Dezembro</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    label="Ano"
+                    type="number"
+                    value={ano}
+                    onChange={(e) => setAno(parseInt(e.target.value) || currentYear)}
+                    fullWidth
+                    size="small"
+                    slotProps={{ htmlInput: { min: 2000, max: 2100 } }}
+                  />
+                </Grid>
+              </Grid>
             )}
 
             {opcao === 'PERIODO' && (
-              <Box sx={{ display: 'flex', gap: 1.5 }}>
-                <TextField
-                  label="Data Início"
-                  type="date"
-                  value={dataInicio}
-                  onChange={(e) => setDataInicio(e.target.value)}
-                  fullWidth
-                  size="small"
-                  slotProps={{ inputLabel: { shrink: true } }}
-                />
-                <TextField
-                  label="Data Fim"
-                  type="date"
-                  value={dataFim}
-                  onChange={(e) => setDataFim(e.target.value)}
-                  fullWidth
-                  size="small"
-                  slotProps={{ inputLabel: { shrink: true } }}
-                />
-              </Box>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    label="Data Início"
+                    type="date"
+                    value={dataInicio}
+                    onChange={(e) => setDataInicio(e.target.value)}
+                    fullWidth
+                    size="small"
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <TextField
+                    label="Data Fim"
+                    type="date"
+                    value={dataFim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                    fullWidth
+                    size="small"
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                </Grid>
+              </Grid>
             )}
           </Box>
 
-          <Box sx={{ borderTop: '1px dashed #e0e0e0', pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ borderTop: '1px dashed', borderColor: 'divider', pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="export-org-label">Organização Responsável</InputLabel>
               <Select
@@ -215,15 +223,15 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
 
         </Box>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
-        <Button onClick={onClose} color="inherit" size="small" sx={{ borderRadius: 0, textTransform: 'none' }}>Cancelar</Button>
-        <Button 
-          onClick={handleExport} 
-          variant="contained" 
+      <DialogActions>
+        <Button onClick={onClose} color="secondary" size="small" sx={{ textTransform: 'none' }}>Cancelar</Button>
+        <Button
+          onClick={handleExport}
+          variant="contained"
           color="primary"
           size="small"
           disabled={opcao === 'PERIODO' && (!dataInicio || !dataFim)}
-          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}
+          sx={{ textTransform: 'none', fontWeight: 600 }}
         >
           Exportar
         </Button>

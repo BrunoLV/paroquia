@@ -15,6 +15,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import theme from '../theme';
 
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';
 
@@ -77,8 +78,8 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
   };
 
   return (
-    <Box sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 0, border: '1px solid #e0e0e0' }}>
-      <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#455a64' }}>
+    <Box sx={{ p: 2, bgcolor: theme.custom.subtlePanelBg, border: '1px solid', borderColor: 'divider' }}>
+      <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
         Configurações de Repetição
       </Typography>
 

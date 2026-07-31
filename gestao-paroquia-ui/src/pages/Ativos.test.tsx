@@ -191,7 +191,7 @@ describe('Ativos Page', () => {
       screen.getByText(/Encontro de Catequistas/i).click();
     });
 
-    fireEvent.change(screen.getByLabelText('Justificativa de Utilização'), {
+    fireEvent.change(screen.getByLabelText(/Justificativa de Utilização/), {
       target: { value: 'Uso do projetor no encontro de catequistas' },
     });
 

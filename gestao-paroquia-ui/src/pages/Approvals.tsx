@@ -4,13 +4,13 @@ import {
     Alert,
     Box,
     Button,
+    Card,
     Chip,
-    CircularProgress,
     Container,
     Divider,
     Drawer,
     IconButton,
-    Paper,
+    Skeleton,
     Tab,
     Table,
     TableBody,
@@ -29,6 +29,7 @@ import {decideProjectApproval, getProjectApprovals} from '../api/projects';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
 import apiClient from '../api/client';
+import PageHeader from '../components/PageHeader';
 
 const Approvals = () => {
   const { showError, showSuccess } = useNotification();
@@ -178,22 +179,11 @@ const Approvals = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header Padronizado */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <FactCheckIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Solicitações de Aprovação
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Gerencie e analise as solicitações de alteração e novos eventos ou projetos no calendário paroquial.
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+      <PageHeader
+        icon={<FactCheckIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Solicitações de Aprovação"
+        subtitle="Gerencie e analise as solicitações de alteração e novos eventos ou projetos no calendário paroquial."
+      />
 
         {/* TOP LEVEL TAB SELECTOR */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
@@ -214,7 +204,7 @@ const Approvals = () => {
           </Tabs>
         </Box>
 
-        <Paper sx={{ width: '100%', mb: 4, borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <Card sx={{ width: '100%', mb: 4, borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
@@ -265,8 +255,8 @@ const Approvals = () => {
           {/* EVENT APPROVALS CONTENT */}
           {approvalsType === 'EVENTOS' && (
             isLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
-                <CircularProgress />
+              <Box sx={{ p: 3 }}>
+                <Skeleton variant="rounded" height={280} sx={{ borderRadius: 0 }} />
               </Box>
             ) : isError ? (
               <Box sx={{ p: 4 }}>
@@ -345,8 +335,8 @@ const Approvals = () => {
           {/* PROJECT APPROVALS VIEW */}
           {approvalsType === 'PROJETOS' && (
             isProjectLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
-                <CircularProgress />
+              <Box sx={{ p: 3 }}>
+                <Skeleton variant="rounded" height={280} sx={{ borderRadius: 0 }} />
               </Box>
             ) : isProjectError ? (
               <Box sx={{ p: 4 }}>
@@ -410,7 +400,7 @@ const Approvals = () => {
                 </TableContainer>
               )
             )}
-        </Paper>
+        </Card>
 
       {/* Details Drawer */}
       <Drawer

@@ -54,13 +54,12 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
       <form onSubmit={handleSubmit} noValidate>
-        <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+        <DialogTitle>
           Registrar Ata / Decisão de Conselho (CPC / CPP)
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <Typography variant="body2" color="textSecondary">
               Preencha os dados da reunião e as deliberações aprovadas pelo conselho. O documento ficará pendente de homologação pelo Pároco / Mesa Diretora do CPP.
@@ -74,10 +73,9 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               disabled={isSubmitting}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
-            <FormControl fullWidth required size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+            <FormControl fullWidth required size="small">
               <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP)</InputLabel>
               <Select
                 labelId="cpc-comunidade-label"
@@ -104,7 +102,6 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               onChange={(e) => setDataReuniao(e.target.value)}
               slotProps={{ inputLabel: { shrink: true } }}
               disabled={isSubmitting}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
             <TextField
@@ -117,31 +114,24 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               value={pautaDescricao}
               onChange={(e) => setPautaDescricao(e.target.value)}
               disabled={isSubmitting}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ borderTop: '1px solid #eee', pt: 2, pb: 2, px: 3 }}>
+        <DialogActions>
           <Button
             onClick={onClose}
             disabled={isSubmitting}
-            sx={{ textTransform: 'none', fontWeight: 600, color: '#d97706' }}
+            color="secondary"
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
+            color="primary"
             disabled={isSubmitting}
-            sx={{
-              bgcolor: '#1a237e',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: 0,
-              px: 3,
-              '&:hover': { bgcolor: '#0d47a1' },
-            }}
+            sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
           >
             Submeter Ata para Homologação
           </Button>

@@ -33,9 +33,8 @@ import {
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { canApprove } from '../auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser } from '../auth/permissions';
 import { ScopeSelector } from './ScopeSelector';
-import { isUnlinkedUser } from '../auth/permissions';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -45,16 +44,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(true);
-
-  const canManageAnoParoquial = (u: any) => {
-    if (!u) return false;
-    return u.roles?.some((r: string) => ['ADMIN', 'ROLE_ADMIN', 'CLERO_PAROCO', 'ROLE_CLERO_PAROCO', 'PAROCO', 'ROLE_PAROCO', 'CONSELHO_COORDENADOR', 'ROLE_CONSELHO_COORDENADOR'].includes(r));
-  };
-
-  const canManageLocais = (u: any) => {
-    if (!u) return false;
-    return u.roles?.some((r: string) => ['ADMIN', 'ROLE_ADMIN', 'CLERO_PAROCO', 'ROLE_CLERO_PAROCO', 'PAROCO', 'ROLE_PAROCO', 'CONSELHO_COORDENADOR', 'ROLE_CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR', 'ROLE_CONSELHO_VICE_COORDENADOR'].includes(r));
-  };
 
   const handleMobileDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

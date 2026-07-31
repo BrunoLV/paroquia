@@ -7,7 +7,6 @@ import {
     Card,
     Checkbox,
     Chip,
-    CircularProgress,
     Container,
     Dialog,
     DialogActions,
@@ -20,6 +19,7 @@ import {
     MenuItem,
     Paper,
     Select,
+    Skeleton,
     Tab,
     Table,
     TableBody,
@@ -67,6 +67,7 @@ import {canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin} 
 import LocalFormModal from './LocalFormModal';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
 import ImportModal from '../components/ImportModal';
+import PageHeader from '../components/PageHeader';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -574,22 +575,11 @@ const Settings = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header Padronizado */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <SettingsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Configurações do Sistema
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Gerencie os parâmetros globais do sistema, como o calendário paroquial, os locais físicos e pastorais.
-            </Typography>
-          </Box>
-        </Box>
-        {isAdmin(user) && (
+      <PageHeader
+        icon={<SettingsIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Configurações do Sistema"
+        subtitle="Gerencie os parâmetros globais do sistema, como o calendário paroquial, os locais físicos e pastorais."
+        actions={isAdmin(user) && (
           <Button
             variant="outlined"
             color="primary"
@@ -599,7 +589,7 @@ const Settings = () => {
             Importar em Lote (CSV/Excel)
           </Button>
         )}
-      </Box>
+      />
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="Abas de Configurações">
@@ -618,8 +608,11 @@ const Settings = () => {
         {/* Tab 1: Ano Paroquial */}
         <CustomTabPanel value={tabValue} index={0}>
           {isLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
-              <CircularProgress />
+            <Box sx={{ my: 4 }}>
+              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+              ))}
             </Box>
           ) : isError ? (
             <Alert severity="error">
@@ -720,8 +713,11 @@ const Settings = () => {
         {/* Tab 2: Locais */}
         <CustomTabPanel value={tabValue} index={1}>
           {isLoadingLocais ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
-              <CircularProgress />
+            <Box sx={{ my: 4 }}>
+              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+              ))}
             </Box>
           ) : isErrorLocais ? (
             <Alert severity="error">
@@ -841,8 +837,11 @@ const Settings = () => {
 
         <CustomTabPanel value={tabValue} index={2}>
           {isLoadingOrgs ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-              <CircularProgress />
+            <Box sx={{ py: 4 }}>
+              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+              ))}
             </Box>
           ) : isErrorOrgs ? (
             <Alert severity="error" sx={{ borderRadius: 0 }}>
@@ -1000,8 +999,11 @@ const Settings = () => {
         {isAuthorizedUsers && (
           <CustomTabPanel value={tabValue} index={3}>
             {isLoadingUsers ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                <CircularProgress />
+              <Box sx={{ py: 4 }}>
+                <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                ))}
               </Box>
             ) : isErrorUsers ? (
               <Alert severity="error" sx={{ borderRadius: 0 }}>
@@ -1129,8 +1131,11 @@ const Settings = () => {
         {isAdmin(user) && (
           <CustomTabPanel value={tabValue} index={4}>
             {isLoadingPO ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                <CircularProgress />
+              <Box sx={{ py: 4 }}>
+                <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                ))}
               </Box>
             ) : isErrorPO ? (
               <Alert severity="error" sx={{ borderRadius: 0 }}>
@@ -1231,15 +1236,17 @@ const Settings = () => {
         }}
         maxWidth="md"
         fullWidth
-        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
       >
-        <DialogTitle sx={{ fontWeight: 700 }}>
+        <DialogTitle>
           Gerenciar Vínculos - {selectedUserForMemberships?.nome}
         </DialogTitle>
         <DialogContent dividers>
           {isLoadingMemberships ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress />
+            <Box sx={{ py: 2 }}>
+              <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1, borderRadius: 0 }} />
+              ))}
             </Box>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -1432,15 +1439,17 @@ const Settings = () => {
         }}
         maxWidth="md"
         fullWidth
-        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
       >
-        <DialogTitle sx={{ fontWeight: 700 }}>
+        <DialogTitle>
           Membros - {selectedOrgForMembers?.nome}
         </DialogTitle>
         <DialogContent dividers>
           {isLoadingOrgMembers ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress />
+            <Box sx={{ py: 2 }}>
+              <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1, borderRadius: 0 }} />
+              ))}
             </Box>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -1632,17 +1641,16 @@ const Settings = () => {
         }}
         maxWidth="sm"
         fullWidth
-        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
       >
-        <DialogTitle sx={{ fontWeight: 700 }}>
+        <DialogTitle>
           Cadastrar Novo Usuário / Membro
         </DialogTitle>
         <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <TextField
-              margin="normal"
               required
               fullWidth
+              size="small"
               id="adminRegisterNome"
               label="Nome Completo"
               name="adminRegisterNome"
@@ -1650,9 +1658,9 @@ const Settings = () => {
               onChange={(e) => setAdminRegisterNome(e.target.value)}
             />
             <TextField
-              margin="normal"
               required
               fullWidth
+              size="small"
               id="adminRegisterUsername"
               label="E-mail"
               name="adminRegisterUsername"
@@ -1661,9 +1669,9 @@ const Settings = () => {
               onChange={(e) => setAdminRegisterUsername(e.target.value)}
             />
             <TextField
-              margin="normal"
               required
               fullWidth
+              size="small"
               name="adminRegisterPassword"
               label="Senha"
               type="password"
@@ -1672,9 +1680,9 @@ const Settings = () => {
               onChange={(e) => setAdminRegisterPassword(e.target.value)}
             />
             <TextField
-              margin="normal"
               required
               fullWidth
+              size="small"
               id="adminRegisterTelefone"
               label="Telefone"
               name="adminRegisterTelefone"
@@ -1682,9 +1690,9 @@ const Settings = () => {
               onChange={(e) => setAdminRegisterTelefone(e.target.value)}
             />
             <TextField
-              margin="normal"
               required
               fullWidth
+              size="small"
               id="adminRegisterDataNascimento"
               label="Data de Nascimento"
               name="adminRegisterDataNascimento"
@@ -1693,7 +1701,7 @@ const Settings = () => {
               value={adminRegisterDataNascimento}
               onChange={(e) => setAdminRegisterDataNascimento(e.target.value)}
             />
-            <FormControl fullWidth margin="normal" required>
+            <FormControl fullWidth required size="small">
               <InputLabel id="admin-reg-church-label">Igreja / Comunidade</InputLabel>
               <Select
                 labelId="admin-reg-church-label"
@@ -1876,19 +1884,19 @@ const Settings = () => {
         onClose={() => setPoModalOpen(false)}
         fullWidth
         maxWidth="sm"
-        sx={{ '& .MuiPaper-root': { borderRadius: 0 } }}
       >
         <form onSubmit={handlePOSubmit}>
           <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
             {selectedPO ? 'Editar Tipo Oficial' : 'Novo Tipo Oficial'}
           </DialogTitle>
           <DialogContent dividers>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
               <TextField
                 label="Nome"
                 variant="outlined"
                 fullWidth
                 required
+                size="small"
                 value={poNome}
                 onChange={(e) => {
                   setPoNome(e.target.value);
@@ -1898,7 +1906,7 @@ const Settings = () => {
                 helperText={poErrors.nome}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
               />
-              <FormControl fullWidth required>
+              <FormControl fullWidth required size="small">
                 <InputLabel id="po-tipo-label">Tipo</InputLabel>
                 <Select
                   labelId="po-tipo-label"
@@ -1913,7 +1921,7 @@ const Settings = () => {
               </FormControl>
             </Box>
           </DialogContent>
-          <DialogActions sx={{ p: 2 }}>
+          <DialogActions>
             <Button onClick={() => setPoModalOpen(false)} color="inherit" sx={{ borderRadius: 0 }}>
               Cancelar
             </Button>
@@ -1924,7 +1932,7 @@ const Settings = () => {
               disabled={createPOMutation.isPending || updatePOMutation.isPending}
               sx={{ borderRadius: 0, fontWeight: 600 }}
             >
-              Salvar
+              {(createPOMutation.isPending || updatePOMutation.isPending) ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogActions>
         </form>

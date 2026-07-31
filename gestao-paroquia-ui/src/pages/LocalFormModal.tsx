@@ -94,13 +94,12 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
       <form onSubmit={handleSubmit} noValidate>
-        <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+        <DialogTitle>
           {local ? 'Editar Local' : 'Novo Local'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <TextField
               label="Nome do Local"
@@ -116,10 +115,9 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
               error={!!errors.nome}
               helperText={errors.nome}
               disabled={isPending}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
-            <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+            <FormControl fullWidth size="small">
               <InputLabel id="organizacao-local-label">Matriz / Comunidade (Subordinação)</InputLabel>
               <Select
                 labelId="organizacao-local-label"
@@ -141,7 +139,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth required size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                <FormControl fullWidth required size="small">
                   <InputLabel id="tipo-local-label">Tipo</InputLabel>
                   <Select
                     labelId="tipo-local-label"
@@ -171,7 +169,6 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
                     setCapacidade(val === '' ? '' : Math.max(0, parseInt(val, 10)));
                   }}
                   disabled={isPending}
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
                 />
               </Grid>
             </Grid>
@@ -184,7 +181,6 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
               value={endereco}
               onChange={(e) => setEndereco(e.target.value)}
               disabled={isPending}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
             <TextField
@@ -198,33 +194,26 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
               value={caracteristicas}
               onChange={(e) => setCaracteristicas(e.target.value)}
               disabled={isPending}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ borderTop: '1px solid #eee', pt: 2, pb: 2, px: 3 }}>
+        <DialogActions>
           <Button
             onClick={onClose}
             disabled={isPending}
-            sx={{ textTransform: 'none', fontWeight: 600, color: '#d97706' }}
+            color="secondary"
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
+            color="primary"
             disabled={isPending}
-            sx={{
-              bgcolor: '#1a237e',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: 0,
-              px: 3,
-              '&:hover': { bgcolor: '#0d47a1' },
-            }}
+            sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
           >
-            {local ? 'Salvar Alterações' : 'Cadastrar'}
+            {local ? 'Salvar Alterações' : 'Salvar'}
           </Button>
         </DialogActions>
       </form>

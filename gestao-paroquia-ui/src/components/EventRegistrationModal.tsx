@@ -348,15 +348,15 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="md" fullWidth>
       <form onSubmit={handleFormSubmit} noValidate>
-        <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+        <DialogTitle>
           {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             {isClosedYear && (
-              <Alert severity="warning" sx={{ borderRadius: 0 }}>
+              <Alert severity="warning">
                 <strong>Ano Paroquial Fechado ({selectedYear}):</strong> Este ano administrativo está travado para auditoria. Inclusões serão registradas como <strong>ADICIONADO_EXTRA</strong> (requer justificativa obrigatória abaixo).
               </Alert>
             )}
@@ -440,11 +440,11 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             </FormControl>
 
             <FormControl fullWidth size="small" required error={!igrejaVinculoId}>
-              <InputLabel id="new-igreja-vinculo-label">Comunidade / Igreja de Atuação *</InputLabel>
+              <InputLabel id="new-igreja-vinculo-label">Comunidade / Igreja de Atuação</InputLabel>
               <Select
                 labelId="new-igreja-vinculo-label"
                 value={igrejaVinculoId}
-                label="Comunidade / Igreja de Atuação *"
+                label="Comunidade / Igreja de Atuação"
                 onChange={(e) => setIgrejaVinculoId(e.target.value)}
                 disabled={isSubmitting}
                 data-testid="event-church-select"
@@ -608,7 +608,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 </Collapse>
 
                 {isParoco && (
-                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #ccc' }}>
+                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed', borderColor: 'divider' }}>
                     <FormControlLabel
                       control={
                         <Switch
@@ -637,12 +637,12 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
-          <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600, borderRadius: 0, textTransform: 'none' }}>
+        <DialogActions>
+          <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600, textTransform: 'none' }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600, borderRadius: 0, textTransform: 'none' }}>
-            {initialEvent ? 'Salvar Alterações' : 'Criar Evento'}
+          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600, textTransform: 'none' }}>
+            {initialEvent ? 'Salvar Alterações' : 'Salvar'}
           </Button>
         </DialogActions>
       </form>

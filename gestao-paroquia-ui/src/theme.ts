@@ -1,5 +1,19 @@
 import {createTheme} from '@mui/material/styles';
 
+interface CustomThemeTokens {
+  headerIconBg: string;
+  subtlePanelBg: string;
+}
+
+declare module '@mui/material/styles' {
+  interface Theme {
+    custom: CustomThemeTokens;
+  }
+  interface ThemeOptions {
+    custom?: CustomThemeTokens;
+  }
+}
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -15,6 +29,10 @@ const theme = createTheme({
       default: '#FFFDF4', // Cream / Light Yellow
       paper: '#FFFFFF', // White
     },
+  },
+  custom: {
+    headerIconBg: 'rgba(26, 35, 126, 0.08)',
+    subtlePanelBg: '#F8F9FA',
   },
   shape: {
     borderRadius: 0,
@@ -49,6 +67,30 @@ const theme = createTheme({
     MuiLink: {
       defaultProps: {
         underline: 'hover',
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: '0px',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+          paddingBottom: '16px',
+          fontWeight: 700,
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+          padding: '16px 24px',
+        },
       },
     },
   },

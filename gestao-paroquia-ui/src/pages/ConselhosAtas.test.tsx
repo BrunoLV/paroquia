@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import ConselhosAtas from './ConselhosAtas';
+import { QueryProvider } from '../api/QueryProvider';
 import { NotificationProvider } from '../context/NotificationContext';
 import * as conselhosApi from '../api/conselhos';
 import * as organizacoesApi from '../api/organizacoes';
@@ -25,11 +26,13 @@ vi.mock('../api/organizacoes');
 
 const renderComponent = () => {
   return render(
-    <NotificationProvider>
-      <BrowserRouter>
-        <ConselhosAtas />
-      </BrowserRouter>
-    </NotificationProvider>
+    <QueryProvider>
+      <NotificationProvider>
+        <BrowserRouter>
+          <ConselhosAtas />
+        </BrowserRouter>
+      </NotificationProvider>
+    </QueryProvider>
   );
 };
 

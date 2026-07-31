@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   Chip,
-  CircularProgress,
   Container,
   Dialog,
   DialogActions,
@@ -12,10 +11,12 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
+  Grid,
   InputLabel,
   MenuItem,
   Paper,
   Select,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -25,7 +26,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon, SwapHoriz as TransferIcon, EventAvailable as AllocateIcon } from '@mui/icons-material';
+import { Add as AddIcon, SwapHoriz as TransferIcon, EventAvailable as AllocateIcon, Inventory as InventoryIcon } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { canManageAtivos, canTransferAtivo, canAlocarAtivo, isGlobalCreator } from '../auth/permissions';
 import apiClient from '../api/client';
@@ -33,6 +34,7 @@ import { alocarAtivo, createAtivo, getAtivosPorOrganizacao, transferirAtivo } fr
 import { listEventos } from '../api/eventos';
 import { AtivoCategoria, AtivoPatrimonial, Evento, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
+import PageHeader from '../components/PageHeader';
 
 const addDays = (date: Date, days: number): string => {
   const result = new Date(date);
@@ -284,19 +286,23 @@ const Ativos = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Ativos Patrimoniais</Typography>
-        {canManageAtivos(user) && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            disabled={!selectedOrgId}
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            Novo Ativo
-          </Button>
-        )}
-      </Box>
+      <PageHeader
+        icon={<InventoryIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Ativos Patrimoniais"
+        subtitle="Gerencie o cadastro, transferência e alocação de ativos patrimoniais da paróquia."
+        actions={
+          canManageAtivos(user) && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              disabled={!selectedOrgId}
+              onClick={() => setCreateDialogOpen(true)}
+            >
+              Novo Ativo
+            </Button>
+          )
+        }
+      />
 
       <FormControl sx={{ minWidth: 280, mb: 3 }}>
         <InputLabel id="organizacao-select-label">Organização</InputLabel>
@@ -315,8 +321,10 @@ const Ativos = () => {
       </FormControl>
 
       {isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-          <CircularProgress />
+        <Box>
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1, borderRadius: 0 }} />
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1, borderRadius: 0 }} />
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1, borderRadius: 0 }} />
         </Box>
       ) : (
         <TableContainer component={Paper}>
@@ -375,45 +383,56 @@ const Ativos = () => {
 
       <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Novo Ativo Patrimonial</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField label="Nome" value={formNome} onChange={(e) => setFormNome(e.target.value)} fullWidth />
-          <FormControl fullWidth>
-            <InputLabel id="categoria-select-label">Categoria</InputLabel>
-            <Select
-              labelId="categoria-select-label"
-              label="Categoria"
-              value={formCategoria}
-              onChange={(e) => setFormCategoria(e.target.value as AtivoCategoria)}
-            >
-              {CATEGORIAS.map((categoria) => (
-                <MenuItem key={categoria} value={categoria}>
-                  {categoria}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControlLabel
-            control={<Checkbox checked={formReservavel} onChange={(e) => setFormReservavel(e.target.checked)} />}
-            label="Reservável"
-          />
-          <TextField
-            label="Data de Aquisição"
-            type="date"
-            value={formDataAquisicao}
-            onChange={(e) => setFormDataAquisicao(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true } }}
-            fullWidth
-          />
-          <TextField
-            label="Valor Estimado"
-            type="number"
-            value={formValorEstimado}
-            onChange={(e) => setFormValorEstimado(e.target.value)}
-            fullWidth
-          />
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <TextField
+              label="Nome"
+              value={formNome}
+              onChange={(e) => setFormNome(e.target.value)}
+              fullWidth
+              required
+              size="small"
+            />
+            <FormControl fullWidth size="small">
+              <InputLabel id="categoria-select-label">Categoria</InputLabel>
+              <Select
+                labelId="categoria-select-label"
+                label="Categoria"
+                value={formCategoria}
+                onChange={(e) => setFormCategoria(e.target.value as AtivoCategoria)}
+              >
+                {CATEGORIAS.map((categoria) => (
+                  <MenuItem key={categoria} value={categoria}>
+                    {categoria}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              control={<Checkbox checked={formReservavel} onChange={(e) => setFormReservavel(e.target.checked)} />}
+              label="Reservável"
+            />
+            <TextField
+              label="Data de Aquisição"
+              type="date"
+              value={formDataAquisicao}
+              onChange={(e) => setFormDataAquisicao(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="Valor Estimado"
+              type="number"
+              value={formValorEstimado}
+              onChange={(e) => setFormValorEstimado(e.target.value)}
+              fullWidth
+              size="small"
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setCreateDialogOpen(false)} color="secondary">Cancelar</Button>
           <Button variant="contained" onClick={handleCreate}>
             Salvar
           </Button>
@@ -422,33 +441,37 @@ const Ativos = () => {
 
       <Dialog open={!!transferDialogAtivo} onClose={() => setTransferDialogAtivo(null)} maxWidth="sm" fullWidth>
         <DialogTitle>Transferir Ativo</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <FormControl fullWidth>
-            <InputLabel id="nova-organizacao-select-label">Nova Organização</InputLabel>
-            <Select
-              labelId="nova-organizacao-select-label"
-              label="Nova Organização"
-              value={transferNovaOrgId}
-              onChange={(e) => setTransferNovaOrgId(e.target.value as string)}
-            >
-              {organizations.map((org) => (
-                <MenuItem key={org.id} value={org.id}>
-                  {org.nome}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            label="Justificativa"
-            multiline
-            minRows={2}
-            value={transferJustificativa}
-            onChange={(e) => setTransferJustificativa(e.target.value)}
-            fullWidth
-          />
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="nova-organizacao-select-label">Nova Organização</InputLabel>
+              <Select
+                labelId="nova-organizacao-select-label"
+                label="Nova Organização"
+                value={transferNovaOrgId}
+                onChange={(e) => setTransferNovaOrgId(e.target.value as string)}
+              >
+                {organizations.map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Justificativa"
+              multiline
+              rows={3}
+              value={transferJustificativa}
+              onChange={(e) => setTransferJustificativa(e.target.value)}
+              fullWidth
+              required
+              size="small"
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setTransferDialogAtivo(null)}>Cancelar</Button>
+          <Button onClick={() => setTransferDialogAtivo(null)} color="secondary">Cancelar</Button>
           <Button variant="contained" onClick={handleTransferir}>
             Transferir
           </Button>
@@ -457,56 +480,66 @@ const Ativos = () => {
 
       <Dialog open={!!alocarDialogAtivo} onClose={closeAlocarDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Alocar Ativo para Evento</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Período - Início"
+                  type="date"
+                  value={alocarDataInicio}
+                  onChange={(e) => handleAlocarPeriodoChange(e.target.value, alocarDataFim)}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Período - Fim"
+                  type="date"
+                  value={alocarDataFim}
+                  onChange={(e) => handleAlocarPeriodoChange(alocarDataInicio, e.target.value)}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+            <FormControl fullWidth disabled={isLoadingEventos} size="small">
+              <InputLabel id="evento-select-label">Evento</InputLabel>
+              <Select
+                labelId="evento-select-label"
+                label="Evento"
+                value={alocarEventoId}
+                onChange={(e) => setAlocarEventoId(e.target.value as string)}
+              >
+                {eventosDisponiveis.map((evento) => (
+                  <MenuItem key={evento.id} value={evento.id}>
+                    {formatEventoOption(evento)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {!isLoadingEventos && eventosDisponiveis.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                Nenhum evento encontrado neste período para esta organização.
+              </Typography>
+            )}
             <TextField
-              label="Período - Início"
-              type="date"
-              value={alocarDataInicio}
-              onChange={(e) => handleAlocarPeriodoChange(e.target.value, alocarDataFim)}
-              slotProps={{ inputLabel: { shrink: true } }}
+              label="Justificativa de Utilização"
+              multiline
+              rows={3}
+              value={alocarJustificativa}
+              onChange={(e) => setAlocarJustificativa(e.target.value)}
               fullWidth
-            />
-            <TextField
-              label="Período - Fim"
-              type="date"
-              value={alocarDataFim}
-              onChange={(e) => handleAlocarPeriodoChange(alocarDataInicio, e.target.value)}
-              slotProps={{ inputLabel: { shrink: true } }}
-              fullWidth
+              required
+              size="small"
             />
           </Box>
-          <FormControl fullWidth disabled={isLoadingEventos}>
-            <InputLabel id="evento-select-label">Evento</InputLabel>
-            <Select
-              labelId="evento-select-label"
-              label="Evento"
-              value={alocarEventoId}
-              onChange={(e) => setAlocarEventoId(e.target.value as string)}
-            >
-              {eventosDisponiveis.map((evento) => (
-                <MenuItem key={evento.id} value={evento.id}>
-                  {formatEventoOption(evento)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {!isLoadingEventos && eventosDisponiveis.length === 0 && (
-            <Typography variant="body2" color="text.secondary">
-              Nenhum evento encontrado neste período para esta organização.
-            </Typography>
-          )}
-          <TextField
-            label="Justificativa de Utilização"
-            multiline
-            minRows={2}
-            value={alocarJustificativa}
-            onChange={(e) => setAlocarJustificativa(e.target.value)}
-            fullWidth
-          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeAlocarDialog}>Cancelar</Button>
+          <Button onClick={closeAlocarDialog} color="secondary">Cancelar</Button>
           <Button variant="contained" onClick={handleAlocar} disabled={!alocarEventoId}>
             Alocar
           </Button>

@@ -33,6 +33,7 @@ import {getOrganograma} from '../api/organizacoes';
 import {OrganogramaNode} from '../api/types';
 import {ExportFormat, useOrganogramaExport} from '../hooks/useOrganogramaExport';
 import {OrganogramaExportButton} from '../components/organograma/OrganogramaExportButton';
+import PageHeader from '../components/PageHeader';
 
 const Organograma: React.FC = () => {
   const { data: organograma, isLoading, isError } = useQuery({
@@ -177,8 +178,8 @@ const Organograma: React.FC = () => {
         return {
           bgcolor: '#f5f7fb',
           borderColor: '#eef2f6',
-          textColor: '#1a237e',
-          iconColor: '#1a237e',
+          textColor: 'primary.main',
+          iconColor: 'primary.main',
           icon: ChurchIcon,
         };
     }
@@ -372,42 +373,33 @@ const Organograma: React.FC = () => {
 
   return (
     <Box sx={{ mt: 3, mb: 4, px: { xs: 2, md: 4 } }}>
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <AccountTreeIcon sx={{ fontSize: 32, color: '#1a237e' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1a237e', mb: 0.5 }}>
-              Estrutura Organizacional
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-              Visualização completa da hierarquia e lideranças da paróquia.
-            </Typography>
-          </Box>
-        </Box>
+      <PageHeader
+        icon={<AccountTreeIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Estrutura Organizacional"
+        subtitle="Visualização completa da hierarquia e lideranças da paróquia."
+        actions={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <OrganogramaExportButton onExport={handleExport} isExporting={isExporting} />
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <OrganogramaExportButton onExport={handleExport} isExporting={isExporting} />
-
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={(_, nextValue) => nextValue && setViewMode(nextValue)}
-            size="small"
-            sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
-          >
-            <ToggleButton value="tree" aria-label="Visualização em Árvore">
-              <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
-              Árvore
-            </ToggleButton>
-            <ToggleButton value="grid" aria-label="Visualização em Grade">
-              <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
-              Grade
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      </Box>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(_, nextValue) => nextValue && setViewMode(nextValue)}
+              size="small"
+              sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+            >
+              <ToggleButton value="tree" aria-label="Visualização em Árvore">
+                <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
+                Árvore
+              </ToggleButton>
+              <ToggleButton value="grid" aria-label="Visualização em Grade">
+                <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
+                Grade
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        }
+      />
 
       {/* Container de captura para exportação de imagem */}
       <Box ref={chartRef} sx={{ bgcolor: '#ffffff', p: 1 }}>
@@ -431,7 +423,7 @@ const Organograma: React.FC = () => {
                   disabled={zoom <= 0.5}
                   title="Diminuir Zoom"
                   sx={{
-                    color: '#1a237e',
+                    color: 'primary.main',
                     borderColor: '#e2e8f0',
                     borderRadius: 0,
                     '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
@@ -443,7 +435,7 @@ const Organograma: React.FC = () => {
                   onClick={handleZoomReset}
                   title="Resetar Zoom"
                   sx={{
-                    color: '#1a237e',
+                    color: 'primary.main',
                     borderColor: '#e2e8f0',
                     fontWeight: 700,
                     fontSize: '0.75rem',
@@ -458,7 +450,7 @@ const Organograma: React.FC = () => {
                   disabled={zoom >= 1.5}
                   title="Aumentar Zoom"
                   sx={{
-                    color: '#1a237e',
+                    color: 'primary.main',
                     borderColor: '#e2e8f0',
                     borderRadius: 0,
                     '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
@@ -487,7 +479,7 @@ const Organograma: React.FC = () => {
             {/* Nível 1: Clero */}
             {cleroOrgs.length > 0 && (
               <Box sx={{ mb: 6 }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: 'primary.main', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <ChurchIcon /> Clero Paroquial
                 </Typography>
                 <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
@@ -503,7 +495,7 @@ const Organograma: React.FC = () => {
             {/* Nível 2: Matrizes e Comunidades */}
             {matrizesOrgs.length > 0 && (
               <Box sx={{ mb: 6 }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: 'primary.main', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <ChurchIcon /> Matriz e Comunidades
                 </Typography>
                 <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
@@ -519,7 +511,7 @@ const Organograma: React.FC = () => {
             {/* Nível 3: Conselhos */}
             {conselhoOrgs.length > 0 && (
               <Box sx={{ mb: 6 }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: 'primary.main', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <SupervisorAccountIcon /> Conselhos Paroquiais
                 </Typography>
                 <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
@@ -535,7 +527,7 @@ const Organograma: React.FC = () => {
             {/* Nível 4: Pastorais, Movimentos e outros */}
             {pastoralOrgs.length > 0 && (
               <Box>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1a237e', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: 'primary.main', mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <PeopleIcon /> Pastorais e Movimentos
                 </Typography>
                 <Grid container spacing={3} sx={{ justifyContent: 'center' }}>

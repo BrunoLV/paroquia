@@ -17,7 +17,6 @@ import {
     IconButton,
     InputLabel,
     MenuItem,
-    Paper,
     Select,
     Typography,
 } from '@mui/material';
@@ -43,6 +42,8 @@ import EventCancelDialog from '../components/EventCancelDialog';
 import EditScopeDialog, {EditScope} from '../components/EditScopeDialog';
 import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
+import PageHeader from '../components/PageHeader';
+import theme from '../theme';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
 import {fetchSolenidadesLiturgicasAtivas} from '../api/solenidades';
@@ -617,51 +618,41 @@ const Calendar = () => {
 
   return (
     <Box>
-      {/* Header Padronizado */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <CalendarIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+      <PageHeader
+        icon={<CalendarIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Calendário Paroquial"
+        subtitle="Agendamento de eventos, celebrações e atividades pastorais da paróquia."
+        actions={
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => setIsSolemnitiesOpen(true)}
+              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+            >
+              Solenidades & Santoral
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<DownloadIcon />}
+              onClick={() => setIsExportOpen(true)}
+              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+            >
+              Exportar
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={() => handleOpenCreate()}
+              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+            >
+              Novo Evento
+            </Button>
           </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Calendário Paroquial
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Agendamento de eventos, celebrações e atividades pastorais da paróquia.
-            </Typography>
-          </Box>
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => setIsSolemnitiesOpen(true)}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
-          >
-            Solenidades & Santoral
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<DownloadIcon />}
-            onClick={() => setIsExportOpen(true)}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
-          >
-            Exportar
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenCreate()}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-          >
-            Novo Evento
-          </Button>
-        </Box>
-      </Box>
+        }
+      />
 
       {/* Toolbar / Controls Card Padronizado */}
       <Card
@@ -785,7 +776,7 @@ const Calendar = () => {
       {/* View Content */}
       {viewMode === 'month' ? (
         /* Monthly Grid View */
-         <Paper elevation={2} sx={{ borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 25px rgba(0,0,0,0.04)' }}>
+         <Card elevation={2} sx={{ borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 25px rgba(0,0,0,0.04)' }}>
           {/* Days of week header */}
           <Grid container columns={7} sx={{ bgcolor: '#eceff1', borderBottom: '1px solid #cfd8dc', textAlign: 'center', py: 1.5 }}>
             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
@@ -918,15 +909,15 @@ const Calendar = () => {
               );
             })}
           </Grid>
-        </Paper>
+        </Card>
       ) : (
         /* Agenda / List View */
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {agendaEvents.length === 0 ? (
-             <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 0, color: 'text.secondary' }}>
+             <Card sx={{ p: 4, textAlign: 'center', borderRadius: 0, color: 'text.secondary' }}>
               <CalendarIcon sx={{ fontSize: 48, color: '#cfd8dc', mb: 2 }} />
               <Typography variant="h6">Nenhum evento agendado para o período visível.</Typography>
-            </Paper>
+            </Card>
           ) : (
             agendaEvents.map((evt) => {
               const styleColors = getCategoryColor(evt.categoria);
@@ -1005,17 +996,17 @@ const Calendar = () => {
       )}
 
       {/* Details Dialog Modal */}
-       <Dialog open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+       <Dialog open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} maxWidth="sm" fullWidth>
         {selectedEvent && (
           <>
-            <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               Detalhes do Evento
               <Chip label={selectedEvent.status} color={getStatusColor(selectedEvent.status)} size="small" sx={{ fontWeight: 600 }} />
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 {selectedEvent.pendingTipoSolicitacao && (
-                  <Alert severity="warning" sx={{ borderRadius: 0 }}>
+                  <Alert severity="warning">
                     {selectedEvent.pendingTipoSolicitacao === 'CRIACAO_EVENTO'
                       ? 'Solicitação de Criação Pendente'
                       : selectedEvent.pendingTipoSolicitacao === 'CANCELAMENTO'
@@ -1047,7 +1038,7 @@ const Calendar = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Horário
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                       {new Date(selectedEvent.inicio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} às{' '}
                       {new Date(selectedEvent.fim).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                     </Typography>
@@ -1061,7 +1052,7 @@ const Calendar = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Organização Responsável
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                       {getOrgName(selectedEvent.organizacaoResponsavelId, selectedEvent.igrejaVinculoId)}
                     </Typography>
                   </Box>
@@ -1074,7 +1065,7 @@ const Calendar = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
                       Descrição
                     </Typography>
-                     <Typography variant="body1" sx={{ color: '#546e7a', whiteSpace: 'pre-wrap', bgcolor: '#fafafa', p: 1.5, borderRadius: 0, border: '1px solid #eceff1' }}>
+                     <Typography variant="body1" sx={{ color: '#546e7a', whiteSpace: 'pre-wrap', bgcolor: theme.custom.subtlePanelBg, p: 1.5, borderRadius: 0, border: '1px solid #eceff1' }}>
                       {selectedEvent.descricao || 'Nenhuma descrição fornecida.'}
                     </Typography>
                   </Box>
@@ -1087,7 +1078,7 @@ const Calendar = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Local
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                       {getLocalName(selectedEvent.localId) || 'Não especificado'}
                     </Typography>
                   </Box>
@@ -1101,7 +1092,7 @@ const Calendar = () => {
                       <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                         Projeto
                       </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 600, color: '#37474f' }}>
+                      <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                         {selectedEvent.nomeProjeto}
                       </Typography>
                     </Box>
@@ -1127,7 +1118,7 @@ const Calendar = () => {
 
                 {/* Extra Justification */}
                 {selectedEvent.conflictReason && (
-                  <Alert severity="warning" sx={{ borderRadius: 0 }}>
+                  <Alert severity="warning">
                     Conflito detectado: {selectedEvent.conflictReason}
                   </Alert>
                 )}
@@ -1136,7 +1127,7 @@ const Calendar = () => {
                 <EventObservations eventoId={selectedEvent.id} />
               </Box>
             </DialogContent>
-            <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
+            <DialogActions>
               <Button onClick={() => setIsDetailsOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>
                 Fechar
               </Button>
@@ -1208,7 +1199,7 @@ const Calendar = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle sx={{ fontWeight: 700, color: 'primary.main', borderBottom: '1px solid #eee' }}>
+        <DialogTitle sx={{ color: 'primary.main' }}>
           Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalInfo.cycle})
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
@@ -1270,7 +1261,7 @@ const Calendar = () => {
             </table>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2, borderTop: '1px solid #eee' }}>
+        <DialogActions>
           <Button onClick={() => setIsSolemnitiesOpen(false)} variant="contained" color="primary">
             Fechar
           </Button>

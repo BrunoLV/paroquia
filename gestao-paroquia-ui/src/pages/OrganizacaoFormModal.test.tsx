@@ -125,7 +125,7 @@ describe('OrganizacaoFormModal', () => {
     fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' }));
 
 
-    fireEvent.submit(screen.getByRole('button', { name: /Cadastrar/i }));
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
     expect(mockOnSave).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -180,7 +180,7 @@ describe('OrganizacaoFormModal', () => {
     renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
-    fireEvent.submit(screen.getByRole('button', { name: /Cadastrar/i }));
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
     // Should show validation error and NOT call onSave
     expect(screen.getByText('A associação oficial é obrigatória')).toBeInTheDocument();
@@ -191,7 +191,7 @@ describe('OrganizacaoFormModal', () => {
     fireEvent.click(screen.getByRole('option', { name: 'Catequese Oficial' }));
 
     // Submit again
-    fireEvent.submit(screen.getByRole('button', { name: /Cadastrar/i }));
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
     expect(mockOnSave).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -225,7 +225,7 @@ describe('OrganizacaoFormModal', () => {
   test('renders action buttons with right alignment and standardized labels', () => {
     renderModal();
     const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
-    const submitButton = screen.getByRole('button', { name: /Cadastrar/i });
+    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
 
     expect(cancelButton).toBeInTheDocument();
     expect(submitButton).toBeInTheDocument();

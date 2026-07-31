@@ -39,6 +39,7 @@ import {
     ImportacaoValidacaoResultado,
     validarImportacao
 } from '../api/importacao';
+import theme from '../theme';
 
 interface ImportModalProps {
   open: boolean;
@@ -132,12 +133,12 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleCloseModal} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
-      <DialogTitle sx={{ fontWeight: 700, color: '#37474f', borderBottom: '1px solid #eee', pb: 2 }}>
+    <Dialog open={open} onClose={handleCloseModal} maxWidth="md" fullWidth>
+      <DialogTitle>
         Importação de Registros em Lote
       </DialogTitle>
-      
-      <DialogContent sx={{ pt: 3 }}>
+
+      <DialogContent dividers>
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {STEPS.map((label) => (
             <Step key={label}>
@@ -147,7 +148,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         </Stepper>
 
         {activeStep === 0 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="import-entity-label">Tipo de Cadastro</InputLabel>
               <Select
@@ -155,7 +156,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 value={entityType}
                 label="Tipo de Cadastro"
                 onChange={(e) => setEntityType(e.target.value as any)}
-                sx={{ borderRadius: 0 }}
               >
                 <MenuItem value="MEMBRO">Membros / Féis Leigos</MenuItem>
                 <MenuItem value="USUARIO">Usuários do Sistema</MenuItem>
@@ -164,7 +164,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               </Select>
             </FormControl>
 
-            <Alert severity="info" sx={{ borderRadius: 0 }}>
+            <Alert severity="info">
               Faça o download do modelo padrão abaixo para preencher os dados corretamente antes de enviar o arquivo.
             </Alert>
 
@@ -173,7 +173,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 variant="outlined"
                 startIcon={<DownloadIcon />}
                 onClick={() => handleDownload('CSV')}
-                sx={{ borderRadius: 0, textTransform: 'none' }}
+                sx={{ textTransform: 'none' }}
               >
                 Baixar Template CSV
               </Button>
@@ -181,18 +181,18 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 variant="outlined"
                 startIcon={<DownloadIcon />}
                 onClick={() => handleDownload('XLSX')}
-                sx={{ borderRadius: 0, textTransform: 'none' }}
+                sx={{ textTransform: 'none' }}
               >
                 Baixar Template Excel (.xlsx)
               </Button>
             </Box>
 
-            <Box sx={{ border: '2px dashed #ccc', p: 3, textAlign: 'center', bgcolor: '#fafafa' }}>
+            <Box sx={{ border: '2px dashed', borderColor: 'divider', p: 3, textAlign: 'center', bgcolor: theme.custom.subtlePanelBg }}>
               <Button
                 variant="contained"
                 component="label"
                 startIcon={<UploadIcon />}
-                sx={{ borderRadius: 0, textTransform: 'none', mb: 1 }}
+                sx={{ textTransform: 'none', mb: 1 }}
               >
                 Selecionar Arquivo (.csv, .xls, .xlsx)
                 <input type="file" hidden accept=".csv, .xls, .xlsx" onChange={handleFileChange} />
@@ -205,13 +205,13 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         )}
 
         {activeStep === 1 && validationResult && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Chip icon={<ValidIcon />} label={`${validationResult.totalValidos} Válidos`} color="success" sx={{ borderRadius: 0 }} />
               <Chip icon={<ErrorIcon />} label={`${validationResult.totalInvalidos} Inválidos`} color="error" sx={{ borderRadius: 0 }} />
             </Box>
 
-            <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e0e0e0', maxHeight: 320 }}>
+            <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', maxHeight: 320 }}>
               <Table size="small" stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -252,12 +252,12 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
-        <Button onClick={handleCloseModal} color="inherit" sx={{ borderRadius: 0, textTransform: 'none' }}>
+      <DialogActions>
+        <Button onClick={handleCloseModal} color="secondary" sx={{ textTransform: 'none' }}>
           Cancelar
         </Button>
         {activeStep > 0 && (
-          <Button onClick={() => setActiveStep(activeStep - 1)} sx={{ borderRadius: 0, textTransform: 'none' }}>
+          <Button onClick={() => setActiveStep(activeStep - 1)} sx={{ textTransform: 'none' }}>
             Voltar
           </Button>
         )}
@@ -266,7 +266,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             variant="contained"
             onClick={handleProceedToValidation}
             disabled={!selectedFile || isValidating}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             {isValidating ? <CircularProgress size={24} /> : 'Validar Arquivo'}
           </Button>
@@ -276,7 +276,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             variant="contained"
             onClick={() => setActiveStep(2)}
             disabled={validationResult?.totalValidos === 0}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Avançar para Confirmação
           </Button>
@@ -287,7 +287,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             color="primary"
             onClick={handleConfirmImport}
             disabled={isConfirming}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600 }}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             {isConfirming ? <CircularProgress size={24} /> : 'Confirmar Importação'}
           </Button>

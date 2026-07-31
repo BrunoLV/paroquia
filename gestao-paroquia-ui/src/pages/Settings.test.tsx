@@ -293,7 +293,7 @@ describe('Settings page - Locais CRUD', () => {
     fireEvent.change(capacidadeInput, { target: { value: '30' } });
     fireEvent.change(enderecoInput, { target: { value: '2º Andar' } });
 
-    const submitBtn = screen.getByRole('button', { name: /Cadastrar/i });
+    const submitBtn = screen.getByRole('button', { name: /^Salvar$/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {

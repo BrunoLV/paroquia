@@ -7,6 +7,7 @@ import {
     DialogContent,
     DialogTitle,
     FormControl,
+    FormHelperText,
     Grid,
     InputLabel,
     MenuItem,
@@ -167,13 +168,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
     >
       <form onSubmit={handleSubmit} noValidate>
-        <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+        <DialogTitle>
           {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <TextField
               label="Nome"
@@ -189,12 +189,11 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               error={!!errors.nome}
               helperText={errors.nome}
               disabled={isPending}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
             <Grid container spacing={2}>
               <Grid size={{ xs: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? 6 : 12 }}>
-                <FormControl fullWidth required size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                <FormControl fullWidth required size="small">
                   <InputLabel id="tipo-org-label">Tipo</InputLabel>
                   <Select
                     labelId="tipo-org-label"
@@ -217,7 +216,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
 
               {(tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && (
                 <Grid size={{ xs: 6 }}>
-                  <FormControl fullWidth required size="small" error={!!errors.pastoralOficialId} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                  <FormControl fullWidth required size="small" error={!!errors.pastoralOficialId}>
                     <InputLabel id="pastoral-oficial-label">Tipo Oficial / Movimento</InputLabel>
                     <Select
                       labelId="pastoral-oficial-label"
@@ -237,9 +236,9 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                         ))}
                     </Select>
                     {errors.pastoralOficialId && (
-                      <span style={{ color: '#d32f2f', fontSize: '0.75rem', marginTop: '3px', marginLeft: '14px' }}>
+                      <FormHelperText error>
                         {errors.pastoralOficialId}
-                      </span>
+                      </FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
@@ -247,7 +246,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
 
             {tipo !== 'CLERO' && (
-              <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+              <FormControl fullWidth size="small">
                 <InputLabel id="parent-org-label">Organização Pai</InputLabel>
                 <Select
                   labelId="parent-org-label"
@@ -272,12 +271,11 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               value={contato}
               onChange={(e) => setContato(e.target.value)}
               disabled={isPending}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                <FormControl fullWidth size="small">
                   <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
                   <Select
                     labelId="coordenador-select-label"
@@ -295,7 +293,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}>
+                <FormControl fullWidth size="small">
                   <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
                   <Select
                     labelId="vice-coordenador-select-label"
@@ -314,29 +312,23 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ borderTop: '1px solid #eee', pt: 2, pb: 2, px: 3 }}>
+        <DialogActions>
           <Button
             onClick={onClose}
             disabled={isPending}
-            sx={{ textTransform: 'none', fontWeight: 600, color: '#d97706' }}
+            color="secondary"
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
+            color="primary"
             disabled={isPending}
-            sx={{
-              bgcolor: '#1a237e',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 600,
-              borderRadius: 0,
-              px: 3,
-              '&:hover': { bgcolor: '#0d47a1' },
-            }}
+            sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
           >
-            {organizacao ? 'Salvar Alterações' : 'Cadastrar'}
+            {organizacao ? 'Salvar Alterações' : 'Salvar'}
           </Button>
         </DialogActions>
       </form>

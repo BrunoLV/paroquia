@@ -40,6 +40,7 @@ import EventDistributionPieChart from '../components/dashboard/EventDistribution
 import EventVolumeBarChart from '../components/reports/EventVolumeBarChart';
 import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from '../utils/exportUtils';
 import {useNotification} from '../context/NotificationContext';
+import PageHeader from '../components/PageHeader';
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();
@@ -216,10 +217,11 @@ const Reports: React.FC = () => {
   if (metricsError || !metricsData || !filteredMetrics) {
     return (
       <Box sx={{ p: 1 }}>
-        <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: '#1a237e' }}>
-          Relatórios & Métricas Gerenciais
-        </Typography>
-        <Alert severity="error" sx={{ borderRadius: 0 }}>
+        <PageHeader
+          icon={<AssessmentIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+          title="Relatórios & Métricas Gerenciais"
+        />
+        <Alert severity="error">
           Não foi possível carregar os relatórios. Verifique sua conexão ou permissões.
         </Alert>
       </Box>
@@ -252,37 +254,18 @@ const Reports: React.FC = () => {
 
   return (
     <Box id="reports-container" sx={{ p: 1 }}>
-      {/* Top Header & Actions Padronizado */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 2,
-          mb: 4,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <AssessmentIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Relatórios & Métricas Gerenciais
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Painel de controle com dados consolidados da paróquia e indicadores de desempenho.
-            </Typography>
-          </Box>
-        </Box>
-
-        <ReportExportButtons
-          onExportCSV={handleExportCSV}
-          onExportPDF={handleExportPDF}
-          isExporting={isExporting}
-        />
-      </Box>
+      <PageHeader
+        icon={<AssessmentIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Relatórios & Métricas Gerenciais"
+        subtitle="Painel de controle com dados consolidados da paróquia e indicadores de desempenho."
+        actions={
+          <ReportExportButtons
+            onExportCSV={handleExportCSV}
+            onExportPDF={handleExportPDF}
+            isExporting={isExporting}
+          />
+        }
+      />
 
       {/* Tabs de Seleção de Relatório */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
@@ -329,7 +312,7 @@ const Reports: React.FC = () => {
           severity="info"
           variant="outlined"
           icon={<FilterIcon />}
-          sx={{ mb: 3, borderRadius: 0, borderLeft: '4px solid #1a237e' }}
+          sx={{ mb: 3, borderLeft: '4px solid #1a237e' }}
           onClose={handleClearFilters}
         >
           Filtro ativo de <strong>{appliedStartDate || 'início do registro'}</strong> até{' '}

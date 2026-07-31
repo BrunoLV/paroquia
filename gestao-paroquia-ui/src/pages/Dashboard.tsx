@@ -16,6 +16,7 @@ import {useNotification} from '../context/NotificationContext';
 import {DashboardMetrics, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {getDashboardMetrics} from '../api/dashboard';
+import PageHeader from '../components/PageHeader';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -233,22 +234,11 @@ const Dashboard = () => {
 
   return (
     <Box>
-      {/* Header Padronizado */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <DashboardIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Dashboard
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Visão geral e indicadores consolidados das atividades, projetos e eventos da paróquia.
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+      <PageHeader
+        icon={<DashboardIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Dashboard"
+        subtitle="Visão geral e indicadores consolidados das atividades, projetos e eventos da paróquia."
+      />
 
       {errorMsg && <Alert severity="error" sx={{ mb: 3 }}>{errorMsg}</Alert>}
 

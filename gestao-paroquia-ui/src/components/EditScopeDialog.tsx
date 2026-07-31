@@ -24,8 +24,8 @@ interface EditScopeDialogProps {
 
 const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSelect }) => {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
-      <DialogTitle sx={{ fontWeight: 700 }}>Editar Evento Recorrente</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>Editar Evento Recorrente</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ mb: 2 }}>
           Este é um evento recorrente. Como você deseja aplicar as alterações?
@@ -66,8 +66,8 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
           </ListItem>
         </List>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
-        <Button onClick={onClose} color="inherit" sx={{ borderRadius: 0, textTransform: 'none' }}>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary" sx={{ textTransform: 'none' }}>
           Cancelar
         </Button>
       </DialogActions>

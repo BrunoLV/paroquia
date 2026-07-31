@@ -240,7 +240,7 @@ test('opens and submits event creation form', async () => {
   fireEvent.change(titleInput, { target: { value: 'Novo Evento Teste' } });
 
   // Select first organization from dropdown - mockOrgs has Pastoral da Juventude
-  const submitButton = screen.getByRole('button', { name: /Criar Evento/i });
+  const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
 
   await act(async () => {
     fireEvent.click(submitButton);

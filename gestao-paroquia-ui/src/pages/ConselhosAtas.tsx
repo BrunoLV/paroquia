@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
   Button,
@@ -14,6 +15,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -35,22 +37,20 @@ import { useAuth } from '../auth/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { getCpcDecisoes, createCpcDecisao, homologarCpcDecisao } from '../api/conselhos';
 import { getOrganizacoes } from '../api/organizacoes';
-import { CpcDecisao, Organizacao, StatusHomologacao } from '../api/types';
+import { CpcDecisao, StatusHomologacao } from '../api/types';
 import { CpcDecisaoModal } from '../components/CpcDecisaoModal';
+import PageHeader from '../components/PageHeader';
+import theme from '../theme';
 
 export const ConselhosAtas: React.FC = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useNotification();
-
-  const [decisoes, setDecisoes] = useState<CpcDecisao[]>([]);
-  const [communities, setCommunities] = useState<Organizacao[]>([]);
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const [selectedComunidade, setSelectedComunidade] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [vetoDialogItem, setVetoDialogItem] = useState<CpcDecisao | null>(null);
   const [motivoVeto, setMotivoVeto] = useState('');
@@ -60,77 +60,65 @@ export const ConselhosAtas: React.FC = () => {
       ['ADMIN', 'ROLE_ADMIN', 'PAROCO', 'ROLE_PAROCO', 'MESA_CPP', 'ROLE_MESA_CPP'].includes(r)
     ) ?? false;
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [decisoesData, orgsData] = await Promise.all([
-        getCpcDecisoes({
-          comunidadeId: selectedComunidade || undefined,
-          status: (selectedStatus as StatusHomologacao) || undefined,
-        }),
-        getOrganizacoes(),
-      ]);
+  const { data: decisoes = [], isLoading } = useQuery({
+    queryKey: ['cpcDecisoes', selectedComunidade, selectedStatus],
+    queryFn: () =>
+      getCpcDecisoes({
+        comunidadeId: selectedComunidade || undefined,
+        status: (selectedStatus as StatusHomologacao) || undefined,
+      }),
+  });
 
-      setDecisoes(decisoesData);
-      setCommunities(orgsData.filter((o) => o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'));
-    } catch (err: any) {
-      showError('Erro ao carregar atas e decisões dos conselhos.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: organizacoes = [] } = useQuery({
+    queryKey: ['organizacoes'],
+    queryFn: getOrganizacoes,
+  });
 
-  useEffect(() => {
-    loadData();
-  }, [selectedComunidade, selectedStatus]);
+  const communities = organizacoes.filter((o) => o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE');
 
-  const handleCreateDecisao = async (data: {
-    titulo: string;
-    pautaDescricao: string;
-    dataReuniao: string;
-    comunidadeId: string;
-  }) => {
-    setIsSubmitting(true);
-    try {
-      await createCpcDecisao(data);
+  const createMutation = useMutation({
+    mutationFn: createCpcDecisao,
+    onSuccess: () => {
       showSuccess('Ata/Decisão submetida com sucesso para homologação!');
       setIsModalOpen(false);
-      loadData();
-    } catch (err: any) {
-      showError('Erro ao submeter ata de conselho.');
-    } finally {
-      setIsSubmitting(false);
-    }
+      queryClient.invalidateQueries({ queryKey: ['cpcDecisoes'] });
+    },
+    onError: () => showError('Erro ao submeter ata de conselho.'),
+  });
+
+  const homologarMutation = useMutation({
+    mutationFn: (params: { id: string; status: StatusHomologacao; motivoVeto?: string }) =>
+      homologarCpcDecisao(params.id, { status: params.status, motivoVeto: params.motivoVeto }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cpcDecisoes'] }),
+  });
+
+  const handleHomologar = (id: string) => {
+    homologarMutation.mutate(
+      { id, status: 'HOMOLOGADO' },
+      {
+        onSuccess: () => showSuccess('Ata/Decisão homologada com sucesso pelo Pároco/Mesa CPP!'),
+        onError: () => showError('Erro ao homologar ata.'),
+      }
+    );
   };
 
-  const handleHomologar = async (id: string) => {
-    try {
-      await homologarCpcDecisao(id, { status: 'HOMOLOGADO' });
-      showSuccess('Ata/Decisão homologada com sucesso pelo Pároco/Mesa CPP!');
-      loadData();
-    } catch (err: any) {
-      showError('Erro ao homologar ata.');
-    }
-  };
-
-  const handleConfirmVeto = async () => {
+  const handleConfirmVeto = () => {
     if (!vetoDialogItem) return;
     if (!motivoVeto.trim()) {
       showError('O motivo do veto é obrigatório.');
       return;
     }
-    try {
-      await homologarCpcDecisao(vetoDialogItem.id, {
-        status: 'VETADO',
-        motivoVeto: motivoVeto.trim(),
-      });
-      showSuccess('Ata/Decisão vetada com sucesso.');
-      setVetoDialogItem(null);
-      setMotivoVeto('');
-      loadData();
-    } catch (err: any) {
-      showError('Erro ao vetar ata.');
-    }
+    homologarMutation.mutate(
+      { id: vetoDialogItem.id, status: 'VETADO', motivoVeto: motivoVeto.trim() },
+      {
+        onSuccess: () => {
+          showSuccess('Ata/Decisão vetada com sucesso.');
+          setVetoDialogItem(null);
+          setMotivoVeto('');
+        },
+        onError: () => showError('Erro ao vetar ata.'),
+      }
+    );
   };
 
   const handleClearFilters = () => {
@@ -155,34 +143,23 @@ export const ConselhosAtas: React.FC = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header Padronizado com Ícone Inline em Box, Título, Descrição e Botão Principal à Direita */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <DescriptionIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Governança dos Conselhos (CPP & CPC)
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação.
-            </Typography>
-          </Box>
-        </Box>
+      <PageHeader
+        icon={<DescriptionIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Governança dos Conselhos (CPP & CPC)"
+        subtitle="Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação."
+        actions={
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => setIsModalOpen(true)}
+            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+          >
+            Nova Ata / Decisão
+          </Button>
+        }
+      />
 
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => setIsModalOpen(true)}
-          sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-        >
-          Nova Ata / Decisão
-        </Button>
-      </Box>
-
-      {/* Card de Filtros Padronizado do Sistema */}
       <Card
         elevation={0}
         sx={{
@@ -191,7 +168,7 @@ export const ConselhosAtas: React.FC = () => {
           borderRadius: 0,
           border: '1px solid',
           borderColor: 'divider',
-          backgroundColor: '#fafafa',
+          backgroundColor: theme.custom.subtlePanelBg,
         }}
       >
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap">
@@ -239,123 +216,125 @@ export const ConselhosAtas: React.FC = () => {
         </Stack>
       </Card>
 
-      {/* Tabela de Atas/Decisões */}
-      <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: 'action.hover' }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 600 }}>Título / Pauta</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Comunidade</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Data da Reunião</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Status Homologação</TableCell>
-              <TableCell sx={{ fontWeight: 600 }} align="center">
-                Ações de Homologação
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {decisoes.length === 0 ? (
+      {isLoading ? (
+        <Stack spacing={1}>
+          <Skeleton variant="rectangular" height={48} />
+          <Skeleton variant="rectangular" height={72} />
+          <Skeleton variant="rectangular" height={72} />
+          <Skeleton variant="rectangular" height={72} />
+        </Stack>
+      ) : (
+        <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          <Table>
+            <TableHead sx={{ backgroundColor: 'action.hover' }}>
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    Nenhuma ata ou decisão registrada para os filtros selecionados.
-                  </Typography>
+                <TableCell sx={{ fontWeight: 600 }}>Título / Pauta</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Comunidade</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Data da Reunião</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Status Homologação</TableCell>
+                <TableCell sx={{ fontWeight: 600 }} align="center">
+                  Ações de Homologação
                 </TableCell>
               </TableRow>
-            ) : (
-              decisoes.map((item) => (
-                <TableRow key={item.id} hover>
-                  <TableCell sx={{ maxW: 400 }}>
-                    <Typography variant="subtitle2" fontWeight={600}>
-                      {item.titulo}
+            </TableHead>
+            <TableBody>
+              {decisoes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      Nenhuma ata ou decisão registrada para os filtros selecionados.
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
-                      {item.pautaDescricao}
-                    </Typography>
-                    {item.motivoVeto && (
-                      <Typography variant="caption" display="block" color="error.main" sx={{ mt: 0.5, fontWeight: 500 }}>
-                        Motivo do Veto: {item.motivoVeto}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
-                  <TableCell>{item.dataReuniao}</TableCell>
-                  <TableCell>{getStatusChip(item.statusHomologacao)}</TableCell>
-                  <TableCell align="center">
-                    {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
-                      <Box display="flex" justifyContent="center" gap={1}>
-                        <Tooltip title="Homologar Ata (Aprovar)">
-                          <IconButton
-                            color="success"
-                            size="small"
-                            onClick={() => handleHomologar(item.id)}
-                            data-testid={`homologate-btn-${item.id}`}
-                          >
-                            <CheckCircleIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Vetar Ata (Reprovar)">
-                          <IconButton
-                            color="error"
-                            size="small"
-                            onClick={() => setVetoDialogItem(item)}
-                            data-testid={`veto-btn-${item.id}`}
-                          >
-                            <CancelIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    ) : (
-                      <Typography variant="caption" color="text.secondary">
-                        —
-                      </Typography>
-                    )}
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                decisoes.map((item) => (
+                  <TableRow key={item.id} hover>
+                    <TableCell sx={{ maxW: 400 }}>
+                      <Typography variant="subtitle2" fontWeight={600}>
+                        {item.titulo}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
+                        {item.pautaDescricao}
+                      </Typography>
+                      {item.motivoVeto && (
+                        <Typography variant="caption" display="block" color="error.main" sx={{ mt: 0.5, fontWeight: 500 }}>
+                          Motivo do Veto: {item.motivoVeto}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
+                    <TableCell>{item.dataReuniao}</TableCell>
+                    <TableCell>{getStatusChip(item.statusHomologacao)}</TableCell>
+                    <TableCell align="center">
+                      {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
+                        <Box display="flex" justifyContent="center" gap={1}>
+                          <Tooltip title="Homologar Ata (Aprovar)">
+                            <IconButton
+                              color="success"
+                              size="small"
+                              onClick={() => handleHomologar(item.id)}
+                              data-testid={`homologate-btn-${item.id}`}
+                            >
+                              <CheckCircleIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Vetar Ata (Reprovar)">
+                            <IconButton
+                              color="error"
+                              size="small"
+                              onClick={() => setVetoDialogItem(item)}
+                              data-testid={`veto-btn-${item.id}`}
+                            >
+                              <CancelIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      ) : (
+                        <Typography variant="caption" color="text.secondary">
+                          —
+                        </Typography>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-      {/* Modal de Criação */}
       <CpcDecisaoModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateDecisao}
-        isSubmitting={isSubmitting}
+        onSubmit={(data) => createMutation.mutate(data)}
+        isSubmitting={createMutation.isPending}
         communities={communities}
       />
 
-      {/* Dialog de Veto */}
-      <Dialog
-        open={!!vetoDialogItem}
-        onClose={() => setVetoDialogItem(null)}
-        maxWidth="xs"
-        fullWidth
-        PaperProps={{ sx: { borderRadius: 0 } }}
-      >
-        <DialogTitle sx={{ fontWeight: 600 }}>Vetar Ata / Decisão de Conselho</DialogTitle>
+      <Dialog open={!!vetoDialogItem} onClose={() => setVetoDialogItem(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Vetar Ata / Decisão de Conselho</DialogTitle>
         <DialogContent dividers>
-          <Typography variant="body2" sx={{ mb: 2 }} color="textSecondary">
-            Informe o motivo do veto para a ata "{vetoDialogItem?.titulo}". Esta justificativa será gravada de forma auditável.
-          </Typography>
-          <TextField
-            label="Motivo do Veto *"
-            fullWidth
-            multiline
-            rows={3}
-            value={motivoVeto}
-            onChange={(e) => setMotivoVeto(e.target.value)}
-            required
-            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <Typography variant="body2" color="textSecondary">
+              Informe o motivo do veto para a ata "{vetoDialogItem?.titulo}". Esta justificativa será gravada de forma auditável.
+            </Typography>
+            <TextField
+              label="Motivo do Veto"
+              fullWidth
+              multiline
+              rows={3}
+              size="small"
+              value={motivoVeto}
+              onChange={(e) => setMotivoVeto(e.target.value)}
+              required
+            />
+          </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setVetoDialogItem(null)} color="inherit" sx={{ borderRadius: 0 }}>
+        <DialogActions>
+          <Button onClick={() => setVetoDialogItem(null)} color="secondary">
             Cancelar
           </Button>
-          <Button onClick={handleConfirmVeto} variant="contained" color="error" sx={{ borderRadius: 0 }}>
+          <Button onClick={handleConfirmVeto} variant="contained" color="error">
             Confirmar Veto
           </Button>
         </DialogActions>

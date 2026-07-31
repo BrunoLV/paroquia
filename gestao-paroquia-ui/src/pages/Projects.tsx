@@ -3,6 +3,7 @@ import {
     Alert,
     Box,
     Button,
+    Card,
     Checkbox,
     Chip,
     CircularProgress,
@@ -22,6 +23,7 @@ import {
     MenuItem,
     Paper,
     Select,
+    Skeleton,
     Table,
     TableBody,
     TableCell,
@@ -43,6 +45,7 @@ import {
     Warning as WarningIcon,
 } from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
+import PageHeader from '../components/PageHeader';
 import {
     canManageProjects as userCanManageProjects,
     canTransitionProject as userCanTransitionProject,
@@ -337,41 +340,34 @@ const Projects = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header Padronizado */}
-      <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ p: 1.5, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
-            <WorkIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          </Box>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.5px' }}>
-              Projetos Paroquiais
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais.
-            </Typography>
-          </Box>
-        </Box>
-
-        {canManageProjects() && (
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleOpenCreate}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-          >
-            Novo Projeto
-          </Button>
-        )}
-      </Box>
+      <PageHeader
+        icon={<WorkIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        title="Projetos Paroquiais"
+        subtitle="Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais."
+        actions={
+          canManageProjects() && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleOpenCreate}
+              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+            >
+              Novo Projeto
+            </Button>
+          )
+        }
+      />
 
       {isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
-          <CircularProgress />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
+          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
+          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
+          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
         </Box>
       ) : projects.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center', bgcolor: 'background.paper' }}>
+        <Card sx={{ p: 4, textAlign: 'center', bgcolor: 'background.paper' }}>
           <Typography variant="h6" color="textSecondary" gutterBottom>
             Nenhum projeto cadastrado.
           </Typography>
@@ -386,73 +382,75 @@ const Projects = () => {
               Cadastrar Primeiro Projeto
             </Button>
           )}
-        </Paper>
+        </Card>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-          <Table>
-            <TableHead sx={{ bgcolor: 'rgba(26, 35, 126, 0.04)' }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Nome</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Responsável</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Início</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Término</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 700, textAlign: 'right' }}>Ações</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {projects.map((project) => (
-                <TableRow
-                  key={project.id}
-                  hover
-                  onClick={() => handleRowClick(project)}
-                  sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
-                  <TableCell>{getOrgName(project.organizacaoResponsavelId)}</TableCell>
-                  <TableCell>{formatDate(project.inicio)}</TableCell>
-                  <TableCell>{formatDate(project.fim)}</TableCell>
-                  <TableCell>
-                    <Chip
-                      size="small"
-                      label={
-                        project.status === 'ABERTO' ? 'Aberto' :
-                        project.status === 'EM_ANDAMENTO' ? 'Em Andamento' :
-                        project.status === 'CANCELADO' ? 'Cancelado' :
-                        project.status === 'CONCLUIDO' ? 'Concluído' :
-                        project.status
-                      }
-                      color={
-                        project.status === 'EM_ANDAMENTO' ? 'success' :
-                        project.status === 'ABERTO' ? 'info' :
-                        project.status === 'CANCELADO' ? 'error' :
-                        'default'
-                      }
-                      variant="outlined"
-                      sx={{ borderRadius: 0 }}
-                    />
-                  </TableCell>
-                  <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
-                    <IconButton size="small" color="primary" onClick={() => handleRowClick(project)} title="Visualizar Indicadores">
-                      <VisibilityIcon />
-                    </IconButton>
-                    {canManageProjects() && (
-                      <IconButton size="small" color="secondary" onClick={(e) => handleOpenEdit(project, e)} title="Editar Projeto" sx={{ ml: 1 }}>
-                        <EditIcon />
-                      </IconButton>
-                    )}
-                  </TableCell>
+        <Card sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+          <TableContainer component={Paper} elevation={0}>
+            <Table>
+              <TableHead sx={{ bgcolor: 'rgba(26, 35, 126, 0.04)' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700 }}>Nome</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Responsável</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Início</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Término</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 700, textAlign: 'right' }}>Ações</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {projects.map((project) => (
+                  <TableRow
+                    key={project.id}
+                    hover
+                    onClick={() => handleRowClick(project)}
+                    sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
+                    <TableCell>{getOrgName(project.organizacaoResponsavelId)}</TableCell>
+                    <TableCell>{formatDate(project.inicio)}</TableCell>
+                    <TableCell>{formatDate(project.fim)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        label={
+                          project.status === 'ABERTO' ? 'Aberto' :
+                          project.status === 'EM_ANDAMENTO' ? 'Em Andamento' :
+                          project.status === 'CANCELADO' ? 'Cancelado' :
+                          project.status === 'CONCLUIDO' ? 'Concluído' :
+                          project.status
+                        }
+                        color={
+                          project.status === 'EM_ANDAMENTO' ? 'success' :
+                          project.status === 'ABERTO' ? 'info' :
+                          project.status === 'CANCELADO' ? 'error' :
+                          'default'
+                        }
+                        variant="outlined"
+                        sx={{ borderRadius: 0 }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                      <IconButton size="small" color="primary" onClick={() => handleRowClick(project)} title="Visualizar Indicadores">
+                        <VisibilityIcon />
+                      </IconButton>
+                      {canManageProjects() && (
+                        <IconButton size="small" color="secondary" onClick={(e) => handleOpenEdit(project, e)} title="Editar Projeto" sx={{ ml: 1 }}>
+                          <EditIcon />
+                        </IconButton>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
       )}
 
       {/* CREATE & EDIT DIALOG */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
-          <DialogTitle sx={{ borderBottom: '1px solid #eee', pb: 2, fontWeight: 700, color: '#37474f', fontSize: '1.25rem' }}>
+          <DialogTitle>
             {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
           </DialogTitle>
           <DialogContent>
@@ -540,10 +538,10 @@ const Projects = () => {
               )}
             </Box>
           </DialogContent>
-          <DialogActions sx={{ borderTop: '1px solid #eee', px: 3, py: 2 }}>
+          <DialogActions>
             <Button onClick={() => setDialogOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>Cancelar</Button>
             <Button type="submit" variant="contained" color="primary" sx={{ fontWeight: 600 }}>
-              Salvar
+              {isEditMode ? 'Salvar Alterações' : 'Salvar'}
             </Button>
           </DialogActions>
         </form>
@@ -791,7 +789,7 @@ const Projects = () => {
         fullWidth
         sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
       >
-        <DialogTitle sx={{ fontWeight: 700 }}>
+        <DialogTitle>
           {transitionType === 'INICIAR' && 'Iniciar Projeto'}
           {transitionType === 'CONCLUIR' && 'Concluir Projeto'}
           {transitionType === 'CANCELAR' && 'Cancelar Projeto'}
@@ -816,7 +814,7 @@ const Projects = () => {
             />
           )}
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
+        <DialogActions>
           <Button
             onClick={() => setTransitionDialogOpen(false)}
             color="secondary"
