@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
@@ -15,7 +17,8 @@ public class AnoLiturgicoEntity {
     @Column(name = "ano", nullable = false)
     private Integer ano;
 
-    @Column(name = "ciclo_letra", length = 1, nullable = false, columnDefinition = "CHAR(1)")
+    @Column(name = "ciclo_letra", length = 1, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
     private String cicloLetra;
 
     @Column(name = "data_inicio_advento", nullable = false)
