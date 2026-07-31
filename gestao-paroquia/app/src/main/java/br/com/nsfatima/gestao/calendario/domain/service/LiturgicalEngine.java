@@ -1,5 +1,8 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
+import br.com.nsfatima.gestao.calendario.domain.model.CorLiturgica;
+import br.com.nsfatima.gestao.calendario.domain.model.LiturgicalOutput;
+import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -7,6 +10,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 public class LiturgicalEngine {
@@ -32,54 +38,80 @@ public class LiturgicalEngine {
         return LocalDate.of(year, month, day);
     }
 
-    /**
-     * Início da Quaresma (Quarta-feira de Cinzas = Páscoa - 46 dias).
-     */
     public LocalDate calculateQuartaDeCinzas(int year) {
         return calculateEaster(year).minusDays(46);
     }
 
-    /**
-     * Fim da Quaresma (Sábado Santo = Páscoa - 1 dia).
-     */
+    public LocalDate calculateQuartaSanta(int year) {
+        return calculateEaster(year).minusDays(4);
+    }
+
+    public LocalDate calculateQuintaSanta(int year) {
+        return calculateEaster(year).minusDays(3);
+    }
+
     public LocalDate calculateVesperaPascoa(int year) {
         return calculateEaster(year).minusDays(1);
     }
 
-    /**
-     * Fim do Tempo Pascal (Domingo de Pentecostes = Páscoa + 49 dias / 50º dia).
-     */
+    public LocalDate calculateAscensao(int year) {
+        return calculateEaster(year).plusDays(42);
+    }
+
     public LocalDate calculatePentecostes(int year) {
         return calculateEaster(year).plusDays(49);
     }
 
-    /**
-     * Calcula o início do Advento (1º Domingo do Advento) para o Ano Litúrgico nominal.
-     * O 1º Domingo do Advento é o domingo mais próximo de 30 de novembro do ano civil anterior (anoLiturgico - 1).
-     */
-    public ZonedDateTime calculateAdventoInicio(int liturgicalYear) {
-        LocalDate baseDate = LocalDate.of(liturgicalYear - 1, 11, 30);
-        DayOfWeek dayOfWeek = baseDate.getDayOfWeek();
+    public LocalDate calculateSantissimaTrindade(int year) {
+        return calculateEaster(year).plusDays(56);
+    }
 
-        LocalDate adventoSunday;
-        if (dayOfWeek == DayOfWeek.SUNDAY) {
-            adventoSunday = baseDate;
-        } else if (dayOfWeek.getValue() <= 3) {
-            // Qui, Sex, Sáb vão para o próximo domingo? Não, Seg(1), Ter(2), Quarta(3) voltam para o domingo anterior (27, 28, 29 nov)
-            adventoSunday = baseDate.minusDays(dayOfWeek.getValue());
-        } else {
-            // Qui(4), Sex(5), Sáb(6) vão para o domingo seguinte (1, 2, 3 dez)
-            adventoSunday = baseDate.plusDays(7 - dayOfWeek.getValue());
-        }
+    public LocalDate calculateCorpusChristi(int year) {
+        return calculateEaster(year).plusDays(60);
+    }
 
-        return adventoSunday.atStartOfDay(ZoneOffset.UTC);
+    public LocalDate calculateSagradoCoracao(int year) {
+        return calculateEaster(year).plusDays(68);
     }
 
     /**
-     * Resolve o Ano Litúrgico nominal para uma determinada data UTC.
-     * Se a data for igual ou posterior ao 1º Domingo do Advento do ano civil corrente,
-     * pertence ao Ano Litúrgico do ano civil seguinte.
+     * Calcula o 1º Domingo do Advento do ano civil anterior (início do anoLiturgico).
      */
+    public ZonedDateTime calculateAdventoInicio(int liturgicalYear) {
+        return calculateAdventoSundayDate(liturgicalYear - 1).atStartOfDay(ZoneOffset.UTC);
+    }
+
+    /**
+     * Encontra o domingo mais próximo a 30 de novembro do ano especificado.
+     */
+    private LocalDate calculateAdventoSundayDate(int year) {
+        LocalDate baseDate = LocalDate.of(year, 11, 30);
+        DayOfWeek dayOfWeek = baseDate.getDayOfWeek();
+
+        if (dayOfWeek == DayOfWeek.SUNDAY) {
+            return baseDate;
+        } else if (dayOfWeek.getValue() <= 3) {
+            return baseDate.minusDays(dayOfWeek.getValue());
+        } else {
+            return baseDate.plusDays(7 - dayOfWeek.getValue());
+        }
+    }
+
+    public LocalDate calculateCristoRei(int year) {
+        LocalDate adventoCurrent = calculateAdventoSundayDate(year);
+        return adventoCurrent.minusDays(7);
+    }
+
+    public LocalDate calculateEpifania(int year) {
+        for (int day = 2; day <= 8; day++) {
+            LocalDate d = LocalDate.of(year, 1, day);
+            if (d.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                return d;
+            }
+        }
+        return LocalDate.of(year, 1, 6);
+    }
+
     public int resolveAnoLiturgico(Instant eventDate) {
         if (eventDate == null) {
             return LocalDate.now().getYear();
@@ -96,32 +128,56 @@ public class LiturgicalEngine {
     }
 
     /**
-     * Resolve o ciclo trienal da leitura dominical (A, B ou C) com base no ano litúrgico.
-     * Anos divisíveis por 3 após resto:
-     * (ano - 1) % 3: 0 -> A, 1 -> B, 2 -> C
-     * Exemplo: 2026 -> (2026 - 1) = 2025 % 3 = 0 => 2026 é C?
-     * Padrão eclesial:
-     * 2023 = A (2023 % 3 = 2 => A)
-     * 2024 = B (2024 % 3 = 0 => B)
-     * 2025 = C (2025 % 3 = 1 => C)
-     * 2026 = C (2026 % 3 = 2 => C)
-     * 2027 = A (2027 % 3 = 0 => A)
-     * 2028 = B (2028 % 3 = 1 => B)
+     * Resolve o ciclo trienal dominical (A, B ou C) com base na regra universal do ano nominal.
+     * anoNominal % 3 == 1 -> A
+     * anoNominal % 3 == 2 -> B
+     * anoNominal % 3 == 0 -> C
      */
     public String resolveCicloLetra(int liturgicalYear) {
-        int remainder = (liturgicalYear - 2026) % 3;
-        if (remainder < 0) {
-            remainder += 3;
-        }
-        switch (remainder) {
-            case 0:
-                return "C";
-            case 1:
-                return "A";
-            case 2:
-                return "B";
-            default:
-                return "C";
-        }
+        int rem = Math.abs(liturgicalYear) % 3;
+        return switch (rem) {
+            case 1 -> "A";
+            case 2 -> "B";
+            case 0 -> "C";
+            default -> "C";
+        };
+    }
+
+    /**
+     * Calcula o ano litúrgico completo (LiturgicalOutput) de forma stateless e imutável.
+     */
+    public LiturgicalOutput calculateLiturgicalYear(int anoNominal) {
+        LocalDate dataInicio = calculateAdventoSundayDate(anoNominal - 1);
+        LocalDate dataFim = calculateAdventoSundayDate(anoNominal).minusDays(1);
+        String cicloLetra = resolveCicloLetra(anoNominal);
+
+        Map<String, MarcoLiturgico> marcos = new LinkedHashMap<>();
+
+        // Marcos móveis
+        marcos.put("QUARTA_CINZAS", new MarcoLiturgico("QUARTA_CINZAS", "Quarta-feira de Cinzas", calculateQuartaDeCinzas(anoNominal), CorLiturgica.ROXO, 2.50));
+        marcos.put("QUARTA_SANTA", new MarcoLiturgico("QUARTA_SANTA", "Quarta-feira Santa", calculateQuartaSanta(anoNominal), CorLiturgica.ROXO, 2.00));
+        marcos.put("QUINTA_SANTA", new MarcoLiturgico("QUINTA_SANTA", "Quinta-feira Santa", calculateQuintaSanta(anoNominal), CorLiturgica.BRANCO, 3.00));
+        marcos.put("SABADO_SANTO", new MarcoLiturgico("SABADO_SANTO", "Sábado Santo", calculateVesperaPascoa(anoNominal), CorLiturgica.BRANCO, 3.00));
+        marcos.put("PASCOA", new MarcoLiturgico("PASCOA", "Domingo de Páscoa", calculateEaster(anoNominal), CorLiturgica.BRANCO, 3.00));
+        marcos.put("ASCENSAO", new MarcoLiturgico("ASCENSAO", "Ascensão do Senhor", calculateAscensao(anoNominal), CorLiturgica.BRANCO, 2.50));
+        marcos.put("PENTECOSTES", new MarcoLiturgico("PENTECOSTES", "Domingo de Pentecostes", calculatePentecostes(anoNominal), CorLiturgica.VERMELHO, 3.00));
+        marcos.put("SANTISSIMA_TRINDADE", new MarcoLiturgico("SANTISSIMA_TRINDADE", "Santíssima Trindade", calculateSantissimaTrindade(anoNominal), CorLiturgica.BRANCO, 2.50));
+        marcos.put("CORPUS_CHRISTI", new MarcoLiturgico("CORPUS_CHRISTI", "Corpus Christi", calculateCorpusChristi(anoNominal), CorLiturgica.BRANCO, 3.00));
+        marcos.put("SAGRADO_CORACAO", new MarcoLiturgico("SAGRADO_CORACAO", "Sagrado Coração de Jesus", calculateSagradoCoracao(anoNominal), CorLiturgica.BRANCO, 2.50));
+        marcos.put("CRISTO_REI", new MarcoLiturgico("CRISTO_REI", "Nosso Senhor Jesus Cristo, Rei do Universo", calculateCristoRei(anoNominal), CorLiturgica.BRANCO, 2.50));
+        marcos.put("EPIFANIA", new MarcoLiturgico("EPIFANIA", "Epifania do Senhor", calculateEpifania(anoNominal), CorLiturgica.BRANCO, 2.50));
+
+        // Solenidades fixas (Santoral)
+        marcos.put("MAE_DE_DEUS", new MarcoLiturgico("MAE_DE_DEUS", "Santa Maria, Mãe de Deus", LocalDate.of(anoNominal, 1, 1), CorLiturgica.BRANCO, 3.00));
+        marcos.put("SAO_JOSE", new MarcoLiturgico("SAO_JOSE", "São José, Esposo da Virgem Maria", LocalDate.of(anoNominal, 3, 19), CorLiturgica.BRANCO, 3.00));
+        marcos.put("ANUNCIACAO_SENHOR", new MarcoLiturgico("ANUNCIACAO_SENHOR", "Anunciação do Senhor", LocalDate.of(anoNominal, 3, 25), CorLiturgica.BRANCO, 3.00));
+        marcos.put("NATIVIDADE_JOAO_BATISTA", new MarcoLiturgico("NATIVIDADE_JOAO_BATISTA", "Natividade de São João Batista", LocalDate.of(anoNominal, 6, 24), CorLiturgica.BRANCO, 3.00));
+        marcos.put("SAO_PEDRO_SAO_PAULO", new MarcoLiturgico("SAO_PEDRO_SAO_PAULO", "São Pedro e São Paulo, Apóstolos", LocalDate.of(anoNominal, 6, 29), CorLiturgica.VERMELHO, 3.00));
+        marcos.put("ASSUNCAO_NOSSA_SENHORA", new MarcoLiturgico("ASSUNCAO_NOSSA_SENHORA", "Assunção de Nossa Senhora", LocalDate.of(anoNominal, 8, 15), CorLiturgica.BRANCO, 3.00));
+        marcos.put("TODOS_OS_SANTOS", new MarcoLiturgico("TODOS_OS_SANTOS", "Todos os Santos", LocalDate.of(anoNominal, 11, 1), CorLiturgica.BRANCO, 3.00));
+        marcos.put("IMACULADA_CONCEICAO", new MarcoLiturgico("IMACULADA_CONCEICAO", "Imaculada Conceição de Nossa Senhora", LocalDate.of(anoNominal, 12, 8), CorLiturgica.BRANCO, 3.00));
+        marcos.put("NATAL_SENHOR", new MarcoLiturgico("NATAL_SENHOR", "Natal do Senhor", LocalDate.of(anoNominal, 12, 25), CorLiturgica.BRANCO, 3.00));
+
+        return new LiturgicalOutput(anoNominal, dataInicio, dataFim, cicloLetra, Collections.unmodifiableMap(marcos));
     }
 }
