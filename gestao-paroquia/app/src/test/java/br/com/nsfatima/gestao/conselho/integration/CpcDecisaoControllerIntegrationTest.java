@@ -1,8 +1,5 @@
 package br.com.nsfatima.gestao.conselho.integration;
 
-import br.com.nsfatima.gestao.conselho.api.v1.dto.CreateCpcDecisaoRequest;
-import br.com.nsfatima.gestao.conselho.api.v1.dto.HomologarCpcDecisaoRequest;
-import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +12,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc

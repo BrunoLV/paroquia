@@ -140,8 +140,11 @@ test('toggles to signup form and submits registration', async () => {
     { id: 'comunidade-id', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: null, ativo: true }
   ];
 
-  mockedApiClient.get.mockResolvedValueOnce({ data: null }); // for auth check
-  mockedApiClient.get.mockResolvedValueOnce({ data: mockOrgs }); // for organizations list
+  mockedApiClient.get.mockImplementation(async (url: string) => {
+    if (url === '/auth/me') return { data: null };
+    if (url === '/organizacoes') return { data: mockOrgs };
+    return { data: [] };
+  });
   mockedApiClient.post.mockResolvedValueOnce({ data: 'new-user-uuid' }); // for signup post
 
   await act(async () => {

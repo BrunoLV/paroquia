@@ -10,6 +10,8 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest
 class CacheInfrastructureTest {

@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.support;
 
 import java.util.Map;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public final class TestAuditOrganizationResolver {
 
