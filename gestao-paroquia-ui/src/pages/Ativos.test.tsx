@@ -59,6 +59,17 @@ describe('Ativos Page', () => {
     mockShowSuccess.mockClear();
   });
 
+  const mockEventos = [
+    {
+      id: 'evento-1',
+      titulo: 'Encontro de Catequistas',
+      inicio: '2026-02-10T14:00:00Z',
+      fim: '2026-02-10T16:00:00Z',
+      status: 'CONFIRMADO',
+      organizacaoResponsavelId: 'org-1',
+    },
+  ];
+
   const renderAtivos = async (user: any) => {
     mockedApiClient.get.mockImplementation((url) => {
       if (url === '/auth/me') {
@@ -69,6 +80,9 @@ describe('Ativos Page', () => {
       }
       if (url === '/ativos/organizacao/org-1') {
         return Promise.resolve({ data: mockAtivos });
+      }
+      if (url === '/eventos') {
+        return Promise.resolve({ data: mockEventos });
       }
       return Promise.reject(new Error('Not found'));
     });
@@ -142,5 +156,53 @@ describe('Ativos Page', () => {
 
     const alocarButtons = screen.getAllByRole('button', { name: /Alocar/i });
     expect(alocarButtons).toHaveLength(1);
+  });
+
+  test('allocates an ativo by selecting an evento from the period filter', async () => {
+    const coordenadorUser = {
+      id: '3',
+      name: 'Coordenador',
+      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', ativo: true }],
+    };
+    mockedApiClient.post.mockResolvedValue({ data: { ...mockAtivos[0], status: 'ALOCADO' } });
+
+    await renderAtivos(coordenadorUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    await act(async () => {
+      screen.getAllByRole('button', { name: /Alocar/i })[0].click();
+    });
+
+    expect(mockedApiClient.get).toHaveBeenCalledWith('/eventos', expect.objectContaining({
+      params: expect.objectContaining({ organizacaoIds: ['org-1'] }),
+    }));
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Evento'));
+    });
+    await act(async () => {
+      screen.getByText(/Encontro de Catequistas/i).click();
+    });
+
+    fireEvent.change(screen.getByLabelText('Justificativa de Utilização'), {
+      target: { value: 'Uso do projetor no encontro de catequistas' },
+    });
+
+    await act(async () => {
+      screen.getByRole('button', { name: /^Alocar$/i }).click();
+    });
+
+    expect(mockedApiClient.post).toHaveBeenCalledWith('/ativos/ativo-1/alocar', {
+      eventoId: 'evento-1',
+      justificativaAlocacao: 'Uso do projetor no encontro de catequistas',
+    });
+    expect(mockShowSuccess).toHaveBeenCalled();
   });
 });

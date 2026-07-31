@@ -30,8 +30,26 @@ import { useAuth } from '../auth/AuthContext';
 import { canManageAtivos, canTransferAtivo, canAlocarAtivo, isGlobalCreator } from '../auth/permissions';
 import apiClient from '../api/client';
 import { alocarAtivo, createAtivo, getAtivosPorOrganizacao, transferirAtivo } from '../api/ativos';
-import { AtivoCategoria, AtivoPatrimonial, Organizacao } from '../api/types';
+import { listEventos } from '../api/eventos';
+import { AtivoCategoria, AtivoPatrimonial, Evento, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
+
+const addDays = (date: Date, days: number): string => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result.toISOString().slice(0, 10);
+};
+
+const formatEventoOption = (evento: Evento): string => {
+  const inicio = evento.inicio ? new Date(evento.inicio).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }) : '';
+  return inicio ? `${evento.titulo} — ${inicio}` : evento.titulo;
+};
 
 const CATEGORIAS: AtivoCategoria[] = ['ELETRONICO', 'MOBILIARIO', 'PARAMENTO', 'INFRAESTRUTURA'];
 
@@ -63,8 +81,12 @@ const Ativos = () => {
   const [transferJustificativa, setTransferJustificativa] = useState('');
 
   const [alocarDialogAtivo, setAlocarDialogAtivo] = useState<AtivoPatrimonial | null>(null);
+  const [alocarDataInicio, setAlocarDataInicio] = useState('');
+  const [alocarDataFim, setAlocarDataFim] = useState('');
   const [alocarEventoId, setAlocarEventoId] = useState('');
   const [alocarJustificativa, setAlocarJustificativa] = useState('');
+  const [eventosDisponiveis, setEventosDisponiveis] = useState<Evento[]>([]);
+  const [isLoadingEventos, setIsLoadingEventos] = useState(false);
 
   const getSelectableOrgs = () => {
     if (isGlobalCreator(user)) {
@@ -114,6 +136,55 @@ const Ativos = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOrgId]);
+
+  const loadEventos = async (organizacaoId: string, dataInicio: string, dataFim: string) => {
+    if (!dataInicio || !dataFim) {
+      setEventosDisponiveis([]);
+      return;
+    }
+    setIsLoadingEventos(true);
+    try {
+      const data = await listEventos({
+        dataInicio: new Date(dataInicio).toISOString(),
+        dataFim: new Date(`${dataFim}T23:59:59`).toISOString(),
+        organizacaoIds: [organizacaoId],
+      });
+      setEventosDisponiveis(data || []);
+    } catch (err) {
+      console.error('Erro ao buscar eventos:', err);
+      showError('Não foi possível carregar os eventos do período informado.');
+      setEventosDisponiveis([]);
+    } finally {
+      setIsLoadingEventos(false);
+    }
+  };
+
+  useEffect(() => {
+    if (alocarDialogAtivo) {
+      const inicio = addDays(new Date(), 0);
+      const fim = addDays(new Date(), 30);
+      setAlocarDataInicio(inicio);
+      setAlocarDataFim(fim);
+      loadEventos(alocarDialogAtivo.organizacaoId, inicio, fim);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alocarDialogAtivo]);
+
+  const closeAlocarDialog = () => {
+    setAlocarDialogAtivo(null);
+    setAlocarEventoId('');
+    setAlocarJustificativa('');
+    setEventosDisponiveis([]);
+  };
+
+  const handleAlocarPeriodoChange = (dataInicio: string, dataFim: string) => {
+    setAlocarDataInicio(dataInicio);
+    setAlocarDataFim(dataFim);
+    setAlocarEventoId('');
+    if (alocarDialogAtivo) {
+      loadEventos(alocarDialogAtivo.organizacaoId, dataInicio, dataFim);
+    }
+  };
 
   const extractErrorMessage = (err: any, fallback: string): string => {
     if (err.response?.data) {
@@ -190,8 +261,8 @@ const Ativos = () => {
 
   const handleAlocar = async () => {
     if (!alocarDialogAtivo) return;
-    if (!alocarEventoId.trim()) {
-      showError('Informe o evento para o qual o ativo será alocado.');
+    if (!alocarEventoId) {
+      showError('Selecione o evento para o qual o ativo será alocado.');
       return;
     }
     if (alocarJustificativa.trim().length < 10) {
@@ -204,9 +275,7 @@ const Ativos = () => {
         justificativaAlocacao: alocarJustificativa,
       });
       showSuccess('Ativo alocado com sucesso!');
-      setAlocarDialogAtivo(null);
-      setAlocarEventoId('');
-      setAlocarJustificativa('');
+      closeAlocarDialog();
       loadAtivos(selectedOrgId);
     } catch (err: any) {
       showError(extractErrorMessage(err, 'Erro ao alocar ativo.'));
@@ -386,15 +455,47 @@ const Ativos = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={!!alocarDialogAtivo} onClose={() => setAlocarDialogAtivo(null)} maxWidth="sm" fullWidth>
+      <Dialog open={!!alocarDialogAtivo} onClose={closeAlocarDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Alocar Ativo para Evento</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField
-            label="ID do Evento"
-            value={alocarEventoId}
-            onChange={(e) => setAlocarEventoId(e.target.value)}
-            fullWidth
-          />
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="Período - Início"
+              type="date"
+              value={alocarDataInicio}
+              onChange={(e) => handleAlocarPeriodoChange(e.target.value, alocarDataFim)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              fullWidth
+            />
+            <TextField
+              label="Período - Fim"
+              type="date"
+              value={alocarDataFim}
+              onChange={(e) => handleAlocarPeriodoChange(alocarDataInicio, e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              fullWidth
+            />
+          </Box>
+          <FormControl fullWidth disabled={isLoadingEventos}>
+            <InputLabel id="evento-select-label">Evento</InputLabel>
+            <Select
+              labelId="evento-select-label"
+              label="Evento"
+              value={alocarEventoId}
+              onChange={(e) => setAlocarEventoId(e.target.value as string)}
+            >
+              {eventosDisponiveis.map((evento) => (
+                <MenuItem key={evento.id} value={evento.id}>
+                  {formatEventoOption(evento)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {!isLoadingEventos && eventosDisponiveis.length === 0 && (
+            <Typography variant="body2" color="text.secondary">
+              Nenhum evento encontrado neste período para esta organização.
+            </Typography>
+          )}
           <TextField
             label="Justificativa de Utilização"
             multiline
@@ -405,8 +506,8 @@ const Ativos = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setAlocarDialogAtivo(null)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleAlocar}>
+          <Button onClick={closeAlocarDialog}>Cancelar</Button>
+          <Button variant="contained" onClick={handleAlocar} disabled={!alocarEventoId}>
             Alocar
           </Button>
         </DialogActions>
