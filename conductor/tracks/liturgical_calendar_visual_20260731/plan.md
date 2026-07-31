@@ -5,7 +5,7 @@
     - [x] Write failing unit tests in `src/utils/liturgicalCalendar.test.ts` for liturgical season calculation and color mappings
     - [x] Implement `src/utils/liturgicalCalendar.ts` returning season labels and subtle background colors
     - [x] Confirm all tests pass and meet coverage requirements (>80%)
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Helper Litúrgico e Mapeamento Visual' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Helper Litúrgico e Mapeamento Visual' (Protocol in workflow.md) ee852c9
 
 ## Phase 2: Integração Visual no Grid de Dias (`Calendar.tsx`)
 - [ ] Task: Integrar fundo sutil litúrgico e rótulo no grid de dias mantendo cartões de eventos inalterados
