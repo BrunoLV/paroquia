@@ -33,6 +33,7 @@ describe('EventVolumeBarChart', () => {
       { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 },
     ]);
 
+    expect(screen.getByText('Volume de Eventos por Organização')).toBeInTheDocument();
     expect(screen.getByText('Pastoral A: 8')).toBeInTheDocument();
     expect(screen.getByText('Pastoral B: 4')).toBeInTheDocument();
   });

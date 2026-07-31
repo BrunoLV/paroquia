@@ -24,7 +24,6 @@ import MetricasEstrategicasTab from '../components/reports/MetricasEstrategicasT
 import {
     Assessment as AssessmentIcon,
     Assignment as ProjectIcon,
-    BarChart as BarIcon,
     Event as EventIcon,
     FilterList as FilterIcon,
     PendingActions as PendingIcon,
@@ -397,27 +396,7 @@ const Reports: React.FC = () => {
 
         {/* BarChart - Volume Comparison */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card
-            elevation={0}
-            sx={{
-              p: 3,
-              height: '100%',
-              borderRadius: 0,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <BarIcon sx={{ color: '#1a237e' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
-                Volume de Eventos por Organização
-              </Typography>
-            </Box>
-
-            <Box sx={{ minHeight: 320, width: '100%' }}>
-              <EventVolumeBarChart data={filteredMetrics.eventosPorOrganizacao || []} />
-            </Box>
-          </Card>
+          <EventVolumeBarChart data={filteredMetrics.eventosPorOrganizacao || []} />
         </Grid>
       </Grid>
 
