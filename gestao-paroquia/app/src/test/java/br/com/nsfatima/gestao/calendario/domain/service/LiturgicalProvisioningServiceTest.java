@@ -2,8 +2,13 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.CicloLiturgicoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.AnoLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,11 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,13 +37,25 @@ class LiturgicalProvisioningServiceTest {
     @Mock
     private CicloLiturgicoRepository cicloLiturgicoRepository;
 
+    @Mock
+    private EventoJpaRepository eventoJpaRepository;
+
+    @Mock
+    private OrganizacaoJpaRepository organizacaoJpaRepository;
+
     private LiturgicalEngine liturgicalEngine;
     private LiturgicalProvisioningService service;
 
     @BeforeEach
     void setUp() {
         liturgicalEngine = new LiturgicalEngine();
-        service = new LiturgicalProvisioningService(anoLiturgicoRepository, cicloLiturgicoRepository, liturgicalEngine);
+        service = new LiturgicalProvisioningService(
+                anoLiturgicoRepository,
+                cicloLiturgicoRepository,
+                liturgicalEngine,
+                eventoJpaRepository,
+                organizacaoJpaRepository
+        );
     }
 
     @Test
@@ -56,10 +73,22 @@ class LiturgicalProvisioningServiceTest {
     }
 
     @Test
-    @DisplayName("Deve criar e provisionar automaticamente o Ano Litúrgico e seus 6 ciclos quando não existir (ex: 2036)")
-    void testShouldProvisionAnoLiturgicoAndCyclesAutomaticallyWhenMissing() {
+    @DisplayName("Deve criar e provisionar automaticamente o Ano Litúrgico, ciclos e eventos de Solenidade na Matriz e Comunidades")
+    void testShouldProvisionAnoLiturgicoCyclesAndSolemnityEventsWhenMissing() {
         when(anoLiturgicoRepository.findById(2036)).thenReturn(Optional.empty());
         when(anoLiturgicoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        OrganizacaoEntity matriz = new OrganizacaoEntity();
+        matriz.setId(UUID.randomUUID());
+        matriz.setNome("Paróquia Matriz");
+        matriz.setTipo(TipoOrganizacao.MATRIZ);
+
+        OrganizacaoEntity comunidade = new OrganizacaoEntity();
+        comunidade.setId(UUID.randomUUID());
+        comunidade.setNome("Comunidade São José");
+        comunidade.setTipo(TipoOrganizacao.COMUNIDADE);
+
+        when(organizacaoJpaRepository.findAll()).thenReturn(List.of(matriz, comunidade));
 
         AnoLiturgicoEntity result = service.ensureAnoLiturgicoEExiste(2036);
 
@@ -70,11 +99,20 @@ class LiturgicalProvisioningServiceTest {
         verify(anoLiturgicoRepository).save(any(AnoLiturgicoEntity.class));
 
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<CicloLiturgicoEntity>> captor = ArgumentCaptor.forClass(List.class);
-        verify(cicloLiturgicoRepository).saveAll(captor.capture());
+        ArgumentCaptor<List<CicloLiturgicoEntity>> captorCiclos = ArgumentCaptor.forClass(List.class);
+        verify(cicloLiturgicoRepository).saveAll(captorCiclos.capture());
 
-        List<CicloLiturgicoEntity> savedCycles = captor.getValue();
+        List<CicloLiturgicoEntity> savedCycles = captorCiclos.getValue();
         assertThat(savedCycles).hasSize(6);
-        assertThat(savedCycles).extracting(CicloLiturgicoEntity::getAnoLiturgicoRef).containsOnly(2036);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<EventoEntity>> captorEventos = ArgumentCaptor.forClass(List.class);
+        verify(eventoJpaRepository).saveAll(captorEventos.capture());
+
+        List<EventoEntity> savedEvents = captorEventos.getValue();
+        // 21 marcos (9 solenidades fixas + 12 marcos móveis) x 2 organizações (Matriz + Comunidade) = 42 eventos
+        assertThat(savedEvents).hasSize(42);
+        assertThat(savedEvents).extracting(EventoEntity::getCategoria).containsOnly("LITURGICO");
+        assertThat(savedEvents).extracting(EventoEntity::getStatus).containsOnly("CONFIRMADO");
     }
 }
