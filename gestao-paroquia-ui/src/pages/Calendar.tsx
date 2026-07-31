@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
     Alert,
     Box,
@@ -44,11 +45,13 @@ import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
+import {fetchSolenidadesLiturgicasAtivas} from '../api/solenidades';
 import {
   getLiturgicalSeason,
   getLiturgicalSeasonStyle,
   getLiturgicalCycleLetter,
   getSolemnitiesForYear,
+  buildSolemnitiesFromApi,
   SolemnityInfo,
 } from '../utils/liturgicalCalendar';
 
@@ -159,7 +162,15 @@ const Calendar = () => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
-  const solemnities = useMemo(() => getSolemnitiesForYear(currentYear), [currentYear]);
+  const { data: apiSolenidades = [] } = useQuery({
+    queryKey: ['solenidadesLiturgicasAtivas'],
+    queryFn: fetchSolenidadesLiturgicasAtivas,
+  });
+
+  const solemnities = useMemo(
+    () => buildSolemnitiesFromApi(apiSolenidades, currentYear),
+    [apiSolenidades, currentYear]
+  );
 
   const liturgicalInfo = useMemo(() => {
     const cycleLetter = getLiturgicalCycleLetter(currentYear);

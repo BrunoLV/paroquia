@@ -23,6 +23,7 @@ describe('Data Fetching Requirements', () => {
       if (url === '/organizacoes') return Promise.resolve({ data: [] });
       if (url === '/locais') return Promise.resolve({ data: [] });
       if (url === '/projetos') return Promise.resolve({ data: [] });
+      if (url === '/solenidades-liturgicas/ativas') return Promise.resolve({ data: [] });
       return Promise.reject(new Error('Not found'));
     });
   });

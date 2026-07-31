@@ -1,18 +1,19 @@
 import {vi} from "vitest";
 import React from 'react';
-import {act, fireEvent, render, screen} from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import Calendar from './Calendar';
 import {BrowserRouter} from 'react-router-dom';
 import {AuthProvider} from '../auth/AuthContext';
 import {ThemeProvider} from '@mui/material/styles';
 import theme from '../theme';
 import apiClient from '../api/client';
+import { QueryProvider } from '../api/QueryProvider';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
-const mockShowError = jest.fn();
-const mockShowSuccess = jest.fn();
+const mockShowError = vi.fn();
+const mockShowSuccess = vi.fn();
 vi.mock('../context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
@@ -44,8 +45,7 @@ const mockEvents = [
   }
 ];
 
-// Helper wrapper to render the calendar with mocks
-const renderCalendar = async (user = mockUser, approvals: any[] = []) => {
+const setupApiMock = (user = mockUser, approvals: any[] = []) => {
   mockedApiClient.get.mockImplementation((url) => {
     if (url === '/auth/me') {
       return Promise.resolve({ data: user });
@@ -65,15 +65,30 @@ const renderCalendar = async (user = mockUser, approvals: any[] = []) => {
     if (url === '/aprovacoes') {
       return Promise.resolve({ data: { content: approvals } });
     }
+    if (url === '/solenidades-liturgicas/ativas') {
+      return Promise.resolve({ data: [] });
+    }
     return Promise.reject(new Error('Not found'));
   });
+
+  mockedApiClient.post.mockImplementation(() => Promise.resolve({ data: {} }));
+  mockedApiClient.put.mockImplementation(() => Promise.resolve({ data: {} }));
+};
+
+// Helper wrapper to render the calendar with mocks
+const renderCalendar = async (user = mockUser, approvals: any[] = [], skipSetupMock = false) => {
+  if (!skipSetupMock) {
+    setupApiMock(user, approvals);
+  }
 
   await act(async () => {
     render(
       <BrowserRouter>
         <AuthProvider>
           <ThemeProvider theme={theme}>
-            <Calendar />
+            <QueryProvider>
+              <Calendar />
+            </QueryProvider>
           </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
@@ -181,6 +196,7 @@ test('event details modal displays Local and Supporting Organizations', async ()
     if (url === '/eventos') return Promise.resolve({ data: { content: [eventWithExtraInfo] } });
     if (url === '/locais') return Promise.resolve({ data: [{ id: 'loc-1', nome: 'Salão Principal', ativo: true }] });
     if (url === '/projetos') return Promise.resolve({ data: [] });
+    if (url === '/solenidades-liturgicas/ativas') return Promise.resolve({ data: [] });
     return Promise.reject(new Error('Not found'));
   });
 
@@ -189,7 +205,9 @@ test('event details modal displays Local and Supporting Organizations', async ()
       <BrowserRouter>
         <AuthProvider>
           <ThemeProvider theme={theme}>
-            <Calendar />
+            <QueryProvider>
+              <Calendar />
+            </QueryProvider>
           </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
@@ -310,9 +328,15 @@ test('parses and renders transient events from pending creation requests', async
 });
 
 test('shows error notification when calendar data fetch fails', async () => {
-  mockedApiClient.get.mockRejectedValueOnce(new Error('API failure'));
-  await renderCalendar();
-  expect(mockShowError).toHaveBeenCalledWith('Não foi possível carregar as informações do calendário.');
+  mockedApiClient.get.mockImplementation((url) => {
+    if (url === '/auth/me') return Promise.resolve({ data: mockUser });
+    if (url === '/solenidades-liturgicas/ativas') return Promise.resolve({ data: [] });
+    return Promise.reject(new Error('API failure'));
+  });
+  await renderCalendar(mockUser, [], true);
+  await waitFor(() => {
+    expect(mockShowError).toHaveBeenCalledWith('Não foi possível carregar as informações do calendário.');
+  });
 });
 
 test('toggles calendar view between Grid and List mode', async () => {
