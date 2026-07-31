@@ -59,4 +59,11 @@
 - **`html-to-image`:** Exporting interactive parish organogram views to PNG images.
 - **`@dabeng/react-orgchart`:** Interactive hierarchical tree rendering and zoom/pan organogram view.
 
+### Data Visualization (Charts)
+- **ApexCharts (`react-apexcharts`, `apexcharts`):** Bar/volume comparison chart in `Reports.tsx`. Chosen over `@mui/x-charts` for native zoom/horizontal-scroll and a built-in export menu (PNG/SVG/CSV).
+- **Recharts (`recharts`):** Pie/donut event-distribution chart (`EventDistributionPieChart.tsx`, shared by `Dashboard.tsx` and `Reports.tsx`). Chosen over `@mui/x-charts` for external label lines and easier custom grouping ("Outras" slice for <3% shares).
+- **`@mui/x-charts`:** Retained only if still referenced elsewhere after the migration below; otherwise removed as a dependency.
+
+> **2026-07-31:** Partially replaced `@mui/x-charts` with ApexCharts (bar chart) and Recharts (pie/donut chart) per track `modernizacao_graficos_visualizacoes_20260731`. Widgets under `WeeklyTimeline.tsx`, `ActiveProjectsProgressList.tsx`, and `MetricasEstrategicasWidget.tsx` remain chart-library-free (MUI `LinearProgress`/`Timeline` only), and `Organograma.tsx` keeps `@dabeng/react-orgchart`.
+
 
