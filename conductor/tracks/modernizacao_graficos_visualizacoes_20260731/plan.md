@@ -1,0 +1,73 @@
+# Plan: Modernização de Gráficos e Visualizações (Reports & Dashboard)
+
+## Fase 1 — Preparação e Documentação da Stack
+
+- [ ] Task: Documentar mudança de stack em `tech-stack.md`
+  - [ ] Adicionar seção descrevendo a introdução de `react-apexcharts`/`apexcharts` (gráfico de barras) e `recharts` (gráfico de rosca), com nota datada explicando a substituição parcial de `@mui/x-charts`
+- [ ] Task: Instalar dependências
+  - [ ] Rodar `npm install react-apexcharts apexcharts recharts` em `gestao-paroquia-ui/`
+  - [ ] Verificar `package.json`/`package-lock.json` atualizados
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Fase 2 — Componente Unificado de Rosca (Recharts)
+
+- [ ] Task: Escrever testes (Red) para o novo `EventDistributionPieChart.tsx`
+  - [ ] Teste: renderiza fatias a partir de `EventDistribution[]`
+  - [ ] Teste: agrupa organizações com <3% de representatividade em fatia "Outras"
+  - [ ] Teste: não exibe "Outras" quando nenhuma organização está abaixo do limiar
+  - [ ] Teste: exibe mensagem de estado vazio quando não há dados
+  - [ ] Teste: aplica cores do tema MUI (mock de `useTheme`) e reage a `palette.mode`
+  - [ ] Rodar `npx vitest run EventDistributionPieChart.test.tsx` e confirmar falha (Red)
+- [ ] Task: Atualizar mock global em `setupTests.ts`
+  - [ ] Substituir/estender mock de `@mui/x-charts` por mock de `recharts` (PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer)
+- [ ] Task: Implementar `EventDistributionPieChart.tsx` com Recharts (Green)
+  - [ ] Extrair função utilitária de agrupamento "Outras" (limiar 3%)
+  - [ ] Labels externos com linha-guia (customized label/labelLine do Recharts)
+  - [ ] Animação de entrada ease-out (`isAnimationActive`, `animationEasing="ease-out"`)
+  - [ ] Cores dinâmicas via `useTheme()` (primary/secondary/info/warning/success)
+  - [ ] Suporte a dark mode no tooltip/legenda (fundo semitransparente de `background.paper`)
+  - [ ] Rodar testes e confirmar passagem (Green)
+- [ ] Task: Substituir uso em `Dashboard.tsx`
+  - [ ] Confirmar que `Dashboard.tsx` continua passando `data={metrics?.eventosPorOrganizacao || []}` sem mudança de contrato
+  - [ ] Rodar `Dashboard.test.tsx` e ajustar mocks/asserts se necessário
+- [ ] Task: Substituir `PieChart` inline em `Reports.tsx`
+  - [ ] Remover import de `PieChart` de `@mui/x-charts` em `Reports.tsx`
+  - [ ] Substituir bloco inline (linha ~429-456) pelo componente `EventDistributionPieChart`, adaptando `pieChartData`/`eventosPorOrganizacao` para a prop `data: EventDistribution[]`
+  - [ ] Rodar `Reports.test.tsx` e ajustar mocks/asserts se necessário
+- [ ] Task: Verificar cobertura de teste (>80% para código novo)
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Fase 3 — Gráfico de Barras em ApexCharts (`Reports.tsx`)
+
+- [ ] Task: Escrever testes (Red) para o novo bloco de barras
+  - [ ] Teste: renderiza série de barras a partir de `eventosPorOrganizacao`
+  - [ ] Teste: exibe mensagem de estado vazio quando não há dados
+  - [ ] Teste: aplica cores do tema MUI e reage a `palette.mode`
+  - [ ] Rodar `npx vitest run Reports.test.tsx -t "bar"` (ou equivalente) e confirmar falha (Red)
+- [ ] Task: Adicionar mock de `react-apexcharts` em `setupTests.ts`
+  - [ ] Mock do componente `ReactApexChart` retornando marcação simples testável (`data-testid="mock-apex-bar-chart"`)
+- [ ] Task: Implementar bloco de barras com ApexCharts (Green)
+  - [ ] Substituir import de `BarChart` de `@mui/x-charts` por `react-apexcharts` em `Reports.tsx`
+  - [ ] Configurar `options`/`series` a partir de `eventosPorOrganizacao` (`categories` = nomes das organizações)
+  - [ ] Habilitar zoom e rolagem horizontal (`chart.zoom.enabled`, `chart.type: 'bar'`, scroll via `xaxis`/`chart.toolbar`)
+  - [ ] Habilitar menu de exportação nativo (`chart.toolbar.show = true`, export PNG/SVG/CSV)
+  - [ ] Cores dinâmicas via `useTheme()` e `theme.mode` propagado para `options.theme.mode`
+  - [ ] Container responsivo (`width: '100%'`, `ResizeObserver`/redraw automático do ApexCharts)
+  - [ ] Rodar testes e confirmar passagem (Green)
+- [ ] Task: Verificar cobertura de teste (>80% para código novo)
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Fase 4 — Limpeza, Validação Cruzada e Responsividade
+
+- [ ] Task: Auditar uso remanescente de `@mui/x-charts`
+  - [ ] Buscar por outras referências no projeto (`grep -r "@mui/x-charts"`)
+  - [ ] Se não houver mais uso, remover a dependência do `package.json` e do mock em `setupTests.ts`; caso contrário, documentar por que foi mantida
+- [ ] Task: Confirmar que componentes preservados não foram tocados
+  - [ ] Revisar diffs de `WeeklyTimeline.tsx`, `ActiveProjectsProgressList.tsx`, `MetricasEstrategicasWidget.tsx`, `Organograma.tsx` — nenhuma nova lib de gráfico introduzida
+- [ ] Task: Rodar suíte completa e typecheck
+  - [ ] `npm run build` (tsc + vite build) sem erros
+  - [ ] `CI=true npm test` sem regressões
+- [ ] Task: Validar responsividade manual
+  - [ ] Verificar `Reports.tsx` (abas de indicadores) em breakpoints mobile/tablet do MUI Grid
+  - [ ] Verificar `Dashboard.tsx` com o novo componente de rosca em telas menores
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)

@@ -306,6 +306,11 @@
 - [x] **Track: Reestruturação do Motor Litúrgico Universal, Precedência, Governança Eclesial e UI**
 *Link: [./archive/motor_liturgico_universal_eclesial_20260731/](./archive/motor_liturgico_universal_eclesial_20260731/)*
 
+---
+
+- [ ] **Track: Modernização de Gráficos e Visualizações (ApexCharts, Recharts)**
+*Link: [./tracks/modernizacao_graficos_visualizacoes_20260731/index.md](./tracks/modernizacao_graficos_visualizacoes_20260731/index.md)*
+
 
 
 
