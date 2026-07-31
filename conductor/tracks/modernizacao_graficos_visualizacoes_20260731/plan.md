@@ -61,8 +61,8 @@
 - [x] Task: Auditar uso remanescente de `@mui/x-charts` (681a65a)
   - [x] Buscar por outras referências no projeto (`grep -r "@mui/x-charts"`)
   - [x] Se não houver mais uso, remover a dependência do `package.json` e do mock em `setupTests.ts`; caso contrário, documentar por que foi mantida
-- [ ] Task: Confirmar que componentes preservados não foram tocados
-  - [ ] Revisar diffs de `WeeklyTimeline.tsx`, `ActiveProjectsProgressList.tsx`, `MetricasEstrategicasWidget.tsx`, `Organograma.tsx` — nenhuma nova lib de gráfico introduzida
+- [x] Task: Confirmar que componentes preservados não foram tocados
+  - [x] Revisar diffs de `WeeklyTimeline.tsx`, `ActiveProjectsProgressList.tsx`, `MetricasEstrategicasWidget.tsx`, `Organograma.tsx` — nenhuma nova lib de gráfico introduzida
 - [ ] Task: Rodar suíte completa e typecheck
   - [ ] `npm run build` (tsc + vite build) sem erros
   - [ ] `CI=true npm test` sem regressões
