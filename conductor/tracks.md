@@ -301,5 +301,11 @@
 - [x] **Track: Identificação Visual do Tempo Litúrgico no Calendário**
 *Link: [./archive/liturgical_calendar_visual_20260731/](./archive/liturgical_calendar_visual_20260731/)*
 
+---
+
+- [ ] **Track: Reestruturação do Motor Litúrgico Universal, Precedência, Governança Eclesial e UI**
+*Link: [./tracks/motor_liturgico_universal_eclesial_20260731/](./tracks/motor_liturgico_universal_eclesial_20260731/)*
+
+
 
 
