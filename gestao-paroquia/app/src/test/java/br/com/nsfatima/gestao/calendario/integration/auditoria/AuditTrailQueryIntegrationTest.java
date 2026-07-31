@@ -45,11 +45,11 @@ class AuditTrailQueryIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        auditoriaOperacaoJpaRepository.deleteAll();
-        observacaoEventoJpaRepository.deleteAll();
-        aprovacaoJpaRepository.deleteAll();
-        eventoEnvolvidoJpaRepository.deleteAll();
-        eventoJpaRepository.deleteAll();
+        auditoriaOperacaoJpaRepository.deleteAllInBatch();
+        observacaoEventoJpaRepository.deleteAllInBatch();
+        aprovacaoJpaRepository.deleteAllInBatch();
+        eventoEnvolvidoJpaRepository.deleteAllInBatch();
+        eventoJpaRepository.deleteAllInBatch();
     }
 
     @Test

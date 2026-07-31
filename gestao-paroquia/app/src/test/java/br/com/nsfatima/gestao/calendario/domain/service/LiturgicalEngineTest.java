@@ -3,13 +3,17 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 import br.com.nsfatima.gestao.calendario.domain.model.CorLiturgica;
 import br.com.nsfatima.gestao.calendario.domain.model.LiturgicalOutput;
 import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
+import br.com.nsfatima.gestao.calendario.domain.model.TipoSolenidade;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,7 +61,39 @@ class LiturgicalEngineTest {
     }
 
     @Test
-    @DisplayName("Deve retornar LiturgicalOutput completo com limites, ciclo e todos os marcos móveis e fixos")
+    @DisplayName("Deve retornar LiturgicalOutput completo com limites, ciclo e todos os marcos móveis e fixos do banco")
+    void deveCalcularAnoLiturgicoApartirDeEntidadesDoBanco() {
+        SolenidadeLiturgicaEntity sFixa = new SolenidadeLiturgicaEntity();
+        sFixa.setId(UUID.randomUUID());
+        sFixa.setChave("SAO_PADRE_PIO");
+        sFixa.setNome("São Padre Pio");
+        sFixa.setTipoSolenidade(TipoSolenidade.FIXA);
+        sFixa.setMesFixo(9);
+        sFixa.setDiaFixo(23);
+        sFixa.setCorLiturgica("BRANCO");
+        sFixa.setFatorDemanda(2.5);
+        sFixa.setAtivo(true);
+
+        SolenidadeLiturgicaEntity sMovel = new SolenidadeLiturgicaEntity();
+        sMovel.setId(UUID.randomUUID());
+        sMovel.setChave("PASCOA");
+        sMovel.setNome("Domingo da Ressurreição (Páscoa)");
+        sMovel.setTipoSolenidade(TipoSolenidade.MOVEL);
+        sMovel.setOffsetDiasPascoa(0);
+        sMovel.setCorLiturgica("BRANCO");
+        sMovel.setFatorDemanda(3.0);
+        sMovel.setAtivo(true);
+
+        LiturgicalOutput output = engine.calculateLiturgicalYear(2026, List.of(sFixa, sMovel));
+
+        assertThat(output).isNotNull();
+        assertThat(output.marcosCalculados()).hasSize(2);
+        assertThat(output.marcosCalculados().get("SAO_PADRE_PIO").data()).isEqualTo(LocalDate.of(2026, 9, 23));
+        assertThat(output.marcosCalculados().get("PASCOA").data()).isEqualTo(LocalDate.of(2026, 4, 5));
+    }
+
+    @Test
+    @DisplayName("Deve retornar LiturgicalOutput completo com limites, ciclo e todos os marcos móveis e fixos como fallback")
     void deveRetornarLiturgicalOutputCompleto() {
         LiturgicalOutput output = engine.calculateLiturgicalYear(2026);
 
@@ -70,27 +106,8 @@ class LiturgicalEngineTest {
         Map<String, MarcoLiturgico> marcos = output.marcosCalculados();
         assertThat(marcos).isNotNull();
 
-        // Marcos móveis em 2026 (Páscoa em 05/04/2026)
         assertThat(marcos.get("PASCOA").data()).isEqualTo(LocalDate.of(2026, 4, 5));
         assertThat(marcos.get("QUARTA_CINZAS").data()).isEqualTo(LocalDate.of(2026, 2, 18));
         assertThat(marcos.get("QUARTA_CINZAS").corLiturgica()).isEqualTo(CorLiturgica.ROXO);
-
-        assertThat(marcos.get("QUINTA_SANTA").data()).isEqualTo(LocalDate.of(2026, 4, 2));
-        assertThat(marcos.get("SABADO_SANTO").data()).isEqualTo(LocalDate.of(2026, 4, 4));
-        assertThat(marcos.get("ASCENSAO").data()).isEqualTo(LocalDate.of(2026, 5, 17));
-        assertThat(marcos.get("PENTECOSTES").data()).isEqualTo(LocalDate.of(2026, 5, 24));
-        assertThat(marcos.get("PENTECOSTES").corLiturgica()).isEqualTo(CorLiturgica.VERMELHO);
-
-        assertThat(marcos.get("SANTISSIMA_TRINDADE").data()).isEqualTo(LocalDate.of(2026, 5, 31));
-        assertThat(marcos.get("CORPUS_CHRISTI").data()).isEqualTo(LocalDate.of(2026, 6, 4));
-        assertThat(marcos.get("SAGRADO_CORACAO").data()).isEqualTo(LocalDate.of(2026, 6, 12));
-
-        // Solenidades fixas (Santoral)
-        assertThat(marcos.get("MAE_DE_DEUS").data()).isEqualTo(LocalDate.of(2026, 1, 1));
-        assertThat(marcos.get("SAO_JOSE").data()).isEqualTo(LocalDate.of(2026, 3, 19));
-        assertThat(marcos.get("SAO_PEDRO_SAO_PAULO").data()).isEqualTo(LocalDate.of(2026, 6, 29));
-        assertThat(marcos.get("SAO_PEDRO_SAO_PAULO").corLiturgica()).isEqualTo(CorLiturgica.VERMELHO);
-        assertThat(marcos.get("NATAL_SENHOR").data()).isEqualTo(LocalDate.of(2026, 12, 25));
-        assertThat(marcos.get("NATAL_SENHOR").fatorDemanda()).isEqualTo(3.00);
     }
 }

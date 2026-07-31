@@ -8,9 +8,11 @@ import br.com.nsfatima.gestao.calendario.domain.model.TipoCicloLiturgico;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.CicloLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.AnoLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
@@ -34,11 +36,12 @@ public class LiturgicalProvisioningService {
     private final LiturgicalEngine liturgicalEngine;
     private final EventoJpaRepository eventoJpaRepository;
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
+    private final SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository;
 
     public LiturgicalProvisioningService(AnoLiturgicoRepository anoLiturgicoRepository,
                                         CicloLiturgicoRepository cicloLiturgicoRepository,
                                         LiturgicalEngine liturgicalEngine) {
-        this(anoLiturgicoRepository, cicloLiturgicoRepository, liturgicalEngine, null, null);
+        this(anoLiturgicoRepository, cicloLiturgicoRepository, liturgicalEngine, null, null, null);
     }
 
     @Autowired
@@ -46,12 +49,14 @@ public class LiturgicalProvisioningService {
                                         CicloLiturgicoRepository cicloLiturgicoRepository,
                                         LiturgicalEngine liturgicalEngine,
                                         @Autowired(required = false) EventoJpaRepository eventoJpaRepository,
-                                        @Autowired(required = false) OrganizacaoJpaRepository organizacaoJpaRepository) {
+                                        @Autowired(required = false) OrganizacaoJpaRepository organizacaoJpaRepository,
+                                        @Autowired(required = false) SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
         this.anoLiturgicoRepository = anoLiturgicoRepository;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.liturgicalEngine = liturgicalEngine;
         this.eventoJpaRepository = eventoJpaRepository;
         this.organizacaoJpaRepository = organizacaoJpaRepository;
+        this.solenidadeLiturgicaJpaRepository = solenidadeLiturgicaJpaRepository;
     }
 
     /**
@@ -73,12 +78,16 @@ public class LiturgicalProvisioningService {
     }
 
     /**
-     * Executa a rotina de provisionamento automático do Ano Litúrgico a partir do LiturgicalEngine,
-     * persistem o Ano Litúrgico, os Ciclos Litúrgicos e os Eventos do tipo SOLENIDADE/LITURGICO
-     * na Matriz e Comunidades no banco de dados.
+     * Executa a rotina de provisionamento automático do Ano Litúrgico a partir das Solenidades cadastradas
+     * no banco de dados (`SolenidadeLiturgicaEntity`), persistem o Ano Litúrgico, os Ciclos Litúrgicos e os
+     * Eventos do tipo SOLENIDADE/LITURGICO na Matriz e Comunidades na base de dados.
      */
     private AnoLiturgicoEntity provisionNewLiturgicalYear(int year) {
-        LiturgicalOutput output = liturgicalEngine.calculateLiturgicalYear(year);
+        List<SolenidadeLiturgicaEntity> solenidadesDoBanco = solenidadeLiturgicaJpaRepository != null
+                ? solenidadeLiturgicaJpaRepository.findByAtivoTrue()
+                : List.of();
+
+        LiturgicalOutput output = liturgicalEngine.calculateLiturgicalYear(year, solenidadesDoBanco);
 
         Instant inicioAdvento = output.dataInicio().atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant fimAnoLiturgico = output.dataFim().atTime(23, 59, 59).atZone(ZoneOffset.UTC).toInstant();
@@ -156,7 +165,6 @@ public class LiturgicalProvisioningService {
         }
 
         if (igrejasTarget.isEmpty()) {
-            // Se nenhuma igreja foi cadastrada, gera com ID padrão genérico para a Matriz Paroquial
             OrganizacaoEntity defaultMatriz = new OrganizacaoEntity();
             defaultMatriz.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
             igrejasTarget = List.of(defaultMatriz);
@@ -169,15 +177,15 @@ public class LiturgicalProvisioningService {
                 EventoEntity evento = new EventoEntity();
                 evento.setId(UUID.randomUUID());
                 evento.setTitulo(marco.nome());
-                evento.setDescricao("Solenidade / Marco Litúrgico provisionado automaticamente pelo Motor Litúrgico Universal (" + marco.chave() + ")");
+                evento.setDescricao("Solenidade / Marco Litúrgico provisionado automaticamente a partir do banco de dados (" + marco.chave() + ")");
                 evento.setOrganizacaoResponsavelId(igreja.getId());
                 evento.setCategoria("LITURGICO");
                 evento.setStatus("CONFIRMADO");
 
-                int prioridade = 2; // Solenidades padrão
+                int prioridade = 2;
                 if ("QUINTA_SANTA".equals(marco.chave()) || "SEXTA_SANTA".equals(marco.chave())
                         || "SABADO_SANTO".equals(marco.chave()) || "PASCOA".equals(marco.chave())) {
-                    prioridade = 1; // Tríduo Pascal (Prioridade Máxima)
+                    prioridade = 1;
                 }
                 evento.setNivelPrioridade(prioridade);
                 evento.setAnoLiturgicoRef(year);
@@ -212,11 +220,6 @@ public class LiturgicalProvisioningService {
 
     /**
      * Retorna o peso de precedência litúrgica (1 a 5, menor número = maior prioridade).
-     * 1. Tríduo Pascal
-     * 2. Solenidades Instanciadas / Festa Padroeira
-     * 3. Quaresma e Advento (Tempos Fortes)
-     * 4. Natal e Páscoa (Tempos Festivos)
-     * 5. Tempo Comum
      */
     public int resolvePrecedenciaPeso(TipoCicloLiturgico tipoCiclo) {
         if (tipoCiclo == null) {
@@ -233,7 +236,6 @@ public class LiturgicalProvisioningService {
 
     /**
      * Valida direitos de alteração manual: permite EXCLUSIVAMENTE para PAROCO ou VIGARIO.
-     * Bloqueia alterações em campos eclesiais imutáveis (cicloLetra ou Domingo de Páscoa).
      */
     public void validateManualMutationRights(String userRole, String campoModificado, String novoValor, String justificativaPastoral) {
         String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";

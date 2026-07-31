@@ -50,12 +50,12 @@ class AuditoriaIntegradaIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        auditoriaRepository.deleteAll();
-        observacaoEventoJpaRepository.deleteAll();
-        aprovacaoRepository.deleteAll();
-        eventoEnvolvidoRepository.deleteAll();
-        eventoRepository.deleteAll();
-        projetoRepository.deleteAll();
+        auditoriaRepository.deleteAllInBatch();
+        observacaoEventoJpaRepository.deleteAllInBatch();
+        aprovacaoRepository.deleteAllInBatch();
+        eventoEnvolvidoRepository.deleteAllInBatch();
+        eventoRepository.deleteAllInBatch();
+        projetoRepository.deleteAllInBatch();
     }
 
     @Test

@@ -190,3 +190,100 @@ export function getPrecedenciaPeso(season: LiturgicalSeason): number {
       return 5;
   }
 }
+
+export interface SolemnityInfo {
+  chave: string;
+  nome: string;
+  date: Date;
+  corLiturgica: 'BRANCO' | 'VERMELHO' | 'ROXO' | 'VERDE';
+  fatorDemanda: number;
+  tipo: 'FIXA' | 'MOVEL';
+}
+
+export interface ApiSolenidadeDTO {
+  id: string;
+  chave: string;
+  nome: string;
+  tipoSolenidade: 'FIXA' | 'MOVEL';
+  mesFixo?: number;
+  diaFixo?: number;
+  offsetDiasPascoa?: number;
+  corLiturgica: 'BRANCO' | 'VERMELHO' | 'ROXO' | 'VERDE';
+  fatorDemanda: number;
+  nivelPrioridade: number;
+  descricao?: string;
+  ativo: boolean;
+}
+
+/**
+ * Builds solemnity info dynamically from DB entities returned by the API.
+ */
+export function buildSolemnitiesFromApi(items: ApiSolenidadeDTO[], year: number): SolemnityInfo[] {
+  if (!items || items.length === 0) {
+    return getSolemnitiesForYear(year);
+  }
+
+  const easter = calculateEaster(year);
+  const addDays = (base: Date, days: number) => {
+    return new Date(base.getFullYear(), base.getMonth(), base.getDate() + days);
+  };
+
+  return items
+    .filter((item) => item.ativo)
+    .map((item) => {
+      let date: Date;
+      if (item.tipoSolenidade === 'FIXA' && item.mesFixo && item.diaFixo) {
+        date = new Date(year, item.mesFixo - 1, item.diaFixo);
+      } else {
+        const offset = item.offsetDiasPascoa || 0;
+        date = addDays(easter, offset);
+      }
+      return {
+        chave: item.chave,
+        nome: item.nome,
+        date,
+        corLiturgica: item.corLiturgica,
+        fatorDemanda: item.fatorDemanda || 1.0,
+        tipo: item.tipoSolenidade,
+      };
+    })
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+/**
+ * Returns all calculated solemnities (Fixed Santoral + Movable Offsets) for a given year as fallback.
+ */
+export function getSolemnitiesForYear(year: number): SolemnityInfo[] {
+  const easter = calculateEaster(year);
+
+  const addDays = (base: Date, days: number) => {
+    return new Date(base.getFullYear(), base.getMonth(), base.getDate() + days);
+  };
+
+  const movel: SolemnityInfo[] = [
+    { chave: 'QUARTA_CINZAS', nome: 'Quarta-feira de Cinzas', date: addDays(easter, -46), corLiturgica: 'ROXO', fatorDemanda: 2.2, tipo: 'MOVEL' },
+    { chave: 'QUINTA_SANTA', nome: 'Quinta-feira Santa (Tríduo)', date: addDays(easter, -3), corLiturgica: 'BRANCO', fatorDemanda: 2.5, tipo: 'MOVEL' },
+    { chave: 'SEXTA_SANTA', nome: 'Sexta-feira da Paixão (Tríduo)', date: addDays(easter, -2), corLiturgica: 'VERMELHO', fatorDemanda: 2.5, tipo: 'MOVEL' },
+    { chave: 'SABADO_SANTO', nome: 'Sábado Santo / Vigília Pascal', date: addDays(easter, -1), corLiturgica: 'BRANCO', fatorDemanda: 2.5, tipo: 'MOVEL' },
+    { chave: 'PASCOA', nome: 'Domingo da Ressurreição (Páscoa)', date: easter, corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'MOVEL' },
+    { chave: 'ASCENSAO', nome: 'Ascensão do Senhor', date: addDays(easter, 42), corLiturgica: 'BRANCO', fatorDemanda: 2.0, tipo: 'MOVEL' },
+    { chave: 'PENTECOSTES', nome: 'Pentecostes', date: addDays(easter, 49), corLiturgica: 'VERMELHO', fatorDemanda: 2.5, tipo: 'MOVEL' },
+    { chave: 'TRINDADE', nome: 'Santíssima Trindade', date: addDays(easter, 56), corLiturgica: 'BRANCO', fatorDemanda: 2.0, tipo: 'MOVEL' },
+    { chave: 'CORPUS_CHRISTI', nome: 'Corpus Christi', date: addDays(easter, 60), corLiturgica: 'BRANCO', fatorDemanda: 2.5, tipo: 'MOVEL' },
+    { chave: 'SAGRADO_CORACAO', nome: 'Sagrado Coração de Jesus', date: addDays(easter, 68), corLiturgica: 'BRANCO', fatorDemanda: 2.0, tipo: 'MOVEL' },
+  ];
+
+  const fixas: SolemnityInfo[] = [
+    { chave: 'MAE_DE_DEUS', nome: 'Santa Maria, Mãe de Deus', date: new Date(year, 0, 1), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'SAO_JOSE', nome: 'São José, Esposo de Maria', date: new Date(year, 2, 19), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'ANUNCIACAO', nome: 'Anunciação do Senhor', date: new Date(year, 2, 25), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'NATIVIDADE_JOAO_BATISTA', nome: 'Natividade de S. João Batista', date: new Date(year, 5, 24), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'SAO_PEDRO_SAO_PAULO', nome: 'São Pedro e São Paulo', date: new Date(year, 5, 29), corLiturgica: 'VERMELHO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'ASSUNCAO_NOSSA_SENHORA', nome: 'Assunção de Nossa Senhora', date: new Date(year, 7, 15), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'TODOS_OS_SANTOS', nome: 'Todos os Santos', date: new Date(year, 10, 1), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'IMACULADA_CONCEICAO', nome: 'Imaculada Conceição', date: new Date(year, 11, 8), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+    { chave: 'NATAL_DO_SENHOR', nome: 'Natal do Senhor', date: new Date(year, 11, 25), corLiturgica: 'BRANCO', fatorDemanda: 3.0, tipo: 'FIXA' },
+  ];
+
+  return [...movel, ...fixas].sort((a, b) => a.date.getTime() - b.date.getTime());
+}

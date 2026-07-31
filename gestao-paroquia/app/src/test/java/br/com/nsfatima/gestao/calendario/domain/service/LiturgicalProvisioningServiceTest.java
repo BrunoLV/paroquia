@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.AnoLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
@@ -43,6 +44,9 @@ class LiturgicalProvisioningServiceTest {
     @Mock
     private OrganizacaoJpaRepository organizacaoJpaRepository;
 
+    @Mock
+    private SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository;
+
     private LiturgicalEngine liturgicalEngine;
     private LiturgicalProvisioningService service;
 
@@ -54,7 +58,8 @@ class LiturgicalProvisioningServiceTest {
                 cicloLiturgicoRepository,
                 liturgicalEngine,
                 eventoJpaRepository,
-                organizacaoJpaRepository
+                organizacaoJpaRepository,
+                solenidadeLiturgicaJpaRepository
         );
     }
 

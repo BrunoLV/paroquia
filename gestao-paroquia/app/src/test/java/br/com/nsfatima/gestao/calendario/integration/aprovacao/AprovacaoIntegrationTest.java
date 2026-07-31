@@ -40,12 +40,16 @@ class AprovacaoIntegrationTest {
     @Autowired
     private ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
 
+    @Autowired
+    private br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository auditoriaRepository;
+
     @BeforeEach
     void setUp() {
-        observacaoEventoJpaRepository.deleteAll();
-        aprovacaoRepository.deleteAll();
-        eventoEnvolvidoJpaRepository.deleteAll();
-        eventoRepository.deleteAll();
+        auditoriaRepository.deleteAllInBatch();
+        observacaoEventoJpaRepository.deleteAllInBatch();
+        aprovacaoRepository.deleteAllInBatch();
+        eventoEnvolvidoJpaRepository.deleteAllInBatch();
+        eventoRepository.deleteAllInBatch();
     }
 
     @Test

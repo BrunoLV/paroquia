@@ -3,6 +3,8 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 import br.com.nsfatima.gestao.calendario.domain.model.CorLiturgica;
 import br.com.nsfatima.gestao.calendario.domain.model.LiturgicalOutput;
 import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
+import br.com.nsfatima.gestao.calendario.domain.model.TipoSolenidade;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -12,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -144,7 +147,53 @@ public class LiturgicalEngine {
     }
 
     /**
-     * Calcula o ano litúrgico completo (LiturgicalOutput) de forma stateless e imutável.
+     * Calcula o ano litúrgico de forma dinâmica a partir das entidades SolenidadeLiturgicaEntity
+     * cadastradas e gerenciadas na base de dados.
+     */
+    public LiturgicalOutput calculateLiturgicalYear(int anoNominal, List<SolenidadeLiturgicaEntity> solenidadesDoBanco) {
+        if (solenidadesDoBanco == null || solenidadesDoBanco.isEmpty()) {
+            return calculateLiturgicalYear(anoNominal);
+        }
+
+        LocalDate dataInicio = calculateAdventoSundayDate(anoNominal - 1);
+        LocalDate dataFim = calculateAdventoSundayDate(anoNominal).minusDays(1);
+        String cicloLetra = resolveCicloLetra(anoNominal);
+
+        Map<String, MarcoLiturgico> marcos = new LinkedHashMap<>();
+
+        LocalDate pascoa = calculateEaster(anoNominal);
+
+        for (SolenidadeLiturgicaEntity s : solenidadesDoBanco) {
+            if (!s.isAtivo()) {
+                continue;
+            }
+
+            LocalDate dataMarco;
+            if (s.getTipoSolenidade() == TipoSolenidade.FIXA) {
+                if (s.getMesFixo() == null || s.getDiaFixo() == null) {
+                    continue;
+                }
+                dataMarco = LocalDate.of(anoNominal, s.getMesFixo(), s.getDiaFixo());
+            } else {
+                int offset = s.getOffsetDiasPascoa() != null ? s.getOffsetDiasPascoa() : 0;
+                dataMarco = pascoa.plusDays(offset);
+            }
+
+            CorLiturgica cor;
+            try {
+                cor = CorLiturgica.valueOf(s.getCorLiturgica().toUpperCase());
+            } catch (Exception e) {
+                cor = CorLiturgica.BRANCO;
+            }
+
+            marcos.put(s.getChave(), new MarcoLiturgico(s.getChave(), s.getNome(), dataMarco, cor, s.getFatorDemanda()));
+        }
+
+        return new LiturgicalOutput(anoNominal, dataInicio, dataFim, cicloLetra, Collections.unmodifiableMap(marcos));
+    }
+
+    /**
+     * Calcula o ano litúrgico completo (LiturgicalOutput) de forma estática como fallback.
      */
     public LiturgicalOutput calculateLiturgicalYear(int anoNominal) {
         LocalDate dataInicio = calculateAdventoSundayDate(anoNominal - 1);
