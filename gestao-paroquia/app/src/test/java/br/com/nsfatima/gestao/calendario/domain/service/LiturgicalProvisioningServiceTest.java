@@ -65,7 +65,7 @@ class LiturgicalProvisioningServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getAno()).isEqualTo(2036);
-        assertThat(result.getCicloLetra()).isEqualTo("A"); // 2036 é Ano A
+        assertThat(result.getCicloLetra()).isEqualTo("B"); // 2036 é Ano B (2036 % 3 == 2)
 
         verify(anoLiturgicoRepository).save(any(AnoLiturgicoEntity.class));
 

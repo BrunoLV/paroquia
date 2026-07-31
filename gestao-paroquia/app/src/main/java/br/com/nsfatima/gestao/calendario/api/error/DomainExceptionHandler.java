@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.calendario.api.error;
 import br.com.nsfatima.gestao.calendario.domain.exception.CalendarLockedException;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleException;
 import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalidoException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
@@ -150,6 +151,19 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                 List.of(new ValidationErrorItem(
                         ErrorCodes.OBSERVACAO_TIPO_IMUTAVEL.name(),
                         "tipo",
+                        ex.getMessage(),
+                        null)));
+    }
+
+    @ExceptionHandler(ImmutableEclesialRuleException.class)
+    public ResponseEntity<ValidationErrorResponse> handleImmutableEclesialRule(ImmutableEclesialRuleException ex) {
+        return buildValidation(
+                HttpStatus.BAD_REQUEST,
+                ErrorCodes.DOMAIN_RULE_VIOLATION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(),
+                        "cicloLiturgico",
                         ex.getMessage(),
                         null)));
     }
