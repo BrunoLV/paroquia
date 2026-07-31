@@ -44,7 +44,13 @@ import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
-import {getLiturgicalSeason, getLiturgicalSeasonStyle} from '../utils/liturgicalCalendar';
+import {
+  getLiturgicalSeason,
+  getLiturgicalSeasonStyle,
+  getLiturgicalCycleLetter,
+  getSolemnitiesForYear,
+  SolemnityInfo,
+} from '../utils/liturgicalCalendar';
 
 interface CalendarDay {
   date: Date;
@@ -148,13 +154,15 @@ const Calendar = () => {
 
   // Export states
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isSolemnitiesOpen, setIsSolemnitiesOpen] = useState(false);
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
+  const solemnities = useMemo(() => getSolemnitiesForYear(currentYear), [currentYear]);
+
   const liturgicalInfo = useMemo(() => {
-    const remainder = ((currentYear - 2026) % 3 + 3) % 3;
-    const cycleLetter = remainder === 0 ? 'C' : remainder === 1 ? 'A' : 'B';
+    const cycleLetter = getLiturgicalCycleLetter(currentYear);
     const anoConfig = anosParoquiais.find(a => a.ano === currentYear);
     const isClosed = anoConfig?.status === 'FECHADO';
     return {
@@ -615,6 +623,14 @@ const Calendar = () => {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setIsSolemnitiesOpen(true)}
+            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+          >
+            Solenidades & Santoral
+          </Button>
           <Button
             variant="outlined"
             color="primary"
@@ -1173,6 +1189,82 @@ const Calendar = () => {
         onClose={() => setIsExportOpen(false)}
         organizations={organizations}
       />
+
+      {/* Solenidades & Santoral Dialog Modal */}
+      <Dialog
+        open={isSolemnitiesOpen}
+        onClose={() => setIsSolemnitiesOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 700, color: 'primary.main', borderBottom: '1px solid #eee' }}>
+          Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalInfo.cycle})
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Solenidades fixas (Santoral) e datas móveis derivadas via algoritmo de Meeus/Jones/Butcher.
+          </Typography>
+          <Box sx={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid #e0e0e0', backgroundColor: '#f5f5f5' }}>
+                  <th style={{ padding: '8px 12px' }}>Data</th>
+                  <th style={{ padding: '8px 12px' }}>Solenidade / Marco</th>
+                  <th style={{ padding: '8px 12px' }}>Tipo</th>
+                  <th style={{ padding: '8px 12px' }}>Cor Litúrgica</th>
+                  <th style={{ padding: '8px 12px' }}>Fator Demanda</th>
+                </tr>
+              </thead>
+              <tbody>
+                {solemnities.map((sol) => (
+                  <tr key={sol.chave} style={{ borderBottom: '1px solid #e0e0e0' }}>
+                    <td style={{ padding: '8px 12px', fontWeight: 600 }}>
+                      {sol.date.toLocaleDateString('pt-BR')}
+                    </td>
+                    <td style={{ padding: '8px 12px' }}>{sol.nome}</td>
+                    <td style={{ padding: '8px 12px' }}>
+                      <Chip
+                        label={sol.tipo === 'FIXA' ? 'Santoral (Fixa)' : 'Móvel'}
+                        size="small"
+                        color={sol.tipo === 'FIXA' ? 'info' : 'secondary'}
+                        variant="outlined"
+                        sx={{ fontSize: '0.75rem', height: 20 }}
+                      />
+                    </td>
+                    <td style={{ padding: '8px 12px' }}>
+                      <Chip
+                        label={sol.corLiturgica}
+                        size="small"
+                        sx={{
+                          fontSize: '0.75rem',
+                          height: 20,
+                          backgroundColor:
+                            sol.corLiturgica === 'ROXO' ? '#f3e5f5' :
+                            sol.corLiturgica === 'VERMELHO' ? '#ffebee' :
+                            sol.corLiturgica === 'VERDE' ? '#e8f5e9' : '#fff9c4',
+                          color:
+                            sol.corLiturgica === 'ROXO' ? '#7b1fa2' :
+                            sol.corLiturgica === 'VERMELHO' ? '#c62828' :
+                            sol.corLiturgica === 'VERDE' ? '#2e7d32' : '#f57f17',
+                          fontWeight: 700,
+                        }}
+                      />
+                    </td>
+                    <td style={{ padding: '8px 12px', fontWeight: 600 }}>
+                      {sol.fatorDemanda.toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, borderTop: '1px solid #eee' }}>
+          <Button onClick={() => setIsSolemnitiesOpen(false)} variant="contained" color="primary">
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

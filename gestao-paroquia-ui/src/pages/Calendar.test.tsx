@@ -339,4 +339,15 @@ test('renders liturgical season background colors and season labels on calendar 
   expect(screen.getAllByText(/TEMPO COMUM/i).length).toBeGreaterThan(0);
 });
 
+test('opens solemnities dialog when clicking Solenidades & Santoral button', async () => {
+  await renderCalendar();
+  const btn = screen.getByRole('button', { name: /Solenidades & Santoral/i });
+  await act(async () => {
+    fireEvent.click(btn);
+  });
+  expect(screen.getByText(/Catálogo Litúrgico & Solenidades/i)).toBeInTheDocument();
+  expect(screen.getByText(/Santa Maria, Mãe de Deus/i)).toBeInTheDocument();
+  expect(screen.getByText(/Natal do Senhor/i)).toBeInTheDocument();
+});
+
 
