@@ -318,3 +318,49 @@ export interface CpcDecisao {
   decididoEmUtc?: string | null;
 }
 
+export type AtivoCategoria = 'ELETRONICO' | 'MOBILIARIO' | 'PARAMENTO' | 'INFRAESTRUTURA';
+
+export type AtivoStatus = 'DISPONIVEL' | 'EM_MANUTENCAO' | 'BAIXADO' | 'ALOCADO';
+
+export interface AtivoPatrimonial {
+  id: string;
+  nome: string;
+  numeroTombamento: string;
+  categoria: AtivoCategoria;
+  status: AtivoStatus;
+  reservavel: boolean;
+  organizacaoId: string;
+  dataAquisicao?: string | null;
+  valorEstimado?: number | null;
+  criadoEmUtc: string;
+}
+
+export interface CreateAtivoPayload {
+  nome: string;
+  categoria: AtivoCategoria;
+  organizacaoId: string;
+  reservavel: boolean;
+  dataAquisicao?: string | null;
+  valorEstimado?: number | null;
+}
+
+export interface TransferirAtivoPayload {
+  novaOrganizacaoId: string;
+  justificativa: string;
+}
+
+export interface AlocarAtivoPayload {
+  eventoId: string;
+  justificativaAlocacao: string;
+}
+
+export interface MetricasOciosidade {
+  totalAtivos: number;
+  totalDisponiveis: number;
+  totalAlocados: number;
+  totalEmManutencao: number;
+  totalBaixados: number;
+  taxaOciosidade: number;
+  distribuicaoPorCategoria: Record<string, number>;
+}
+

@@ -110,7 +110,7 @@ public class AuditLogPersistenceService {
         return action != null && List.of("create", "patch", "cancel", "approval-decision", "approval-decision-request",
                         "create-observacao",
                         "update-observacao", "delete-observacao", "system-observacao", "read", "list",
-                        "admin-action")
+                        "admin-action", "transferir", "alocar")
 
                 .contains(action);
     }

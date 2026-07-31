@@ -6,6 +6,7 @@ import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
 import Approvals from './pages/Approvals';
 import Projects from './pages/Projects';
+import Ativos from './pages/Ativos';
 import Settings from './pages/Settings';
 import Organograma from './pages/Organograma';
 import Reports from './pages/Reports';
@@ -54,6 +55,7 @@ const AppRoutes = () => {
                   }
                 />
                 <Route path="projects" element={<Projects />} />
+                <Route path="ativos" element={<Ativos />} />
                 <Route
                   path="configuracoes"
                   element={

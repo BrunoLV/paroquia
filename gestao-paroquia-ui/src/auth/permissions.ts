@@ -121,6 +121,23 @@ export const canManageEvent = (user: User | null, _eventOrgId: string): boolean 
   return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
+export const canManageAtivos = (user: User | null): boolean => {
+  if (!user) return false;
+  return isAdmin(user) || isParoco(user) || isClero(user) || isCoordenador(user);
+};
+
+export const canTransferAtivo = (user: User | null, ativoOrgId: string): boolean => {
+  if (!user) return false;
+  if (isGlobalCreator(user)) return true;
+
+  if (isCoordenador(user) && Array.isArray(user.organizations)) {
+    return user.organizations.some((org: any) => org.id === ativoOrgId);
+  }
+  return false;
+};
+
+export const canAlocarAtivo = canTransferAtivo;
+
 export const canApprove = (user: User | null): boolean => {
   if (!user) return false;
   return (

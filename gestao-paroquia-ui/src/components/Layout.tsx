@@ -26,6 +26,7 @@ import {
     Dashboard as DashboardIcon,
     Description as DescriptionIcon,
     FactCheck as FactCheckIcon,
+    Inventory as InventoryIcon,
     Logout as LogoutIcon,
     Menu as MenuIcon,
     Settings as SettingsIcon,
@@ -78,6 +79,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { label: 'Projetos', path: '/projects', icon: <WorkIcon /> },
     { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon /> },
     { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
+    { label: 'Ativos Patrimoniais', path: '/ativos', icon: <InventoryIcon /> },
     { label: 'Relatórios', path: '/reports', icon: <AssessmentIcon /> },
   ];
 
