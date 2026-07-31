@@ -1,10 +1,10 @@
 # Implementation Plan - Identificação Visual do Tempo Litúrgico no Calendário
 
 ## Phase 1: Helper Litúrgico e Mapeamento Visual
-- [ ] Task: Criar testes unitários e módulo utilitário para cálculo e estilo dos Tempos Litúrgicos (`liturgicalCalendar.ts`)
-    - [ ] Write failing unit tests in `src/utils/liturgicalCalendar.test.ts` for liturgical season calculation and color mappings
-    - [ ] Implement `src/utils/liturgicalCalendar.ts` returning season labels and subtle background colors
-    - [ ] Confirm all tests pass and meet coverage requirements (>80%)
+- [x] Task: Criar testes unitários e módulo utilitário para cálculo e estilo dos Tempos Litúrgicos (`liturgicalCalendar.ts`) c43c9dc
+    - [x] Write failing unit tests in `src/utils/liturgicalCalendar.test.ts` for liturgical season calculation and color mappings
+    - [x] Implement `src/utils/liturgicalCalendar.ts` returning season labels and subtle background colors
+    - [x] Confirm all tests pass and meet coverage requirements (>80%)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Helper Litúrgico e Mapeamento Visual' (Protocol in workflow.md)
 
 ## Phase 2: Integração Visual no Grid de Dias (`Calendar.tsx`)
