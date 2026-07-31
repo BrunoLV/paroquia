@@ -45,14 +45,14 @@
   - [x] Rodar `npx vitest run EventVolumeBarChart.test.tsx` e confirmar falha (Red)
 - [x] Task: Adicionar mock de `react-apexcharts` em `setupTests.ts` (a27963d)
   - [x] Mock do componente `ReactApexChart` retornando marcação simples testável (`data-testid="mock-apex-bar-chart"`)
-- [ ] Task: Implementar bloco de barras com ApexCharts (Green)
-  - [ ] Substituir import de `BarChart` de `@mui/x-charts` por `react-apexcharts` em `Reports.tsx`
-  - [ ] Configurar `options`/`series` a partir de `eventosPorOrganizacao` (`categories` = nomes das organizações)
-  - [ ] Habilitar zoom e rolagem horizontal (`chart.zoom.enabled`, `chart.type: 'bar'`, scroll via `xaxis`/`chart.toolbar`)
-  - [ ] Habilitar menu de exportação nativo (`chart.toolbar.show = true`, export PNG/SVG/CSV)
-  - [ ] Cores dinâmicas via `useTheme()` e `theme.mode` propagado para `options.theme.mode`
-  - [ ] Container responsivo (`width: '100%'`, `ResizeObserver`/redraw automático do ApexCharts)
-  - [ ] Rodar testes e confirmar passagem (Green)
+- [x] Task: Implementar bloco de barras com ApexCharts (Green) (96e5873, d40fee5)
+  - [x] Substituir import de `BarChart` de `@mui/x-charts` por `react-apexcharts` em `Reports.tsx`
+  - [x] Configurar `options`/`series` a partir de `eventosPorOrganizacao` (`categories` = nomes das organizações)
+  - [x] Habilitar zoom e rolagem horizontal (`chart.zoom.enabled`, `chart.type: 'bar'`, scroll via `xaxis`/`chart.toolbar`)
+  - [x] Habilitar menu de exportação nativo (`chart.toolbar.show = true`, export PNG/SVG/CSV)
+  - [x] Cores dinâmicas via `useTheme()` e `theme.mode` propagado para `options.theme.mode`
+  - [x] Container responsivo (`width: '100%'`, `ResizeObserver`/redraw automático do ApexCharts)
+  - [x] Rodar testes e confirmar passagem (Green)
 - [ ] Task: Verificar cobertura de teste (>80% para código novo)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
