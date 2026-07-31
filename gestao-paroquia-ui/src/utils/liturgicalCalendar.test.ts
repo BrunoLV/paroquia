@@ -3,6 +3,8 @@ import {
   calculateEaster,
   getLiturgicalSeason,
   getLiturgicalSeasonStyle,
+  getLiturgicalCycleLetter,
+  getPrecedenciaPeso,
   LiturgicalSeason,
 } from './liturgicalCalendar';
 
@@ -84,6 +86,26 @@ describe('liturgicalCalendar utils', () => {
 
       const natalStyle = getLiturgicalSeasonStyle('NATAL');
       expect(natalStyle.label).toBe('NATAL');
+    });
+  });
+
+  describe('getLiturgicalCycleLetter', () => {
+    it('calculates cycle letter matching 1->A, 2->B, 0->C formula', () => {
+      expect(getLiturgicalCycleLetter(2026)).toBe('A'); // 2026 % 3 = 1
+      expect(getLiturgicalCycleLetter(2027)).toBe('B'); // 2027 % 3 = 2
+      expect(getLiturgicalCycleLetter(2028)).toBe('C'); // 2028 % 3 = 0
+      expect(getLiturgicalCycleLetter(2030)).toBe('B'); // 2030 % 3 = 2
+    });
+  });
+
+  describe('getPrecedenciaPeso', () => {
+    it('returns correct precedence weight ranking 1 to 5', () => {
+      expect(getPrecedenciaPeso('TRIDUO_PASCAL')).toBe(1);
+      expect(getPrecedenciaPeso('QUARESMA')).toBe(3);
+      expect(getPrecedenciaPeso('ADVENTO')).toBe(3);
+      expect(getPrecedenciaPeso('PASCOA')).toBe(4);
+      expect(getPrecedenciaPeso('NATAL')).toBe(4);
+      expect(getPrecedenciaPeso('TEMPO_COMUM')).toBe(5);
     });
   });
 });

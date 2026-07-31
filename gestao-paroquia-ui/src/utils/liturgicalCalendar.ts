@@ -160,3 +160,33 @@ export function getLiturgicalSeasonStyle(season: LiturgicalSeason): LiturgicalSe
       };
   }
 }
+
+/**
+ * Calculates the Liturgical Sunday Cycle letter (A, B, or C) for a given civil year.
+ * Formula: year % 3 === 1 -> 'A', year % 3 === 2 -> 'B', year % 3 === 0 -> 'C'.
+ */
+export function getLiturgicalCycleLetter(year: number): 'A' | 'B' | 'C' {
+  const rem = Math.abs(year) % 3;
+  if (rem === 1) return 'A';
+  if (rem === 2) return 'B';
+  return 'C';
+}
+
+/**
+ * Returns the precedence weight (1 to 5, lower = higher priority).
+ */
+export function getPrecedenciaPeso(season: LiturgicalSeason): number {
+  switch (season) {
+    case 'TRIDUO_PASCAL':
+      return 1;
+    case 'QUARESMA':
+    case 'ADVENTO':
+      return 3;
+    case 'PASCOA':
+    case 'NATAL':
+      return 4;
+    case 'TEMPO_COMUM':
+    default:
+      return 5;
+  }
+}
