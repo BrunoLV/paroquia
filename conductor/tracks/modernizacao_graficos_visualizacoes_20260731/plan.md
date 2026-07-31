@@ -2,8 +2,8 @@
 
 ## Fase 1 — Preparação e Documentação da Stack
 
-- [ ] Task: Documentar mudança de stack em `tech-stack.md`
-  - [ ] Adicionar seção descrevendo a introdução de `react-apexcharts`/`apexcharts` (gráfico de barras) e `recharts` (gráfico de rosca), com nota datada explicando a substituição parcial de `@mui/x-charts`
+- [x] Task: Documentar mudança de stack em `tech-stack.md` (0b4a305)
+  - [x] Adicionar seção descrevendo a introdução de `react-apexcharts`/`apexcharts` (gráfico de barras) e `recharts` (gráfico de rosca), com nota datada explicando a substituição parcial de `@mui/x-charts`
 - [ ] Task: Instalar dependências
   - [ ] Rodar `npm install react-apexcharts apexcharts recharts` em `gestao-paroquia-ui/`
   - [ ] Verificar `package.json`/`package-lock.json` atualizados
