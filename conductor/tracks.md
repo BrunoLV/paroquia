@@ -299,7 +299,7 @@
 ---
 
 - [x] **Track: Identificação Visual do Tempo Litúrgico no Calendário**
-*Link: [./tracks/liturgical_calendar_visual_20260731/](./tracks/liturgical_calendar_visual_20260731/)*
+*Link: [./archive/liturgical_calendar_visual_20260731/](./archive/liturgical_calendar_visual_20260731/)*
 
 
 
