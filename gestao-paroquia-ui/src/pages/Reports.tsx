@@ -30,7 +30,6 @@ import {
     PendingActions as PendingIcon,
     Warning as WarningIcon,
 } from '@mui/icons-material';
-import {BarChart} from '@mui/x-charts';
 import {useQuery} from '@tanstack/react-query';
 import {getDashboardMetrics} from '../api/dashboard';
 import {getOrganizacoes} from '../api/organizacoes';
@@ -39,10 +38,9 @@ import {DashboardMetrics, Organizacao, WeeklyEvent} from '../api/types';
 import ReportFilters from '../components/reports/ReportFilters';
 import ReportExportButtons from '../components/reports/ReportExportButtons';
 import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
+import EventVolumeBarChart from '../components/reports/EventVolumeBarChart';
 import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from '../utils/exportUtils';
 import {useNotification} from '../context/NotificationContext';
-
-const MARIAN_PALETTE = ['#1a237e', '#0288d1', '#00796b', '#7b1fa2', '#f57c00', '#d4af37', '#e91e63', '#455a64'];
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();
@@ -228,13 +226,6 @@ const Reports: React.FC = () => {
       </Box>
     );
   }
-
-  // Series per organization for BarChart
-  const barChartSeries = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
-    data: [item.quantidadeEventos],
-    label: item.organizacaoNome,
-    color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
-  }));
 
   const summaryCards = [
     {
@@ -423,26 +414,9 @@ const Reports: React.FC = () => {
               </Typography>
             </Box>
 
-            {barChartSeries.length > 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 320, width: '100%' }}>
-                <BarChart
-                  xAxis={[{ scaleType: 'band', data: ['Quantidade de Eventos'] }]}
-                  series={barChartSeries}
-                  height={310}
-                  margin={{ top: 20, bottom: 50, left: 40, right: 20 }}
-                  slotProps={{
-                    legend: {
-                      direction: 'horizontal',
-                      position: { vertical: 'bottom', horizontal: 'center' },
-                    },
-                  }}
-                />
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ py: 6, textAlign: 'center' }}>
-                Nenhum dado disponível para exibição no gráfico de barras.
-              </Typography>
-            )}
+            <Box sx={{ minHeight: 320, width: '100%' }}>
+              <EventVolumeBarChart data={filteredMetrics.eventosPorOrganizacao || []} />
+            </Box>
           </Card>
         </Grid>
       </Grid>

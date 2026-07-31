@@ -21,15 +21,6 @@ vi.mock('../context/NotificationContext', () => ({
   NotificationProvider: ({ children }: any) => children,
 }));
 
-// Mock @mui/x-charts to avoid jsdom SVG rendering limitations
-vi.mock('@mui/x-charts', () => ({
-  BarChart: ({ xAxis, series }: any) => (
-    <div data-testid="mock-bar-chart">
-      <span>BarChart Mock</span>
-    </div>
-  ),
-}));
-
 vi.spyOn(exportUtils, 'downloadCSV').mockImplementation(() => {});
 vi.spyOn(exportUtils, 'exportElementAsPDF').mockResolvedValue(true);
 
