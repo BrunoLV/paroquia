@@ -1,7 +1,7 @@
 # Implementation Plan - Reestruturação do Motor Litúrgico, Precedência e Governança Eclesial
 
 ## Phase 1: Backend - Reestruturação do Motor Litúrgico Universal (`LiturgicalEngine`) com Records Java 25
-- [ ] Task: Criar Records e Enums Litúrgicos imutáveis e implementar o novo algoritmo stateless em `LiturgicalEngine.java`
+- [~] Task: Criar Records e Enums Litúrgicos imutáveis e implementar o novo algoritmo stateless em `LiturgicalEngine.java`
     - [ ] Write unit tests in `LiturgicalEngineTest.java` for Java 25 Records (`LiturgicalOutput`, `MarcoLiturgico`), cycle formula (`1->A, 2->B, 0->C`), movable offsets and fixed solemnities
     - [ ] Implement `LiturgicalOutput.java`, `MarcoLiturgico.java`, `CorLiturgica.java` and pure calculation methods in `LiturgicalEngine.java`
     - [ ] Confirm all tests pass across years 2024-2030 and satisfy monorepo Checkstyle rules

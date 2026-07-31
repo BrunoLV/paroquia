@@ -53,7 +53,7 @@ class LiturgicalEngineTest {
         assertThat(engine.resolveCicloLetra(2026)).isEqualTo("A");
         assertThat(engine.resolveCicloLetra(2027)).isEqualTo("B");
         assertThat(engine.resolveCicloLetra(2028)).isEqualTo("C");
-        assertThat(engine.resolveCicloLetra(2030)).isEqualTo("C");
+        assertThat(engine.resolveCicloLetra(2030)).isEqualTo("B");
     }
 
     @Test

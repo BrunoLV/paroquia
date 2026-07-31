@@ -303,7 +303,7 @@
 
 ---
 
-- [ ] **Track: Reestruturação do Motor Litúrgico Universal, Precedência, Governança Eclesial e UI**
+- [~] **Track: Reestruturação do Motor Litúrgico Universal, Precedência, Governança Eclesial e UI**
 *Link: [./tracks/motor_liturgico_universal_eclesial_20260731/](./tracks/motor_liturgico_universal_eclesial_20260731/)*
 
 
