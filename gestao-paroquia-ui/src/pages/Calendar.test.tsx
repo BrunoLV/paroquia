@@ -333,3 +333,10 @@ test('toggles calendar view between Grid and List mode', async () => {
   expect(screen.getByRole('heading', { name: /Julho/i })).toBeInTheDocument();
 });
 
+test('renders liturgical season background colors and season labels on calendar day cells', async () => {
+  await renderCalendar();
+  // July 2026 is in TEMPO COMUM
+  expect(screen.getAllByText(/TEMPO COMUM/i).length).toBeGreaterThan(0);
+});
+
+

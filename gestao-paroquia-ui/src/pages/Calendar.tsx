@@ -44,6 +44,7 @@ import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
+import {getLiturgicalSeason, getLiturgicalSeasonStyle} from '../utils/liturgicalCalendar';
 
 interface CalendarDay {
   date: Date;
@@ -773,6 +774,8 @@ const Calendar = () => {
           <Grid container columns={7}>
             {calendarDays.map(({ date, isCurrentMonth, isToday }, idx) => {
               const dayEvents = getEventsForDay(date);
+              const season = getLiturgicalSeason(date);
+              const seasonStyle = getLiturgicalSeasonStyle(season);
               return (
                 <Grid
                   size={{ xs: 1 }}
@@ -782,7 +785,7 @@ const Calendar = () => {
                     minHeight: 130,
                     borderRight: '1px solid #e0e0e0',
                     borderBottom: '1px solid #e0e0e0',
-                    bgcolor: isToday ? '#f1f8e9' : isCurrentMonth ? 'white' : '#fafafa',
+                    bgcolor: isToday ? '#f1f8e9' : isCurrentMonth ? seasonStyle.backgroundColor : '#fafafa',
                     p: 1,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
@@ -793,7 +796,7 @@ const Calendar = () => {
                     },
                   }}
                 >
-                  {/* Day number and indicator */}
+                  {/* Day number, liturgical season label (desktop) and indicator */}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography
                       variant="body2"
@@ -811,6 +814,26 @@ const Calendar = () => {
                     >
                       {date.getDate()}
                     </Typography>
+
+                    {/* Liturgical Season Label for Desktop */}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: '0.625rem',
+                        fontWeight: 700,
+                        color: seasonStyle.textColor,
+                        opacity: isCurrentMonth ? 0.85 : 0.45,
+                        textTransform: 'uppercase',
+                        lineHeight: 1,
+                        display: { xs: 'none', md: 'block' },
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {seasonStyle.label}
+                    </Typography>
+
                     {/* Plus icon on hover */}
                     <AddIcon
                       className="add-day-btn"
