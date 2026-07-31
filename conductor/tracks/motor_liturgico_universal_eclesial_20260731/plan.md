@@ -15,8 +15,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend - Provisionamento, Tabela de Precedência e Governança Eclesial (PAROCO/VIGARIO)' (Protocol in workflow.md) bfaffab
 
 ## Phase 3: Frontend - Sincronização do Motor Litúrgico e Precedência na UI (`Calendar.tsx`)
-- [ ] Task: Sincronizar o utilitário `liturgicalCalendar.ts` e `Calendar.tsx` com a fórmula universal do ciclo e hierarquia de precedência
-    - [ ] Update unit tests in `liturgicalCalendar.test.ts` and `Calendar.test.tsx` verifying liturgical cycle formula (`1->A, 2->B, 0->C`) and precedence styling
-    - [ ] Update `liturgicalCalendar.ts` and `Calendar.tsx` applying strict cycle formula and visual precedence hierarchy
-    - [ ] Confirm all UI tests pass cleanly
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend - Sincronização do Motor Litúrgico e Precedência na UI (Calendar.tsx)' (Protocol in workflow.md)
+- [x] Task: Sincronizar o utilitário `liturgicalCalendar.ts` e `Calendar.tsx` com a fórmula universal do ciclo e hierarquia de precedência 8d6819a
+    - [x] Update unit tests in `liturgicalCalendar.test.ts` and `Calendar.test.tsx` verifying liturgical cycle formula (`1->A, 2->B, 0->C`) and precedence styling
+    - [x] Update `liturgicalCalendar.ts` and `Calendar.tsx` applying strict cycle formula and visual precedence hierarchy
+    - [x] Confirm all UI tests pass cleanly
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend - Sincronização do Motor Litúrgico e Precedência na UI (Calendar.tsx)' (Protocol in workflow.md) 8b9127d
