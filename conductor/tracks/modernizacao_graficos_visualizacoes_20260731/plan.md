@@ -7,7 +7,7 @@
 - [x] Task: Instalar dependências (64e9190)
   - [x] Rodar `npm install react-apexcharts apexcharts recharts` em `gestao-paroquia-ui/`
   - [x] Verificar `package.json`/`package-lock.json` atualizados
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Fase 2 — Componente Unificado de Rosca (Recharts)
 
