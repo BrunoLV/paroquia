@@ -19,13 +19,13 @@
   - [x] Rodar `npx vitest run EventDistributionPieChart.test.tsx` e confirmar falha (Red)
 - [x] Task: Atualizar mock global em `setupTests.ts` (dbfc367)
   - [x] Substituir/estender mock de `@mui/x-charts` por mock de `recharts` (PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer)
-- [ ] Task: Implementar `EventDistributionPieChart.tsx` com Recharts (Green)
-  - [ ] Extrair função utilitária de agrupamento "Outras" (limiar 3%)
-  - [ ] Labels externos com linha-guia (customized label/labelLine do Recharts)
-  - [ ] Animação de entrada ease-out (`isAnimationActive`, `animationEasing="ease-out"`)
-  - [ ] Cores dinâmicas via `useTheme()` (primary/secondary/info/warning/success)
-  - [ ] Suporte a dark mode no tooltip/legenda (fundo semitransparente de `background.paper`)
-  - [ ] Rodar testes e confirmar passagem (Green)
+- [x] Task: Implementar `EventDistributionPieChart.tsx` com Recharts (Green) (9f5ab48)
+  - [x] Extrair função utilitária de agrupamento "Outras" (limiar 3%)
+  - [x] Labels externos com linha-guia (customized label/labelLine do Recharts)
+  - [x] Animação de entrada ease-out (`isAnimationActive`, `animationEasing="ease-out"`)
+  - [x] Cores dinâmicas via `useTheme()` (primary/secondary/info/warning/success)
+  - [x] Suporte a dark mode no tooltip/legenda (fundo semitransparente de `background.paper`)
+  - [x] Rodar testes e confirmar passagem (Green)
 - [ ] Task: Substituir uso em `Dashboard.tsx`
   - [ ] Confirmar que `Dashboard.tsx` continua passando `data={metrics?.eventosPorOrganizacao || []}` sem mudança de contrato
   - [ ] Rodar `Dashboard.test.tsx` e ajustar mocks/asserts se necessário
