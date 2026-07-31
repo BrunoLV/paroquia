@@ -66,7 +66,7 @@
 - [x] Task: Rodar suíte completa e typecheck
   - [~] `npm run build` (tsc + vite build) sem erros — falha por 12 erros de TS **pré-existentes** e não relacionados a este track (`ConselhosAtas.tsx`, `Layout.tsx`, `MetricasEstrategicasTab.tsx`, `ConcorrenciaAlertaBanner.tsx`, testes usando `it` do vitest); confirmado via `git stash`/`npx tsc --noEmit` que os mesmos 12 erros já existiam antes do início do track. Nenhum erro novo introduzido pelas mudanças deste track.
   - [x] `CI=true npm test` sem regressões — 43 arquivos, 306 testes passando
-- [ ] Task: Validar responsividade manual
-  - [ ] Verificar `Reports.tsx` (abas de indicadores) em breakpoints mobile/tablet do MUI Grid
-  - [ ] Verificar `Dashboard.tsx` com o novo componente de rosca em telas menores
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Validar responsividade manual (verificado pelo usuário)
+  - [x] Verificar `Reports.tsx` (abas de indicadores) em breakpoints mobile/tablet do MUI Grid
+  - [x] Verificar `Dashboard.tsx` com o novo componente de rosca em telas menores
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
