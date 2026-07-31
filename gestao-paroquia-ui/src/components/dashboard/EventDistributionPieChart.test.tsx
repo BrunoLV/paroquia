@@ -45,12 +45,13 @@ describe('EventDistributionPieChart', () => {
 
   test('groups organizations below 3% representativeness into "Outras"', () => {
     renderChart([
-      { organizacaoNome: 'Pastoral A', quantidadeEventos: 970 },
-      { organizacaoNome: 'Pastoral B', quantidadeEventos: 20 },
-      { organizacaoNome: 'Pastoral C', quantidadeEventos: 10 },
+      { organizacaoNome: 'Pastoral A', quantidadeEventos: 95 },
+      { organizacaoNome: 'Pastoral B', quantidadeEventos: 3 },
+      { organizacaoNome: 'Pastoral C', quantidadeEventos: 2 },
     ]);
 
-    expect(screen.getByText(/Outras: 10/)).toBeInTheDocument();
+    expect(screen.getByText(/Outras: 2/)).toBeInTheDocument();
+    expect(screen.getByText(/Pastoral B: 3/)).toBeInTheDocument();
     expect(screen.queryByText(/Pastoral C/)).not.toBeInTheDocument();
   });
 

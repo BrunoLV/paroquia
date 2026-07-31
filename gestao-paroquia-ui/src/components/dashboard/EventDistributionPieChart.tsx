@@ -1,21 +1,57 @@
 import React from 'react';
-import {Box, Paper, Typography} from '@mui/material';
-import {PieChart} from '@mui/x-charts';
+import {Box, Paper, Typography, useTheme} from '@mui/material';
+import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {EventDistribution} from '../../api/types';
 
 interface EventDistributionPieChartProps {
   data: EventDistribution[];
 }
 
+interface ChartSlice {
+  label: string;
+  value: number;
+}
+
+const OUTRAS_THRESHOLD_PERCENT = 3;
+
+export const groupMinorSlices = (data: EventDistribution[]): ChartSlice[] => {
+  const total = data.reduce((acc, item) => acc + item.quantidadeEventos, 0);
+  if (total <= 0) {
+    return [];
+  }
+
+  const mainSlices: ChartSlice[] = [];
+  let outrasValue = 0;
+
+  data.forEach((item) => {
+    const share = (item.quantidadeEventos / total) * 100;
+    if (share < OUTRAS_THRESHOLD_PERCENT) {
+      outrasValue += item.quantidadeEventos;
+    } else {
+      mainSlices.push({ label: item.organizacaoNome, value: item.quantidadeEventos });
+    }
+  });
+
+  if (outrasValue > 0) {
+    mainSlices.push({ label: 'Outras', value: outrasValue });
+  }
+
+  return mainSlices;
+};
+
 const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ data }) => {
+  const theme = useTheme();
 
-  const chartData = data.map((item, index) => ({
-    id: index,
-    value: item.quantidadeEventos,
-    label: item.organizacaoNome,
-  }));
+  const chartData = groupMinorSlices(data);
+  const hasData = chartData.length > 0;
 
-  const hasData = chartData.length > 0 && chartData.reduce((acc, curr) => acc + curr.value, 0) > 0;
+  const sliceColors = [
+    theme.palette.primary.main,
+    theme.palette.secondary.main,
+    theme.palette.info.main,
+    theme.palette.warning.main,
+    theme.palette.success.main,
+  ];
 
   return (
     <Paper
@@ -46,25 +82,41 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
 
       <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 220 }}>
         {hasData ? (
-          <PieChart
-            series={[
-              {
-                data: chartData,
-                innerRadius: 60,
-                outerRadius: 90,
-                paddingAngle: 3,
-                cornerRadius: 5,
-                cx: 120,
-              },
-            ]}
-            height={200}
-            slotProps={{
-              legend: {
-                direction: 'vertical',
-                position: { vertical: 'middle', horizontal: 'end' },
-              },
-            }}
-          />
+          <ResponsiveContainer width="100%" height={260}>
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="label"
+                innerRadius={60}
+                outerRadius={90}
+                paddingAngle={3}
+                labelLine
+                label={({ label, percent }: any) => `${label} (${Math.round((percent || 0) * 100)}%)`}
+                isAnimationActive
+                animationEasing="ease-out"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={entry.label} fill={sliceColors[index % sliceColors.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: theme.palette.mode === 'dark'
+                    ? 'rgba(0, 0, 0, 0.85)'
+                    : 'rgba(255, 255, 255, 0.92)',
+                  border: `1px solid ${theme.palette.divider}`,
+                  color: theme.palette.text.secondary,
+                }}
+              />
+              <Legend
+                layout="vertical"
+                verticalAlign="middle"
+                align="right"
+                wrapperStyle={{ color: theme.palette.text.secondary }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         ) : (
           <Typography variant="body2" color="text.secondary">
             Sem dados de eventos para exibir
