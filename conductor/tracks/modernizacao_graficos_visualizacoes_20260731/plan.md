@@ -26,9 +26,9 @@
   - [x] Cores dinâmicas via `useTheme()` (primary/secondary/info/warning/success)
   - [x] Suporte a dark mode no tooltip/legenda (fundo semitransparente de `background.paper`)
   - [x] Rodar testes e confirmar passagem (Green)
-- [ ] Task: Substituir uso em `Dashboard.tsx`
-  - [ ] Confirmar que `Dashboard.tsx` continua passando `data={metrics?.eventosPorOrganizacao || []}` sem mudança de contrato
-  - [ ] Rodar `Dashboard.test.tsx` e ajustar mocks/asserts se necessário
+- [x] Task: Substituir uso em `Dashboard.tsx`
+  - [x] Confirmar que `Dashboard.tsx` continua passando `data={metrics?.eventosPorOrganizacao || []}` sem mudança de contrato
+  - [x] Rodar `Dashboard.test.tsx` e ajustar mocks/asserts se necessário
 - [ ] Task: Substituir `PieChart` inline em `Reports.tsx`
   - [ ] Remover import de `PieChart` de `@mui/x-charts` em `Reports.tsx`
   - [ ] Substituir bloco inline (linha ~429-456) pelo componente `EventDistributionPieChart`, adaptando `pieChartData`/`eventosPorOrganizacao` para a prop `data: EventDistribution[]`
