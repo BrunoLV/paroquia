@@ -254,46 +254,46 @@
 ---
 
 - [x] **Track: Reformulação do RBAC e Eliminação de Papéis Genéricos**
-*Link: [./archive/rbac_especifico_eclesial_20260728/index.md](./archive/rbac_especifico_eclesial_20260728/index.md)*
+*Link: [./archive/rbac_especifico_eclesial_20260728/](./archive/rbac_especifico_eclesial_20260728/)*
 
 ---
 
 - [x] **Track: Escopo Territorial e Vínculo Obrigatório (community_id)**
-*Link: [./archive/escopo_territorial_community_id_20260728/index.md](./archive/escopo_territorial_community_id_20260728/index.md)*
+*Link: [./archive/escopo_territorial_community_id_20260728/](./archive/escopo_territorial_community_id_20260728/)*
 
 ---
 
 - [x] **Track: Governança dos Conselhos (CPP e CPC) e Homologação de Atas**
-*Link: [./archive/governanca_conselhos_cpp_cpc_20260728/index.md](./archive/governanca_conselhos_cpp_cpc_20260728/index.md)*
+*Link: [./archive/governanca_conselhos_cpp_cpc_20260728/](./archive/governanca_conselhos_cpp_cpc_20260728/)*
 
 ---
 
 - [x] **Track: Motor de Validação da Agenda Comunitária (Níveis de Prioridade 1-4 & Bypass)**
-*Link: [./archive/motor_agenda_comunitaria_prioridades_20260728/index.md](./archive/motor_agenda_comunitaria_prioridades_20260728/index.md)*
+*Link: [./archive/motor_agenda_comunitaria_prioridades_20260728/](./archive/motor_agenda_comunitaria_prioridades_20260728/)*
 
 ---
 
 - [x] **Track: Auditoria, Consistência e Alinhamento do Cadastro de Eventos, Projetos e Recorrência (API x UI)**
-*Link: [./archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md](./archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md)*
+*Link: [./archive/alinhamento_eventos_projetos_recorrencia_20260730/](./archive/alinhamento_eventos_projetos_recorrencia_20260730/)*
 
 ---
 
 - [x] **Track: Vinculação de Locais (Espaços Paroquiais) a Matriz/Comunidades na API, UI e Banco de Dados (com ajuste de seed)**
-*Link: [./archive/vinculo_locais_matriz_comunidades_20260730/index.md](./archive/vinculo_locais_matriz_comunidades_20260730/index.md)*
+*Link: [./archive/vinculo_locais_matriz_comunidades_20260730/](./archive/vinculo_locais_matriz_comunidades_20260730/)*
 
 ---
 
 - [x] **Track: Otimização de Arquitetura Identificada pelo Grafo (Segregação de God Nodes)**
-*Link: [./archive/segregacao_repositorios_god_nodes_20260730/index.md](./archive/segregacao_repositorios_god_nodes_20260730/index.md)*
+*Link: [./archive/segregacao_repositorios_god_nodes_20260730/](./archive/segregacao_repositorios_god_nodes_20260730/)*
 
 ---
 
 - [x] **Track: Métricas Estratégicas e Preditivas de Gestão Paroquial (Sazonalidade Litúrgica, SLA de Despacho, Taxa de Projetos, Impacto Social, Concorrência e Ociosidade Patrimonial)**
-*Link: [./tracks/metricas_estrategicas_paroquiais_20260730/](./tracks/metricas_estrategicas_paroquiais_20260730/)*
+*Link: [./archive/metricas_estrategicas_paroquiais_20260730/](./archive/metricas_estrategicas_paroquiais_20260730/)*
 
 ---
 
 - [x] **Track: Motor de Governança Temporal e Sazonalidade Litúrgica (Ano Paroquial, Ano Litúrgico, Ciclos Litúrgicos 10 anos, Lock Policy e Importação Silenciosa)**
-*Link: [./archive/motor_governanca_temporal_liturgica_20260730/index.md](./archive/motor_governanca_temporal_liturgica_20260730/index.md)*
+*Link: [./archive/motor_governanca_temporal_liturgica_20260730/](./archive/motor_governanca_temporal_liturgica_20260730/)*
 
 
