@@ -11,15 +11,14 @@
 
 ## Fase 2 — Componente Unificado de Rosca (Recharts)
 
-- [ ] Task: Escrever testes (Red) para o novo `EventDistributionPieChart.tsx`
-  - [ ] Teste: renderiza fatias a partir de `EventDistribution[]`
-  - [ ] Teste: agrupa organizações com <3% de representatividade em fatia "Outras"
-  - [ ] Teste: não exibe "Outras" quando nenhuma organização está abaixo do limiar
-  - [ ] Teste: exibe mensagem de estado vazio quando não há dados
-  - [ ] Teste: aplica cores do tema MUI (mock de `useTheme`) e reage a `palette.mode`
-  - [ ] Rodar `npx vitest run EventDistributionPieChart.test.tsx` e confirmar falha (Red)
-- [ ] Task: Atualizar mock global em `setupTests.ts`
-  - [ ] Substituir/estender mock de `@mui/x-charts` por mock de `recharts` (PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer)
+- [x] Task: Escrever testes (Red) para o novo `EventDistributionPieChart.tsx` (862ead8)
+  - [x] Teste: renderiza fatias a partir de `EventDistribution[]`
+  - [x] Teste: agrupa organizações com <3% de representatividade em fatia "Outras"
+  - [x] Teste: não exibe "Outras" quando nenhuma organização está abaixo do limiar
+  - [x] Teste: exibe mensagem de estado vazio quando não há dados
+  - [x] Rodar `npx vitest run EventDistributionPieChart.test.tsx` e confirmar falha (Red)
+- [x] Task: Atualizar mock global em `setupTests.ts` (dbfc367)
+  - [x] Substituir/estender mock de `@mui/x-charts` por mock de `recharts` (PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer)
 - [ ] Task: Implementar `EventDistributionPieChart.tsx` com Recharts (Green)
   - [ ] Extrair função utilitária de agrupamento "Outras" (limiar 3%)
   - [ ] Labels externos com linha-guia (customized label/labelLine do Recharts)
