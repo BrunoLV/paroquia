@@ -308,7 +308,7 @@
 
 ---
 
-- [ ] **Track: Modernização de Gráficos e Visualizações (ApexCharts, Recharts)**
+- [~] **Track: Modernização de Gráficos e Visualizações (ApexCharts, Recharts)**
 *Link: [./tracks/modernizacao_graficos_visualizacoes_20260731/index.md](./tracks/modernizacao_graficos_visualizacoes_20260731/index.md)*
 
 
