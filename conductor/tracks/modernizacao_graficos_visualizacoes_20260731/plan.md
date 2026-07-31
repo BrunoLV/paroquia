@@ -4,9 +4,9 @@
 
 - [x] Task: Documentar mudança de stack em `tech-stack.md` (0b4a305)
   - [x] Adicionar seção descrevendo a introdução de `react-apexcharts`/`apexcharts` (gráfico de barras) e `recharts` (gráfico de rosca), com nota datada explicando a substituição parcial de `@mui/x-charts`
-- [ ] Task: Instalar dependências
-  - [ ] Rodar `npm install react-apexcharts apexcharts recharts` em `gestao-paroquia-ui/`
-  - [ ] Verificar `package.json`/`package-lock.json` atualizados
+- [x] Task: Instalar dependências (64e9190)
+  - [x] Rodar `npm install react-apexcharts apexcharts recharts` em `gestao-paroquia-ui/`
+  - [x] Verificar `package.json`/`package-lock.json` atualizados
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Fase 2 — Componente Unificado de Rosca (Recharts)
