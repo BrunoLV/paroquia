@@ -12,7 +12,7 @@
     - [x] Write tests in `LiturgicalGovernanceTest.java` and `LiturgicalProvisioningServiceTest.java` asserting permission check for `PAROCO`/`VIGARIO`, `ImmutableEclesialRuleException`, automatic provisioning and 1-5 precedence order
     - [x] Implement `ImmutableEclesialRuleException.java`, security checks, precedence ranking (1-5) and update dependent services (`CreateEventoUseCase`, `ImportacaoService`)
     - [x] Confirm all backend tests pass and build completes cleanly
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend - Provisionamento, Tabela de Precedência e Governança Eclesial (PAROCO/VIGARIO)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Backend - Provisionamento, Tabela de Precedência e Governança Eclesial (PAROCO/VIGARIO)' (Protocol in workflow.md) bfaffab
 
 ## Phase 3: Frontend - Sincronização do Motor Litúrgico e Precedência na UI (`Calendar.tsx`)
 - [ ] Task: Sincronizar o utilitário `liturgicalCalendar.ts` e `Calendar.tsx` com a fórmula universal do ciclo e hierarquia de precedência
