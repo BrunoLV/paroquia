@@ -1,7 +1,13 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,25 +33,29 @@ class EventoControllerListTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Autowired
-    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository organizacaoJpaRepository;
+    private OrganizacaoJpaRepository organizacaoJpaRepository;
 
     @Autowired
-    private br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
+    private ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
 
     @Autowired
-    private br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository aprovacaoJpaRepository;
+    private AprovacaoJpaRepository aprovacaoJpaRepository;
+
+    @Autowired
+    private EventoEnvolvidoJpaRepository eventoEnvolvidoJpaRepository;
 
     @BeforeEach
     void setup() {
         observacaoEventoJpaRepository.deleteAll();
         aprovacaoJpaRepository.deleteAll();
+        eventoEnvolvidoJpaRepository.deleteAll();
         eventoJpaRepository.deleteAll();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         if (!organizacaoJpaRepository.existsById(orgId)) {
-            var org = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+            var org = new OrganizacaoEntity();
             org.setId(orgId);
             org.setNome("Organizacao Default");
-            org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
+            org.setTipo(TipoOrganizacao.PASTORAL);
             org.setAtivo(true);
             organizacaoJpaRepository.save(org);
         }

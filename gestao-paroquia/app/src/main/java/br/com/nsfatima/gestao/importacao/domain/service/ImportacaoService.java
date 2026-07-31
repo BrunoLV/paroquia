@@ -16,6 +16,7 @@ import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
+import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalProvisioningService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ public class ImportacaoService {
     private final AnoParoquialJpaRepository anoParoquialJpaRepository;
     private final LiturgicalEngine liturgicalEngine;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
+    private final LiturgicalProvisioningService liturgicalProvisioningService;
 
     public ImportacaoService(CreateMembroUseCase createMembroUseCase,
                               MembroJpaRepository membroJpaRepository,
@@ -72,7 +74,8 @@ public class ImportacaoService {
                               ImportacaoFileParser importacaoFileParser,
                               AnoParoquialJpaRepository anoParoquialJpaRepository,
                               LiturgicalEngine liturgicalEngine,
-                              CicloLiturgicoRepository cicloLiturgicoRepository) {
+                              CicloLiturgicoRepository cicloLiturgicoRepository,
+                              LiturgicalProvisioningService liturgicalProvisioningService) {
         this.createMembroUseCase = createMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
@@ -84,6 +87,7 @@ public class ImportacaoService {
         this.anoParoquialJpaRepository = anoParoquialJpaRepository;
         this.liturgicalEngine = liturgicalEngine;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
+        this.liturgicalProvisioningService = liturgicalProvisioningService;
     }
 
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
@@ -304,7 +308,10 @@ public class ImportacaoService {
         entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));
 
         // Resolução Litúrgica
-        if (liturgicalEngine != null) {
+        if (liturgicalProvisioningService != null) {
+            var anoLiturgico = liturgicalProvisioningService.resolveAndEnsure(entity.getInicioUtc());
+            entity.setAnoLiturgicoRef(anoLiturgico.getAno());
+        } else if (liturgicalEngine != null) {
             int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(entity.getInicioUtc());
             entity.setAnoLiturgicoRef(anoLiturgicoRef);
         }

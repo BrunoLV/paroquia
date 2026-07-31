@@ -33,19 +33,19 @@
         <!-- do código (ex: java.util.List). Força o uso do import no topo.    -->
         <module name="IllegalTokenText">
             <property name="tokens" value="IDENT"/>
-            <!-- Expressão para capturar padrões comuns de FQN de pacotes conhecidos -->
-            <property name="format" value="^(java|javax|jakarta|org\.springframework|org\.hibernate)\.[a-zA-Z0-9_]+\."/>
+            <!-- Expressão para capturar padrões de FQN inline em pacotes Java/Spring/Hib/Projeto -->
+            <property name="format" value="^(java|javax|jakarta|org\.springframework|org\.hibernate|br\.com\.nsfatima)\.[a-zA-Z0-9_]+\."/>
             <property name="ignoreCase" value="false"/>
             <property name="message"
                       value="Não utilize caminhos completos (FQN / Imports Inline). Importe a classe no topo do arquivo."/>
         </module>
 
         <!-- ================================================================= -->
-        <!-- GERENCIAMENTO DE IMPORTS                                         -->
+        <!-- GERENCIAMENTO DE IMPORTS: PROIBIÇÃO ABSOLUTA DE IMPORTS COM *    -->
         <!-- ================================================================= -->
         <module name="AvoidStarImport">
             <property name="allowClassImports" value="false"/>
-            <property name="allowStaticMemberImports" value="true"/>
+            <property name="allowStaticMemberImports" value="false"/>
         </module>
         <module name="UnusedImports"/>
         <module name="RedundantImport"/>

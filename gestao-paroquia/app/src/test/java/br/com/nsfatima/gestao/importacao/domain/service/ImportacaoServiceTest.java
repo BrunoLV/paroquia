@@ -84,6 +84,7 @@ class ImportacaoServiceTest {
                 new ImportacaoFileParser(),
                 null,
                 null,
+                null,
                 null
         );
     }
@@ -224,7 +225,7 @@ class ImportacaoServiceTest {
         ImportacaoService serviceComAno = new ImportacaoService(
                 createMembroUseCase, membroJpaRepository, usuarioJpaRepository, organizacaoService,
                 eventoJpaRepository, passwordEncoder, organizacaoJpaRepository, pastoralOficialRepository,
-                new ImportacaoFileParser(), anoRepoMock, null, null
+                new ImportacaoFileParser(), anoRepoMock, null, null, null
         );
 
         Map<String, String> eventoMap = Map.of(

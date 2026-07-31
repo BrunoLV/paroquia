@@ -25,7 +25,7 @@ class CicloLiturgicoRepositoryTest {
         List<CicloLiturgicoEntity> ciclos = repository.findAll();
         assertTrue(ciclos.size() >= 6, "Deve haver pelo menos 6 ciclos litúrgicos semeados no banco");
 
-        Optional<CicloLiturgicoEntity> quaresma = repository.findByTipoCiclo(TipoCicloLiturgico.QUARESMA);
+        Optional<CicloLiturgicoEntity> quaresma = repository.findFirstByTipoCiclo(TipoCicloLiturgico.QUARESMA);
         assertTrue(quaresma.isPresent());
         assertEquals("Quaresma", quaresma.get().getNome());
         assertEquals(2.5, quaresma.get().getFatorDemanda());

@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +26,7 @@ class DashboardMetricsIntegrationTest {
 
     @Test
     void shouldDenyUnauthenticatedAccess() throws Exception {
-        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        SecurityContextHolder.clearContext();
         mockMvc.perform(get("/api/v1/dashboard/metrics")
                         .header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());

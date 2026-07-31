@@ -11,11 +11,7 @@ import java.util.UUID;
 @Repository
 public interface CicloLiturgicoRepository extends JpaRepository<CicloLiturgicoEntity, UUID> {
 
-    /**
-     * Busca ciclo litúrgico pelo seu tipo.
-     *
-     * @param tipoCiclo Tipo do ciclo litúrgico
-     * @return Optional com a entidade encontrada
-     */
-    Optional<CicloLiturgicoEntity> findByTipoCiclo(TipoCicloLiturgico tipoCiclo);
+    Optional<CicloLiturgicoEntity> findFirstByTipoCiclo(TipoCicloLiturgico tipoCiclo);
+
+    Optional<CicloLiturgicoEntity> findByTipoCicloAndAnoLiturgicoRef(TipoCicloLiturgico tipoCiclo, Integer anoLiturgicoRef);
 }

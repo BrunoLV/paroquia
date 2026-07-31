@@ -13,6 +13,8 @@ import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
 import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
+import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalProvisioningService;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
@@ -62,6 +64,7 @@ public class CreateEventoUseCase {
     private final CacheManager cacheManager;
     private final LiturgicalEngine liturgicalEngine;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
+    private final LiturgicalProvisioningService liturgicalProvisioningService;
 
     public CreateEventoUseCase(
             EventoDomainService domainService,
@@ -80,7 +83,8 @@ public class CreateEventoUseCase {
             AgendaPriorityValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager,
             LiturgicalEngine liturgicalEngine,
-            CicloLiturgicoRepository cicloLiturgicoRepository) {
+            CicloLiturgicoRepository cicloLiturgicoRepository,
+            LiturgicalProvisioningService liturgicalProvisioningService) {
         this.domainService = domainService;
         this.repository = repository;
         this.involvementRepository = involvementRepository;
@@ -98,6 +102,7 @@ public class CreateEventoUseCase {
         this.cacheManager = cacheManager;
         this.liturgicalEngine = liturgicalEngine;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
+        this.liturgicalProvisioningService = liturgicalProvisioningService;
     }
 
     /**
@@ -188,9 +193,16 @@ public class CreateEventoUseCase {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         EventoEntity entity = mapper.toNewEntity(request, status);
 
-        int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(request.inicio());
-        entity.setAnoLiturgicoRef(anoLiturgicoRef);
-        cicloLiturgicoRepository.findAll().stream().findFirst().ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
+        if (liturgicalProvisioningService != null) {
+            AnoLiturgicoEntity anoLiturgico = liturgicalProvisioningService.resolveAndEnsure(request.inicio());
+            entity.setAnoLiturgicoRef(anoLiturgico.getAno());
+        } else if (liturgicalEngine != null) {
+            int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(request.inicio());
+            entity.setAnoLiturgicoRef(anoLiturgicoRef);
+        }
+        if (cicloLiturgicoRepository != null) {
+            cicloLiturgicoRepository.findAll().stream().findFirst().ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
+        }
 
         boolean hasOverlap = repository.existsByInicioUtcLessThanAndFimUtcGreaterThan(request.fim(), request.inicio());
         entity.setConflictState(domainService.resolveConflictState(hasOverlap));

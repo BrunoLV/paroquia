@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.calendario.integration.auditoria;
 
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
@@ -36,13 +38,17 @@ class AuditTrailQueryIntegrationTest {
     private AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
 
     @Autowired
-    private br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository aprovacaoJpaRepository;
+    private AprovacaoJpaRepository aprovacaoJpaRepository;
+
+    @Autowired
+    private EventoEnvolvidoJpaRepository eventoEnvolvidoJpaRepository;
 
     @BeforeEach
     void setUp() {
         auditoriaOperacaoJpaRepository.deleteAll();
         observacaoEventoJpaRepository.deleteAll();
         aprovacaoJpaRepository.deleteAll();
+        eventoEnvolvidoJpaRepository.deleteAll();
         eventoJpaRepository.deleteAll();
     }
 

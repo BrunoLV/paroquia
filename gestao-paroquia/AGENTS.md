@@ -1,78 +1,82 @@
-# AGENTS.md - Monorepo Engineering Standards & Guidelines
+# AGENTS.md - Backend Engineering Standards & Guidelines
 
 ## Domain-Driven Design (DDD) Core Principles
-- **Domain-Driven Standards:** Strictly follow pure Domain-Driven Design principles to model business capabilities.
-- **Ubiquitous Language:** Code elements (classes, methods, variables, database schemas) must mirror the business domain language exactly. Never use technical jargon where a domain term exists.
-- **Bounded Contexts:** Maintain strict separation between distinct domain contexts. Do not leak concepts, entities, or database structures from one bounded context into another.
-- **Rich Domain Model over Anemic Members:** Entities must contain both data and behavior. Business rules, state transitions, and domain validations belong inside the Domain Entities and Aggregates, NEVER leaked into Services.
-- **Aggregates & Roots:** Design clear Aggregate Roots to maintain transactional boundaries and invariants. Reference external aggregates strictly by Identity (ID), never by holding direct object references.
-- **Value Objects:** Always encapsulate attributes that have no conceptual identity into immutable Value Objects (implemented as Java `record`). Examples: Money, Address, Email.
+- **Padrões Orientados ao Domínio:** Siga estritamente os princípios puros de Domain-Driven Design para modelar as capacidades de negócio.
+- **Linguagem Ubíqua:** Os elementos de código (classes, métodos, variáveis, schemas de banco de dados) devem espelhar exatamente a linguagem do domínio de negócio. Nunca use jargões técnicos onde exista um termo do domínio.
+- **Contextos Delimitados (Bounded Contexts):** Mantenha uma separação rigorosa entre contextos de domínio distintos. Não vaze conceitos, entidades ou estruturas de banco de dados de um contexto delimitado para outro.
+- **Modelo de Domínio Rico sobre Membros Anêmicos:** As entidades devem conter tanto dados quanto comportamento. Regras de negócio, transições de estado e validações de domínio pertencem ao interior das Entidades de Domínio e Agregados, NUNCA vazadas para os Services.
+- **Agregados e Raízes (Roots):** Desenhe Raízes de Agregados claras para manter os limites transacionais e invariantes. Referencie agregados externos estritamente por Identidade (ID), nunca mantendo referências diretas a objetos.
+- **Objetos de Valor (Value Objects):** Sempre encapsule atributos que não possuem identidade conceitual em Objetos de Valor imutáveis (implementados como Java `record`). Exemplos: Money, Address, Email.
 
-## Data Privacy & Compliance (LGPD Mandate)
-- **Strict Compliance Routing:** This project handles personal data and is for internal use only. The agent ABSOLUTELY MUST read, internalize, and strictly enforce the privacy and security boundaries defined in the `docs/ia/regras_duras_lgpd.md` file before authoring, refactoring, or exposing any code, data contract, or internal log.
+## Data Privacy & Compliance (Mandato da LGPD)
+- **Roteamento de Compliance Estrito:** Este projeto manipula dados pessoais e é apenas para uso interno. O agente DEVE ABSOLUTAMENTE ler, internalizar e aplicar estritamente os limites de privacidade e segurança definidos no arquivo `docs/ia/regras_duras_lgpd.md` antes de autorar, refatorar ou expor qualquer código, contrato de dados ou log interno.
+
+## Otimização de Janela de Contexto
+- **Consulta Prévia Mandatória:** Sempre consulte `graphify-out/graph.json` ou execute buscas semânticas locais antes de abrir múltiplos arquivos de código.
+- **Eficiência de Tokens:** Nunca consuma tokens carregando arquivos inteiros se a relação mapeada pelo Graphify exigir modificações em apenas algumas linhas isoladas.
 
 ## Agent Capabilities, Custom Skills & Graphify Mandate
-- **Graphify Codebase Exploration:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar classes, pacotes ou repositories do backend via buscas manuais.
+- **Exploração da Base de Código via Graphify:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar classes, pacotes ou repositories do backend via buscas manuais.
 - **Economia de Tokens:** É proibida a leitura em lote de múltiplos arquivos fonte inteiros quando a estrutura de dependências puder ser obtida diretamente via consulta aos artefatos do Graphify, garantindo economia de tokens e navegação precisa.
-- **Mandatory Project Skills Alignment:** O agente DEVE obrigatoriamente consultar e aplicar as diretrizes contidas nos guias de skill em `.agents/skills/` (`ddd.md`, `java.md`, `solid.md`, `tdd.md`, `tdd_2.md`, `flyway.md`, `sql.md` e `gradle.md`) antes de gerar ou refatorar qualquer código no backend.
+- **Alinhamento Obrigatório de Skills do Projeto:** O agente DEVE obrigatoriamente consultar e aplicar as diretrizes contidas nos guias de skill em `.agents/skills/` (`ddd.md`, `java.md`, `solid.md`, `tdd.md`, `tdd_2.md`, `flyway.md`, `sql.md` e `gradle.md`) antes de gerar ou refatorar qualquer código no backend.
 
-## Code Style & Architecture (Java & Type Safety)
-- **Types over Strings:** Always prefer Java `enum`, `sealed classes`, or strongly-typed object wrappers (Value Objects) over raw `String` to represent states, categories, or fixed domains.
-- **Strict Typing:** Never use raw types, untyped collections, or generic `Object` maps for structural data. Use precise Generics and `java.util.Optional` instead of returning `null`.
-- **Immutable Data Carriers:** Use Java `record` for Value Objects, DTOs, and event payloads to enforce immutability by default.
-- **Function Constraints:** Keep methods between 4-20 lines. If a method exceeds 20 lines, extract cohesive blocks into private helper methods.
-- **File Limits:** Keep files under 500 lines. Split classes by Single Responsibility Principle (SRP) when they grow beyond this limit.
-- **Naming Conventions:** Names must be specific, unique, and domain-driven. ABSOLUTELY BANNED terms: `Data`, `Handler`, `Manager`, `Helper`, `Utility`. Prefer precise names that return less than 5 grep hits in the codebase.
-- **Control Flow:** Prefer early returns and guard clauses over nested `if-else` blocks. Maximum allowed indentation depth is 2 levels within any block.
-- **Dry & Extract:** Zero code duplication allowed. Extract shared logic into reusable, testable components or pure functions.
-- **Expressive Exceptions:** Custom exceptions must be unchecked (`RuntimeException`). Exception messages must explicitly include the offending runtime value, the context, and the expected boundary/shape.
+## Estilo de Código & Arquitetura (Java & Segurança de Tipos)
+- **Tipos sobre Strings:** Sempre prefira Java `enum`, `sealed classes` ou wrappers de objetos fortemente tipados (Objetos de Valor) em vez de `String` pura para representar estados, categorias ou domínios fixos.
+- **Tipagem Estrita:** Nunca use tipos brutos (raw types), coleções não tipadas ou mapas genéricos de `Object` para dados estruturais. Use Genéricos precisos e `java.util.Optional` em vez de retornar `null`.
+- **Carregadores de Dados Imutáveis:** Use Java `record` para Objetos de Valor, DTOs e payloads de eventos para garantir a imutabilidade por padrão.
+- **Restrições de Funções:** Mantenha os métodos entre 4 e 20 linhas. Se um método exceder 20 linhas, extraia os blocos coesos para métodos auxiliares privados (private helper methods).
+- **Limites de Arquivo:** Mantenha os arquivos abaixo de 500 linhas. Divida as classes pelo Princípio da Responsabilidade Única (SRP) quando elas crescerem além desse limite.
+- **Convenções de Nomenclatura:** Os nomes devem ser específicos, únicos e orientados ao domínio. Termos ABSOLUTAMENTE PROIBIDOS: `Data`, `Handler`, `Manager`, `Helper`, `Utility`. Prefira nomes precisos que retornem menos de 5 resultados de grep na base de código.
+- **Fluxo de Controle:** Prefira retornos antecipados (early returns) e cláusulas de guarda (guard clauses) em vez de blocos `if-else` aninhados. A profundidade máxima de indentação permitida é de 2 níveis dentro de qualquer bloco.
+- **Dry & Extract:** Zero duplicação de código permitida. Extraia a lógica compartilhada em componentes reutilizáveis e testáveis ou em funções puras.
+- **Exceções Expressivas:** Exceções customizadas devem ser não checadas (`RuntimeException`). As mensagens de exceção devem incluir explicitamente o valor incorreto em tempo de execução, o contexto e o limite/formato esperado.
 
-## Static Analysis & Linters (Quality Gates)
-- **Tooling Compliance:** The codebase strictly enforces quality gates via **PMD**, **SpotBugs**, and **Checkstyle**. All generated or refactored code must comply fully with these tool configurations.
-- **Zero Warnings Policy:** No warnings, code smells, or style violations should be introduced. The agent must verify that the code does not trigger PMD rule violations (e.g., optimization, error prone), SpotBugs alerts (e.g., null pointer risks, bad practices), or Checkstyle layout errors before finalizing changes.
+## Análise Estática & Linters (Quality Gates)
+- **Conformidade com Ferramentas:** A base de código impõe rigidamente portões de qualidade (quality gates) via **PMD**, **SpotBugs** e **Checkstyle**. Todo código gerado ou refatorado deve estar em total conformidade com as configurações dessas ferramentas.
+- **Política de Zero Avisos:** Nenhum aviso (warning), code smell ou violação de estilo deve ser introduzido. O agente deve verificar se o código não dispara violações de regras do PMD (ex: otimização, propensão a erros), alertas do SpotBugs (ex: riscos de ponteiro nulo, má práticas) ou erros de layout do Checkstyle antes de finalizar as alterações.
 
-## Documentation Architecture
-- **Living Documentation:** Every non-trivial architectural change, structural pattern introduction, or major integration choice MUST be documented via an **Architectural Decision Record (ADR)** in Markdown format within the designated repository location.
-- **API and Contract Documentation:** Public API contracts must be fully decorated with OpenAPI/Swagger annotations (`@Operation`, `@ApiResponse`) to produce exhaustive, accurate, and interactive API documentation automatically at runtime.
-- **Public Javadoc:** Every public interface, controller, configuration class, and service method must have a Javadoc block stating its primary intent, business context, and exactly one valid usage example.
-- **Domain & Flow Documentation:** Complex business rules, cross-aggregate sagas, and state machines must be explicitly documented using Mermaid.js diagrams embedded directly in accompanying Markdown files or package-level Javadocs.
-- **Traceability:** Reference issue tracking IDs or commit SHAs directly in the comments when a line of code exists solely to patch an upstream bug or third-party edge case.
-- **Intent over Mechanism:** Comments within the code must explain the **WHY**, not the **WHAT**. Do not comment self-explanatory code (e.g., skip `// increment counter` above `i++`). Explain the business constraint or architectural reason behind non-obvious logic.
-- **Preserve Context:** Retain existing comments during refactoring; they carry historical intent and provenance.
+## Arquitetura de Documentação
+- **Documentação Viva:** Cada mudança arquitetural não trivial, introdução de padrão estrutural ou grande escolha de integração DEVE ser documentada por meio de um **Registro de Decisão Arquitetural (ADR)** em formato Markdown no local designado do repositório.
+- **Documentação de API e Contratos:** Os contratos de API pública devem ser totalmente decorados com anotações OpenAPI/Swagger (`@Operation`, `@ApiResponse`) para produzir documentação de API exaustiva, precisa e interativa automaticamente em tempo de execução.
+- **Javadoc Público:** Cada interface pública, controller, classe de configuração e método de serviço deve ter um bloco Javadoc declarando sua intenção primária, contexto de negócio e exatamente um exemplo de uso válido.
+- **Documentação de Domínio & Fluxo:** Regras de negócio complexas, sagas entre agregados e máquinas de estado devem ser explicitamente documentadas usando diagramas Mermaid.js incorporados diretamente nos arquivos Markdown de acompanhamento ou nos Javadocs em nível de pacote.
+- **Rastreabilidade:** Referencie IDs de rastreamento de issues ou SHAs de commit diretamente nos comentários quando uma linha de código existir unicamente para corrigir um bug upstream ou um caso de borda de terceiros.
+- **Intenção sobre Mechanism:** Os comentários dentro do código devem explicar o **PORQUÊ**, não o **O QUÊ**. Não comente códigos autoexplicativos (ex: pule `// incrementa o contador` acima de `i++`). Explique a restrição de negócio ou a razão arquitetural por trás de uma lógica não óbvia.
+- **Preservar o Contexto:** Retenha os comentários existentes durante a refatoração; eles carregam intenção histórica e proveniência.
 
-## Imports & Package Hygiene
-- **No Fully Qualified Names:** NEVER use inline fully qualified class names (e.g., `com.example.domain.MyClass`) inside the code body.
-- **Clean Top-Level Imports:** ALWAYS use explicit, standard top-level imports at the beginning of the file.
-- **No Wildcards:** Do NOT use wildcard imports (e.g., `import java.util.*`). Import each class explicitly to keep compilation dependencies transparent.
+## Importações & Higiene de Pacotes
+- **Sem Nomes Totalmente Qualificados (No Inline FQNs):** NUNCA use nomes de classes totalmente qualificados em linha (ex: `com.example.domain.MyClass`) dentro do corpo do código. Aplicado estritamente tanto ao código produtivo (`src/main`) quanto ao código de testes (`src/test`) e checado via Checkstyle (`IllegalTokenText`).
+- **Importações Limpas no Topo:** SEMPRE use importações explícitas no topo (top-level) no início do arquivo.
+- **Sem Caracteres Coringa (Proibição Absoluta de Wildcards/Star Imports):** NÃO use importações com caracteres coringa (ex: `import java.util.*` ou `import static org.mockito.Mockito.*`). Importe cada classe ou membro estático explicitamente. Aplicado estritamente tanto em `src/main` quanto em `src/test` e checado via Checkstyle (`AvoidStarImport` com `allowClassImports=false` e `allowStaticMemberImports=false`).
 
-## Error Handling & Resilience
-- **Fail-Fast Validation:** Validate inputs at the boundary (e.g., Controllers, Event Listeners) using Jakarta Validation (`@NotNull`, `@Valid`) or explicit `Objects.requireNonNull()` before passing data to core services.
-- **Catch Specifics:** Never catch generic `Throwable` or `Exception` unless explicitly building a global fallback error handler. Catch the most specific subclass possible.
+## Tratamento de Erros & Resiliência
+- **Validação Fail-Fast:** Valide as entradas na fronteira (ex: Controllers, Event Listeners) usando Jakarta Validation (`@NotNull`, `@Valid`) ou `Objects.requireNonNull()` explícito antes de passar os dados para os serviços core.
+- **Captura Específica:** Nunca capture `Throwable` ou `Exception` genéricos, a menos que esteja construindo explicitamente um manipulador de erros global de fallback. Capture a subclasse mais específica possível.
 
-## Test Harness & TDD Mandate
-- **Strict TDD Enforcement:** Test-Driven Development (TDD) is the absolute foundation of code safety in this project. You MUST write the test before writing any production code (Red-Green-Refactor cycle). No production code changes are allowed without a preceding test change.
-- **Mandatory Test Suite Layers:** For every new feature or domain behavior, the agent MUST implement three distinct testing layers:
-  1. **Unit Tests:** Fast, isolated tests for core domain logic, Value Objects, and Aggregate invariants. External I/O must be mocked or faked.
-  2. **Integration Tests:** Tests verifying the interplay between components and infrastructure boundaries (e.g., Database persistence with `@DataJpaTest`, Spring context slices, API contracts).
-  3. **End-to-End (E2E) Tests:** Full-slice tests traversing the entire application stack from the public entry point (e.g., HTTP request using `@SpringBootTest` + `WebTestClient`) down to the database/external integrations, proving the system works as a cohesive whole.
-- **Execution:** All tests across all levels must run cleanly via a single root command: `./gradlew test`.
-- **Strict I/O Isolation for Unit Level:** Mock external I/O boundaries (REST APIs, Databases, Filesystems, Clocks). Prefer named test fakes (`FakeUserRepository`) or Mockito mocks. Never let a unit test perform actual network or disk activity.
-- **F.I.R.S.T. Principles:** Tests must be Fast, Independent, Repeatable, Self-Validating, and Timely.
+## Suíte de Testes & Mandato de TDD
+- **Aplicação Estrita de TDD:** O Desenvolvimento Orientado a Testes (TDD) é a base absoluta da segurança do código neste projeto. Você DEVE escrever o teste antes de escrever qualquer código de produção (ciclo Red-Green-Refactor). Nenhuma alteração no código de produção é permitida sem uma alteração prévia no teste.
+- **Camadas Obrigatórias da Suíte de Testes:** Para cada nova funcionalidade ou comportamento de domínio, o agente DEVE implementar três camadas distintas de teste:
+  1. **Testes Unitários:** Testes rápidos e isolados para a lógica central do domínio, Objetos de Valor e invariantes de Agregados. I/O externo deve ser mockado ou simulado (faked).
+  2. **Testes de Integração:** Testes que verificam a interação entre componentes e fronteiras de infraestrutura (ex: persistência em banco de dados com `@DataJpaTest`, fatias de contexto do Spring, contratos de API).
+  3. **Testes de Ponta a Ponta (E2E):** Testes de fatia completa que atravessam toda a stack da aplicação, desde o ponto de entrada público (ex: requisição HTTP usando `@SpringBootTest` + `WebTestClient`) até o banco de dados/integrações externas, provando que o sistema funciona como um todo coeso.
+- **Execução:** Todos os testes em todos os níveis devem rodar perfeitamente através de um único comando na raiz: `./gradlew test`.
+- **Isolamento Estrito de I/O no Nível Unitário:** Mocke as fronteiras de I/O externo (APIs REST, Bancos de Dados, Sistemas de Arquivos, Relógios). Prefira simuladores de teste nomeados (`FakeUserRepository`) ou mocks do Mockito. Nunca permita que um teste unitário realize atividades reais de rede ou disco.
+- **Princípios F.I.R.S.T.:** Os testes devem ser Rápidos (Fast), Independentes (Independent), Repetíveis (Repeatable), Auto-validáveis (Self-Validating) e Oportunos/Na hora certa (Timely).
 
-## Dependency Management & Decoupling
-- **Dependency Injection:** Inject all dependencies explicitly via constructor injection. Avoid `@Autowired` on fields to ensure class testability without Spring context orchestration.
-- **Anti-Corruption Layer:** Wrap third-party libraries and external SDKs behind a thin interface owned by this project. Do not leak external library models into the core domain layer.
+## Gerenciamento de Dependências & Desacoplamento
+- **Injeção de Dependência:** Injete todas as dependências explicitamente via injeção por construtor. Evite `@Autowired` em atributos para garantir a testabilidade da classe sem a necessidade de orquestração do contexto do Spring.
+- **Camada Anticorrupção (ACL):** Envolva bibliotecas de terceiros e SDKs externos atrás de uma interface fina de propriedade deste projeto. Não vaze modelos de bibliotecas externas para a camada core do domínio.
 
-## Framework & Structure (Spring Boot & Clean Architecture)
-- **Strategic Layering:** Isolate the Core Domain from Infrastructure. Follow a clean Ports & Adapters (Hexagonal) or Onion architecture layout:
-  - `domain/model`: Aggregates, Entities, Value Objects, and Domain Events. (Zero framework dependencies).
-  - `domain/service`: Pure domain services handling operations spanning multiple aggregates.
-  - `application`: Use cases, CQRS handlers, and application services coordinating transactions.
-  - `infrastructure`: Spring Controllers, Repositories, DB Mappers, and external API clients.
-- **Idiomatic Spring Boot:** Follow standard Spring Boot conventions strictly within the infrastructure layer, ensuring it implements the interfaces (Ports) defined by the domain layer.
-- **Granular Components:** Prefer small, highly focused Spring `@Component` classes over bloated "God Services".
+## Framework & Estrutura (Spring Boot & Arquitetura Limpa)
+- **Camadas Estratégicas:** Isole o Domínio Core da Infraestrutura. Siga um layout de arquitetura limpa do tipo Portas e Adaptadores (Hexagonal) ou Onion:
+  - `domain/model`: Agregados, Entidades, Objetos de Valor e Eventos de Domínio. (Zero dependências de frameworks).
+  - `domain/service`: Serviços de domínio puros que lidam com operações que abrangem múltiplos agregados.
+  - `application`: Casos de uso, handlers de CQRS e serviços de aplicação que coordenam transações.
+  - `infrastructure`: Spring Controllers, Repositories, Mappers de Banco de Dados e clientes de API externa.
+- **Spring Boot Idiomático:** Siga estritamente as convenções padrão do Spring Boot dentro da camada de infraestrutura, garantindo que ela implemente as interfaces (Portas) definidas pela camada de domínio.
+- **Componentes Granulares:** Prefira classes Spring `@Component` pequenas e altamente focadas em vez de "Serviços Deuses" (God Services) inflados.
 
-## Observability & Formatting
-- **Structured Logging:** Use SLF4J/Logback to output structured JSON format for application logs (info, warn, error).
-- **Contextual Logs:** Include relevant trace identifiers (like MDC / Trace IDs) in logs, and always log actionable context, not just generic stack traces.
-- **Zero Style Debates:** Use the default project/IDE formatter configuration. Do not alter or debate formatting styles beyond the automated checkstyle rules.
+## Observabilidade & Formatação
+- **Log Estruturado:** Use SLF4J/Logback para emitir o formato JSON estruturado para os logs da aplicação (info, warn, error).
+- **Logs Contextuais:** Inclua identificadores de rastreamento relevantes (como MDC / Trace IDs) nos logs e sempre registre contextos que permitam ação, não apenas stack traces genéricos.
+- **Zero Debates sobre Estilo:** Use a configuração padrão de formatador do projeto/IDE. Não altere ou debate estilos de formatação além das regras automatizadas do checkstyle.

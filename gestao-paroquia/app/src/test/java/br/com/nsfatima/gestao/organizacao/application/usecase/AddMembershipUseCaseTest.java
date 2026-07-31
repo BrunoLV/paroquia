@@ -1,10 +1,12 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +19,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,8 +44,7 @@ class AddMembershipUseCaseTest {
         useCase = new AddMembershipUseCase(membershipRepository, usuarioRepository, organizacaoRepository);
         originalContext = SecurityContextHolder.getContext();
 
-        var defaultIgreja =
-                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var defaultIgreja = new OrganizacaoEntity();
         defaultIgreja.setId(UUID.randomUUID());
         defaultIgreja.setTipo(TipoOrganizacao.MATRIZ);
         defaultIgreja.setNome("Matriz Default");
@@ -55,7 +57,7 @@ class AddMembershipUseCaseTest {
     }
 
     private void mockAuthentication(String... roles) {
-        var authorities = java.util.Arrays.stream(roles)
+        var authorities = Arrays.stream(roles)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
         var principal = new UsuarioDetails(UUID.randomUUID(), "actor", "pass", true, "", List.of());
@@ -197,8 +199,7 @@ class AddMembershipUseCaseTest {
         UUID igrejaId = UUID.randomUUID();
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
-        var invalidIgreja =
-                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var invalidIgreja = new OrganizacaoEntity();
         invalidIgreja.setId(igrejaId);
         invalidIgreja.setTipo(TipoOrganizacao.PASTORAL);
         when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.of(invalidIgreja));
@@ -230,14 +231,12 @@ class AddMembershipUseCaseTest {
 
                 .thenReturn(Optional.empty());
 
-        var defaultIgrejaA =
-                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var defaultIgrejaA = new OrganizacaoEntity();
         defaultIgrejaA.setId(churchA);
         defaultIgrejaA.setTipo(TipoOrganizacao.MATRIZ);
         when(organizacaoRepository.findById(churchA)).thenReturn(Optional.of(defaultIgrejaA));
 
-        var defaultIgrejaB =
-                new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var defaultIgrejaB = new OrganizacaoEntity();
         defaultIgrejaB.setId(churchB);
         defaultIgrejaB.setTipo(TipoOrganizacao.COMUNIDADE);
         when(organizacaoRepository.findById(churchB)).thenReturn(Optional.of(defaultIgrejaB));
@@ -395,7 +394,7 @@ class AddMembershipUseCaseTest {
         UUID differentChurchId = UUID.randomUUID();
         UUID organizacaoId = UUID.randomUUID();
 
-        var usuarioEntity = new br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity();
+        var usuarioEntity = new UsuarioEntity();
         usuarioEntity.setId(usuarioId);
         usuarioEntity.setIgrejaId(userChurchId);
 

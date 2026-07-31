@@ -33,6 +33,27 @@ public class LiturgicalEngine {
     }
 
     /**
+     * Início da Quaresma (Quarta-feira de Cinzas = Páscoa - 46 dias).
+     */
+    public LocalDate calculateQuartaDeCinzas(int year) {
+        return calculateEaster(year).minusDays(46);
+    }
+
+    /**
+     * Fim da Quaresma (Sábado Santo = Páscoa - 1 dia).
+     */
+    public LocalDate calculateVesperaPascoa(int year) {
+        return calculateEaster(year).minusDays(1);
+    }
+
+    /**
+     * Fim do Tempo Pascal (Domingo de Pentecostes = Páscoa + 49 dias / 50º dia).
+     */
+    public LocalDate calculatePentecostes(int year) {
+        return calculateEaster(year).plusDays(49);
+    }
+
+    /**
      * Calcula o início do Advento (1º Domingo do Advento) para o Ano Litúrgico nominal.
      * O 1º Domingo do Advento é o domingo mais próximo de 30 de novembro do ano civil anterior (anoLiturgico - 1).
      */

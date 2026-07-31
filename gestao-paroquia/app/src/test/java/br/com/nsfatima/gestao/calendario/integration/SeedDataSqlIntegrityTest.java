@@ -39,6 +39,8 @@ public class SeedDataSqlIntegrityTest {
         jdbcTemplate.execute("TRUNCATE TABLE calendario.usuarios;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.locais;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.organizacoes;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_ciclo_liturgico;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_liturgicos;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.pastorais_movimentos_oficiais;");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
 
@@ -50,7 +52,7 @@ public class SeedDataSqlIntegrityTest {
         }
 
         // Replace PostgreSQL ON CONFLICT for H2 compatibility in tests
-        sqlContent = sqlContent.replaceAll("ON CONFLICT\\s*\\(id\\)\\s*DO NOTHING", "")
+        sqlContent = sqlContent.replaceAll("ON CONFLICT\\s*\\([^)]+\\)\\s*DO NOTHING", "")
                                .replaceAll("ON CONFLICT\\s*\\(ano\\)\\s*DO UPDATE SET status = EXCLUDED.status, data_fechamento_utc = EXCLUDED.data_fechamento_utc", "")
                                .replaceAll("ON CONFLICT\\s*DO NOTHING", "");
 

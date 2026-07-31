@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.aprovacao;
 
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,9 +33,13 @@ class AprovacaoIntegrationTest {
     @Autowired
     private EventoJpaRepository eventoRepository;
 
+    @Autowired
+    private EventoEnvolvidoJpaRepository eventoEnvolvidoJpaRepository;
+
     @BeforeEach
     void setUp() {
         aprovacaoRepository.deleteAll();
+        eventoEnvolvidoJpaRepository.deleteAll();
         eventoRepository.deleteAll();
     }
 

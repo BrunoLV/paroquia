@@ -3,7 +3,9 @@ package br.com.nsfatima.gestao.iam.integration;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,26 +52,26 @@ class UsuarioDelegatedAdminIntegrationTest {
     @BeforeEach
     void setUp() {
         churchId = UUID.randomUUID();
-        var church = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var church = new OrganizacaoEntity();
         church.setId(churchId);
         church.setNome("Igreja Matriz Teste");
-        church.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.MATRIZ);
+        church.setTipo(TipoOrganizacao.MATRIZ);
         church.setAtivo(true);
         organizacaoRepository.save(church);
 
         orgId = UUID.randomUUID();
-        var org = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var org = new OrganizacaoEntity();
         org.setId(orgId);
         org.setNome("Pastoral Teste");
-        org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
+        org.setTipo(TipoOrganizacao.PASTORAL);
         org.setAtivo(true);
         organizacaoRepository.save(org);
 
         otherOrgId = UUID.randomUUID();
-        var otherOrg = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        var otherOrg = new OrganizacaoEntity();
         otherOrg.setId(otherOrgId);
         otherOrg.setNome("Outra Pastoral");
-        otherOrg.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao.PASTORAL);
+        otherOrg.setTipo(TipoOrganizacao.PASTORAL);
         otherOrg.setAtivo(true);
         organizacaoRepository.save(otherOrg);
 
