@@ -58,9 +58,9 @@
 
 ## Fase 4 — Limpeza, Validação Cruzada e Responsividade
 
-- [ ] Task: Auditar uso remanescente de `@mui/x-charts`
-  - [ ] Buscar por outras referências no projeto (`grep -r "@mui/x-charts"`)
-  - [ ] Se não houver mais uso, remover a dependência do `package.json` e do mock em `setupTests.ts`; caso contrário, documentar por que foi mantida
+- [x] Task: Auditar uso remanescente de `@mui/x-charts` (681a65a)
+  - [x] Buscar por outras referências no projeto (`grep -r "@mui/x-charts"`)
+  - [x] Se não houver mais uso, remover a dependência do `package.json` e do mock em `setupTests.ts`; caso contrário, documentar por que foi mantida
 - [ ] Task: Confirmar que componentes preservados não foram tocados
   - [ ] Revisar diffs de `WeeklyTimeline.tsx`, `ActiveProjectsProgressList.tsx`, `MetricasEstrategicasWidget.tsx`, `Organograma.tsx` — nenhuma nova lib de gráfico introduzida
 - [ ] Task: Rodar suíte completa e typecheck
