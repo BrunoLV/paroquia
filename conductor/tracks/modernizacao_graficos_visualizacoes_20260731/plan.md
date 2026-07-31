@@ -38,13 +38,13 @@
 
 ## Fase 3 — Gráfico de Barras em ApexCharts (`Reports.tsx`)
 
-- [ ] Task: Escrever testes (Red) para o novo bloco de barras
-  - [ ] Teste: renderiza série de barras a partir de `eventosPorOrganizacao`
-  - [ ] Teste: exibe mensagem de estado vazio quando não há dados
-  - [ ] Teste: aplica cores do tema MUI e reage a `palette.mode`
-  - [ ] Rodar `npx vitest run Reports.test.tsx -t "bar"` (ou equivalente) e confirmar falha (Red)
-- [ ] Task: Adicionar mock de `react-apexcharts` em `setupTests.ts`
-  - [ ] Mock do componente `ReactApexChart` retornando marcação simples testável (`data-testid="mock-apex-bar-chart"`)
+- [x] Task: Escrever testes (Red) para o novo bloco de barras (55e53b0)
+  - [x] Teste: renderiza série de barras a partir de `eventosPorOrganizacao`
+  - [x] Teste: exibe mensagem de estado vazio quando não há dados
+  - [x] Teste: aplica cores do tema MUI e reage a `palette.mode`
+  - [x] Rodar `npx vitest run EventVolumeBarChart.test.tsx` e confirmar falha (Red)
+- [x] Task: Adicionar mock de `react-apexcharts` em `setupTests.ts` (a27963d)
+  - [x] Mock do componente `ReactApexChart` retornando marcação simples testável (`data-testid="mock-apex-bar-chart"`)
 - [ ] Task: Implementar bloco de barras com ApexCharts (Green)
   - [ ] Substituir import de `BarChart` de `@mui/x-charts` por `react-apexcharts` em `Reports.tsx`
   - [ ] Configurar `options`/`series` a partir de `eventosPorOrganizacao` (`categories` = nomes das organizações)
