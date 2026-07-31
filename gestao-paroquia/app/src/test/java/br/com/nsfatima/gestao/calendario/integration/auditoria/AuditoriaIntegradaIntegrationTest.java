@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import com.jayway.jsonpath.JsonPath;
@@ -31,6 +32,7 @@ class AuditoriaIntegradaIntegrationTest {
     private static final String ORG_ID = "00000000-0000-0000-0000-0000000000aa";
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
     @Autowired
@@ -43,13 +45,17 @@ class AuditoriaIntegradaIntegrationTest {
     @Autowired
     private EventoEnvolvidoJpaRepository eventoEnvolvidoRepository;
 
+    @Autowired
+    private ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
+
     @BeforeEach
     void setUp() {
         auditoriaRepository.deleteAll();
-        projetoRepository.deleteAll();
+        observacaoEventoJpaRepository.deleteAll();
         aprovacaoRepository.deleteAll();
         eventoEnvolvidoRepository.deleteAll();
         eventoRepository.deleteAll();
+        projetoRepository.deleteAll();
     }
 
     @Test

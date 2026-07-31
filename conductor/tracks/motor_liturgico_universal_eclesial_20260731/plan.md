@@ -8,10 +8,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend - Reestruturação do Motor Litúrgico Universal (LiturgicalEngine) com Records Java 25' (Protocol in workflow.md) 2f4c607
 
 ## Phase 2: Backend - Provisionamento, Tabela de Precedência e Governança Eclesial (`PAROCO`/`VIGARIO`)
-- [ ] Task: Implementar exceção de regra imutável, controle de acesso estrito (`PAROCO`/`VIGARIO`) e refatorar `LiturgicalProvisioningService`
-    - [ ] Write tests in `LiturgicalGovernanceTest.java` and `LiturgicalProvisioningServiceTest.java` asserting permission check for `PAROCO`/`VIGARIO`, `ImmutableEclesialRuleException`, automatic provisioning and 1-5 precedence order
-    - [ ] Implement `ImmutableEclesialRuleException.java`, security checks, precedence ranking (1-5) and update dependent services (`CreateEventoUseCase`, `ImportacaoService`)
-    - [ ] Confirm all backend tests pass and build completes cleanly
+- [x] Task: Implementar exceção de regra imutável, controle de acesso estrito (`PAROCO`/`VIGARIO`) e refatorar `LiturgicalProvisioningService` a46f772
+    - [x] Write tests in `LiturgicalGovernanceTest.java` and `LiturgicalProvisioningServiceTest.java` asserting permission check for `PAROCO`/`VIGARIO`, `ImmutableEclesialRuleException`, automatic provisioning and 1-5 precedence order
+    - [x] Implement `ImmutableEclesialRuleException.java`, security checks, precedence ranking (1-5) and update dependent services (`CreateEventoUseCase`, `ImportacaoService`)
+    - [x] Confirm all backend tests pass and build completes cleanly
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend - Provisionamento, Tabela de Precedência e Governança Eclesial (PAROCO/VIGARIO)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend - Sincronização do Motor Litúrgico e Precedência na UI (`Calendar.tsx`)
