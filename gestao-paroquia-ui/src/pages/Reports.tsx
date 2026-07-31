@@ -28,10 +28,9 @@ import {
     Event as EventIcon,
     FilterList as FilterIcon,
     PendingActions as PendingIcon,
-    PieChart as PieIcon,
     Warning as WarningIcon,
 } from '@mui/icons-material';
-import {BarChart, PieChart} from '@mui/x-charts';
+import {BarChart} from '@mui/x-charts';
 import {useQuery} from '@tanstack/react-query';
 import {getDashboardMetrics} from '../api/dashboard';
 import {getOrganizacoes} from '../api/organizacoes';
@@ -39,6 +38,7 @@ import apiClient from '../api/client';
 import {DashboardMetrics, Organizacao, WeeklyEvent} from '../api/types';
 import ReportFilters from '../components/reports/ReportFilters';
 import ReportExportButtons from '../components/reports/ReportExportButtons';
+import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
 import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from '../utils/exportUtils';
 import {useNotification} from '../context/NotificationContext';
 
@@ -229,14 +229,6 @@ const Reports: React.FC = () => {
     );
   }
 
-  // Data formatted for PieChart with Marian Palette colors & labels
-  const pieChartData = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
-    id: index,
-    value: item.quantidadeEventos,
-    label: `${item.organizacaoNome} (${item.quantidadeEventos})`,
-    color: MARIAN_PALETTE[index % MARIAN_PALETTE.length],
-  }));
-
   // Series per organization for BarChart
   const barChartSeries = (filteredMetrics.eventosPorOrganizacao || []).map((item, index) => ({
     data: [item.quantidadeEventos],
@@ -409,52 +401,7 @@ const Reports: React.FC = () => {
       <Grid container spacing={3} sx={{ mt: 1 }}>
         {/* PieChart - Event Distribution */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card
-            elevation={0}
-            sx={{
-              p: 3,
-              height: '100%',
-              borderRadius: 0,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <PieIcon sx={{ color: '#1a237e' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
-                Distribuição de Eventos por Organização
-              </Typography>
-            </Box>
-
-            {pieChartData.length > 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 320, width: '100%' }}>
-                <PieChart
-                  series={[
-                    {
-                      data: pieChartData,
-                      innerRadius: 40,
-                      outerRadius: 95,
-                      paddingAngle: 3,
-                      cornerRadius: 0,
-                      highlightScope: { fade: 'global', highlight: 'item' },
-                    },
-                  ]}
-                  height={310}
-                  margin={{ top: 20, bottom: 50, left: 20, right: 20 }}
-                  slotProps={{
-                    legend: {
-                      direction: 'horizontal',
-                      position: { vertical: 'bottom', horizontal: 'center' },
-                    },
-                  }}
-                />
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ py: 6, textAlign: 'center' }}>
-                Nenhum evento encontrado para as organizações no período selecionado.
-              </Typography>
-            )}
-          </Card>
+          <EventDistributionPieChart data={filteredMetrics.eventosPorOrganizacao || []} />
         </Grid>
 
         {/* BarChart - Volume Comparison */}

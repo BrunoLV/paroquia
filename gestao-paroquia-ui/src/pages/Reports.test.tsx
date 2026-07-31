@@ -23,13 +23,6 @@ vi.mock('../context/NotificationContext', () => ({
 
 // Mock @mui/x-charts to avoid jsdom SVG rendering limitations
 vi.mock('@mui/x-charts', () => ({
-  PieChart: ({ series }: any) => (
-    <div data-testid="mock-pie-chart">
-      {series[0]?.data?.map((d: any) => (
-        <span key={d.label}>{d.label}: {d.value}</span>
-      ))}
-    </div>
-  ),
   BarChart: ({ xAxis, series }: any) => (
     <div data-testid="mock-bar-chart">
       <span>BarChart Mock</span>
@@ -98,7 +91,7 @@ describe('Reports Page', () => {
       expect(screen.getByText('3')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Distribuição de Eventos por Organização')).toBeInTheDocument();
+    expect(screen.getByText('Distribuição de Eventos')).toBeInTheDocument();
     expect(screen.getByText('Volume de Eventos por Organização')).toBeInTheDocument();
     expect(screen.getByText('Acompanhamento de Projetos Ativos & Status')).toBeInTheDocument();
     expect(screen.getByText('Festa Padroeiro')).toBeInTheDocument();

@@ -19,17 +19,6 @@ vi.mock('../context/NotificationContext', () => ({
   }),
 }));
 
-// Mock @mui/x-charts components to avoid jsdom rendering errors
-vi.mock('@mui/x-charts', () => ({
-  PieChart: ({ series }: any) => (
-    <div data-testid="mock-pie-chart">
-      {series[0]?.data?.map((d: any) => (
-        <span key={d.label}>{d.label}: {d.value}</span>
-      ))}
-    </div>
-  ),
-}));
-
 describe('Dashboard Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
