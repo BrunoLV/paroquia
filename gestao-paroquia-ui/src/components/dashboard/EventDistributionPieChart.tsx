@@ -80,19 +80,17 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
         Proporção de eventos agendados por organização responsável
       </Typography>
 
-      <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 220 }}>
+      <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 280, width: '100%' }}>
         {hasData ? (
-          <ResponsiveContainer width="100%" height={260}>
-            <PieChart>
+          <ResponsiveContainer width="100%" height={280}>
+            <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
               <Pie
                 data={chartData}
                 dataKey="value"
                 nameKey="label"
-                innerRadius={60}
-                outerRadius={90}
+                innerRadius={55}
+                outerRadius={80}
                 paddingAngle={3}
-                labelLine
-                label={({ label, percent }: any) => `${label} (${Math.round((percent || 0) * 100)}%)`}
                 isAnimationActive
                 animationEasing="ease-out"
               >
@@ -110,10 +108,16 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
                 }}
               />
               <Legend
-                layout="vertical"
-                verticalAlign="middle"
-                align="right"
-                wrapperStyle={{ color: theme.palette.text.secondary }}
+                layout="horizontal"
+                verticalAlign="bottom"
+                align="center"
+                wrapperStyle={{ color: theme.palette.text.secondary, fontSize: 12 }}
+                formatter={(value: string, _entry: unknown, index: number) => {
+                  const total = chartData.reduce((acc, item) => acc + item.value, 0);
+                  const sliceValue = chartData[index]?.value ?? 0;
+                  const percent = total > 0 ? Math.round((sliceValue / total) * 100) : 0;
+                  return `${value} (${percent}%)`;
+                }}
               />
             </PieChart>
           </ResponsiveContainer>
