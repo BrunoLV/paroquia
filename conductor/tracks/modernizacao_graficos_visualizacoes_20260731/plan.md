@@ -34,7 +34,7 @@
   - [x] Substituir bloco inline (linha ~429-456) pelo componente `EventDistributionPieChart`, adaptando `pieChartData`/`eventosPorOrganizacao` para a prop `data: EventDistribution[]`
   - [x] Rodar `Reports.test.tsx` e ajustar mocks/asserts se necessário
 - [x] Task: Verificar cobertura de teste (>80% para código novo)
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Fase 3 — Gráfico de Barras em ApexCharts (`Reports.tsx`)
 
