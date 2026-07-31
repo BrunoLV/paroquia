@@ -19,11 +19,14 @@
     "@mui/material": "^9.0.1",
     "@mui/x-charts": "^9.5.0",
     "@tanstack/react-query": "^5.100.10",
+    "apexcharts": "^6.6.1",
     "axios": "^1.16.1",
     "html-to-image": "^1.11.13",
     "react": "^19.2.6",
+    "react-apexcharts": "^2.1.1",
     "react-dom": "^19.2.6",
     "react-router-dom": "^6.30.3",
+    "recharts": "^3.10.1",
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {
