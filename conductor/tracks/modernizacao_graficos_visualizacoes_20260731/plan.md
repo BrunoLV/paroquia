@@ -53,7 +53,7 @@
   - [x] Cores dinâmicas via `useTheme()` e `theme.mode` propagado para `options.theme.mode`
   - [x] Container responsivo (`width: '100%'`, `ResizeObserver`/redraw automático do ApexCharts)
   - [x] Rodar testes e confirmar passagem (Green)
-- [ ] Task: Verificar cobertura de teste (>80% para código novo)
+- [x] Task: Verificar cobertura de teste (>80% para código novo)
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Fase 4 — Limpeza, Validação Cruzada e Responsividade
