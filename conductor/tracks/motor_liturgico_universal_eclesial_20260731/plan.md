@@ -5,7 +5,7 @@
     - [x] Write unit tests in `LiturgicalEngineTest.java` for Java 25 Records (`LiturgicalOutput`, `MarcoLiturgico`), cycle formula (`1->A, 2->B, 0->C`), movable offsets and fixed solemnities
     - [x] Implement `LiturgicalOutput.java`, `MarcoLiturgico.java`, `CorLiturgica.java` and pure calculation methods in `LiturgicalEngine.java`
     - [x] Confirm all tests pass across years 2024-2030 and satisfy monorepo Checkstyle rules
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend - Reestruturação do Motor Litúrgico Universal (LiturgicalEngine) com Records Java 25' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend - Reestruturação do Motor Litúrgico Universal (LiturgicalEngine) com Records Java 25' (Protocol in workflow.md) 2f4c607
 
 ## Phase 2: Backend - Provisionamento, Tabela de Precedência e Governança Eclesial (`PAROCO`/`VIGARIO`)
 - [ ] Task: Implementar exceção de regra imutável, controle de acesso estrito (`PAROCO`/`VIGARIO`) e refatorar `LiturgicalProvisioningService`
