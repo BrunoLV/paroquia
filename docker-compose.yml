@@ -16,10 +16,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    mem_limit: 224M
+    memswap_limit: 320M
+    cpus: 0.5
     deploy:
       resources:
         limits:
-          memory: 256M
+          cpus: '0.5'
+          memory: 224M
 
   builder:
     build:
@@ -33,10 +37,14 @@ services:
       - shared_volume:/shared
       - ./gestao-paroquia:/workspace
       - gradle_cache:/root/.gradle
+    mem_limit: 1024M
+    memswap_limit: 1280M
+    cpus: 2.0
     deploy:
       resources:
         limits:
-          memory: 1200M
+          cpus: '2.0'
+          memory: 1024M
 
   api:
     build:
@@ -66,10 +74,14 @@ services:
       timeout: 5s
       retries: 10
       start_period: 40s
+    mem_limit: 512M
+    memswap_limit: 640M
+    cpus: 1.0
     deploy:
       resources:
         limits:
-          memory: 450M
+          cpus: '1.0'
+          memory: 512M
 
   db-seeder:
     image: postgres:16-alpine
@@ -82,10 +94,14 @@ services:
     volumes:
       - ./gestao-paroquia/docker/seed-data.sql:/seed-data.sql
     command: psql -h db -U postgres -d calendario -f /seed-data.sql
+    mem_limit: 128M
+    memswap_limit: 128M
+    cpus: 0.25
     deploy:
       resources:
         limits:
-          memory: 100M
+          cpus: '0.25'
+          memory: 128M
 
   ui:
     build:
@@ -101,14 +117,18 @@ services:
     environment:
       - VITE_API_URL=http://localhost:8080/api/v1
       - VITE_API_PROXY_TARGET=http://api:8080
-      - NODE_OPTIONS=--max-old-space-size=1024
+      - NODE_OPTIONS=--max-old-space-size=512
     depends_on:
       api:
         condition: service_started
+    mem_limit: 1152M
+    memswap_limit: 1408M
+    cpus: 1.0
     deploy:
       resources:
         limits:
-          memory: 1200M
+          cpus: '1.0'
+          memory: 1152M
 
   pgadmin:
     image: dpage/pgadmin4
@@ -120,10 +140,14 @@ services:
       - "5050:80"
     depends_on:
       - db
+    mem_limit: 128M
+    memswap_limit: 160M
+    cpus: 0.25
     deploy:
       resources:
         limits:
-          memory: 150M
+          cpus: '0.25'
+          memory: 128M
 
 volumes:
   postgres_data:

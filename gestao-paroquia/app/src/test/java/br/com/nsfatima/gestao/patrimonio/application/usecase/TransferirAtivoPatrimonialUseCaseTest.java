@@ -3,10 +3,12 @@ package br.com.nsfatima.gestao.patrimonio.application.usecase;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.TransferirAtivoRequest;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoTransferenciaBloqueadaException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
@@ -25,6 +27,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +43,9 @@ class TransferirAtivoPatrimonialUseCaseTest {
     @Mock
     private PatrimonioAuditPublisher auditPublisher;
 
+    @Mock
+    private AtivoOrganizacaoPolicy organizacaoPolicy;
+
     private TransferirAtivoPatrimonialUseCase useCase;
     private UUID ativoId;
     private UUID organizacaoOrigemId;
@@ -47,7 +53,7 @@ class TransferirAtivoPatrimonialUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new TransferirAtivoPatrimonialUseCase(repository, actorContextResolver,
-                new PatrimonioAuthorizationService(), auditPublisher);
+                new PatrimonioAuthorizationService(), organizacaoPolicy, auditPublisher);
         ativoId = UUID.randomUUID();
         organizacaoOrigemId = UUID.randomUUID();
 
@@ -85,6 +91,19 @@ class TransferirAtivoPatrimonialUseCaseTest {
         var response = useCase.execute(ativoId, new TransferirAtivoRequest(novaOrganizacaoId, "Justificativa válida"));
 
         assertThat(response.organizacaoId()).isEqualTo(novaOrganizacaoId);
+    }
+
+    @Test
+    void deveRejeitarTransferenciaParaOrganizacaoDeTipoInvalido() {
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL);
+        UUID novaOrganizacaoId = UUID.randomUUID();
+        when(repository.findById(ativoId)).thenReturn(Optional.of(ativo));
+        doThrow(new AtivoOrganizacaoInvalidaException("tipo inválido"))
+                .when(organizacaoPolicy).assertOwnerOrganizacaoPermitida(novaOrganizacaoId);
+
+        assertThatThrownBy(() -> useCase.execute(ativoId,
+                new TransferirAtivoRequest(novaOrganizacaoId, "Justificativa válida")))
+                .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
     }
 
     private AtivoPatrimonialEntity criarAtivo(AtivoStatus status) {

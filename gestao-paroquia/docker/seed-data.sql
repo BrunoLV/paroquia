@@ -102,7 +102,9 @@ VALUES
     ('00000000-0000-0000-0000-000000000001', 'Igreja Principal', 'IGREJA', 500, TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-000000000002', 'Salão Paroquial', 'SALAO', 300, TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-000000000003', 'Sala de Catequese 1', 'SALA', 30, TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 10, TRUE, '00000000-0000-0000-0000-000000000100', 0)
+    ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 10, TRUE, '00000000-0000-0000-0000-000000000100', 0),
+    ('00000000-0000-0000-0000-000000000005', 'Salão Comunidade São José Allamano', 'SALAO', 150, TRUE, '00000000-0000-0000-0000-000000000200', 0),
+    ('00000000-0000-0000-0000-000000000006', 'Salão Comunidade Santo Agostinho', 'SALAO', 150, TRUE, '00000000-0000-0000-0000-000000000300', 0)
 ON CONFLICT (id) DO NOTHING;
 
 
@@ -121,7 +123,11 @@ VALUES
     ('10000000-0000-0000-0000-000000000011', 'carlos.catequese', '{noop}senha123', TRUE, 'VOLUNTARIO_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 'Carlos de Oliveira', '11999990011', TRUE, TRUE, FALSE, FALSE, 0),
     ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 'Lucas dos Santos', '11999990012', TRUE, TRUE, TRUE, FALSE, 0),
     ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 'Pedro Finanças', '11999990091', TRUE, TRUE, TRUE, TRUE, 0),
-    ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 'Ana Administração', '11999990092', TRUE, TRUE, TRUE, TRUE, 0)
+    ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 'Ana Administração', '11999990092', TRUE, TRUE, TRUE, TRUE, 0),
+    -- Presidente do CPC de Santo Agostinho, escopado diretamente à comunidade — usado para testar a
+    -- autorização de empréstimo de ativos patrimoniais (só o presidente do CPC da organização DONA do
+    -- ativo pode aprovar o empréstimo, junto com o pároco/admin)
+    ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 'Lúcia Fernandes (Presidente CPC Santo Agostinho)', '11999990013', TRUE, TRUE, TRUE, TRUE, 0)
 ON CONFLICT (id) DO NOTHING;
 
 
@@ -158,7 +164,11 @@ VALUES
     (gen_random_uuid(), '10000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, 0),
     (gen_random_uuid(), '10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000003a1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, 0),
     (gen_random_uuid(), '10000000-0000-0000-0000-000000000091', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, 0),
-    (gen_random_uuid(), '10000000-0000-0000-0000-000000000092', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, 0)
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000092', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, 0),
+    -- Escopo direto na Comunidade (organizacao_id = Santo Agostinho), não no conselho — necessário para
+    -- a checagem de autorização de empréstimo de ativos, que compara o contexto do ator diretamente
+    -- contra a organização dona do ativo.
+    (gen_random_uuid(), '10000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000300', 'CONSELHO_PASTORAL', 'presidente-cpc', '00000000-0000-0000-0000-000000000300', TRUE, 0)
 
 ON CONFLICT DO NOTHING;
 
@@ -194,7 +204,12 @@ VALUES
     ('40000000-0000-0000-0000-000000000013', 'Reunião de Planejamento Pastoral', 'Avaliando o semestre', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-07-28T19:30:00Z', '2026-07-28T21:00:00Z', NULL, 0),
     ('40000000-0000-0000-0000-000000000014', 'Missa de São Pedro e São Paulo', 'Celebração solene', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-30T19:00:00Z', '2026-07-30T20:30:00Z', NULL, 0),
     ('40000000-0000-0000-0000-000000000015', 'Encontro de Jovens de Férias', 'Momento de oração e lazer', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'SOCIAL', 'CONFIRMADO', '2026-07-31T17:00:00Z', '2026-07-31T19:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000016', 'Missa da Família - Agosto', 'Abertura da semana da família', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-08-02T10:00:00Z', '2026-08-02T11:30:00Z', NULL, 0);
+    ('40000000-0000-0000-0000-000000000016', 'Missa da Família - Agosto', 'Abertura da semana da família', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-08-02T10:00:00Z', '2026-08-02T11:30:00Z', NULL, 0),
+    -- Eventos em locais comunitários (fora da Matriz) — usados para testar alocação/empréstimo de ativos patrimoniais
+    ('40000000-0000-0000-0000-000000000201', 'Festa Junina Comunitária - São José', 'Arraiá da comunidade com quermesse', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-07-10T18:00:00Z', '2026-07-15T22:00:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000202', 'Reunião do Conselho - Santo Agostinho', 'Planejamento pastoral comunitário', '00000000-0000-0000-0000-0000000003c0', '00000000-0000-0000-0000-000000000006', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-08-12T19:30:00Z', '2026-08-12T21:00:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000203', 'Retiro Paroquial de Agosto', 'Retiro espiritual aberto a todas as comunidades', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'FORMATIVO', 'CONFIRMADO', '2026-08-20T08:00:00Z', '2026-08-20T18:00:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000204', 'Encontro Comunitário de Agosto - São José', 'Encontro mensal da comunidade', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-08-25T18:00:00Z', '2026-08-26T22:00:00Z', NULL, 0);
 
 -- Event with Extra Status
 INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version)
@@ -294,6 +309,66 @@ INSERT INTO calendario.auditoria_operacoes (id, organizacao_id, evento_id, recur
 VALUES 
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000000ee', '40000000-0000-0000-0000-000000000001', 'EVENTO', '40000000-0000-0000-0000-000000000001', 'CRIACAO', 'SUCCESS', 'maria.catequese', '10000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000004', '{"titulo": "Missa de Abertura da Catequese"}', '2026-01-15T08:00:00Z'),
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000000ee', '40000000-0000-0000-0000-000000000001', 'EVENTO', '40000000-0000-0000-0000-000000000001', 'APROVACAO', 'SUCCESS', 'padre.pedro', '10000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000004', '{"status": "CONFIRMADO"}', '2026-01-16T09:00:00Z');
+
+-- ============================================================================
+-- 2. PATRIMÔNIO — Ativos Patrimoniais e Alocações (massa de teste)
+-- ============================================================================
+-- Cobre os cenários: alocação direta (mesma organização), empréstimo entre
+-- organizações (pendente de aprovação), manutenção, atraso de devolução (com
+-- impacto em reserva futura) e ativo baixado. Organizações donas: Matriz (100),
+-- Comunidade São José Allamano (200) e Comunidade Santo Agostinho (300) — as
+-- únicas elegíveis a possuir ativos.
+
+INSERT INTO calendario.ativos_patrimoniais (
+    id, nome, numero_tombamento, categoria, status, reservavel, organizacao_id,
+    data_aquisicao, valor_estimado, criado_em_utc, version
+) VALUES
+    ('80000000-0000-0000-0000-000000000001', 'Projetor Multimídia Epson', 'PAT-2026-0001', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000100', '2024-03-10', 3500.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000002', 'Caixa de Som Amplificada', 'PAT-2026-0002', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000200', '2024-06-15', 1800.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000003', 'Kit 100 Cadeiras Plásticas', 'PAT-2026-0003', 'MOBILIARIO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2023-11-20', 4200.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000004', 'Notebook Dell Administrativo', 'PAT-2026-0004', 'ELETRONICO', 'ALOCADO', FALSE, '00000000-0000-0000-0000-000000000100', '2025-02-01', 3200.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000005', 'Kit Som Portátil Comunitário', 'PAT-2026-0005', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2024-09-05', 1500.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000006', 'Retroprojetor Antigo', 'PAT-2026-0006', 'ELETRONICO', 'EM_MANUTENCAO', FALSE, '00000000-0000-0000-0000-000000000100', '2018-04-12', 200.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000007', 'Som Amplificado Comunitário', 'PAT-2026-0007', 'ELETRONICO', 'ALOCADO', TRUE, '00000000-0000-0000-0000-000000000200', '2024-02-20', 1600.00, '2026-01-01T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000008', 'Armário Antigo (Fora de Uso)', 'PAT-2026-0008', 'MOBILIARIO', 'BAIXADO', FALSE, '00000000-0000-0000-0000-000000000100', '2015-01-01', 0.00, '2026-01-01T00:00:00Z', 0)
+ON CONFLICT (id) DO NOTHING;
+
+-- Mantém o contador de tombamento de 2026 à frente dos 8 números usados acima,
+-- para que o próximo ativo criado pela aplicação gere PAT-2026-0009 sem colidir.
+INSERT INTO calendario.patrimonio_numeracao_anual (ano, ultimo_numero, version)
+VALUES (2026, 8, 0)
+ON CONFLICT (ano) DO NOTHING;
+
+-- Solicitação de aprovação para o empréstimo pendente (ativo 0005 → evento 0203, Retiro Paroquial)
+INSERT INTO calendario.aprovacoes (
+    id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc,
+    decidido_em_utc, solicitante_id, solicitante_papel, solicitante_tipo_organizacao,
+    aprovador_id, decision_observacao, action_payload_json, correlation_id,
+    mensagem_erro_execucao, version
+) VALUES (
+    '60000000-0000-0000-0000-000000000007', '40000000-0000-0000-0000-000000000203', 'ALOCACAO_ATIVO_EMPRESTIMO', 'conselho-coordenador', 'PENDENTE', '2026-08-01T09:00:00Z',
+    NULL, '10000000-0000-0000-0000-000000000003', 'voluntario-pastoral-local', 'PASTORAL',
+    NULL, NULL, '{"eventoId": "40000000-0000-0000-0000-000000000203", "organizacaoResponsavelId": "00000000-0000-0000-0000-000000000300", "motivo": "Empréstimo do kit de som para uso no retiro paroquial de agosto", "localId": "00000000-0000-0000-0000-000000000001", "ativoId": "80000000-0000-0000-0000-000000000005", "ativoNome": "Kit Som Portátil Comunitário"}', '81000000-0000-0000-0000-000000000002',
+    NULL, 0
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.alocacoes_ativos (
+    id, ativo_id, tipo, evento_id, organizacao_origem_id, organizacao_destino_id,
+    emprestimo, data_inicio, data_fim, status, solicitante_id, justificativa,
+    aprovacao_id, impactada_por_atraso, alerta_atraso_emitido_em, motivo_cancelamento,
+    criado_em_utc, devolvido_em_utc, version
+) VALUES
+    -- Alocação direta confirmada: notebook (Matriz) usado na Missa da Família (local da Matriz)
+    ('81000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000004', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000016', '00000000-0000-0000-0000-000000000100', '00000000-0000-0000-0000-000000000100', FALSE, '2026-08-02', '2026-08-02', 'CONFIRMADA', NULL, 'Uso administrativo durante a missa da família', NULL, FALSE, NULL, NULL, '2026-07-30T10:00:00Z', NULL, 0),
+    -- Empréstimo pendente de aprovação: kit de som (Santo Agostinho) emprestado para o Retiro Paroquial (local da Matriz)
+    ('81000000-0000-0000-0000-000000000002', '80000000-0000-0000-0000-000000000005', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000203', '00000000-0000-0000-0000-000000000300', '00000000-0000-0000-0000-000000000100', TRUE, '2026-08-20', '2026-08-20', 'PENDENTE_APROVACAO', '10000000-0000-0000-0000-000000000003', 'Empréstimo do kit de som para uso no retiro paroquial de agosto', '60000000-0000-0000-0000-000000000007', FALSE, NULL, NULL, '2026-08-01T09:00:00Z', NULL, 0),
+    -- Manutenção em andamento do retroprojetor antigo (Matriz)
+    ('81000000-0000-0000-0000-000000000003', '80000000-0000-0000-0000-000000000006', 'MANUTENCAO', NULL, '00000000-0000-0000-0000-000000000100', NULL, FALSE, '2026-07-28', '2026-08-10', 'CONFIRMADA', NULL, 'Reparo da lâmpada e da lente', NULL, FALSE, NULL, NULL, '2026-07-28T08:00:00Z', NULL, 0),
+    -- Devolução atrasada: som amplificado (São José) usado na Festa Junina, ainda não devolvido
+    ('81000000-0000-0000-0000-000000000004', '80000000-0000-0000-0000-000000000007', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000201', '00000000-0000-0000-0000-000000000200', '00000000-0000-0000-0000-000000000200', FALSE, '2026-07-10', '2026-07-15', 'ATRASADA', NULL, 'Uso na festa junina comunitária', NULL, FALSE, '2026-07-18T00:00:00Z', NULL, '2026-07-08T10:00:00Z', NULL, 0),
+    -- Reserva futura do mesmo ativo, impactada pelo atraso acima (usado para testar o alerta em cascata)
+    ('81000000-0000-0000-0000-000000000005', '80000000-0000-0000-0000-000000000007', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000204', '00000000-0000-0000-0000-000000000200', '00000000-0000-0000-0000-000000000200', FALSE, '2026-08-25', '2026-08-26', 'CONFIRMADA', NULL, 'Uso no encontro comunitário de agosto', NULL, TRUE, NULL, NULL, '2026-08-01T10:00:00Z', NULL, 0)
+ON CONFLICT (id) DO NOTHING;
 
 -- Seed 10 Anos Litúrgicos (2026 - 2035)
 INSERT INTO calendario.anos_liturgicos (ano, ciclo_letra, data_inicio_advento, data_fim_comum, atualizado_em_utc)

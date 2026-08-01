@@ -1,8 +1,13 @@
 package br.com.nsfatima.gestao.patrimonio.api.error;
 
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoAlocacaoCancelamentoInvalidoException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoAlocacaoInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoDesalocacaoInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPeriodoConflitanteException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoTransferenciaBloqueadaException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -52,5 +57,56 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
                         ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "alocacao", ex.getMessage(), null)));
+    }
+
+    @ExceptionHandler(AtivoOrganizacaoInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleOrganizacaoInvalida(AtivoOrganizacaoInvalidaException ex) {
+        return buildValidation(
+                HttpStatus.BAD_REQUEST,
+                ErrorCodes.DOMAIN_RULE_VIOLATION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "organizacaoId", ex.getMessage(), null)));
+    }
+
+    @ExceptionHandler(AtivoPeriodoConflitanteException.class)
+    public ResponseEntity<ValidationErrorResponse> handlePeriodoConflitante(AtivoPeriodoConflitanteException ex) {
+        return buildValidation(
+                HttpStatus.CONFLICT,
+                ErrorCodes.INVALID_STATUS_TRANSITION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), "periodo", ex.getMessage(), null)));
+    }
+
+    @ExceptionHandler(AtivoDesalocacaoInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleDesalocacaoInvalida(AtivoDesalocacaoInvalidaException ex) {
+        return buildValidation(
+                HttpStatus.CONFLICT,
+                ErrorCodes.INVALID_STATUS_TRANSITION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), "alocacao", ex.getMessage(), null)));
+    }
+
+    @ExceptionHandler(AtivoManutencaoInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleManutencaoInvalida(AtivoManutencaoInvalidaException ex) {
+        return buildValidation(
+                HttpStatus.CONFLICT,
+                ErrorCodes.INVALID_STATUS_TRANSITION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), "manutencao", ex.getMessage(), null)));
+    }
+
+    @ExceptionHandler(AtivoAlocacaoCancelamentoInvalidoException.class)
+    public ResponseEntity<ValidationErrorResponse> handleCancelamentoInvalido(
+            AtivoAlocacaoCancelamentoInvalidoException ex) {
+        return buildValidation(
+                HttpStatus.CONFLICT,
+                ErrorCodes.INVALID_STATUS_TRANSITION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), "alocacao", ex.getMessage(), null)));
     }
 }

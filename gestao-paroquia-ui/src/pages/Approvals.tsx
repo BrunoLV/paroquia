@@ -143,6 +143,8 @@ const Approvals = () => {
         return 'Edição de Evento';
       case 'CANCELAMENTO':
         return 'Cancelamento de Evento';
+      case 'ALOCACAO_ATIVO_EMPRESTIMO':
+        return 'Empréstimo de Ativo';
       default:
         return tipo;
     }
@@ -174,6 +176,9 @@ const Approvals = () => {
 
   const getEventTitle = (approval: AprovacaoResponse) => {
     const payload = parsePayload(approval.actionPayloadJson);
+    if (approval.tipoSolicitacao === 'ALOCACAO_ATIVO_EMPRESTIMO') {
+      return payload?.ativoNome ? `Empréstimo — ${payload.ativoNome}` : 'Empréstimo de Ativo';
+    }
     return payload?.titulo || 'Sem título / Cancelamento';
   };
 
@@ -446,6 +451,21 @@ const Approvals = () => {
                   </Typography>
                   <Typography variant="body2">
                     <strong>Motivo:</strong> {parsePayload(selectedApproval.actionPayloadJson)?.motivo || 'Não informado'}
+                  </Typography>
+                </>
+              ) : selectedApproval.tipoSolicitacao === 'ALOCACAO_ATIVO_EMPRESTIMO' ? (
+                <>
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                    Solicitação de Empréstimo de Ativo
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Ativo:</strong> {parsePayload(selectedApproval.actionPayloadJson)?.ativoNome || 'Não informado'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Organização dona:</strong> {parsePayload(selectedApproval.actionPayloadJson)?.organizacaoResponsavelId || 'Não informado'}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Justificativa:</strong> {parsePayload(selectedApproval.actionPayloadJson)?.motivo || 'Não informado'}
                   </Typography>
                 </>
               ) : (

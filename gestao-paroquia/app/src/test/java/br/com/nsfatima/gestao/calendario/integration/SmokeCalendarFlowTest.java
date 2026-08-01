@@ -45,7 +45,7 @@ class SmokeCalendarFlowTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.tipo").value("NOTA"));
 
-        mockMvc.perform(get("/api/v1/eventos"))
+        mockMvc.perform(get("/api/v1/eventos").param("size", "200"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[?(@.titulo=='Evento Smoke')]").exists());
     }

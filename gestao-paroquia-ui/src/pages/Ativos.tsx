@@ -12,7 +12,9 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
+  IconButton,
   InputLabel,
+  Menu,
   MenuItem,
   Paper,
   Select,
@@ -26,15 +28,39 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon, SwapHoriz as TransferIcon, EventAvailable as AllocateIcon, Inventory as InventoryIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  SwapHoriz as TransferIcon,
+  EventAvailable as AllocateIcon,
+  Inventory as InventoryIcon,
+  MoreVert as MoreVertIcon,
+} from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
-import { canManageAtivos, canTransferAtivo, canAlocarAtivo, isGlobalCreator } from '../auth/permissions';
+import {
+  canManageAtivos,
+  canTransferAtivo,
+  canAlocarAtivo,
+  canManageManutencaoAtivo,
+  isGlobalCreator,
+} from '../auth/permissions';
 import apiClient from '../api/client';
-import { alocarAtivo, createAtivo, getAtivosPorOrganizacao, transferirAtivo } from '../api/ativos';
+import {
+  alocarAtivo,
+  createAtivo,
+  desalocarAtivo,
+  finalizarManutencao,
+  getAtivosPorOrganizacao,
+  iniciarManutencao,
+  transferirAtivo,
+} from '../api/ativos';
 import { listEventos } from '../api/eventos';
 import { AtivoCategoria, AtivoPatrimonial, Evento, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import PageHeader from '../components/PageHeader';
+import AtivoAlocacoesModal from '../components/AtivoAlocacoesModal';
+import { formatCurrencyBRL } from '../utils/currencyUtils';
+
+const isOwnerEligibleOrg = (org: Organizacao): boolean => org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
 
 const addDays = (date: Date, days: number): string => {
   const result = new Date(date);
@@ -72,6 +98,7 @@ const Ativos = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [formOrgId, setFormOrgId] = useState('');
   const [formNome, setFormNome] = useState('');
   const [formCategoria, setFormCategoria] = useState<AtivoCategoria>('ELETRONICO');
   const [formReservavel, setFormReservavel] = useState(false);
@@ -81,6 +108,14 @@ const Ativos = () => {
   const [transferDialogAtivo, setTransferDialogAtivo] = useState<AtivoPatrimonial | null>(null);
   const [transferNovaOrgId, setTransferNovaOrgId] = useState('');
   const [transferJustificativa, setTransferJustificativa] = useState('');
+
+  const [manutencaoDialogAtivo, setManutencaoDialogAtivo] = useState<AtivoPatrimonial | null>(null);
+  const [manutencaoDataInicio, setManutencaoDataInicio] = useState('');
+  const [manutencaoDataFim, setManutencaoDataFim] = useState('');
+  const [manutencaoMotivo, setManutencaoMotivo] = useState('');
+
+  const [alocacoesDialogAtivo, setAlocacoesDialogAtivo] = useState<AtivoPatrimonial | null>(null);
+  const [actionMenu, setActionMenu] = useState<{ anchorEl: HTMLElement; ativo: AtivoPatrimonial } | null>(null);
 
   const [alocarDialogAtivo, setAlocarDialogAtivo] = useState<AtivoPatrimonial | null>(null);
   const [alocarDataInicio, setAlocarDataInicio] = useState('');
@@ -99,6 +134,8 @@ const Ativos = () => {
     }
     return [];
   };
+
+  const getOwnerEligibleOrgs = () => getSelectableOrgs().filter(isOwnerEligibleOrg);
 
   const loadOrganizations = async () => {
     try {
@@ -139,17 +176,18 @@ const Ativos = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOrgId]);
 
-  const loadEventos = async (organizacaoId: string, dataInicio: string, dataFim: string) => {
+  const loadEventos = async (dataInicio: string, dataFim: string) => {
     if (!dataInicio || !dataFim) {
       setEventosDisponiveis([]);
       return;
     }
     setIsLoadingEventos(true);
     try {
+      // Não filtra por organização: o ativo pode ser alocado a um evento de qualquer
+      // organização (empréstimo entre organizações), não só da organização dona do ativo.
       const data = await listEventos({
         dataInicio: new Date(dataInicio).toISOString(),
         dataFim: new Date(`${dataFim}T23:59:59`).toISOString(),
-        organizacaoIds: [organizacaoId],
       });
       setEventosDisponiveis(data || []);
     } catch (err) {
@@ -167,7 +205,7 @@ const Ativos = () => {
       const fim = addDays(new Date(), 30);
       setAlocarDataInicio(inicio);
       setAlocarDataFim(fim);
-      loadEventos(alocarDialogAtivo.organizacaoId, inicio, fim);
+      loadEventos(inicio, fim);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alocarDialogAtivo]);
@@ -183,9 +221,7 @@ const Ativos = () => {
     setAlocarDataInicio(dataInicio);
     setAlocarDataFim(dataFim);
     setAlocarEventoId('');
-    if (alocarDialogAtivo) {
-      loadEventos(alocarDialogAtivo.organizacaoId, dataInicio, dataFim);
-    }
+    loadEventos(dataInicio, dataFim);
   };
 
   const extractErrorMessage = (err: any, fallback: string): string => {
@@ -202,6 +238,7 @@ const Ativos = () => {
   };
 
   const resetCreateForm = () => {
+    setFormOrgId('');
     setFormNome('');
     setFormCategoria('ELETRONICO');
     setFormReservavel(false);
@@ -209,20 +246,29 @@ const Ativos = () => {
     setFormValorEstimado('');
   };
 
+  const openCreateDialog = () => {
+    const eligibleOrgs = getOwnerEligibleOrgs();
+    const defaultOrgId = eligibleOrgs.some((org) => org.id === selectedOrgId)
+      ? selectedOrgId
+      : (eligibleOrgs[0]?.id || '');
+    setFormOrgId(defaultOrgId);
+    setCreateDialogOpen(true);
+  };
+
   const handleCreate = async () => {
     if (!formNome.trim()) {
       showError('Informe o nome do ativo.');
       return;
     }
-    if (!selectedOrgId) {
-      showError('Selecione uma organização antes de cadastrar um ativo.');
+    if (!formOrgId) {
+      showError('Selecione uma organização (Matriz ou Comunidade) antes de cadastrar um ativo.');
       return;
     }
     try {
       await createAtivo({
         nome: formNome,
         categoria: formCategoria,
-        organizacaoId: selectedOrgId,
+        organizacaoId: formOrgId,
         reservavel: formReservavel,
         dataAquisicao: formDataAquisicao || null,
         valorEstimado: formValorEstimado ? Number(formValorEstimado) : null,
@@ -230,7 +276,9 @@ const Ativos = () => {
       showSuccess('Ativo cadastrado com sucesso!');
       setCreateDialogOpen(false);
       resetCreateForm();
-      loadAtivos(selectedOrgId);
+      if (formOrgId === selectedOrgId) {
+        loadAtivos(selectedOrgId);
+      }
     } catch (err: any) {
       showError(extractErrorMessage(err, 'Erro ao cadastrar ativo.'));
     }
@@ -263,24 +311,80 @@ const Ativos = () => {
 
   const handleAlocar = async () => {
     if (!alocarDialogAtivo) return;
-    if (!alocarEventoId) {
-      showError('Selecione o evento para o qual o ativo será alocado.');
-      return;
-    }
     if (alocarJustificativa.trim().length < 10) {
       showError('A justificativa de utilização deve ter pelo menos 10 caracteres.');
       return;
     }
     try {
-      await alocarAtivo(alocarDialogAtivo.id, {
-        eventoId: alocarEventoId,
+      const resultado = await alocarAtivo(alocarDialogAtivo.id, {
+        eventoId: alocarEventoId || null,
         justificativaAlocacao: alocarJustificativa,
+        dataInicio: alocarDataInicio,
+        dataFim: alocarDataFim,
       });
-      showSuccess('Ativo alocado com sucesso!');
+      if (resultado.kind === 'PENDENTE') {
+        showSuccess('Empréstimo solicitado — aguardando aprovação do responsável pela organização dona do ativo.');
+      } else {
+        showSuccess('Ativo alocado com sucesso!');
+      }
       closeAlocarDialog();
       loadAtivos(selectedOrgId);
     } catch (err: any) {
       showError(extractErrorMessage(err, 'Erro ao alocar ativo.'));
+    }
+  };
+
+  const closeManutencaoDialog = () => {
+    setManutencaoDialogAtivo(null);
+    setManutencaoDataInicio('');
+    setManutencaoDataFim('');
+    setManutencaoMotivo('');
+  };
+
+  const openManutencaoDialog = (ativo: AtivoPatrimonial) => {
+    setManutencaoDialogAtivo(ativo);
+    setManutencaoDataInicio(addDays(new Date(), 0));
+    setManutencaoDataFim(addDays(new Date(), 7));
+    setManutencaoMotivo('');
+  };
+
+  const handleIniciarManutencao = async () => {
+    if (!manutencaoDialogAtivo) return;
+    if (manutencaoMotivo.trim().length < 10) {
+      showError('O motivo da manutenção deve ter pelo menos 10 caracteres.');
+      return;
+    }
+    try {
+      await iniciarManutencao(manutencaoDialogAtivo.id, {
+        dataInicio: manutencaoDataInicio,
+        dataFim: manutencaoDataFim,
+        motivo: manutencaoMotivo,
+      });
+      showSuccess('Manutenção iniciada com sucesso!');
+      closeManutencaoDialog();
+      loadAtivos(selectedOrgId);
+    } catch (err: any) {
+      showError(extractErrorMessage(err, 'Erro ao iniciar manutenção.'));
+    }
+  };
+
+  const handleFinalizarManutencao = async (ativo: AtivoPatrimonial) => {
+    try {
+      await finalizarManutencao(ativo.id);
+      showSuccess('Manutenção finalizada — ativo disponível novamente.');
+      loadAtivos(selectedOrgId);
+    } catch (err: any) {
+      showError(extractErrorMessage(err, 'Erro ao finalizar manutenção.'));
+    }
+  };
+
+  const handleDesalocar = async (ativo: AtivoPatrimonial) => {
+    try {
+      await desalocarAtivo(ativo.id);
+      showSuccess('Ativo desalocado — devolvido para a organização dona.');
+      loadAtivos(selectedOrgId);
+    } catch (err: any) {
+      showError(extractErrorMessage(err, 'Erro ao desalocar ativo.'));
     }
   };
 
@@ -296,7 +400,7 @@ const Ativos = () => {
               variant="contained"
               startIcon={<AddIcon />}
               disabled={!selectedOrgId}
-              onClick={() => setCreateDialogOpen(true)}
+              onClick={openCreateDialog}
             >
               Novo Ativo
             </Button>
@@ -312,7 +416,7 @@ const Ativos = () => {
           value={selectedOrgId}
           onChange={(e) => setSelectedOrgId(e.target.value as string)}
         >
-          {getSelectableOrgs().map((org) => (
+          {getOwnerEligibleOrgs().map((org) => (
             <MenuItem key={org.id} value={org.id}>
               {org.nome}
             </MenuItem>
@@ -335,6 +439,7 @@ const Ativos = () => {
                 <TableCell>Tombamento</TableCell>
                 <TableCell>Categoria</TableCell>
                 <TableCell>Status</TableCell>
+                <TableCell align="right">Valor Estimado</TableCell>
                 <TableCell align="right">Ações</TableCell>
               </TableRow>
             </TableHead>
@@ -347,31 +452,21 @@ const Ativos = () => {
                   <TableCell>
                     <Chip label={ativo.status} color={STATUS_COLORS[ativo.status] || 'default'} size="small" />
                   </TableCell>
+                  <TableCell align="right">{formatCurrencyBRL(ativo.valorEstimado)}</TableCell>
                   <TableCell align="right">
-                    {canTransferAtivo(user, ativo.organizacaoId) && (
-                      <Button
-                        size="small"
-                        startIcon={<TransferIcon />}
-                        onClick={() => setTransferDialogAtivo(ativo)}
-                      >
-                        Transferir
-                      </Button>
-                    )}
-                    {canAlocarAtivo(user, ativo.organizacaoId) && ativo.status === 'DISPONIVEL' && (
-                      <Button
-                        size="small"
-                        startIcon={<AllocateIcon />}
-                        onClick={() => setAlocarDialogAtivo(ativo)}
-                      >
-                        Alocar
-                      </Button>
-                    )}
+                    <IconButton
+                      size="small"
+                      aria-label="Ações"
+                      onClick={(e) => setActionMenu({ anchorEl: e.currentTarget, ativo })}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
               {ativos.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
+                  <TableCell colSpan={6} align="center">
                     Nenhum ativo cadastrado para esta organização.
                   </TableCell>
                 </TableRow>
@@ -381,10 +476,95 @@ const Ativos = () => {
         </TableContainer>
       )}
 
+      <Menu
+        anchorEl={actionMenu?.anchorEl}
+        open={!!actionMenu}
+        onClose={() => setActionMenu(null)}
+      >
+        {actionMenu && canTransferAtivo(user, actionMenu.ativo.organizacaoId) && (
+          <MenuItem
+            onClick={() => {
+              setTransferDialogAtivo(actionMenu.ativo);
+              setActionMenu(null);
+            }}
+          >
+            <TransferIcon fontSize="small" sx={{ mr: 1 }} />
+            Transferir
+          </MenuItem>
+        )}
+        {actionMenu && canAlocarAtivo(user, actionMenu.ativo.organizacaoId) && actionMenu.ativo.status === 'DISPONIVEL' && (
+          <MenuItem
+            onClick={() => {
+              setAlocarDialogAtivo(actionMenu.ativo);
+              setActionMenu(null);
+            }}
+          >
+            <AllocateIcon fontSize="small" sx={{ mr: 1 }} />
+            Alocar
+          </MenuItem>
+        )}
+        {actionMenu && canAlocarAtivo(user, actionMenu.ativo.organizacaoId) && actionMenu.ativo.status === 'ALOCADO' && (
+          <MenuItem
+            onClick={() => {
+              handleDesalocar(actionMenu.ativo);
+              setActionMenu(null);
+            }}
+          >
+            Desalocar
+          </MenuItem>
+        )}
+        {actionMenu && canManageManutencaoAtivo(user, actionMenu.ativo.organizacaoId) && actionMenu.ativo.status === 'DISPONIVEL' && (
+          <MenuItem
+            onClick={() => {
+              openManutencaoDialog(actionMenu.ativo);
+              setActionMenu(null);
+            }}
+          >
+            Iniciar Manutenção
+          </MenuItem>
+        )}
+        {actionMenu && canManageManutencaoAtivo(user, actionMenu.ativo.organizacaoId) && actionMenu.ativo.status === 'EM_MANUTENCAO' && (
+          <MenuItem
+            onClick={() => {
+              handleFinalizarManutencao(actionMenu.ativo);
+              setActionMenu(null);
+            }}
+          >
+            Finalizar Manutenção
+          </MenuItem>
+        )}
+        {actionMenu && (
+          <MenuItem
+            onClick={() => {
+              setAlocacoesDialogAtivo(actionMenu.ativo);
+              setActionMenu(null);
+            }}
+          >
+            <InventoryIcon fontSize="small" sx={{ mr: 1 }} />
+            Ver Alocações
+          </MenuItem>
+        )}
+      </Menu>
+
       <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Novo Ativo Patrimonial</DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <FormControl fullWidth size="small" required>
+              <InputLabel id="create-organizacao-select-label">Organização Dona</InputLabel>
+              <Select
+                labelId="create-organizacao-select-label"
+                label="Organização Dona"
+                value={formOrgId}
+                onChange={(e) => setFormOrgId(e.target.value as string)}
+              >
+                {getOwnerEligibleOrgs().map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               label="Nome"
               value={formNome}
@@ -451,7 +631,7 @@ const Ativos = () => {
                 value={transferNovaOrgId}
                 onChange={(e) => setTransferNovaOrgId(e.target.value as string)}
               >
-                {organizations.map((org) => (
+                {organizations.filter(isOwnerEligibleOrg).map((org) => (
                   <MenuItem key={org.id} value={org.id}>
                     {org.nome}
                   </MenuItem>
@@ -479,7 +659,7 @@ const Ativos = () => {
       </Dialog>
 
       <Dialog open={!!alocarDialogAtivo} onClose={closeAlocarDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Alocar Ativo para Evento</DialogTitle>
+        <DialogTitle>Alocar / Reservar Ativo</DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <Grid container spacing={2}>
@@ -507,13 +687,16 @@ const Ativos = () => {
               </Grid>
             </Grid>
             <FormControl fullWidth disabled={isLoadingEventos} size="small">
-              <InputLabel id="evento-select-label">Evento</InputLabel>
+              <InputLabel id="evento-select-label">Evento (opcional)</InputLabel>
               <Select
                 labelId="evento-select-label"
-                label="Evento"
+                label="Evento (opcional)"
                 value={alocarEventoId}
                 onChange={(e) => setAlocarEventoId(e.target.value as string)}
               >
+                <MenuItem value="">
+                  <em>Nenhum — apenas reservar o ativo</em>
+                </MenuItem>
                 {eventosDisponiveis.map((evento) => (
                   <MenuItem key={evento.id} value={evento.id}>
                     {formatEventoOption(evento)}
@@ -521,9 +704,14 @@ const Ativos = () => {
                 ))}
               </Select>
             </FormControl>
+            <Typography variant="body2" color="text.secondary">
+              Não é necessário vincular a um evento — o ativo pode ser reservado para o período informado
+              apenas com a justificativa. Se o evento escolhido pertencer a outra organização, a alocação
+              se torna um empréstimo e fica pendente de aprovação.
+            </Typography>
             {!isLoadingEventos && eventosDisponiveis.length === 0 && (
               <Typography variant="body2" color="text.secondary">
-                Nenhum evento encontrado neste período para esta organização.
+                Nenhum evento encontrado neste período.
               </Typography>
             )}
             <TextField
@@ -540,11 +728,66 @@ const Ativos = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={closeAlocarDialog} color="secondary">Cancelar</Button>
-          <Button variant="contained" onClick={handleAlocar} disabled={!alocarEventoId}>
+          <Button variant="contained" onClick={handleAlocar}>
             Alocar
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={!!manutencaoDialogAtivo} onClose={closeManutencaoDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Iniciar Manutenção</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Período - Início"
+                  type="date"
+                  value={manutencaoDataInicio}
+                  onChange={(e) => setManutencaoDataInicio(e.target.value)}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Período - Fim"
+                  type="date"
+                  value={manutencaoDataFim}
+                  onChange={(e) => setManutencaoDataFim(e.target.value)}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+            <TextField
+              label="Motivo da Manutenção"
+              multiline
+              rows={3}
+              value={manutencaoMotivo}
+              onChange={(e) => setManutencaoMotivo(e.target.value)}
+              fullWidth
+              required
+              size="small"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeManutencaoDialog} color="secondary">Cancelar</Button>
+          <Button variant="contained" onClick={handleIniciarManutencao}>
+            Salvar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <AtivoAlocacoesModal
+        ativoId={alocacoesDialogAtivo?.id || null}
+        ativoNome={alocacoesDialogAtivo?.nome}
+        onClose={() => setAlocacoesDialogAtivo(null)}
+        onChanged={() => loadAtivos(selectedOrgId)}
+      />
     </Container>
   );
 };

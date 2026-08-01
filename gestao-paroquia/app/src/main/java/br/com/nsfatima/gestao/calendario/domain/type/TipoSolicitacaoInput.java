@@ -9,6 +9,7 @@ public enum TipoSolicitacaoInput {
     ALTERACAO_HORARIO,
     CANCELAMENTO,
     RECLASSIFICACAO,
+    ALOCACAO_ATIVO_EMPRESTIMO,
     OUTRO;
 
     @JsonCreator

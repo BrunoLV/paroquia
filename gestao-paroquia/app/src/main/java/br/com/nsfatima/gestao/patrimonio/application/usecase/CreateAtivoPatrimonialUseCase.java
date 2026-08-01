@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.CreateAtivoPatrimonialRequest;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
@@ -23,17 +24,20 @@ public class CreateAtivoPatrimonialUseCase {
     private final AtivoPatrimonialJpaRepository repository;
     private final EventoActorContextResolver actorContextResolver;
     private final PatrimonioAuthorizationService authorizationService;
+    private final AtivoOrganizacaoPolicy organizacaoPolicy;
     private final NumeroTombamentoGenerator numeroTombamentoGenerator;
     private final PatrimonioAuditPublisher auditPublisher;
 
     public CreateAtivoPatrimonialUseCase(AtivoPatrimonialJpaRepository repository,
                                           EventoActorContextResolver actorContextResolver,
                                           PatrimonioAuthorizationService authorizationService,
+                                          AtivoOrganizacaoPolicy organizacaoPolicy,
                                           NumeroTombamentoGenerator numeroTombamentoGenerator,
                                           PatrimonioAuditPublisher auditPublisher) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
+        this.organizacaoPolicy = organizacaoPolicy;
         this.numeroTombamentoGenerator = numeroTombamentoGenerator;
         this.auditPublisher = auditPublisher;
     }
@@ -42,6 +46,7 @@ public class CreateAtivoPatrimonialUseCase {
     public AtivoPatrimonialResponse execute(CreateAtivoPatrimonialRequest request) {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanCreate(actorContext, request.organizacaoId());
+        organizacaoPolicy.assertOwnerOrganizacaoPermitida(request.organizacaoId());
 
         AtivoPatrimonialEntity entity = new AtivoPatrimonialEntity();
         entity.setId(UUID.randomUUID());

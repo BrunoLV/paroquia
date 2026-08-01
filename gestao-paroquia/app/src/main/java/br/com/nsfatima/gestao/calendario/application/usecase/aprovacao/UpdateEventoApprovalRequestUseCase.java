@@ -97,6 +97,8 @@ public class UpdateEventoApprovalRequestUseCase {
                 null, // motivo
                 request.participantes(),
                 request.localId(),
-                request.igrejaVinculoId());
+                request.igrejaVinculoId(),
+                null, // ativoId
+                null); // ativoNome
     }
 }

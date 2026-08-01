@@ -42,6 +42,7 @@ import EventCancelDialog from '../components/EventCancelDialog';
 import EditScopeDialog, {EditScope} from '../components/EditScopeDialog';
 import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import EventObservations from '../components/EventObservations';
+import AtivosAlocadosSection from '../components/AtivosAlocadosSection';
 import PageHeader from '../components/PageHeader';
 import theme from '../theme';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
@@ -1122,6 +1123,9 @@ const Calendar = () => {
                     Conflito detectado: {selectedEvent.conflictReason}
                   </Alert>
                 )}
+
+                {/* Allocated Assets */}
+                <AtivosAlocadosSection eventoId={selectedEvent.id} />
 
                 {/* Event Observations */}
                 <EventObservations eventoId={selectedEvent.id} />

@@ -47,15 +47,22 @@ class AtivoPatrimonialControllerIntegrationTest {
     @Autowired
     private OrganizacaoJpaRepository organizacaoRepository;
 
+    @Autowired
+    private br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.AtivoAlocacaoJpaRepository
+            alocacaoRepository;
+
     private final UUID organizacaoId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
+        alocacaoRepository.deleteAll();
         ativoRepository.deleteAll();
     }
 
     @Test
     void deveCriarAtivoComTombamentoAutogeradoEStatusDisponivel() throws Exception {
+        garantirOrganizacaoExiste(organizacaoId);
+
         mockMvc.perform(post("/api/v1/ativos")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
@@ -75,6 +82,33 @@ class AtivoPatrimonialControllerIntegrationTest {
                 .andExpect(jsonPath("$.status").value("DISPONIVEL"))
                 .andExpect(jsonPath("$.numeroTombamento")
                         .value(org.hamcrest.Matchers.startsWith("PAT-" + Year.now().getValue())));
+    }
+
+    @Test
+    void deveRejeitarCriacaoParaOrganizacaoDoTipoPastoral() throws Exception {
+        OrganizacaoEntity pastoral = new OrganizacaoEntity();
+        pastoral.setId(organizacaoId);
+        pastoral.setNome("Pastoral Teste " + organizacaoId);
+        pastoral.setTipo(TipoOrganizacao.PASTORAL);
+        pastoral.setAtivo(true);
+        organizacaoRepository.save(pastoral);
+
+        mockMvc.perform(post("/api/v1/ativos")
+                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Org-Type", "PASTORAL")
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nome": "TV 55 polegadas",
+                                  "categoria": "ELETRONICO",
+                                  "organizacaoId": "%s",
+                                  "reservavel": true,
+                                  "dataAquisicao": "2024-01-10",
+                                  "valorEstimado": 3500.00
+                                }
+                                """.formatted(organizacaoId)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -131,7 +165,9 @@ class AtivoPatrimonialControllerIntegrationTest {
                         .content("""
                                 {
                                   "eventoId": "%s",
-                                  "justificativaAlocacao": "Utilização para exibição de slides de formação"
+                                  "justificativaAlocacao": "Utilização para exibição de slides de formação",
+                                  "dataInicio": "2026-09-01",
+                                  "dataFim": "2026-09-03"
                                 }
                                 """.formatted(evento.getId())))
                 .andExpect(status().isOk())
@@ -139,7 +175,27 @@ class AtivoPatrimonialControllerIntegrationTest {
     }
 
     @Test
-    void deveRejeitarAlocacaoParaEventoDeOutraOrganizacao() throws Exception {
+    void deveReservarAtivoSemEventoInformandoApenasJustificativa() throws Exception {
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+
+        mockMvc.perform(post("/api/v1/ativos/" + ativo.getId() + "/alocar")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "justificativaAlocacao": "Reserva para uso futuro sem evento definido",
+                                  "dataInicio": "2026-09-01",
+                                  "dataFim": "2026-09-03"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ALOCADO"));
+    }
+
+    @Test
+    void deveCriarPendenciaDeAprovacaoParaEventoDeOutraOrganizacao() throws Exception {
         AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
         LocalEntity local = criarLocal(UUID.randomUUID());
         EventoEntity evento = criarEvento(local.getId());
@@ -152,10 +208,28 @@ class AtivoPatrimonialControllerIntegrationTest {
                         .content("""
                                 {
                                   "eventoId": "%s",
-                                  "justificativaAlocacao": "Utilização para exibição de slides de formação"
+                                  "justificativaAlocacao": "Utilização para exibição de slides de formação",
+                                  "dataInicio": "2026-09-01",
+                                  "dataFim": "2026-09-03"
                                 }
                                 """.formatted(evento.getId())))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.status").value("PENDENTE"));
+    }
+
+    @Test
+    void deveDesalocarAtivoAlocado() throws Exception {
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.ALOCADO, organizacaoId);
+        criarOcupacaoConfirmada(ativo.getId(), organizacaoId);
+
+        mockMvc.perform(patch("/api/v1/ativos/" + ativo.getId() + "/desalocar")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DISPONIVEL"));
     }
 
     @Test
@@ -182,6 +256,20 @@ class AtivoPatrimonialControllerIntegrationTest {
         return ativoRepository.save(ativo);
     }
 
+    private void criarOcupacaoConfirmada(UUID ativoId, UUID organizacaoId) {
+        br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoAlocacaoEntity ocupacao =
+                new br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoAlocacaoEntity();
+        ocupacao.setId(UUID.randomUUID());
+        ocupacao.setAtivoId(ativoId);
+        ocupacao.setTipo(br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoTipo.ALOCACAO_EVENTO);
+        ocupacao.setOrganizacaoOrigemId(organizacaoId);
+        ocupacao.setDataInicio(java.time.LocalDate.now().minusDays(1));
+        ocupacao.setDataFim(java.time.LocalDate.now());
+        ocupacao.setStatus(br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoStatus.CONFIRMADA);
+        ocupacao.setCriadoEmUtc(Instant.now());
+        alocacaoRepository.save(ocupacao);
+    }
+
     private LocalEntity criarLocal(UUID organizacaoId) {
         garantirOrganizacaoExiste(organizacaoId);
         LocalEntity local = new LocalEntity();
@@ -199,7 +287,7 @@ class AtivoPatrimonialControllerIntegrationTest {
         OrganizacaoEntity organizacao = new OrganizacaoEntity();
         organizacao.setId(organizacaoId);
         organizacao.setNome("Organização " + organizacaoId);
-        organizacao.setTipo(TipoOrganizacao.PASTORAL);
+        organizacao.setTipo(TipoOrganizacao.COMUNIDADE);
         organizacao.setAtivo(true);
         organizacaoRepository.save(organizacao);
     }

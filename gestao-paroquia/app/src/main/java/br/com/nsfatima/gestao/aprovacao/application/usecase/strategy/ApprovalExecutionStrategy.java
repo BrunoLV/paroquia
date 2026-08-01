@@ -12,4 +12,8 @@ public interface ApprovalExecutionStrategy {
     AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao, EventoActorContext actorContext);
 
     String fetchResourceStatus(AprovacaoEntity aprovacao);
+
+    default void onRejected(AprovacaoEntity aprovacao) {
+        // No-op by default; strategies whose pending resource needs cleanup on rejection may override this.
+    }
 }

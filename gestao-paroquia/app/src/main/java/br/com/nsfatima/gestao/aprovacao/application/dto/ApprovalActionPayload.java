@@ -23,7 +23,9 @@ public record ApprovalActionPayload(
         String motivo,
         List<UUID> participantes,
         UUID localId,
-        UUID igrejaVinculoId) {
+        UUID igrejaVinculoId,
+        UUID ativoId,
+        String ativoNome) {
 
     public ApprovalActionPayload(
             String idempotencyKey,
@@ -43,7 +45,7 @@ public record ApprovalActionPayload(
             UUID localId) {
         this(idempotencyKey,
                 eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, inicio, fim, status,
-                adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes, localId, null);
+                adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes, localId, null, null, null);
 
     }
 }

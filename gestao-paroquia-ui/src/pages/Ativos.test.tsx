@@ -22,8 +22,9 @@ vi.mock('../context/NotificationContext', () => ({
 
 describe('Ativos Page', () => {
   const mockOrgs = [
-    { id: 'org-1', nome: 'Comunidade Santo Agostinho', ativo: true },
-    { id: 'org-2', nome: 'Matriz', ativo: true },
+    { id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true },
+    { id: 'org-2', nome: 'Matriz', tipo: 'MATRIZ', ativo: true },
+    { id: 'org-3', nome: 'Pastoral da Juventude', tipo: 'PASTORAL', ativo: true },
   ];
 
   const mockAtivos = [
@@ -105,7 +106,7 @@ describe('Ativos Page', () => {
     id: '2',
     name: 'Membro',
     roles: ['ROLE_PASTORAL_MEMBRO'],
-    organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', ativo: true }],
+    organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
   };
 
   test('renders page heading', async () => {
@@ -128,6 +129,20 @@ describe('Ativos Page', () => {
     expect(screen.getByText('Projetor Epson')).toBeInTheDocument();
   });
 
+  test('only offers Matriz/Comunidade organizations in the top organization selector', async () => {
+    await renderAtivos(adminUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+
+    const options = screen.getAllByRole('option');
+    const optionLabels = options.map((option) => option.textContent);
+    expect(optionLabels).toContain('Comunidade Santo Agostinho');
+    expect(optionLabels).toContain('Matriz');
+    expect(optionLabels).not.toContain('Pastoral da Juventude');
+  });
+
   test('shows Novo Ativo button only for authorized users', async () => {
     await renderAtivos(memberUser);
     expect(screen.queryByRole('button', { name: /Novo Ativo/i })).not.toBeInTheDocument();
@@ -143,7 +158,7 @@ describe('Ativos Page', () => {
       id: '3',
       name: 'Coordenador',
       roles: ['ROLE_PASTORAL_COORDENADOR'],
-      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', ativo: true }],
+      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
     };
     await renderAtivos(coordenadorUser);
 
@@ -154,8 +169,18 @@ describe('Ativos Page', () => {
       screen.getByText('Comunidade Santo Agostinho').click();
     });
 
-    const alocarButtons = screen.getAllByRole('button', { name: /Alocar/i });
-    expect(alocarButtons).toHaveLength(1);
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[0].click();
+    });
+    expect(screen.getByRole('menuitem', { name: /^Alocar$/i })).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.keyDown(document.activeElement || document.body, { key: 'Escape' });
+    });
+
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[1].click();
+    });
+    expect(screen.queryByRole('menuitem', { name: /^Alocar$/i })).not.toBeInTheDocument();
   });
 
   test('allocates an ativo by selecting an evento from the period filter', async () => {
@@ -163,7 +188,7 @@ describe('Ativos Page', () => {
       id: '3',
       name: 'Coordenador',
       roles: ['ROLE_PASTORAL_COORDENADOR'],
-      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', ativo: true }],
+      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
     };
     mockedApiClient.post.mockResolvedValue({ data: { ...mockAtivos[0], status: 'ALOCADO' } });
 
@@ -177,15 +202,18 @@ describe('Ativos Page', () => {
     });
 
     await act(async () => {
-      screen.getAllByRole('button', { name: /Alocar/i })[0].click();
+      screen.getAllByLabelText('Ações')[0].click();
+    });
+    await act(async () => {
+      screen.getByRole('menuitem', { name: /^Alocar$/i }).click();
     });
 
     expect(mockedApiClient.get).toHaveBeenCalledWith('/eventos', expect.objectContaining({
-      params: expect.objectContaining({ organizacaoIds: ['org-1'] }),
+      params: expect.objectContaining({ dataInicio: expect.any(String), dataFim: expect.any(String) }),
     }));
 
     await act(async () => {
-      fireEvent.mouseDown(screen.getByLabelText('Evento'));
+      fireEvent.mouseDown(screen.getByLabelText(/Evento/i));
     });
     await act(async () => {
       screen.getByText(/Encontro de Catequistas/i).click();
@@ -199,10 +227,138 @@ describe('Ativos Page', () => {
       screen.getByRole('button', { name: /^Alocar$/i }).click();
     });
 
-    expect(mockedApiClient.post).toHaveBeenCalledWith('/ativos/ativo-1/alocar', {
+    expect(mockedApiClient.post).toHaveBeenCalledWith('/ativos/ativo-1/alocar', expect.objectContaining({
       eventoId: 'evento-1',
       justificativaAlocacao: 'Uso do projetor no encontro de catequistas',
-    });
+      dataInicio: expect.any(String),
+      dataFim: expect.any(String),
+    }));
     expect(mockShowSuccess).toHaveBeenCalled();
+  });
+
+  test('shows pending-approval message when allocation returns 202 (empréstimo)', async () => {
+    const coordenadorUser = {
+      id: '3',
+      name: 'Coordenador',
+      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
+    };
+    mockedApiClient.post.mockResolvedValue({
+      status: 202,
+      data: { solicitacaoAprovacaoId: 'aprov-1', status: 'PENDENTE', ativoId: 'ativo-1', eventoId: 'evento-1' },
+    });
+
+    await renderAtivos(coordenadorUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[0].click();
+    });
+    await act(async () => {
+      screen.getByRole('menuitem', { name: /^Alocar$/i }).click();
+    });
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText(/Evento/i));
+    });
+    await act(async () => {
+      screen.getByText(/Encontro de Catequistas/i).click();
+    });
+
+    fireEvent.change(screen.getByLabelText(/Justificativa de Utilização/), {
+      target: { value: 'Uso do projetor no encontro de catequistas' },
+    });
+
+    await act(async () => {
+      screen.getByRole('button', { name: /^Alocar$/i }).click();
+    });
+
+    expect(mockShowSuccess).toHaveBeenCalledWith(expect.stringMatching(/aguardando aprova/i));
+  });
+
+  test('allocates/reserves an ativo without attaching an evento, sending eventoId null', async () => {
+    const coordenadorUser = {
+      id: '3',
+      name: 'Coordenador',
+      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
+    };
+    mockedApiClient.post.mockResolvedValue({ data: { ...mockAtivos[0], status: 'ALOCADO' } });
+
+    await renderAtivos(coordenadorUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[0].click();
+    });
+    await act(async () => {
+      screen.getByRole('menuitem', { name: /^Alocar$/i }).click();
+    });
+
+    fireEvent.change(screen.getByLabelText(/Justificativa de Utilização/), {
+      target: { value: 'Reserva para uso futuro sem evento definido' },
+    });
+
+    await act(async () => {
+      screen.getByRole('button', { name: /^Alocar$/i }).click();
+    });
+
+    expect(mockedApiClient.post).toHaveBeenCalledWith('/ativos/ativo-1/alocar', expect.objectContaining({
+      eventoId: null,
+      justificativaAlocacao: 'Reserva para uso futuro sem evento definido',
+    }));
+    expect(mockShowSuccess).toHaveBeenCalled();
+  });
+
+  test('renders the Valor Estimado column formatted as BRL currency', async () => {
+    await renderAtivos(adminUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    expect(screen.getByText('R$ 3.500,00')).toBeInTheDocument();
+    expect(screen.getByText('R$ 2.000,00')).toBeInTheDocument();
+  });
+
+  test('only offers Matriz/Comunidade organizations as asset owner in the create dialog', async () => {
+    await renderAtivos(adminUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    await act(async () => {
+      screen.getByRole('button', { name: /Novo Ativo/i }).click();
+    });
+
+    await screen.findByText('Novo Ativo Patrimonial');
+    const donaLabel = await screen.findByLabelText(/Organização Dona/i);
+    await act(async () => {
+      fireEvent.mouseDown(donaLabel);
+    });
+
+    const options = screen.getAllByRole('option');
+    const optionLabels = options.map((option) => option.textContent);
+    expect(optionLabels).toContain('Comunidade Santo Agostinho');
+    expect(optionLabels).toContain('Matriz');
   });
 });

@@ -138,6 +138,8 @@ export const canTransferAtivo = (user: User | null, ativoOrgId: string): boolean
 
 export const canAlocarAtivo = canTransferAtivo;
 
+export const canManageManutencaoAtivo = canTransferAtivo;
+
 export const canApprove = (user: User | null): boolean => {
   if (!user) return false;
   return (

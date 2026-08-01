@@ -25,7 +25,8 @@ public class ApprovalActionPayloadMapper {
     public ApprovalActionPayload toPayload(String payloadJson) {
         if (payloadJson == null || payloadJson.isBlank()) {
             return new ApprovalActionPayload(null,
-                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                    null, null);
 
         }
         try {

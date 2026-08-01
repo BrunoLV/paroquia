@@ -195,7 +195,7 @@ export interface UpdateEventoPayload {
 export interface AprovacaoResponse {
   id: string;
   eventoId: string | null;
-  tipoSolicitacao: 'CRIACAO_EVENTO' | 'EDICAO_EVENTO' | 'ALTERACAO_HORARIO' | 'CANCELAMENTO' | 'RECLASSIFICACAO' | 'OUTRO' | 'UNKNOWN_LEGACY';
+  tipoSolicitacao: 'CRIACAO_EVENTO' | 'EDICAO_EVENTO' | 'ALTERACAO_HORARIO' | 'CANCELAMENTO' | 'RECLASSIFICACAO' | 'ALOCACAO_ATIVO_EMPRESTIMO' | 'OUTRO' | 'UNKNOWN_LEGACY';
   status: 'PENDENTE' | 'APROVADA' | 'REPROVADA' | 'FALHA_EXECUCAO';
   aprovadorPapel: string | null;
   criadoEmUtc: string;
@@ -350,9 +350,59 @@ export interface TransferirAtivoPayload {
 }
 
 export interface AlocarAtivoPayload {
-  eventoId: string;
+  eventoId?: string | null;
   justificativaAlocacao: string;
+  dataInicio: string;
+  dataFim: string;
 }
+
+export interface DesalocarAtivoPayload {
+  observacao?: string | null;
+}
+
+export interface IniciarManutencaoPayload {
+  dataInicio: string;
+  dataFim: string;
+  motivo: string;
+}
+
+export interface CancelarAlocacaoPayload {
+  motivoCancelamento: string;
+}
+
+export type AtivoAlocacaoTipo = 'ALOCACAO_EVENTO' | 'MANUTENCAO';
+
+export type AtivoAlocacaoStatus = 'PENDENTE_APROVACAO' | 'CONFIRMADA' | 'ATRASADA' | 'DEVOLVIDA' | 'CANCELADA';
+
+export interface AtivoAlocacaoResponse {
+  id: string;
+  ativoId: string;
+  ativoNome: string | null;
+  numeroTombamento: string | null;
+  tipo: AtivoAlocacaoTipo;
+  eventoId: string | null;
+  organizacaoOrigemId: string;
+  organizacaoDestinoId: string | null;
+  emprestimo: boolean;
+  dataInicio: string;
+  dataFim: string;
+  status: AtivoAlocacaoStatus;
+  impactadaPorAtraso: boolean;
+  criadoEmUtc: string;
+  devolvidoEmUtc: string | null;
+}
+
+export interface AlocacaoAtivoApprovalPendingResponse {
+  solicitacaoAprovacaoId: string;
+  status: string;
+  ativoId: string;
+  eventoId: string;
+  mensagem: string;
+}
+
+export type AlocarAtivoResultado =
+  | { kind: 'ALOCADO'; ativo: AtivoPatrimonial }
+  | { kind: 'PENDENTE'; pendente: AlocacaoAtivoApprovalPendingResponse };
 
 export interface MetricasOciosidade {
   totalAtivos: number;

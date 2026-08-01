@@ -7,6 +7,7 @@ import br.com.nsfatima.gestao.patrimonio.api.v1.dto.TransferirAtivoRequest;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoTransferenciaBloqueadaException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
@@ -26,15 +27,18 @@ public class TransferirAtivoPatrimonialUseCase {
     private final AtivoPatrimonialJpaRepository repository;
     private final EventoActorContextResolver actorContextResolver;
     private final PatrimonioAuthorizationService authorizationService;
+    private final AtivoOrganizacaoPolicy organizacaoPolicy;
     private final PatrimonioAuditPublisher auditPublisher;
 
     public TransferirAtivoPatrimonialUseCase(AtivoPatrimonialJpaRepository repository,
                                               EventoActorContextResolver actorContextResolver,
                                               PatrimonioAuthorizationService authorizationService,
+                                              AtivoOrganizacaoPolicy organizacaoPolicy,
                                               PatrimonioAuditPublisher auditPublisher) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
+        this.organizacaoPolicy = organizacaoPolicy;
         this.auditPublisher = auditPublisher;
     }
 
@@ -51,6 +55,7 @@ public class TransferirAtivoPatrimonialUseCase {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanTransfer(actorContext, ativo.getOrganizacaoId());
+        organizacaoPolicy.assertOwnerOrganizacaoPermitida(request.novaOrganizacaoId());
 
         UUID organizacaoOrigemId = ativo.getOrganizacaoId();
         ativo.setOrganizacaoId(request.novaOrganizacaoId());

@@ -354,7 +354,22 @@ test('toggles calendar view between Grid and List mode', async () => {
     fireEvent.click(gridBtn);
   });
 
-  expect(screen.getByRole('heading', { name: /Julho/i })).toBeInTheDocument();
+  const monthNames = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
+  const currentMonthName = monthNames[new Date().getMonth()];
+  expect(screen.getByRole('heading', { name: new RegExp(currentMonthName, 'i') })).toBeInTheDocument();
 });
 
 test('renders liturgical season background colors and season labels on calendar day cells', async () => {

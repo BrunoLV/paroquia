@@ -140,11 +140,14 @@ public class DecideSolicitacaoAprovacaoUseCase {
         publishDecisionEvent(aprovacao, null);
 
         TipoSolicitacaoInput tipo = TipoSolicitacaoInput.fromJson(aprovacao.getTipoSolicitacao());
-        String currentStatus = strategies.stream()
+        ApprovalExecutionStrategy matchingStrategy = strategies.stream()
                 .filter(s -> s.supports(tipo))
                 .findFirst()
-                .map(s -> s.fetchResourceStatus(aprovacao))
                 .orElse(null);
+        if (matchingStrategy != null) {
+            matchingStrategy.onRejected(aprovacao);
+        }
+        String currentStatus = matchingStrategy == null ? null : matchingStrategy.fetchResourceStatus(aprovacao);
 
         return new AprovacaoDecisionResponse(aprovacao.getId(), aprovacao.getStatusEnum().name(),
                 new AprovacaoDecisionResponse.ActionExecution("REJECTED",

@@ -32,8 +32,14 @@ public class PatrimonioAuditPublisher {
     }
 
     public void publishAlocacao(String actor, UUID ativoId, UUID organizacaoId, UUID eventoId) {
+        Map<String, Object> metadata = eventoId == null ? Map.of() : Map.of("eventoId", eventoId.toString());
         auditLogPersistenceService.log(actor, "alocar", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, organizacaoId, Map.of("eventoId", eventoId.toString())));
+                withDefaults(ativoId, organizacaoId, metadata));
+    }
+
+    public void publishDesalocacao(String actor, UUID ativoId, UUID organizacaoId) {
+        auditLogPersistenceService.log(actor, "desalocar", ativoId.toString(), RESULT_SUCCESS,
+                withDefaults(ativoId, organizacaoId, Map.of()));
     }
 
     public void publishDeniedWrite(String actor, UUID ativoId) {

@@ -36,6 +36,16 @@ public class PatrimonioAuthorizationService {
                 "User cannot allocate assets of another organization");
     }
 
+    public void assertCanDesalocar(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
+        assertScoped(actorContext, ativoOrganizacaoId, "User does not have permission to deallocate assets",
+                "User cannot deallocate assets of another organization");
+    }
+
+    public void assertCanIniciarManutencao(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
+        assertScoped(actorContext, ativoOrganizacaoId, "User does not have permission to put assets into maintenance",
+                "User cannot put assets of another organization into maintenance");
+    }
+
     private void assertScoped(EventoActorContext actorContext, UUID organizacaoId, String roleMessage,
                                String scopeMessage) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());

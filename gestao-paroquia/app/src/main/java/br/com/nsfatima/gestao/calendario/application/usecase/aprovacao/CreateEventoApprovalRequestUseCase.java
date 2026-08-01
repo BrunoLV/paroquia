@@ -90,6 +90,8 @@ public class CreateEventoApprovalRequestUseCase {
                 null, // motivo
                 request.participantes(),
                 request.localId(),
-                request.igrejaVinculoId());
+                request.igrejaVinculoId(),
+                null, // ativoId
+                null); // ativoNome
     }
 }

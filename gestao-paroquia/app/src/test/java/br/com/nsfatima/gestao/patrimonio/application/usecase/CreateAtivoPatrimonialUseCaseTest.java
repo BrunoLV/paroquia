@@ -4,8 +4,10 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationExce
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.CreateAtivoPatrimonialRequest;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
@@ -25,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -43,13 +46,16 @@ class CreateAtivoPatrimonialUseCaseTest {
     @Mock
     private PatrimonioAuditPublisher auditPublisher;
 
+    @Mock
+    private AtivoOrganizacaoPolicy organizacaoPolicy;
+
     private CreateAtivoPatrimonialUseCase useCase;
     private UUID organizacaoId;
 
     @BeforeEach
     void setUp() {
         useCase = new CreateAtivoPatrimonialUseCase(repository, actorContextResolver,
-                new PatrimonioAuthorizationService(), numeroTombamentoGenerator, auditPublisher);
+                new PatrimonioAuthorizationService(), organizacaoPolicy, numeroTombamentoGenerator, auditPublisher);
         organizacaoId = UUID.randomUUID();
         lenient().when(numeroTombamentoGenerator.generate(anyInt()))
                 .thenReturn("PAT-" + Year.now().getValue() + "-0001");
@@ -80,5 +86,19 @@ class CreateAtivoPatrimonialUseCaseTest {
                 "Projetor Epson", AtivoCategoria.ELETRONICO, organizacaoId, true,
                 LocalDate.now(), BigDecimal.valueOf(2500))))
                 .isInstanceOf(ForbiddenOperationException.class);
+    }
+
+    @Test
+    void deveRejeitarCriacaoParaOrganizacaoDeTipoInvalido() {
+        when(actorContextResolver.resolveRequired())
+                .thenReturn(new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
+                        organizacaoId, UUID.randomUUID(), null));
+        doThrow(new AtivoOrganizacaoInvalidaException("tipo inválido"))
+                .when(organizacaoPolicy).assertOwnerOrganizacaoPermitida(organizacaoId);
+
+        assertThatThrownBy(() -> useCase.execute(new CreateAtivoPatrimonialRequest(
+                "Projetor Epson", AtivoCategoria.ELETRONICO, organizacaoId, true,
+                LocalDate.now(), BigDecimal.valueOf(2500))))
+                .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
     }
 }
