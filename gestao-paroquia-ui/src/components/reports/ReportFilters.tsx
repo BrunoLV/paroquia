@@ -47,7 +47,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           size="small"
           sx={{
             minWidth: 160,
-            '& .MuiOutlinedInput-root': { borderRadius: 0 },
+            '& .MuiOutlinedInput-root': {  },
           }}
         />
         <TextField
@@ -59,7 +59,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           size="small"
           sx={{
             minWidth: 160,
-            '& .MuiOutlinedInput-root': { borderRadius: 0 },
+            '& .MuiOutlinedInput-root': {  },
           }}
         />
         <Button
@@ -68,7 +68,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           size="small"
           startIcon={<FilterListIcon />}
           sx={{
-            borderRadius: 0,
+            
             backgroundColor: '#1a237e',
             textTransform: 'none',
             fontWeight: 600,
@@ -89,7 +89,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           onClick={handleClear}
           startIcon={<FilterAltOffIcon />}
           sx={{
-            borderRadius: 0,
+            
             textTransform: 'none',
             fontWeight: 600,
             height: 40,

@@ -584,7 +584,7 @@ const Settings = () => {
             variant="outlined"
             color="primary"
             onClick={() => setIsImportModalOpen(true)}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+            sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
           >
             Importar em Lote (CSV/Excel)
           </Button>
@@ -611,7 +611,7 @@ const Settings = () => {
             <Box sx={{ my: 4 }}>
               <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
               ))}
             </Box>
           ) : isError ? (
@@ -621,7 +621,7 @@ const Settings = () => {
           ) : (
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                   <CalendarIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                 </Box>
                 <Box>
@@ -634,7 +634,7 @@ const Settings = () => {
                 </Box>
               </Box>
 
-              <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
                   <TableHead sx={{ bgcolor: 'grey.100' }}>
                     <TableRow>
@@ -716,7 +716,7 @@ const Settings = () => {
             <Box sx={{ my: 4 }}>
               <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
               ))}
             </Box>
           ) : isErrorLocais ? (
@@ -727,7 +727,7 @@ const Settings = () => {
             <Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                     <LocationIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                   </Box>
                   <Box>
@@ -747,14 +747,14 @@ const Settings = () => {
                       setSelectedLocal(null);
                       setModalOpen(true);
                     }}
-                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                    sx={{ fontWeight: 600 }}
                   >
                     Novo Local
                   </Button>
                 )}
               </Box>
 
-              <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
                   <TableHead sx={{ bgcolor: 'grey.100' }}>
                     <TableRow>
@@ -802,7 +802,7 @@ const Settings = () => {
                                   setModalOpen(true);
                                 }}
                                 disabled={toggleLocalStatusMutation.isPending}
-                                sx={{ borderRadius: 0 }}
+                               
                               >
                                 Editar
                               </Button>
@@ -812,7 +812,7 @@ const Settings = () => {
                                 size="small"
                                 onClick={() => toggleLocalStatusMutation.mutate(local)}
                                 disabled={toggleLocalStatusMutation.isPending}
-                                sx={{ borderRadius: 0 }}
+                               
                               >
                                 {local.ativo ? 'Inativar' : 'Ativar'}
                               </Button>
@@ -840,18 +840,18 @@ const Settings = () => {
             <Box sx={{ py: 4 }}>
               <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
               ))}
             </Box>
           ) : isErrorOrgs ? (
-            <Alert severity="error" sx={{ borderRadius: 0 }}>
+            <Alert severity="error">
               Erro ao carregar pastorais e movimentos.
             </Alert>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                     <GroupsIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                   </Box>
                   <Box>
@@ -870,7 +870,7 @@ const Settings = () => {
                 sx={{
                   p: 2,
                   mb: 1,
-                  borderRadius: 0,
+                  
                   border: '1px solid',
                   borderColor: 'divider',
                   backgroundColor: '#fafafa',
@@ -883,7 +883,7 @@ const Settings = () => {
                     size="small"
                     value={orgSearch}
                     onChange={(e) => setOrgSearch(e.target.value)}
-                    sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { borderRadius: 0, bgcolor: '#fff' } }}
+                    sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { bgcolor: '#fff' } }}
                   />
                   {isAuthorizedOrgs && (
                     <Button
@@ -893,7 +893,7 @@ const Settings = () => {
                         setSelectedOrg(null);
                         setOrgModalOpen(true);
                       }}
-                      sx={{ borderRadius: 0, fontWeight: 600 }}
+                      sx={{ fontWeight: 600 }}
                     >
                       Nova Pastoral / Movimento
                     </Button>
@@ -901,7 +901,7 @@ const Settings = () => {
                 </Box>
               </Card>
 
-              <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
                   <TableHead sx={{ bgcolor: 'grey.100' }}>
                     <TableRow>
@@ -947,7 +947,7 @@ const Settings = () => {
                                 setSelectedOrgForMembers(org);
                                 setIsOrgMembersModalOpen(true);
                               }}
-                              sx={{ borderRadius: 0 }}
+                             
                             >
                               Membros
                             </Button>
@@ -962,7 +962,7 @@ const Settings = () => {
                                     setOrgModalOpen(true);
                                   }}
                                   disabled={toggleOrgStatusMutation.isPending}
-                                  sx={{ borderRadius: 0 }}
+                                 
                                 >
                                   Editar
                                 </Button>
@@ -972,7 +972,7 @@ const Settings = () => {
                                   size="small"
                                   onClick={() => toggleOrgStatusMutation.mutate(org)}
                                   disabled={toggleOrgStatusMutation.isPending}
-                                  sx={{ borderRadius: 0 }}
+                                 
                                 >
                                   {org.ativo ? 'Inativar' : 'Ativar'}
                                 </Button>
@@ -1002,18 +1002,18 @@ const Settings = () => {
               <Box sx={{ py: 4 }}>
                 <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
                 {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
                 ))}
               </Box>
             ) : isErrorUsers ? (
-              <Alert severity="error" sx={{ borderRadius: 0 }}>
+              <Alert severity="error">
                 Erro ao carregar os usuários.
               </Alert>
             ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                     <PeopleIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                   </Box>
                   <Box>
@@ -1030,13 +1030,13 @@ const Settings = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => setIsAdminRegisterModalOpen(true)}
-                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                    sx={{ fontWeight: 600 }}
                   >
                     Cadastrar Usuário
                   </Button>
                 )}
               </Box>
-                <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                   <Table>
                     <TableHead sx={{ bgcolor: 'grey.100' }}>
                       <TableRow>
@@ -1060,10 +1060,10 @@ const Settings = () => {
                           <TableCell>{u.dataNascimento || '-'}</TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                              {u.batizado && <Chip label="Batismo" size="small" color="info" variant="outlined" sx={{ borderRadius: 0 }} />}
-                              {u.primeiraComunhao && <Chip label="1ª Comunhão" size="small" color="success" variant="outlined" sx={{ borderRadius: 0 }} />}
-                              {u.crismado && <Chip label="Crisma" size="small" color="secondary" variant="outlined" sx={{ borderRadius: 0 }} />}
-                              {u.casadoIgrejaCatolica && <Chip label="Matrimônio" size="small" color="warning" variant="outlined" sx={{ borderRadius: 0 }} />}
+                              {u.batizado && <Chip label="Batismo" size="small" color="info" variant="outlined" />}
+                              {u.primeiraComunhao && <Chip label="1ª Comunhão" size="small" color="success" variant="outlined" />}
+                              {u.crismado && <Chip label="Crisma" size="small" color="secondary" variant="outlined" />}
+                              {u.casadoIgrejaCatolica && <Chip label="Matrimônio" size="small" color="warning" variant="outlined" />}
                               {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
                             </Box>
                           </TableCell>
@@ -1092,7 +1092,7 @@ const Settings = () => {
                                   size="small"
                                   onClick={() => approveUserMutation.mutate(u.id)}
                                   disabled={approveUserMutation.isPending}
-                                  sx={{ borderRadius: 0, fontWeight: 600 }}
+                                  sx={{ fontWeight: 600 }}
                                 >
                                   Aprovar
                                 </Button>
@@ -1105,7 +1105,7 @@ const Settings = () => {
                                   setSelectedUserForMemberships(u);
                                   setIsMembershipsModalOpen(true);
                                 }}
-                                sx={{ borderRadius: 0 }}
+                               
                               >
                                 Gerenciar Vínculos
                               </Button>
@@ -1134,18 +1134,18 @@ const Settings = () => {
               <Box sx={{ py: 4 }}>
                 <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1, borderRadius: 0 }} />
+                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
                 ))}
               </Box>
             ) : isErrorPO ? (
-              <Alert severity="error" sx={{ borderRadius: 0 }}>
+              <Alert severity="error">
                 Erro ao carregar o catálogo de pastorais e movimentos oficiais.
               </Alert>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+                    <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                       <CategoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                     </Box>
                     <Box>
@@ -1161,13 +1161,13 @@ const Settings = () => {
                     variant="contained"
                     color="primary"
                     onClick={handleCreatePO}
-                    sx={{ borderRadius: 0, fontWeight: 600 }}
+                    sx={{ fontWeight: 600 }}
                   >
                     Novo Tipo
                   </Button>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                   <Table>
                     <TableHead sx={{ bgcolor: 'grey.100' }}>
                       <TableRow>
@@ -1188,7 +1188,7 @@ const Settings = () => {
                                 color="primary"
                                 size="small"
                                 onClick={() => handleEditPO(po)}
-                                sx={{ borderRadius: 0 }}
+                               
                               >
                                 Editar
                               </Button>
@@ -1202,7 +1202,7 @@ const Settings = () => {
                                   }
                                 }}
                                 disabled={deletePOMutation.isPending}
-                                sx={{ borderRadius: 0 }}
+                               
                               >
                                 Excluir
                               </Button>
@@ -1245,7 +1245,7 @@ const Settings = () => {
             <Box sx={{ py: 2 }}>
               <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1, borderRadius: 0 }} />
+                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1 }} />
               ))}
             </Box>
           ) : (
@@ -1253,7 +1253,7 @@ const Settings = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                 Vínculos Atuais:
               </Typography>
-              <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0 }}>
+              <TableContainer component={Paper} variant="outlined">
                 <Table size="small">
                   <TableHead sx={{ bgcolor: 'grey.50' }}>
                     <TableRow>
@@ -1404,7 +1404,7 @@ const Settings = () => {
                     });
                   }}
                   disabled={!newMembershipOrgId || !newMembershipPapel || addMembershipMutation.isPending}
-                  sx={{ borderRadius: 0, fontWeight: 600, height: 40 }}
+                  sx={{ fontWeight: 600, height: 40 }}
                 >
                   {addMembershipMutation.isPending ? 'Adicionando...' : 'Adicionar Vínculo'}
                 </Button>
@@ -1448,7 +1448,7 @@ const Settings = () => {
             <Box sx={{ py: 2 }}>
               <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1, borderRadius: 0 }} />
+                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1 }} />
               ))}
             </Box>
           ) : (
@@ -1456,7 +1456,7 @@ const Settings = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                 Membros Vinculados:
               </Typography>
-              <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0 }}>
+              <TableContainer component={Paper} variant="outlined">
                 <Table size="small">
                   <TableHead sx={{ bgcolor: 'grey.50' }}>
                     <TableRow>
@@ -1603,7 +1603,7 @@ const Settings = () => {
                     });
                   }}
                   disabled={!newOrgMemberUserId || !newOrgMemberPapel || addOrgMemberMutation.isPending}
-                  sx={{ borderRadius: 0, fontWeight: 600, height: 40 }}
+                  sx={{ fontWeight: 600, height: 40 }}
                 >
                   {addOrgMemberMutation.isPending ? 'Vinculando...' : 'Vincular Membro'}
                 </Button>
@@ -1807,7 +1807,7 @@ const Settings = () => {
                 casadoIgrejaCatolica: adminRegisterCasadoIgrejaCatolica,
               });
             }}
-            sx={{ borderRadius: 0, fontWeight: 600 }}
+            sx={{ fontWeight: 600 }}
           >
 
             {registerUserMutation.isPending ? 'Cadastrando...' : 'Cadastrar'}
@@ -1904,7 +1904,7 @@ const Settings = () => {
                 }}
                 error={!!poErrors.nome}
                 helperText={poErrors.nome}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
+                sx={{ '& .MuiOutlinedInput-root': {  } }}
               />
               <FormControl fullWidth required size="small">
                 <InputLabel id="po-tipo-label">Tipo</InputLabel>
@@ -1913,7 +1913,7 @@ const Settings = () => {
                   label="Tipo"
                   value={poTipo}
                   onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
-                  sx={{ borderRadius: 0 }}
+                 
                 >
                   <MenuItem value="PASTORAL">Pastoral</MenuItem>
                   <MenuItem value="MOVIMENTO">Movimento</MenuItem>
@@ -1922,7 +1922,7 @@ const Settings = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setPoModalOpen(false)} color="inherit" sx={{ borderRadius: 0 }}>
+            <Button onClick={() => setPoModalOpen(false)} color="inherit">
               Cancelar
             </Button>
             <Button
@@ -1930,7 +1930,7 @@ const Settings = () => {
               variant="contained"
               color="primary"
               disabled={createPOMutation.isPending || updatePOMutation.isPending}
-              sx={{ borderRadius: 0, fontWeight: 600 }}
+              sx={{ fontWeight: 600 }}
             >
               {(createPOMutation.isPending || updatePOMutation.isPending) ? 'Salvando...' : 'Salvar'}
             </Button>

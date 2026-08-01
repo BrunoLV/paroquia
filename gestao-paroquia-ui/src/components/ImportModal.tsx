@@ -207,8 +207,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         {activeStep === 1 && validationResult && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Chip icon={<ValidIcon />} label={`${validationResult.totalValidos} Válidos`} color="success" sx={{ borderRadius: 0 }} />
-              <Chip icon={<ErrorIcon />} label={`${validationResult.totalInvalidos} Inválidos`} color="error" sx={{ borderRadius: 0 }} />
+              <Chip icon={<ValidIcon />} label={`${validationResult.totalValidos} Válidos`} color="success" />
+              <Chip icon={<ErrorIcon />} label={`${validationResult.totalInvalidos} Inválidos`} color="error" />
             </Box>
 
             <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', maxHeight: 320 }}>
@@ -226,9 +226,9 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                       <TableCell>{item.linha}</TableCell>
                       <TableCell>
                         {item.valido ? (
-                          <Chip label="Válido" color="success" size="small" sx={{ borderRadius: 0 }} />
+                          <Chip label="Válido" color="success" size="small" />
                         ) : (
-                          <Chip label="Erro" color="error" size="small" sx={{ borderRadius: 0 }} />
+                          <Chip label="Erro" color="error" size="small" />
                         )}
                       </TableCell>
                       <TableCell>{item.valido ? 'Pronto para importação' : item.mensagemErro}</TableCell>

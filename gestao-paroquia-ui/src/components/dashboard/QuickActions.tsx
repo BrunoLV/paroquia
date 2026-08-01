@@ -11,7 +11,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
   const navigate = useNavigate();
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 0, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+    <Paper sx={{ p: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Ações Rápidas
       </Typography>

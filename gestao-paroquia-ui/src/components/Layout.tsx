@@ -96,7 +96,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         {(drawerOpen || !isMdUp) ? (
           <>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
-              <Box sx={{ bgcolor: 'white', p: 0.5, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+              <Box sx={{ bgcolor: 'white', p: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                 <img 
                   src="/logo-paroquia.png" 
                   alt="Logo da Paróquia" 
@@ -144,7 +144,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               }}
               selected={isSelected}
               sx={{
-                borderRadius: 0,
+                
                 mb: 1,
                 justifyContent: drawerOpen || !isMdUp ? 'initial' : 'center',
                 px: 2,

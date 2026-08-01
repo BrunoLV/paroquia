@@ -203,7 +203,7 @@ const Dashboard = () => {
         <Grid container spacing={3}>
           {[1, 2, 3].map((i) => (
             <Grid key={i} size={{ xs: 12, sm: 4 }}>
-              <Skeleton variant="rounded" height={120} sx={{ borderRadius: 0 }} />
+              <Skeleton variant="rounded" height={120} />
             </Grid>
           ))}
         </Grid>
@@ -212,19 +212,19 @@ const Dashboard = () => {
             <Stack spacing={3}>
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, lg: 6 }}>
-                  <Skeleton variant="rounded" height={300} sx={{ borderRadius: 0 }} />
+                  <Skeleton variant="rounded" height={300} />
                 </Grid>
                 <Grid size={{ xs: 12, lg: 6 }}>
-                  <Skeleton variant="rounded" height={300} sx={{ borderRadius: 0 }} />
+                  <Skeleton variant="rounded" height={300} />
                 </Grid>
               </Grid>
-              <Skeleton variant="rounded" height={250} sx={{ borderRadius: 0 }} />
+              <Skeleton variant="rounded" height={250} />
             </Stack>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Stack spacing={3}>
-              <Skeleton variant="rounded" height={150} sx={{ borderRadius: 0 }} />
-              <Skeleton variant="rounded" height={200} sx={{ borderRadius: 0 }} />
+              <Skeleton variant="rounded" height={150} />
+              <Skeleton variant="rounded" height={200} />
             </Stack>
           </Grid>
         </Grid>

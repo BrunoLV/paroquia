@@ -203,12 +203,12 @@ const Reports: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3].map((i) => (
             <Grid key={i} size={{ xs: 12, md: 4 }}>
-              <Skeleton variant="rounded" height={130} sx={{ borderRadius: 0 }} />
+              <Skeleton variant="rounded" height={130} />
             </Grid>
           ))}
         </Grid>
         <Box sx={{ mt: 4 }}>
-          <Skeleton variant="rounded" height={300} sx={{ borderRadius: 0 }} />
+          <Skeleton variant="rounded" height={300} />
         </Box>
       </Box>
     );
@@ -292,7 +292,7 @@ const Reports: React.FC = () => {
         sx={{
           p: 2,
           mb: 3,
-          borderRadius: 0,
+          
           border: '1px solid',
           borderColor: 'divider',
           backgroundColor: '#fafafa',
@@ -329,7 +329,7 @@ const Reports: React.FC = () => {
               <Card
                 elevation={0}
                 sx={{
-                  borderRadius: 0,
+                  
                   border: '1px solid',
                   borderColor: 'divider',
                   background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
@@ -390,7 +390,7 @@ const Reports: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              borderRadius: 0,
+              
               border: '1px solid',
               borderColor: 'divider',
             }}
@@ -411,7 +411,7 @@ const Reports: React.FC = () => {
                       label={`${b.status}: ${b.count}`}
                       size="small"
                       variant="outlined"
-                      sx={{ borderRadius: 0, fontWeight: 600 }}
+                      sx={{ fontWeight: 600 }}
                     />
                   ))}
                 </Stack>
@@ -434,13 +434,13 @@ const Reports: React.FC = () => {
                               label="Em Risco"
                               color="error"
                               size="small"
-                              sx={{ borderRadius: 0, height: 22, fontSize: '0.7rem' }}
+                              sx={{ height: 22, fontSize: '0.7rem' }}
                             />
                           )}
                           <Chip
                             label={proj.status}
                             size="small"
-                            sx={{ borderRadius: 0, height: 22, fontSize: '0.7rem', backgroundColor: '#e3f2fd', color: '#0d47a1' }}
+                            sx={{ height: 22, fontSize: '0.7rem', backgroundColor: '#e3f2fd', color: '#0d47a1' }}
                           />
                         </Stack>
                       </Box>
@@ -459,7 +459,7 @@ const Reports: React.FC = () => {
                         value={Math.min(100, Math.max(0, proj.percentualTempoDecorrido))}
                         sx={{
                           height: 8,
-                          borderRadius: 0,
+                          
                           backgroundColor: '#e0e0e0',
                           '& .MuiLinearProgress-bar': {
                             backgroundColor: proj.emRisco ? '#d32f2f' : '#1a237e',
@@ -473,7 +473,7 @@ const Reports: React.FC = () => {
                             Envolvidos:
                           </Typography>
                           {proj.envolvidos.map((env, eIdx) => (
-                            <Chip key={eIdx} label={env} size="small" variant="outlined" sx={{ borderRadius: 0, height: 18, fontSize: '0.65rem' }} />
+                            <Chip key={eIdx} label={env} size="small" variant="outlined" sx={{ height: 18, fontSize: '0.65rem' }} />
                           ))}
                         </Box>
                       )}
@@ -496,7 +496,7 @@ const Reports: React.FC = () => {
         sx={{
           mt: 4,
           p: 3,
-          borderRadius: 0,
+          
           border: '1px solid',
           borderColor: 'divider',
         }}
@@ -509,7 +509,7 @@ const Reports: React.FC = () => {
         </Box>
 
         {filteredMetrics.eventosSemana && filteredMetrics.eventosSemana.length > 0 ? (
-          <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #eee', borderRadius: 0 }}>
+          <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #eee' }}>
             <Table size="small">
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>

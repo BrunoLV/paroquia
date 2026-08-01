@@ -10,7 +10,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
   const { data, isLoading } = usePainelMetricasEstrategicas();
 
   if (isLoading) {
-    return <Skeleton variant="rounded" height={140} sx={{ borderRadius: 0, mb: 3 }} />;
+    return <Skeleton variant="rounded" height={140} sx={{ mb: 3 }} />;
   }
 
   if (!data) {
@@ -20,7 +20,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
   const { taxaProjetos, slaDespacho, impactoSocial, concorrenciaInterpastoral } = data;
 
   return (
-    <Card sx={{ borderRadius: 0, mb: 3, borderLeft: '4px solid #1a237e', bgcolor: '#f8f9fa' }}>
+    <Card sx={{ mb: 3, borderLeft: '4px solid #1a237e', bgcolor: '#f8f9fa' }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -48,7 +48,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#f57c00' }}>
                 {slaDespacho.tempoMedioAprovacaoHoras}h
               </Typography>
-              <Chip label={slaDespacho.statusSla} size="small" color="success" sx={{ borderRadius: 0, fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={slaDespacho.statusSla} size="small" color="success" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
 
@@ -60,7 +60,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#00796b' }}>
                 {taxaProjetos.taxaConclusaoPercentual}%
               </Typography>
-              <Chip label={taxaProjetos.avaliacaoExecutiva} size="small" color="info" sx={{ borderRadius: 0, fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={taxaProjetos.avaliacaoExecutiva} size="small" color="info" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
 
@@ -72,7 +72,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#e91e63' }}>
                 {impactoSocial.coeficienteImpactoSocialPercentual}%
               </Typography>
-              <Chip label={impactoSocial.diagnosticoPastoral} size="small" color="secondary" sx={{ borderRadius: 0, fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={impactoSocial.diagnosticoPastoral} size="small" color="secondary" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
 
@@ -84,7 +84,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#7b1fa2' }}>
                 {concorrenciaInterpastoral.totalConflitosDetectados} conflitos
               </Typography>
-              <Chip label={`Risco ${concorrenciaInterpastoral.nivelRiscoConcorrencia}`} size="small" color={concorrenciaInterpastoral.nivelRiscoConcorrencia === 'BAIXO' ? 'success' : 'warning'} sx={{ borderRadius: 0, fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={`Risco ${concorrenciaInterpastoral.nivelRiscoConcorrencia}`} size="small" color={concorrenciaInterpastoral.nivelRiscoConcorrencia === 'BAIXO' ? 'success' : 'warning'} sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
         </Grid>

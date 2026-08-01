@@ -51,7 +51,7 @@ export const OrganogramaExportButton: React.FC<OrganogramaExportButtonProps> = (
         }
         endIcon={<KeyboardArrowDownIcon />}
         sx={{
-          borderRadius: 0,
+          
           fontWeight: 600,
           textTransform: 'none',
           px: 2.5,
@@ -77,7 +77,7 @@ export const OrganogramaExportButton: React.FC<OrganogramaExportButtonProps> = (
           paper: {
             elevation: 3,
             sx: {
-              borderRadius: 0,
+              
               minWidth: 200,
               mt: 0.5,
             },

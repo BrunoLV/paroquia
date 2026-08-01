@@ -129,11 +129,11 @@ export const ConselhosAtas: React.FC = () => {
   const getStatusChip = (status: StatusHomologacao) => {
     switch (status) {
       case 'HOMOLOGADO':
-        return <Chip label="Homologado" color="success" size="small" sx={{ fontWeight: 600, borderRadius: 0 }} />;
+        return <Chip label="Homologado" color="success" size="small" sx={{ fontWeight: 600 }} />;
       case 'VETADO':
-        return <Chip label="Vetado" color="error" size="small" sx={{ fontWeight: 600, borderRadius: 0 }} />;
+        return <Chip label="Vetado" color="error" size="small" sx={{ fontWeight: 600 }} />;
       default:
-        return <Chip label="Pendente de Homologação" color="warning" size="small" sx={{ fontWeight: 600, borderRadius: 0 }} />;
+        return <Chip label="Pendente de Homologação" color="warning" size="small" sx={{ fontWeight: 600 }} />;
     }
   };
 
@@ -153,7 +153,7 @@ export const ConselhosAtas: React.FC = () => {
             color="primary"
             startIcon={<AddIcon />}
             onClick={() => setIsModalOpen(true)}
-            sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+            sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
           >
             Nova Ata / Decisão
           </Button>
@@ -165,7 +165,7 @@ export const ConselhosAtas: React.FC = () => {
         sx={{
           p: 2,
           mb: 3,
-          borderRadius: 0,
+          
           border: '1px solid',
           borderColor: 'divider',
           backgroundColor: theme.custom.subtlePanelBg,
@@ -179,7 +179,7 @@ export const ConselhosAtas: React.FC = () => {
               value={selectedComunidade}
               label="Comunidade de Origem"
               onChange={(e) => setSelectedComunidade(e.target.value)}
-              sx={{ borderRadius: 0 }}
+             
             >
               <MenuItem value="">Todas as Comunidades</MenuItem>
               {communities.map((c) => (
@@ -197,7 +197,7 @@ export const ConselhosAtas: React.FC = () => {
               value={selectedStatus}
               label="Status de Homologação"
               onChange={(e) => setSelectedStatus(e.target.value)}
-              sx={{ borderRadius: 0 }}
+             
             >
               <MenuItem value="">Todos os Status</MenuItem>
               <MenuItem value="PENDENTE_HOMOLOGACAO">Pendente de Homologação</MenuItem>
@@ -224,7 +224,7 @@ export const ConselhosAtas: React.FC = () => {
           <Skeleton variant="rectangular" height={72} />
         </Stack>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+        <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           <Table>
             <TableHead sx={{ backgroundColor: 'action.hover' }}>
               <TableRow>

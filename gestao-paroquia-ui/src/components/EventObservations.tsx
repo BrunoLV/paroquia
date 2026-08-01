@@ -169,7 +169,7 @@ const EventObservations = ({ eventoId }: EventObservationsProps) => {
                 variant="outlined"
                 sx={{
                   p: 1.5,
-                  borderRadius: 0,
+                  
                   bgcolor: isNote ? '#ffffff' : '#fcfcfc',
                   borderColor: isNote ? '#e0e0e0' : '#e0f2f1',
                   borderLeft: isNote ? '3px solid #1976d2' : '3px solid #009688',

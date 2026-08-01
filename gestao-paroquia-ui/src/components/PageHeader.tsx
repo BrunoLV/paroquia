@@ -13,7 +13,7 @@ export default function PageHeader({icon, title, subtitle, actions}: PageHeaderP
   return (
     <Box sx={{ mb: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Box sx={{ p: 1.5, bgcolor: theme.custom.headerIconBg, borderRadius: 0, display: 'flex' }}>
+        <Box sx={{ p: 1.5, bgcolor: theme.custom.headerIconBg, display: 'flex' }}>
           {icon}
         </Box>
         <Box>

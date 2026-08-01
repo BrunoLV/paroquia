@@ -204,7 +204,7 @@ const Approvals = () => {
           </Tabs>
         </Box>
 
-        <Card sx={{ width: '100%', mb: 4, borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <Card sx={{ width: '100%', mb: 4, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
@@ -221,7 +221,7 @@ const Approvals = () => {
           {/* EVENT APPROVALS VIEW */}
           {approvalsType === 'EVENTOS' && (
             <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                 <EventNoteIcon sx={{ fontSize: 26, color: 'primary.main' }} />
               </Box>
               <Box>
@@ -238,7 +238,7 @@ const Approvals = () => {
           {/* PROJECT APPROVALS VIEW */}
           {approvalsType === 'PROJETOS' && (
             <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', borderRadius: 0, display: 'flex' }}>
+              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                 <WorkHistoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
               </Box>
               <Box>
@@ -256,7 +256,7 @@ const Approvals = () => {
           {approvalsType === 'EVENTOS' && (
             isLoading ? (
               <Box sx={{ p: 3 }}>
-                <Skeleton variant="rounded" height={280} sx={{ borderRadius: 0 }} />
+                <Skeleton variant="rounded" height={280} />
               </Box>
             ) : isError ? (
               <Box sx={{ p: 4 }}>
@@ -336,7 +336,7 @@ const Approvals = () => {
           {approvalsType === 'PROJETOS' && (
             isProjectLoading ? (
               <Box sx={{ p: 3 }}>
-                <Skeleton variant="rounded" height={280} sx={{ borderRadius: 0 }} />
+                <Skeleton variant="rounded" height={280} />
               </Box>
             ) : isProjectError ? (
               <Box sx={{ p: 4 }}>
@@ -438,7 +438,7 @@ const Approvals = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 0 }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa' }}>
               {selectedApproval.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>
@@ -554,7 +554,7 @@ const Approvals = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 0 }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa' }}>
               {selectedProjectApproval.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>

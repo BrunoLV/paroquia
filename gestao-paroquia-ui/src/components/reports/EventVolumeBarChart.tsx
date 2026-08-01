@@ -14,7 +14,7 @@ const ChartCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     elevation={0}
     sx={{
       p: 3,
-      borderRadius: 0,
+      
       border: '1px solid',
       borderColor: 'divider',
       height: '100%',
@@ -80,7 +80,7 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
     colors: palette,
     plotOptions: {
       bar: {
-        borderRadius: 0,
+        
         columnWidth: categories.length > 8 ? '40%' : '55%',
         distributed: true,
       },

@@ -628,7 +628,7 @@ const Calendar = () => {
               variant="outlined"
               color="secondary"
               onClick={() => setIsSolemnitiesOpen(true)}
-              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+              sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
             >
               Solenidades & Santoral
             </Button>
@@ -637,7 +637,7 @@ const Calendar = () => {
               color="primary"
               startIcon={<DownloadIcon />}
               onClick={() => setIsExportOpen(true)}
-              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
+              sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
             >
               Exportar
             </Button>
@@ -646,7 +646,7 @@ const Calendar = () => {
               color="primary"
               startIcon={<AddIcon />}
               onClick={() => handleOpenCreate()}
-              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+              sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
             >
               Novo Evento
             </Button>
@@ -660,7 +660,7 @@ const Calendar = () => {
         sx={{
           p: 1,
           mb: 3,
-          borderRadius: 0,
+          
           border: '1px solid',
           borderColor: 'divider',
           backgroundColor: '#fafafa',
@@ -680,7 +680,7 @@ const Calendar = () => {
               <IconButton onClick={handleNextMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
                 <ChevronRight />
               </IconButton>
-              <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none', borderRadius: 0 }}>
+              <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none' }}>
                 Hoje
               </Button>
               <Chip
@@ -688,24 +688,24 @@ const Calendar = () => {
                 color="primary"
                 variant="outlined"
                 size="small"
-                sx={{ borderRadius: 0, fontWeight: 700, border: '1px solid #1a237e' }}
+                sx={{ fontWeight: 700, border: '1px solid #1a237e' }}
               />
               {liturgicalInfo.isClosed && (
                 <Chip
                   label="ANO FECHADO"
                   color="error"
                   size="small"
-                  sx={{ borderRadius: 0, fontWeight: 700 }}
+                  sx={{ fontWeight: 700 }}
                 />
               )}
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 0, overflow: 'hidden', display: 'flex' }}>
+              <Box sx={{ border: '1px solid #e0e0e0', overflow: 'hidden', display: 'flex' }}>
                 <IconButton
                   color={viewMode === 'month' ? 'primary' : 'default'}
                   onClick={() => setViewMode('month')}
-                  sx={{ borderRadius: 0, bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
+                  sx={{ bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
                   title="Visualização Mensal"
                   aria-label="Mês"
                 >
@@ -714,7 +714,7 @@ const Calendar = () => {
                 <IconButton
                   color={viewMode === 'agenda' ? 'primary' : 'default'}
                   onClick={() => setViewMode('agenda')}
-                  sx={{ borderRadius: 0, bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
+                  sx={{ bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
                   title="Visualização em Agenda"
                   aria-label="Lista"
                 >
@@ -732,7 +732,7 @@ const Calendar = () => {
                   value={selectedOrgFilter}
                   label="Organização"
                   onChange={(e) => setSelectedOrgFilter(e.target.value)}
-                  sx={{ borderRadius: 0 }}
+                 
                 >
                   <MenuItem value="">
                     <em>Todas</em>
@@ -752,7 +752,7 @@ const Calendar = () => {
                   value={selectedCategoryFilter}
                   label="Categoria"
                   onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  sx={{ borderRadius: 0 }}
+                 
                 >
                   <MenuItem value="">
                     <em>Todas</em>
@@ -776,7 +776,7 @@ const Calendar = () => {
       {/* View Content */}
       {viewMode === 'month' ? (
         /* Monthly Grid View */
-         <Card elevation={2} sx={{ borderRadius: 0, overflow: 'hidden', boxShadow: '0 4px 25px rgba(0,0,0,0.04)' }}>
+         <Card elevation={2} sx={{ overflow: 'hidden', boxShadow: '0 4px 25px rgba(0,0,0,0.04)' }}>
           {/* Days of week header */}
           <Grid container columns={7} sx={{ bgcolor: '#eceff1', borderBottom: '1px solid #cfd8dc', textAlign: 'center', py: 1.5 }}>
             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
@@ -880,7 +880,7 @@ const Calendar = () => {
                             bgcolor: evt.status?.toUpperCase() === 'CANCELADO' ? '#ffebee' : styleColors.bg,
                             color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : styleColors.text,
                             borderLeft: `3px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
-                             borderRadius: 0,
+                             
                             px: 1,
                             py: 0.5,
                             mb: 0.5,
@@ -914,7 +914,7 @@ const Calendar = () => {
         /* Agenda / List View */
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {agendaEvents.length === 0 ? (
-             <Card sx={{ p: 4, textAlign: 'center', borderRadius: 0, color: 'text.secondary' }}>
+             <Card sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
               <CalendarIcon sx={{ fontSize: 48, color: '#cfd8dc', mb: 2 }} />
               <Typography variant="h6">Nenhum evento agendado para o período visível.</Typography>
             </Card>
@@ -929,7 +929,7 @@ const Calendar = () => {
                   key={evt.id}
                   onClick={() => handleOpenDetails(evt)}
                    sx={{
-                    borderRadius: 0,
+                    
                     cursor: 'pointer',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                     borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
@@ -1065,7 +1065,7 @@ const Calendar = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
                       Descrição
                     </Typography>
-                     <Typography variant="body1" sx={{ color: '#546e7a', whiteSpace: 'pre-wrap', bgcolor: theme.custom.subtlePanelBg, p: 1.5, borderRadius: 0, border: '1px solid #eceff1' }}>
+                     <Typography variant="body1" sx={{ color: '#546e7a', whiteSpace: 'pre-wrap', bgcolor: theme.custom.subtlePanelBg, p: 1.5, border: '1px solid #eceff1' }}>
                       {selectedEvent.descricao || 'Nenhuma descrição fornecida.'}
                     </Typography>
                   </Box>

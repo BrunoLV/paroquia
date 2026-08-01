@@ -13,7 +13,7 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
       elevation={0}
       sx={{
         p: 3,
-        borderRadius: 0,
+        
         border: '1px solid',
         borderColor: 'divider',
         height: '100%',
@@ -47,7 +47,7 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                 key={index}
                 sx={{
                   p: 2,
-                  borderRadius: 0,
+                  
                   border: '1px solid',
                   borderColor: project.emRisco ? 'error.light' : 'divider',
                   bgcolor: project.emRisco ? 'error.lighter' : 'background.paper',
@@ -114,7 +114,7 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                       variant="determinate"
                       value={Math.min(project.percentualTempoDecorrido, 100)}
                       color={project.percentualTempoDecorrido > 90 ? 'warning' : 'primary'}
-                      sx={{ height: 6, borderRadius: 0 }}
+                      sx={{ height: 6 }}
                     />
                   </Grid>
 
@@ -134,7 +134,7 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                       variant="determinate"
                       value={Math.min(executionRate, 100)}
                       color={executionRate < project.percentualTempoDecorrido - 15 ? 'warning' : 'success'}
-                      sx={{ height: 6, borderRadius: 0 }}
+                      sx={{ height: 6 }}
                     />
                   </Grid>
                 </Grid>

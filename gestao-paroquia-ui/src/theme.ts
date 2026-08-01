@@ -35,7 +35,7 @@ const theme = createTheme({
     subtlePanelBg: '#F8F9FA',
   },
   shape: {
-    borderRadius: 0,
+    borderRadius: 12,
   },
   typography: {
     fontFamily: [
@@ -53,14 +53,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: '0px',
+          borderRadius: '10px',
         },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: '0px',
+          borderRadius: '10px',
         },
       },
     },
@@ -69,10 +69,31 @@ const theme = createTheme({
         underline: 'hover',
       },
     },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+        },
+      },
+    },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: '0px',
+          borderRadius: '16px',
         },
       },
     },

@@ -23,7 +23,7 @@ export const ConcorrenciaAlertaBanner: React.FC<ConcorrenciaAlertaBannerProps> =
       <Alert
         severity={severity}
         icon={<WarningAmberIcon fontSize="inherit" />}
-        sx={{ borderRadius: 0, border: '1px solid', borderColor: severity === 'error' ? 'error.main' : 'warning.main' }}
+        sx={{ border: '1px solid', borderColor: severity === 'error' ? 'error.main' : 'warning.main' }}
       >
         <AlertTitle sx={{ fontWeight: 700 }}>
           Atenção: Risco de Concorrência Interpastoral ({nivelRisco})
@@ -54,7 +54,7 @@ export const ConcorrenciaAlertaBanner: React.FC<ConcorrenciaAlertaBannerProps> =
                 size="small"
                 color={severity === 'error' ? 'error' : 'warning'}
                 variant="outlined"
-                sx={{ mt: 0.5, borderRadius: 0, fontSize: '0.7rem' }}
+                sx={{ mt: 0.5, fontSize: '0.7rem' }}
               />
             </Box>
           ))}

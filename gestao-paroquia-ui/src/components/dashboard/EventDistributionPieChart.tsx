@@ -58,7 +58,7 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
       elevation={0}
       sx={{
         p: 3,
-        borderRadius: 0,
+        
         border: '1px solid',
         borderColor: 'divider',
         height: '100%',

@@ -35,19 +35,19 @@ test('theme should have Roboto or Inter typography', () => {
   expect(theme.typography.fontFamily).toContain('Roboto');
 });
 
-test('theme should have border-radius of 0 globally', () => {
-  expect(theme.shape.borderRadius).toBe(0);
+test('theme should have a modern rounded border-radius globally', () => {
+  expect(theme.shape.borderRadius).toBe(12);
 });
 
-test('theme should standardize buttons to avoid all-caps and use 0px border-radius', () => {
+test('theme should standardize buttons to avoid all-caps and use rounded corners', () => {
   const buttonStyle: any = theme.components?.MuiButton?.styleOverrides?.root;
   expect(buttonStyle?.textTransform).toBe('none');
-  expect(buttonStyle?.borderRadius).toBe('0px');
+  expect(buttonStyle?.borderRadius).toBe('10px');
 });
 
-test('theme should standardize text fields to use 0px border-radius', () => {
+test('theme should standardize text fields to use rounded corners', () => {
   const inputStyle: any = theme.components?.MuiOutlinedInput?.styleOverrides?.root;
-  expect(inputStyle?.borderRadius).toBe('0px');
+  expect(inputStyle?.borderRadius).toBe('10px');
 });
 
 test('theme should standardize links to underline on hover only', () => {

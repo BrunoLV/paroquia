@@ -23,7 +23,7 @@ const ReportExportButtons: React.FC<ReportExportButtonsProps> = ({
         onClick={onExportCSV}
         startIcon={<FileDownloadIcon />}
         sx={{
-          borderRadius: 0,
+          
           backgroundColor: '#1a237e',
           '&:hover': { backgroundColor: '#0d1757' },
           textTransform: 'none',
@@ -41,7 +41,7 @@ const ReportExportButtons: React.FC<ReportExportButtonsProps> = ({
         onClick={onExportPDF}
         startIcon={<PictureAsPdfIcon />}
         sx={{
-          borderRadius: 0,
+          
           color: '#1a237e',
           borderColor: '#1a237e',
           '&:hover': { borderColor: '#0d1757', backgroundColor: 'rgba(26,35,126,0.04)' },

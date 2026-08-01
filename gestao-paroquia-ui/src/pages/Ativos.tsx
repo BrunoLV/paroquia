@@ -322,9 +322,9 @@ const Ativos = () => {
 
       {isLoading ? (
         <Box>
-          <Skeleton variant="rounded" height={56} sx={{ mb: 1, borderRadius: 0 }} />
-          <Skeleton variant="rounded" height={56} sx={{ mb: 1, borderRadius: 0 }} />
-          <Skeleton variant="rounded" height={56} sx={{ mb: 1, borderRadius: 0 }} />
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
         </Box>
       ) : (
         <TableContainer component={Paper}>

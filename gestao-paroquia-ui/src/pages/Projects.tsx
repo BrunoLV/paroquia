@@ -351,7 +351,7 @@ const Projects = () => {
               color="primary"
               startIcon={<AddIcon />}
               onClick={handleOpenCreate}
-              sx={{ borderRadius: 0, textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
+              sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
             >
               Novo Projeto
             </Button>
@@ -361,10 +361,10 @@ const Projects = () => {
 
       {isLoading ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 0 }} />
+          <Skeleton variant="rectangular" height={56} />
+          <Skeleton variant="rectangular" height={56} />
+          <Skeleton variant="rectangular" height={56} />
+          <Skeleton variant="rectangular" height={56} />
         </Box>
       ) : projects.length === 0 ? (
         <Card sx={{ p: 4, textAlign: 'center', bgcolor: 'background.paper' }}>
@@ -384,7 +384,7 @@ const Projects = () => {
           )}
         </Card>
       ) : (
-        <Card sx={{ borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <TableContainer component={Paper} elevation={0}>
             <Table>
               <TableHead sx={{ bgcolor: 'rgba(26, 35, 126, 0.04)' }}>
@@ -426,7 +426,7 @@ const Projects = () => {
                           'default'
                         }
                         variant="outlined"
-                        sx={{ borderRadius: 0 }}
+                       
                       />
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
@@ -448,7 +448,7 @@ const Projects = () => {
       )}
 
       {/* CREATE & EDIT DIALOG */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': {  } }}>
         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
           <DialogTitle>
             {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
@@ -638,7 +638,7 @@ const Projects = () => {
                       'default'
                     }
                     variant="outlined"
-                    sx={{ borderRadius: 0 }}
+                   
                   />
                 </Box>
               </Box>
@@ -673,7 +673,7 @@ const Projects = () => {
                       variant="determinate"
                       value={Math.min(resumo.saudeTemporal.percentualTempoDecorrido, 100)}
                       color={resumo.saudeTemporal.emRisco ? 'error' : 'primary'}
-                      sx={{ height: 8, borderRadius: 0 }}
+                      sx={{ height: 8 }}
                     />
                     {resumo.saudeTemporal.emRisco && (
                       <Alert severity="warning" icon={<WarningIcon />} sx={{ mt: 1.5, py: 0.5 }}>
@@ -689,19 +689,19 @@ const Projects = () => {
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid size={{ xs: 4 }}>
-                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderRadius: 0 }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
                           <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>TOTAL</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700 }}>{resumo.statusExecucao.totalEventos}</Typography>
                         </Paper>
                       </Grid>
                       <Grid size={{ xs: 4 }}>
-                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'success.light', borderRadius: 0 }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'success.light' }}>
                           <Typography variant="caption" color="success.main" sx={{ display: 'block' }}>REALIZADOS</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700, color: 'success.main' }}>{resumo.statusExecucao.eventosRealizados}</Typography>
                         </Paper>
                       </Grid>
                       <Grid size={{ xs: 4 }}>
-                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'warning.light', borderRadius: 0 }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', borderColor: 'warning.light' }}>
                           <Typography variant="caption" color="warning.main" sx={{ display: 'block' }}>PENDENTES</Typography>
                           <Typography variant="h5" sx={{ fontWeight: 700, color: 'warning.main' }}>{resumo.statusExecucao.eventosPendentes}</Typography>
                         </Paper>
@@ -727,7 +727,7 @@ const Projects = () => {
                             size="small"
                             variant="outlined"
                             icon={<InfoIcon sx={{ fontSize: '0.8rem' }} />}
-                            sx={{ borderRadius: 0 }}
+                           
                           />
                         ))
                       )}
@@ -748,7 +748,7 @@ const Projects = () => {
                     variant="contained"
                     color="success"
                     onClick={() => handleOpenTransition('INICIAR')}
-                    sx={{ textTransform: 'none', borderRadius: 0 }}
+                    sx={{ textTransform: 'none' }}
                   >
                     Iniciar
                   </Button>
@@ -758,7 +758,7 @@ const Projects = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => handleOpenTransition('CONCLUIR')}
-                    sx={{ textTransform: 'none', borderRadius: 0 }}
+                    sx={{ textTransform: 'none' }}
                   >
                     Concluir
                   </Button>
@@ -768,13 +768,13 @@ const Projects = () => {
                     variant="contained"
                     color="error"
                     onClick={() => handleOpenTransition('CANCELAR')}
-                    sx={{ textTransform: 'none', borderRadius: 0 }}
+                    sx={{ textTransform: 'none' }}
                   >
                     Cancelar
                   </Button>
                 )}
               </Box>
-              <Button variant="outlined" onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none', borderRadius: 0 }}>
+              <Button variant="outlined" onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none' }}>
                 Fechar
               </Button>
             </Box>
@@ -787,7 +787,7 @@ const Projects = () => {
         onClose={() => !isTransitioning && setTransitionDialogOpen(false)}
         maxWidth="xs"
         fullWidth
-        sx={{ '& .MuiDialog-paper': { borderRadius: 0 } }}
+        sx={{ '& .MuiDialog-paper': {  } }}
       >
         <DialogTitle>
           {transitionType === 'INICIAR' && 'Iniciar Projeto'}

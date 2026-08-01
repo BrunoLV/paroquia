@@ -122,7 +122,7 @@ const Organograma: React.FC = () => {
           maxWidth: 240,
           mx: 'auto',
           borderLeft: `4px solid ${roleColor}`,
-          borderRadius: 0,
+          
           boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
           transition: 'all 0.2s ease-in-out',
           '&:hover': {
@@ -214,7 +214,7 @@ const Organograma: React.FC = () => {
           maxWidth: isInsideTree ? 260 : 550,
           display: 'flex',
           flexDirection: 'column',
-          borderRadius: 0,
+          
           boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
           border: '1px solid #eef2f6',
           background: 'linear-gradient(to bottom, #ffffff, #fafafa)',
@@ -324,11 +324,11 @@ const Organograma: React.FC = () => {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 0 }} />
+          <Skeleton variant="rectangular" height={100} />
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 0 }} /></Grid>
-            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 0 }} /></Grid>
-            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} sx={{ borderRadius: 0 }} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} /></Grid>
+            <Grid size={{ xs: 12, md: 4 }}><Skeleton variant="rectangular" height={300} /></Grid>
           </Grid>
         </Box>
       </Container>
@@ -414,7 +414,7 @@ const Organograma: React.FC = () => {
                 sx={{
                   bgcolor: 'white',
                   border: '1px solid #e2e8f0',
-                  borderRadius: 0,
+                  
                   boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                 }}
               >
@@ -425,7 +425,7 @@ const Organograma: React.FC = () => {
                   sx={{
                     color: 'primary.main',
                     borderColor: '#e2e8f0',
-                    borderRadius: 0,
+                    
                     '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
                   }}
                 >
@@ -452,7 +452,7 @@ const Organograma: React.FC = () => {
                   sx={{
                     color: 'primary.main',
                     borderColor: '#e2e8f0',
-                    borderRadius: 0,
+                    
                     '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
                   }}
                 >

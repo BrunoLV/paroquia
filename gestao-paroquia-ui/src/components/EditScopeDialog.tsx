@@ -32,7 +32,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
         </DialogContentText>
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onSelect('ONLY_THIS')} sx={{ borderRadius: 0 }}>
+            <ListItemButton onClick={() => onSelect('ONLY_THIS')}>
               <ListItemIcon>
                 <EventIcon color="primary" />
               </ListItemIcon>
@@ -43,7 +43,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onSelect('THIS_AND_FOLLOWING')} sx={{ borderRadius: 0 }}>
+            <ListItemButton onClick={() => onSelect('THIS_AND_FOLLOWING')}>
               <ListItemIcon>
                 <UpdateIcon color="primary" />
               </ListItemIcon>
@@ -54,7 +54,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onSelect('EDIT_ALL')} sx={{ borderRadius: 0 }}>
+            <ListItemButton onClick={() => onSelect('EDIT_ALL')}>
               <ListItemIcon>
                 <EventRepeatIcon color="primary" />
               </ListItemIcon>

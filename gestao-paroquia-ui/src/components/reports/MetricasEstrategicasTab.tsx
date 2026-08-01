@@ -37,7 +37,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Grid key={i} size={{ xs: 12, md: 6 }}>
-              <Skeleton variant="rounded" height={180} sx={{ borderRadius: 0 }} />
+              <Skeleton variant="rounded" height={180} />
             </Grid>
           ))}
         </Grid>
@@ -47,7 +47,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
   if (error || !data) {
     return (
-      <Alert severity="error" sx={{ borderRadius: 0, my: 2 }}>
+      <Alert severity="error" sx={{ my: 2 }}>
         Não foi possível carregar as métricas estratégicas. Verifique a conexão com o servidor.
       </Alert>
     );
@@ -75,7 +75,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
       <Grid container spacing={3}>
         {/* 1. Sazonalidade Litúrgica (Predictive Pastoral Analytics) */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ borderRadius: 0, height: '100%', borderTop: '4px solid #1a237e' }}>
+          <Card sx={{ height: '100%', borderTop: '4px solid #1a237e' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                 <PredictiveIcon sx={{ color: '#1a237e' }} />
@@ -87,7 +87,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                 Histórico litúrgico e projeção preditiva de picos operacionais para o Pároco e secretaria.
               </Typography>
 
-              <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0 }}>
+              <TableContainer component={Paper} variant="outlined">
                 <Table size="small">
                   <TableHead sx={{ bgcolor: 'grey.100' }}>
                     <TableRow>
@@ -112,7 +112,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                             label={s.nivelDemanda}
                             size="small"
                             color={s.nivelDemanda === 'PICO_OPERACIONAL' ? 'error' : s.nivelDemanda === 'ALTA' ? 'warning' : 'default'}
-                            sx={{ borderRadius: 0, fontSize: '0.65rem' }}
+                            sx={{ fontSize: '0.65rem' }}
                           />
                         </TableCell>
                       </TableRow>
@@ -126,7 +126,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 2. Taxa de Conclusão e Abandono de Projetos (CPP/CAE) */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ borderRadius: 0, height: '100%', borderTop: '4px solid #00796b' }}>
+          <Card sx={{ height: '100%', borderTop: '4px solid #00796b' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                 <ProjectIcon sx={{ color: '#00796b' }} />
@@ -151,7 +151,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   variant="determinate"
                   value={taxaProjetos.taxaConclusaoPercentual}
                   color="success"
-                  sx={{ height: 10, borderRadius: 0 }}
+                  sx={{ height: 10 }}
                 />
               </Box>
 
@@ -168,7 +168,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   variant="determinate"
                   value={taxaProjetos.taxaAbandonoPercentual}
                   color="error"
-                  sx={{ height: 10, borderRadius: 0 }}
+                  sx={{ height: 10 }}
                 />
               </Box>
 
@@ -180,7 +180,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   label={`Avaliação: ${taxaProjetos.avaliacaoExecutiva}`}
                   color={taxaProjetos.avaliacaoExecutiva === 'SAUDAVEL' ? 'success' : 'warning'}
                   size="small"
-                  sx={{ borderRadius: 0, fontWeight: 700, mt: 0.5 }}
+                  sx={{ fontWeight: 700, mt: 0.5 }}
                 />
               </Box>
             </CardContent>
@@ -189,7 +189,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 3. SLA de Despacho Pastoral */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ borderRadius: 0, height: '100%', borderTop: '4px solid #f57c00' }}>
+          <Card sx={{ height: '100%', borderTop: '4px solid #f57c00' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                 <SlaIcon sx={{ color: '#f57c00' }} />
@@ -203,7 +203,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 6 }}>
-                  <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 0, textAlign: 'center' }}>
+                  <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
                     <Typography variant="caption" color="text.secondary">
                       Tempo Médio
                     </Typography>
@@ -213,7 +213,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   </Paper>
                 </Grid>
                 <Grid size={{ xs: 6 }}>
-                  <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 0, textAlign: 'center' }}>
+                  <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
                     <Typography variant="caption" color="text.secondary">
                       Dentro do SLA ({slaDespacho.slaMetaHoras}h)
                     </Typography>
@@ -227,7 +227,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
               <Chip
                 label={`Status SLA: ${slaDespacho.statusSla}`}
                 color={slaDespacho.statusSla === 'EXCELENTE' ? 'success' : 'warning'}
-                sx={{ borderRadius: 0, fontWeight: 700 }}
+                sx={{ fontWeight: 700 }}
               />
             </CardContent>
           </Card>
@@ -235,7 +235,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 4. Coeficiente de Impacto Social (Pastoral em Saída) */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ borderRadius: 0, height: '100%', borderTop: '4px solid #e91e63' }}>
+          <Card sx={{ height: '100%', borderTop: '4px solid #e91e63' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                 <SocialIcon sx={{ color: '#e91e63' }} />
@@ -261,7 +261,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   value={impactoSocial.coeficienteImpactoSocialPercentual}
                   sx={{
                     height: 10,
-                    borderRadius: 0,
+                    
                     bgcolor: 'grey.300',
                     '& .MuiLinearProgress-bar': { bgcolor: '#e91e63' },
                   }}
@@ -270,7 +270,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
               <Chip
                 label={`Diretriz Pastoral: ${impactoSocial.diagnosticoPastoral}`}
-                sx={{ borderRadius: 0, fontWeight: 700, bgcolor: '#fce4ec', color: '#c2185b' }}
+                sx={{ fontWeight: 700, bgcolor: '#fce4ec', color: '#c2185b' }}
               />
             </CardContent>
           </Card>
@@ -278,7 +278,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 5. Alerta de Concorrência Interpastoral */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ borderRadius: 0, height: '100%', borderTop: '4px solid #7b1fa2' }}>
+          <Card sx={{ height: '100%', borderTop: '4px solid #7b1fa2' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                 <ConflictIcon sx={{ color: '#7b1fa2' }} />
@@ -290,7 +290,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                 Prevenção de esvaziamento por eventos do mesmo público em datas próximas.
               </Typography>
 
-              <Paper variant="outlined" sx={{ p: 2, borderRadius: 0, mb: 2 }}>
+              <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   Conflitos Detectados: {concorrenciaInterpastoral.totalConflitosDetectados}
                 </Typography>
@@ -302,7 +302,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
               <Chip
                 label={`Risco Interpastoral: ${concorrenciaInterpastoral.nivelRiscoConcorrencia}`}
                 color={concorrenciaInterpastoral.nivelRiscoConcorrencia === 'BAIXO' ? 'success' : 'warning'}
-                sx={{ borderRadius: 0, fontWeight: 700 }}
+                sx={{ fontWeight: 700 }}
               />
             </CardContent>
           </Card>
@@ -310,7 +310,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 6. Índice de Ociosidade Patrimonial */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ borderRadius: 0, height: '100%', borderTop: '4px solid #455a64' }}>
+          <Card sx={{ height: '100%', borderTop: '4px solid #455a64' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                 <PropertyIcon sx={{ color: '#455a64' }} />
@@ -324,7 +324,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 6 }}>
-                  <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 0, textAlign: 'center' }}>
+                  <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
                     <Typography variant="caption" color="text.secondary">
                       Horas Ociosas / Semana
                     </Typography>
@@ -334,7 +334,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   </Paper>
                 </Grid>
                 <Grid size={{ xs: 6 }}>
-                  <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 0, textAlign: 'center' }}>
+                  <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
                     <Typography variant="caption" color="text.secondary">
                       Índice de Ociosidade
                     </Typography>
@@ -348,7 +348,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
               <Chip
                 label={`Recomendação CAE: ${ociosidadePatrimonial.recomendacaoCae}`}
                 color="info"
-                sx={{ borderRadius: 0, fontWeight: 700 }}
+                sx={{ fontWeight: 700 }}
               />
             </CardContent>
           </Card>
