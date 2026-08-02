@@ -26,7 +26,7 @@ class DashboardMetricsIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldDenyUnauthenticatedAccess() throws Exception {
+    void deveNegarNaoAutenticadoAcesso() throws Exception {
         SecurityContextHolder.clearContext();
         mockMvc.perform(get("/api/v1/dashboard/metrics")
                         .header("X-Test-Anonymous", "true"))
@@ -35,7 +35,7 @@ class DashboardMetricsIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldReturnDashboardMetricsForAdmin() throws Exception {
+    void deveRetornarDashboardMetricasParaAdmin() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/metrics")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -46,7 +46,7 @@ class DashboardMetricsIntegrationTest {
     }
 
     @Test
-    void shouldReturnFilteredMetricsForNonAdmin() throws Exception {
+    void deveRetornarFiltradoMetricasParaNaoAdmin() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
         mockMvc.perform(get("/api/v1/dashboard/metrics")

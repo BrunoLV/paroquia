@@ -47,7 +47,7 @@ public class GetIndicadorRetrabalhoUseCase {
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Authenticated user required");
         }
-        if (usuarioDetails.findMembershipByOrganization(organizacaoId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
             throw new AccessDeniedException(
                     "User cannot query operational data outside the responsible organization scope");
         }

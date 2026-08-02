@@ -35,7 +35,7 @@ class ProjetoAgregacaoCacheIntegrationTest {
     private CacheManager cacheManager;
 
     @Test
-    void shouldCacheProjectResumo() {
+    void deveCacheProjetoResumo() {
         UUID projetoId = UUID.randomUUID();
         ProjetoEventoEntity entity = new ProjetoEventoEntity();
         entity.setId(projetoId);

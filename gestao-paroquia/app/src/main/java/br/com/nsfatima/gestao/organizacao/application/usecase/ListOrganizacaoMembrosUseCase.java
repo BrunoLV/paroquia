@@ -15,24 +15,24 @@ import java.util.UUID;
 @Service
 public class ListOrganizacaoMembrosUseCase {
 
-    private final MembroOrganizacaoJpaRepository membershipRepository;
+    private final MembroOrganizacaoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListOrganizacaoMembrosUseCase(
-            MembroOrganizacaoJpaRepository membershipRepository,
+            MembroOrganizacaoJpaRepository vinculoRepository,
             UsuarioJpaRepository usuarioRepository,
             MembroJpaRepository membroRepository,
             OrganizacaoJpaRepository organizacaoRepository) {
-        this.membershipRepository = membershipRepository;
+        this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
     }
 
     @Transactional(readOnly = true)
     public List<OrganizacaoMembroResponse> execute(UUID organizacaoId) {
-        var rawMembers = new java.util.ArrayList<>(membershipRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
-        var churchMembers = membershipRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
+        var rawMembers = new java.util.ArrayList<>(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
+        var churchMembers = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
         for (var cm : churchMembers) {
             if (rawMembers.stream().noneMatch(m -> m.getUsuarioId().equals(cm.getUsuarioId()))) {
                 rawMembers.add(cm);
@@ -79,7 +79,7 @@ public class ListOrganizacaoMembrosUseCase {
                 .filter(u -> name.equalsIgnoreCase(u.getNome()))
                 .map(UsuarioEntity::getId)
                 .findFirst().ifPresent(userId -> list.add(new OrganizacaoMembroResponse(
-                        UUID.randomUUID(), // dummy membership ID
+                        UUID.randomUUID(), // dummy vinculo ID
                         userId,
                         name,
                         papel,

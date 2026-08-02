@@ -22,7 +22,7 @@ class MembroOrganizacaoJpaRepositoryTest {
     private UsuarioJpaRepository usuarioRepository;
 
     @Test
-    void shouldFindActiveMembershipsByUserId() {
+    void deveBuscarActiveVinculosPorUsuarioId() {
         UUID userId = UUID.randomUUID();
         UsuarioEntity user = new UsuarioEntity();
         user.setId(userId);

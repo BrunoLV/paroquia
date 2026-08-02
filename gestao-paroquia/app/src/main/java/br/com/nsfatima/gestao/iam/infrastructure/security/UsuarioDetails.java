@@ -18,7 +18,7 @@ public class UsuarioDetails implements UserDetails {
     private final String username;
     private final String password;
     private final boolean enabled;
-    private final List<ExternalMembershipReader.Membership> memberships;
+    private final List<LeitorVinculoExterno.Vinculo> vinculos;
     private final List<GrantedAuthority> authorities;
 
     public UsuarioDetails(
@@ -27,12 +27,12 @@ public class UsuarioDetails implements UserDetails {
             String password,
             boolean enabled,
             String roles,
-            List<ExternalMembershipReader.Membership> memberships) {
+            List<LeitorVinculoExterno.Vinculo> vinculos) {
         this.usuarioId = usuarioId;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
-        this.memberships = memberships == null ? List.of() : List.copyOf(memberships);
+        this.vinculos = vinculos == null ? List.of() : List.copyOf(vinculos);
 
         Stream<String> globalRoles = (roles == null || roles.isBlank())
                 ? Stream.empty()
@@ -41,10 +41,10 @@ public class UsuarioDetails implements UserDetails {
                 .filter(s -> !s.isEmpty())
                 .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r);
 
-        Stream<String> membershipRoles = this.memberships.stream()
-                .map(ExternalMembershipReader.Membership::authority);
+        Stream<String> vinculoRoles = this.vinculos.stream()
+                .map(LeitorVinculoExterno.Vinculo::authority);
 
-        this.authorities = Stream.concat(globalRoles, membershipRoles)
+        this.authorities = Stream.concat(globalRoles, vinculoRoles)
                 .distinct()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toUnmodifiableList());
@@ -54,17 +54,17 @@ public class UsuarioDetails implements UserDetails {
         return usuarioId;
     }
 
-    public List<ExternalMembershipReader.Membership> getMemberships() {
-        return memberships;
+    public List<LeitorVinculoExterno.Vinculo> getVinculos() {
+        return vinculos;
     }
 
-    public Optional<ExternalMembershipReader.Membership> primaryMembership() {
-        return memberships.stream().findFirst();
+    public Optional<LeitorVinculoExterno.Vinculo> vinculoPrimario() {
+        return vinculos.stream().findFirst();
     }
 
-    public Optional<ExternalMembershipReader.Membership> findMembershipByOrganization(UUID organizationId) {
-        return memberships.stream()
-                .filter(membership -> organizationId != null && organizationId.equals(membership.organizationId()))
+    public Optional<LeitorVinculoExterno.Vinculo> findVinculoPorOrganizacao(UUID organizationId) {
+        return vinculos.stream()
+                .filter(vinculo -> organizationId != null && organizationId.equals(vinculo.organizationId()))
                 .findFirst();
     }
 

@@ -33,7 +33,7 @@ class UpdateEventoTier1PerformanceTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldKeepPatchLatencyWithinCiOperationalGuardrail() throws Exception {
+    void deveManterPatchLatenciaDentroCiOperacionalGuardrail() throws Exception {
         UUID eventoId = UUID.randomUUID();
 
         EventoEntity entity = new EventoEntity();

@@ -39,7 +39,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldAllowTransitionToEmPlanejamentoEvenIfPreviousYearIsNotConcluido() throws Exception {
+    void devePermitirTransicionarParaEmPlanejamentoMesmoSeAnteriorAnoENaoConcluido() throws Exception {
         // Arrange: previous year exists but is not CONCLUIDO (it is EM_PLANEJAMENTO)
         saveAno(currentYear - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
 
@@ -53,7 +53,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldFailToTransitionToFechadoIfPreviousYearIsNotConcluido() throws Exception {
+    void deveFalhaParaTransicionarParaFechadoSeAnteriorAnoENaoConcluido() throws Exception {
         // Arrange: previous year exists but is not CONCLUIDO (it is EM_PLANEJAMENTO)
         saveAno(currentYear - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
 
@@ -67,7 +67,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldFailToTransitionToFechadoIfAnyPriorYearIsNotConcluido() throws Exception {
+    void deveFalhaParaTransicionarParaFechadoSeQualquerPriorAnoENaoConcluido() throws Exception {
         // Arrange: year N-2 is EM_PLANEJAMENTO, N-1 is CONCLUIDO
         saveAno(currentYear - 2, AnoParoquialStatus.EM_PLANEJAMENTO);
         saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
@@ -82,7 +82,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldAllowTransitionToEmPlanejamentoIfPreviousYearIsConcluido() throws Exception {
+    void devePermitirTransicionarParaEmPlanejamentoSeAnteriorAnoEConcluido() throws Exception {
         // Arrange: previous year is CONCLUIDO
         saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
 
@@ -96,7 +96,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldFailToTransitionOutOfEmPlanejamentoIfYearIsNotCurrentCalendarYear() throws Exception {
+    void deveFalhaParaTransicionarForaDeEmPlanejamentoSeAnoENaoAtualCalendarioAno() throws Exception {
         // Arrange: a future year is in EM_PLANEJAMENTO
         saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
         saveAno(currentYear, AnoParoquialStatus.CONCLUIDO);
@@ -112,7 +112,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldAllowTransitionOutOfEmPlanejamentoIfYearIsCurrentCalendarYear() throws Exception {
+    void devePermitirTransicionarForaDeEmPlanejamentoSeAnoEAtualCalendarioAno() throws Exception {
         // Arrange: current year is in EM_PLANEJAMENTO, previous is CONCLUIDO
         saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
         saveAno(currentYear, AnoParoquialStatus.EM_PLANEJAMENTO);
@@ -127,7 +127,7 @@ class AnoParoquialTransitionTest {
     }
 
     @Test
-    void shouldFailToUpdateConcluidoYear() throws Exception {
+    void deveFalhaParaAtualizarConcluidoAno() throws Exception {
         // Arrange: current year is CONCLUIDO
         saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
         saveAno(currentYear, AnoParoquialStatus.CONCLUIDO);

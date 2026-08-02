@@ -32,7 +32,7 @@ class EventoControllerSecurityTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Test
-    void shouldAllowParocoToViewAnyEvent() throws Exception {
+    void devePermitirParocoParaVisualizarQualquerEvento() throws Exception {
         UUID eventId = UUID.randomUUID();
         createEvento(eventId, UUID.fromString(PASTORAL_A));
 
@@ -43,7 +43,7 @@ class EventoControllerSecurityTest {
     }
 
     @Test
-    void shouldAllowOrgMemberToViewTheirOwnOrgEvent() throws Exception {
+    void devePermitirOrgMembroParaVisualizarSeuProprioOrgEvento() throws Exception {
         UUID orgId = UUID.fromString(PASTORAL_A);
         UUID eventId = UUID.randomUUID();
         createEvento(eventId, orgId);
@@ -56,7 +56,7 @@ class EventoControllerSecurityTest {
     }
 
     @Test
-    void shouldDenyOrgMemberFromViewingOtherOrgEvent() throws Exception {
+    void deveNegarOrgMembroDeVisualizandoOutraOrgEvento() throws Exception {
         UUID otherOrgId = UUID.fromString(PASTORAL_B);
         UUID myOrgId = UUID.fromString(PASTORAL_A);
         UUID eventId = UUID.randomUUID();

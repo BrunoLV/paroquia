@@ -42,7 +42,7 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPreserveHistoricalLinksAfterCancellation() throws Exception {
+    void devePreservarHistoricoVinculaDepoisCancelamento() throws Exception {
         UUID eventoId = UUID.randomUUID();
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 

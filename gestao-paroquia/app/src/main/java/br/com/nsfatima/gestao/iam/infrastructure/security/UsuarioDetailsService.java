@@ -18,11 +18,11 @@ import java.util.UUID;
 public class UsuarioDetailsService implements UserDetailsService {
 
     private final JdbcTemplate jdbcTemplate;
-    private final ExternalMembershipReader externalMembershipReader;
+    private final LeitorVinculoExterno externalVinculoReader;
 
-    public UsuarioDetailsService(JdbcTemplate jdbcTemplate, ExternalMembershipReader externalMembershipReader) {
+    public UsuarioDetailsService(JdbcTemplate jdbcTemplate, LeitorVinculoExterno externalVinculoReader) {
         this.jdbcTemplate = jdbcTemplate;
-        this.externalMembershipReader = externalMembershipReader;
+        this.externalVinculoReader = externalVinculoReader;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class UsuarioDetailsService implements UserDetailsService {
                     usuario.passwordHash(),
                     usuario.enabled(),
                     usuario.roles(),
-                    externalMembershipReader.findActiveMemberships(usuario.id()));
+                    externalVinculoReader.findVinculosAtivos(usuario.id()));
         } catch (DataAccessException ex) {
             throw new AuthenticationServiceException("Fonte de autorizacao indisponivel", ex);
         }

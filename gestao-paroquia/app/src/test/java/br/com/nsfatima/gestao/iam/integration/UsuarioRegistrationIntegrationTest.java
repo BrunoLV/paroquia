@@ -40,7 +40,7 @@ class UsuarioRegistrationIntegrationTest {
     private OrganizacaoJpaRepository organizacaoJpaRepository;
 
     @Test
-    void shouldRegisterNewUserAsDisabledAndEncrypted() throws Exception {
+    void deveRegistrarNovoUsuarioComoDesabilitadoEEncrypted() throws Exception {
         OrganizacaoEntity igreja = new OrganizacaoEntity();
         UUID igrejaId = UUID.randomUUID();
         igreja.setId(igrejaId);
@@ -86,7 +86,7 @@ class UsuarioRegistrationIntegrationTest {
     }
 
     @Test
-    void shouldFailRegistrationWhenIgrejaIsMissing() throws Exception {
+    void deveFalhaRegistrationQuandoIgrejaEFaltando() throws Exception {
         String username = "test.fail.reg." + UUID.randomUUID() + "@example.com";
         String body = """
                 {

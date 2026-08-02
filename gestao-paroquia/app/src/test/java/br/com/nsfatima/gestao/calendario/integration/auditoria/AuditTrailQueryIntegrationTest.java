@@ -59,7 +59,7 @@ class AuditTrailQueryIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldQueryPersistedAuditTrailByOrganizationAndPeriod() throws Exception {
+    void deveConsultaPersistidoAuditarTrilhaPorOrganizacaoEPeriodo() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID outraOrganizacao = UUID.fromString("00000000-0000-0000-0000-0000000000bb");
         UUID eventoId = persistEvent(organizacaoId, "Evento auditado");

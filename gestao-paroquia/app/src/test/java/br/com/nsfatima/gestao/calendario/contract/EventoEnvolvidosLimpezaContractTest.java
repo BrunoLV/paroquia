@@ -18,7 +18,7 @@ class EventoEnvolvidosLimpezaContractTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldClearEnvolvidos() throws Exception {
+    void deveLimparEnvolvidos() throws Exception {
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}/envolvidos", "00000000-0000-0000-0000-000000000001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventoId").value("00000000-0000-0000-0000-000000000001"))

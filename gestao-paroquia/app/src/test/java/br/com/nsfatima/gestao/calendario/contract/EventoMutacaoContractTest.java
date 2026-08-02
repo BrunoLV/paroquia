@@ -33,7 +33,7 @@ class EventoMutacaoContractTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Test
-    void shouldPatchEventoWithEnumStatus() throws Exception {
+    void devePatchEventoComEnumStatus() throws Exception {
         persistEventoBase();
 
         String payload = """
@@ -53,7 +53,7 @@ class EventoMutacaoContractTest {
     }
 
     @Test
-    void shouldRejectInvalidEnumStatusDeterministically() throws Exception {
+    void deveRejeitarInvalidoEnumStatusDeterministicamente() throws Exception {
         String payload = """
                 {
                   "status": "quinzenal"
@@ -70,7 +70,7 @@ class EventoMutacaoContractTest {
     }
 
     @Test
-    void shouldRejectInvalidPartialUpdateAtomically() throws Exception {
+    void deveRejeitarInvalidoParcialAtualizarAtomically() throws Exception {
         String payload = """
                 {
                   "titulo": "Novo Titulo",
@@ -88,7 +88,7 @@ class EventoMutacaoContractTest {
     }
 
     @Test
-    void shouldCancelEvento() throws Exception {
+    void deveCancelarEvento() throws Exception {
         persistEventoConfirmado();
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}", EVENTO_ID)

@@ -35,7 +35,7 @@ class ProjetoAutoActivationSchedulerTest {
     }
 
     @Test
-    void shouldActivatePendingProjectsWhenLockAcquired() {
+    void deveAtivarPendenteProjetosQuandoLockAcquired() {
         when(lockRepository.acquireLock(anyString(), any(), any())).thenReturn(true);
 
         ProjetoEventoEntity project = new ProjetoEventoEntity();
@@ -54,7 +54,7 @@ class ProjetoAutoActivationSchedulerTest {
     }
 
     @Test
-    void shouldNotActivateWhenLockAcquisitionFails() {
+    void deveNaoAtivarQuandoLockAcquisitionFalha() {
         when(lockRepository.acquireLock(anyString(), any(), any())).thenReturn(false);
 
         scheduler.activateProjects();

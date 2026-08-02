@@ -30,7 +30,7 @@ class CancelEventoStatusEligibilityIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectCancellationWhenEventoIsNotConfirmed() throws Exception {
+    void deveRejeitarCancelamentoQuandoEventoENaoConfirmado() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

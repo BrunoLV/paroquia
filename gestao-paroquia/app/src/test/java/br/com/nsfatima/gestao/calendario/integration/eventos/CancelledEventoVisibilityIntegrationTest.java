@@ -29,7 +29,7 @@ class CancelledEventoVisibilityIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldHideFromPublicAndShowInAuthorizedInternalHistory() throws Exception {
+    void deveOcultarDePublicoEShowEmAutorizadoInternoHistorico() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

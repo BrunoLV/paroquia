@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.membro.integration;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
@@ -77,7 +77,7 @@ class MembroControllerIntegrationTest {
 
         UsuarioDetails details = new UsuarioDetails(
                 adminUser.getId(), "admin", "pass", true, "ROLE_ADMIN",
-                List.of(new ExternalMembershipReader.Membership(ORG_ID, "PASTORAL", "coordenador")));
+                List.of(new LeitorVinculoExterno.Vinculo(ORG_ID, "PASTORAL", "coordenador")));
 
         return UsernamePasswordAuthenticationToken.authenticated(details, null, details.getAuthorities());
     }

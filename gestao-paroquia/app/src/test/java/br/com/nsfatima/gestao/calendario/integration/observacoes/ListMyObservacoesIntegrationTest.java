@@ -32,7 +32,7 @@ class ListMyObservacoesIntegrationTest {
     }
 
     @Test
-    void shouldReturnOnlyAuthenticatedUserNotesInMinhasMode() throws Exception {
+    void deveRetornarApenasAutenticadoUsuarioNotasEmMinhasMode() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000aa";
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)

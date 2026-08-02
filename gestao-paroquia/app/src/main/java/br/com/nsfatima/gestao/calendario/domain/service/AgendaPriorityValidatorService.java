@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.springframework.stereotype.Service;
@@ -101,7 +102,7 @@ public class AgendaPriorityValidatorService {
                 : "Cancelado automaticamente devido a conflito de prioridade de agenda eclesial";
 
         for (EventoEntity evento : eventsToCancel) {
-            evento.setStatus("CANCELADO");
+            evento.setStatus(EventoStatusInput.CANCELADO.name());
             evento.setCanceladoMotivo(motivoFinal);
         }
 

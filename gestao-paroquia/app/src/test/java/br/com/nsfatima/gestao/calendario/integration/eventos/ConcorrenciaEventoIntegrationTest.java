@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ConcorrenciaEventoIntegrationTest {
 
     @Test
-    void shouldExposeVersionField() {
+    void deveExporVersionCampo() {
         BaseVersionedEntity entity = new BaseVersionedEntity() {
         };
         assertNotNull(entity.getVersion());

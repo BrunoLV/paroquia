@@ -47,7 +47,7 @@ class ApproveUpdateEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldAutoUpdateEventoAfterApproval() throws Exception {
+    void deveAutoAtualizarEventoDepoisAprovacao() throws Exception {
         // Step 1: Create event (paroco → immediate 201)
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
@@ -119,7 +119,7 @@ class ApproveUpdateEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldApplyUpdateFromDirectPendingSnapshot() throws Exception {
+    void deveAplicarAtualizarDeDiretoPendenteSnapshot() throws Exception {
         // Create event first
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())

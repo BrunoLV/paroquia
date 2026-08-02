@@ -31,7 +31,7 @@ class UpdateEventoPersistenciaIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPersistPatchedDescription() throws Exception {
+    void devePersistirPatchedDescription() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

@@ -23,7 +23,7 @@ class CreateEventoValidationIntegrationTest {
 
     @Test
     @WithMockUser
-    void shouldRejectCreateWhenEndIsBeforeStart() throws Exception {
+    void deveRejeitarCriarQuandoFimEAntesIniciar() throws Exception {
         String payload = """
                 {
                   "titulo": "Evento Invalido",
@@ -46,7 +46,7 @@ class CreateEventoValidationIntegrationTest {
 
     @Test
     @WithMockUser
-    void shouldRejectAddedExtraWithoutJustification() throws Exception {
+    void deveRejeitarAdicionadoExtraSemJustificativa() throws Exception {
         String payload = """
                 {
                   "titulo": "Evento Extra",

@@ -63,7 +63,7 @@ class EventoControllerListTest {
     }
 
     @Test
-    void shouldListEventsWithPagination() throws Exception {
+    void deveListarEventosComPagination() throws Exception {
         for (int i = 0; i < 15; i++) {
             createEvento("Evento " + i, Instant.parse("2026-05-10T10:00:00Z"));
         }
@@ -81,7 +81,7 @@ class EventoControllerListTest {
     }
 
     @Test
-    void shouldFilterEventsByDateRange() throws Exception {
+    void deveFiltrarEventosPorDataRange() throws Exception {
         createEvento("Maio Event", Instant.parse("2026-05-15T10:00:00Z"));
         createEvento("Junho Event", Instant.parse("2026-06-15T10:00:00Z"));
 

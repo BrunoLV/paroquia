@@ -1,17 +1,19 @@
 package br.com.nsfatima.gestao.dashboard.application.usecase;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardMetricsDTO;
-import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventDistributionDTO;
-import br.com.nsfatima.gestao.dashboard.api.v1.dto.GeneralSummaryDTO;
-import br.com.nsfatima.gestao.dashboard.api.v1.dto.ProjectDetailDTO;
-import br.com.nsfatima.gestao.dashboard.api.v1.dto.WeeklyEventDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.DetalheProjetoDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.DistribuicaoEventosDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventoSemanalDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.ResumoGeralDTO;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
@@ -90,14 +92,14 @@ public class GetDashboardMetricsUseCase {
         // 3. Fetch all projects
         List<ProjetoEventoEntity> projetos = projetoRepository.findAll();
         List<ProjetoEventoEntity> projetosAtivosEntities = projetos.stream()
-                .filter(p -> "ABERTO".equals(p.getStatus()) || "EM_ANDAMENTO".equals(p.getStatus()))
+                .filter(p -> ProjetoStatus.ABERTO.name().equals(p.getStatus()) || ProjetoStatus.EM_ANDAMENTO.name().equals(p.getStatus()))
                 .filter(p -> !isFilterNeeded || orgId.equals(p.getOrganizacaoResponsavelId()))
                 .toList();
 
         // 4. Count pending approvals
         // Event approvals
         List<AprovacaoEntity> aprovacoesPendentes =
-                aprovacaoRepository.findByStatusIgnoreCaseOrderByCriadoEmUtcAsc("PENDENTE");
+                aprovacaoRepository.findByStatusIgnoreCaseOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE.name());
         long eventApprovalsCount = aprovacoesPendentes.stream()
                 .filter(a -> {
                     if (!isFilterNeeded) {
@@ -113,7 +115,7 @@ public class GetDashboardMetricsUseCase {
 
         // Project approvals
         List<ProjetoSolicitacaoAprovacaoEntity> projetoAprovacoesPendentes =
-                projetoAprovacaoRepository.findByStatus("PENDENTE");
+                projetoAprovacaoRepository.findByStatus(AprovacaoStatus.PENDENTE.name());
         long projectApprovalsCount = projetoAprovacoesPendentes.stream()
                 .filter(a -> {
                     if (!isFilterNeeded) {
@@ -129,7 +131,7 @@ public class GetDashboardMetricsUseCase {
 
         int totalSolicitacoesPendentes = (int) (eventApprovalsCount + projectApprovalsCount);
 
-        GeneralSummaryDTO resumoGeral = new GeneralSummaryDTO(
+        ResumoGeralDTO resumoGeral = new ResumoGeralDTO(
                 eventosMes.size(),
                 projetosAtivosEntities.size(),
                 totalSolicitacoesPendentes
@@ -142,16 +144,16 @@ public class GetDashboardMetricsUseCase {
         Map<UUID, Long> countByOrg = eventosMes.stream()
                 .collect(Collectors.groupingBy(EventoEntity::getOrganizacaoResponsavelId, Collectors.counting()));
 
-        List<EventDistributionDTO> eventosPorOrganizacao = countByOrg.entrySet().stream()
-                .map(entry -> new EventDistributionDTO(
+        List<DistribuicaoEventosDTO> eventosPorOrganizacao = countByOrg.entrySet().stream()
+                .map(entry -> new DistribuicaoEventosDTO(
                         orgNames.getOrDefault(entry.getKey(), "Organização Desconhecida"),
                         entry.getValue()
                 ))
-                .sorted(Comparator.comparingLong(EventDistributionDTO::quantidadeEventos).reversed())
+                .sorted(Comparator.comparingLong(DistribuicaoEventosDTO::quantidadeEventos).reversed())
                 .toList();
 
         // 6. Build active projects details
-        List<ProjectDetailDTO> projetosAtivosDetalhes = projetosAtivosEntities.stream()
+        List<DetalheProjetoDTO> projetosAtivosDetalhes = projetosAtivosEntities.stream()
                 .map(p -> {
                     int totalEvents = (int) eventoRepository.countByProjetoId(p.getId());
                     int eventsDone = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
@@ -166,7 +168,7 @@ public class GetDashboardMetricsUseCase {
 
                     List<String> involvedOrgs = eventoRepository.findInvolvedOrganizationNames(p.getId());
 
-                    return new ProjectDetailDTO(
+                    return new DetalheProjetoDTO(
                             p.getNome(),
                             p.getStatus(),
                             percent,
@@ -197,8 +199,8 @@ public class GetDashboardMetricsUseCase {
         Map<UUID, String> localNames = new HashMap<>();
         localRepository.findAll().forEach(l -> localNames.put(l.getId(), l.getNome()));
 
-        List<WeeklyEventDTO> eventosSemana = eventosSemanaEntities.stream()
-                .map(e -> new WeeklyEventDTO(
+        List<EventoSemanalDTO> eventosSemana = eventosSemanaEntities.stream()
+                .map(e -> new EventoSemanalDTO(
                         e.getTitulo(),
                         LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
                         localNames.getOrDefault(e.getLocalId(), "Sem Local"),

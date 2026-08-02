@@ -44,7 +44,7 @@ class EventoEnvolvidosContractTest {
     }
 
     @Test
-    void shouldUpdateEnvolvidos() throws Exception {
+    void deveAtualizarEnvolvidos() throws Exception {
         mockMvc.perform(put("/api/v1/eventos/{eventoId}/envolvidos", EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(

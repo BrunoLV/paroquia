@@ -24,7 +24,7 @@ class LocalApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldCreateAndRetrieveLocal() throws Exception {
+    void deveCriarERecuperarLocal() throws Exception {
         String payload = """
                 {
                   "nome": "Sala de Reuniões",
@@ -54,7 +54,7 @@ class LocalApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyCreateForNonAdmin() throws Exception {
+    void deveNegarCriarParaNaoAdmin() throws Exception {
         String payload = """
                 {
                   "nome": "Tentativa",
@@ -71,7 +71,7 @@ class LocalApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldListLocais() throws Exception {
+    void deveListarLocais() throws Exception {
         mockMvc.perform(get("/api/v1/locais"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

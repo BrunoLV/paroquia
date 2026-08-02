@@ -39,7 +39,7 @@ class CancelEventoObservacaoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldAppendCancellationObservationAfterApprovedExecution() throws Exception {
+    void deveAnexarCancelamentoObservacaoDepoisAprovadoExecucao() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

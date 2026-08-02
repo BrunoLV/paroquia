@@ -24,21 +24,21 @@ class ImportacaoControllerSecurityIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldAllowAdminToDownloadTemplate() throws Exception {
+    void devePermitirAdminParaBaixarTemplate() throws Exception {
         mockMvc.perform(get("/api/v1/importacao/template?tipo=MEMBRO&formato=CSV"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyUserFromDownloadingTemplate() throws Exception {
+    void deveNegarUsuarioDeDownloadingTemplate() throws Exception {
         mockMvc.perform(get("/api/v1/importacao/template?tipo=MEMBRO&formato=CSV"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldAllowAdminToValidateFile() throws Exception {
+    void devePermitirAdminParaValidarArquivo() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "membros.csv", "text/csv",
@@ -52,7 +52,7 @@ class ImportacaoControllerSecurityIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyUserFromValidatingFile() throws Exception {
+    void deveNegarUsuarioDeValidatingArquivo() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "membros.csv", "text/csv",
@@ -65,7 +65,7 @@ class ImportacaoControllerSecurityIntegrationTest {
     }
 
     @Test
-    void shouldRequireAuthToAccessImportationApi() throws Exception {
+    void deveExigirAuthParaAcessoImportationApi() throws Exception {
         mockMvc.perform(get("/api/v1/importacao/template?tipo=MEMBRO&formato=CSV").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }

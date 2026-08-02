@@ -18,7 +18,7 @@ class JobLockJpaRepositoryTest {
     private JobLockJpaRepository repository;
 
     @Test
-    void shouldAcquireAndReleaseLock() {
+    void deveAdquirirELiberarLock() {
         String lockName = "YEARLY_RECURRENCE_JOB";
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 

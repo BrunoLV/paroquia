@@ -18,7 +18,7 @@ class PublicStatusVisibilityIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldRequireAuthenticationForEventosListEndpoint() throws Exception {
+    void deveExigirAutenticacaoParaEventosListarEndpoint() throws Exception {
         mockMvc.perform(get("/api/v1/eventos").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }

@@ -24,7 +24,7 @@ class UnknownFieldRejectionIntegrationTest {
 
     @Test
     @WithMockUser
-    void shouldRejectUnknownFieldsAcrossMigratedEndpoints() throws Exception {
+    void deveRejeitarDesconhecidoCamposAtravesMigratedEndpoints() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", "evt-unknown-field-001")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

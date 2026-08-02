@@ -49,7 +49,7 @@ class AuditPersistenceFailureIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldReturnConflictWhenMandatoryAuditPersistenceFails() throws Exception {
+    void deveRetornarConflitoQuandoObrigatorioAuditarPersistenciaFalha() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();

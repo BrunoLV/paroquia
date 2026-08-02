@@ -27,7 +27,7 @@ class RbacOrganizationIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldAllowCreateForConselhoSecretary() throws Exception {
+    void devePermitirCriarParaConselhoSecretario() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "maria.secretaria", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
@@ -40,7 +40,7 @@ class RbacOrganizationIntegrationTest {
     }
 
     @Test
-    void shouldReturnRoleScopeInvalidForIncompatibleRoleAndOrganizationType() throws Exception {
+    void deveRetornarPapelEscopoInvalidoParaIncompativelPapelEOrganizacaoTipo() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "clara.invalida", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
@@ -53,7 +53,7 @@ class RbacOrganizationIntegrationTest {
     }
 
     @Test
-    void shouldDenyCreateForMemberWithoutWriteRole() throws Exception {
+    void deveNegarCriarParaMembroSemEscreverPapel() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "pedro.membro", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
@@ -66,7 +66,7 @@ class RbacOrganizationIntegrationTest {
     }
 
     @Test
-    void shouldAllowAuthenticatedReadForPastoralCoordinator() throws Exception {
+    void devePermitirAutenticadoLerParaPastoralCoordenador() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
         mockMvc.perform(get("/api/v1/eventos")

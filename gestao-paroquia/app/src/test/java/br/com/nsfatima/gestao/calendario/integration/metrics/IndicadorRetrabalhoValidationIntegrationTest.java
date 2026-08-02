@@ -17,7 +17,7 @@ class IndicadorRetrabalhoValidationIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldRejectQueryWithoutOrganizationId() throws Exception {
+    void deveRejeitarConsultaSemOrganizacaoId() throws Exception {
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
                         .param("granularidade", "SEMANAL"))
                 .andExpect(status().isBadRequest());

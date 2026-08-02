@@ -48,7 +48,7 @@ class CalendarPayloadCompatibilityContractTest {
     }
 
     @Test
-    void shouldPreserveApprovalPayloadShapeForAuthenticatedUsers() throws Exception {
+    void devePreservarAprovacaoPayloadShapeParaAutenticadoUsuarios() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "ana.conselho", "senha123");
 
         mockMvc.perform(post("/api/v1/aprovacoes")
@@ -67,7 +67,7 @@ class CalendarPayloadCompatibilityContractTest {
     }
 
     @Test
-    void shouldPreserveEnvolvidosCleanupPayloadForAuthenticatedUsers() throws Exception {
+    void devePreservarEnvolvidosCleanupPayloadParaAutenticadoUsuarios() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}/envolvidos", EVENT_ID)

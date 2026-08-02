@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.support;
 
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -61,7 +61,7 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
                 "{noop}senha123",
                 true,
                 null,
-                List.of(new ExternalMembershipReader.Membership(organizationId, organizationType, role)));
+                List.of(new LeitorVinculoExterno.Vinculo(organizationId, organizationType, role)));
 
         UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.authenticated(
                 principal,

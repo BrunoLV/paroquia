@@ -19,7 +19,7 @@ class CryptoConverterTest {
     }
 
     @Test
-    void shouldEncryptAndDecryptString() {
+    void deveCriptografarEDescriptografarString() {
         String original = "João da Silva";
         String encrypted = CryptoUtils.encrypt(original);
 
@@ -31,7 +31,7 @@ class CryptoConverterTest {
     }
 
     @Test
-    void shouldEncryptAndDecryptLocalDate() {
+    void deveCriptografarEDescriptografarLocalData() {
         LocalDate original = LocalDate.of(1990, 5, 15);
         EncryptedLocalDateConverter converter = new EncryptedLocalDateConverter();
 
@@ -44,7 +44,7 @@ class CryptoConverterTest {
     }
 
     @Test
-    void shouldHandleNullValues() {
+    void deveTratarNuloValores() {
         EncryptedStringConverter stringConverter = new EncryptedStringConverter();
         assertNull(stringConverter.convertToDatabaseColumn(null));
         assertNull(stringConverter.convertToEntityAttribute(null));

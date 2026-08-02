@@ -31,7 +31,7 @@ class EventoIdempotencyIntegrationTest {
 
     @Test
     @WithMockUser(roles = "CLERO_PAROCO")
-    void shouldReplaySameResponseForSameIdempotencyKeyAndPayload() throws Exception {
+    void deveReplayMesmaResponseParaMesmaIdempotenciaChaveEPayload() throws Exception {
         String payload = """
                 {
                   "titulo": "Assembleia",
@@ -69,7 +69,7 @@ class EventoIdempotencyIntegrationTest {
 
     @Test
     @WithMockUser(roles = "CLERO_PAROCO")
-    void shouldReturnConflictWhenIdempotencyKeyIsReusedWithDifferentPayload() throws Exception {
+    void deveRetornarConflitoQuandoIdempotenciaChaveEReusedComDiferentePayload() throws Exception {
         String firstPayload = """
                 {
                   "titulo": "Assembleia",

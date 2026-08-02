@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EventoRecorrenciaEntityTest {
 
     @Test
-    void shouldMapRegraRecorrencia() {
+    void deveMapearRegraRecorrencia() {
         EventoRecorrenciaEntity entity = new EventoRecorrenciaEntity();
         RegraRecorrencia regra = new RegraRecorrencia(
                 "SEMANAL",

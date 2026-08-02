@@ -40,7 +40,7 @@ class EventoParticipantesIntegrationTest {
 
     @Test
     @DisplayName("Should return participants in response when creating event")
-    void shouldReturnParticipantsInResponse() throws Exception {
+    void deveRetornarParticipantesEmResponse() throws Exception {
         String orgId = "00000000-0000-0000-0000-0000000000cc"; // Conselho C
         String participanteId = "00000000-0000-0000-0000-0000000000bb"; // Pastoral B
         String payload = """
@@ -67,7 +67,7 @@ class EventoParticipantesIntegrationTest {
 
     @Test
     @DisplayName("Should return updated participants in response")
-    void shouldReturnUpdatedParticipantsInResponse() throws Exception {
+    void deveRetornarAtualizadoParticipantesEmResponse() throws Exception {
         UUID eventoId = UUID.randomUUID();
         String orgId = "00000000-0000-0000-0000-0000000000aa";
         String initialParticipanteId = "00000000-0000-0000-0000-0000000000bb";

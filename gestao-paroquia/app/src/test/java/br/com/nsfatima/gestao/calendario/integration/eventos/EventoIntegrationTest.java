@@ -34,7 +34,7 @@ class EventoIntegrationTest {
 
     @Test
     @DisplayName("Should create event immediately when actor has permission")
-    void shouldCreateEventImmediately() throws Exception {
+    void deveCriarEventoImediatamente() throws Exception {
         String orgId = "00000000-0000-0000-0000-000000000001";
         String payload = """
                 {
@@ -59,7 +59,7 @@ class EventoIntegrationTest {
 
     @Test
     @DisplayName("Should return 400 for invalid interval")
-    void shouldFailForInvalidInterval() throws Exception {
+    void deveFalhaParaInvalidoIntervalo() throws Exception {
         String orgId = "00000000-0000-0000-0000-000000000001";
         String payload = """
                 {
@@ -83,7 +83,7 @@ class EventoIntegrationTest {
 
     @Test
     @DisplayName("Should cancel event successfully")
-    void shouldCancelEvent() throws Exception {
+    void deveCancelarEvento() throws Exception {
         UUID eventoId = UUID.randomUUID();
         String orgId = "00000000-0000-0000-0000-000000000001";
 
@@ -113,7 +113,7 @@ class EventoIntegrationTest {
 
     @Test
     @DisplayName("Should transition to confirmed when actor has permission")
-    void shouldTransitionToConfirmed() throws Exception {
+    void deveTransicionarParaConfirmado() throws Exception {
         UUID eventoId = UUID.randomUUID();
         String orgId = "00000000-0000-0000-0000-000000000001";
 

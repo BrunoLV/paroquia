@@ -44,7 +44,7 @@ class ProjetosContractTest {
     }
 
     @Test
-    void shouldListProjetos() throws Exception {
+    void deveListarProjetos() throws Exception {
         mockMvc.perform(get("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
@@ -60,7 +60,7 @@ class ProjetosContractTest {
     }
 
     @Test
-    void shouldCreateProjeto() throws Exception {
+    void deveCriarProjeto() throws Exception {
         String orgId = UUID.randomUUID().toString();
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")

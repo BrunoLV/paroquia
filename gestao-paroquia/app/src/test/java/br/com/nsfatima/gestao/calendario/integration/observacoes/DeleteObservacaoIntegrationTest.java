@@ -41,7 +41,7 @@ class DeleteObservacaoIntegrationTest {
     }
 
     @Test
-    void shouldSoftDeleteAndHideFromFunctionalList() throws Exception {
+    void deveSoftExcluirEOcultarDeFuncionalListar() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000bb";
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
                         .contentType(MediaType.APPLICATION_JSON)

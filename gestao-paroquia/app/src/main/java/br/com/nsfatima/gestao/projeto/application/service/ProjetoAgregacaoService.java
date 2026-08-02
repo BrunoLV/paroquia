@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.SaudeTemporalDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.StatusExecucaoDTO;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
+import br.com.nsfatima.gestao.projeto.domain.service.ProjetoEventoProvider;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
@@ -26,12 +26,12 @@ import java.util.UUID;
 public class ProjetoAgregacaoService {
 
     private final ProjetoEventoJpaRepository projetoRepository;
-    private final ProjectEventProvider eventProvider;
+    private final ProjetoEventoProvider eventProvider;
     private final ProjetoAgregacaoDomainService domainService;
 
     public ProjetoAgregacaoService(
             ProjetoEventoJpaRepository projetoRepository,
-            ProjectEventProvider eventProvider,
+            ProjetoEventoProvider eventProvider,
             ProjetoAgregacaoDomainService domainService) {
         this.projetoRepository = projetoRepository;
         this.eventProvider = eventProvider;

@@ -31,7 +31,7 @@ class CreateListObservacaoIntegrationTest {
     }
 
     @Test
-    void shouldPersistAndListNotaForEvento() throws Exception {
+    void devePersistirEListarNotaParaEvento() throws Exception {
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Contexto operacional\"}"))

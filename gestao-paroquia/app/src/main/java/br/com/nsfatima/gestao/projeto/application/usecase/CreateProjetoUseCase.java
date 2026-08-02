@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
 import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
@@ -74,7 +76,7 @@ public class CreateProjetoUseCase {
         boolean isLocked = false;
         if (anoParoquialOpt.isPresent()) {
             String status = anoParoquialOpt.get().getStatus();
-            if ("FECHADO".equals(status) || "CONCLUIDO".equals(status)) {
+            if (AnoParoquialStatus.FECHADO.name().equals(status) || AnoParoquialStatus.CONCLUIDO.name().equals(status)) {
                 isLocked = true;
             }
         }
@@ -84,7 +86,7 @@ public class CreateProjetoUseCase {
             approval.setId(UUID.randomUUID());
             approval.setProjetoId(null);
             approval.setTipoSolicitacao("CRIACAO");
-            approval.setStatus("PENDENTE");
+            approval.setStatus(AprovacaoStatus.PENDENTE.name());
             approval.setSolicitanteId(actorContext.actor());
             approval.setSolicitantePapel(actorContext.role());
             approval.setSolicitanteTipoOrganizacao(actorContext.organizationType());

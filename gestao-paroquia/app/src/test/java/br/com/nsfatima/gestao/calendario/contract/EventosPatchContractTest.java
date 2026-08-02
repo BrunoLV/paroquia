@@ -30,7 +30,7 @@ class EventosPatchContractTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPatchEventoAndReturnPersistedStatus() throws Exception {
+    void devePatchEventoERetornarPersistidoStatus() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

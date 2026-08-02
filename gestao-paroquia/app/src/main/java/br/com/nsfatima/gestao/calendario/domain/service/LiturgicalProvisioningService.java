@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleE
 import br.com.nsfatima.gestao.calendario.domain.model.LiturgicalOutput;
 import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
 import br.com.nsfatima.gestao.calendario.domain.model.TipoCicloLiturgico;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.CicloLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
@@ -180,7 +181,7 @@ public class LiturgicalProvisioningService {
                 evento.setDescricao("Solenidade / Marco Litúrgico provisionado automaticamente a partir do banco de dados (" + marco.chave() + ")");
                 evento.setOrganizacaoResponsavelId(igreja.getId());
                 evento.setCategoria("LITURGICO");
-                evento.setStatus("CONFIRMADO");
+                evento.setStatus(EventoStatusInput.CONFIRMADO.name());
 
                 int prioridade = 2;
                 if ("QUINTA_SANTA".equals(marco.chave()) || "SEXTA_SANTA".equals(marco.chave())

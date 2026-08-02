@@ -34,7 +34,7 @@ class EventoLocalIntegrationTest {
 
     @Test
     @DisplayName("Should create event with localId")
-    void shouldCreateEventWithLocalId() throws Exception {
+    void deveCriarEventoComLocalId() throws Exception {
         String orgId = "00000000-0000-0000-0000-000000000001";
         String localId = "00000000-0000-0000-0000-000000000010"; // From locais-fixtures.sql
         String payload = """
@@ -61,7 +61,7 @@ class EventoLocalIntegrationTest {
 
     @Test
     @DisplayName("Should update event with localId")
-    void shouldUpdateEventWithLocalId() throws Exception {
+    void deveAtualizarEventoComLocalId() throws Exception {
         UUID eventoId = UUID.randomUUID();
         String orgId = "00000000-0000-0000-0000-000000000001";
         String localId = "00000000-0000-0000-0000-000000000010"; // From locais-fixtures.sql

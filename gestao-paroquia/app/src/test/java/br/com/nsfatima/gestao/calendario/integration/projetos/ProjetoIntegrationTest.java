@@ -39,7 +39,7 @@ class ProjetoIntegrationTest {
 
     @Test
     @DisplayName("Should perform full project lifecycle")
-    void shouldPerformFullLifecycle() throws Exception {
+    void deveRealizarCompletoCicloVida() throws Exception {
         String orgId = UUID.randomUUID().toString();
 
         // Create
@@ -96,7 +96,7 @@ class ProjetoIntegrationTest {
 
     @Test
     @DisplayName("Should fail when project name is too long")
-    void shouldFailForLongName() throws Exception {
+    void deveFalhaParaLongoNome() throws Exception {
         String longName = "A".repeat(161);
         String payload = """
                 {
@@ -119,7 +119,7 @@ class ProjetoIntegrationTest {
 
     @Test
     @DisplayName("Should return 404 for non-existent project")
-    void shouldReturn404() throws Exception {
+    void deveRetornar404() throws Exception {
         String patchPayload = """
                 {
                   "nome": "Inexistente",

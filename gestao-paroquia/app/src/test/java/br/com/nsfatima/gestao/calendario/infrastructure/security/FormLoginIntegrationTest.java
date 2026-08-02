@@ -31,7 +31,7 @@ class FormLoginIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldLoginWithValidCredentialsAndReturnSessionCookie() throws Exception {
+    void deveLoginComValidoCredenciaisERetornarSessaoCookie() throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -53,7 +53,7 @@ class FormLoginIntegrationTest {
     }
 
     @Test
-    void shouldRejectInvalidCredentials() throws Exception {
+    void deveRejeitarInvalidoCredenciais() throws Exception {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -67,7 +67,7 @@ class FormLoginIntegrationTest {
     }
 
     @Test
-    void shouldRejectDisabledUserWithApprovalRequired() throws Exception {
+    void deveRejeitarDesabilitadoUsuarioComAprovacaoObrigatorio() throws Exception {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -82,7 +82,7 @@ class FormLoginIntegrationTest {
     }
 
     @Test
-    void shouldInvalidateSessionOnLogout() throws Exception {
+    void deveInvalidarSessaoEmLogout() throws Exception {
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

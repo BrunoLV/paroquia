@@ -36,11 +36,11 @@ class OrganizacaoDynamicResolverIntegrationTest {
     private UsuarioJpaRepository usuarioRepository;
 
     @Autowired
-    private MembroOrganizacaoJpaRepository membershipRepository;
+    private MembroOrganizacaoJpaRepository vinculoRepository;
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldResolveCoordinatorAndViceCoordinatorNamesDynamically() throws Exception {
+    void deveResolverCoordenadorEViceCoordenadorNomesDynamically() throws Exception {
         // Create coordinator user
         UsuarioEntity coord = new UsuarioEntity();
         coord.setId(UUID.randomUUID());
@@ -70,7 +70,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         org.setAtivo(true);
         organizacaoRepository.save(org);
 
-        // Create memberships
+        // Create vinculos
         MembroOrganizacaoEntity m1 = new MembroOrganizacaoEntity();
         m1.setId(UUID.randomUUID());
         m1.setUsuarioId(coord.getId());
@@ -78,7 +78,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         m1.setTipoOrganizacao(TipoOrganizacao.PASTORAL.name());
         m1.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         m1.setAtivo(true);
-        membershipRepository.save(m1);
+        vinculoRepository.save(m1);
 
         MembroOrganizacaoEntity m2 = new MembroOrganizacaoEntity();
         m2.setId(UUID.randomUUID());
@@ -87,7 +87,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         m2.setTipoOrganizacao(TipoOrganizacao.PASTORAL.name());
         m2.setPapel("vice-coordenador-pastoral-local");
         m2.setAtivo(true);
-        membershipRepository.save(m2);
+        vinculoRepository.save(m2);
 
         // Get organization and verify Resolved Names
         mockMvc.perform(get("/api/v1/organizacoes/" + org.getId())

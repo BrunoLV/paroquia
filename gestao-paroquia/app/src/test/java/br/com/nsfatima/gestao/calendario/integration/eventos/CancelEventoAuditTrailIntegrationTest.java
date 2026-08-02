@@ -40,7 +40,7 @@ class CancelEventoAuditTrailIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPublishAuditForPendingAndExecutedPaths() throws Exception {
+    void devePublicarAuditarParaPendenteEExecutedPaths() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

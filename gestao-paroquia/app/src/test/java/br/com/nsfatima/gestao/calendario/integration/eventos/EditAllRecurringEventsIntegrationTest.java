@@ -40,7 +40,7 @@ class EditAllRecurringEventsIntegrationTest {
 
     @Test
     @DisplayName("Should update all instances in a series when scope is EDIT_ALL")
-    void shouldUpdateAllInstances() throws Exception {
+    void deveAtualizarTodosInstancias() throws Exception {
         String orgId = "00000000-0000-0000-0000-000000000001";
         UUID recorrenciaId = UUID.randomUUID();
 

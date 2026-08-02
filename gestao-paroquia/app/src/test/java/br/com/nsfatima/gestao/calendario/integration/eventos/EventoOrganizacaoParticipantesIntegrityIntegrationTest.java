@@ -23,7 +23,7 @@ class EventoOrganizacaoParticipantesIntegrityIntegrationTest {
 
     @Test
     @WithMockUser
-    void shouldRejectWhenResponsibleOrganizationIsRepeatedInParticipants() throws Exception {
+    void deveRejeitarQuandoResponsavelOrganizacaoERepetidoEmParticipantes() throws Exception {
         String payload = """
                 {
                   "titulo": "Planejamento",

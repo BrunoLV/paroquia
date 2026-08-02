@@ -26,7 +26,7 @@ class EventoErrorHandlingIntegrationTest {
     @Test
     @WithMockUser
     @DisplayName("Should return structured error for missing required fields")
-    void shouldReturnErrorForMissingFields() throws Exception {
+    void deveRetornarErroParaFaltandoCampos() throws Exception {
         String payload = "{}";
 
         mockMvc.perform(post("/api/v1/eventos")
@@ -44,7 +44,7 @@ class EventoErrorHandlingIntegrationTest {
     @Test
     @WithMockUser
     @DisplayName("Should return structured error for too long title")
-    void shouldReturnErrorForLongTitle() throws Exception {
+    void deveRetornarErroParaLongoTitle() throws Exception {
         String longTitle = "A".repeat(161);
         String payload = """
                 {
@@ -68,7 +68,7 @@ class EventoErrorHandlingIntegrationTest {
     @Test
     @WithMockUser
     @DisplayName("Should return DOMAIN_RULE_VIOLATION for end date before start date")
-    void shouldReturnDomainViolationForInvalidDates() throws Exception {
+    void deveRetornarDominioViolacaoParaInvalidoDatas() throws Exception {
         String payload = """
                 {
                   "titulo": "Valid Title",

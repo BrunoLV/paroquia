@@ -21,7 +21,7 @@ class ParoquiaConfiguracaoInitializerIntegrationTest {
     private ParoquiaConfiguracaoRepository repository;
 
     @Test
-    void shouldSeedDefaultConfigurationAtStartup() {
+    void deveSemearPadraoConfigurationEmInicializacao() {
         // The initializer runs automatically on application startup, so the config must exist.
         List<ParoquiaConfiguracaoEntity> configs = repository.findAll();
         assertFalse(configs.isEmpty(), "Should have initialized at least one configuration");

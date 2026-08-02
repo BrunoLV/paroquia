@@ -36,7 +36,7 @@ class ApprovalRefinementIntegrationTest {
     private ApprovalActionPayloadMapper payloadMapper;
 
     @Test
-    void shouldRejectExpiredApprovalRequest() throws Exception {
+    void deveRejeitarExpiredAprovacaoRequest() throws Exception {
         UUID approvalId = UUID.randomUUID();
         AprovacaoEntity aprovacao = new AprovacaoEntity();
         aprovacao.setId(approvalId);

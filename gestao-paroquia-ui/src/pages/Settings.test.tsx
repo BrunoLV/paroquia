@@ -4,7 +4,7 @@ import Settings from './Settings';
 import {getAnosParoquiais, updateAnoParoquialStatus} from '../api/anosParoquiais';
 import {createLocal, deleteLocal, getLocais, updateLocal} from '../api/locais';
 import {createOrganizacao, getOrganizacaoMembros, getOrganizacoes, updateOrganizacao} from '../api/organizacoes';
-import {addMembership, approveUsuario, getMemberships, getUsuarios, removeMembership} from '../api/usuarios';
+import {adicionarVinculo, approveUsuario, getVinculos, getUsuarios, removerVinculo} from '../api/usuarios';
 import {
     createPastoralOficial,
     deletePastoralOficial,
@@ -38,9 +38,9 @@ vi.mock('../api/organizacoes', () => ({
 vi.mock('../api/usuarios', () => ({
   getUsuarios: vi.fn(),
   approveUsuario: vi.fn(),
-  getMemberships: vi.fn(),
-  addMembership: vi.fn(),
-  removeMembership: vi.fn(),
+  getVinculos: vi.fn(),
+  adicionarVinculo: vi.fn(),
+  removerVinculo: vi.fn(),
 }));
 
 vi.mock('../auth/AuthContext', () => ({
@@ -66,9 +66,9 @@ const mockUpdateOrganizacao = vi.mocked(updateOrganizacao);
 const mockGetOrganizacaoMembros = vi.mocked(getOrganizacaoMembros);
 const mockGetUsuarios = vi.mocked(getUsuarios);
 const mockApproveUsuario = vi.mocked(approveUsuario);
-const mockGetMemberships = vi.mocked(getMemberships);
-const mockAddMembership = vi.mocked(addMembership);
-const mockRemoveMembership = vi.mocked(removeMembership);
+const mockGetVinculos = vi.mocked(getVinculos);
+const mockAdicionarVinculo = vi.mocked(adicionarVinculo);
+const mockRemoverVinculo = vi.mocked(removerVinculo);
 const mockUseAuth = vi.mocked(useAuth);
 const mockGetPastoraisOficiais = vi.mocked(getPastoraisOficiais);
 const mockCreatePastoralOficial = vi.mocked(createPastoralOficial);
@@ -538,7 +538,7 @@ describe('Settings page - Membros por Pastoral', () => {
 
   const mockOrgMembros = [
     {
-      membershipId: 'memb-1',
+      vinculoId: 'memb-1',
       usuarioId: 'user-active',
       usuarioNome: 'Maria Membro',
       papel: 'MEMBRO',
@@ -594,7 +594,7 @@ describe('Settings page - Membros por Pastoral', () => {
     });
   });
 
-  test('requires igrejaVinculoId when adding membership for pastoral/movimento', async () => {
+  test('requires igrejaVinculoId when adding vinculo for pastoral/movimento', async () => {
     mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
     mockGetOrganizacoes.mockResolvedValueOnce(mockOrgs);
     mockGetUsuarios.mockResolvedValueOnce([

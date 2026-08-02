@@ -477,7 +477,7 @@ describe('isUnlinkedUser', () => {
     expect(isUnlinkedUser(null)).toBe(false);
   });
 
-  it('returns false for ADMIN regardless of organization memberships', () => {
+  it('returns false for ADMIN regardless of organization vinculos', () => {
     const user: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'], organizations: [] };
     expect(isUnlinkedUser(user)).toBe(false);
   });

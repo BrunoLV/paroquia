@@ -86,7 +86,7 @@ class OrganizacaoApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldCreateAndRetrieveOrganization() throws Exception {
+    void deveCriarERecuperarOrganizacao() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Pastoral da Música",
@@ -122,7 +122,7 @@ class OrganizacaoApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "CONSELHO_COORDENADOR")
-    void shouldAllowCreateForConselhoCoordenador() throws Exception {
+    void devePermitirCriarParaConselhoCoordenador() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Pastoral da Acolhida",
@@ -146,7 +146,7 @@ class OrganizacaoApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyCreateForNonAdmin() throws Exception {
+    void deveNegarCriarParaNaoAdmin() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Tentativa",
@@ -164,7 +164,7 @@ class OrganizacaoApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldListOrganizationMembers() throws Exception {
+    void deveListarOrganizacaoMembros() throws Exception {
         // Create a mock UUID
         UUID orgId = UUID.randomUUID();
         mockMvc.perform(get("/api/v1/organizacoes/" + orgId + "/membros")
@@ -174,7 +174,7 @@ class OrganizacaoApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldRetrieveOrganogramaTree() throws Exception {
+    void deveRecuperarOrganogramaArvore() throws Exception {
         mockMvc.perform(get("/api/v1/organizacoes/organograma")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

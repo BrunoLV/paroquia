@@ -2,8 +2,8 @@ package br.com.nsfatima.gestao.projeto.application.service;
 
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjectEventProvider;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
+import br.com.nsfatima.gestao.projeto.domain.service.ProjetoEventoProvider;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +38,7 @@ class ProjetoAgregacaoServiceTest {
     private ProjetoEventoJpaRepository projetoRepository;
 
     @Mock
-    private ProjectEventProvider eventProvider;
+    private ProjetoEventoProvider eventProvider;
 
     @Mock
     private ProjetoAgregacaoDomainService domainService;

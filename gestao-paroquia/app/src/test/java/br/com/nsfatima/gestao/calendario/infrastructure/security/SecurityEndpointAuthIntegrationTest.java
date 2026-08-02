@@ -22,7 +22,7 @@ class SecurityEndpointAuthIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldRequireAuthenticationForBusinessEndpoints() throws Exception {
+    void deveExigirAutenticacaoParaNegocioEndpoints() throws Exception {
         mockMvc.perform(get("/api/v1/eventos").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").value("AUTH_REQUIRED"));

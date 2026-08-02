@@ -40,7 +40,7 @@ class UpdateEventoApprovalAuditTrailIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPersistApprovalTimelineForUpdateExecution() throws Exception {
+    void devePersistirAprovacaoLinhaTempoParaAtualizarExecucao() throws Exception {
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
                         .header("X-Actor-Role", "paroco")

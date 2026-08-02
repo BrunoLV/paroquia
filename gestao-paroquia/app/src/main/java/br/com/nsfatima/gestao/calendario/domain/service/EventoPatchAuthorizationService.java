@@ -82,10 +82,10 @@ public class EventoPatchAuthorizationService {
                     (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
 
             if (!matchesOrg || !matchesChurch) {
-                boolean hasOtherValidMembership = checkUserMembership(organizacaoResponsavelId,
+                boolean hasOtherValidVinculo = checkUserVinculo(organizacaoResponsavelId,
                         igrejaVinculoId, ORG_CREATOR_ROLES);
 
-                if (!hasOtherValidMembership) {
+                if (!hasOtherValidVinculo) {
                     throw new AccessDeniedException(
                             "User cannot create events outside the responsible organization scope");
                 }
@@ -119,10 +119,10 @@ public class EventoPatchAuthorizationService {
                     actorContext.igrejaVinculoId().equals(eventIgrejaVinculoId));
 
             if (!matchesOrg || !matchesChurch) {
-                boolean hasOtherValidMembership = checkUserMembership(eventoOrganizacaoResponsavelId,
+                boolean hasOtherValidVinculo = checkUserVinculo(eventoOrganizacaoResponsavelId,
                         eventIgrejaVinculoId, ORG_EDITOR_ROLES);
 
-                if (!hasOtherValidMembership) {
+                if (!hasOtherValidVinculo) {
                     throw new ForbiddenOperationException(
                             "User cannot edit events outside the responsible organization scope");
                 }
@@ -153,7 +153,7 @@ public class EventoPatchAuthorizationService {
         }
     }
 
-    private boolean checkUserMembership(UUID organizacaoResponsavelId,
+    private boolean checkUserVinculo(UUID organizacaoResponsavelId,
                                         UUID eventIgrejaVinculoId, Set<PapelOrganizacional> allowedRoles) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -161,7 +161,7 @@ public class EventoPatchAuthorizationService {
             return false;
         }
         if (auth.getPrincipal() instanceof UsuarioDetails usuarioDetails) {
-            return usuarioDetails.getMemberships().stream()
+            return usuarioDetails.getVinculos().stream()
                     .anyMatch(m -> {
                         boolean sameOrg = m.organizationId().equals(organizacaoResponsavelId);
                         boolean roleAllowed = allowedRoles.contains(PapelOrganizacional.fromStoredValue(m.role()));

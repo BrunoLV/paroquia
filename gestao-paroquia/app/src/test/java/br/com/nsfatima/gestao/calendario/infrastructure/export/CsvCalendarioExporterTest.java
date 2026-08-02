@@ -17,7 +17,7 @@ class CsvCalendarioExporterTest {
     private final CalendarioExporter exporter = new CsvCalendarioExporter();
 
     @Test
-    void shouldExportToCsv() {
+    void deveExportarParaCsv() {
         ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
         config.setNome("Paróquia Teste");
 

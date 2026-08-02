@@ -30,7 +30,7 @@ class UpdateEventoApprovalIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRequireApprovalForDateChange() throws Exception {
+    void deveExigirAprovacaoParaDataMudanca() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

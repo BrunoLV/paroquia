@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,11 +29,11 @@ class FailClosedAuthzIntegrationTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ExternalMembershipReader externalMembershipReader;
+    private LeitorVinculoExterno externalVinculoReader;
 
     @Test
-    void shouldReturnServiceUnavailableWhenAuthorizationSourceFails() throws Exception {
-        when(externalMembershipReader.findActiveMemberships(any(UUID.class)))
+    void deveRetornarServiceUnavailableQuandoAuthorizationSourceFalha() throws Exception {
+        when(externalVinculoReader.findVinculosAtivos(any(UUID.class)))
                 .thenThrow(new CannotAcquireLockException("db unavailable"));
 
         mockMvc.perform(post("/api/v1/auth/login")

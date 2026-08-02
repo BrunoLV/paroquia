@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ConsultaCalendarioPerformanceTest {
 
     @Test
-    void shouldKeepQueryLatencyWithinExpectedWindow() {
+    void deveManterConsultaLatenciaDentroEsperadoJanela() {
         long p95Millis = 2000;
         assertTrue(p95Millis <= 2000);
     }

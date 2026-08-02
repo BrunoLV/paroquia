@@ -33,7 +33,7 @@ class IndicadorRetrabalhoContractTest {
     }
 
     @Test
-    void shouldReturnReworkContractPayload() throws Exception {
+    void deveRetornarRetrabalhoContratoPayload() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 

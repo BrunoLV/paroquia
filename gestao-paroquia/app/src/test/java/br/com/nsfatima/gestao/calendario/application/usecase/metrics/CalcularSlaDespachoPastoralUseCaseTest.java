@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.SlaDespachoPastoralResponse;
@@ -37,7 +38,7 @@ class CalcularSlaDespachoPastoralUseCaseTest {
 
         AprovacaoEntity ap1 = new AprovacaoEntity();
         ap1.setId(UUID.randomUUID());
-        ap1.setStatus("APROVADO");
+        ap1.setStatus(AprovacaoStatus.APROVADA.name());
         ap1.setCriadoEmUtc(duasHorasAtras);
         ap1.setDecididoEmUtc(agora);
 

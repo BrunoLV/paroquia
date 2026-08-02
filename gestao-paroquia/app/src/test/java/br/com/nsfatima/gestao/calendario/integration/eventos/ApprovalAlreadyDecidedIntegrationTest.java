@@ -35,7 +35,7 @@ class ApprovalAlreadyDecidedIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldReturnConflictWhenApprovalWasAlreadyDecided() throws Exception {
+    void deveRetornarConflitoQuandoAprovacaoWasJaDecided() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

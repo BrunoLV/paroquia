@@ -31,7 +31,7 @@ class GetOrganogramaUseCaseTest {
     }
 
     @Test
-    void shouldBuildCompleteOrganogramaTree() {
+    void deveConstruirCompletoOrganogramaArvore() {
         UUID cleroId = UUID.randomUUID();
         OrganizacaoEntity clero = new OrganizacaoEntity();
         clero.setId(cleroId);
@@ -79,7 +79,7 @@ class GetOrganogramaUseCaseTest {
         // Mock database call
         when(organizacaoRepository.findAll()).thenReturn(List.of(clero, matriz, conselho, conselhoEconomico, pastoral));
 
-        // Mock memberships
+        // Mock vinculos
         UUID membroId = UUID.randomUUID();
         OrganizacaoMembroResponse memberResp = new OrganizacaoMembroResponse(
                 UUID.randomUUID(),

@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
-import br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.GetOrganogramaUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ListOrganizacaoMembrosUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
@@ -40,19 +40,19 @@ public class OrganizacaoController {
     private final OrganizacaoService organizacaoService;
     private final ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase;
     private final GetOrganogramaUseCase getOrganogramaUseCase;
-    private final AddMembershipUseCase addMembershipUseCase;
+    private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final UsuarioJpaRepository usuarioRepository;
 
     public OrganizacaoController(
             OrganizacaoService organizacaoService,
             ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase,
             GetOrganogramaUseCase getOrganogramaUseCase,
-            AddMembershipUseCase addMembershipUseCase,
+            AdicionarVinculoUseCase adicionarVinculoUseCase,
             UsuarioJpaRepository usuarioRepository) {
         this.organizacaoService = organizacaoService;
         this.listOrganizacaoMembrosUseCase = listOrganizacaoMembrosUseCase;
         this.getOrganogramaUseCase = getOrganogramaUseCase;
-        this.addMembershipUseCase = addMembershipUseCase;
+        this.adicionarVinculoUseCase = adicionarVinculoUseCase;
         this.usuarioRepository = usuarioRepository;
     }
 
@@ -70,7 +70,7 @@ public class OrganizacaoController {
                 request.parentId(),
                 request.pastoralOficialId()
         );
-        syncCoordinatorMemberships(org, request.coordenador(), request.viceCoordenador());
+        syncCoordinatorVinculos(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
     }
 
@@ -90,11 +90,11 @@ public class OrganizacaoController {
                 request.parentId(),
                 request.pastoralOficialId()
         );
-        syncCoordinatorMemberships(org, request.coordenador(), request.viceCoordenador());
+        syncCoordinatorVinculos(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
     }
 
-    private void syncCoordinatorMemberships(Organizacao org, String coordName, String viceCoordName) {
+    private void syncCoordinatorVinculos(Organizacao org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
         PapelOrganizacional papel = org.getTipo() == TipoOrganizacao.MOVIMENTO
                 ? PapelOrganizacional.COORD_MOVIMENTO
@@ -127,7 +127,7 @@ public class OrganizacaoController {
 
         if (userId != null && usuarioRepository.existsById(userId)) {
             try {
-                addMembershipUseCase.execute(userId, org.getId(), org.getTipo(), papel, igrejaVinculoId);
+                adicionarVinculoUseCase.execute(userId, org.getId(), org.getTipo(), papel, igrejaVinculoId);
             } catch (Exception ignored) {
             }
         }

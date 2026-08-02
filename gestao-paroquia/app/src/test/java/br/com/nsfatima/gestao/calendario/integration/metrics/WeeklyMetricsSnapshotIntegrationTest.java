@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class WeeklyMetricsSnapshotIntegrationTest {
 
     @Test
-    void shouldProduceWeeklySnapshot() {
+    void deveProduzirSemanalSnapshot() {
         AuditoriaOperacaoJpaRepository auditRepository = mock(AuditoriaOperacaoJpaRepository.class);
         when(auditRepository.findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
                 any(),

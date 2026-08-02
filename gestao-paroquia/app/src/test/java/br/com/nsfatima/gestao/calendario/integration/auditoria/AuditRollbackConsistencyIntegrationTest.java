@@ -63,7 +63,7 @@ class AuditRollbackConsistencyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldKeepOriginalStateWhenAuditRollbackIsTriggered() throws Exception {
+    void deveManterOriginalEstadoQuandoAuditarRollbackETriggered() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
@@ -95,7 +95,7 @@ class AuditRollbackConsistencyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldKeepEventConfirmedWhenCancellationAuditPersistenceFails() throws Exception {
+    void deveManterEventoConfirmadoQuandoCancelamentoAuditarPersistenciaFalha() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
@@ -129,7 +129,7 @@ class AuditRollbackConsistencyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldKeepObservationVisibleWhenDeleteAuditPersistenceFails() throws Exception {
+    void deveManterObservacaoVisibleQuandoExcluirAuditarPersistenciaFalha() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000bb";
         String organizacaoId = "00000000-0000-0000-0000-0000000000aa";
         EventoEntity evento = new EventoEntity();

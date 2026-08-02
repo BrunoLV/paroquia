@@ -45,7 +45,7 @@ class AuditoriaTier1PerformanceTest {
     }
 
     @Test
-    void shouldKeepTrailAndReworkQueriesWithinTier1Threshold() throws Exception {
+    void deveManterTrilhaERetrabalhoQueriesDentroTier1Limite() throws Exception {
         List<Long> trilhaLatencies = new ArrayList<>();
         List<Long> retrabalhoLatencies = new ArrayList<>();
 

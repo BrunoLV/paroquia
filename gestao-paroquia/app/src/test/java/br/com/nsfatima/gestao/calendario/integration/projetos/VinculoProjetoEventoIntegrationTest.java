@@ -44,7 +44,7 @@ class VinculoProjetoEventoIntegrationTest {
     }
 
     @Test
-    void shouldSupportProjectLinkingLifecycle() throws Exception {
+    void deveSuportarProjetoLinkingCicloVida() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CPC")
@@ -71,7 +71,7 @@ class VinculoProjetoEventoIntegrationTest {
     }
 
     @Test
-    void shouldRejectEventCreationOutsideProjectPeriod() throws Exception {
+    void deveRejeitarEventoCriacaoForaProjetoPeriodo() throws Exception {
         String projectResponse = mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CPC")
@@ -113,7 +113,7 @@ class VinculoProjetoEventoIntegrationTest {
     }
 
     @Test
-    void shouldAllowEventCreationWhenProjectDatesAreNull() throws Exception {
+    void devePermitirEventoCriacaoQuandoProjetoDatasSaoNulo() throws Exception {
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(UUID.randomUUID());
         projeto.setNome("Projeto Sem Limites");
@@ -148,7 +148,7 @@ class VinculoProjetoEventoIntegrationTest {
     }
 
     @Test
-    void shouldRejectRecurringEventRuleMismatchedDates() throws Exception {
+    void deveRejeitarRecorrenteEventoRegraMismatchedDatas() throws Exception {
         String projectResponse = mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CPC")
@@ -224,7 +224,7 @@ class VinculoProjetoEventoIntegrationTest {
     }
 
     @Test
-    void shouldAllowRecurringEventRuleMatchingDates() throws Exception {
+    void devePermitirRecorrenteEventoRegraCorrespondenteDatas() throws Exception {
         String projectResponse = mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CPC")

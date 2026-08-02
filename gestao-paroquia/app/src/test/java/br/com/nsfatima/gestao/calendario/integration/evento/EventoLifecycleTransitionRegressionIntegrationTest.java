@@ -30,7 +30,7 @@ class EventoLifecycleTransitionRegressionIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectCancellationOutsideConfirmedLifecycleState() throws Exception {
+    void deveRejeitarCancelamentoForaConfirmadoCicloVidaEstado() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

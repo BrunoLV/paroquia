@@ -20,20 +20,20 @@ class UsuarioControllerSecurityIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldAllowAdminToAccessUsuarios() throws Exception {
+    void devePermitirAdminParaAcessoUsuarios() throws Exception {
         mockMvc.perform(get("/api/v1/usuarios"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyNonAdminToAccessUsuarios() throws Exception {
+    void deveNegarNaoAdminParaAcessoUsuarios() throws Exception {
         mockMvc.perform(get("/api/v1/usuarios"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void shouldRequireAuthToAccessUsuarios() throws Exception {
+    void deveExigirAuthParaAcessoUsuarios() throws Exception {
         mockMvc.perform(get("/api/v1/usuarios").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }

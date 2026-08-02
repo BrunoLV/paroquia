@@ -65,6 +65,6 @@ public class CalcularTaxaProjetosUseCase {
         if (projeto.getStatus() == null) {
             return false;
         }
-        return targetStatus.name().equalsIgnoreCase(projeto.getStatus());
+        return targetStatus == ProjetoStatus.valueOf(projeto.getStatus());
     }
 }

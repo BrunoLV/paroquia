@@ -29,7 +29,7 @@ class LocalJpaRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
-    void shouldPersistLocalWithAllFields() {
+    void devePersistirLocalComTodosCampos() {
         UUID id = UUID.randomUUID();
         LocalEntity local = new LocalEntity();
         local.setId(id);
@@ -52,7 +52,7 @@ class LocalJpaRepositoryTest {
     }
 
     @Test
-    void shouldCheckIfLocalHasAssociatedEvents() {
+    void deveVerificarSeLocalTemAssociadoEventos() {
         UUID localId = UUID.randomUUID();
         LocalEntity local = new LocalEntity();
         local.setId(localId);

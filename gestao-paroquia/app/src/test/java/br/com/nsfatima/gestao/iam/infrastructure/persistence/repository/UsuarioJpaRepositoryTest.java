@@ -19,7 +19,7 @@ class UsuarioJpaRepositoryTest {
     private UsuarioJpaRepository repository;
 
     @Test
-    void shouldFindUserByUsernameIgnoreCase() {
+    void deveBuscarUsuarioPorUsernameIgnorarCase() {
         UUID userId = UUID.randomUUID();
         UsuarioEntity usuario = new UsuarioEntity();
         usuario.setId(userId);

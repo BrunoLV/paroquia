@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.SlaDespachoPastoralResponse;
@@ -32,10 +33,10 @@ public class CalcularSlaDespachoPastoralUseCase {
 
         long total = aprovacoes.size();
         long aprovadas = aprovacoes.stream()
-                .filter(a -> "APROVADO".equalsIgnoreCase(a.getStatus()))
+                .filter(a -> AprovacaoStatus.APROVADA.name().equalsIgnoreCase(a.getStatus()))
                 .count();
         long rejeitadas = aprovacoes.stream()
-                .filter(a -> "REJEITADO".equalsIgnoreCase(a.getStatus()) || "CANCELADO".equalsIgnoreCase(a.getStatus()))
+                .filter(a -> AprovacaoStatus.REPROVADA.name().equalsIgnoreCase(a.getStatus()))
                 .count();
 
         List<Double> duracoesHoras = aprovacoes.stream()

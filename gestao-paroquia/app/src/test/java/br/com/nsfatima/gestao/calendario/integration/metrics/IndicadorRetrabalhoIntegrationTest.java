@@ -33,7 +33,7 @@ class IndicadorRetrabalhoIntegrationTest {
     }
 
     @Test
-    void shouldCalculateAdministrativeReworkRate() throws Exception {
+    void deveCalcularAdministrativoRetrabalhoTaxa() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoA = UUID.randomUUID();
         UUID eventoB = UUID.randomUUID();

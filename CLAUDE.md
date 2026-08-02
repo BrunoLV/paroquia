@@ -46,6 +46,10 @@ docker compose up -d   # postgres, backend API, frontend UI, pgAdmin, seeder
 ```
 Frontend: http://localhost:3000, API: http://localhost:8080, Swagger UI: http://localhost:8080/swagger-ui.html, pgAdmin: http://localhost:5050.
 
+## Naming convention: domain in Portuguese, technical in English
+
+Domain/business concepts (entity names, enum values, status names, role names, DTO fields, use-case names describing a business action) are named in **Portuguese**, mirrored consistently across backend and frontend — e.g. `AtivoAlocacaoEntity`, `EventoController`, `VinculoResponse` (not `MembershipResponse`). Purely technical/architectural terms stay in **English** (`Entity`, `Controller`, `Repository`, `UseCase`, `DTO`, `Enum`, `Exception`, `Context`, `Provider`). Prefer an enum or a named constant over a string literal used as a marker in comparisons/`switch` — reuse an existing enum via `.name()` (e.g. `AprovacaoStatus`, `ProjetoStatus`, `EventoStatusInput`) instead of repeating the literal.
+
 ## Architecture
 
 ### Backend — DDD + Ports & Adapters, package-by-feature

@@ -39,7 +39,7 @@ class YearlyRecurrenceGeneratorJobTest {
 
     @Test
     @DisplayName("Should generate event instances for the whole year")
-    void shouldGenerateYearlyInstances() {
+    void deveGerarAnualInstancias() {
         UUID baseId = UUID.randomUUID();
         EventoEntity baseEvent = new EventoEntity();
         baseEvent.setId(baseId);

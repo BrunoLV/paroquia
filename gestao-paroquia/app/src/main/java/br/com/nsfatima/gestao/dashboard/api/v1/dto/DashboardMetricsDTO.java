@@ -7,15 +7,15 @@ import java.util.List;
 @Schema(description = "DTO contendo todas as métricas consolidadas do dashboard")
 public record DashboardMetricsDTO(
         @Schema(description = "Resumo geral numérico")
-        GeneralSummaryDTO resumoGeral,
+        ResumoGeralDTO resumoGeral,
 
         @Schema(description = "Distribuição de eventos por organização no mês")
-        List<EventDistributionDTO> eventosPorOrganizacao,
+        List<DistribuicaoEventosDTO> eventosPorOrganizacao,
 
         @Schema(description = "Detalhes de execução e progresso dos projetos ativos")
-        List<ProjectDetailDTO> projetosAtivosDetalhes,
+        List<DetalheProjetoDTO> projetosAtivosDetalhes,
 
         @Schema(description = "Eventos agendados para a semana corrente")
-        List<WeeklyEventDTO> eventosSemana
+        List<EventoSemanalDTO> eventosSemana
 ) {
 }

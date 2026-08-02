@@ -28,7 +28,7 @@ class UsuarioApprovalIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldApproveUserWhenAuthorized() throws Exception {
+    void deveAprovarUsuarioQuandoAutorizado() throws Exception {
         UsuarioEntity user = new UsuarioEntity();
         user.setId(UUID.randomUUID());
         user.setUsername("user.to.approve." + UUID.randomUUID() + "@example.com");
@@ -48,7 +48,7 @@ class UsuarioApprovalIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyApproveUserWhenNotAuthorized() throws Exception {
+    void deveNegarAprovarUsuarioQuandoNaoAutorizado() throws Exception {
         mockMvc.perform(put("/api/v1/usuarios/" + UUID.randomUUID() + "/approve")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());

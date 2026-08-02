@@ -32,7 +32,7 @@ class AuditTrailAuthorizationIntegrationTest {
     }
 
     @Test
-    void shouldDenyAuditTrailOutsideOrganizationScope() throws Exception {
+    void deveNegarAuditarTrilhaForaOrganizacaoEscopo() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 

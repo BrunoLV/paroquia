@@ -15,7 +15,7 @@ class AddedExtraValidationContractTest {
     private final EventoDomainService service = new EventoDomainService(new CalendarIntegrityPolicy());
 
     @Test
-    void shouldRejectAddedExtraWithoutJustification() {
+    void deveRejeitarAdicionadoExtraSemJustificativa() {
         assertThrows(IllegalArgumentException.class, () -> service.validateEvento(
                 Instant.parse("2026-03-16T10:00:00Z"),
                 Instant.parse("2026-03-16T11:00:00Z"),
@@ -24,7 +24,7 @@ class AddedExtraValidationContractTest {
     }
 
     @Test
-    void shouldAcceptAddedExtraWithJustification() {
+    void deveAceitarAdicionadoExtraComJustificativa() {
         assertDoesNotThrow(() -> service.validateEvento(
                 Instant.parse("2026-03-16T10:00:00Z"),
                 Instant.parse("2026-03-16T11:00:00Z"),

@@ -39,7 +39,7 @@ class CancelEventoImmediateIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldCancelConfirmedEventoImmediatelyForParoco() throws Exception {
+    void deveCancelarConfirmadoEventoImediatamenteParaParoco() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

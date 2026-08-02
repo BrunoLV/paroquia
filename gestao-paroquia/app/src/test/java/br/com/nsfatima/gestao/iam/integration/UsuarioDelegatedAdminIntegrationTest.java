@@ -38,7 +38,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     private UsuarioJpaRepository usuarioRepository;
 
     @Autowired
-    private MembroOrganizacaoJpaRepository membershipRepository;
+    private MembroOrganizacaoJpaRepository vinculoRepository;
 
     @Autowired
     private OrganizacaoJpaRepository organizacaoRepository;
@@ -80,9 +80,9 @@ class UsuarioDelegatedAdminIntegrationTest {
         memberId = createUser("member");
         strangerId = createUser("stranger");
 
-        createMembership(coordinatorId, orgId, "coordenador-pastoral-local");
-        createMembership(memberId, orgId, "voluntario-pastoral-local");
-        createMembership(strangerId, otherOrgId, "voluntario-pastoral-local");
+        createVinculo(coordinatorId, orgId, "coordenador-pastoral-local");
+        createVinculo(memberId, orgId, "voluntario-pastoral-local");
+        createVinculo(strangerId, otherOrgId, "voluntario-pastoral-local");
     }
 
     private UUID createUser(String username) {
@@ -94,7 +94,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         return usuarioRepository.save(user).getId();
     }
 
-    private void createMembership(UUID userId, UUID organizationId, String papel) {
+    private void createVinculo(UUID userId, UUID organizationId, String papel) {
         MembroOrganizacaoEntity m = new MembroOrganizacaoEntity();
         m.setId(UUID.randomUUID());
         m.setUsuarioId(userId);
@@ -102,7 +102,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         m.setTipoOrganizacao("PASTORAL");
         m.setPapel(papel);
         m.setAtivo(true);
-        membershipRepository.save(m);
+        vinculoRepository.save(m);
     }
 
     private void authenticateAs(UUID userId, String roles) {
@@ -147,7 +147,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     }
 
     @Test
-    void coordinatorShouldAddMembershipToTheirOrg() throws Exception {
+    void coordinatorShouldAddVinculoToTheirOrg() throws Exception {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
         UUID newUser = createUser("new_user");
@@ -161,7 +161,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     }
 
     @Test
-    void coordinatorShouldNotAddMembershipToOtherOrg() throws Exception {
+    void coordinatorShouldNotAddVinculoToOtherOrg() throws Exception {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
         UUID newUser = createUser("new_user");

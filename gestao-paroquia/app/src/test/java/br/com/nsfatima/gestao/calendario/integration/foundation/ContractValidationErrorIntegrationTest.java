@@ -22,7 +22,7 @@ class ContractValidationErrorIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnStructuredValidationPayloadForMissingRequiredField() throws Exception {
+    void deveRetornarEstruturadoValidacaoPayloadParaFaltandoObrigatorioCampo() throws Exception {
         String payload = """
                 {
                   "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000cc",
@@ -44,7 +44,7 @@ class ContractValidationErrorIntegrationTest {
     }
 
     @Test
-    void shouldRejectUnknownFieldsWithDeterministicValidationCode() throws Exception {
+    void deveRejeitarDesconhecidoCamposComDeterministicoValidacaoCode() throws Exception {
         String payload = """
                 {
                   "titulo": "Missa",

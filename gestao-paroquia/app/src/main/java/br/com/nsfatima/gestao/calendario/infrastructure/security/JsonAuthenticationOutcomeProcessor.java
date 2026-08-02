@@ -69,14 +69,14 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                     "roles", usuarioDetails.getAuthorities().stream()
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.toList()),
-                    "organizations", usuarioDetails.getMemberships().stream()
-                            .map(membership -> {
+                    "organizations", usuarioDetails.getVinculos().stream()
+                            .map(vinculo -> {
                                 Map<String, Object> map = new java.util.HashMap<>();
-                                map.put("id", membership.organizationId().toString());
-                                map.put("nome", membership.organizationName());
-                                map.put("tipo", membership.organizationType());
-                                map.put("contato", membership.organizationContact());
-                                map.put("ativo", membership.organizationActive());
+                                map.put("id", vinculo.organizationId().toString());
+                                map.put("nome", vinculo.organizationName());
+                                map.put("tipo", vinculo.organizationType());
+                                map.put("contato", vinculo.organizationContact());
+                                map.put("ativo", vinculo.organizationActive());
                                 return map;
                             })
                             .collect(Collectors.toList())));

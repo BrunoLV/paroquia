@@ -95,7 +95,7 @@ class ImportacaoServiceTest {
 
 
     @Test
-    void shouldGerarCsvTemplateParaMembro() throws IOException {
+    void deveGerarCsvTemplateParaMembro() throws IOException {
         byte[] bytes = importacaoService.gerarTemplate("MEMBRO", "CSV");
         String content = new String(bytes, StandardCharsets.UTF_8);
         assertTrue(content.contains("usuarioUsername,organizacaoNome,papel,igrejaId"));
@@ -103,14 +103,14 @@ class ImportacaoServiceTest {
     }
 
     @Test
-    void shouldGerarXlsxTemplateParaEvento() throws IOException {
+    void deveGerarXlsxTemplateParaEvento() throws IOException {
         byte[] bytes = importacaoService.gerarTemplate("EVENTO", "XLSX");
         assertNotNull(bytes);
         assertTrue(bytes.length > 0);
     }
 
     @Test
-    void shouldValidarArquivoCsvComSucessoEErros() throws IOException {
+    void deveValidarArquivoCsvComSucessoEErros() throws IOException {
         when(usuarioJpaRepository.findByUsernameIgnoreCase("joao@email.com"))
                 .thenReturn(Optional.of(new UsuarioEntity()));
         when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
@@ -135,7 +135,7 @@ class ImportacaoServiceTest {
     }
 
     @Test
-    void shouldValidarArquivoXlsx() throws IOException {
+    void deveValidarArquivoXlsx() throws IOException {
         when(usuarioJpaRepository.findByUsernameIgnoreCase("maria@email.com"))
                 .thenReturn(Optional.of(new UsuarioEntity()));
         when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Catequese"))
@@ -170,7 +170,7 @@ class ImportacaoServiceTest {
     }
 
     @Test
-    void shouldConfirmarImportacaoParaMembroEUsuarioEOrganizacaoEEvento() {
+    void deveConfirmarImportacaoParaMembroEUsuarioEOrganizacaoEEvento() {
         var user = new UsuarioEntity();
         user.setId(UUID.randomUUID());
         var org = new OrganizacaoEntity();

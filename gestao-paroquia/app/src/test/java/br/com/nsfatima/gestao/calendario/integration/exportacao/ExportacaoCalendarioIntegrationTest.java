@@ -40,7 +40,7 @@ class ExportacaoCalendarioIntegrationTest {
 
     @Test
     @DisplayName("Should export calendar events to CSV successfully")
-    void shouldExportToCsv() throws Exception {
+    void deveExportarParaCsv() throws Exception {
         // Create sample event
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
@@ -67,7 +67,7 @@ class ExportacaoCalendarioIntegrationTest {
 
     @Test
     @DisplayName("Should export calendar events to Excel successfully")
-    void shouldExportToExcel() throws Exception {
+    void deveExportarParaExcel() throws Exception {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Reunião de Conselho");
@@ -92,7 +92,7 @@ class ExportacaoCalendarioIntegrationTest {
 
     @Test
     @DisplayName("Should export calendar events to PDF successfully")
-    void shouldExportToPdf() throws Exception {
+    void deveExportarParaPdf() throws Exception {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Festa da Padroeira");
@@ -116,7 +116,7 @@ class ExportacaoCalendarioIntegrationTest {
 
     @Test
     @DisplayName("Should export calendar events with category and organization filters")
-    void shouldExportWithFilters() throws Exception {
+    void deveExportarComFiltra() throws Exception {
         EventoEntity event1 = new EventoEntity();
         event1.setId(UUID.randomUUID());
         event1.setTitulo("Festa Liturgica");

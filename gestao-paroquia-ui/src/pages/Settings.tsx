@@ -44,14 +44,14 @@ import {getAnosParoquiais, updateAnoParoquialStatus} from '../api/anosParoquiais
 import {createLocal, deleteLocal, getLocais, updateLocal} from '../api/locais';
 import {createOrganizacao, getOrganizacaoMembros, getOrganizacoes, updateOrganizacao} from '../api/organizacoes';
 import {
-    addMembership,
-    AddMembershipRequest,
+    adicionarVinculo,
+    AdicionarVinculoRequest,
     approveUsuario,
-    getMemberships,
+    getVinculos,
     getUsuarios,
     registrarUsuario,
     RegistrarUsuarioRequest,
-    removeMembership,
+    removerVinculo,
     Usuario
 } from '../api/usuarios';
 import {
@@ -119,12 +119,12 @@ const Settings = () => {
   const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
   const [orgSearch, setOrgSearch] = useState('');
 
-  // User and Membership states
-  const [selectedUserForMemberships, setSelectedUserForMemberships] = useState<Usuario | null>(null);
-  const [isMembershipsModalOpen, setIsMembershipsModalOpen] = useState(false);
-  const [newMembershipOrgId, setNewMembershipOrgId] = useState('');
-  const [newMembershipPapel, setNewMembershipPapel] = useState('');
-  const [newMembershipChurchId, setNewMembershipChurchId] = useState('');
+  // User and Vinculo states
+  const [selectedUserForVinculos, setSelectedUserForVinculos] = useState<Usuario | null>(null);
+  const [isVinculosModalOpen, setIsVinculosModalOpen] = useState(false);
+  const [newVinculoOrgId, setNewVinculoOrgId] = useState('');
+  const [newVinculoPapel, setNewVinculoPapel] = useState('');
+  const [newVinculoChurchId, setNewVinculoChurchId] = useState('');
 
   // Organization members states
   const [selectedOrgForMembers, setSelectedOrgForMembers] = useState<Organizacao | null>(null);
@@ -257,21 +257,21 @@ const Settings = () => {
     },
   });
 
-  const { data: memberships = [], isLoading: isLoadingMemberships } = useQuery({
-    queryKey: ['memberships', selectedUserForMemberships?.id],
-    queryFn: () => getMemberships(selectedUserForMemberships!.id),
-    enabled: !!selectedUserForMemberships && isMembershipsModalOpen,
+  const { data: vinculos = [], isLoading: isLoadingVinculos } = useQuery({
+    queryKey: ['vinculos', selectedUserForVinculos?.id],
+    queryFn: () => getVinculos(selectedUserForVinculos!.id),
+    enabled: !!selectedUserForVinculos && isVinculosModalOpen,
   });
 
-  const addMembershipMutation = useMutation({
-    mutationFn: (request: AddMembershipRequest) => addMembership(selectedUserForMemberships!.id, request),
+  const addVinculoMutation = useMutation({
+    mutationFn: (request: AdicionarVinculoRequest) => adicionarVinculo(selectedUserForVinculos!.id, request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['memberships', selectedUserForMemberships?.id] });
+      queryClient.invalidateQueries({ queryKey: ['vinculos', selectedUserForVinculos?.id] });
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
       showSuccess('Vínculo adicionado com sucesso!');
-      setNewMembershipOrgId('');
-      setNewMembershipPapel('');
-      setNewMembershipChurchId('');
+      setNewVinculoOrgId('');
+      setNewVinculoPapel('');
+      setNewVinculoChurchId('');
     },
     onError: (error: any) => {
       const errMsg = error.response?.data?.message || 'Erro ao adicionar vínculo.';
@@ -279,10 +279,10 @@ const Settings = () => {
     },
   });
 
-  const removeMembershipMutation = useMutation({
-    mutationFn: (membershipId: string) => removeMembership(selectedUserForMemberships!.id, membershipId),
+  const removeVinculoMutation = useMutation({
+    mutationFn: (vinculoId: string) => removerVinculo(selectedUserForVinculos!.id, vinculoId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['memberships', selectedUserForMemberships?.id] });
+      queryClient.invalidateQueries({ queryKey: ['vinculos', selectedUserForVinculos?.id] });
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
       showSuccess('Vínculo removido com sucesso!');
     },
@@ -299,8 +299,8 @@ const Settings = () => {
   });
 
   const addOrgMemberMutation = useMutation({
-    mutationFn: ({ userId, request }: { userId: string; request: AddMembershipRequest }) =>
-      addMembership(userId, request),
+    mutationFn: ({ userId, request }: { userId: string; request: AdicionarVinculoRequest }) =>
+      adicionarVinculo(userId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizacaoMembros', selectedOrgForMembers?.id] });
       queryClient.invalidateQueries({ queryKey: ['usuarios'] });
@@ -317,8 +317,8 @@ const Settings = () => {
   });
 
   const removeOrgMemberMutation = useMutation({
-    mutationFn: ({ userId, membershipId }: { userId: string; membershipId: string }) =>
-      removeMembership(userId, membershipId),
+    mutationFn: ({ userId, vinculoId }: { userId: string; vinculoId: string }) =>
+      removerVinculo(userId, vinculoId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizacaoMembros', selectedOrgForMembers?.id] });
       queryClient.invalidateQueries({ queryKey: ['usuarios'] });
@@ -1102,8 +1102,8 @@ const Settings = () => {
                                 color="primary"
                                 size="small"
                                 onClick={() => {
-                                  setSelectedUserForMemberships(u);
-                                  setIsMembershipsModalOpen(true);
+                                  setSelectedUserForVinculos(u);
+                                  setIsVinculosModalOpen(true);
                                 }}
                                
                               >
@@ -1225,23 +1225,23 @@ const Settings = () => {
           </CustomTabPanel>
         )}
 
-      {/* User Memberships Dialog */}
+      {/* User Vinculos Dialog */}
       <Dialog
-        open={isMembershipsModalOpen}
+        open={isVinculosModalOpen}
         onClose={() => {
-          setIsMembershipsModalOpen(false);
-          setSelectedUserForMemberships(null);
-          setNewMembershipOrgId('');
-          setNewMembershipPapel('');
+          setIsVinculosModalOpen(false);
+          setSelectedUserForVinculos(null);
+          setNewVinculoOrgId('');
+          setNewVinculoPapel('');
         }}
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>
-          Gerenciar Vínculos - {selectedUserForMemberships?.nome}
+          Gerenciar Vínculos - {selectedUserForVinculos?.nome}
         </DialogTitle>
         <DialogContent dividers>
-          {isLoadingMemberships ? (
+          {isLoadingVinculos ? (
             <Box sx={{ py: 2 }}>
               <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
               {[1, 2, 3].map((i) => (
@@ -1266,7 +1266,7 @@ const Settings = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(memberships || []).map((m) => (
+                    {(vinculos || []).map((m) => (
                       <TableRow key={m.id}>
                         <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome || orgs.find((o) => o.id === m.organizacaoId)?.nome || '-'}</TableCell>
                         <TableCell>{m.igrejaVinculoNome || orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
@@ -1278,8 +1278,8 @@ const Settings = () => {
                             variant="text"
                             color="error"
                             size="small"
-                            onClick={() => removeMembershipMutation.mutate(m.id)}
-                            disabled={removeMembershipMutation.isPending}
+                            onClick={() => removeVinculoMutation.mutate(m.id)}
+                            disabled={removeVinculoMutation.isPending}
                             sx={{ textTransform: 'none' }}
                           >
                             Remover
@@ -1287,7 +1287,7 @@ const Settings = () => {
                         </TableCell>
                       </TableRow>
                     ))}
-                    {(memberships || []).length === 0 && (
+                    {(vinculos || []).length === 0 && (
                       <TableRow>
                         <TableCell colSpan={6} align="center" sx={{ py: 2, color: 'text.secondary' }}>
                           Nenhum vínculo ativo encontrado para este usuário.
@@ -1305,19 +1305,19 @@ const Settings = () => {
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                 <FormControl sx={{ minWidth: 250 }} size="small">
-                  <InputLabel id="add-membership-org-label">Organização</InputLabel>
+                  <InputLabel id="add-vinculo-org-label">Organização</InputLabel>
                   <Select
-                    labelId="add-membership-org-label"
-                    id="add-membership-org"
-                    value={newMembershipOrgId}
+                    labelId="add-vinculo-org-label"
+                    id="add-vinculo-org"
+                    value={newVinculoOrgId}
                     label="Organização"
-                    onChange={(e) => setNewMembershipOrgId(e.target.value)}
+                    onChange={(e) => setNewVinculoOrgId(e.target.value)}
                   >
                     {orgs
                       .filter((o) => {
                         if (!o.ativo) return false;
-                        if (!selectedUserForMemberships?.igrejaId) return true;
-                        const userChurch = selectedUserForMemberships.igrejaId;
+                        if (!selectedUserForVinculos?.igrejaId) return true;
+                        const userChurch = selectedUserForVinculos.igrejaId;
                         if (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') {
                           return o.id === userChurch;
                         }
@@ -1335,13 +1335,13 @@ const Settings = () => {
                 </FormControl>
 
                 <FormControl sx={{ minWidth: 200 }} size="small">
-                  <InputLabel id="add-membership-role-label">Papel</InputLabel>
+                  <InputLabel id="add-vinculo-role-label">Papel</InputLabel>
                   <Select
-                    labelId="add-membership-role-label"
-                    id="add-membership-role"
-                    value={newMembershipPapel}
+                    labelId="add-vinculo-role-label"
+                    id="add-vinculo-role"
+                    value={newVinculoPapel}
                     label="Papel"
-                    onChange={(e) => setNewMembershipPapel(e.target.value)}
+                    onChange={(e) => setNewVinculoPapel(e.target.value)}
                   >
                     <MenuItem value="COORD_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
                     <MenuItem value="COORD_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
@@ -1361,20 +1361,20 @@ const Settings = () => {
                 </FormControl>
 
                 {(() => {
-                  const selectedOrgObj = orgs.find((o) => o.id === newMembershipOrgId);
+                  const selectedOrgObj = orgs.find((o) => o.id === newVinculoOrgId);
                   return selectedOrgObj && (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? (
                     <FormControl sx={{ minWidth: 200 }} size="small">
-                      <InputLabel id="add-membership-church-label">Igreja de Atuação</InputLabel>
+                      <InputLabel id="add-vinculo-church-label">Igreja de Atuação</InputLabel>
                       <Select
-                        labelId="add-membership-church-label"
-                        id="add-membership-church"
-                        value={newMembershipChurchId}
+                        labelId="add-vinculo-church-label"
+                        id="add-vinculo-church"
+                        value={newVinculoChurchId}
                         label="Igreja de Atuação"
-                        onChange={(e) => setNewMembershipChurchId(e.target.value)}
-                        inputProps={{ 'data-testid': 'add-membership-church-select' }}
+                        onChange={(e) => setNewVinculoChurchId(e.target.value)}
+                        inputProps={{ 'data-testid': 'add-vinculo-church-select' }}
                       >
                         {orgs
-                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') && (!selectedUserForMemberships?.igrejaId || o.id === selectedUserForMemberships.igrejaId))
+                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') && (!selectedUserForVinculos?.igrejaId || o.id === selectedUserForVinculos.igrejaId))
                           .map((o) => (
                             <MenuItem key={o.id} value={o.id}>
                               {o.nome}
@@ -1388,25 +1388,25 @@ const Settings = () => {
                 <Button
                   variant="contained"
                   onClick={() => {
-                    const selectedOrgObj = orgs.find((o) => o.id === newMembershipOrgId);
+                    const selectedOrgObj = orgs.find((o) => o.id === newVinculoOrgId);
                     if (!selectedOrgObj) return;
                     if (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') {
-                      if (!newMembershipChurchId) {
+                      if (!newVinculoChurchId) {
                         showError('A igreja de atuação é obrigatória para pastorais e movimentos');
                         return;
                       }
                     }
-                    addMembershipMutation.mutate({
-                      organizacaoId: newMembershipOrgId,
+                    addVinculoMutation.mutate({
+                      organizacaoId: newVinculoOrgId,
                       tipo: selectedOrgObj.tipo,
-                      papel: newMembershipPapel,
-                      igrejaVinculoId: (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? newMembershipChurchId : undefined
+                      papel: newVinculoPapel,
+                      igrejaVinculoId: (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? newVinculoChurchId : undefined
                     });
                   }}
-                  disabled={!newMembershipOrgId || !newMembershipPapel || addMembershipMutation.isPending}
+                  disabled={!newVinculoOrgId || !newVinculoPapel || addVinculoMutation.isPending}
                   sx={{ fontWeight: 600, height: 40 }}
                 >
-                  {addMembershipMutation.isPending ? 'Adicionando...' : 'Adicionar Vínculo'}
+                  {addVinculoMutation.isPending ? 'Adicionando...' : 'Adicionar Vínculo'}
                 </Button>
               </Box>
             </Box>
@@ -1415,11 +1415,11 @@ const Settings = () => {
         <DialogActions>
           <Button
             onClick={() => {
-              setIsMembershipsModalOpen(false);
-              setSelectedUserForMemberships(null);
-              setNewMembershipOrgId('');
-              setNewMembershipPapel('');
-              setNewMembershipChurchId('');
+              setIsVinculosModalOpen(false);
+              setSelectedUserForVinculos(null);
+              setNewVinculoOrgId('');
+              setNewVinculoPapel('');
+              setNewVinculoChurchId('');
             }}
             color="inherit"
           >
@@ -1471,7 +1471,7 @@ const Settings = () => {
                   </TableHead>
                   <TableBody>
                     {(orgMembers || []).map((m) => (
-                      <TableRow key={m.membershipId}>
+                      <TableRow key={m.vinculoId}>
                         <TableCell sx={{ fontWeight: 500 }}>{m.usuarioNome}</TableCell>
                         {selectedOrgForMembers && (selectedOrgForMembers.tipo === 'PASTORAL' || selectedOrgForMembers.tipo === 'MOVIMENTO') && (
                           <TableCell>{orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
@@ -1483,7 +1483,7 @@ const Settings = () => {
                             variant="text"
                             color="error"
                             size="small"
-                            onClick={() => removeOrgMemberMutation.mutate({ userId: m.usuarioId, membershipId: m.membershipId })}
+                            onClick={() => removeOrgMemberMutation.mutate({ userId: m.usuarioId, vinculoId: m.vinculoId })}
                             disabled={removeOrgMemberMutation.isPending}
                             sx={{ textTransform: 'none' }}
                           >

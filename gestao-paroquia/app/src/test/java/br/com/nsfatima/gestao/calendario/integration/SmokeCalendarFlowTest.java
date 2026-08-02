@@ -22,7 +22,7 @@ class SmokeCalendarFlowTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldRunBasicCalendarJourney() throws Exception {
+    void deveRunBasicoCalendarioJornada() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", "evt-smoke-flow-001")
                         .header("X-Actor-Role", "paroco")

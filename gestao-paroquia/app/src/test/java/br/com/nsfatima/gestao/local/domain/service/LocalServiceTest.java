@@ -29,7 +29,7 @@ class LocalServiceTest {
     }
 
     @Test
-    void shouldCreateLocalWithOrganizacao() {
+    void deveCriarLocalComOrganizacao() {
         UUID orgId = UUID.randomUUID();
         Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi", orgId);
 
@@ -41,7 +41,7 @@ class LocalServiceTest {
     }
 
     @Test
-    void shouldCreateLocal() {
+    void deveCriarLocal() {
         Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi");
 
         assertNotNull(created.getId());
@@ -51,7 +51,7 @@ class LocalServiceTest {
     }
 
     @Test
-    void shouldUpdateLocal() {
+    void deveAtualizarLocal() {
         UUID orgId = UUID.randomUUID();
         Local local = new Local(UUID.randomUUID(), "Velho Nome", "SALA", "End", 10, "Nada", true);
         localRepository.save(local);
@@ -65,7 +65,7 @@ class LocalServiceTest {
     }
 
     @Test
-    void shouldInactivateLocalInsteadOfDeleting() {
+    void deveInativarLocalEmVezDeDeExcluindo() {
         UUID id = UUID.randomUUID();
         Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
         localRepository.save(local);
@@ -79,7 +79,7 @@ class LocalServiceTest {
     }
 
     @Test
-    void shouldInactivateLocalEvenWhenInUse() {
+    void deveInativarLocalMesmoQuandoEmUso() {
         UUID id = UUID.randomUUID();
         Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
         localRepository.save(local);

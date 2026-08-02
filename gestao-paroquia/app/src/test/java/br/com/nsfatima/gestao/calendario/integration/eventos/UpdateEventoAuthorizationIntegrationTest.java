@@ -30,7 +30,7 @@ class UpdateEventoAuthorizationIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldDenyPatchForUnauthorizedRole() throws Exception {
+    void deveNegarPatchParaNaoAutorizadoPapel() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

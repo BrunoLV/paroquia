@@ -26,7 +26,7 @@ class AnoParoquialSeedingTest {
 
     @Test
     @Transactional
-    void shouldSeedCurrentYearWhenDatabaseIsEmpty() {
+    void deveSemearAtualAnoQuandoDatabaseEVazio() {
         // Arrange
         repository.deleteAll();
         assertThat(repository.count()).isZero();

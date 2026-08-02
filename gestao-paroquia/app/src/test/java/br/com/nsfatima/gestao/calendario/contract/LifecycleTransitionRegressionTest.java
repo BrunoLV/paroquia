@@ -31,7 +31,7 @@ class LifecycleTransitionRegressionTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldReturnInvalidStatusTransitionForCancellationOutsideConfirmedState() throws Exception {
+    void deveRetornarInvalidoStatusTransicionarParaCancelamentoForaConfirmadoEstado() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
@@ -57,7 +57,7 @@ class LifecycleTransitionRegressionTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldKeepDomainRejectionForSensitiveCancellationWithoutApproval() throws Exception {
+    void deveManterDominioRejectionParaSensivelCancelamentoSemAprovacao() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

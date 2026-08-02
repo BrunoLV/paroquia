@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.type.Granularidade;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -53,38 +54,41 @@ public class PeriodoOperacionalPolicy {
 
         if (hasGranularidade) {
             String normalized = Objects.requireNonNull(granularidade).trim().toUpperCase();
+            Granularidade granularidadeEnum = Granularidade.fromCode(normalized);
+            if (granularidadeEnum == null) {
+                throw new PeriodoOperacionalInvalidoException(
+                        "granularidade",
+                        "Granularidade operacional nao suportada",
+                        false);
+            }
             Instant now = clock.instant();
             LocalDate today = LocalDate.ofInstant(now, ZoneOffset.UTC);
-            return switch (normalized) {
-                case "DIARIO" -> new ResolvedPeriod(
+            return switch (granularidadeEnum) {
+                case DIARIO -> new ResolvedPeriod(
                         normalized,
                         today.atStartOfDay().toInstant(ZoneOffset.UTC),
                         today.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC));
-                case "SEMANAL" -> {
+                case SEMANAL -> {
                     LocalDate start = today.with(DayOfWeek.MONDAY);
                     yield new ResolvedPeriod(
                             normalized,
                             start.atStartOfDay().toInstant(ZoneOffset.UTC),
                             start.plusWeeks(1).atStartOfDay().toInstant(ZoneOffset.UTC));
                 }
-                case "MENSAL" -> {
+                case MENSAL -> {
                     LocalDate start = today.withDayOfMonth(1);
                     yield new ResolvedPeriod(
                             normalized,
                             start.atStartOfDay().toInstant(ZoneOffset.UTC),
                             start.plusMonths(1).atStartOfDay().toInstant(ZoneOffset.UTC));
                 }
-                case "ANUAL" -> {
+                case ANUAL -> {
                     LocalDate start = today.with(TemporalAdjusters.firstDayOfYear());
                     yield new ResolvedPeriod(
                             normalized,
                             start.atStartOfDay().toInstant(ZoneOffset.UTC),
                             start.plusYears(1).atStartOfDay().toInstant(ZoneOffset.UTC));
                 }
-                default -> throw new PeriodoOperacionalInvalidoException(
-                        "granularidade",
-                        "Granularidade operacional nao suportada",
-                        false);
             };
         }
 

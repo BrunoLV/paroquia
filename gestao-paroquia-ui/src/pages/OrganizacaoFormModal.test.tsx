@@ -204,7 +204,7 @@ describe('OrganizacaoFormModal', () => {
 
   test('renders coordinator select dropdown and calls getOrganizacaoMembros when parent organization resolves to a church', async () => {
     mockGetOrganizacaoMembros.mockResolvedValue([
-      { membershipId: 'm-1', usuarioId: 'u-1', usuarioNome: 'Membro Teste', papel: 'OUTRO', ativo: true }
+      { vinculoId: 'm-1', usuarioId: 'u-1', usuarioNome: 'Membro Teste', papel: 'OUTRO', ativo: true }
     ]);
 
     renderModal({

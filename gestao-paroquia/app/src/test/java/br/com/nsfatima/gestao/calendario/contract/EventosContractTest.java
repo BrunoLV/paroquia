@@ -24,14 +24,14 @@ class EventosContractTest {
 
     @Test
     @WithMockUser
-    void shouldListEventosWhenAuthenticated() throws Exception {
+    void deveListarEventosQuandoAutenticado() throws Exception {
         mockMvc.perform(get("/api/v1/eventos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray());
     }
 
     @Test
-    void shouldCreateEventoWithCanonicalEnumNormalization() throws Exception {
+    void deveCriarEventoComCanonicoEnumNormalizacao() throws Exception {
         String payload = """
                       {
                         "titulo": "Missa",

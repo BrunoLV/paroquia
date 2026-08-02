@@ -30,7 +30,7 @@ class UpdateEventoLifecycleTransitionsIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectInvalidIntervalDuringLifecycleChange() throws Exception {
+    void deveRejeitarInvalidoIntervaloDuranteCicloVidaMudanca() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

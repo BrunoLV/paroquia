@@ -47,7 +47,7 @@ class ApproveCreateEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldAutoCreateEventoAfterApproval() throws Exception {
+    void deveAutoCriarEventoDepoisAprovacao() throws Exception {
         // Step 1: POST with secretario → 202 PENDING
         UUID idempotencyKey = UUID.randomUUID();
         long eventsBefore = eventoJpaRepository.count();
@@ -106,7 +106,7 @@ class ApproveCreateEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldAutoCreateEventoFromDirectPendingAprovacao() throws Exception {
+    void deveAutoCriarEventoDeDiretoPendenteAprovacao() throws Exception {
         // Setup a pending CRIACAO_EVENTO approval with proper payload
         UUID aprovacaoId = UUID.randomUUID();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-0000000000dd");

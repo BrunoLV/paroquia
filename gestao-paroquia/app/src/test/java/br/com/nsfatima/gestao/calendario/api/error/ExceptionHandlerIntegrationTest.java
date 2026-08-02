@@ -30,7 +30,7 @@ class ExceptionHandlerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnBadRequestOnTypeMismatch() throws Exception {
+    void deveRetornarBadRequestEmTipoMismatch() throws Exception {
         mockMvc.perform(get("/api/v1/eventos/not-a-uuid")
                         .header("X-Actor-Role", "admin")
                         .header("X-Actor-Org-Type", "CONSELHO"))
@@ -41,7 +41,7 @@ class ExceptionHandlerIntegrationTest {
     }
 
     @Test
-    void shouldReturnForbiddenOnForbiddenOperation() throws Exception {
+    void deveRetornarProibidoEmProibidoOperacao() throws Exception {
         mockMvc.perform(get("/api/v1/test-errors/forbidden"))
                 .andDo(print())
                 .andExpect(status().isForbidden())
@@ -52,7 +52,7 @@ class ExceptionHandlerIntegrationTest {
     }
 
     @Test
-    void shouldReturnForbiddenOnAccessDenied() throws Exception {
+    void deveRetornarProibidoEmAcessoNegado() throws Exception {
         mockMvc.perform(get("/api/v1/test-errors/access-denied"))
                 .andDo(print())
                 .andExpect(status().isForbidden())
@@ -63,7 +63,7 @@ class ExceptionHandlerIntegrationTest {
     }
 
     @Test
-    void shouldReturnConflictOnDataIntegrityViolation() throws Exception {
+    void deveRetornarConflitoEmDataIntegrityViolacao() throws Exception {
         mockMvc.perform(get("/api/v1/test-errors/integrity-violation"))
                 .andDo(print())
                 .andExpect(status().isConflict())

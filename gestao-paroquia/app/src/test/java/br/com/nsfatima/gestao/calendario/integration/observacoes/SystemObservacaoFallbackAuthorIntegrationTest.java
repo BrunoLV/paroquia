@@ -27,7 +27,7 @@ class SystemObservacaoFallbackAuthorIntegrationTest {
     }
 
     @Test
-    void shouldUseTechnicalFallbackWhenSystemFlowHasNoHumanActor() {
+    void deveUsoTechnicalFallbackQuandoSistemaFlowTemNenhumHumanAtor() {
         UUID eventoId = UUID.randomUUID();
 
         registerSystemObservacaoUseCase.execute(

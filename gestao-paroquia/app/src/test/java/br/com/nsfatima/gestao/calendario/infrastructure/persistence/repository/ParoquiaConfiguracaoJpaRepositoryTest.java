@@ -17,7 +17,7 @@ class ParoquiaConfiguracaoJpaRepositoryTest {
     private ParoquiaConfiguracaoRepository repository;
 
     @Test
-    void shouldSaveAndRetrieveConfiguration() {
+    void deveSalvarERecuperarConfiguration() {
         ParoquiaConfiguracaoEntity entity = new ParoquiaConfiguracaoEntity();
         UUID id = UUID.randomUUID();
         entity.setId(id);

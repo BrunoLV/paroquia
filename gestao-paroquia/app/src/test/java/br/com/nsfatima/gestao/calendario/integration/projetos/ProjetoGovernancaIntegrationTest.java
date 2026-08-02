@@ -65,7 +65,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should create project directly in open year (EM_PLANEJAMENTO)")
-    void shouldCreateImmediatelyInOpenYear() throws Exception {
+    void deveCriarImediatamenteEmAbertoAno() throws Exception {
         saveAnoParoquial(testYear, AnoParoquialStatus.EM_PLANEJAMENTO);
 
         String payload = """
@@ -91,7 +91,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should return 202 Accepted and create approval request when creating project in closed year")
-    void shouldRouteToApprovalWhenYearClosed() throws Exception {
+    void deveRotaParaAprovacaoQuandoAnoFechado() throws Exception {
         saveAnoParoquial(testYear, AnoParoquialStatus.FECHADO);
 
         String payload = """
@@ -118,7 +118,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should start project manually when authorized")
-    void shouldStartProjectManuallyWhenAuthorized() throws Exception {
+    void deveIniciarProjetoManualmenteQuandoAutorizado() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", project.getId())
@@ -131,7 +131,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should reject manual start when unauthorized role/org")
-    void shouldRejectManualStartWhenUnauthorized() throws Exception {
+    void deveRejeitarManualIniciarQuandoNaoAutorizado() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", project.getId())
@@ -143,7 +143,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should conclude project manually when authorized")
-    void shouldConcludeProjectManuallyWhenAuthorized() throws Exception {
+    void deveConcluirProjetoManualmenteQuandoAutorizado() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Em Andamento", ProjetoStatus.EM_ANDAMENTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/concluir", project.getId())
@@ -156,7 +156,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should cancel project immediately when requested by Council Leader")
-    void shouldCancelImmediatelyWhenRequestedByCouncilLeader() throws Exception {
+    void deveCancelarImediatamenteQuandoSolicitadoPorConselhoLider() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
@@ -171,7 +171,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should route to approval cancellation request when requested by Pastoral Coordinator")
-    void shouldRouteToApprovalCancellationWhenRequestedByPastoralCoordinator() throws Exception {
+    void deveRotaParaAprovacaoCancelamentoQuandoSolicitadoPorPastoralCoordenador() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, PASTORAL_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
@@ -188,7 +188,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should approve project creation request and create project")
-    void shouldApproveProjectCreationRequest() throws Exception {
+    void deveAprovarProjetoCriacaoRequest() throws Exception {
         String payloadJson = """
                 {
                   "nome": "Projeto Aprovado Criacao",
@@ -227,7 +227,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should cancel linked events when cancelling project with cascade = true")
-    void shouldCancelLinkedEventsWhenCascadeTrue() throws Exception {
+    void deveCancelarVinculadoEventosQuandoCascataVerdadeiro() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Cascata", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         EventoEntity event = new EventoEntity();
@@ -260,7 +260,7 @@ class ProjetoGovernancaIntegrationTest {
 
     @Test
     @DisplayName("Should unlink events when cancelling project with cascade = false")
-    void shouldUnlinkEventsWhenCascadeFalse() throws Exception {
+    void deveDesvincularEventosQuandoCascataFalso() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Sem Cascata", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         EventoEntity event = new EventoEntity();

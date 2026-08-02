@@ -51,7 +51,7 @@ class EventoProjetoLinkIntegrationTest {
     }
 
     @Test
-    void shouldLinkEventToProjectWithinTimeframe() throws Exception {
+    void deveVincularEventoParaProjetoDentroPeriodo() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
                         .header("X-Actor-Role", "presidente-cpc")
@@ -73,7 +73,7 @@ class EventoProjetoLinkIntegrationTest {
     }
 
     @Test
-    void shouldFailWhenEventIsOutsideProjectTimeframe() throws Exception {
+    void deveFalhaQuandoEventoEForaProjetoPeriodo() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
                         .header("X-Actor-Role", "presidente-cpc")
@@ -93,7 +93,7 @@ class EventoProjetoLinkIntegrationTest {
     }
 
     @Test
-    void shouldFailWhenProjectIsInactive() throws Exception {
+    void deveFalhaQuandoProjetoEInativo() throws Exception {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId).get();
         projeto.setStatus("CANCELADO");
         projetoRepository.save(projeto);
@@ -117,7 +117,7 @@ class EventoProjetoLinkIntegrationTest {
     }
 
     @Test
-    void shouldFilterEventsByProject() throws Exception {
+    void deveFiltrarEventosPorProjeto() throws Exception {
         // 1. Create event linked to project
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())

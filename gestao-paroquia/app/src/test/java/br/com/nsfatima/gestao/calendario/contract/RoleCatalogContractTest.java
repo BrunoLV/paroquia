@@ -10,7 +10,7 @@ class RoleCatalogContractTest {
     private final AuthorizationPolicy policy = new AuthorizationPolicy();
 
     @Test
-    void shouldRejectSecretaryOutsideCouncil() {
+    void deveRejeitarSecretarioForaConselho() {
         assertFalse(policy.isRoleAllowed("PASTORAL", "secretario"));
     }
 }

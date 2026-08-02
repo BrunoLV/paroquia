@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.iam.api.v1.controller;
 
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -39,20 +39,20 @@ public class AuthController {
                 userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()),
-                userDetails.getMemberships().stream()
+                userDetails.getVinculos().stream()
                         .map(this::mapToOrganizacaoResponse)
                         .collect(Collectors.toList()));
     }
 
-    private OrganizacaoResponse mapToOrganizacaoResponse(ExternalMembershipReader.Membership membership) {
+    private OrganizacaoResponse mapToOrganizacaoResponse(LeitorVinculoExterno.Vinculo vinculo) {
         return new OrganizacaoResponse(
-                membership.organizationId(),
-                membership.organizationName(),
-                TipoOrganizacao.valueOf(membership.organizationType()),
-                membership.organizationContact(),
-                membership.organizationCoordinator(),
-                membership.organizationViceCoordinator(),
-                membership.organizationActive(),
+                vinculo.organizationId(),
+                vinculo.organizationName(),
+                TipoOrganizacao.valueOf(vinculo.organizationType()),
+                vinculo.organizationContact(),
+                vinculo.organizationCoordinator(),
+                vinculo.organizationViceCoordinator(),
+                vinculo.organizationActive(),
                 null,
                 null);
     }

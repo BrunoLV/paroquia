@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.local.integration;
 
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.local.api.v1.dto.LocalRequest;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
@@ -65,7 +65,7 @@ class LocalControllerIntegrationTest {
         UUID userId = UUID.randomUUID();
         UsuarioDetails details = new UsuarioDetails(
                 userId, "user", "pass", true, "ROLE_" + role,
-                List.of(new ExternalMembershipReader.Membership(ORG_ID, "PASTORAL", "membro")));
+                List.of(new LeitorVinculoExterno.Vinculo(ORG_ID, "PASTORAL", "membro")));
         return UsernamePasswordAuthenticationToken.authenticated(details, null, details.getAuthorities());
     }
 

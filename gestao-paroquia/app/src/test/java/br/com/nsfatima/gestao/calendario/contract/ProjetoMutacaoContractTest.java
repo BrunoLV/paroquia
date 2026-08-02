@@ -43,7 +43,7 @@ class ProjetoMutacaoContractTest {
     }
 
     @Test
-    void shouldPatchProjeto() throws Exception {
+    void devePatchProjeto() throws Exception {
         mockMvc.perform(patch("/api/v1/projetos/{projetoId}", "00000000-0000-0000-0000-000000000001")
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")

@@ -32,7 +32,7 @@ class LegacyEventoReadCompatibilityIntegrationTest {
     @Test
     @WithMockUser
     @SuppressWarnings("null")
-    void shouldMapUnknownLegacyStatusToUnknownLegacyOnRead() throws Exception {
+    void deveMapearDesconhecidoLegadoStatusParaDesconhecidoLegadoEmLer() throws Exception {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo("Evento Legado");

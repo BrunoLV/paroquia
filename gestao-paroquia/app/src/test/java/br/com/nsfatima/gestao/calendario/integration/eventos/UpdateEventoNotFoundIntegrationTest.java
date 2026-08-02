@@ -23,7 +23,7 @@ class UpdateEventoNotFoundIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnEventNotFoundWhenEventoDoesNotExist() throws Exception {
+    void deveRetornarEventoNaoEncontradoQuandoEventoNaoExiste() throws Exception {
         String payload = """
                 {
                   "descricao": "nao encontrado"

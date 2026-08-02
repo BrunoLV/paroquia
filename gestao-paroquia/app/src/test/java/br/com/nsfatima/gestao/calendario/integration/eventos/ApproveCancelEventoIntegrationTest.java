@@ -41,7 +41,7 @@ class ApproveCancelEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldApproveAndExecuteCancellationAutomatically() throws Exception {
+    void deveAprovarEExecutarCancelamentoAutomaticamente() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

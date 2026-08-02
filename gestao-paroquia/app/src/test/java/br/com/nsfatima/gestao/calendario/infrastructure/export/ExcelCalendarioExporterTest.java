@@ -18,7 +18,7 @@ class ExcelCalendarioExporterTest {
     private final CalendarioExporter exporter = new ExcelCalendarioExporter();
 
     @Test
-    void shouldExportToExcel() {
+    void deveExportarParaExcel() {
         ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
         config.setNome("Paróquia Teste");
         config.setDiocese("Diocese Teste");

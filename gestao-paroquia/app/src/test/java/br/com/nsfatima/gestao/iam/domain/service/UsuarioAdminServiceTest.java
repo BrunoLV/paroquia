@@ -39,7 +39,7 @@ class UsuarioAdminServiceTest {
     }
 
     @Test
-    void shouldToggleUserStatus() {
+    void deveAlternarUsuarioStatus() {
         UUID id = UUID.randomUUID();
         UsuarioEntity user = new UsuarioEntity();
         user.setEnabled(true);
@@ -53,7 +53,7 @@ class UsuarioAdminServiceTest {
     }
 
     @Test
-    void shouldResetPassword() {
+    void deveRedefinirSenha() {
         UUID id = UUID.randomUUID();
         UsuarioEntity user = new UsuarioEntity();
         when(repository.findById(id)).thenReturn(Optional.of(user));
@@ -67,7 +67,7 @@ class UsuarioAdminServiceTest {
     }
 
     @Test
-    void shouldUpdateRoles() {
+    void deveAtualizarPapeis() {
         UUID id = UUID.randomUUID();
         UsuarioEntity user = new UsuarioEntity();
         when(repository.findById(id)).thenReturn(Optional.of(user));
@@ -80,7 +80,7 @@ class UsuarioAdminServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenUserNotFound() {
+    void deveLancarExceptionQuandoUsuarioNaoEncontrado() {
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.empty());
 

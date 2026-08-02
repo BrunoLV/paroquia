@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.hasSize;
 class ListOrganizacaoMembrosUseCaseTest {
 
     @Mock
-    private MembroOrganizacaoJpaRepository membershipRepository;
+    private MembroOrganizacaoJpaRepository vinculoRepository;
     @Mock
     private UsuarioJpaRepository usuarioRepository;
     @Mock
@@ -40,7 +40,7 @@ class ListOrganizacaoMembrosUseCaseTest {
     @BeforeEach
     void setUp() {
         useCase = new ListOrganizacaoMembrosUseCase(
-                membershipRepository,
+                vinculoRepository,
                 usuarioRepository,
                 membroRepository,
                 organizacaoRepository
@@ -49,7 +49,7 @@ class ListOrganizacaoMembrosUseCaseTest {
 
     @Test
     @DisplayName("Deve listar membros de uma organização resolvendo nomes de usuários e membros leigos")
-    void shouldListOrganizationMembersResolvingUserAndMemberNames() {
+    void deveListarOrganizacaoMembrosResolvingUsuarioEMembroNomes() {
         UUID orgId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
@@ -65,8 +65,8 @@ class ListOrganizacaoMembrosUseCaseTest {
         userEntity.setId(userId);
         userEntity.setNome("João da Silva");
 
-        when(membershipRepository.findByOrganizacaoIdAndAtivoTrue(orgId)).thenReturn(List.of(memberEntity));
-        when(membershipRepository.findByIgrejaVinculoIdAndAtivoTrue(orgId)).thenReturn(Collections.emptyList());
+        when(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(orgId)).thenReturn(List.of(memberEntity));
+        when(vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(orgId)).thenReturn(Collections.emptyList());
         when(usuarioRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(organizacaoRepository.findById(orgId)).thenReturn(Optional.empty());
 

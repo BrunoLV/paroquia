@@ -36,7 +36,7 @@ class TaxaEventosExtraIntegrationTest {
     }
 
     @Test
-    void shouldCalculateTaxaEventosExtra() throws Exception {
+    void deveCalcularTaxaEventosExtra() throws Exception {
         UUID organizacaoId = UUID.fromString(ORG_ID);
 
         // 1. Regular event

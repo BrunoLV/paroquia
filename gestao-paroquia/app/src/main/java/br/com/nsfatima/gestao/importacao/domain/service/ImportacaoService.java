@@ -1,11 +1,13 @@
 package br.com.nsfatima.gestao.importacao.domain.service;
 
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoItemResultadoDTO;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
+import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
@@ -18,6 +20,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
 import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalProvisioningService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +45,6 @@ import java.util.UUID;
 public class ImportacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(ImportacaoService.class);
-    private static final String TYPE_MEMBRO = "MEMBRO";
-    private static final String TYPE_USUARIO = "USUARIO";
-    private static final String TYPE_ORGANIZACAO = "ORGANIZACAO";
-    private static final String TYPE_EVENTO = "EVENTO";
     private static final String KEY_NOME = "nome";
     private static final String ERR_NOME_REQUIRED = "O campo 'nome' é obrigatório.";
     private static final String KEY_IGREJA_ID = "igrejaId";
@@ -120,12 +119,15 @@ public class ImportacaoService {
     }
 
     private String validarLinha(String tipo, Map<String, String> data) {
-        return switch (tipo.toUpperCase()) {
-            case "MEMBRO" -> validarMembro(data);
-            case "USUARIO" -> validarUsuario(data);
-            case "ORGANIZACAO" -> validarOrganizacao(data);
-            case "EVENTO" -> validarEvento(data);
-            default -> "Tipo de entidade desconhecido";
+        TipoEntidadeImportacao tipoEntidade = TipoEntidadeImportacao.fromCode(tipo);
+        if (tipoEntidade == null) {
+            return "Tipo de entidade desconhecido";
+        }
+        return switch (tipoEntidade) {
+            case MEMBRO -> validarMembro(data);
+            case USUARIO -> validarUsuario(data);
+            case ORGANIZACAO -> validarOrganizacao(data);
+            case EVENTO -> validarEvento(data);
         };
     }
 
@@ -188,14 +190,17 @@ public class ImportacaoService {
     public int confirmarImportacao(
             String tipo, List<Map<String, String>> validItems, String actor) {
         int count = 0;
+        TipoEntidadeImportacao tipoEntidade = TipoEntidadeImportacao.fromCode(tipo);
+        if (tipoEntidade == null) {
+            throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
+        }
         for (Map<String, String> data : validItems) {
             try {
-                switch (tipo.toUpperCase()) {
-                    case TYPE_MEMBRO -> importMembro(data, actor);
-                    case TYPE_USUARIO -> importUsuario(data);
-                    case TYPE_ORGANIZACAO -> importOrganizacao(data);
-                    case TYPE_EVENTO -> importEvento(data);
-                    default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
+                switch (tipoEntidade) {
+                    case MEMBRO -> importMembro(data, actor);
+                    case USUARIO -> importUsuario(data);
+                    case ORGANIZACAO -> importOrganizacao(data);
+                    case EVENTO -> importEvento(data);
                 }
                 count++;
             } catch (Exception e) {
@@ -209,7 +214,7 @@ public class ImportacaoService {
         String username = data.get("usuarioUsername").trim();
         String orgNome = data.get("organizacaoNome").trim();
         String papel = Optional.ofNullable(data.get("papel"))
-                .filter(p -> !p.isBlank()).orElse(TYPE_MEMBRO);
+                .filter(p -> !p.isBlank()).orElse(TipoEntidadeImportacao.MEMBRO.name());
         UUID igrejaId = parseUuid(data.get(KEY_IGREJA_ID));
 
         var user = usuarioJpaRepository.findByUsernameIgnoreCase(username)
@@ -280,13 +285,13 @@ public class ImportacaoService {
         int anoCivil = entity.getInicioUtc().atZone(java.time.ZoneOffset.UTC).getYear();
         boolean isAnoFechado = anoParoquialJpaRepository != null &&
                 anoParoquialJpaRepository.findByAno(anoCivil)
-                        .map(a -> "FECHADO".equals(a.getStatus()))
+                        .map(a -> AnoParoquialStatus.FECHADO.name().equals(a.getStatus()))
                         .orElse(false);
 
         String inputStatus = Optional.ofNullable(data.get("status")).orElse("APROVADO").toUpperCase();
         if (isAnoFechado) {
-            if ("ADICIONADO_EXTRA".equals(inputStatus)) {
-                entity.setStatus("ADICIONADO_EXTRA");
+            if (EventoStatusInput.ADICIONADO_EXTRA.name().equals(inputStatus)) {
+                entity.setStatus(EventoStatusInput.ADICIONADO_EXTRA.name());
                 entity.setAdicionadoExtraJustificativa(
                         Optional.ofNullable(data.get("adicionadoExtraJustificativa"))
                                 .orElse("Inclusão extra via importação em lote"));

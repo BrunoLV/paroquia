@@ -27,7 +27,7 @@ class SecurityAccessMatrixContractTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldKeepOnlyLoginPublicAcrossRepresentativeEndpoints() throws Exception {
+    void deveManterApenasLoginPublicoAtravesRepresentativoEndpoints() throws Exception {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().isOk());
 
@@ -46,7 +46,7 @@ class SecurityAccessMatrixContractTest {
     }
 
     @Test
-    void shouldAllowAuthenticatedSessionOnProtectedReadEndpoints() throws Exception {
+    void devePermitirAutenticadoSessaoEmProtegidoLerEndpoints() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
         mockMvc.perform(get("/api/v1/eventos")

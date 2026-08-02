@@ -19,6 +19,10 @@ public class ReworkRateCalculator {
 
     private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {
     };
+    private static final String RESULTADO_SUCESSO = "success";
+    private static final String RESULTADO_EXECUTADO = "executed";
+    private static final String ACAO_CANCELAMENTO = "cancel";
+    private static final String ACAO_ALTERACAO = "patch";
 
     private final AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
     private final ObjectMapper objectMapper;
@@ -79,15 +83,15 @@ public class ReworkRateCalculator {
     private boolean isEligibleAdministrativeRework(AuditoriaOperacaoEntity auditRecord) {
         String action = auditRecord.getAcao() == null ? "" : auditRecord.getAcao().toLowerCase();
         String result = auditRecord.getResultado() == null ? "" : auditRecord.getResultado().toLowerCase();
-        if (!result.equals("success") && !result.equals("executed")) {
+        if (!result.equals(RESULTADO_SUCESSO) && !result.equals(RESULTADO_EXECUTADO)) {
             return false;
         }
 
-        if (action.equals("cancel")) {
+        if (action.equals(ACAO_CANCELAMENTO)) {
             return true;
         }
 
-        if (!action.equals("patch")) {
+        if (!action.equals(ACAO_ALTERACAO)) {
             return false;
         }
 

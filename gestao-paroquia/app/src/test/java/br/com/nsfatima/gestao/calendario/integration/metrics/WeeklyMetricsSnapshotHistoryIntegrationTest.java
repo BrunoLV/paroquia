@@ -43,7 +43,7 @@ class WeeklyMetricsSnapshotHistoryIntegrationTest {
     }
 
     @Test
-    void shouldRetainHistoricalBaselineAcrossConsecutiveSnapshots() {
+    void deveReterHistoricoBaselineAtravesConsecutiveSnapshots() {
         Map<String, Object> first = snapshotJob.snapshot();
         Map<String, Object> second = snapshotJob.snapshot();
 

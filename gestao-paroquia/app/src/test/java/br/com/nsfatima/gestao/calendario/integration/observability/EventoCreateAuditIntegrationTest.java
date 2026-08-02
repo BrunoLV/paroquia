@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
 class EventoCreateAuditIntegrationTest {
 
     @Test
-    void shouldPublishCreateAuditForSuccessAndFailure() {
+    void devePublicarCriarAuditarParaSucessoEFalha() {
         AuditLogPersistenceService auditLogPersistenceService = new AuditLogPersistenceService(
                 mock(AuditoriaOperacaoJpaRepository.class),
                 new ObjectMapper());

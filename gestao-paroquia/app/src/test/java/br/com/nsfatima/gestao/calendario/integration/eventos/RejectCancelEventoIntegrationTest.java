@@ -36,7 +36,7 @@ class RejectCancelEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectWithoutMutatingEvento() throws Exception {
+    void deveRejeitarSemMutatingEvento() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

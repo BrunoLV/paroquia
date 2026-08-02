@@ -65,7 +65,7 @@ class AuditoriaIntegradaIntegrationTest {
 
     @Test
     @DisplayName("Should audit project creation and update")
-    void shouldAuditProjectOperations() throws Exception {
+    void deveAuditarProjetoOperacoes() throws Exception {
         // 1. Create Project
         String createResponse = mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "presidente-cpc")
@@ -105,7 +105,7 @@ class AuditoriaIntegradaIntegrationTest {
 
     @Test
     @DisplayName("Should audit approval decisions")
-    void shouldAuditApprovalDecisions() throws Exception {
+    void deveAuditarAprovacaoDecisoes() throws Exception {
         // Create an event to satisfy organization resolution
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());

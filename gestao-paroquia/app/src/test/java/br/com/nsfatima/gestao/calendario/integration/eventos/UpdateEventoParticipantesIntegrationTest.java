@@ -37,7 +37,7 @@ class UpdateEventoParticipantesIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPersistParticipantesWhenAuthorizedCoordinatorPatches() throws Exception {
+    void devePersistirParticipantesQuandoAutorizadoCoordenadorPatches() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

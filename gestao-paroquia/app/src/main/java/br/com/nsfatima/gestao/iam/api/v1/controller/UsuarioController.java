@@ -10,11 +10,11 @@ import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.RegistrarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.AddMembershipRequest;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.MembershipResponse;
-import br.com.nsfatima.gestao.organizacao.application.usecase.AddMembershipUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.ListMembershipsUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.RemoveMembershipUseCase;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.AdicionarVinculoRequest;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.VinculoResponse;
+import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListarVinculosUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.RemoverVinculoUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,9 +43,9 @@ public class UsuarioController {
     private final GetUsuarioUseCase getUsuarioUseCase;
     private final CreateUsuarioUseCase createUsuarioUseCase;
     private final UpdateUsuarioUseCase updateUsuarioUseCase;
-    private final AddMembershipUseCase addMembershipUseCase;
-    private final RemoveMembershipUseCase removeMembershipUseCase;
-    private final ListMembershipsUseCase listMembershipsUseCase;
+    private final AdicionarVinculoUseCase adicionarVinculoUseCase;
+    private final RemoverVinculoUseCase removerVinculoUseCase;
+    private final ListarVinculosUseCase listarVinculosUseCase;
     private final UsuarioAuthorizationService authorizationService;
     private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
     private final ApproveUsuarioUseCase approveUsuarioUseCase;
@@ -55,9 +55,9 @@ public class UsuarioController {
             GetUsuarioUseCase getUsuarioUseCase,
             CreateUsuarioUseCase createUsuarioUseCase,
             UpdateUsuarioUseCase updateUsuarioUseCase,
-            AddMembershipUseCase addMembershipUseCase,
-            RemoveMembershipUseCase removeMembershipUseCase,
-            ListMembershipsUseCase listMembershipsUseCase,
+            AdicionarVinculoUseCase adicionarVinculoUseCase,
+            RemoverVinculoUseCase removerVinculoUseCase,
+            ListarVinculosUseCase listarVinculosUseCase,
             UsuarioAuthorizationService authorizationService,
             RegistrarUsuarioUseCase registrarUsuarioUseCase,
             ApproveUsuarioUseCase approveUsuarioUseCase) {
@@ -65,9 +65,9 @@ public class UsuarioController {
         this.getUsuarioUseCase = getUsuarioUseCase;
         this.createUsuarioUseCase = createUsuarioUseCase;
         this.updateUsuarioUseCase = updateUsuarioUseCase;
-        this.addMembershipUseCase = addMembershipUseCase;
-        this.removeMembershipUseCase = removeMembershipUseCase;
-        this.listMembershipsUseCase = listMembershipsUseCase;
+        this.adicionarVinculoUseCase = adicionarVinculoUseCase;
+        this.removerVinculoUseCase = removerVinculoUseCase;
+        this.listarVinculosUseCase = listarVinculosUseCase;
         this.authorizationService = authorizationService;
         this.registrarUsuarioUseCase = registrarUsuarioUseCase;
         this.approveUsuarioUseCase = approveUsuarioUseCase;
@@ -148,9 +148,9 @@ public class UsuarioController {
       <p>
       Exemplo: GET /api/v1/usuarios/{id}/membros
      */
-    public List<MembershipResponse> listMemberships(@PathVariable UUID id) {
+    public List<VinculoResponse> listarVinculos(@PathVariable UUID id) {
         authorizationService.requireAdminOrCoordinatorOf(id);
-        return listMembershipsUseCase.execute(id);
+        return listarVinculosUseCase.execute(id);
     }
 
     @PostMapping("/{id}/membros")
@@ -162,14 +162,14 @@ public class UsuarioController {
       <p>
       Exemplo: POST /api/v1/usuarios/{id}/membros { "organizacaoId": "...", "tipo": "VOLUNTARIO", "papel": "AUXILIAR" }
      */
-    public UUID addMembership(@PathVariable UUID id, @RequestBody @Valid AddMembershipRequest request) {
+    public UUID adicionarVinculo(@PathVariable UUID id, @RequestBody @Valid AdicionarVinculoRequest request) {
         authorizationService.requireAdminOrCoordinatorOfOrganization(request.organizacaoId());
-        return addMembershipUseCase.execute(id,
+        return adicionarVinculoUseCase.execute(id,
                 request.organizacaoId(), request.tipo(), request.papel(), request.igrejaVinculoId());
 
     }
 
-    @DeleteMapping("/{id}/membros/{membershipId}")
+    @DeleteMapping("/{id}/membros/{vinculoId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remove associação a organização")
@@ -177,13 +177,13 @@ public class UsuarioController {
       Encerra o vínculo de um usuário com uma organização específica para revogar acessos e responsabilidades
       naquele contexto.
       <p>
-      Exemplo: DELETE /api/v1/usuarios/{id}/membros/{membershipId}
+      Exemplo: DELETE /api/v1/usuarios/{id}/membros/{vinculoId}
      */
-    public void removeMembership(@PathVariable UUID id, @PathVariable UUID membershipId) {
-        // Here we ideally need to check the organization of the membership being removed.
+    public void removerVinculo(@PathVariable UUID id, @PathVariable UUID vinculoId) {
+        // Here we ideally need to check the organization of the vinculo being removed.
         // For simplicity, we can use requireAdminOrCoordinatorOf(id) which ensures 
         // the actor can manage the target user.
         authorizationService.requireAdminOrCoordinatorOf(id);
-        removeMembershipUseCase.execute(membershipId);
+        removerVinculoUseCase.execute(vinculoId);
     }
 }

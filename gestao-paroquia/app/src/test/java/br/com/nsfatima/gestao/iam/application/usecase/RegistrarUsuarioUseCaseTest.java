@@ -47,7 +47,7 @@ class RegistrarUsuarioUseCaseTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenIgrejaIdIsNull() {
+    void deveLancarExceptionQuandoIgrejaIdENulo() {
         RegistrarUsuarioRequest request = new RegistrarUsuarioRequest(
                 "João Silva",
                 "joao@example.com",
@@ -62,7 +62,7 @@ class RegistrarUsuarioUseCaseTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenIgrejaNotFound() {
+    void deveLancarExceptionQuandoIgrejaNaoEncontrado() {
         UUID igrejaId = UUID.randomUUID();
         when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.empty());
 
@@ -80,7 +80,7 @@ class RegistrarUsuarioUseCaseTest {
     }
 
     @Test
-    void shouldRegisterUserSuccessfullyWithValidIgrejaId() {
+    void deveRegistrarUsuarioComSucessoComValidoIgrejaId() {
         UUID igrejaId = UUID.randomUUID();
         OrganizacaoEntity igrejaEntity = new OrganizacaoEntity();
         igrejaEntity.setId(igrejaId);

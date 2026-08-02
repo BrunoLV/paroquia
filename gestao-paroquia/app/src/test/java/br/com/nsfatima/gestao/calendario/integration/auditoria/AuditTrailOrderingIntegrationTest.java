@@ -33,7 +33,7 @@ class AuditTrailOrderingIntegrationTest {
     }
 
     @Test
-    void shouldOrderAuditTrailDeterministicallyWhenTimestampsMatch() throws Exception {
+    void deveOrderAuditarTrilhaDeterministicamenteQuandoTimestampsCorresponder() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         Instant sameInstant = Instant.parse("2026-10-03T10:15:00Z");
         UUID firstId = UUID.fromString("00000000-0000-0000-0000-000000000111");

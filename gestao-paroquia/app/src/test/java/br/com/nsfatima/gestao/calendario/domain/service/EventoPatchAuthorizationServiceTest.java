@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader.Membership;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno.Vinculo;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -37,8 +37,8 @@ class EventoPatchAuthorizationServiceTest {
         SecurityContextHolder.setContext(originalContext);
     }
 
-    private void mockAuthentication(UUID usuarioId, List<Membership> memberships) {
-        var principal = new UsuarioDetails(usuarioId, "tester", "pass", true, "", memberships);
+    private void mockAuthentication(UUID usuarioId, List<Vinculo> vinculos) {
+        var principal = new UsuarioDetails(usuarioId, "tester", "pass", true, "", vinculos);
         var auth = new UsernamePasswordAuthenticationToken(principal, null, List.of());
         var context = mock(SecurityContext.class);
         when(context.getAuthentication()).thenReturn(auth);
@@ -46,16 +46,16 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void shouldAllowEventCreationWhenUserIsCoordinatorOfSamePastoralAndSameChurch() {
+    void devePermitirEventoCriacaoQuandoUsuarioECoordenadorDeMesmaPastoralEMesmaIgreja() {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();
         UUID churchId = UUID.randomUUID();
 
-        var membership = new Membership(orgId,
+        var vinculo = new Vinculo(orgId,
                 "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchId);
 
-        mockAuthentication(usuarioId, List.of(membership));
+        mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
@@ -66,17 +66,17 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void shouldDenyEventCreationWhenUserIsCoordinatorOfSamePastoralButDifferentChurch() {
+    void deveNegarEventoCriacaoQuandoUsuarioECoordenadorDeMesmaPastoralButDiferenteIgreja() {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();
         UUID churchA = UUID.randomUUID();
         UUID churchB = UUID.randomUUID();
 
-        var membership = new Membership(orgId,
+        var vinculo = new Vinculo(orgId,
                 "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchA);
 
-        mockAuthentication(usuarioId, List.of(membership));
+        mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,
@@ -87,16 +87,16 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void shouldAllowEventCreationWhenUserIsParoco() {
+    void devePermitirEventoCriacaoQuandoUsuarioEParoco() {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();
         UUID churchId = UUID.randomUUID();
 
-        var membership = new Membership(orgId,
+        var vinculo = new Vinculo(orgId,
                 "Clero", TipoOrganizacao.CLERO.name(), null, null, null, true, PapelOrganizacional.PAROCO.name(),
                 null);
 
-        mockAuthentication(usuarioId, List.of(membership));
+        mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), orgId, usuarioId, null);
@@ -106,7 +106,7 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void shouldAllowBypassWhenUserIsParoco() {
+    void devePermitirIgnorarQuandoUsuarioEParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), UUID.randomUUID(), usuarioId, null);
@@ -115,7 +115,7 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void shouldDenyBypassWhenUserIsNotParoco() {
+    void deveNegarIgnorarQuandoUsuarioENaoParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), UUID.randomUUID(), usuarioId, null);
@@ -124,15 +124,15 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void shouldAllowEventCreationWhenUserIsCoordinatorOfPastoralWithoutChurchLink() {
+    void devePermitirEventoCriacaoQuandoUsuarioECoordenadorDePastoralSemIgrejaVincular() {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();
 
-        var membership = new Membership(orgId,
+        var vinculo = new Vinculo(orgId,
                 "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
                 PapelOrganizacional.COORD_PASTORAL_GLOBAL.name(), null);
 
-        mockAuthentication(usuarioId, List.of(membership));
+        mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.COORD_PASTORAL_GLOBAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId, usuarioId,

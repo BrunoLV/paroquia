@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StatusAndHistoryIntegrationTest {
 
     @Test
-    void shouldKeepCancelledHistoryWithReason() {
+    void deveManterCanceladoHistoricoComMotivo() {
         assertTrue(true);
     }
 }

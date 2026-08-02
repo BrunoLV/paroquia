@@ -30,7 +30,7 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldDenyOwnerChangeForResponsibleOrganizationCoordinator() throws Exception {
+    void deveNegarDonoMudancaParaResponsavelOrganizacaoCoordenador() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
@@ -59,7 +59,7 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldAllowOwnerChangeForConselhoCoordinator() throws Exception {
+    void devePermitirDonoMudancaParaConselhoCoordenador() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

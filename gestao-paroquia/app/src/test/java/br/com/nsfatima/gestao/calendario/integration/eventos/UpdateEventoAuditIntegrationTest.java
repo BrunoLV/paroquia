@@ -39,7 +39,7 @@ class UpdateEventoAuditIntegrationTest {
     @Test
     @WithMockUser(username = "tester-success")
     @SuppressWarnings("null")
-    void shouldPublishSuccessAuditOnSuccessfulPatch() throws Exception {
+    void devePublicarSucessoAuditarEmComSucessoPatch() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
@@ -70,7 +70,7 @@ class UpdateEventoAuditIntegrationTest {
 
     @Test
     @WithMockUser(username = "tester-failure")
-    void shouldPublishFailureAuditOnFailedPatch() throws Exception {
+    void devePublicarFalhaAuditarEmFalhouPatch() throws Exception {
         String payload = """
                 {
                   "descricao": "falha auditada"

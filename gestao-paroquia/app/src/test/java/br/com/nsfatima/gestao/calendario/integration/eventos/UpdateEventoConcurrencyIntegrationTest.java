@@ -35,7 +35,7 @@ class UpdateEventoConcurrencyIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldReturnConflictWhenOptimisticLockFailsOnPatch() throws Exception {
+    void deveRetornarConflitoQuandoOtimistaLockFalhaEmPatch() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

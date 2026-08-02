@@ -37,7 +37,7 @@ class MotorAgendaPrioridadesIntegrationTest {
     }
 
     @Test
-    void shouldRejectLevel4WhenConflictWithLevel2() throws Exception {
+    void deveRejeitarNivel4QuandoConflitoComNivel2() throws Exception {
         // 1. Create Level 2 Event (LITURGICO)
         String level2Payload = """
                 {
@@ -83,7 +83,7 @@ class MotorAgendaPrioridadesIntegrationTest {
     }
 
     @Test
-    void shouldAllowLevel4WhenParocoUsesBypass() throws Exception {
+    void devePermitirNivel4QuandoParocoUsaIgnorar() throws Exception {
         // 1. Create Level 2 Event (LITURGICO)
         String level2Payload = """
                 {
@@ -129,7 +129,7 @@ class MotorAgendaPrioridadesIntegrationTest {
     }
 
     @Test
-    void shouldRejectBypassWhenUserIsNotParoco() throws Exception {
+    void deveRejeitarIgnorarQuandoUsuarioENaoParoco() throws Exception {
         String bypassPayload = """
                 {
                   "titulo": "Tentativa de Bypass sem permissão",
@@ -152,7 +152,7 @@ class MotorAgendaPrioridadesIntegrationTest {
     }
 
     @Test
-    void shouldAutoCancelLowerPriorityEventsWhenLevel1Created() throws Exception {
+    void deveAutoCancelarMenorPrioridadeEventosQuandoNivel1Criado() throws Exception {
         // 1. Create Level 3 Event (PASTORAL)
         String level3Payload = """
                 {

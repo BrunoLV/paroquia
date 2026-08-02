@@ -74,7 +74,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldCreateOrganization() {
+    void deveCriarOrganizacao() {
         Organizacao created = service.createOrganization("PJ",
                 TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId,
                 movimentoOficialId);
@@ -90,7 +90,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldUpdateOrganization() {
+    void deveAtualizarOrganizacao() {
         UUID id = UUID.randomUUID();
         Organizacao org = new Organizacao(id,
                 "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
@@ -113,7 +113,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenDeletingOrgInUse() {
+    void deveLancarExceptionQuandoExcluindoOrgEmUso() {
         UUID id = UUID.randomUUID();
         Organizacao org = new Organizacao(id,
                 "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
@@ -128,7 +128,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldDeleteOrgWhenNotInUse() {
+    void deveExcluirOrgQuandoNaoEmUso() {
         UUID id = UUID.randomUUID();
         Organizacao org = new Organizacao(id,
                 "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
@@ -143,7 +143,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldCreateOrganizationWithConselhoEconomico() {
+    void deveCriarOrganizacaoComConselhoEconomico() {
         Organizacao created = service.createOrganization("Conselho Econômico",
                 TipoOrganizacao.CONSELHO_ECONOMICO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
                 matrizId, null);
@@ -154,7 +154,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldFailToCreateMatrizWithoutCleroParent() {
+    void deveFalhaParaCriarMatrizSemCleroPai() {
         assertThrows(OrganizationBusinessException.class, () ->
                 service.createOrganization("Matriz Sem Pai",
                         TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", null, null)
@@ -168,7 +168,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldFailToCreateCouncilWithoutMatrizOrComunidadeParent() {
+    void deveFalhaParaCriarConselhoSemMatrizOuComunidadePai() {
         assertThrows(OrganizationBusinessException.class, () ->
                 service.createOrganization("Conselho Sem Pai",
                         TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", null, null)
@@ -182,7 +182,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldFailToCreatePastoralWithoutCouncilParent() {
+    void deveFalhaParaCriarPastoralSemConselhoPai() {
         assertThrows(OrganizationBusinessException.class, () ->
                 service.createOrganization("Pastoral Sem Pai",
                         TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
@@ -196,7 +196,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldFailToCreateOrgIfParentIsInactive() {
+    void deveFalhaParaCriarOrgSePaiEInativo() {
         UUID inactiveId = UUID.randomUUID();
         Organizacao inactiveParent = new Organizacao(inactiveId,
                 "Conselho Inativo", TipoOrganizacao.CONSELHO_PASTORAL, "conselho@test.com", "Coordenador", null,
@@ -212,7 +212,7 @@ class OrganizacaoServiceTest {
     }
 
     @Test
-    void shouldAllowCreatingCleroWithNullParent() {
+    void devePermitirCriandoCleroComNuloPai() {
         Organizacao created = service.createOrganization("Clero Novo",
                 TipoOrganizacao.CLERO, "clero@test.com", "Coord", "Vice", null, null);
 

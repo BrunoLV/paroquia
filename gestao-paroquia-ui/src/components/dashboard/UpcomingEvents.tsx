@@ -1,7 +1,7 @@
 import React from 'react';
 import {Divider, List, ListItem, ListItemText, Paper, Typography} from '@mui/material';
 
-interface Event {
+interface Evento {
   id: string;
   titulo: string;
   inicio: string;
@@ -9,7 +9,7 @@ interface Event {
 }
 
 interface UpcomingEventsProps {
-  events?: Event[];
+  events?: Evento[];
   isLoading?: boolean;
 }
 

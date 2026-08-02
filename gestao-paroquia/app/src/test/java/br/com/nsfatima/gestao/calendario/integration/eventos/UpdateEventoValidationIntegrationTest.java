@@ -30,7 +30,7 @@ class UpdateEventoValidationIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectEmptyPatchPayload() throws Exception {
+    void deveRejeitarVazioPatchPayload() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

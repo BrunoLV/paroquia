@@ -10,7 +10,7 @@ class PapelOrganizacionalTest {
 
     @Test
     @DisplayName("Should resolve all specific stored values")
-    void shouldResolveAllStoredValuesIncludingAdmin() {
+    void deveResolverTodosArmazenadoValoresIncludingAdmin() {
         assertThat(PapelOrganizacional.fromStoredValue("admin")).isEqualTo(PapelOrganizacional.ADMIN);
         assertThat(PapelOrganizacional.fromStoredValue("paroco")).isEqualTo(PapelOrganizacional.PAROCO);
         assertThat(PapelOrganizacional.fromStoredValue("vigario")).isEqualTo(PapelOrganizacional.VIGARIO);
@@ -39,7 +39,7 @@ class PapelOrganizacionalTest {
 
     @Test
     @DisplayName("Should return null for generic or unknown stored values")
-    void shouldReturnNullForUnknownOrGenericStoredValues() {
+    void deveRetornarNuloParaDesconhecidoOuGenericoArmazenadoValores() {
         assertThat(PapelOrganizacional.fromStoredValue("coordenador")).isNull();
         assertThat(PapelOrganizacional.fromStoredValue("vice-coordenador")).isNull();
         assertThat(PapelOrganizacional.fromStoredValue("membro")).isNull();

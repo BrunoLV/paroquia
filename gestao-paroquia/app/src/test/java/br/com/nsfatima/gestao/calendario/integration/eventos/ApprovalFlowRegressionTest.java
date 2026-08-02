@@ -40,7 +40,7 @@ class ApprovalFlowRegressionTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldValidateCoreApprovalRegressionScenarios() throws Exception {
+    void deveValidarCoreAprovacaoRegressionScenarios() throws Exception {
         long eventsBefore = eventoJpaRepository.count();
 
         MvcResult createPending = mockMvc.perform(post("/api/v1/eventos")

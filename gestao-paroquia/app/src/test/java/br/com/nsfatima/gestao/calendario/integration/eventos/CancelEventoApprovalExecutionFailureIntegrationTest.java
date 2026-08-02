@@ -37,7 +37,7 @@ class CancelEventoApprovalExecutionFailureIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldFailSafelyWhenApprovedExecutionPreconditionIsBroken() throws Exception {
+    void deveFalhaSafelyQuandoAprovadoExecucaoPreconditionEBroken() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

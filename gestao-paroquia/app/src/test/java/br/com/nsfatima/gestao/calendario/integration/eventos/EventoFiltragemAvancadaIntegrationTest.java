@@ -64,7 +64,7 @@ class EventoFiltragemAvancadaIntegrationTest {
     }
 
     @Test
-    void shouldFilterByEnvolvidoId() {
+    void deveFiltrarPorEnvolvidoId() {
         // Org A is responsible for E1 and involved in E2
         EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, orgA, null, null);
         Page<EventoResponse> result = listEventosUseCase.execute(filter, PageRequest.of(0, 10));
@@ -74,7 +74,7 @@ class EventoFiltragemAvancadaIntegrationTest {
     }
 
     @Test
-    void shouldFilterByMultipleCategories() {
+    void deveFiltrarPorMultiplosCategories() {
         EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, null,
                 List.of(CategoriaEvento.LITURGICO, CategoriaEvento.SOCIAL), null);
         Page<EventoResponse> result = listEventosUseCase.execute(filter, PageRequest.of(0, 10));
@@ -84,7 +84,7 @@ class EventoFiltragemAvancadaIntegrationTest {
     }
 
     @Test
-    void shouldFilterByMultipleStatuses() {
+    void deveFiltrarPorMultiplosStatuses() {
         EventoFiltroRequest filter = new EventoFiltroRequest(null, null, null, null, null, null,
                 List.of(EventoStatusInput.RASCUNHO, EventoStatusInput.CANCELADO));
         Page<EventoResponse> result = listEventosUseCase.execute(filter, PageRequest.of(0, 10));

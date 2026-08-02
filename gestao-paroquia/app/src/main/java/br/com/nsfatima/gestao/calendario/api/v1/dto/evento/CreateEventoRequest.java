@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.validation.ValidEventDates;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.validation.ValidEventoDates;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@ValidEventDates
+@ValidEventoDates
 @Schema(description = "Solicitação para criação de um novo evento")
 public record CreateEventoRequest(
         @Schema(description = "Título do evento", example = "Missa de Domingo")

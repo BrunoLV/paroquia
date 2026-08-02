@@ -29,7 +29,7 @@ class UsuarioAdminApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldToggleUserStatus() throws Exception {
+    void deveAlternarUsuarioStatus() throws Exception {
         UsuarioEntity user = new UsuarioEntity();
         user.setId(UUID.randomUUID());
         user.setUsername("user_to_disable");
@@ -49,7 +49,7 @@ class UsuarioAdminApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldDenyAdminActionForRegularUser() throws Exception {
+    void deveNegarAdminActionParaRegularUsuario() throws Exception {
         mockMvc.perform(patch("/api/v1/usuarios/" + UUID.randomUUID() + "/status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"enabled\": false}"))

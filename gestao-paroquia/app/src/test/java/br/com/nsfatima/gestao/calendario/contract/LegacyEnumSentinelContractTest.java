@@ -32,7 +32,7 @@ class LegacyEnumSentinelContractTest {
     }
 
     @Test
-    void shouldProjectUnknownLegacyValueOnRead() throws Exception {
+    void deveProjetoDesconhecidoLegadoValorEmLer() throws Exception {
         ObservacaoEventoEntity legacyObservation = new ObservacaoEventoEntity();
         legacyObservation.setId(UUID.randomUUID());
         legacyObservation.setEventoId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));

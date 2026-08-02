@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ParticipantesLimpezaTotalIntegrationTest {
 
     @Test
-    void shouldKeepEventoValidAfterClearingParticipants() {
+    void deveManterEventoValidoDepoisClearingParticipantes() {
         assertTrue(true);
     }
 }

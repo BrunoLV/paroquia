@@ -42,7 +42,7 @@ class CancelEventoAuthorizationIntegrationTest {
     @ParameterizedTest
     @MethodSource("forbiddenActors")
     @SuppressWarnings("null")
-    void shouldRejectUnauthorizedRoles(String role, String orgType) throws Exception {
+    void deveRejeitarNaoAutorizadoPapeis(String role, String orgType) throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

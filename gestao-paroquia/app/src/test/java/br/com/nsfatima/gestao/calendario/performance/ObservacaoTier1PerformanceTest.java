@@ -47,7 +47,7 @@ class ObservacaoTier1PerformanceTest {
     }
 
     @Test
-    void shouldKeepP95BelowTier1ThresholdForCreateEditList() throws Exception {
+    void deveManterP95AbaixoTier1LimiteParaCriarEditListar() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000aa";
 
         List<Long> createLatencies = new ArrayList<>();

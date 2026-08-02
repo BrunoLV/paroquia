@@ -32,7 +32,7 @@ class ObservacoesContractTest {
     }
 
     @Test
-    void shouldCreateNotaUsingAuthenticatedAuthor() throws Exception {
+    void deveCriarNotaUsandoAutenticadoAutor() throws Exception {
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"tipo\":\"nota\",\"conteudo\":\"Registro pastoral\"}"))
@@ -45,7 +45,7 @@ class ObservacoesContractTest {
     }
 
     @Test
-    void shouldRejectManualCreationForSystemType() throws Exception {
+    void deveRejeitarManualCriacaoParaSistemaTipo() throws Exception {
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"tipo\":\"cancelamento\",\"conteudo\":\"Nao permitido\"}"))
@@ -54,7 +54,7 @@ class ObservacoesContractTest {
     }
 
     @Test
-    void shouldListObservacoesWithCreatedTimestamp() throws Exception {
+    void deveListarObservacoesComCriadoTimestamp() throws Exception {
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"tipo\":\"nota\",\"conteudo\":\"Historico append-only\"}"))
@@ -69,7 +69,7 @@ class ObservacoesContractTest {
     }
 
     @Test
-    void shouldListOnlyMyObservacoes() throws Exception {
+    void deveListarApenasMyObservacoes() throws Exception {
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"tipo\":\"nota\",\"conteudo\":\"Minha nota\"}"))

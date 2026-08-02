@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class GetOrganogramaUseCase {
 
+    private static final String ORGANIZACAO_RAIZ_ID = "00000000-0000-0000-0000-000000000001";
+
     private final OrganizacaoJpaRepository organizacaoRepository;
     private final ListOrganizacaoMembrosUseCase listMembrosUseCase;
     private final String paroquiaNome;
@@ -37,7 +39,7 @@ public class GetOrganogramaUseCase {
 
         List<OrganizacaoEntity> rootOrgs = allOrgs.stream()
                 .filter(OrganizacaoEntity::isAtivo)
-                .filter(org -> !org.getId().toString().equals("00000000-0000-0000-0000-000000000001"))
+                .filter(org -> !org.getId().toString().equals(ORGANIZACAO_RAIZ_ID))
                 .filter(org -> org.getParentId() == null)
                 .toList();
 
@@ -48,7 +50,7 @@ public class GetOrganogramaUseCase {
 
         Map<UUID, List<OrganizacaoEntity>> childrenByParentId = allOrgs.stream()
                 .filter(OrganizacaoEntity::isAtivo)
-                .filter(org -> !org.getId().toString().equals("00000000-0000-0000-0000-000000000001"))
+                .filter(org -> !org.getId().toString().equals(ORGANIZACAO_RAIZ_ID))
                 .filter(org -> org.getParentId() != null)
                 .collect(Collectors.groupingBy(OrganizacaoEntity::getParentId));
 

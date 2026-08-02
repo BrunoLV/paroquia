@@ -14,7 +14,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should generate dates for a weekly recurrence (Sundays)")
-    void shouldGenerateWeeklyDates() {
+    void deveGerarSemanalDatas() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "SEMANAL",
                 1,
@@ -37,7 +37,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should generate dates for an annual date-specific recurrence (May 13th)")
-    void shouldGenerateAnnualDateSpecific() {
+    void deveGerarAnualDataEspecifico() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "ANUAL",
                 1,
@@ -62,7 +62,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should generate dates for a daily recurrence")
-    void shouldGenerateDailyDates() {
+    void deveGerarDiarioDatas() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "DIARIA",
                 2, // Every 2 days
@@ -82,7 +82,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should respect numeroOcorrencias limit")
-    void shouldRespectCountLimit() {
+    void deveRespeitarContarLimit() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "DIARIA",
                 1,
@@ -102,7 +102,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should generate dates for first Friday of the month")
-    void shouldGenerateFirstFridayOfMonth() {
+    void deveGerarPrimeiroSextaDeMes() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "MENSAL",
                 1,
@@ -124,7 +124,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should generate dates for third Saturday of the month every 2 months")
-    void shouldGenerateThirdSaturdayEveryTwoMonths() {
+    void deveGerarThirdSabadoEveryDoisMonths() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "MENSAL",
                 2, // every 2 months
@@ -148,7 +148,7 @@ class RegraRecorrenciaTest {
 
     @Test
     @DisplayName("Should generate dates for last Saturday of the month using ULTIMO")
-    void shouldGenerateLastSaturdayOfMonth() {
+    void deveGerarUltimoSabadoDeMes() {
         RegraRecorrencia regra = new RegraRecorrencia(
                 "MENSAL",
                 1,

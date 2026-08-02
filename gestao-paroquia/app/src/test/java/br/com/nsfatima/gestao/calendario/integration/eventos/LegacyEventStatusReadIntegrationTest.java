@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 class LegacyEventStatusReadIntegrationTest {
 
     @Test
-    void shouldExposeUnknownLegacyForInvalidStoredStatus() {
+    void deveExporDesconhecidoLegadoParaInvalidoArmazenadoStatus() {
         LegacyEnumInconsistencyPublisher publisher = Mockito.mock(LegacyEnumInconsistencyPublisher.class);
 
         EventoStatusResponse status = EventoStatusResponse.fromStoredValue(

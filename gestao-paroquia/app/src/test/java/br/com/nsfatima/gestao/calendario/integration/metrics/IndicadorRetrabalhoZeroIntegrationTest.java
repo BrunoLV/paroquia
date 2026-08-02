@@ -31,7 +31,7 @@ class IndicadorRetrabalhoZeroIntegrationTest {
     }
 
     @Test
-    void shouldReturnZeroWhenNoEligibleOccurrencesExist() throws Exception {
+    void deveRetornarZeroQuandoNenhumEligibleOccurrencesExiste() throws Exception {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")

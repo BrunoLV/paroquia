@@ -29,7 +29,7 @@ class CancelEventoTier1PerformanceTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Test
-    void shouldCompleteDirectCancellationWithinTwoSeconds() throws Exception {
+    void deveCompletoDiretoCancelamentoDentroDoisSegundos() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

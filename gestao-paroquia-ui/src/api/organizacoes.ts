@@ -24,7 +24,7 @@ export const deleteOrganizacao = async (id: string): Promise<void> => {
 };
 
 export interface OrganizacaoMembro {
-  membershipId: string;
+  vinculoId: string;
   usuarioId: string;
   usuarioNome: string;
   nomeCompleto?: string;

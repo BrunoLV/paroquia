@@ -51,7 +51,7 @@ class AprovacoesContractTest {
     }
 
     @Test
-    void shouldCreateAprovacaoWithExplicitDto() throws Exception {
+    void deveCriarAprovacaoComExplicitoDto() throws Exception {
         mockMvc.perform(post("/api/v1/aprovacoes")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
@@ -67,7 +67,7 @@ class AprovacoesContractTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPatchApprovalDecisionWithExecutionOutcome() throws Exception {
+    void devePatchAprovacaoDecisaoComExecucaoOutcome() throws Exception {
         UUID aprovacaoId = UUID.randomUUID();
         AprovacaoEntity aprovacao = new AprovacaoEntity();
         aprovacao.setId(aprovacaoId);

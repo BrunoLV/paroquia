@@ -23,7 +23,7 @@ class CreateEventoConflitoPendingIntegrationTest {
 
     @Test
     @WithMockUser(roles = "CLERO_PAROCO")
-    void shouldCreateWithConflictPendingWhenOverlapExists() throws Exception {
+    void deveCriarComConflitoPendenteQuandoOverlapExiste() throws Exception {
         String firstPayload = """
                 {
                   "titulo": "Evento Base",

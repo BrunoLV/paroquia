@@ -22,7 +22,7 @@ class EnumNormalizationIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldNormalizeCanonicalEnumOnCreate() throws Exception {
+    void deveNormalizarCanonicoEnumEmCriar() throws Exception {
         String payload = """
                 {
                   "titulo": "Vigilia",
@@ -45,7 +45,7 @@ class EnumNormalizationIntegrationTest {
     }
 
     @Test
-    void shouldRejectLocalizedOrUnsupportedEnumValues() throws Exception {
+    void deveRejeitarLocalizadoOuNaoSuportadoEnumValores() throws Exception {
         String payload = """
                 {
                   "status": "confirmado_pt"

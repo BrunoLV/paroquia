@@ -14,10 +14,10 @@ import java.util.UUID;
 @Service
 public class UsuarioAuthorizationService {
 
-    private final MembroOrganizacaoJpaRepository membershipRepository;
+    private final MembroOrganizacaoJpaRepository vinculoRepository;
 
-    public UsuarioAuthorizationService(MembroOrganizacaoJpaRepository membershipRepository) {
-        this.membershipRepository = membershipRepository;
+    public UsuarioAuthorizationService(MembroOrganizacaoJpaRepository vinculoRepository) {
+        this.vinculoRepository = vinculoRepository;
     }
 
     public void requireAdminOrCoordinatorOf(UUID targetUserId) {
@@ -36,8 +36,8 @@ public class UsuarioAuthorizationService {
         }
 
         // If actor is COORDENADOR, they must share an organization with targetUserId where they are COORDENADOR
-        List<MembroOrganizacaoEntity> actorMemberships = membershipRepository.findByUsuarioIdAndAtivoTrue(actorId);
-        List<UUID> coordinatorOrgIds = actorMemberships.stream()
+        List<MembroOrganizacaoEntity> actorVinculos = vinculoRepository.findByUsuarioIdAndAtivoTrue(actorId);
+        List<UUID> coordinatorOrgIds = actorVinculos.stream()
                 .filter(m -> isCoordinatorRole(m.getPapel()))
                 .map(MembroOrganizacaoEntity::getOrganizacaoId)
                 .toList();
@@ -46,9 +46,9 @@ public class UsuarioAuthorizationService {
             throw new AccessDeniedException("Actor is not a coordinator");
         }
 
-        List<MembroOrganizacaoEntity> targetMemberships =
-                membershipRepository.findByUsuarioIdAndAtivoTrue(targetUserId);
-        boolean sharesOrg = targetMemberships.stream()
+        List<MembroOrganizacaoEntity> targetVinculos =
+                vinculoRepository.findByUsuarioIdAndAtivoTrue(targetUserId);
+        boolean sharesOrg = targetVinculos.stream()
                 .anyMatch(m -> coordinatorOrgIds.contains(m.getOrganizacaoId()));
 
         if (!sharesOrg) {
@@ -71,7 +71,7 @@ public class UsuarioAuthorizationService {
             throw new AccessDeniedException("Actor ID not found");
         }
 
-        boolean isCoordinator = membershipRepository.findByUsuarioIdAndAtivoTrue(actorId).stream()
+        boolean isCoordinator = vinculoRepository.findByUsuarioIdAndAtivoTrue(actorId).stream()
                 .filter(m -> organizationId.equals(m.getOrganizacaoId()))
                 .anyMatch(m -> isCoordinatorRole(m.getPapel()));
 

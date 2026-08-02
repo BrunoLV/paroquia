@@ -41,7 +41,7 @@ class RejectCreateEventoIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectCreateApprovalWithoutCreatingEvento() throws Exception {
+    void deveRejeitarCriarAprovacaoSemCriandoEvento() throws Exception {
         UUID aprovacaoId = UUID.randomUUID();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 

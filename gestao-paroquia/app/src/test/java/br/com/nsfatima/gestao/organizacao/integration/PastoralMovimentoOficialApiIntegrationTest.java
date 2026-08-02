@@ -69,7 +69,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldCreateAndRetrieveOfficialType() throws Exception {
+    void deveCriarERecuperarOficialTipo() throws Exception {
         String payload = """
                 {
                   "nome": "Pastoral de Teste Oficial",
@@ -96,7 +96,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldBlockOfficialTypeCreationForNonAdmin() throws Exception {
+    void deveBloquearOficialTipoCriacaoParaNaoAdmin() throws Exception {
         String payload = """
                 {
                   "nome": "Pastoral Não Autorizada",
@@ -112,7 +112,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldFailToCreateOrganizationTypePastoralWithoutOfficialLink() throws Exception {
+    void deveFalhaParaCriarOrganizacaoTipoPastoralSemOficialVincular() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Pastoral Sem Link",
@@ -134,7 +134,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldCreateOrganizationTypePastoralWithOfficialLink() throws Exception {
+    void deveCriarOrganizacaoTipoPastoralComOficialVincular() throws Exception {
         // Create official type
         String officialPayload = """
                 {

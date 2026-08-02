@@ -13,13 +13,13 @@ import java.util.UUID;
 public class ApproveUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
-    private final MembroOrganizacaoJpaRepository membershipRepository;
+    private final MembroOrganizacaoJpaRepository vinculoRepository;
 
     public ApproveUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
-            MembroOrganizacaoJpaRepository membershipRepository) {
+            MembroOrganizacaoJpaRepository vinculoRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.membershipRepository = membershipRepository;
+        this.vinculoRepository = vinculoRepository;
     }
 
     @Transactional
@@ -37,12 +37,12 @@ public class ApproveUsuarioUseCase {
         }
         usuarioRepository.save(user);
 
-        // Activate requested memberships
-        var memberships = membershipRepository.findByUsuarioId(userId);
-        for (var membership : memberships) {
-            if (!membership.isAtivo()) {
-                membership.setAtivo(true);
-                membershipRepository.save(membership);
+        // Activate requested vinculos
+        var vinculos = vinculoRepository.findByUsuarioId(userId);
+        for (var vinculo : vinculos) {
+            if (!vinculo.isAtivo()) {
+                vinculo.setAtivo(true);
+                vinculoRepository.save(vinculo);
             }
         }
     }

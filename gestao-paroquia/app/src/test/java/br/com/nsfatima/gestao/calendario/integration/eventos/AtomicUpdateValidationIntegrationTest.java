@@ -27,7 +27,7 @@ class AtomicUpdateValidationIntegrationTest {
     private EventoAuditPublisher eventoAuditPublisher;
 
     @Test
-    void shouldRejectInvalidPartialUpdateWithoutMutationSideEffects() throws Exception {
+    void deveRejeitarInvalidoParcialAtualizarSemMutacaoSideEffects() throws Exception {
         String payload = """
                 {
                   "titulo": "Titulo que nao deve ser aplicado",

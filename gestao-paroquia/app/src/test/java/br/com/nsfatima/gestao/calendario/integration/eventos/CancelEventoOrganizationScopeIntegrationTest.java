@@ -31,7 +31,7 @@ class CancelEventoOrganizationScopeIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldRejectPastoralOutsideResponsibleOrganizationScope() throws Exception {
+    void deveRejeitarPastoralForaResponsavelOrganizacaoEscopo() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

@@ -33,7 +33,7 @@ class AnoParoquialRolloverTest {
     }
 
     @Test
-    void shouldHaveScheduledCronExpressionForDec31EndOfDay() throws NoSuchMethodException {
+    void deveTerScheduledCronExpressionParaDec31FimDeDia() throws NoSuchMethodException {
         Method method = AnoParoquialRolloverService.class.getMethod("rolloverYearAutomatically");
         Scheduled scheduled = method.getAnnotation(Scheduled.class);
 
@@ -42,7 +42,7 @@ class AnoParoquialRolloverTest {
     }
 
     @Test
-    void shouldRolloverYearSettingItToConcluidoAndInitializingNextYear() {
+    void deveVirarAnoSettingIssoParaConcluidoEInitializingProximoAno() {
         // Arrange: Year 2026 is EM_PLANEJAMENTO
         AnoParoquialEntity entity = new AnoParoquialEntity();
         entity.setAno(2026);

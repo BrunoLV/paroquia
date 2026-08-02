@@ -40,7 +40,7 @@ class CreateEventoApprovalAuditTrailIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPersistApprovalTimelineForCreateExecution() throws Exception {
+    void devePersistirAprovacaoLinhaTempoParaCriarExecucao() throws Exception {
         long eventCountBefore = eventoJpaRepository.count();
 
         MvcResult pendingResult = mockMvc.perform(post("/api/v1/eventos")

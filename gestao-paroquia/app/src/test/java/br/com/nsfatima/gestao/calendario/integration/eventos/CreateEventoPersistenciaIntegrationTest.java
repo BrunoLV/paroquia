@@ -25,7 +25,7 @@ class CreateEventoPersistenciaIntegrationTest {
 
     @Test
     @WithMockUser(roles = "CLERO_PAROCO")
-    void shouldPersistCreatedEventoAndReturnItOnList() throws Exception {
+    void devePersistirCriadoEventoERetornarIssoEmListar() throws Exception {
         String payload = """
                 {
                   "titulo": "Retiro Jovem",

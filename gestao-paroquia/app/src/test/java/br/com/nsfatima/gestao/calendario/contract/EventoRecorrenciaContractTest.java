@@ -44,7 +44,7 @@ class EventoRecorrenciaContractTest {
     }
 
     @Test
-    void shouldDefineRecorrenciaContract() throws Exception {
+    void deveDefinirRecorrenciaContrato() throws Exception {
         mockMvc.perform(put("/api/v1/eventos/{eventoId}/recorrencia", EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"frequencia\":\"semanal\",\"intervalo\":2}"))

@@ -57,7 +57,7 @@ class EventoRecorrenciaIntegracaoTest {
 
     @Test
     @DisplayName("Should create recurrence, generate instances, and handle ONLY_THIS edit")
-    void shouldHandleFullRecurrenceLifecycle_OnlyThis() throws Exception {
+    void deveTratarCompletoRecorrenciaCicloVidaApenasEste() throws Exception {
         // 1. Create Base Event
         UUID baseId = UUID.randomUUID();
         EventoEntity baseEvent = createEvento(baseId, "Base Recorrente", "2026-05-10T10:00:00Z");
@@ -122,7 +122,7 @@ class EventoRecorrenciaIntegracaoTest {
 
     @Test
     @DisplayName("Should handle THIS_AND_FOLLOWING edit by splitting the series")
-    void shouldHandleFullRecurrenceLifecycle_ThisAndFollowing() throws Exception {
+    void deveTratarCompletoRecorrenciaCicloVidaEsteESeguinte() throws Exception {
         // 1. Create Base Event
         UUID baseId = UUID.randomUUID();
         EventoEntity baseEvent = createEvento(baseId, "Serie Original", "2026-06-01T10:00:00Z");

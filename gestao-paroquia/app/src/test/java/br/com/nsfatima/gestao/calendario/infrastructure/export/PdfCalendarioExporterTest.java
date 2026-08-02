@@ -18,7 +18,7 @@ class PdfCalendarioExporterTest {
     private final CalendarioExporter exporter = new PdfCalendarioExporter();
 
     @Test
-    void shouldExportToPdf() {
+    void deveExportarParaPdf() {
         ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
         config.setNome("Paróquia Teste");
         config.setDiocese("Diocese Teste");

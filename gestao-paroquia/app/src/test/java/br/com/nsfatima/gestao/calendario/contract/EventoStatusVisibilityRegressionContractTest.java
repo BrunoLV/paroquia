@@ -28,7 +28,7 @@ class EventoStatusVisibilityRegressionContractTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldKeepCancelledEventsRestrictedToAuthenticatedInternalHistory() throws Exception {
+    void deveManterCanceladoEventosRestrictedParaAutenticadoInternoHistorico() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);

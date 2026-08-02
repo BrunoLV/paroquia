@@ -88,8 +88,8 @@ public abstract class BaseExceptionHandler {
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             return null;
         }
-        return usuarioDetails.primaryMembership()
-                .map(membership -> membership.organizationId() == null ? null : membership.organizationId().toString())
+        return usuarioDetails.vinculoPrimario()
+                .map(vinculo -> vinculo.organizationId() == null ? null : vinculo.organizationId().toString())
                 .orElse(null);
     }
 

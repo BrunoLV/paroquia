@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
 import br.com.nsfatima.gestao.calendario.domain.policy.AuthorizationPolicy;
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -48,18 +48,18 @@ public class EventoActorContextResolver {
                         null);
             }
 
-            ExternalMembershipReader.Membership membership = usuarioDetails.getMemberships().stream()
+            LeitorVinculoExterno.Vinculo vinculo = usuarioDetails.getVinculos().stream()
                     .filter(m -> authorizationPolicy.isRoleAllowed(m.organizationType(), m.role()))
                     .findFirst()
                     .orElseThrow(() -> new RoleScopeInvalidException("Role is incompatible with organization type"));
 
             return new EventoActorContext(
                     authentication.getName(),
-                    membership.role(),
-                    membership.organizationType(),
-                    membership.organizationId(),
+                    vinculo.role(),
+                    vinculo.organizationType(),
+                    vinculo.organizationId(),
                     usuarioDetails.getUsuarioId(),
-                    membership.igrejaVinculoId());
+                    vinculo.igrejaVinculoId());
         }
 
         for (GrantedAuthority authority : authentication.getAuthorities()) {

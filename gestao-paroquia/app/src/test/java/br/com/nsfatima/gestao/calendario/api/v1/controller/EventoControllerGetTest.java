@@ -31,7 +31,7 @@ class EventoControllerGetTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void shouldReturnEventDetailsWhenFound() throws Exception {
+    void deveRetornarEventoDetalhesQuandoEncontrado() throws Exception {
         UUID orgId = UUID.randomUUID();
         jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgId + "', 'Org Teste')");
 
@@ -54,7 +54,7 @@ class EventoControllerGetTest {
     }
 
     @Test
-    void shouldReturnNotFoundWhenEventDoesNotExist() throws Exception {
+    void deveRetornarNaoEncontradoQuandoEventoNaoExiste() throws Exception {
         mockMvc.perform(get("/api/v1/eventos/" + UUID.randomUUID())
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO"))

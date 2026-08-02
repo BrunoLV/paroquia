@@ -65,7 +65,7 @@ public class ListAuditTrailUseCase {
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Authenticated user required");
         }
-        if (usuarioDetails.findMembershipByOrganization(organizacaoId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
             throw new AccessDeniedException("User cannot query audit data outside the responsible organization scope");
         }
     }

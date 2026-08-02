@@ -28,7 +28,7 @@ class EventoControllerCancelTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Test
-    void shouldCancelEventWithPost() throws Exception {
+    void deveCancelarEventoComPost() throws Exception {
         UUID eventId = UUID.randomUUID();
         createEvento(eventId, UUID.fromString("00000000-0000-0000-0000-000000000001"));
 

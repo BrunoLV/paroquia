@@ -36,7 +36,7 @@ class AuditoriaInfrastructureIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldPersistStructuredAuditTrailForEventMutation() {
+    void devePersistirEstruturadoAuditarTrilhaParaEventoMutacao() {
         UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 

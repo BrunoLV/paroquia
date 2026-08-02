@@ -15,7 +15,7 @@ export interface Usuario {
   casadoIgrejaCatolica?: boolean;
 }
 
-export interface MembershipResponse {
+export interface VinculoResponse {
   id: string;
   organizacaoId: string;
   organizacaoNome?: string;
@@ -26,7 +26,7 @@ export interface MembershipResponse {
   igrejaVinculoNome?: string | null;
 }
 
-export interface AddMembershipRequest {
+export interface AdicionarVinculoRequest {
   organizacaoId: string;
   tipo: string;
   papel: string;
@@ -51,15 +51,15 @@ export const approveUsuario = async (id: string): Promise<void> => {
 /**
  * Busca a lista de vínculos de um usuário com organizações da paróquia.
  */
-export const getMemberships = async (id: string): Promise<MembershipResponse[]> => {
-  const response = await apiClient.get<MembershipResponse[]>(`/usuarios/${id}/membros`);
+export const getVinculos = async (id: string): Promise<VinculoResponse[]> => {
+  const response = await apiClient.get<VinculoResponse[]>(`/usuarios/${id}/membros`);
   return response.data;
 };
 
 /**
  * Adiciona um novo vínculo de organização a um usuário.
  */
-export const addMembership = async (userId: string, request: AddMembershipRequest): Promise<string> => {
+export const adicionarVinculo = async (userId: string, request: AdicionarVinculoRequest): Promise<string> => {
   const response = await apiClient.post<string>(`/usuarios/${userId}/membros`, request);
   return response.data;
 };
@@ -67,8 +67,8 @@ export const addMembership = async (userId: string, request: AddMembershipReques
 /**
  * Remove um vínculo de organização de um usuário.
  */
-export const removeMembership = async (userId: string, membershipId: string): Promise<void> => {
-  await apiClient.delete(`/usuarios/${userId}/membros/${membershipId}`);
+export const removerVinculo = async (userId: string, vinculoId: string): Promise<void> => {
+  await apiClient.delete(`/usuarios/${userId}/membros/${vinculoId}`);
 };
 
 export interface RegistrarUsuarioRequest {

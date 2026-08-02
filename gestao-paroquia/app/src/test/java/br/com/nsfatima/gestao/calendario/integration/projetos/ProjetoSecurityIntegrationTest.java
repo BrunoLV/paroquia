@@ -33,7 +33,7 @@ class ProjetoSecurityIntegrationTest {
     }
 
     @Test
-    void shouldAllowCoordenadorToCreateProjectForTheirOrg() throws Exception {
+    void devePermitirCoordenadorParaCriarProjetoParaSeuOrg() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
@@ -52,7 +52,7 @@ class ProjetoSecurityIntegrationTest {
     }
 
     @Test
-    void shouldDenyCoordenadorToCreateProjectForOtherOrg() throws Exception {
+    void deveNegarCoordenadorParaCriarProjetoParaOutraOrg() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
@@ -71,7 +71,7 @@ class ProjetoSecurityIntegrationTest {
     }
 
     @Test
-    void shouldAllowParocoToCreateProjectForAnyOrg() throws Exception {
+    void devePermitirParocoParaCriarProjetoParaQualquerOrg() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")

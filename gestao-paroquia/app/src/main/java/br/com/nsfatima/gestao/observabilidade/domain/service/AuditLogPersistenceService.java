@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.observabilidade.domain.service;
 
-import br.com.nsfatima.gestao.iam.infrastructure.security.ExternalMembershipReader;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
@@ -161,7 +161,7 @@ public class AuditLogPersistenceService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UsuarioDetails user) {
-            return user.primaryMembership().map(ExternalMembershipReader.Membership::organizationId).orElse(null);
+            return user.vinculoPrimario().map(LeitorVinculoExterno.Vinculo::organizationId).orElse(null);
         }
         return null;
     }

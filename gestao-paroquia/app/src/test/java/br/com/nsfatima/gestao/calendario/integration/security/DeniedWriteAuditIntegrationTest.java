@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 class DeniedWriteAuditIntegrationTest {
 
     @Test
-    void shouldLogAuditOnDeniedWrite() {
+    void deveRegistrarAuditarEmNegadoEscrever() {
         AuditLogPersistenceService service = new AuditLogPersistenceService(
                 mock(AuditoriaOperacaoJpaRepository.class),
                 new ObjectMapper());

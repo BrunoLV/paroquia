@@ -12,7 +12,7 @@ class ConflitoAgendaIntegrationTest {
     private final CalendarIntegrityPolicy policy = new CalendarIntegrityPolicy();
 
     @Test
-    void shouldRejectInvalidInterval() {
+    void deveRejeitarInvalidoIntervalo() {
         assertThrows(IllegalArgumentException.class, () ->
                 policy.validateInterval(Instant.parse("2026-03-15T11:00:00Z"), Instant.parse("2026-03-15T10:00:00Z")));
     }

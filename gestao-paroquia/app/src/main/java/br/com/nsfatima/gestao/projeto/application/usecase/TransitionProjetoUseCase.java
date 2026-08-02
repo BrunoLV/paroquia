@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -108,7 +110,7 @@ public class TransitionProjetoUseCase {
             List<EventoEntity> linkedEvents = eventoRepository.findByProjetoId(id);
             if (cancelarEventosVinculados) {
                 for (EventoEntity event : linkedEvents) {
-                    event.setStatus("CANCELADO");
+                    event.setStatus(EventoStatusInput.CANCELADO.name());
                 }
             } else {
                 for (EventoEntity event : linkedEvents) {
@@ -124,7 +126,7 @@ public class TransitionProjetoUseCase {
             approval.setId(UUID.randomUUID());
             approval.setProjetoId(id);
             approval.setTipoSolicitacao("CANCELAMENTO");
-            approval.setStatus("PENDENTE");
+            approval.setStatus(AprovacaoStatus.PENDENTE.name());
             approval.setSolicitanteId(actorContext.actor());
             approval.setSolicitantePapel(actorContext.role());
             approval.setSolicitanteTipoOrganizacao(actorContext.organizationType());
@@ -141,7 +143,7 @@ public class TransitionProjetoUseCase {
         ProjetoSolicitacaoAprovacaoEntity req = approvalRepository.findById(solicitacaoId)
                 .orElseThrow(() -> new IllegalArgumentException("Approval request not found: " + solicitacaoId));
 
-        if (!"PENDENTE".equals(req.getStatus())) {
+        if (!AprovacaoStatus.PENDENTE.name().equals(req.getStatus())) {
             throw new IllegalStateException("This request is already decided");
         }
 
@@ -188,7 +190,7 @@ public class TransitionProjetoUseCase {
                 List<EventoEntity> linkedEvents = eventoRepository.findByProjetoId(project.getId());
                 if (Boolean.TRUE.equals(req.getCancelarEventosVinculados())) {
                     for (EventoEntity event : linkedEvents) {
-                        event.setStatus("CANCELADO");
+                        event.setStatus(EventoStatusInput.CANCELADO.name());
                     }
                 } else {
                     for (EventoEntity event : linkedEvents) {

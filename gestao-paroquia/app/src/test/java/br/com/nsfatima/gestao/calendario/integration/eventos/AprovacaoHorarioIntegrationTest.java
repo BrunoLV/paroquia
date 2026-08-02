@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class AprovacaoHorarioIntegrationTest {
 
     @Test
-    void shouldCreateApprovalRequest() {
+    void deveCriarAprovacaoRequest() {
         FakeEventoActorContextResolver resolver = new FakeEventoActorContextResolver();
         FakeAprovacaoRepository repository = new FakeAprovacaoRepository();
         FakeLegacyEnumInconsistencyPublisher publisher = new FakeLegacyEnumInconsistencyPublisher();

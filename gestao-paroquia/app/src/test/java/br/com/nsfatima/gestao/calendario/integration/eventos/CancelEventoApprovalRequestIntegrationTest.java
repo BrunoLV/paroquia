@@ -37,7 +37,7 @@ class CancelEventoApprovalRequestIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void shouldCreatePendingApprovalForPastoralCoordinator() throws Exception {
+    void deveCriarPendenteAprovacaoParaPastoralCoordenador() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);

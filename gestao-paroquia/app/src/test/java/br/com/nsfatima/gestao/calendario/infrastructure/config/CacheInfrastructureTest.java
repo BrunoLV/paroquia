@@ -20,18 +20,18 @@ class CacheInfrastructureTest {
     private CacheManager cacheManager;
 
     @Test
-    void shouldBeCaffeineCacheManager() {
+    void deveCaffeineCacheManager() {
         assertThat(cacheManager).isInstanceOf(CaffeineCacheManager.class);
     }
 
     @Test
-    void shouldHaveConfiguredCaches() {
+    void deveTerConfiguredCacheia() {
         assertThat(cacheManager.getCacheNames())
                 .containsExactlyInAnyOrder(CacheConfig.PROJECT_RESUMO_CACHE, CacheConfig.ANO_PAROQUIAL_CACHE);
     }
 
     @Test
-    void shouldStoreAndRetrieveFromCache() {
+    void deveStoreERecuperarDeCache() {
         Cache cache = cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE);
         assertThat(cache).isNotNull();
 

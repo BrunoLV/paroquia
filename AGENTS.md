@@ -15,6 +15,10 @@
   - `refactor(scope): description` para alterações estruturais de código que preservam o comportamento.
 - **Estratégia de Branches:** O trabalho deve ser sempre realizado em branches de funcionalidade (feature branches) de curta duração, derivadas da branch principal de integração. Nunca envie código diretamente para as branches principais de produção ou main.
 
+## Convenção de Nomenclatura: Domínio em Português, Técnico em Inglês
+- **Regra:** Conceitos de domínio (nomes de entidades, enums, campos, DTOs, use cases que descrevem uma ação de negócio) DEVEM ser nomeados em português. Termos puramente técnicos/arquiteturais (sufixos como `Entity`, `Controller`, `Repository`, `Service`, `UseCase`, `DTO`, `Exception`, `Policy`, `Event`/`Listener` como padrão técnico, `Enum`, `Cache`) permanecem em inglês. Exemplo já consolidado no backend: `AtivoAlocacaoEntity`, `EventoController`, `VinculoResponse` (não `MembershipResponse`). No frontend, o mesmo padrão vale para tipos/DTOs/identificadores (ex.: `VinculoResponse`, não `MembershipResponse`).
+- **Strings mágicas:** Prefira enum ou constante nomeada a string literal usada como marcador em comparações (`.equals("PENDENTE")`) ou `switch`/`case`. Quando já existir um enum para o conceito (`AprovacaoStatus`, `ProjetoStatus`, `EventoStatusInput`, etc.), reutilize-o via `Enum.CONSTANTE.name()` em vez de repetir o literal.
+
 ## Unified Quality & Monorepo Validation Gates
 - **Verificação Abrangente:** Antes de finalizar qualquer tarefa, o agente deve executar os comandos de validação em todos os projetos filhos afetados para garantir um estado de zero regressão.
 - **Higiene Pré-Commit:** O agente deve pré-avaliar a sintaxe e a formatação usando as configurações de ferramentas locais. Nenhum código com erros de lint, avisos de análise estática (Checkstyle, PMD, SpotBugs, ESLint) ou estados de compilação quebrados (`tsc`, Gradle build) pode ser proposto.

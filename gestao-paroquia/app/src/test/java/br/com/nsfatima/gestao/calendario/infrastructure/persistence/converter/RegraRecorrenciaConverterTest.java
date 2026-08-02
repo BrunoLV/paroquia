@@ -14,7 +14,7 @@ class RegraRecorrenciaConverterTest {
     private final RegraRecorrenciaConverter converter = new RegraRecorrenciaConverter();
 
     @Test
-    void shouldConvertRoundTrip() {
+    void deveConverterRoundTrip() {
         RegraRecorrencia rule = new RegraRecorrencia(
                 "SEMANAL",
                 2,
@@ -29,7 +29,7 @@ class RegraRecorrenciaConverterTest {
     }
 
     @Test
-    void shouldHandleNulls() {
+    void deveTratarNulls() {
         assertNull(converter.convertToDatabaseColumn(null));
         assertNull(converter.convertToEntityAttribute(null));
         assertNull(converter.convertToEntityAttribute(""));
