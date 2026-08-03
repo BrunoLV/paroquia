@@ -102,3 +102,27 @@ tasks.withType<JacocoReport> {
         html.required.set(true)
     }
 }
+
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    dependsOn("jacocoTestReport")
+    violationRules {
+        rule {
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                // Baseline: 83.5% medido em 2026-08-03 — threshold 80% para headroom seguro
+                minimum = "0.80".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                // Baseline: 59.5% medido em 2026-08-03 — threshold 55% para headroom seguro
+                minimum = "0.55".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn("jacocoTestCoverageVerification")
+}
