@@ -18,6 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Transfere a posse de um ativo patrimonial para outra organização. A transferência é bloqueada
+ * enquanto o ativo estiver {@code EM_MANUTENCAO} ou {@code ALOCADO}, pois trocar a organização
+ * dona nessas condições invalidaria a alocação/manutenção corrente; a organização de destino
+ * também deve ser de um tipo elegível a possuir patrimônio ({@code AtivoOrganizacaoPolicy}).
+ */
 @Service
 public class TransferirAtivoPatrimonialUseCase {
 
@@ -42,6 +48,16 @@ public class TransferirAtivoPatrimonialUseCase {
         this.auditPublisher = auditPublisher;
     }
 
+    /**
+     * Transfere o ativo para a organização de destino, validando que o status atual permite
+     * transferência e que a organização de destino é elegível como proprietária de patrimônio.
+     *
+     * @param ativoId ativo a transferir
+     * @param request organização de destino
+     * @return o ativo com a organização dona já atualizada
+     * @throws AtivoPatrimonialNotFoundException    se o ativo não existir
+     * @throws AtivoTransferenciaBloqueadaException se o ativo estiver em manutenção ou alocado
+     */
     @Transactional
     public AtivoPatrimonialResponse execute(UUID ativoId, TransferirAtivoRequest request) {
         AtivoPatrimonialEntity ativo = repository.findById(ativoId)

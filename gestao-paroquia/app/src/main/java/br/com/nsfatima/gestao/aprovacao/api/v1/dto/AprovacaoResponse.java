@@ -6,6 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Representação detalhada de uma solicitação de aprovação para exibição/consulta via API, incluindo status
+ * atual, dados de solicitante/aprovador e, em caso de falha de execução, a mensagem de erro correspondente.
+ */
 @Schema(description = "Dados detalhados de uma solicitação de aprovação")
 public record AprovacaoResponse(
         @Schema(description = "ID único da aprovação")

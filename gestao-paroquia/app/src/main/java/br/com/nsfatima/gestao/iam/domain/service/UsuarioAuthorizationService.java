@@ -11,6 +11,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Checagem fina de autorização para operações administrativas sobre usuários: além do papel global exigido
+ * pelo {@code @PreAuthorize} do endpoint, garante que um ator com papel de coordenador só possa agir sobre
+ * usuários/organizações dentro do seu próprio escopo organizacional — admin global sempre passa
+ * incondicionalmente. Lança {@link AccessDeniedException} (não retorna booleano) porque o chamador espera
+ * interromper o fluxo imediatamente quando a autorização falha.
+ */
 @Service
 public class UsuarioAuthorizationService {
 
@@ -20,6 +27,16 @@ public class UsuarioAuthorizationService {
         this.vinculoRepository = vinculoRepository;
     }
 
+    /**
+     * Garante que o ator autenticado pode gerenciar o usuário-alvo: passa livre se for admin global; caso
+     * contrário, exige que o ator seja coordenador (papel contendo "coordenador", "presidente" ou
+     * "mesa-diretora", normalizado) em pelo menos uma organização onde o usuário-alvo também possui vínculo
+     * ativo — ou seja, coordenador só gerencia membros da(s) própria(s) organização(ões).
+     *
+     * @param targetUserId identificador do usuário sobre o qual a ação será executada
+     * @throws AccessDeniedException se não houver autenticação, se o ator não for admin nem coordenador, ou
+     *                               se o ator for coordenador mas não compartilhar organização com o alvo
+     */
     public void requireAdminOrCoordinatorOf(UUID targetUserId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
@@ -56,6 +73,17 @@ public class UsuarioAuthorizationService {
         }
     }
 
+    /**
+     * Garante que o ator autenticado pode agir em nome de uma organização específica (ex.: adicionar vínculo
+     * de membro): passa livre se for admin global; caso contrário, exige que o ator seja coordenador
+     * (vínculo ativo com papel de coordenação) especificamente naquela organização — diferente de
+     * {@link #requireAdminOrCoordinatorOf(UUID)}, aqui a organização é conhecida de antemão em vez de
+     * derivada dos vínculos de um usuário-alvo.
+     *
+     * @param organizationId identificador da organização sobre a qual a ação será executada
+     * @throws AccessDeniedException se não houver autenticação, ou se o ator não for admin global nem
+     *                               coordenador ativo daquela organização
+     */
     public void requireAdminOrCoordinatorOfOrganization(UUID organizationId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {

@@ -9,6 +9,12 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Nota de observação no histórico de um ativo patrimonial — parte da trilha obrigatória de
+ * justificativa de uso (alocação/devolução), não uma anotação livre. Suporta remoção lógica
+ * (campos {@code removida}/{@code removidaEmUtc}/{@code removidaPorUsuarioId}) preservando o
+ * registro para auditoria.
+ */
 @Entity
 @Table(name = "observacoes_ativo_patrimonial", schema = "calendario")
 public class ObservacaoAtivoPatrimonialEntity extends BaseVersionedEntity {
@@ -22,6 +28,7 @@ public class ObservacaoAtivoPatrimonialEntity extends BaseVersionedEntity {
     @Column(name = "usuario_id", nullable = false)
     private UUID usuarioId;
 
+    /** Nome de {@link br.com.nsfatima.gestao.patrimonio.domain.model.TipoNotaAtivoPatrimonial}. */
     @Column(nullable = false, length = 64)
     private String tipo;
 

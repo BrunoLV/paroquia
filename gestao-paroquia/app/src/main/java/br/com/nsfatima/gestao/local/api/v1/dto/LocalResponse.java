@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
+/**
+ * Payload de saída representando um Local, incluindo o nome da organização (Matriz/Comunidade) já
+ * resolvido para exibição, quando o local estiver vinculado a uma.
+ */
 @Schema(description = "Dados de resposta de um Local")
 public record LocalResponse(
         @Schema(description = "Identificador único")

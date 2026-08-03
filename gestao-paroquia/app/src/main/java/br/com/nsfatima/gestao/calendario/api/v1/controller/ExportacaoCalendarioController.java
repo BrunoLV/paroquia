@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Expõe a exportação do calendário de eventos em formatos de arquivo (PDF, Excel, CSV) para apoiar
+ * a divulgação e o arquivamento externo da agenda paroquial, aplicando os mesmos filtros de período
+ * e organização usados na listagem de eventos.
+ */
 @RestController
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Exportação de Calendário", description = "Endpoints para exportar eventos do calendário")
@@ -25,6 +30,23 @@ public class ExportacaoCalendarioController {
         this.exportUseCase = exportUseCase;
     }
 
+    /**
+     * Gera e retorna o arquivo de exportação do calendário no formato solicitado, aplicando o filtro
+     * de período (ano, mês ou intervalo customizado) e, opcionalmente, restringindo por categorias e
+     * organizações responsáveis. O nome do arquivo é derivado da opção de filtragem para facilitar a
+     * identificação do conteúdo exportado.
+     *
+     * @param formato formato de saída: PDF, EXCEL ou CSV (case-insensitive)
+     * @param opcao modo de filtragem por período: ANO, MES ou PERIODO
+     * @param ano ano de referência, obrigatório quando {@code opcao} é ANO ou MES
+     * @param mes mês de referência (1-12), obrigatório quando {@code opcao} é MES
+     * @param dataInicio início do intervalo customizado, usado quando {@code opcao} é PERIODO
+     * @param dataFim fim do intervalo customizado, usado quando {@code opcao} é PERIODO
+     * @param categorias categorias de evento para restringir a exportação; se omitido, inclui todas
+     * @param organizacaoIds organizações responsáveis para restringir a exportação; se omitido, inclui todas
+     * @return o arquivo exportado com os cabeçalhos de content-type e content-disposition apropriados,
+     *     ou {@code 400 Bad Request} caso o formato informado não seja reconhecido
+     */
     @GetMapping("/exportar")
     @Operation(summary = "Exportar calendário", description = "Exporta os eventos do calendário nos formatos PDF, " +
             "Excel ou CSV com base em filtros de período.")

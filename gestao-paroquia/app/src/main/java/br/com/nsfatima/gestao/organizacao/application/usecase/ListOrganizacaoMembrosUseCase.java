@@ -12,6 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Lista os membros efetivos de uma organização, combinando os vínculos formais ({@code MembroOrganizacaoEntity})
+ * diretos da organização com os vínculos de pastorais/movimentos que a têm como igreja de contexto, e
+ * completando a lista com o coordenador/vice-coordenador definidos como texto livre na organização quando
+ * ainda não existir um vínculo formal correspondente — garantindo que o organograma sempre exiba a liderança
+ * mesmo antes de ela ser formalmente vinculada.
+ */
 @Service
 public class ListOrganizacaoMembrosUseCase {
 
@@ -29,6 +36,15 @@ public class ListOrganizacaoMembrosUseCase {
         this.organizacaoRepository = organizacaoRepository;
     }
 
+    /**
+     * Lista os membros efetivos da organização informada: vínculos formais diretos, vínculos de
+     * pastorais/movimentos que usam esta organização como igreja de contexto, e, como fallback, o
+     * coordenador/vice-coordenador registrados como texto livre quando ainda não houver vínculo formal com o
+     * mesmo nome.
+     *
+     * @param organizacaoId identificador da organização
+     * @return lista de membros efetivos da organização
+     */
     @Transactional(readOnly = true)
     public List<OrganizacaoMembroResponse> execute(UUID organizacaoId) {
         var vinculosBrutos =

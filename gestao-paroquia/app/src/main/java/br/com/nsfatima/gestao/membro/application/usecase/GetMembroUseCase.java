@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Recupera um vínculo usuário-organização (membro) pelo identificador, para consulta de detalhes.
+ */
 @Service
 public class GetMembroUseCase {
 
@@ -20,13 +23,14 @@ public class GetMembroUseCase {
         this.mapper = mapper;
     }
 
-    @Transactional(readOnly = true)
-    /*
-      Recupera as informações detalhadas de um membro pelo seu identificador único para fornecer dados de perfil e
-      histórico.
-      <p>
-      Exemplo: useCase.execute(membroId)
+    /**
+     * Busca o vínculo pelo identificador informado.
+     *
+     * @param id identificador do vínculo
+     * @return o vínculo encontrado, com dados de exibição resolvidos
+     * @throws IllegalArgumentException se não houver vínculo com o {@code id} informado
      */
+    @Transactional(readOnly = true)
     public MembroResponse execute(UUID id) {
         MembroEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro nao encontrado: " + id));

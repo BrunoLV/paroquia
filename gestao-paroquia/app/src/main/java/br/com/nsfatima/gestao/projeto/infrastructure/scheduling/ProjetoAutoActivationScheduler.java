@@ -14,6 +14,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Job agendado que automatiza a transição {@code ABERTO -> EM_ANDAMENTO} de projetos cuja data
+ * de início já foi atingida, evitando que projetos fiquem indefinidamente em {@code ABERTO}
+ * quando ninguém aciona {@code TransitionProjetoUseCase#iniciar} manualmente. Usa
+ * {@code JobLockJpaRepository} para garantir execução exclusiva entre instâncias da aplicação.
+ */
 @Component
 public class ProjetoAutoActivationScheduler {
 
@@ -30,6 +36,12 @@ public class ProjetoAutoActivationScheduler {
         this.lockRepository = lockRepository;
     }
 
+    /**
+     * Executa diariamente (00:00:01 UTC) e ativa (muda para {@code EM_ANDAMENTO}) todos os
+     * projetos {@code ABERTO} cuja data de início já foi atingida. Adquire um lock nomeado antes
+     * de rodar para evitar execução concorrente em múltiplas instâncias da aplicação; se o lock
+     * não puder ser adquirido, a execução é ignorada silenciosamente (apenas logada).
+     */
     @Scheduled(cron = "1 0 0 * * *", zone = "UTC")
     @Transactional
     public void activateProjects() {

@@ -8,6 +8,17 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * Utilitário estático de criptografia simétrica usado para cifrar/decifrar campos sensíveis (dados
+ * pessoais sujeitos à LGPD) antes de persistência, via os conversores JPA deste pacote
+ * ({@link EncryptedStringConverter}, {@link EncryptedLocalDateConverter}). Usa AES/CBC/PKCS5Padding
+ * com um IV (vetor de inicialização) aleatório gerado a cada chamada de {@link #encrypt(String)} e
+ * prefixado ao texto cifrado resultante — isso garante que o mesmo valor em claro produza
+ * ciframentos distintos a cada execução (proteção contra análise de padrões/ataques de dicionário
+ * sobre colunas cifradas), sem exigir armazenamento separado do IV. A chave configurada é sempre
+ * normalizada via SHA-256 antes de virar {@link SecretKeySpec}, garantindo o tamanho de 256 bits
+ * exigido pelo AES independentemente do tamanho da chave configurada em texto.
+ */
 public class CryptoUtils {
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
@@ -22,6 +33,16 @@ public class CryptoUtils {
     private CryptoUtils() {
     }
 
+    /**
+     * Define (ou redefine) a chave secreta usada por {@link #encrypt(String)} e
+     * {@link #decrypt(String)}, derivando-a via SHA-256 para obter uma chave AES de 256 bits a
+     * partir de qualquer chave configurada em texto. Chamadas com chave nula ou em branco são
+     * ignoradas silenciosamente, preservando a chave de fallback definida no bloco estático — isso
+     * evita que uma configuração ausente em ambiente de desenvolvimento derrube a aplicação.
+     *
+     * @param key chave secreta em texto (tipicamente vinda de configuração externa/variável de ambiente)
+     * @throws RuntimeException se o algoritmo de digest SHA-256 não estiver disponível na JVM
+     */
     public static void setSecretKey(String key) {
         try {
             if (key == null || key.isBlank()) {
@@ -36,6 +57,16 @@ public class CryptoUtils {
         }
     }
 
+    /**
+     * Cifra o valor informado com AES/CBC/PKCS5Padding, usando um IV aleatório novo a cada chamada.
+     * O IV gerado é concatenado antes dos bytes cifrados e o resultado combinado é codificado em
+     * Base64, de forma que o próprio valor de saída carregue tudo que {@link #decrypt(String)}
+     * precisa para reverter a operação, sem exigir uma coluna adicional para o IV.
+     *
+     * @param value valor em texto claro a ser cifrado; {@code null} é retornado como {@code null}
+     * @return valor cifrado codificado em Base64 (IV + texto cifrado), ou {@code null} se a entrada for nula
+     * @throws RuntimeException se ocorrer falha na operação de cifragem (chave inválida, algoritmo indisponível, etc.)
+     */
     public static String encrypt(String value) {
         if (value == null) {
             return null;
@@ -60,6 +91,14 @@ public class CryptoUtils {
         }
     }
 
+    /**
+     * Decifra um valor previamente cifrado por {@link #encrypt(String)}, extraindo o IV dos
+     * primeiros {@link #IV_SIZE} bytes do valor decodificado de Base64 antes de decifrar o restante.
+     *
+     * @param value valor cifrado codificado em Base64 (IV + texto cifrado); {@code null} é retornado como {@code null}
+     * @return valor original em texto claro, ou {@code null} se a entrada for nula
+     * @throws RuntimeException se o valor estiver corrompido, com tamanho inválido, ou se a chave/algoritmo não corresponderem
+     */
     public static String decrypt(String value) {
         if (value == null) {
             return null;

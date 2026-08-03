@@ -15,19 +15,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.stream.Collectors;
 
+/**
+ * Expõe o "quem sou eu" da sessão autenticada: identidade, papéis globais (roles) e vínculos organizacionais
+ * ativos do usuário logado. É a fonte que o frontend usa para decidir o que renderizar/permitir sem precisar
+ * reimplementar as regras de autorização já resolvidas pelo Spring Security no login.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Autenticação", description = "Endpoints para sessão e perfil do usuário logado")
 public class AuthController {
 
+    /**
+     * Retorna o perfil do usuário autenticado na requisição atual, incluindo authorities (roles globais e
+     * papéis por organização) e a lista de organizações às quais ele possui vínculo ativo.
+     * <p>
+     * Exemplo: GET /api/v1/auth/me -&gt; 200 OK { "id": "...", "username": "...", "enabled": true,
+     * "roles": ["ADMIN"], "organizations": [...] }
+     *
+     * @param userDetails principal injetado pelo Spring Security; {@code null} quando não há usuário autenticado
+     *                     (ex.: endpoint acessado anonimamente), caso em que o método retorna {@code null}
+     * @return o perfil completo do usuário logado, ou {@code null} se não houver sessão autenticada
+     */
     @GetMapping("/me")
     @Operation(summary = "Obtém o perfil do usuário logado")
-    /*
-      Identifica o usuário atualmente autenticado na sessão para fornecer dados de perfil e permissões.
-      <p>
-      Exemplo: GET /api/v1/auth/me -> 200 OK { "id": "...", "username": "...", "enabled": true, "roles": ["ADMIN"],
-      "organizations": [...] }
-     */
     public UsuarioResponse me(@AuthenticationPrincipal UsuarioDetails userDetails) {
         if (userDetails == null) {
             return null;

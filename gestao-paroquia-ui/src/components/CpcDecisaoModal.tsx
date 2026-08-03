@@ -23,6 +23,14 @@ interface CpcDecisaoModalProps {
   communities: Organizacao[];
 }
 
+/**
+ * Formulário de registro de ata/decisão do Conselho Pastoral (CPC/CPP). Este modal apenas cria
+ * a decisão em estado `PENDENTE_HOMOLOGACAO` — a decisão nasce sempre pendente e só se torna
+ * oficial/válida quando homologada por autoridade competente (Pároco, Admin ou Mesa do CPP).
+ * A homologação (aprovar -> HOMOLOGADO, ou vetar -> VETADO, exigindo motivo) é um passo
+ * separado, feito em outra tela/ação após a submissão daqui — este componente não decide o
+ * mérito da ata, só registra a proposta.
+ */
 export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
   open,
   onClose,
@@ -37,6 +45,8 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Todos os campos são obrigatórios para que a ata seja auditável quando submetida à
+    // homologação (comunidade de origem identifica o CPC/CPP responsável perante o Pároco).
     if (!titulo.trim() || !pautaDescricao.trim() || !dataReuniao || !comunidadeId) {
       return;
     }

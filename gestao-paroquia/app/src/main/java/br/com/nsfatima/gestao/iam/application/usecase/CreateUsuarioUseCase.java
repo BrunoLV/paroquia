@@ -8,6 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Cria uma conta de usuário pela via administrativa ({@code ROLE_ADMIN}, distinta do autocadastro público de
+ * {@code RegistrarUsuarioUseCase}). O usuário criado por este caminho já nasce habilitado
+ * ({@code enabled=true}) e sem papel/vínculo organizacional atribuído — quem cria decide depois os papéis e
+ * vínculos, se necessário.
+ */
 @Service
 public class CreateUsuarioUseCase {
 
@@ -19,12 +25,17 @@ public class CreateUsuarioUseCase {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
-    /*
-      Cria uma nova conta de usuário com senha criptografada para permitir o acesso seguro ao sistema.
-      <p>
-      Exemplo: useCase.execute("novo.usuario", "senhaForte")
+    /**
+     * Cria o usuário com a senha já criptografada, rejeitando duplicidade de username (case-insensitive).
+     * <p>
+     * Exemplo: useCase.execute("novo.usuario", "senhaForte")
+     *
+     * @param username    nome de usuário/login desejado; deve ser único ignorando maiúsculas/minúsculas
+     * @param rawPassword senha em texto puro, a ser criptografada antes da persistência
+     * @return o id gerado para o novo usuário
+     * @throws IllegalArgumentException se já existir usuário com o mesmo username (ignorando caixa)
      */
+    @Transactional
     public UUID execute(String username, String rawPassword) {
         if (usuarioRepository.findByUsernameIgnoreCase(username).isPresent()) {
             throw new IllegalArgumentException("Username ja existe: " + username);

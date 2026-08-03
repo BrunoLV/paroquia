@@ -12,6 +12,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Adaptação de {@code UsuarioEntity} para o contrato {@link UserDetails} do Spring Security, combinando os
+ * papéis globais do usuário (persistidos como string separada por vírgulas) com as authorities derivadas de
+ * cada vínculo organizacional ativo, num único conjunto de authorities sem duplicatas. É o principal
+ * (retornado por {@link UsuarioDetailsService}) que fica disponível via
+ * {@code @AuthenticationPrincipal} em toda a aplicação após o login.
+ */
 public class UsuarioDetails implements UserDetails {
 
     private final UUID usuarioId;
@@ -21,6 +28,19 @@ public class UsuarioDetails implements UserDetails {
     private final List<LeitorVinculoExterno.Vinculo> vinculos;
     private final List<GrantedAuthority> authorities;
 
+    /**
+     * Monta o conjunto final de authorities a partir de duas fontes: os papéis globais (string separada por
+     * vírgulas, cada um normalizado com prefixo {@code ROLE_} se ainda não tiver) e as authorities derivadas
+     * dos vínculos organizacionais ativos ({@link LeitorVinculoExterno.Vinculo#authority()}). Duplicatas
+     * entre as duas fontes são eliminadas.
+     *
+     * @param usuarioId identificador do usuário
+     * @param username  username/login
+     * @param password  hash da senha (nunca texto puro)
+     * @param enabled   se o usuário pode autenticar
+     * @param roles     papéis globais separados por vírgula, ou {@code null}/vazio se nenhum
+     * @param vinculos  vínculos organizacionais ativos do usuário, ou {@code null} tratado como lista vazia
+     */
     public UsuarioDetails(
             UUID usuarioId,
             String username,
@@ -58,10 +78,24 @@ public class UsuarioDetails implements UserDetails {
         return vinculos;
     }
 
+    /**
+     * Retorna o primeiro vínculo organizacional ativo do usuário, sem garantia de ordem específica além da
+     * ordenação já aplicada por {@link LeitorVinculoExterno#findVinculosAtivos}. Útil apenas quando o
+     * chamador sabe, pelo contexto de negócio, que o usuário deve ter no máximo um vínculo relevante.
+     *
+     * @return o primeiro vínculo ativo, se houver algum
+     */
     public Optional<LeitorVinculoExterno.Vinculo> vinculoPrimario() {
         return vinculos.stream().findFirst();
     }
 
+    /**
+     * Busca, entre os vínculos ativos do usuário, aquele referente a uma organização específica — usado
+     * para resolver o papel do usuário dentro do escopo de uma organização em particular.
+     *
+     * @param organizationId organização de interesse
+     * @return o vínculo do usuário com essa organização, se existir
+     */
     public Optional<LeitorVinculoExterno.Vinculo> findVinculoPorOrganizacao(UUID organizationId) {
         return vinculos.stream()
                 .filter(vinculo -> organizationId != null && organizationId.equals(vinculo.organizationId()))

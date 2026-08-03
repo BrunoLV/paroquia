@@ -22,6 +22,18 @@ interface EditScopeDialogProps {
   onSelect: (scope: EditScope) => void;
 }
 
+/**
+ * Um evento recorrente não existe como várias cópias independentes no backend: ele é uma única
+ * regra de recorrência (`RecorrenciaEntity`/`RegraRecorrencia`) que gera as ocorrências
+ * exibidas na agenda. Por isso, ao editar uma ocorrência, é preciso perguntar ao usuário até
+ * onde a alteração deve se propagar:
+ * - `ONLY_THIS`: destaca essa ocorrência da regra (vira uma exceção pontual), sem afetar as
+ *   demais nem a regra original.
+ * - `THIS_AND_FOLLOWING`: divide a série a partir desta ocorrência, aplicando a mudança nela e
+ *   em todas as futuras, preservando as ocorrências passadas como estavam.
+ * - `EDIT_ALL`: atualiza a regra de recorrência original por completo, afetando passado e
+ *   futuro da série.
+ */
 const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSelect }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>

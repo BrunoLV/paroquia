@@ -32,6 +32,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Expõe a API REST de gestão de organizações da paróquia (Matriz, Comunidades, Pastorais, Movimentos,
+ * Conselhos, Clero), incluindo consulta do organograma e dos membros de cada organização. Ao criar ou
+ * atualizar uma organização, sincroniza automaticamente os vínculos formais de coordenador/vice-coordenador
+ * com base no nome/username informado em texto livre, via {@link AdicionarVinculoUseCase}.
+ */
 @RestController
 @RequestMapping("/api/v1/organizacoes")
 @Tag(name = "Organizations", description = "Management of parish organizations (Pastorals, Movements, etc.)")
@@ -56,6 +62,13 @@ public class OrganizacaoController {
         this.usuarioRepository = usuarioRepository;
     }
 
+    /**
+     * Cria uma nova organização e sincroniza os vínculos de coordenador/vice-coordenador informados em texto
+     * livre na requisição.
+     *
+     * @param request dados da organização a criar
+     * @return a organização criada
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
@@ -74,6 +87,14 @@ public class OrganizacaoController {
         return toResponse(org);
     }
 
+    /**
+     * Atualiza uma organização existente e ressincroniza os vínculos de coordenador/vice-coordenador com os
+     * novos valores informados.
+     *
+     * @param id identificador da organização a atualizar
+     * @param request novos dados da organização
+     * @return a organização atualizada
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing organization", description = "Only administrators can update " +
@@ -159,29 +180,30 @@ public class OrganizacaoController {
         return null;
     }
 
+    /**
+     * Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências
+     * ativas (membros ou eventos) que impeçam a exclusão segura.
+     *
+     * @param id identificador da organização a excluir
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. " +
             "Cannot delete organizations with active dependencies.")
-    /*
-      Remove o registro de uma organização do sistema, garantindo que não existam vínculos ou dependências ativas
-      que impeçam a exclusão segura.
-      <p>
-      Exemplo: DELETE /api/v1/organizacoes/{id}
-     */
     public void delete(@PathVariable UUID id) {
         organizacaoService.deleteOrganization(id);
     }
 
+    /**
+     * Recupera os dados detalhados de uma organização específica para consulta, exibição de perfil ou
+     * preparação de edições.
+     *
+     * @param id identificador da organização
+     * @return a organização encontrada com status 200, ou 404 se não existir
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get organization details")
-    /*
-      Recupera os dados detalhados de uma organização específica para consulta, exibição de perfil ou preparação de
-      edições.
-      <p>
-      Exemplo: GET /api/v1/organizacoes/{id}
-     */
     public ResponseEntity<OrganizacaoResponse> get(@PathVariable UUID id) {
         return organizacaoService.getOrganization(id)
                 .map(this::toResponse)
@@ -189,26 +211,38 @@ public class OrganizacaoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Fornece uma listagem de todas as organizações cadastradas, permitindo a navegação, seleção e visão
+     * geral das entidades paroquiais.
+     *
+     * @return lista de todas as organizações cadastradas
+     */
     @GetMapping
     @Operation(summary = "List all organizations")
-    /*
-      Fornece uma listagem de todas as organizações cadastradas, permitindo a navegação, seleção e visão geral das
-      entidades paroquiais.
-      <p>
-      Exemplo: GET /api/v1/organizacoes
-     */
     public List<OrganizacaoResponse> list() {
         return organizacaoService.listOrganizations().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Lista os membros efetivos da organização informada, incluindo os vínculos formais e o
+     * coordenador/vice-coordenador registrados em texto livre.
+     *
+     * @param id identificador da organização
+     * @return lista de membros efetivos da organização
+     */
     @GetMapping("/{id}/membros")
     @Operation(summary = "Lista os membros de uma organização")
     public List<OrganizacaoMembroResponse> listMembros(@PathVariable UUID id) {
         return listOrganizacaoMembrosUseCase.execute(id);
     }
 
+    /**
+     * Obtém a árvore completa do organograma paroquial, partindo da organização raiz do clero.
+     *
+     * @return o nó raiz da árvore do organograma
+     */
     @GetMapping("/organograma")
     @Operation(summary = "Obtém a árvore do organograma paroquial")
     public OrganogramaNodeResponse getOrganograma() {

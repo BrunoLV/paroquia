@@ -32,6 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Expõe os endpoints REST de gestão de vínculos usuário-organização (membros) e de suas participações
+ * adicionais em outras organizações. Todas as operações exigem papel {@code ADMIN} e as mutações resolvem o
+ * ator autenticado via {@link EventoActorContextResolver} para fins de auditoria.
+ */
 @RestController
 @RequestMapping("/api/v1/membros")
 @Tag(name = "Membros", description = "Endpoints para gestão de fiéis e paroquianos")
@@ -62,30 +67,37 @@ public class MembroController {
         this.actorContextResolver = actorContextResolver;
     }
 
+    /**
+     * Cria o vínculo de um usuário a uma organização com o papel informado. Se o papel for
+     * {@code COORDENADOR} ou {@code VICE_COORDENADOR}, sincroniza automaticamente o campo de liderança
+     * correspondente na organização.
+     *
+     * @param request dados do vínculo a ser criado
+     * @return o vínculo criado, já com os dados de exibição do usuário/organização resolvidos
+     * @throws IllegalArgumentException se usuário/organização não existirem ou já houver vínculo ativo entre eles
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cadastra um novo membro")
-    /*
-      Registra um novo fiel ou paroquiano no sistema para permitir o acompanhamento de sua vida sacramental e
-      participação na comunidade.
-      <p>
-      Exemplo: POST /api/v1/membros { "nomeCompleto": "Maria Oliveira", "email": "maria@example.com", ... }
-     */
     public MembroResponse create(@RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
         return createMembroUseCase.execute(request, context.actor());
     }
 
+    /**
+     * Lista vínculos usuário-organização, aplicando filtros opcionais por organização, usuário e situação
+     * (ativo/inativo).
+     *
+     * @param organizacaoId filtro por organização, ou {@code null} para não filtrar
+     * @param usuarioId     filtro por usuário, ou {@code null} para não filtrar
+     * @param ativo         filtro por situação do vínculo, ou {@code null} para não filtrar
+     * @param pageable      paginação/ordenação solicitada
+     * @return página de vínculos que atendem aos filtros informados
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista membros com filtros e paginação")
-    /*
-      Recupera uma lista paginada de membros, permitindo a aplicação de filtros por nome e status para facilitar a
-      gestão do cadastro.
-      <p>
-      Exemplo: GET /api/v1/membros?nome=Maria&ativo=true&page=0&size=20
-     */
     public Page<MembroResponse> list(
             @RequestParam(required = false) UUID organizacaoId,
             @RequestParam(required = false) UUID usuarioId,
@@ -95,28 +107,34 @@ public class MembroController {
     }
 
 
+    /**
+     * Busca um vínculo usuário-organização pelo identificador.
+     *
+     * @param id identificador do vínculo
+     * @return o vínculo encontrado, com dados de exibição resolvidos
+     * @throws IllegalArgumentException se não houver vínculo com o {@code id} informado
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtém detalhes de um membro")
-    /*
-      Busca as informações completas de um membro específico para consulta detalhada ou preparação de atualização de
-      dados.
-      <p>
-      Exemplo: GET /api/v1/membros/{id}
-     */
     public MembroResponse get(@PathVariable UUID id) {
         return getMembroUseCase.execute(id);
     }
 
+    /**
+     * Atualiza os dados de um vínculo usuário-organização existente. Repete a validação de unicidade de vínculo
+     * ativo (impede associar o novo usuário/organização a outro vínculo já ativo diferente do que está sendo
+     * editado) e ressincroniza o campo de liderança da organização quando o papel for de coordenação.
+     *
+     * @param id      identificador do vínculo a atualizar
+     * @param request novos dados do vínculo
+     * @return o vínculo atualizado
+     * @throws IllegalArgumentException se o vínculo, usuário ou organização não existirem, ou se o
+     *                                   usuário/organização já tiver outro vínculo ativo
+     */
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualiza dados de um membro")
-    /*
-      Atualiza as informações cadastrais de um membro para manter o histórico sacramental e dados de contato
-      fidedignos.
-      <p>
-      Exemplo: PATCH /api/v1/membros/{id} { "telefone": "(11) 99999-9999", "endereco": "Nova Rua, 123" }
-     */
     public MembroResponse update(
             @PathVariable UUID id,
             @RequestBody @Valid MembroRequest request) {
@@ -124,16 +142,17 @@ public class MembroController {
         return updateMembroUseCase.execute(id, request, context.actor());
     }
 
+    /**
+     * Ativa ou desativa um vínculo usuário-organização, sem alterar os demais dados cadastrais.
+     *
+     * @param id    identificador do vínculo
+     * @param ativo novo estado desejado ({@code true} para ativar, {@code false} para desativar)
+     * @throws IllegalArgumentException se não houver vínculo com o {@code id} informado
+     */
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Ativa ou desativa um membro")
-    /*
-      Altera a situação de atividade de um membro no sistema para refletir sua condição atual de participação na
-      paróquia.
-      <p>
-      Exemplo: PATCH /api/v1/membros/{id}/status?ativo=false
-     */
     public void toggleStatus(
             @PathVariable UUID id,
             @RequestParam boolean ativo) {
@@ -141,29 +160,34 @@ public class MembroController {
         updateMembroUseCase.toggleAtivo(id, ativo, context.actor());
     }
 
+    /**
+     * Lista as participações ativas do membro (identificado pelo vínculo usuário-organização) em organizações
+     * adicionais, para entender seu engajamento em pastorais/movimentos além do vínculo principal.
+     *
+     * @param id identificador do vínculo (membro)
+     * @return participações ativas encontradas; lista vazia se não houver nenhuma
+     */
     @GetMapping("/{id}/organizacoes")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista organizações que o membro participa")
-    /*
-      Lista as pastorais, movimentos ou grupos aos quais o membro está vinculado para entender seu engajamento e
-      responsabilidades.
-      <p>
-      Exemplo: GET /api/v1/membros/{id}/organizacoes
-     */
     public List<ParticipacaoResponse> listOrganizacoes(@PathVariable UUID id) {
         return listParticipacoesUseCase.execute(id);
     }
 
+    /**
+     * Inscreve o membro (vínculo usuário-organização) em uma organização adicional, desde que ele possua
+     * usuário cadastrado e ainda não participe ativamente daquela organização.
+     *
+     * @param id      identificador do vínculo (membro) a inscrever
+     * @param request organização de destino e data de início da participação
+     * @return a participação criada
+     * @throws IllegalArgumentException se o membro não existir, não possuir usuário associado, ou já
+     *                                   participar ativamente da organização informada
+     */
     @PostMapping("/{id}/organizacoes")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Inscreve um membro em uma organização")
-    /*
-      Vincula um membro a uma organização específica, registrando formalmente o início de sua participação ativa
-      naquele grupo.
-      <p>
-      Exemplo: POST /api/v1/membros/{id}/organizacoes { "organizacaoId": "...", "dataInicio": "2023-01-01" }
-     */
     public ParticipacaoResponse addOrganizacao(
             @PathVariable UUID id,
             @RequestBody @Valid ParticipacaoRequest request) {

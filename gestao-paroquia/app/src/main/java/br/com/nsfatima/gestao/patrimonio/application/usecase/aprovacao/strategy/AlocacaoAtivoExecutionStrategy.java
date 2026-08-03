@@ -20,6 +20,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+/**
+ * Plugin do fluxo genérico de aprovação (`EstrategiaExecucaoAprovacao`) para o tipo de solicitação
+ * {@code ALOCACAO_ATIVO_EMPRESTIMO}: efetiva o empréstimo de ativo patrimonial entre organizações
+ * quando aprovado, cancela a ocupação pendente quando rejeitado, e restringe quem pode decidir ao
+ * coordenador de conselho da organização dona do ativo ou ao pároco/admin.
+ */
 @Component
 public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
@@ -38,11 +44,28 @@ public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovac
         this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
     }
 
+    /**
+     * Indica que esta estratégia trata apenas solicitações de empréstimo de ativo patrimonial.
+     *
+     * @param tipo tipo de solicitação da aprovação
+     * @return {@code true} somente para {@code ALOCACAO_ATIVO_EMPRESTIMO}
+     */
     @Override
     public boolean supports(TipoSolicitacaoInput tipo) {
         return tipo == TipoSolicitacaoInput.ALOCACAO_ATIVO_EMPRESTIMO;
     }
 
+    /**
+     * Executa a aprovação de um empréstimo: valida que o ator decisor tem autoridade sobre a
+     * organização dona do ativo e delega a efetivação da alocação ao caso de uso de alocação.
+     *
+     * @param aprovacao   solicitação de aprovação já aceita, com o payload da ação
+     * @param actorContext contexto do ator que decide a aprovação
+     * @return resultado da execução, com o id/status do ativo já alocado
+     * @throws AtivoPatrimonialNotFoundException se o ativo referenciado no payload não existir
+     * @throws ForbiddenOperationException       se o ator não tiver autoridade sobre a organização
+     *                                            dona do ativo
+     */
     @Override
     public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
@@ -60,6 +83,14 @@ public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovac
                 "EXECUTED", response.id(), response.status().name(), null);
     }
 
+    /**
+     * Consulta o status corrente do ativo referenciado pela aprovação, usado para exibir o estado
+     * atualizado do recurso mesmo depois de decidida a solicitação.
+     *
+     * @param aprovacao solicitação de aprovação
+     * @return o nome do status do ativo, ou {@code null} se o payload não referenciar um ativo ou
+     *     o ativo não existir mais
+     */
     @Override
     public String fetchResourceStatus(AprovacaoEntity aprovacao) {
         AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
@@ -71,6 +102,13 @@ public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovac
                 .orElse(null);
     }
 
+    /**
+     * Reverte a ocupação pendente quando a solicitação de empréstimo é rejeitada, marcando-a como
+     * {@code CANCELADA} para liberar o ativo (só age se a ocupação ainda estiver
+     * {@code PENDENTE_APROVACAO}, evitando sobrescrever um estado já avançado por outro caminho).
+     *
+     * @param aprovacao solicitação de aprovação rejeitada
+     */
     @Override
     public void onRejected(AprovacaoEntity aprovacao) {
         alocacaoRepository.findByAprovacaoId(aprovacao.getId())

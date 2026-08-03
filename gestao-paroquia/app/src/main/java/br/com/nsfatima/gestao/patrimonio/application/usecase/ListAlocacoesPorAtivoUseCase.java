@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Lista o histórico completo de ocupações (alocações a eventos e períodos de manutenção) de um
+ * ativo patrimonial, ordenado da mais recente para a mais antiga.
+ */
 @Service
 public class ListAlocacoesPorAtivoUseCase {
 
@@ -24,6 +28,13 @@ public class ListAlocacoesPorAtivoUseCase {
         this.ativoRepository = ativoRepository;
     }
 
+    /**
+     * Retorna todas as ocupações registradas para o ativo, da mais recente para a mais antiga.
+     *
+     * @param ativoId ativo consultado
+     * @return histórico de ocupações do ativo
+     * @throws AtivoPatrimonialNotFoundException se o ativo não existir
+     */
     @Transactional(readOnly = true)
     public List<AtivoAlocacaoResponse> execute(UUID ativoId) {
         AtivoPatrimonialEntity ativo = ativoRepository.findById(ativoId)

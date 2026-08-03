@@ -29,6 +29,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Expõe a governança do Ano Paroquial: consulta do histórico/estado de anos e a transição controlada de status
+ * ({@code EM_PLANEJAMENTO} -&gt; {@code FECHADO} -&gt; {@code CONCLUIDO}) que trava ou libera o planejamento anual do
+ * calendário para a Matriz e as Comunidades. Apenas o Pároco/Admin ou coordenadores do Conselho podem acionar
+ * transições de status (ver {@link AnoParoquialAuthorizationService}); ao concluir um ano, delega ao
+ * {@link AnoParoquialRolloverService} o provisionamento automático do ano seguinte.
+ */
 @RestController
 @RequestMapping("/api/v1/anos-paroquiais")
 @Tag(name = "Gestão de Ano Paroquial", description = "Endpoints para controlar a trava do calendário anual")

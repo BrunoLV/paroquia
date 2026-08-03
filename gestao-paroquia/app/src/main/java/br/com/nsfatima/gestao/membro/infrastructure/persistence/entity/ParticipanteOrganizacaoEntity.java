@@ -9,6 +9,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Registra o período de participação de um {@code MembroEntity} (vínculo usuário-organização) em uma
+ * {@code Organizacao} adicional, distinta daquela para a qual o vínculo original foi criado — permite rastrear
+ * que uma pessoa participa de mais de uma pastoral/movimento simultaneamente. Uma participação {@code ativa}
+ * (sem {@code dataFim}) impede nova inscrição duplicada na mesma organização (ver
+ * {@link br.com.nsfatima.gestao.membro.application.usecase.AddParticipanteUseCase}).
+ */
 @Entity
 @Table(name = "membros_organizacoes", schema = "calendario")
 public class ParticipanteOrganizacaoEntity extends BaseVersionedEntity {

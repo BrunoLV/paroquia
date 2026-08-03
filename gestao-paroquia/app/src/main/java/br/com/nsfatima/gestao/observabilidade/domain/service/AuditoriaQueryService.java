@@ -13,6 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Serviço de leitura da trilha de auditoria: expõe os registros persistidos por
+ * {@link AuditoriaPersistenceService} em formato pronto para apresentação (API de trilha de
+ * auditoria/dashboard), traduzindo o JSON opaco de detalhes de volta para um mapa estruturado.
+ * Somente leitura — não participa da decisão de o que é auditável, apenas consulta o que já foi
+ * gravado.
+ */
 @Service
 public class AuditoriaQueryService {
 
@@ -29,6 +36,21 @@ public class AuditoriaQueryService {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Busca a trilha de auditoria de uma organização em um intervalo de tempo, com filtros
+     * opcionais por ator, ação, resultado e correlationId (todos ignorados quando nulos — ver
+     * a query em {@link AuditoriaOperacaoJpaRepository#findForTrail}). Ordenado cronologicamente
+     * para permitir reconstrução sequencial dos eventos de negócio.
+     *
+     * @param organizacaoId organização cujo histórico será consultado
+     * @param inicio limite inferior (inclusivo) do intervalo, em UTC
+     * @param fim limite superior (exclusivo) do intervalo, em UTC
+     * @param ator filtro opcional por ator; {@code null} não filtra
+     * @param acao filtro opcional por ação (case-insensitive); {@code null} não filtra
+     * @param resultado filtro opcional por resultado (case-insensitive); {@code null} não filtra
+     * @param correlationId filtro opcional para agrupar registros da mesma requisição/lote
+     * @return itens da trilha de auditoria, com o JSON de detalhes já desserializado
+     */
     @Transactional(readOnly = true)
     public List<AuditoriaOperacaoResponse.RegistroAuditavelItem> findAuditTrail(
             UUID organizacaoId,

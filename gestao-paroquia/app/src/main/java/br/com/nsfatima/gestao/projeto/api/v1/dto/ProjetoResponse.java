@@ -6,6 +6,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Representação de um projeto paroquial retornada pela API, incluindo o status atual do ciclo
+ * de vida ({@code ProjetoStatus}) e um marcador {@code updated} indicando se a resposta se
+ * refere a uma operação de atualização/transição.
+ */
 @Schema(description = "Dados de um projeto paroquial")
 public record ProjetoResponse(
         @Schema(description = "ID único do projeto")

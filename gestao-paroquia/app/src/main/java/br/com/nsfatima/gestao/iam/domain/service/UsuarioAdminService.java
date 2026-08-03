@@ -11,6 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Executa as ações administrativas sensíveis sobre contas de usuário (ativar/desativar, redefinir senha,
+ * alterar papéis globais), reaplicando a checagem de autorização de escopo (admin global ou coordenador da
+ * organização do usuário-alvo, via {@link UsuarioAuthorizationService}) independentemente do que o
+ * controller já validou, e registrando cada ação na trilha de auditoria
+ * ({@link AuditoriaPersistenceService}) para rastreabilidade de quem alterou o quê.
+ */
 @Service
 @Transactional
 public class UsuarioAdminService {
@@ -39,6 +46,16 @@ public class UsuarioAdminService {
         this.authorizationService = authorizationService;
     }
 
+    /**
+     * Ativa ou desativa o acesso de um usuário, registrando a ação na auditoria. Usuário desativado não
+     * consegue mais autenticar, mesmo com credenciais válidas.
+     *
+     * @param id      identificador do usuário alvo
+     * @param enabled novo estado de habilitação
+     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
+     *                                                                    coordenador de uma organização do usuário-alvo
+     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException se o usuário não existir
+     */
     @Transactional
     public void toggleActiveStatus(UUID id, boolean enabled) {
         authorizationService.requireAdminOrCoordinatorOf(id);
@@ -56,6 +73,16 @@ public class UsuarioAdminService {
         ));
     }
 
+    /**
+     * Redefine administrativamente a senha de um usuário (sem exigir a senha atual), registrando a ação na
+     * auditoria. Usado quando o usuário perdeu acesso à conta ou por política de segurança.
+     *
+     * @param id             identificador do usuário alvo
+     * @param newRawPassword nova senha em texto puro, criptografada antes da persistência
+     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
+     *                                                                    coordenador de uma organização do usuário-alvo
+     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException se o usuário não existir
+     */
     @Transactional
     public void resetPassword(UUID id, String newRawPassword) {
         authorizationService.requireAdminOrCoordinatorOf(id);
@@ -73,6 +100,17 @@ public class UsuarioAdminService {
         ));
     }
 
+    /**
+     * Substitui integralmente os papéis (roles) globais de um usuário, registrando a ação e o novo conjunto
+     * de papéis na auditoria. Papéis globais valem no sistema inteiro, diferente de papéis por vínculo
+     * organizacional.
+     *
+     * @param id    identificador do usuário alvo
+     * @param roles nova string de papéis separados por vírgula, que substitui os papéis globais atuais
+     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
+     *                                                                    coordenador de uma organização do usuário-alvo
+     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException se o usuário não existir
+     */
     @Transactional
     public void updateGlobalRoles(UUID id, String roles) {
         authorizationService.requireAdminOrCoordinatorOf(id);

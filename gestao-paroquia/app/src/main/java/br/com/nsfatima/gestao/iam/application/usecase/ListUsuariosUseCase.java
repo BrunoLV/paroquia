@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Lista todos os usuários cadastrados no sistema para fins de auditoria e gestão administrativa global
+ * (endpoint restrito a admin/clero pároco/coordenador de conselho). Resolve o nome de exibição da
+ * igreja/comunidade de cada usuário, mas não carrega seus vínculos organizacionais individuais — para não
+ * pagar o custo de N+1 consultas ao listar todos os usuários.
+ */
 @Service
 public class ListUsuariosUseCase {
 
@@ -25,6 +31,12 @@ public class ListUsuariosUseCase {
         this.organizacaoRepository = organizacaoRepository;
     }
 
+    /**
+     * Retorna todos os usuários com seus dados cadastrais e papéis globais convertidos a partir da string
+     * persistida, sem os vínculos organizacionais (sempre {@code List.of()} na resposta).
+     *
+     * @return lista de todos os usuários cadastrados
+     */
     @Transactional(readOnly = true)
     public List<UsuarioResponse> execute() {
         return usuarioRepository.findAll().stream()

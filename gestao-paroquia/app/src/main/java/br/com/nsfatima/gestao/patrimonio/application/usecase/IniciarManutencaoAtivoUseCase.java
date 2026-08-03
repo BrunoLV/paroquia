@@ -22,6 +22,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Registra um período de manutenção para um ativo patrimonial, checando conflito com outras
+ * ocupações já agendadas. O status do ativo só é imediatamente alterado para
+ * {@code EM_MANUTENCAO} quando o período já começou (data de início não futura); manutenções
+ * agendadas para o futuro ficam apenas reservadas, mantendo o ativo disponível até lá.
+ */
 @Service
 public class IniciarManutencaoAtivoUseCase {
 
@@ -43,6 +49,17 @@ public class IniciarManutencaoAtivoUseCase {
         this.authorizationService = authorizationService;
     }
 
+    /**
+     * Cria uma ocupação de manutenção para o período informado, validando que o ativo não está
+     * baixado, que o período é consistente e que não conflita com outra ocupação já registrada.
+     *
+     * @param ativoId ativo a colocar em manutenção
+     * @param request período e motivo da manutenção
+     * @return o ativo, com status {@code EM_MANUTENCAO} se o período já começou, ou inalterado se
+     *     a manutenção for apenas uma reserva futura
+     * @throws AtivoPatrimonialNotFoundException se o ativo não existir
+     * @throws AtivoManutencaoInvalidaException  se o ativo estiver baixado ou o período for inválido
+     */
     @Transactional
     public AtivoPatrimonialResponse execute(UUID ativoId, IniciarManutencaoRequest request) {
         AtivoPatrimonialEntity ativo = ativoRepository.findById(ativoId)

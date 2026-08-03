@@ -10,6 +10,12 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Orga
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Component;
 
+/**
+ * Converte entidades do contexto {@code membro} em DTOs de resposta, enriquecendo o vínculo usuário-organização
+ * com dados de exibição (nome/e-mail/telefone do usuário, nome da organização) obtidos por consulta direta aos
+ * contextos {@code iam} e {@code organizacao} — necessário porque {@code MembroEntity} guarda apenas os IDs, sem
+ * duplicar dados de outros agregados.
+ */
 @Component
 public class MembroMapper {
 
@@ -21,6 +27,14 @@ public class MembroMapper {
         this.organizacaoRepository = organizacaoRepository;
     }
 
+    /**
+     * Converte o vínculo usuário-organização em DTO de resposta, resolvendo os dados de exibição do usuário e da
+     * organização vinculados. IDs de usuário/organização que não existem mais (registro órfão) resultam em campos
+     * de nome/e-mail/telefone {@code null}, sem lançar exceção.
+     *
+     * @param entity vínculo persistido, ou {@code null}
+     * @return DTO de resposta enriquecido, ou {@code null} se {@code entity} for {@code null}
+     */
     public MembroResponse toResponse(MembroEntity entity) {
         if (entity == null) {
             return null;
@@ -62,6 +76,12 @@ public class MembroMapper {
         );
     }
 
+    /**
+     * Converte um registro de participação em DTO de resposta.
+     *
+     * @param entity participação persistida, ou {@code null}
+     * @return DTO de resposta, ou {@code null} se {@code entity} for {@code null}
+     */
     public ParticipacaoResponse toParticipacaoResponse(ParticipanteOrganizacaoEntity entity) {
         if (entity == null) {
             return null;

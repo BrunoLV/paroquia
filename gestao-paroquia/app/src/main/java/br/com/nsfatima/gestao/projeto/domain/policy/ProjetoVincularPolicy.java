@@ -12,6 +12,21 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Política de domínio que valida se um evento (único ou recorrente) pode ser vinculado a um
+ * {@code Projeto}. Regras de vínculo:
+ * <ol>
+ *     <li>Projetos em estado terminal ({@code CANCELADO} ou {@code CONCLUIDO}) nunca aceitam
+ *     novos vínculos.</li>
+ *     <li>Se o projeto não tiver período definido ({@code inicioUtc}/{@code fimUtc} nulos), a
+ *     validação de limites de data é dispensada.</li>
+ *     <li>Para evento único, o intervalo do evento deve estar contido no intervalo do
+ *     projeto.</li>
+ *     <li>Para série recorrente, a regra de recorrência precisa ter data limite ou número de
+ *     ocorrências definido, e a última ocorrência (calculada ou pela data limite) não pode
+ *     ultrapassar o fim do projeto.</li>
+ * </ol>
+ */
 @Service
 public class ProjetoVincularPolicy {
 

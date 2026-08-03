@@ -19,7 +19,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Job that runs on January 1st to generate EventoEntity instances for all recurring rules.
+ * Job agendado que roda todo dia 1º de janeiro para materializar, a partir das regras de
+ * recorrência já cadastradas ({@link EventoRecorrenciaEntity}), as instâncias de
+ * {@link EventoEntity} correspondentes às ocorrências do evento recorrente ao longo do ano
+ * corrente. Eventos recorrentes precisam ter suas ocorrências futuras materializadas
+ * antecipadamente (em vez de calculadas sob demanda) para que consultas de agenda, conflitos de
+ * horário e o fluxo de aprovação operem sobre instâncias concretas de evento como qualquer outro
+ * evento do calendário. Usa um lock distribuído ({@code JobLockJpaRepository}) para evitar
+ * execução concorrente por múltiplas instâncias da aplicação.
  */
 @Component
 public class GeradorRecorrenciaAnualJob {
@@ -40,7 +47,11 @@ public class GeradorRecorrenciaAnualJob {
     }
 
     /**
-     * Executes the generation for the current year. Runs on Jan 1st at 01:00 AM.
+     * Executa a geração de ocorrências para o ano corrente. Agendado para rodar todo 1º de
+     * janeiro à 01:00. Adquire um lock distribuído antes de executar para evitar processamento
+     * duplicado caso mais de uma instância da aplicação esteja rodando; se o lock não puder ser
+     * adquirido (já em execução em outra instância), a execução é ignorada silenciosamente. O
+     * lock é sempre liberado ao final, mesmo em caso de falha.
      */
     @Scheduled(cron = "0 0 1 1 1 *")
     @Transactional
@@ -60,10 +71,13 @@ public class GeradorRecorrenciaAnualJob {
     }
 
     /**
-     * Generates instances for a specific year.
-     * <p>
-     * Usage Example:
-     * job.executeForYear(2026);
+     * Gera as instâncias de evento recorrente para um ano específico, percorrendo todas as regras
+     * de recorrência cadastradas e materializando, para cada uma, as datas de ocorrência que caem
+     * dentro do ano informado.
+     *
+     * <p>Exemplo de uso: {@code job.executeForYear(2026);}
+     *
+     * @param year ano para o qual as ocorrências recorrentes devem ser geradas
      */
     @Transactional
     public void executeForYear(int year) {

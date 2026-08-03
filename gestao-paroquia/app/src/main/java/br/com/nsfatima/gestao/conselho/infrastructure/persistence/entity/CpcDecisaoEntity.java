@@ -13,6 +13,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Entidade JPA de uma ata/decisão de conselho paroquial (CPC/CPP). Persiste tanto a proposta
+ * inicial (solicitante, pauta, reunião) quanto o resultado da homologação (homologador, motivo
+ * de veto, data da decisão) na mesma linha — {@code homologadorId}, {@code motivoVeto} e
+ * {@code decididoEmUtc} permanecem nulos enquanto {@code statusHomologacao} for
+ * {@code PENDENTE_HOMOLOGACAO}.
+ */
 @Entity
 @Table(name = "cpc_decisoes", schema = "calendario")
 public class CpcDecisaoEntity extends BaseVersionedEntity {

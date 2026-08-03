@@ -6,6 +6,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Filtros combináveis para a consulta da trilha de auditoria de operações sobre o calendário.
+ * Apenas {@code organizacaoId} é obrigatório; os demais campos, quando omitidos, não restringem
+ * a consulta.
+ */
 @Schema(description = "Filtros para consulta da trilha de auditoria")
 public record AuditoriaFiltroRequest(
         @Schema(description = "ID da organização", requiredMode = Schema.RequiredMode.REQUIRED)

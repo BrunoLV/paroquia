@@ -14,6 +14,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Ponto de integração do Spring Security com a base de usuários: localiza a conta pelo username (via SQL
+ * nativo, não JPA, para não acoplar a autenticação ao ciclo de vida de entidades) e monta o
+ * {@link UsuarioDetails} completo, já enriquecido com os vínculos organizacionais ativos resolvidos por
+ * {@link LeitorVinculoExterno}. Chamado automaticamente pelo Spring Security a cada tentativa de login.
+ */
 @Service
 public class UsuarioDetailsService implements UserDetailsService {
 
@@ -25,6 +31,18 @@ public class UsuarioDetailsService implements UserDetailsService {
         this.externalVinculoReader = externalVinculoReader;
     }
 
+    /**
+     * Busca o usuário pelo username (case-insensitive) e monta seu {@link UserDetails} com papéis globais e
+     * authorities de vínculos organizacionais já resolvidos. Erros de acesso a dados são traduzidos para
+     * {@link AuthenticationServiceException} para não vazar detalhes de infraestrutura no fluxo de
+     * autenticação.
+     *
+     * @param username username informado no login, comparado ignorando maiúsculas/minúsculas
+     * @return os detalhes completos do usuário autenticável
+     * @throws UsernameNotFoundException      se não existir usuário com esse username
+     * @throws AuthenticationServiceException se a consulta ao banco falhar (indisponibilidade da fonte de
+     *                                         dados de autenticação/autorização)
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

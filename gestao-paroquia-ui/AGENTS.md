@@ -27,9 +27,10 @@
 - **Stack de Framework:** Adira estritamente à stack principal do framework do projeto: **Vite** como empacotador/servidor de desenvolvimento, **React 19**, **Material UI (MUI 9)** para o sistema de design/componentes, **Axios** para execução do cliente HTTP e **TanStack React Query (v5)** para cache de estado do servidor.
 
 ## Arquitetura de Documentação
-- **Documentação de API & Query:** Cada custom hook que encapsula um TanStack Query (`useQuery` / `useMutation`) deve incluir JSDoc detalhando o contrato de rede, estratégia de invalidação de query key e o formato de dados esperado.
+- **Documentação de API & Query:** Cada custom hook que encapsula um TanStack Query (`useQuery` / `useMutation`) deve incluir JSDoc detalhando o contrato de rede, estratégia de invalidação de query key e o formato de dados esperado. Todos os módulos de `src/api/` já têm essa documentação (auditoria concluída) — siga o mesmo padrão em qualquer módulo/hook novo.
 - **JSDoc de Componentes:** Primitivos de UI reaproveitáveis públicos e componentes estruturais complexos devem ter um bloco Javadoc/JSDoc declarando sua intenção visual primária, requisitos de acessibilidade e exatamente um exemplo de uso de JSX válido.
-- **Intenção sobre Mecanismo:** Os comentários dentro do código devem explicar o **PORQUÊ**, não o **O QUÊ**. Não comente códigos autoexplicativos (ex: pule `// set loading to true` acima de `setIsLoading(true)`).
+- **Campos de DTO não-óbvios em `types.ts`:** Documente com JSDoc os campos cujo significado não é óbvio a partir do nome/tipo (ex.: os campos de aprovação pendente e de estado de conflito em `Evento` — `estadoConflito`/`motivoConflito`/`aprovacaoPendenteId`/`tipoSolicitacaoPendente` já servem de referência de padrão); não é preciso documentar campos triviais como `id: string`.
+- **Intenção sobre Mecanismo:** Os comentários dentro do código devem explicar o **PORQUÊ**, não o **O QUÊ**. Não comente códigos autoexplicativos (ex: pule `// set loading to true` acima de `setIsLoading(true)`). O mesmo vale para agentes de IA lendo o código: a documentação deve tornar a regra de negócio compreensível sem depender de contexto de conversa ou histórico de commits.
 - **Preservar o Contexto:** Retenha os comentários existentes durante a refatoração; eles carregam intenção histórica e proveniência.
 
 ## Importações & Higiene de Caminhos

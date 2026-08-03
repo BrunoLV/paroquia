@@ -14,6 +14,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Calcula a taxa de retrabalho administrativo sobre eventos: a proporção entre
+ * ocorrências de retrabalho elegíveis (cancelamentos, ou atualizações que alteraram
+ * agenda, organização responsável, ou representaram um cancelamento efetivo, conforme
+ * os detalhes auditáveis da operação) e o total de eventos distintos afetados por
+ * qualquer operação auditada no período. Uma taxa alta indica que decisões operacionais
+ * (agenda, responsável) estão sendo revertidas ou refeitas com frequência incomum.
+ * A fonte de dados é o log de auditoria ({@code AuditoriaOperacaoEntity}), não o estado
+ * atual dos eventos, então o cálculo reflete o histórico de operações, não o snapshot.
+ */
 @Component
 public class CalculadoraTaxaRetrabalho {
 
@@ -34,6 +44,18 @@ public class CalculadoraTaxaRetrabalho {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Calcula a taxa de retrabalho para uma organização específica dentro do período
+     * resolvido, consultando diretamente o banco (contagens agregadas) em vez de
+     * carregar e iterar os registros de auditoria em memória. A taxa é o quociente entre
+     * ocorrências de retrabalho administrativo elegíveis e o total de eventos distintos
+     * afetados por operações auditadas no período; retorna {@code 0.0} quando não há
+     * eventos afetados, para evitar divisão por zero.
+     *
+     * @param organizacaoId organização cujas operações auditadas serão consideradas
+     * @param periodo período operacional já resolvido (início/fim) para o cálculo
+     * @return indicador com a taxa calculada e os valores de numerador/denominador
+     */
     public IndicadorRetrabalhoResponse calculateForOrganization(
             UUID organizacaoId,
             PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
@@ -54,6 +76,15 @@ public class CalculadoraTaxaRetrabalho {
                 denominador);
     }
 
+    /**
+     * Calcula a taxa de retrabalho em nível global (todas as organizações) para o
+     * período informado, carregando os registros de auditoria em memória para compor
+     * um snapshot consolidado. Usado quando o indicador é reportado sem segmentação
+     * por organização (ex.: dashboards agregados).
+     *
+     * @param periodo período operacional já resolvido (início/fim) para o cálculo
+     * @return métricas de retrabalho consolidadas para o período
+     */
     public SnapshotReworkMetrics calculateForSnapshot(PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
         return calculate(auditoriaOperacaoJpaRepository
                 .findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
@@ -116,6 +147,19 @@ public class CalculadoraTaxaRetrabalho {
         return value != null && Boolean.parseBoolean(String.valueOf(value));
     }
 
+    /**
+     * Métricas consolidadas de retrabalho para um snapshot de período: a taxa
+     * (numerador dividido pelo denominador, ou zero se não houver eventos afetados)
+     * junto com os valores brutos que a compõem, para permitir auditoria do cálculo.
+     *
+     * @param taxaRetrabalho proporção de ocorrências de retrabalho elegíveis sobre o
+     *                        total de eventos distintos afetados no período
+     * @param numeradorOcorrenciasElegiveis quantidade de ocorrências de retrabalho
+     *                                        administrativo elegíveis (cancelamentos e
+     *                                        atualizações qualificadas)
+     * @param denominadorEventosAfetados quantidade de eventos distintos afetados por
+     *                                    qualquer operação auditada no período
+     */
     public record SnapshotReworkMetrics(
             double taxaRetrabalho,
             long numeradorOcorrenciasElegiveis,

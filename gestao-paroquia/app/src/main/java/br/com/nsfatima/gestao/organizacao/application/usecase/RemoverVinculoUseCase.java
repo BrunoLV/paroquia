@@ -7,6 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Revoga o vínculo de um usuário com uma organização, desativando-o (sem excluí-lo) para preservar o
+ * histórico de quem já atuou naquela organização e em que papel.
+ */
 @Service
 public class RemoverVinculoUseCase {
 
@@ -16,13 +20,14 @@ public class RemoverVinculoUseCase {
         this.vinculoRepository = vinculoRepository;
     }
 
-    @Transactional
-    /*
-      Desativa o vínculo de um usuário com uma organização para revogar seus acessos e responsabilidades
-      administrativas naquele contexto específico.
-      <p>
-      Exemplo: useCase.execute(vinculoId)
+    /**
+     * Desativa o vínculo de um usuário com uma organização para revogar seus acessos e responsabilidades
+     * administrativas naquele contexto específico, mantendo o registro histórico do vínculo.
+     *
+     * @param vinculoId identificador do vínculo a desativar
+     * @throws IllegalArgumentException se o vínculo não existir
      */
+    @Transactional
     public void execute(UUID vinculoId) {
         MembroOrganizacaoEntity entity = vinculoRepository.findById(vinculoId)
                 .orElseThrow(() -> new IllegalArgumentException("Membro nao encontrado: " + vinculoId));

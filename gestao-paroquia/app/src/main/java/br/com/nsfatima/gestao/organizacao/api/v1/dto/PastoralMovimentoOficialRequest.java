@@ -6,6 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Payload de criação/atualização de um item do catálogo oficial de Pastorais e Movimentos. O nome deve ser
+ * único e o tipo restrito a {@code PASTORAL} ou {@code MOVIMENTO}, conforme validado por
+ * {@code PastoralMovimentoOficialService}.
+ */
 @Schema(description = "Request to create or update a Pastoral or Movimento Oficial")
 public record PastoralMovimentoOficialRequest(
         @Schema(description = "Official catalog name", example = "Pastoral da Criança")

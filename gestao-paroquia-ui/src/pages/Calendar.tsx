@@ -414,6 +414,10 @@ const Calendar = () => {
   };
 
   // Open Event editing dialog
+  // Eventos recorrentes (recorrenciaId presente) exigem que o usuário decida o
+  // escopo da edição antes de abrir o formulário: alterar só esta ocorrência ou a
+  // série inteira (EditScopeDialog). Eventos avulsos não têm essa ambiguidade e vão
+  // direto para o formulário de edição.
   const handleOpenEdit = (event: Evento) => {
     if (event.recorrenciaId) {
       setEditingEvent(event);
@@ -425,6 +429,10 @@ const Calendar = () => {
     }
   };
 
+  // Escopo escolhido (ex.: ONLY_THIS vs. série) é guardado em selectedEditScope e só
+  // é enviado ao backend quando o formulário é de fato submetido (ver
+  // handleEventSubmit -> updateData.editScope), pois o backend precisa saber se a
+  // alteração deve tocar apenas esta ocorrência ou toda a série recorrente.
   const handleScopeSelect = (scope: EditScope) => {
     setSelectedEditScope(scope);
     setIsEditScopeOpen(false);
@@ -438,6 +446,11 @@ const Calendar = () => {
     try {
       if (editingEvent) {
         // UPDATE (PATCH)
+        // editScope diz ao backend o alcance da edição: ONLY_THIS altera apenas esta
+        // ocorrência (destacando-a da série), enquanto um escopo de série propaga a
+        // mudança para as demais ocorrências futuras da recorrência. Default
+        // ONLY_THIS cobre o caso de evento não-recorrente (selectedEditScope nunca é
+        // definido nesse caminho, ver handleOpenEdit).
         const { recurrence, ...eventBaseData } = data;
         const updateData = {
           ...eventBaseData,
@@ -518,8 +531,18 @@ const Calendar = () => {
   };
 
   // Combine API events with transient events from pending creation requests
+  //
+  // O calendário precisa mostrar não só os eventos já confirmados (endpoint
+  // /eventos), mas também o efeito de solicitações de aprovação ainda PENDENTES
+  // (buscadas em aprovacoesPendentes), para que o usuário veja "o que vai acontecer
+  // se isso for aprovado" sem que a mudança já tenha sido aplicada de fato — nenhum
+  // desses eventos "pendentes" existe de verdade no backend ainda; é só uma
+  // pré-visualização client-side construída a partir do payload da solicitação.
   const combinedEvents = useMemo(() => {
-    // 1. Transient creation events
+    // 1. Transient creation events: uma solicitação de CRIACAO_EVENTO ainda não gerou
+    // um EventoEntity real, então sintetizamos aqui um objeto Evento "fantasma" só
+    // para desenhar no grid/agenda, usando o payload serializado da solicitação.
+    // Esse evento nunca existe no array `events` vindo da API.
     const transientEvents = aprovacoesPendentes
       .filter((a) => a.tipoSolicitacao === 'CRIACAO_EVENTO' && a.actionPayloadJson)
       .map((a): Evento | null => {
@@ -537,8 +560,13 @@ const Calendar = () => {
             inicio: payload.inicio,
             fim: payload.fim,
             status: 'PENDENTE_CRIACAO', // custom status for pending creation
+            // Evento ainda não existe de fato, então não há como o motor de conflitos
+            // do backend tê-lo avaliado — não se aplica estado de conflito aqui.
             estadoConflito: null,
             motivoConflito: null,
+            // aprovacaoPendenteId / tipoSolicitacaoPendente marcam este evento como
+            // "sujeito a aprovação" para a UI (ex.: exibir badge [Pendente], opacidade
+            // reduzida e ocultar ações de editar/cancelar — ver JSX mais abaixo).
             aprovacaoPendenteId: a.id,
             solicitantePendenteId: a.solicitanteId,
             tipoSolicitacaoPendente: a.tipoSolicitacao
@@ -549,7 +577,11 @@ const Calendar = () => {
       })
       .filter((e): e is Evento => e !== null);
 
-    // 2. Decorated events
+    // 2. Decorated events: eventos que JÁ existem no backend mas têm uma edição ou
+    // cancelamento aguardando aprovação são "decorados" com os mesmos campos de
+    // pendência acima, para que a UI sinalize que este evento tem uma mudança em
+    // trânsito (o conteúdo exibido ainda é o estado atual/confirmado do evento — só
+    // a mudança proposta é que está pendente, não o evento em si).
     const decoratedEvents = events.map((e) => {
       const acaoPendente = aprovacoesPendentes.find((a) => a.eventoId === e.id);
       if (acaoPendente) {
@@ -1006,6 +1038,10 @@ const Calendar = () => {
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {/* Quando este evento tem uma solicitação de aprovação em aberto
+                    (ver merge em combinedEvents), avisamos qual tipo de mudança está
+                    pendente — o conteúdo abaixo ainda reflete o estado atual/salvo do
+                    evento, não a mudança proposta ainda não aprovada. */}
                 {selectedEvent.tipoSolicitacaoPendente && (
                   <Alert severity="warning">
                     {selectedEvent.tipoSolicitacaoPendente === 'CRIACAO_EVENTO'
@@ -1117,7 +1153,12 @@ const Calendar = () => {
                   </Box>
                 )}
 
-                {/* Extra Justification */}
+                {/* Conflict warning: estadoConflito/motivoConflito são calculados pelo
+                    backend (motor de validação de agenda) quando este evento colide
+                    com outro compromisso — mesmo local, mesma organização/recurso,
+                    ou regra de prioridade da agenda paroquial violada. O evento ainda
+                    é salvo/exibido normalmente; o conflito é apenas um alerta para o
+                    responsável avaliar manualmente, não um bloqueio automático. */}
                 {selectedEvent.motivoConflito && (
                   <Alert severity="warning">
                     Conflito detectado: {selectedEvent.motivoConflito}
@@ -1135,6 +1176,10 @@ const Calendar = () => {
               <Button onClick={() => setIsDetailsOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>
                 Fechar
               </Button>
+              {/* Editar/Cancelar ficam ocultos enquanto há uma solicitação pendente
+                  para este evento (aprovacaoPendenteId) — evita empilhar uma segunda
+                  solicitação de mudança sobre a mesma entidade antes que a primeira
+                  seja decidida pelo aprovador. */}
               {selectedEvent.status !== 'CANCELADO' && !selectedEvent.aprovacaoPendenteId && canEditEvent(selectedEvent) && (
                 <>
                   <Button 

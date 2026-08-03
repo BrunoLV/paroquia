@@ -3,6 +3,12 @@ package br.com.nsfatima.gestao.calendario.infrastructure.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Vincula as propriedades de configuração sob o prefixo {@code app.paroquia}, fornecendo os
+ * valores padrão de identidade visual e institucional da paróquia (nome, diocese, endereço,
+ * cores e caminho do logo) usados como fallback por {@link ParoquiaConfiguracaoInitializer} ao
+ * semear a configuração persistida no banco.
+ */
 @Component
 @ConfigurationProperties(prefix = "app.paroquia")
 public class ParoquiaProperties {

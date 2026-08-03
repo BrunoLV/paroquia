@@ -12,6 +12,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+/**
+ * Lê, via SQL nativo (deliberadamente fora do JPA para evitar acoplar o contexto {@code iam} às entidades
+ * do contexto {@code organizacao}), os vínculos organizacionais ativos de um usuário e os traduz em
+ * authorities Spring Security no formato {@code ROLE_<TIPO_ORGANIZACAO>_<PAPEL>}. É a fonte de papéis
+ * por-organização usada tanto no login ({@link UsuarioDetailsService}) quanto no perfil exposto pelo
+ * {@code AuthController}.
+ */
 @Component
 public class LeitorVinculoExterno {
 
@@ -21,6 +28,14 @@ public class LeitorVinculoExterno {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Consulta todos os vínculos organizacionais do usuário que estejam ativos tanto no vínculo
+     * ({@code m.ativo = TRUE}) quanto na organização vinculada ({@code o.ativo = TRUE}) — um vínculo com
+     * organização desativada não é retornado, mesmo que o vínculo em si esteja ativo.
+     *
+     * @param userId identificador do usuário
+     * @return lista de vínculos ativos, ordenada por tipo de organização, papel e id da organização
+     */
     @Transactional(readOnly = true)
     public List<Vinculo> findVinculosAtivos(UUID userId) {
         return jdbcTemplate.query(
@@ -41,6 +56,15 @@ public class LeitorVinculoExterno {
                 userId);
     }
 
+    /**
+     * Filtra as authorities do usuário para uma organização específica, ou retorna todas se
+     * {@code organizationId} for {@code null}. Útil quando a checagem de autorização precisa saber apenas
+     * os papéis do usuário dentro de um escopo organizacional já conhecido.
+     *
+     * @param userId         identificador do usuário
+     * @param organizationId organização de interesse, ou {@code null} para não filtrar
+     * @return conjunto ordenado (sem duplicatas) de authorities no formato {@code ROLE_<TIPO>_<PAPEL>}
+     */
     @Transactional(readOnly = true)
     public Set<String> findRolesByUserAndOrganization(UUID userId, UUID organizationId) {
         Set<String> roles = new TreeSet<>();
@@ -67,6 +91,10 @@ public class LeitorVinculoExterno {
                 igrejaVinculoId);
     }
 
+    /**
+     * Um vínculo ativo do usuário com uma organização, já carregando os dados de exibição da organização
+     * (nome, contato, coordenadores) para evitar uma segunda consulta ao montar respostas de API.
+     */
     public record Vinculo(
             UUID organizationId,
             String organizationName,
@@ -88,6 +116,14 @@ public class LeitorVinculoExterno {
                     : value.trim().replace('-', '_').replace(' ', '_').toUpperCase(Locale.ROOT);
         }
 
+        /**
+         * Constrói a authority Spring Security correspondente a este vínculo, no formato
+         * {@code ROLE_<TIPO_ORGANIZACAO>_<PAPEL>} (ex.: {@code ROLE_COMUNIDADE_COORDENADOR}), normalizando
+         * espaços e hífens para underscore em maiúsculas — é assim que papéis por-organização se tornam
+         * comparáveis a {@code hasRole(...)}/{@code hasAuthority(...)} do Spring Security.
+         *
+         * @return a authority no formato {@code ROLE_<TIPO>_<PAPEL>}
+         */
         public String authority() {
             return "ROLE_" + normalize(organizationType) + "_" + normalize(role);
         }

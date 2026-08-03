@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Expõe a API REST de gestão do catálogo oficial de Pastorais e Movimentos da paróquia. Restrita a ADMIN,
+ * diferente da API de {@code Organizacao} que também aceita coordenadores locais, pois este catálogo define
+ * o registro-mestre compartilhado por todas as instâncias locais de uma pastoral/movimento.
+ */
 @RestController
 @RequestMapping("/api/v1/pastorais-oficiais")
 @Tag(name = "Official Pastorals and Movements Catalog", description = "Management of official catalog of Pastorals " +
@@ -36,6 +41,12 @@ public class PastoralMovimentoOficialController {
         this.service = service;
     }
 
+    /**
+     * Cria um novo item do catálogo oficial de Pastorais e Movimentos.
+     *
+     * @param request dados do item a criar
+     * @return o item criado
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,6 +57,13 @@ public class PastoralMovimentoOficialController {
         return toResponse(oficial);
     }
 
+    /**
+     * Atualiza um item existente do catálogo oficial de Pastorais e Movimentos.
+     *
+     * @param id identificador do item a atualizar
+     * @param request novos dados do item
+     * @return o item atualizado
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update an existing official pastoral/movement", description = "Only admins can manage the " +
@@ -57,6 +75,11 @@ public class PastoralMovimentoOficialController {
         return toResponse(oficial);
     }
 
+    /**
+     * Remove definitivamente um item do catálogo oficial de Pastorais e Movimentos.
+     *
+     * @param id identificador do item a remover
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
@@ -66,6 +89,13 @@ public class PastoralMovimentoOficialController {
         service.delete(id);
     }
 
+    /**
+     * Busca um item do catálogo oficial pelo seu identificador.
+     *
+     * @param id identificador do item
+     * @return o item encontrado
+     * @throws PastoralMovimentoOficialBusinessException se o item não existir
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get official pastoral/movement by ID")
     public PastoralMovimentoOficialResponse getById(@PathVariable UUID id) {
@@ -75,6 +105,11 @@ public class PastoralMovimentoOficialController {
         return toResponse(oficial);
     }
 
+    /**
+     * Lista todos os itens do catálogo oficial de Pastorais e Movimentos.
+     *
+     * @return lista de todos os itens cadastrados
+     */
     @GetMapping
     @Operation(summary = "List all official pastorals/movements")
     public List<PastoralMovimentoOficialResponse> list() {

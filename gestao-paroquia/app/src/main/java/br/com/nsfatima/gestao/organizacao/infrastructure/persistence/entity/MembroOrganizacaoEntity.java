@@ -11,6 +11,14 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Entidade JPA que representa o vínculo (associação) entre um usuário e uma organização, com o
+ * {@code papel} exercido nesse vínculo. Um mesmo usuário pode ter múltiplos vínculos ativos (em
+ * organizações diferentes, ou papéis diferentes na mesma organização); vínculos desativados
+ * ({@code ativo = false}) são preservados para histórico em vez de excluídos. O campo
+ * {@code igrejaVinculoId} amarra pastorais/movimentos (que não têm hierarquia territorial própria) à
+ * Matriz/Comunidade à qual pertencem, permitindo checagens de escopo territorial.
+ */
 @Entity
 @Table(name = "membros_organizacao", schema = "calendario")
 public class MembroOrganizacaoEntity extends BaseVersionedEntity {

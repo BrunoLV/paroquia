@@ -2,6 +2,13 @@ package br.com.nsfatima.gestao.organizacao.domain.model;
 
 import java.util.Locale;
 
+/**
+ * Enumera os papéis que um usuário pode exercer dentro de uma organização da paróquia (clero, coordenações
+ * pastorais/de movimento, mesas de conselho, voluntariado etc.). O papel de um usuário numa organização
+ * específica, combinado com o {@code TipoOrganizacao} dessa organização e seu escopo (comunidade/pastoral),
+ * é a base das checagens de autorização em todo o sistema — ver
+ * {@code EscopoUsuarioAuthorizationService} para as regras de escopo derivadas de cada papel.
+ */
 public enum PapelOrganizacional {
     ADMIN("admin", "Administrador do Sistema"),
     BISPO_DIOCESANO("bispo-diocesano", "Bispo Diocesano"),
@@ -31,6 +38,16 @@ public enum PapelOrganizacional {
         this.descricao = descricao;
     }
 
+    /**
+     * Converte um valor persistido/recebido de fora (código armazenado, nome do enum, ou um alias legado como
+     * {@code mesa-diretora-cpp}) para o papel correspondente, normalizando maiúsculas/minúsculas e o separador
+     * ({@code _} vs {@code -}). Os aliases legados existem para manter compatibilidade com dados gravados antes
+     * de uma renomeação de papel; novos códigos não devem ser adicionados aqui sem necessidade de migração.
+     *
+     * @param rawValue valor bruto vindo do banco de dados ou de uma requisição externa
+     * @return o {@link PapelOrganizacional} correspondente, ou {@code null} se {@code rawValue} for nulo,
+     *     em branco ou não corresponder a nenhum papel conhecido
+     */
     public static PapelOrganizacional fromStoredValue(String rawValue) {
         if (rawValue == null || rawValue.isBlank()) {
             return null;
@@ -63,10 +80,21 @@ public enum PapelOrganizacional {
         return null;
     }
 
+    /**
+     * Retorna o código estável usado para persistir este papel (independente do nome do enum em código),
+     * permitindo renomear a constante Java sem quebrar dados já gravados.
+     *
+     * @return o código de armazenamento deste papel
+     */
     public String storedValue() {
         return storedCode;
     }
 
+    /**
+     * Retorna o rótulo em português apresentado ao usuário final para este papel.
+     *
+     * @return a descrição legível deste papel
+     */
     public String getDescricao() {
         return descricao;
     }

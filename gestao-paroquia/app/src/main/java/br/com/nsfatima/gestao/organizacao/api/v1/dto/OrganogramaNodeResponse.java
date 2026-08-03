@@ -2,6 +2,12 @@ package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
 import java.util.List;
 
+/**
+ * Nó recursivo da árvore de organograma retornada por {@code GetOrganogramaUseCase}. Um nó pode representar
+ * tanto uma organização ({@code type = "ORGANIZACAO"}, com {@code subtype} igual ao {@code TipoOrganizacao})
+ * quanto um membro individual ({@code type = "MEMBRO"}, folha sem filhos); membros são adicionados como
+ * filhos do nó da organização a que pertencem, junto com os nós de organizações filhas.
+ */
 public record OrganogramaNodeResponse(
         String id,
         String label,

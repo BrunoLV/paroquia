@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Recupera os detalhes completos de um usuário para exibição/edição administrativa, incluindo o nome da
+ * igreja/comunidade vinculada resolvido a partir do {@code igrejaId} bruto persistido na entidade.
+ */
 @Service
 public class GetUsuarioUseCase {
 
@@ -27,6 +31,15 @@ public class GetUsuarioUseCase {
         this.organizacaoRepository = organizacaoRepository;
     }
 
+    /**
+     * Monta a resposta completa do usuário, convertendo a string de papéis persistida (separada por vírgulas)
+     * em uma coleção e resolvendo o nome de exibição da igreja/comunidade vinculada, quando houver.
+     * Não inclui vínculos organizacionais (membros) — essa lista é obtida separadamente.
+     *
+     * @param id identificador do usuário
+     * @return dados completos do usuário
+     * @throws UsuarioNotFoundException se não existir usuário com o id informado
+     */
     @Transactional(readOnly = true)
     public UsuarioResponse execute(UUID id) {
         return usuarioRepository.findById(id)

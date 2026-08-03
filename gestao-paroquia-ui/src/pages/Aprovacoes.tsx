@@ -31,14 +31,32 @@ import {useNotification} from '../context/NotificationContext';
 import apiClient from '../api/client';
 import PageHeader from '../components/PageHeader';
 
+/**
+ * Tela de "caixa de entrada" de aprovações pastorais.
+ *
+ * Eventos e Projetos têm fluxos de aprovação independentes no backend (endpoints,
+ * DTOs e regras de transição próprios — AprovacaoEntity para eventos/ativos e um
+ * mecanismo equivalente para projetos), por isso esta tela usa duas fontes de dados
+ * e dois conjuntos de estado (`tipoAprovacao` chaveia qual delas é exibida) em vez de
+ * uma única lista unificada. Cada solicitação pendente representa uma mudança que
+ * ainda não foi aplicada ao calendário/projeto real — ela só é efetivada quando um
+ * aprovador decide (ver `decisionMutation`/`projectDecisionMutation` abaixo).
+ */
 const Aprovacoes = () => {
   const { showError, showSuccess } = useNotification();
+  // tipoAprovacao alterna a fonte de dados exibida (eventos x projetos); tabValue
+  // filtra por status dentro dessa fonte (ver array `statuses`).
   const [tipoAprovacao, setTipoAprovacao] = useState<'EVENTOS' | 'PROJETOS'>('EVENTOS');
   const [tabValue, setTabValue] = useState(0);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  // Solicitação selecionada abre o drawer de detalhes/decisão; cada tipo de
+  // aprovação tem seu próprio drawer porque os payloads (actionPayloadJson) e as
+  // regras de exibição diferem entre evento e projeto.
   const [aprovacaoSelecionada, setAprovacaoSelecionada] = useState<AprovacaoResponse | null>(null);
   const [aprovacaoProjetoSelecionada, setAprovacaoProjetoSelecionada] = useState<ProjetoAprovacaoResponse | null>(null);
+  // Cache local id->nome de projetos, usado apenas para exibir o nome do projeto em
+  // solicitações de cancelamento (que referenciam só o projetoId, não o nome).
   const [projectsMap, setProjectsMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -59,6 +77,11 @@ const Aprovacoes = () => {
     loadProjects();
   }, []);
 
+  // Espelha o ciclo de vida de AprovacaoStatus no backend: toda solicitação nasce
+  // PENDENTE e transiciona para APROVADA/REPROVADA quando um aprovador decide, ou
+  // para FALHA_EXECUCAO quando a decisão foi aprovada mas a aplicação da mudança no
+  // domínio (ex.: criar o evento de fato) falhou depois — aba exclusiva de Eventos,
+  // pois projetos não têm hoje uma etapa de execução assíncrona separada da decisão.
   const statuses: ('PENDENTE' | 'APROVADA' | 'REPROVADA' | 'FALHA_EXECUCAO')[] = [
     'PENDENTE',
     'APROVADA',
@@ -68,6 +91,10 @@ const Aprovacoes = () => {
 
   const currentStatus = statuses[tabValue];
 
+  // Projetos não têm a aba "Falhas" (tabValue 3 não existe na UI de projetos), mas
+  // como as duas listas de abas compartilham o mesmo `tabValue`, se o usuário tiver
+  // deixado a aba em índice 3 ao trocar de EVENTOS->PROJETOS caímos de volta em
+  // PENDENTE em vez de estourar o índice inexistente.
   const getProjectStatus = () => {
     if (tabValue === 3) return 'PENDENTE';
     return statuses[tabValue] as 'PENDENTE' | 'APROVADA' | 'REPROVADA';
@@ -88,6 +115,13 @@ const Aprovacoes = () => {
   const queryClient = useQueryClient();
   const [observacao, setObservacao] = useState('');
 
+  // Decisão de aprovação de EVENTO/ATIVO. No backend isso dispara
+  // DecideSolicitacaoAprovacaoUseCase: se status = APROVADA, o payload gravado na
+  // solicitação (actionPayloadJson) é finalmente aplicado ao domínio (criação/edição/
+  // cancelamento do evento ou empréstimo do ativo) — é só nesse momento que a mudança
+  // passa a existir de fato; se REPROVADA, o payload é descartado e nada muda no
+  // calendário. Caso a aplicação em si falhe após a aprovação, o status vira
+  // FALHA_EXECUCAO (fora do controle desta mutation, refletido só ao recarregar).
   const decisionMutation = useMutation({
     mutationFn: ({ id, status, observacao }: { id: string; status: 'APROVADA' | 'REPROVADA'; observacao: string }) =>
       decideAprovacao(id, { status, observacao }),
@@ -104,6 +138,10 @@ const Aprovacoes = () => {
     },
   });
 
+  // Decisão de aprovação de PROJETO — mesma semântica de negócio do fluxo de
+  // eventos (aprovar aplica a criação/cancelamento do projeto, rejeitar descarta a
+  // solicitação), porém via endpoint e use case próprios de projeto (aceita um
+  // booleano `aprovado` em vez do enum de status usado para eventos).
   const projectDecisionMutation = useMutation({
     mutationFn: ({ id, aprovado, observacao }: { id: string; aprovado: boolean; observacao: string }) =>
       decideAprovacaoProjeto(id, aprovado, observacao),
@@ -190,7 +228,10 @@ const Aprovacoes = () => {
         subtitle="Gerencie e analise as solicitações de alteração e novos eventos ou projetos no calendário paroquial."
       />
 
-        {/* TOP LEVEL TAB SELECTOR */}
+        {/* TOP LEVEL TAB SELECTOR: alterna entre as duas fontes de dados independentes
+            (aprovações de EVENTOS x de PROJETOS). Trocar aqui reseta a subaba de
+            status, a paginação e fecha qualquer drawer aberto, pois os índices de
+            aba/página e as seleções não fazem sentido ao mudar de contexto. */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
           <Tabs
             value={tipoAprovacao}
@@ -407,7 +448,10 @@ const Aprovacoes = () => {
             )}
         </Card>
 
-      {/* Details Drawer */}
+      {/* Details Drawer: mostra o payload da solicitação de evento/ativo e, apenas
+          quando status === PENDENTE, expõe os botões Aprovar/Rejeitar — solicitações
+          já decididas (APROVADA/REPROVADA/FALHA_EXECUCAO) são somente leitura, pois
+          a decisão no backend é definitiva e não pode ser revertida por aqui. */}
       <Drawer
         anchor="right"
         open={Boolean(aprovacaoSelecionada)}
@@ -536,7 +580,8 @@ const Aprovacoes = () => {
         )}
       </Drawer>
 
-      {/* Project Details Drawer */}
+      {/* Project Details Drawer: mesma lógica do drawer de eventos acima, aplicada à
+          solicitação de projeto — Aprovar/Rejeitar só aparece com status PENDENTE. */}
       <Drawer
         anchor="right"
         open={Boolean(aprovacaoProjetoSelecionada)}

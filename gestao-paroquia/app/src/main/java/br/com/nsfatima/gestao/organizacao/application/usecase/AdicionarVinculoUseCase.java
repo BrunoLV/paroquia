@@ -14,6 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Vincula um usuário a uma organização com um determinado {@link PapelOrganizacional}, aplicando as regras de
+ * negócio que protegem a integridade da hierarquia organizacional:
+ * <ul>
+ *   <li>o usuário não pode ser vinculado a uma organização de outra igreja/comunidade que não seja a sua;</li>
+ *   <li>pastorais e movimentos exigem uma igreja de vínculo (Matriz/Comunidade) explícita;</li>
+ *   <li>definir a liderança de um conselho (CONSELHO_PASTORAL/CONSELHO_ECONOMICO/CPP/CPC) exige que quem
+ *       executa a ação seja ADMIN ou PAROCO;</li>
+ *   <li>definir o PAROCO do CLERO exige que quem executa a ação seja ADMIN;</li>
+ *   <li>vínculos duplicados (mesma combinação usuário/organização/papel/igreja) são reativados em vez de
+ *       duplicados;</li>
+ *   <li>papéis de coordenação (únicos por organização/contexto de igreja) rebaixam automaticamente o
+ *       coordenador anterior para um papel de membro comum ao assumir um novo coordenador.</li>
+ * </ul>
+ */
 @Service
 public class AdicionarVinculoUseCase {
 
@@ -30,6 +45,24 @@ public class AdicionarVinculoUseCase {
         this.organizacaoRepository = organizacaoRepository;
     }
 
+    /**
+     * Cria (ou reativa, se já existir um vínculo idêntico desativado) o vínculo do usuário com a organização
+     * informada, validando escopo territorial, obrigatoriedade de igreja de vínculo para pastorais/movimentos,
+     * hierarquia de quem pode atribuir papéis de liderança, e rebaixando automaticamente o coordenador
+     * anterior quando o papel atribuído for de coordenação exclusiva.
+     *
+     * @param usuarioId identificador do usuário a vincular
+     * @param organizacaoId identificador da organização de destino
+     * @param tipo tipo da organização de destino
+     * @param papel papel organizacional a atribuir ao usuário
+     * @param igrejaVinculoId identificador da igreja/comunidade de contexto; obrigatório para pastorais e
+     *     movimentos
+     * @return identificador do vínculo criado ou reativado
+     * @throws IllegalArgumentException se o usuário não existir, pertencer a outra igreja/comunidade, ou a
+     *     igreja de vínculo informada for inválida/ausente quando exigida
+     * @throws org.springframework.security.access.AccessDeniedException se não houver usuário autenticado ou
+     *     o usuário autenticado não tiver permissão hierárquica para atribuir o papel solicitado
+     */
     @Transactional
     public UUID execute(UUID usuarioId,
                         UUID organizacaoId, TipoOrganizacao tipo, PapelOrganizacional papel, UUID igrejaVinculoId) {

@@ -8,6 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Atualização parcial (patch) de username e estado de habilitação de um usuário. Restrito a
+ * {@code ROLE_ADMIN} no controller — não passa pela checagem fina de coordenador de organização usada em
+ * outras operações administrativas de usuário.
+ */
 @Service
 public class UpdateUsuarioUseCase {
 
@@ -17,12 +22,19 @@ public class UpdateUsuarioUseCase {
         this.usuarioRepository = usuarioRepository;
     }
 
-    @Transactional
-    /*
-      Atualiza os campos editáveis de um usuário para refletir mudanças cadastrais ou de permissão de acesso.
-      <p>
-      Exemplo: useCase.execute(userId, "novo.username", true)
+    /**
+     * Aplica apenas os campos informados (não nulos): {@code username} e/ou {@code enabled}. Campos nulos
+     * são preservados com o valor atual, permitindo atualização parcial sem sobrescrever o restante do
+     * cadastro.
+     * <p>
+     * Exemplo: useCase.execute(userId, "novo.username", true)
+     *
+     * @param id       identificador do usuário
+     * @param username novo username, ou {@code null} para não alterar
+     * @param enabled  novo estado de habilitação, ou {@code null} para não alterar
+     * @throws UsuarioNotFoundException se não existir usuário com o id informado
      */
+    @Transactional
     public void execute(UUID id, String username, Boolean enabled) {
         UsuarioEntity entity = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));

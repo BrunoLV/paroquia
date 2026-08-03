@@ -4,9 +4,25 @@ import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.stereotype.Component;
 
+/**
+ * Política que valida se um papel organizacional é compatível com o tipo de
+ * organização à qual o usuário está vinculado — regra base de autorização
+ * eclesial usada antes de checagens específicas de ação (ver
+ * {@code EventoPatchAuthorizationService}, {@code EventoCancelamentoAuthorizationService}).
+ * Cada tipo de organização (pastoral, movimento, matriz/comunidade, clero, conselho)
+ * só aceita um subconjunto fechado de papéis coerentes com sua estrutura.
+ */
 @Component
 public class AuthorizationPolicy {
 
+    /**
+     * Verifica se o papel organizacional informado é um papel válido para o tipo de
+     * organização informado, segundo a hierarquia eclesial da paróquia.
+     *
+     * @param organizationType código do tipo de organização (ex.: pastoral, matriz, clero)
+     * @param role código do papel organizacional do usuário
+     * @return {@code true} se o papel é compatível com o tipo de organização; {@code false} se algum dos dois não for reconhecido ou não for compatível
+     */
     public boolean isRoleAllowed(String organizationType, String role) {
         TipoOrganizacao normalizedOrg = TipoOrganizacao.fromStoredValue(organizationType);
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);

@@ -14,6 +14,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Adaptador JPA de {@link OrganizacaoRepository}. Além do CRUD básico sobre {@code OrganizacaoEntity}, resolve
+ * dinamicamente o nome de exibição de coordenador/vice-coordenador a partir dos vínculos de membro ativos
+ * (papel contendo "coord"/"presidente"/"mesa" para coordenador, "vice" para vice-coordenador), com fallback
+ * para o texto livre gravado na própria organização quando nenhum vínculo correspondente é encontrado — e
+ * calcula {@code hasDependencies} verificando tanto vínculos de membro quanto eventos associados, para que
+ * {@code OrganizacaoService} possa bloquear exclusões que deixariam referências órfãs.
+ */
 @Repository
 public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 

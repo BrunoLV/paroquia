@@ -19,6 +19,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * Serviço de idempotência para a criação de eventos: garante que uma requisição de
+ * criação repetida com a mesma {@code Idempotency-Key} (ex.: retry de cliente após
+ * timeout de rede) não gere um evento duplicado, retornando a resposta já persistida
+ * na primeira execução em vez de reexecutar a ação de criação.
+ */
 @Service
 public class EventoIdempotencyService {
 
@@ -35,6 +41,22 @@ public class EventoIdempotencyService {
         this.eventoMapper = eventoMapper;
     }
 
+    /**
+     * Executa a ação de criação de evento de forma idempotente: se a chave já foi usada
+     * com um payload idêntico (mesmo hash), retorna o evento previamente criado sem
+     * reexecutar {@code createAction}; se a chave já foi usada com um payload diferente,
+     * rejeita a requisição para evitar sobrescrever a intenção original do cliente.
+     *
+     * @param idempotencyKey chave de idempotência fornecida pelo cliente (não nula)
+     * @param request payload da requisição de criação, usado para calcular o hash de
+     *                 comparação entre chamadas repetidas
+     * @param createAction ação que efetivamente cria o evento, executada apenas na
+     *                       primeira chamada para uma dada chave
+     * @return resultado contendo a resposta do evento e um indicador de replay (se a
+     *         resposta veio de uma execução anterior em vez de uma nova criação)
+     * @throws IdempotencyConflictException se a chave já foi usada com um payload
+     *                                        de hash diferente do atual
+     */
     public IdempotencyResult execute(String idempotencyKey, CreateEventoRequest request,
                                      Supplier<EventoResponse> createAction) {
         String key = Objects.requireNonNull(idempotencyKey);
@@ -88,6 +110,14 @@ public class EventoIdempotencyService {
         return value == null ? "" : value;
     }
 
+    /**
+     * Resultado da execução idempotente: a resposta do evento e se ela foi obtida por
+     * replay de uma chamada anterior ({@code replay = true}) ou por uma criação nova.
+     *
+     * @param response evento criado (ou recuperado, em caso de replay)
+     * @param replay {@code true} se a resposta veio de uma execução anterior com a
+     *                mesma chave de idempotência
+     */
     public record IdempotencyResult(EventoResponse response, boolean replay) {
     }
 }

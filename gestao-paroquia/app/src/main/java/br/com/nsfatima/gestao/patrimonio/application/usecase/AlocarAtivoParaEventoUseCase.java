@@ -43,6 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Aloca um ativo patrimonial a um evento. Quando o evento pertence à mesma organização dona do
+ * ativo, a alocação é confirmada imediatamente; quando pertence a outra organização (empréstimo
+ * entre organizações), a ocupação é criada como {@code PENDENTE_APROVACAO} e uma solicitação de
+ * aprovação é aberta no contexto de aprovação (`AprovacaoEntity`), só sendo efetivada no ativo
+ * (status {@code ALOCADO}) quando o pedido for aprovado.
+ */
 @Service
 public class AlocarAtivoParaEventoUseCase {
 
@@ -86,6 +93,18 @@ public class AlocarAtivoParaEventoUseCase {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Processa o pedido de alocação: valida o período/vinculação do ativo e a autorização do
+     * ator, e decide entre confirmar de imediato (mesma organização) ou abrir uma solicitação de
+     * aprovação de empréstimo (organizações diferentes).
+     *
+     * @param ativoId ativo a alocar
+     * @param request evento de destino, período e justificativa de uso
+     * @return resultado da operação: alocação confirmada ou pendência de aprovação, cada uma com
+     *     seu próprio status HTTP
+     * @throws AtivoPatrimonialNotFoundException se o ativo não existir
+     * @throws AtivoAlocacaoInvalidaException    se o evento/local vinculado ao pedido for inválido
+     */
     @Transactional
     public AtivoOperationResult execute(UUID ativoId, AlocarAtivoRequest request) {
         AtivoPatrimonialEntity ativo = findAtivo(ativoId);
@@ -122,6 +141,18 @@ public class AlocarAtivoParaEventoUseCase {
         return new AtivoOperationResult.Pendente(pendente, HttpStatus.ACCEPTED);
     }
 
+    /**
+     * Efetiva no ativo uma alocação de empréstimo previamente pendente, chamado pelo fluxo de
+     * decisão de aprovação após o pedido ser aprovado. Roda em transação própria
+     * ({@code REQUIRES_NEW}) para não acoplar a efetivação da alocação à transação da decisão
+     * de aprovação em si.
+     *
+     * @param aprovacaoId id da solicitação de aprovação já decidida
+     * @param actor       identificação do ator que efetiva a alocação (para auditoria)
+     * @param usuarioId   usuário responsável, usado no registro da nota de uso
+     * @return o ativo já com o status {@code ALOCADO}
+     * @throws AtivoAlocacaoInvalidaException se não existir ocupação vinculada à aprovação
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AtivoPatrimonialResponse executeApprovedAlocacao(UUID aprovacaoId, String actor, UUID usuarioId) {
         AtivoAlocacaoEntity ocupacao = alocacaoRepository.findByAprovacaoId(aprovacaoId)

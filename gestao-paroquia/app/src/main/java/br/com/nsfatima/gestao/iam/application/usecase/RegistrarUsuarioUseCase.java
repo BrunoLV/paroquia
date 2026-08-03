@@ -13,6 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Autocadastro público de um novo fiel/usuário (endpoint sem autenticação, {@code POST /api/v1/usuarios/registrar}).
+ * O usuário nasce sempre com o papel {@code ROLE_USER}; seu estado de habilitação depende de quem está
+ * autenticado no momento do cadastro — se for {@code ROLE_ADMIN} ou {@code ROLE_CLERO_PAROCO} cadastrando em
+ * nome de terceiro, o usuário já nasce habilitado, caso contrário nasce desabilitado e pendente de aprovação
+ * via {@code ApproveUsuarioUseCase}.
+ */
 @Service
 public class RegistrarUsuarioUseCase {
 
@@ -29,6 +36,18 @@ public class RegistrarUsuarioUseCase {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Valida e persiste o cadastro de um novo usuário: rejeita username/e-mail já cadastrado (case-insensitive),
+     * exige uma igreja/comunidade de vínculo do tipo MATRIZ ou COMUNIDADE (outros tipos — movimentos, clero —
+     * não são aceitos como igreja de cadastro), e decide o estado inicial de habilitação com base em quem
+     * está autenticado no momento da chamada (admin/pároco cadastrando por terceiro habilita direto).
+     *
+     * @param request dados do cadastro (nome, credenciais, telefone, data de nascimento, igreja e flags
+     *                sacramentais)
+     * @return o id gerado para o novo usuário
+     * @throws IllegalArgumentException se o username/e-mail já estiver em uso, se {@code igrejaId} for nulo,
+     *                                  não existir, ou não for do tipo MATRIZ/COMUNIDADE
+     */
     @Transactional
     public UUID execute(RegistrarUsuarioRequest request) {
         if (usuarioRepository.findByUsernameIgnoreCase(request.username()).isPresent()) {

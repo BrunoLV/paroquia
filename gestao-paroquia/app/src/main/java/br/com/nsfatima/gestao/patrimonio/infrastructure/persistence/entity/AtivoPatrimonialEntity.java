@@ -16,6 +16,12 @@ import java.util.UUID;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
 
+/**
+ * Um bem patrimonial móvel da paróquia, pertencente a uma organização (sempre MATRIZ ou
+ * COMUNIDADE, ver {@code AtivoOrganizacaoPolicy}), identificado por um número de tombamento único
+ * e anual, e cujo {@code status} reflete o efeito agregado de suas ocupações correntes
+ * ({@code AtivoAlocacaoEntity}).
+ */
 @Entity
 @Table(name = "ativos_patrimoniais", schema = "calendario")
 public class AtivoPatrimonialEntity extends BaseVersionedEntity {

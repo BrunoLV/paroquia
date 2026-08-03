@@ -33,6 +33,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Traduz os desfechos do fluxo de autenticação/autorização do Spring Security (sucesso, falha,
+ * ausência de autenticação, acesso negado e logout) em respostas HTTP em formato JSON, em vez do
+ * comportamento padrão do Spring Security baseado em redirecionamentos e páginas HTML de
+ * login/erro. Isso é necessário porque o frontend é uma SPA que consome a API via JSON e precisa de
+ * corpos de resposta estruturados (com código de erro, mensagem e correlation id) para tratar cada
+ * desfecho de autenticação adequadamente.
+ */
 @Component
 public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccessHandler,
         AuthenticationFailureHandler,
@@ -46,6 +54,17 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Trata o sucesso da autenticação: estabelece o {@code SecurityContext} na sessão HTTP e
+     * escreve na resposta, em JSON, os dados do usuário autenticado (id, username, papéis/roles e
+     * organizações vinculadas) quando o principal for {@code UsuarioDetails}; caso contrário,
+     * escreve apenas o nome de usuário.
+     *
+     * @param request requisição HTTP da tentativa de login
+     * @param response resposta HTTP onde o corpo JSON de sucesso é escrito
+     * @param authentication autenticação já validada pelo {@code AuthenticationManager}
+     * @throws IOException se falhar a escrita do corpo JSON na resposta
+     */
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -87,6 +106,17 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                 "username", authentication.getName()));
     }
 
+    /**
+     * Trata a falha da autenticação, escrevendo um corpo de erro JSON com o código apropriado ao
+     * tipo de exceção: fonte de autorização indisponível ({@code AUTHZ_SOURCE_UNAVAILABLE}), usuário
+     * com cadastro pendente de aprovação ({@code APROVACAO_OBRIGATORIA}), ou credenciais inválidas
+     * ({@code AUTH_INVALID}) como caso genérico.
+     *
+     * @param request requisição HTTP da tentativa de login
+     * @param response resposta HTTP onde o corpo JSON de erro é escrito
+     * @param exception exceção de autenticação que motivou a falha
+     * @throws IOException se falhar a escrita do corpo JSON na resposta
+     */
     @Override
     public void onAuthenticationFailure(
             HttpServletRequest request,
@@ -117,6 +147,17 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                 "Nome de usuario ou senha incorretos.");
     }
 
+    /**
+     * Ponto de entrada acionado quando uma requisição não autenticada tenta acessar um recurso
+     * protegido: escreve um erro JSON de 401, distinguindo entre sessão expirada
+     * ({@code SESSION_EXPIRED}, quando há um cookie {@code JSESSIONID} ou um session id inválido)
+     * e ausência completa de autenticação ({@code AUTH_REQUIRED}).
+     *
+     * @param request requisição HTTP que disparou a falta de autenticação
+     * @param response resposta HTTP onde o corpo JSON de erro é escrito
+     * @param authException exceção de autenticação associada à tentativa de acesso
+     * @throws IOException se falhar a escrita do corpo JSON na resposta
+     */
     @Override
     public void commence(
             HttpServletRequest request,
@@ -134,6 +175,17 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                 sessionExpired ? "Sessao expirada. Faca login novamente." : "Autenticacao obrigatoria.");
     }
 
+    /**
+     * Trata o acesso negado a um recurso por um usuário já autenticado, escrevendo um erro JSON de
+     * 403. Distingue o caso de papel/escopo organizacional incompatível
+     * ({@link PapelEscopoInvalidoException}, código {@code ROLE_SCOPE_INVALID}) do acesso negado
+     * genérico ({@code ACCESS_DENIED}).
+     *
+     * @param request requisição HTTP que teve o acesso negado
+     * @param response resposta HTTP onde o corpo JSON de erro é escrito
+     * @param accessDeniedException exceção que motivou a negação de acesso
+     * @throws IOException se falhar a escrita do corpo JSON na resposta
+     */
     @Override
     public void handle(
             HttpServletRequest request,
@@ -149,6 +201,14 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                 accessDeniedException.getMessage() == null ? "Acesso negado." : accessDeniedException.getMessage());
     }
 
+    /**
+     * Trata o sucesso do logout, respondendo apenas com status 204 (sem corpo), já que não há
+     * conteúdo relevante a devolver para uma SPA que consome a API em JSON.
+     *
+     * @param request requisição HTTP de logout
+     * @param response resposta HTTP onde o status 204 é escrito
+     * @param authentication autenticação que estava ativa antes do logout
+     */
     @Override
     public void onLogoutSuccess(
             HttpServletRequest request,

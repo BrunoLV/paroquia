@@ -12,6 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/**
+ * Orquestra a transição automática entre anos paroquiais: quando um ano é dado como {@code CONCLUIDO} (seja pelo
+ * job agendado de virada de ano, seja por ação manual via {@code AnoParoquialController}), provisiona
+ * automaticamente o próximo ano civil em {@code EM_PLANEJAMENTO} caso ele ainda não exista. Isso garante que a
+ * Matriz e as Comunidades sempre tenham um ano paroquial aberto para novo planejamento assim que o anterior se
+ * encerra, sem exigir criação manual.
+ */
 @Service
 public class AnoParoquialRolloverService {
 
@@ -22,6 +29,12 @@ public class AnoParoquialRolloverService {
         this.repository = repository;
     }
 
+    /**
+     * Recupera o registro de governança de um ano paroquial específico.
+     *
+     * @param ano ano civil desejado
+     * @return o {@link AnoParoquialEntity} correspondente, se existir
+     */
     public Optional<AnoParoquialEntity> get(Integer ano) {
         return repository.findByAno(ano);
     }

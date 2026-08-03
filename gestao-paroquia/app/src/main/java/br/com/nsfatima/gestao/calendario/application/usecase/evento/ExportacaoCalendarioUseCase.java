@@ -25,6 +25,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Caso de uso responsável por montar e exportar o calendário de eventos em um arquivo
+ * (delegando a geração binária a um {@link CalendarioExporter} escolhido por formato).
+ * Resolve o período de exportação (ano, mês ou intervalo customizado, sempre convertido
+ * para UTC a partir do fuso America/Sao_Paulo), busca os eventos elegíveis com os filtros
+ * de organização/categoria informados e carrega os mapas auxiliares (local, organização,
+ * configuração da paróquia) necessários para renderizar o documento sem consultas N+1.
+ */
 @Service
 public class ExportacaoCalendarioUseCase {
 
@@ -48,6 +56,25 @@ public class ExportacaoCalendarioUseCase {
         this.exporters = exporters;
     }
 
+    /**
+     * Resolve o período de exportação a partir da opção informada (ANO, MES ou PERIODO),
+     * busca os eventos elegíveis dentro desse período aplicando os filtros de categoria e
+     * organização, e delega a geração do arquivo binário ao exportador que suporta o
+     * formato solicitado.
+     *
+     * @param formato identificador do formato de saída (ex.: "PDF", "ICS"), repassado ao
+     *                 {@link CalendarioExporter} correspondente
+     * @param opcao modo de resolução do período: "ANO", "MES" ou "PERIODO"
+     * @param ano ano alvo quando {@code opcao} é "ANO" ou "MES"; usa o ano corrente se nulo
+     * @param mes mês alvo (1-12) quando {@code opcao} é "MES"; usa o mês corrente se nulo
+     * @param dataInicio início do intervalo quando {@code opcao} é "PERIODO"
+     * @param dataFim fim do intervalo quando {@code opcao} é "PERIODO"
+     * @param categorias categorias de evento usadas para filtrar o conjunto exportado
+     * @param organizacaoIds organizações usadas para filtrar o conjunto exportado
+     * @return conteúdo binário do calendário exportado no formato solicitado
+     * @throws IllegalArgumentException se {@code opcao} for inválida ou se nenhum
+     *                                    exportador suportar o {@code formato} informado
+     */
     @Transactional(readOnly = true)
     public byte[] execute(String formato, String opcao, Integer ano, Integer mes, Instant dataInicio, Instant dataFim,
                           List<String> categorias, List<UUID> organizacaoIds) {

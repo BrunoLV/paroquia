@@ -6,6 +6,12 @@ import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Verifica se o ator autenticado tem privilégio para operar a trava de governança do Ano Paroquial (abrir, fechar
+ * ou concluir um ano). Esta é uma autorização de escopo mais restrito que a autorização geral de eventos: apenas o
+ * Pároco/Admin ou os coordenadores do Conselho Pastoral (CPP/CPC) podem alterar o ciclo de vida do ano civil, dado
+ * o impacto sobre todo o planejamento anual da Matriz e das Comunidades.
+ */
 @Service
 public class AnoParoquialAuthorizationService {
 

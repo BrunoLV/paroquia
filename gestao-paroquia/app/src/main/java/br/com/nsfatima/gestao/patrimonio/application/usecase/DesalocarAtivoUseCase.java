@@ -24,6 +24,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Encerra a ocupação corrente de um ativo alocado a um evento, marcando a alocação como
+ * {@code DEVOLVIDA} e retornando o ativo ao status {@code DISPONIVEL} para a organização dona.
+ */
 @Service
 public class DesalocarAtivoUseCase {
 
@@ -51,6 +55,16 @@ public class DesalocarAtivoUseCase {
         this.auditPublisher = auditPublisher;
     }
 
+    /**
+     * Desaloca o ativo, procurando entre suas ocupações a alocação de evento corrente (status
+     * {@code CONFIRMADA} ou {@code ATRASADA}) e registrando a devolução com uma nota obrigatória.
+     *
+     * @param ativoId ativo a desalocar
+     * @param request observação da devolução (opcional; usa texto padrão se omitida)
+     * @return o ativo já com status {@code DISPONIVEL}
+     * @throws AtivoPatrimonialNotFoundException  se o ativo não existir
+     * @throws AtivoDesalocacaoInvalidaException se não houver alocação de evento corrente
+     */
     @Transactional
     public AtivoPatrimonialResponse execute(UUID ativoId, DesalocarAtivoRequest request) {
         AtivoPatrimonialEntity ativo = ativoRepository.findById(ativoId)

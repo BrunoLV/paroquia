@@ -1,5 +1,11 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
+/**
+ * Catálogo central de códigos de erro de negócio/validação usados nas respostas padronizadas
+ * ({@link ValidationErrorResponse}) em toda a API. Centralizar os códigos aqui (em vez de strings
+ * literais espalhadas pelos handlers de cada contexto) evita duplicação e divergência de valores
+ * entre backend e frontend, que consome estes mesmos códigos para exibir mensagens localizadas.
+ */
 public enum ErrorCodes {
     VALIDATION_ERROR,
     VALIDATION_REQUIRED_FIELD,

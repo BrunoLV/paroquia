@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
+/**
+ * Dados públicos de uma organização, expostos pela API de gestão de organizações.
+ */
 @Schema(description = "Response with Organization data")
 public record OrganizacaoResponse(
         @Schema(description = "Unique identifier")

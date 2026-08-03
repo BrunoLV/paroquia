@@ -9,6 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Aprova um usuário que se autocadastrou publicamente (via {@code RegistrarUsuarioUseCase}), habilitando seu
+ * acesso e ativando os vínculos organizacionais que ele solicitou no cadastro. Até essa aprovação, o usuário
+ * existe no banco mas fica com {@code enabled=false} e seus vínculos com {@code ativo=false}, ou seja,
+ * não consegue autenticar nem aparece como membro efetivo de nenhuma organização.
+ */
 @Service
 public class ApproveUsuarioUseCase {
 
@@ -22,6 +28,14 @@ public class ApproveUsuarioUseCase {
         this.vinculoRepository = vinculoRepository;
     }
 
+    /**
+     * Habilita o usuário (permitindo login), garante que ele possua o papel padrão {@code ROLE_USER} — sem
+     * duplicá-lo se já presente — e ativa todos os vínculos organizacionais ainda pendentes que ele possui,
+     * tornando-o membro efetivo dessas organizações.
+     *
+     * @param userId identificador do usuário a aprovar
+     * @throws UsuarioNotFoundException se não existir usuário com o id informado
+     */
     @Transactional
     public void execute(UUID userId) {
         UsuarioEntity usuario = usuarioRepository.findById(userId)

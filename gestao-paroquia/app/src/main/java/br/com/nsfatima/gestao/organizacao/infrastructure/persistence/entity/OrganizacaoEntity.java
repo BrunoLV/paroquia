@@ -12,6 +12,12 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Entidade JPA que persiste um nó da hierarquia organizacional da paróquia — o espelho de armazenamento de
+ * {@code Organizacao}. {@code parentId} referencia a organização-mãe (auto-relacionamento por ID, sem FK JPA
+ * navegável, para manter os contextos independentes) e {@code pastoralOficialId} vincula o registro ao
+ * catálogo oficial de Pastorais/Movimentos quando o {@code tipo} for {@code PASTORAL} ou {@code MOVIMENTO}.
+ */
 @Entity
 @Table(name = "organizacoes", schema = "calendario")
 public class OrganizacaoEntity extends BaseVersionedEntity {

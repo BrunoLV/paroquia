@@ -8,6 +8,11 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Configuração institucional da paróquia (nome, diocese, endereço, identidade visual),
+ * usada para personalizar exportações, relatórios e a apresentação da aplicação. Tipicamente
+ * existe uma única instância desta entidade para toda a instalação.
+ */
 @Entity
 @Table(name = "paroquia_configuracao", schema = "calendario")
 public class ParoquiaConfiguracaoEntity extends BaseVersionedEntity {
@@ -24,12 +29,15 @@ public class ParoquiaConfiguracaoEntity extends BaseVersionedEntity {
     @Column(nullable = false, length = 500)
     private String endereco;
 
+    /** Bytes da imagem do logotipo da paróquia, usada em relatórios/exportações e na interface. */
     @Column(name = "logo_bytes")
     private byte[] logoBytes;
 
+    /** Cor primária da identidade visual, em hexadecimal (ex.: {@code #1A2B3C}). */
     @Column(name = "cor_primaria_hex", nullable = false, length = 7)
     private String corPrimariaHex;
 
+    /** Cor secundária da identidade visual, em hexadecimal (ex.: {@code #1A2B3C}). */
     @Column(name = "cor_secundaria_hex", nullable = false, length = 7)
     private String corSecundariaHex;
 

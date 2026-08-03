@@ -17,6 +17,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Serviço de domínio para consulta de eventos de calendário, responsável por
+ * aplicar a regra de visibilidade baseada em papel e escopo organizacional: Clero
+ * e Conselho Pastoral enxergam todos os eventos; demais atores só enxergam eventos
+ * da própria organização responsável.
+ */
 @Service
 public class EventoService {
 
@@ -26,6 +32,16 @@ public class EventoService {
         this.eventoJpaRepository = eventoJpaRepository;
     }
 
+    /**
+     * Busca um evento por identificador, garantindo que o ator autenticado tem
+     * permissão para visualizá-lo.
+     *
+     * @param id identificador do evento
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @return evento encontrado
+     * @throws EventoNotFoundException se nenhum evento existir com o identificador informado
+     * @throws ForbiddenOperationException se o ator não tiver permissão para visualizar o evento
+     */
     public EventoEntity findById(UUID id, EventoActorContext actorContext) {
         EventoEntity evento = eventoJpaRepository.findById(id)
                 .orElseThrow(() -> new EventoNotFoundException(id));
@@ -35,6 +51,14 @@ public class EventoService {
         return evento;
     }
 
+    /**
+     * Lista eventos de calendário paginados, aplicando os filtros opcionais
+     * informados (período, organizações, projeto, envolvido, categoria e status).
+     *
+     * @param filters filtros de busca opcionais
+     * @param pageable parâmetros de paginação e ordenação
+     * @return página de eventos que atendem aos filtros informados
+     */
     public Page<EventoEntity> list(EventoFiltroRequest filters, Pageable pageable) {
         List<CategoriaEvento> categories = filters.categoria();
 

@@ -20,6 +20,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Cancela uma reserva/pedido de alocação de ativo (incluindo pedidos de empréstimo pendentes de
+ * aprovação) desde que ainda não tenha iniciado seu período. Se a ocupação estiver vinculada a
+ * uma solicitação de aprovação pendente, essa solicitação é automaticamente reprovada em
+ * conjunto para manter os dois estados consistentes.
+ */
 @Service
 public class CancelarAlocacaoAtivoUseCase {
 
@@ -41,6 +47,17 @@ public class CancelarAlocacaoAtivoUseCase {
         this.authorizationService = authorizationService;
     }
 
+    /**
+     * Cancela a ocupação (alocação ou manutenção) informada, exigindo que ela esteja em um status
+     * cancelável ({@code PENDENTE_APROVACAO} ou {@code CONFIRMADA}) e que seu período ainda não
+     * tenha começado. O solicitante original sempre pode cancelar; caso contrário, é exigida
+     * autorização equivalente à de iniciar a alocação/manutenção na organização de origem.
+     *
+     * @param alocacaoId ocupação a cancelar
+     * @param request    motivo do cancelamento
+     * @throws AtivoAlocacaoCancelamentoInvalidoException se a ocupação não existir, já tiver
+     *     iniciado ou não estiver em status cancelável
+     */
     @Transactional
     public void execute(UUID alocacaoId, CancelarAlocacaoRequest request) {
         AtivoAlocacaoEntity ocupacao = alocacaoRepository.findById(alocacaoId)

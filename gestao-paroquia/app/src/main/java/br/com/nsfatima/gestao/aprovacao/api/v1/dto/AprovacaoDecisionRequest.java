@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Corpo da requisição para decidir (aprovar ou reprovar) uma solicitação de aprovação pendente.
+ */
 @Schema(description = "Solicitação para decisão de uma aprovação")
 public record AprovacaoDecisionRequest(
         @Schema(description = "Novo status da aprovação (APROVADO ou REJEITADO)")

@@ -166,9 +166,13 @@ class AuditRollbackConsistencyIntegrationTest {
                 .extracting(ObservacaoEventoEntity::isRemovida)
                 .isEqualTo(false);
 
+        // A listagem em si também audita (ação "listar", persistida) e não deve herdar o
+        // "db down" configurado acima para o DELETE — aqui verificamos apenas que a observação
+        // segue visível, não o comportamento de auditoria da própria listagem.
+        reset(auditoriaOperacaoJpaRepository);
+
         mockMvc.perform(get("/api/v1/eventos/{eventoId}/observacoes", eventoId)
                         .header("X-Actor-Org-Id", organizacaoId))
-                .andExpect(status().isOk())
                 .andExpect(status().isOk());
     }
 }

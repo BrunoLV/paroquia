@@ -21,6 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Expõe as métricas estratégicas e preditivas calculadas sobre o calendário de eventos e os
+ * projetos pastorais, consumidas pelos painéis de governança da Matriz, do CPP (Conselho Pastoral
+ * Paroquial) e do CAE (Conselho de Assuntos Econômicos). Cada endpoint delega o cálculo a um
+ * use case dedicado; o controller apenas orquestra e monta a resposta.
+ */
 @RestController
 @RequestMapping("/api/v1/metricas/estrategicas")
 @Tag(name = "Métricas Estratégicas e Preditivas", description = "Endpoints para consulta de inteligência pastoral e governança paroquial (Clero, CPP e CAE)")
@@ -48,6 +54,12 @@ public class MetricaEstrategicaController {
         this.calcularOciosidadePatrimonialUseCase = calcularOciosidadePatrimonialUseCase;
     }
 
+    /**
+     * Consolida em uma única resposta as seis métricas estratégicas do painel de governança,
+     * evitando múltiplas chamadas do frontend para montar o dashboard executivo.
+     *
+     * @return o painel consolidado com todas as métricas estratégicas
+     */
     @GetMapping("/painel")
     @Operation(summary = "Obtém painel consolidado com as 6 métricas estratégicas")
     public MetricasEstrategicasPainelResponse getPainelConsolidado() {
@@ -61,36 +73,73 @@ public class MetricaEstrategicaController {
         );
     }
 
+    /**
+     * Calcula o índice de sazonalidade litúrgica, indicando padrões de concentração de eventos ao
+     * longo do ano eclesiástico para apoiar o planejamento preditivo de recursos pastorais.
+     *
+     * @return a lista de indicadores de sazonalidade por período litúrgico
+     */
     @GetMapping("/sazonalidade-liturgica")
     @Operation(summary = "Índice de Sazonalidade Litúrgica e Preditividade Pastoral")
     public List<SazonalidadeLiturgicaResponse> getSazonalidadeLiturgica() {
         return calcularSazonalidadeLiturgicaUseCase.execute();
     }
 
+    /**
+     * Calcula a taxa de conclusão e de abandono dos projetos pastorais, usada pelo CPP e pelo CAE
+     * para avaliar a efetividade da execução de projetos ao longo do tempo.
+     *
+     * @return a taxa de conclusão/abandono de projetos
+     */
     @GetMapping("/taxa-projetos")
     @Operation(summary = "Taxa de Conclusão e Abandono de Projetos (CPP/CAE)")
     public TaxaConclusaoProjetosResponse getTaxaProjetos() {
         return calcularTaxaProjetosUseCase.execute();
     }
 
+    /**
+     * Calcula o SLA (tempo médio de homologação) do despacho pastoral, medindo quanto tempo leva
+     * para uma solicitação de aprovação ser decidida — indicador de governança do fluxo de aprovação.
+     *
+     * @return o SLA médio de despacho pastoral
+     */
     @GetMapping("/sla-despacho")
     @Operation(summary = "SLA de Despacho Pastoral (Tempo Médio de Homologação)")
     public SlaDespachoPastoralResponse getSlaDespacho() {
         return calcularSlaDespachoPastoralUseCase.execute();
     }
 
+    /**
+     * Calcula o coeficiente de impacto social, refletindo o volume e o alcance de atividades da
+     * pastoral em saída (ações voltadas à comunidade externa) no período analisado.
+     *
+     * @return o coeficiente de impacto social calculado
+     */
     @GetMapping("/impacto-social")
     @Operation(summary = "Coeficiente de Impacto Social (Pastoral em Saída)")
     public CoeficienteImpactoSocialResponse getImpactoSocial() {
         return calcularImpactoSocialUseCase.execute();
     }
 
+    /**
+     * Verifica a ocorrência de concorrência interpastoral — sobreposição de eventos de diferentes
+     * pastorais disputando o mesmo espaço/horário — sinalizando conflitos de agenda para mediação
+     * pela governança.
+     *
+     * @return o alerta de concorrência interpastoral, com os conflitos identificados
+     */
     @GetMapping("/concorrencia-interpastoral")
     @Operation(summary = "Alerta de Concorrência Interpastoral (Overlap Conflict)")
     public ConcorrenciaInterpastoralResponse getConcorrenciaInterpastoral() {
         return verificarConcorrenciaInterpastoralUseCase.execute();
     }
 
+    /**
+     * Calcula o índice de ociosidade patrimonial, indicando o grau de subutilização de espaços e
+     * salas da paróquia com base na ocupação registrada no calendário de eventos.
+     *
+     * @return o índice de ociosidade patrimonial de espaços e salas
+     */
     @GetMapping("/ociosidade-patrimonial")
     @Operation(summary = "Índice de Ociosidade Patrimonial de Espaços e Salas")
     public OciosidadePatrimonialResponse getOciosidadePatrimonial() {

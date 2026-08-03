@@ -14,6 +14,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Serviço de domínio que aplica a hierarquia de prioridade da agenda eclesial entre
+ * eventos sobrepostos no tempo. A hierarquia (nível 1 = maior prioridade, nível 4 =
+ * menor) é: Nível 1 — Solenidade Global, não pode coexistir com outro Nível 1 e
+ * cancela automaticamente qualquer evento de menor prioridade em qualquer
+ * igreja/comunidade; Nível 2 — Litúrgico Territorial, não pode sobrepor Nível 1 em
+ * lugar nenhum nem outro Nível 2 no mesmo espaço/comunidade, e cancela
+ * automaticamente eventos de Nível 3/4 no mesmo espaço/comunidade; Nível 3 — Ação
+ * Orgânica Regular, não pode sobrepor Nível 1 em lugar nenhum, nem qualquer evento
+ * no mesmo espaço/comunidade; Nível 4 — Atividade de Movimento, não pode sobrepor
+ * nenhum evento de prioridade igual ou maior no mesmo espaço/comunidade, nem Nível
+ * 1/2/3 em qualquer lugar. Violações lançam {@link ConflitoAgendaEclesialException};
+ * quando a regra prevê cancelamento automático em vez de rejeição, os eventos
+ * afetados são apenas coletados aqui — o cancelamento efetivo é aplicado por
+ * {@link #processAutoCancellation}.
+ */
 @Service
 public class PrioridadeAgendaValidatorService {
 
@@ -23,6 +39,24 @@ public class PrioridadeAgendaValidatorService {
         this.eventoJpaRepository = eventoJpaRepository;
     }
 
+    /**
+     * Verifica a sobreposição temporal do novo evento contra eventos existentes e
+     * aplica a hierarquia de prioridade da agenda eclesial: rejeita a operação com
+     * {@link ConflitoAgendaEclesialException} quando o novo evento não pode
+     * coexistir com um evento existente, ou coleta (sem aplicar) os eventos de menor
+     * prioridade que devem ser cancelados automaticamente como consequência da
+     * criação deste evento.
+     *
+     * @param categoria categoria do novo evento, cujo nível de prioridade rege a validação; {@code null} pula a validação
+     * @param inicioUtc início do intervalo do novo evento, em UTC
+     * @param fimUtc fim do intervalo do novo evento, em UTC
+     * @param localId identificador do local físico do novo evento, usado para detectar mesmo espaço
+     * @param igrejaVinculoId identificador da igreja/comunidade vinculada ao novo evento, usado para detectar mesmo espaço
+     * @param currentEventoId identificador do próprio evento (para excluí-lo da busca de sobreposição em atualizações), ou {@code null} em criação
+     * @param bypass se {@code true}, ignora completamente a validação de prioridade/conflito
+     * @return lista de eventos existentes que devem ser cancelados automaticamente em decorrência da prioridade do novo evento; vazia se nenhum
+     * @throws ConflitoAgendaEclesialException se o novo evento sobrepõe um evento existente com o qual não pode coexistir segundo a hierarquia de prioridade
+     */
     @Transactional
     public List<EventoEntity> validatePriorityAndConflicts(
             CategoriaEvento categoria,
@@ -91,6 +125,14 @@ public class PrioridadeAgendaValidatorService {
         return eventsToAutoCancel;
     }
 
+    /**
+     * Aplica e persiste o cancelamento automático dos eventos coletados por
+     * {@link #validatePriorityAndConflicts} como consequência de um evento de maior
+     * prioridade ter sido criado. Não faz nada se a lista estiver vazia ou nula.
+     *
+     * @param eventsToCancel eventos a serem cancelados automaticamente
+     * @param motivo motivo do cancelamento a ser registrado; se ausente, usa uma mensagem padrão referindo o conflito de prioridade
+     */
     @Transactional
     public void processAutoCancellation(List<EventoEntity> eventsToCancel, String motivo) {
         if (eventsToCancel == null || eventsToCancel.isEmpty()) {

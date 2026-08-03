@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
+/**
+ * Mapa de colaboração de um projeto: lista das pastorais/movimentos (organizações) envolvidos,
+ * derivada dos eventos vinculados ao projeto (ver {@code ProjetoEventoProvider}).
+ */
 @Schema(description = "Mapa de colaboração das pastorais envolvidas no projeto")
 public record MapaColaboracaoDTO(
         @Schema(description = "Lista única de nomes das pastorais/grupos envolvidos")

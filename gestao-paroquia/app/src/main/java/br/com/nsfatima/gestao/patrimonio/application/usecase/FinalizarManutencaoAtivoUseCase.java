@@ -20,6 +20,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Encerra o período de manutenção corrente de um ativo patrimonial, marcando a ocupação de
+ * manutenção como {@code DEVOLVIDA} e retornando o ativo ao status {@code DISPONIVEL}.
+ */
 @Service
 public class FinalizarManutencaoAtivoUseCase {
 
@@ -41,6 +45,16 @@ public class FinalizarManutencaoAtivoUseCase {
         this.authorizationService = authorizationService;
     }
 
+    /**
+     * Finaliza a manutenção corrente do ativo, localizando a ocupação de manutenção em aberto
+     * (status {@code CONFIRMADA} ou {@code ATRASADA}) e devolvendo o ativo ao inventário
+     * disponível.
+     *
+     * @param ativoId ativo em manutenção
+     * @return o ativo já com status {@code DISPONIVEL}
+     * @throws AtivoPatrimonialNotFoundException se o ativo não existir
+     * @throws AtivoManutencaoInvalidaException  se não houver manutenção corrente para finalizar
+     */
     @Transactional
     public AtivoPatrimonialResponse execute(UUID ativoId) {
         AtivoPatrimonialEntity ativo = ativoRepository.findById(ativoId)

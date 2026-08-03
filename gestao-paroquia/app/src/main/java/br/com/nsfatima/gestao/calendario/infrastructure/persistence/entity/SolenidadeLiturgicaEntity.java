@@ -11,6 +11,13 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Catálogo de solenidades e festas litúrgicas (ex.: Natal, Páscoa, Corpus Christi) usadas
+ * como referência para o provisionamento anual automático de eventos no calendário
+ * paroquial. Cada registro descreve como calcular a data da solenidade em um dado ano —
+ * ou por data fixa ({@link #mesFixo}/{@link #diaFixo}) ou por deslocamento em relação à
+ * Páscoa ({@link #offsetDiasPascoa}) — e sua prioridade/demanda esperada de agenda.
+ */
 @Entity
 @Table(name = "tb_solenidade_liturgica", schema = "calendario")
 public class SolenidadeLiturgicaEntity extends BaseVersionedEntity {
@@ -18,6 +25,7 @@ public class SolenidadeLiturgicaEntity extends BaseVersionedEntity {
     @Id
     private UUID id;
 
+    /** Chave técnica única e estável que identifica a solenidade (independente do nome de exibição). */
     @Column(nullable = false, unique = true, length = 64)
     private String chave;
 
@@ -28,27 +36,33 @@ public class SolenidadeLiturgicaEntity extends BaseVersionedEntity {
     @Column(name = "tipo_solenidade", nullable = false, length = 32)
     private TipoSolenidade tipoSolenidade;
 
+    /** Mês (1-12) de ocorrência da solenidade quando ela tem data fixa no calendário civil; {@code null} se a data é móvel (baseada na Páscoa). */
     @Column(name = "mes_fixo")
     private Integer mesFixo;
 
+    /** Dia do mês de ocorrência da solenidade quando ela tem data fixa; {@code null} se a data é móvel (baseada na Páscoa). */
     @Column(name = "dia_fixo")
     private Integer diaFixo;
 
+    /** Deslocamento em dias em relação ao Domingo de Páscoa, usado para calcular datas móveis (ex.: Quarta-feira de Cinzas, Corpus Christi); {@code null} se a data é fixa. */
     @Column(name = "offset_dias_pascoa")
     private Integer offsetDiasPascoa;
 
     @Column(name = "cor_liturgica", nullable = false, length = 32)
     private String corLiturgica;
 
+    /** Fator multiplicador de demanda de agenda esperado para esta solenidade em relação a um dia comum. */
     @Column(name = "fator_demanda", nullable = false)
     private Double fatorDemanda = 1.0;
 
+    /** Nível de prioridade padrão atribuído aos eventos provisionados para esta solenidade na resolução de conflitos de agenda. */
     @Column(name = "nivel_prioridade", nullable = false)
     private Integer nivelPrioridade = 2;
 
     @Column(length = 500)
     private String descricao;
 
+    /** Indica se a solenidade está ativa para fins de provisionamento automático de eventos; {@code false} desativa a geração sem remover o registro histórico. */
     @Column(nullable = false)
     private boolean ativo = true;
 

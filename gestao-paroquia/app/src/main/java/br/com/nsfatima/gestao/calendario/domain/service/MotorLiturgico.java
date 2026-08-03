@@ -42,38 +42,50 @@ public class MotorLiturgico {
     }
 
     public LocalDate calculateQuartaDeCinzas(int year) {
+        // Início da Quaresma: 40 dias de jejum antes da Páscoa, não contando os 6 domingos
+        // do período (40 + 6 = 46 dias corridos antes do Domingo de Páscoa).
         return calculateEaster(year).minusDays(46);
     }
 
     public LocalDate calculateQuartaSanta(int year) {
+        // Quarta-feira da Semana Santa, imediatamente anterior ao Tríduo Pascal.
         return calculateEaster(year).minusDays(4);
     }
 
     public LocalDate calculateQuintaSanta(int year) {
+        // Quinta-feira Santa: início do Tríduo Pascal (Missa da Ceia do Senhor).
         return calculateEaster(year).minusDays(3);
     }
 
     public LocalDate calculateVesperaPascoa(int year) {
+        // Sábado Santo / Vigília Pascal, véspera do Domingo de Páscoa.
         return calculateEaster(year).minusDays(1);
     }
 
     public LocalDate calculateAscensao(int year) {
+        // Regra tradicional: 40 dias após a Páscoa (contando a própria Páscoa como dia 1),
+        // por isso o offset é 39+3=42 dias corridos a partir do Domingo de Páscoa.
         return calculateEaster(year).plusDays(42);
     }
 
     public LocalDate calculatePentecostes(int year) {
+        // 50 dias após a Páscoa (Páscoa = dia 1), equivalente a +49 dias corridos.
         return calculateEaster(year).plusDays(49);
     }
 
     public LocalDate calculateSantissimaTrindade(int year) {
+        // Domingo seguinte a Pentecostes (+7 dias sobre o offset de Pentecostes = +56).
         return calculateEaster(year).plusDays(56);
     }
 
     public LocalDate calculateCorpusChristi(int year) {
+        // Quinta-feira após a Santíssima Trindade no calendário tradicional; no rito atual
+        // celebrada no domingo seguinte, por isso +60 dias (Trindade +4) em vez de +57.
         return calculateEaster(year).plusDays(60);
     }
 
     public LocalDate calculateSagradoCoracao(int year) {
+        // Sexta-feira após o 2º domingo depois de Pentecostes (Trindade +12 dias = +68).
         return calculateEaster(year).plusDays(68);
     }
 
@@ -101,11 +113,16 @@ public class MotorLiturgico {
     }
 
     public LocalDate calculateCristoRei(int year) {
+        // Último domingo do Ano Litúrgico: o domingo imediatamente anterior ao 1º Domingo
+        // do Advento (que abre o próximo ano litúrgico).
         LocalDate adventoCurrent = calculateAdventoSundayDate(year);
         return adventoCurrent.minusDays(7);
     }
 
     public LocalDate calculateEpifania(int year) {
+        // No Brasil, Epifania é celebrada no domingo entre 2 e 8 de janeiro (nunca em data
+        // fixa); se nenhum dia nesse intervalo cair num domingo (impossível na prática, mas
+        // mantido como salvaguarda), cai de volta para a data fixa tradicional (6/jan).
         for (int day = 2; day <= 8; day++) {
             LocalDate d = LocalDate.of(year, 1, day);
             if (d.getDayOfWeek() == DayOfWeek.SUNDAY) {
@@ -122,6 +139,10 @@ public class MotorLiturgico {
         ZonedDateTime zdt = eventDate.atZone(ZoneOffset.UTC);
         int anoCivil = zdt.getYear();
 
+        // O Ano Litúrgico começa no 1º Domingo do Advento do ano civil anterior, então uma
+        // data no fim do ano civil corrente (a partir do Advento) já pertence ao ano
+        // litúrgico seguinte — daí calcular o início do advento do "próximo" ano litúrgico
+        // (anoCivil + 1) e comparar contra ele.
         ZonedDateTime inicioAdventoProximoAnoLiturgico = calculateAdventoInicio(anoCivil + 1);
 
         if (zdt.isAfter(inicioAdventoProximoAnoLiturgico) || zdt.isEqual(inicioAdventoProximoAnoLiturgico)) {

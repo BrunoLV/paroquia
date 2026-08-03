@@ -6,6 +6,11 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import org.springframework.stereotype.Component;
 
+/**
+ * Converte {@link AprovacaoEntity} (persistência) em {@link AprovacaoResponse} (contrato de API), isolando o
+ * modelo JPA do formato exposto externamente. Normaliza o tipo de solicitação legado via
+ * {@link LegacyEnumInconsistencyPublisher}, reportando inconsistências de dados legados sem quebrar a resposta.
+ */
 @Component
 public class AprovacaoMapper {
 
@@ -15,6 +20,12 @@ public class AprovacaoMapper {
         this.legacyEnumInconsistencyPublisher = legacyEnumInconsistencyPublisher;
     }
 
+    /**
+     * Converte a entidade de aprovação persistida em seu DTO de resposta para a API.
+     *
+     * @param entity entidade de aprovação; pode ser {@code null}
+     * @return DTO de resposta correspondente, ou {@code null} se a entidade for {@code null}
+     */
     public AprovacaoResponse toResponse(AprovacaoEntity entity) {
         if (entity == null) {
             return null;

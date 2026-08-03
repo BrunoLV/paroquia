@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+/**
+ * Lista os ativos patrimoniais alocados a um evento específico, resolvendo em lote os dados dos
+ * ativos referenciados para evitar consultas N+1.
+ */
 @Service
 public class ListAlocacoesPorEventoUseCase {
 
@@ -25,6 +29,12 @@ public class ListAlocacoesPorEventoUseCase {
         this.ativoRepository = ativoRepository;
     }
 
+    /**
+     * Retorna as alocações de ativos vinculadas ao evento, da mais recente para a mais antiga.
+     *
+     * @param eventoId evento consultado
+     * @return alocações de ativos do evento
+     */
     @Transactional(readOnly = true)
     public List<AtivoAlocacaoResponse> execute(UUID eventoId) {
         List<AtivoAlocacaoEntity> ocupacoes = alocacaoRepository.findByEventoIdOrderByDataInicioDesc(eventoId);

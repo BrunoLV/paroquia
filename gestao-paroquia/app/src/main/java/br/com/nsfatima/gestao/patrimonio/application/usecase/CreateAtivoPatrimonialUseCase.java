@@ -18,6 +18,11 @@ import java.time.Instant;
 import java.time.Year;
 import java.util.UUID;
 
+/**
+ * Cadastra um novo ativo patrimonial vinculado a uma organização proprietária, sempre no status
+ * inicial {@code DISPONIVEL} e com um número de tombamento anual gerado automaticamente
+ * ({@code NumeroTombamentoGenerator}).
+ */
 @Service
 public class CreateAtivoPatrimonialUseCase {
 
@@ -42,6 +47,13 @@ public class CreateAtivoPatrimonialUseCase {
         this.auditPublisher = auditPublisher;
     }
 
+    /**
+     * Cadastra o ativo após validar que o ator pode criar ativos para a organização informada e
+     * que essa organização é um tipo válido de proprietária de patrimônio.
+     *
+     * @param request dados do ativo a cadastrar
+     * @return o ativo recém-criado, já com número de tombamento atribuído
+     */
     @Transactional
     public AtivoPatrimonialResponse execute(CreateAtivoPatrimonialRequest request) {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
@@ -65,6 +77,13 @@ public class CreateAtivoPatrimonialUseCase {
         return toResponse(saved);
     }
 
+    /**
+     * Converte a entidade JPA de ativo patrimonial para o DTO de resposta da API, reutilizado por
+     * outros casos de uso do contexto que retornam o estado atualizado de um ativo.
+     *
+     * @param e entidade persistida
+     * @return DTO de resposta correspondente
+     */
     public static AtivoPatrimonialResponse toResponse(AtivoPatrimonialEntity e) {
         return new AtivoPatrimonialResponse(
                 e.getId(),

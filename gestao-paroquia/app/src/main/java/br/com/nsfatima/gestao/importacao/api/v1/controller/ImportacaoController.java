@@ -22,6 +22,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Expõe o fluxo de importação em lote em três passos — baixar template, validar arquivo
+ * (dry-run) e confirmar persistência — restrito a papéis com poder administrativo/coordenativo
+ * sobre a paróquia. A separação entre validar e confirmar existe para que o usuário corrija
+ * erros de linha antes de qualquer gravação em banco.
+ */
 @RestController
 @RequestMapping("/api/v1/importacao")
 @Tag(name = "File Importation", description = "Bulk file import endpoints for Members, Users, Organizations, and " +
@@ -34,6 +40,15 @@ public class ImportacaoController {
         this.importacaoService = importacaoService;
     }
 
+    /**
+     * Gera um arquivo modelo (CSV ou XLSX) com o cabeçalho de colunas e linhas de exemplo
+     * esperados para o tipo de entidade informado, servindo de guia para preenchimento do
+     * arquivo de importação.
+     *
+     * @param tipo código de {@code TipoEntidadeImportacao} (ex.: MEMBRO, USUARIO)
+     * @param formato "CSV" ou "XLSX"; qualquer outro valor recai em CSV
+     * @return arquivo binário para download, com nome e content-type apropriados ao formato
+     */
     @GetMapping("/template")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Download import template", description = "Generates CSV or XLSX sample template for batch " +

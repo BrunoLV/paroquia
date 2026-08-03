@@ -13,6 +13,17 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Serviço de domínio que concentra as regras de autorização para criação, edição,
+ * gestão de participantes e mudança de organização responsável de um evento de
+ * calendário. A autorização combina papel organizacional (conjuntos fechados de
+ * papéis habilitados a criar/editar) com escopo de organização/igreja: fora do
+ * Pároco, o ator só pode agir dentro da própria organização/igreja vinculada, a
+ * menos que possua outro vínculo válido (verificado via
+ * {@link SecurityContextHolder}) que cubra o escopo do evento. Também decide se
+ * uma criação de evento é aplicada imediatamente ou requer aprovação, e restringe o
+ * bypass de conflito de agenda eclesial ao Pároco/Admin.
+ */
 @Service
 public class EventoPatchAuthorizationService {
 
@@ -40,10 +51,28 @@ public class EventoPatchAuthorizationService {
             PapelOrganizacional.VIGARIO,
             PapelOrganizacional.PADRE);
 
+    /**
+     * Garante que o ator tem permissão para criar um evento no escopo informado,
+     * sem retornar o modo de criação resultante.
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @param organizacaoResponsavelId identificador da organização responsável pelo evento a ser criado
+     * @param igrejaVinculoId identificador da igreja vinculada ao evento a ser criado, ou {@code null}
+     * @throws AccessDeniedException se o ator não tiver papel ou escopo autorizado a criar o evento
+     */
     public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
         resolveCreateRequestMode(actorContext, organizacaoResponsavelId, igrejaVinculoId);
     }
 
+    /**
+     * Garante que o ator tem permissão para utilizar o bypass de conflito de
+     * agenda eclesial ao criar/editar um evento — restrito a Pároco/Admin,
+     * verificado tanto pelo contexto de ator quanto pelas autoridades de segurança
+     * do usuário autenticado.
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado, ou {@code null}
+     * @throws AccessDeniedException se o ator não for Pároco nem Admin
+     */
     public void assertCanBypassAgendaConflict(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = actorContext != null
                 ? PapelOrganizacional.fromStoredValue(actorContext.role())
@@ -66,6 +95,19 @@ public class EventoPatchAuthorizationService {
         }
     }
 
+    /**
+     * Valida se o ator tem papel autorizado a criar eventos e se pode fazê-lo no
+     * escopo de organização/igreja informado, e determina se a criação resultante
+     * deve ser aplicada imediatamente ou requer aprovação: Pároco e determinadas
+     * lideranças de conselho pastoral (Presidente CPC, Mesa CPP, Coordenador Global)
+     * criam imediatamente; os demais papéis autorizados requerem aprovação.
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @param organizacaoResponsavelId identificador da organização responsável pelo evento a ser criado
+     * @param igrejaVinculoId identificador da igreja vinculada ao evento a ser criado, ou {@code null}
+     * @return modo de criação resultante (imediato ou sujeito a aprovação)
+     * @throws AccessDeniedException se o ator não tiver papel ou escopo autorizado a criar o evento
+     */
     public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext,
                                                       UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
 
@@ -105,6 +147,17 @@ public class EventoPatchAuthorizationService {
         return CreateRequestMode.REQUIRES_APROVACAO;
     }
 
+    /**
+     * Garante que o ator tem permissão para editar dados gerais de um evento
+     * existente: precisa ter papel editor autorizado e, salvo o Pároco, precisa
+     * atuar dentro da organização/igreja responsável pelo evento (ou possuir outro
+     * vínculo válido que cubra esse escopo).
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento
+     * @param eventIgrejaVinculoId identificador da igreja vinculada ao evento, ou {@code null}
+     * @throws ForbiddenOperationException se o ator não tiver papel ou escopo autorizado a editar o evento
+     */
     public void assertCanEditGeneral(EventoActorContext actorContext,
                                      UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
 
@@ -130,12 +183,30 @@ public class EventoPatchAuthorizationService {
         }
     }
 
+    /**
+     * Garante que o ator tem permissão para gerenciar os participantes (envolvidos)
+     * de um evento — reutiliza a mesma regra de {@link #assertCanEditGeneral}, pois
+     * a gestão de participantes é tratada como parte da edição geral do evento.
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento
+     * @param eventIgrejaVinculoId identificador da igreja vinculada ao evento, ou {@code null}
+     * @throws ForbiddenOperationException se o ator não tiver papel ou escopo autorizado a editar o evento
+     */
     public void assertCanManageParticipants(EventoActorContext actorContext,
                                             UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
 
         assertCanEditGeneral(actorContext, eventoOrganizacaoResponsavelId, eventIgrejaVinculoId);
     }
 
+    /**
+     * Garante que o ator tem permissão para alterar a organização responsável por
+     * um evento — restrito ao Pároco e a determinadas lideranças de conselho
+     * pastoral (Presidente CPC, Mesa CPP, Coordenador Global).
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @throws ForbiddenOperationException se o ator não for Pároco nem liderança de conselho pastoral autorizada
+     */
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
@@ -173,8 +244,14 @@ public class EventoPatchAuthorizationService {
         return false;
     }
 
+    /**
+     * Modo de processamento de uma solicitação de criação de evento, definido
+     * conforme o papel/escopo do ator solicitante.
+     */
     public enum CreateRequestMode {
+        /** O evento é criado imediatamente, sem passar pelo fluxo de aprovação. */
         IMMEDIATE,
+        /** A criação fica pendente até ser decidida através do fluxo de aprovação. */
         REQUIRES_APROVACAO
     }
 }

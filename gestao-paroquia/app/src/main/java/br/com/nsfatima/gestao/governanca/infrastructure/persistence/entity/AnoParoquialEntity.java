@@ -11,6 +11,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
+/**
+ * Registro persistente do estado de governança de um ano paroquial (chave é o próprio ano civil). Guarda o status
+ * corrente da máquina de estados definida em {@link AnoParoquialStatus} e o instante em que o ano foi fechado,
+ * usado tanto para a trava manual via {@code AnoParoquialController} quanto para o rollover automático de
+ * {@code AnoParoquialRolloverService}.
+ */
 @Entity
 @Table(name = "anos_paroquiais", schema = "calendario")
 public class AnoParoquialEntity {
@@ -22,6 +28,7 @@ public class AnoParoquialEntity {
     @Column(nullable = false, length = 32)
     private AnoParoquialStatus status;
 
+    /** Instante em que o ano transitou para {@code FECHADO}; {@code null} enquanto ainda em planejamento. */
     @Column(name = "data_fechamento_utc")
     private Instant dataFechamentoUtc;
 

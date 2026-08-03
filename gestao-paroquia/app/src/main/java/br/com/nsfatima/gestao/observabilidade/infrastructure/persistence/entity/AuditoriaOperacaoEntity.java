@@ -8,6 +8,22 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Registro persistido de uma operação auditável, gravado por
+ * {@code AuditoriaPersistenceService} e lido por {@code AuditoriaQueryService} para compor a
+ * trilha de auditoria. Cada linha representa um evento de negócio já filtrado pelo vocabulário
+ * fechado de ações (campo {@code acao}: "criar", "atualizar", "cancelar", "aprovacao-decisao",
+ * "aprovacao-decisao-solicitacao", "criar-observacao", "atualizar-observacao",
+ * "excluir-observacao", "sistema-observacao", "ler", "listar", "acao-admin", "transferir",
+ * "alocar").
+ *
+ * <p>{@code recursoTipo} é derivado da ação (ex.: "EVENTO", "OBSERVACAO", "APROVACAO",
+ * "GENERIC"); {@code contextId} (coluna {@code evento_id}) referencia opcionalmente o evento de
+ * calendário associado, quando aplicável; {@code detalhesAuditaveisJson} guarda o metadata bruto
+ * (chaves como "usuarioId"/"organizacaoId") serializado como JSON, cujo esquema não é validado
+ * pelo schema do banco — cabe aos publicadores respeitar as convenções de chave documentadas em
+ * {@code AuditoriaPersistenceService}.
+ */
 @Entity
 @Table(name = "auditoria_operacoes", schema = "calendario")
 public class AuditoriaOperacaoEntity {

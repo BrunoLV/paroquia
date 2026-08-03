@@ -13,6 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Registra uma nova ata/decisão de conselho paroquial (CPC/CPP) a partir de uma reunião.
+ * Toda decisão nasce em {@link StatusHomologacao#PENDENTE_HOMOLOGACAO}: o registro do fato
+ * (quem propôs, quando, sobre o que) é imediato, mas só passa a ter efeito oficial após
+ * homologação por uma autoridade competente ({@link HomologarCpcDecisaoUseCase}) — a criação
+ * em si não representa aprovação da decisão.
+ */
 @Service
 public class CreateCpcDecisaoUseCase {
 
@@ -24,6 +31,15 @@ public class CreateCpcDecisaoUseCase {
         this.actorContextResolver = actorContextResolver;
     }
 
+    /**
+     * Cria a ata/decisão com status inicial {@link StatusHomologacao#PENDENTE_HOMOLOGACAO},
+     * registrando o ator autenticado como solicitante (id e papel/role, não o nome pessoal —
+     * ver invariante de LGPD do contexto). O tipo de conselho é fixado como "CPC" nesta
+     * versão do fluxo.
+     *
+     * @param request dados da pauta/ata (título, descrição, data da reunião e comunidade)
+     * @return a decisão recém-criada, já com status pendente de homologação
+     */
     @Transactional
     public CpcDecisaoResponse execute(CreateCpcDecisaoRequest request) {
         EventoActorContext context = actorContextResolver.resolveRequired();
@@ -44,6 +60,14 @@ public class CreateCpcDecisaoUseCase {
         return toResponse(saved);
     }
 
+    /**
+     * Converte a entidade persistida em DTO de resposta da API. Reutilizado pelos demais
+     * use cases do contexto ({@link HomologarCpcDecisaoUseCase}, {@link ListCpcDecisoesUseCase})
+     * para manter um único mapeamento canônico entidade → resposta.
+     *
+     * @param e entidade de decisão de conselho já persistida
+     * @return DTO de resposta com os dados públicos da decisão
+     */
     public static CpcDecisaoResponse toResponse(CpcDecisaoEntity e) {
         return new CpcDecisaoResponse(
                 e.getId(),

@@ -12,6 +12,12 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Solicitação para criação de um novo evento no calendário. A criação pode ser roteada pelo fluxo
+ * de aprovação em vez de ser aplicada diretamente, dependendo do papel do solicitante e da
+ * organização responsável. Os dois construtores compactos legados existem para compatibilidade com
+ * chamadores anteriores à introdução de {@code igrejaVinculoId} e {@code bypassAgendaConflict}.
+ */
 @ValidEventoDates
 @Schema(description = "Solicitação para criação de um novo evento")
 public record CreateEventoRequest(
@@ -54,6 +60,11 @@ public record CreateEventoRequest(
         @Schema(description = "Flag de bypass para liberar conflito de agenda (apenas Pároco)")
         Boolean bypassAgendaConflict) {
 
+    /**
+     * Construtor legado sem {@code igrejaVinculoId} e sem {@code bypassAgendaConflict}, mantido para
+     * compatibilidade com chamadores anteriores à introdução desses campos. Assume que o evento não
+     * possui vínculo de igreja específico e que o conflito de agenda não deve ser ignorado.
+     */
     public CreateEventoRequest(
             String titulo,
             String descricao,
@@ -72,6 +83,10 @@ public record CreateEventoRequest(
 
     }
 
+    /**
+     * Construtor legado sem {@code bypassAgendaConflict}, mantido para compatibilidade com chamadores
+     * anteriores à introdução da flag de bypass. Assume que o conflito de agenda não deve ser ignorado.
+     */
     public CreateEventoRequest(
             String titulo,
             String descricao,
@@ -91,10 +106,23 @@ public record CreateEventoRequest(
 
     }
 
+    /**
+     * Alias semântico de {@code igrejaVinculoId} usado pelo domínio para identificar a comunidade
+     * (Matriz ou Comunidade) à qual o evento está vinculado.
+     *
+     * @return o ID da igreja de vínculo do evento
+     */
     public UUID communityId() {
         return igrejaVinculoId;
     }
 
+    /**
+     * Indica se o solicitante optou por ignorar a validação de conflito de agenda ao criar o evento.
+     * Esta flag só tem efeito para atores com papel de Pároco; para os demais é ignorada pela camada
+     * de domínio.
+     *
+     * @return {@code true} se o conflito de agenda deve ser ignorado na criação
+     */
     public boolean isBypassAgendaConflict() {
         return Boolean.TRUE.equals(bypassAgendaConflict);
     }

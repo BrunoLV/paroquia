@@ -22,6 +22,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Job diário (agendado por {@code PatrimonioQuartzConfig}) que mantém o status agregado das
+ * ocupações de ativos patrimoniais em dia: ativa no ativo as ocupações confirmadas cujo período já
+ * começou, e marca como atrasadas as ocupações cuja data de fim passou (com tolerância de
+ * {@value #DIAS_TOLERANCIA_ATRASO} dias) sem devolução, propagando o impacto do atraso para
+ * ocupações futuras do mesmo ativo. Usa um lock distribuído ({@code JobLockJpaRepository}) para
+ * garantir execução única mesmo com múltiplas instâncias da aplicação.
+ */
 @Component
 public class AtivoAlocacaoAgendaJob extends QuartzJobBean {
 
@@ -44,6 +52,13 @@ public class AtivoAlocacaoAgendaJob extends QuartzJobBean {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Adquire o lock distribuído do job e, se bem-sucedido, ativa ocupações que já iniciaram e
+     * detecta ocupações atrasadas; libera o lock ao final independentemente do resultado. Se o
+     * lock já estiver em uso por outra instância, a execução é ignorada silenciosamente.
+     *
+     * @param context contexto de execução fornecido pelo Quartz (não utilizado diretamente)
+     */
     @Override
     @Transactional
     protected void executeInternal(JobExecutionContext context) {

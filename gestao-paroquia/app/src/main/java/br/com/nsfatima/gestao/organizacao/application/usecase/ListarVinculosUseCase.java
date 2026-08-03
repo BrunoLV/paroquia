@@ -10,6 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Recupera os vínculos organizacionais ativos de um usuário, resolvendo os nomes de organização e de
+ * igreja/comunidade de contexto para exibição, usado para determinar o escopo de acesso e o nível de
+ * atuação do usuário na paróquia.
+ */
 @Service
 public class ListarVinculosUseCase {
 
@@ -23,13 +28,14 @@ public class ListarVinculosUseCase {
         this.organizacaoRepository = organizacaoRepository;
     }
 
-    @Transactional(readOnly = true)
-    /*
-      Recupera todos os vínculos ativos de um usuário com organizações para determinar seu escopo de acesso e nível
-      de atuação na paróquia.
-      <p>
-      Exemplo: useCase.execute(usuarioId)
+    /**
+     * Recupera todos os vínculos ativos de um usuário com organizações, com os nomes de organização e de
+     * igreja/comunidade de contexto já resolvidos para exibição.
+     *
+     * @param usuarioId identificador do usuário
+     * @return lista de vínculos ativos do usuário
      */
+    @Transactional(readOnly = true)
     public List<VinculoResponse> execute(UUID usuarioId) {
         return vinculoRepository.findByUsuarioIdAndAtivoTrue(usuarioId).stream()
                 .map(m -> {

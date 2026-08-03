@@ -13,11 +13,24 @@ import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 
+/**
+ * Política que resolve o período operacional (janela temporal) usado em consultas
+ * de métricas/indicadores do calendário (ex.: taxa de retrabalho, SLA de despacho
+ * pastoral). O período pode ser informado de duas formas mutuamente exclusivas:
+ * uma {@code granularidade} pré-definida (diária, semanal, mensal, anual), que é
+ * traduzida no período corrente correspondente relativo à data atual do relógio; ou
+ * um intervalo explícito de {@code inicio}/{@code fim}. As duas formas não podem ser
+ * combinadas nem omitidas simultaneamente.
+ */
 @Component
 public class PeriodoOperacionalPolicy {
 
     private final Clock clock;
 
+    /**
+     * Cria a política usando o relógio UTC do sistema como referência de "agora"
+     * para resolver granularidades.
+     */
     public PeriodoOperacionalPolicy() {
         this(Clock.systemUTC());
     }
@@ -26,6 +39,17 @@ public class PeriodoOperacionalPolicy {
         this.clock = clock;
     }
 
+    /**
+     * Resolve o período operacional efetivo a partir da granularidade ou do
+     * intervalo explícito informado, validando que exatamente uma das duas formas
+     * foi utilizada e que o intervalo resultante é temporalmente consistente.
+     *
+     * @param granularidade código de granularidade pré-definida, ou {@code null}/vazio se um intervalo explícito for usado
+     * @param inicio início do intervalo explícito, ou {@code null} se uma granularidade for usada
+     * @param fim fim do intervalo explícito, ou {@code null} se uma granularidade for usada
+     * @return período operacional resolvido, com granularidade e/ou intervalo efetivo
+     * @throws PeriodoOperacionalInvalidoException se granularidade e intervalo forem combinados, se nenhum dos dois for informado, se apenas um de início/fim for informado, se a granularidade não for suportada, ou se o fim não for posterior ao início
+     */
     public ResolvedPeriod resolve(String granularidade, Instant inicio, Instant fim) {
         boolean hasGranularidade = granularidade != null && !granularidade.isBlank();
         boolean hasInicio = inicio != null;
@@ -104,11 +128,24 @@ public class PeriodoOperacionalPolicy {
         return new ResolvedPeriod(null, requiredInicio, requiredFim);
     }
 
+    /**
+     * Período operacional já resolvido, pronto para ser usado como janela de
+     * consulta de métricas.
+     *
+     * @param granularidade granularidade que originou o período, ou {@code null} se resolvido a partir de intervalo explícito
+     * @param inicio início efetivo do período
+     * @param fim fim efetivo do período
+     */
     public record ResolvedPeriod(
             String granularidade,
             Instant inicio,
             Instant fim) {
 
+        /**
+         * Converte o período resolvido para o DTO de resposta da API.
+         *
+         * @return resposta de período operacional para exposição via API
+         */
         public PeriodoOperacionalResponse toResponse() {
             return new PeriodoOperacionalResponse(granularidade, inicio, fim);
         }

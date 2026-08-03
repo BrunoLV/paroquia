@@ -7,6 +7,14 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
+/**
+ * Lock distribuído baseado em banco de dados, usado para coordenar a execução de jobs
+ * agendados (ex.: rotinas de métricas/observabilidade) entre múltiplas instâncias da
+ * aplicação, evitando execução concorrente do mesmo job. {@code name} identifica o job de
+ * forma única; {@code lockedUntil} define até quando o lock é considerado válido (permitindo
+ * que outra instância o retome caso a anterior trave/caia sem liberar explicitamente); ver
+ * {@code JobLockJpaRepository#acquireLock} para a semântica de aquisição.
+ */
 @Entity
 @Table(name = "job_locks", schema = "calendario")
 public class JobLockEntity {

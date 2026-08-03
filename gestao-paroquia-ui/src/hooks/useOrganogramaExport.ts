@@ -1,8 +1,14 @@
 import {RefObject, useCallback, useState} from 'react';
 import {toPng, toSvg} from 'html-to-image';
 
+/** Formatos suportados de exportação do organograma: imagem rasterizada (`png`) ou vetorial (`svg`). */
 export type ExportFormat = 'png' | 'svg';
 
+/**
+ * Contrato retornado por `useOrganogramaExport`: estado de carregamento da exportação e as
+ * duas ações que a tela do organograma (`Organograma.tsx`) precisa — gerar o arquivo e, se
+ * quiser, montar um nome de arquivo padronizado antes de chamar a exportação.
+ */
 export interface UseOrganogramaExportReturn {
   isExporting: boolean;
   exportOrganograma: (
@@ -13,10 +19,19 @@ export interface UseOrganogramaExportReturn {
   generateFilename: (orgName?: string, format?: ExportFormat) => string;
 }
 
+/** `zoom` não faz parte do tipo padrão `CSSStyleDeclaration`, mas é usado (via inline style) por
+ * alguns navegadores/bibliotecas para compensar escala de tela; estendido aqui só para poder
+ * salvar/restaurar esse valor ao redor da captura de imagem. */
 type ExtendedCSSStyleDeclaration = CSSStyleDeclaration & {
   zoom?: string;
 };
 
+/**
+ * Snapshot do estado inline original de um elemento do DOM que precisou ser temporariamente
+ * alterado (zoom e overflow removidos) para a captura funcionar sem cortar conteúdo com
+ * scroll/zoom aplicado. Usado para reverter os estilos no `finally` da exportação, garantindo
+ * que a UI volte ao normal mesmo se a exportação falhar no meio do caminho.
+ */
 interface ModifiedElementState {
   el: HTMLElement;
   origZoom: string;
@@ -27,9 +42,36 @@ interface ModifiedElementState {
   origMaxWidth: string;
 }
 
+/**
+ * Hook de exportação do organograma (`Organograma.tsx`) para arquivo de imagem (PNG) ou
+ * vetorial (SVG), usando a biblioteca `html-to-image` para rasterizar/serializar o DOM do
+ * componente `@dabeng/react-orgchart`.
+ *
+ * Não envolve `useQuery`/`useMutation` — não há chamada de rede nem cache do TanStack Query
+ * aqui, é um efeito puramente client-side sobre o DOM. `isExporting` existe para a tela
+ * desabilitar o botão de exportar e evitar cliques concorrentes enquanto a captura (que pode
+ * levar segundos em organogramas grandes) está em andamento.
+ *
+ * Antes de capturar, o hook precisa contornar uma limitação do `html-to-image`: containers
+ * com `overflow: auto/scroll` ou `zoom` aplicado são renderizados "recortados" (do jeito que
+ * aparecem na tela, com scrollbar), então a captura ficaria cortada. Por isso o fluxo:
+ * 1. mede a maior largura/altura real de conteúdo entre todos os descendentes (`scrollWidth`/
+ *    `scrollHeight`), não apenas o elemento raiz, para descobrir as dimensões completas do
+ *    organograma sem cortes;
+ * 2. remove temporariamente `overflow`/`zoom`/limites de largura dos containers de scroll
+ *    encontrados, guardando o estado original em `modifiedElements`;
+ * 3. captura a imagem já expandida com essas dimensões completas;
+ * 4. no `finally`, restaura fielmente os estilos originais — mesmo em caso de erro — para não
+ *    deixar a tela do organograma com scroll/zoom quebrados após a exportação.
+ */
 export function useOrganogramaExport(): UseOrganogramaExportReturn {
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
+  /**
+   * Monta um nome de arquivo padronizado `organograma_<org>_<data-iso>.<formato>`, normalizando
+   * o nome da organização (minúsculas, sem acentos, sem caracteres especiais) para evitar
+   * nomes de arquivo inválidos/estranhos no sistema operacional do usuário.
+   */
   const generateFilename = useCallback((orgName: string = 'paroquia', format: ExportFormat = 'png'): string => {
     const today = new Date().toISOString().split('T')[0];
     const sanitizedOrg = orgName
@@ -42,6 +84,10 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
     return `organograma_${sanitizedOrg || 'paroquia'}_${today}.${format}`;
   }, []);
 
+  /**
+   * Dispara o download do arquivo no navegador criando um link `<a>` temporário com o `dataUrl`
+   * gerado pelo `html-to-image` — não sobe nada ao backend, a exportação é 100% client-side.
+   */
   const downloadFile = (dataUrl: string, filename: string): void => {
     const link = document.createElement('a');
     link.download = filename;
@@ -49,6 +95,15 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
     link.click();
   };
 
+  /**
+   * Executa a exportação do elemento referenciado por `elementRef` para PNG ou SVG e dispara
+   * o download no navegador. Lança erro se o elemento não estiver montado (`elementRef.current`
+   * nulo) — a tela chamadora deve tratar essa exceção (ex.: exibir notificação de erro).
+   *
+   * `options.filter` exclui da captura elementos marcados com as classes `no-export`/
+   * `oc-export-btn` (ex.: o próprio botão de exportar, tooltips de ação), para o arquivo final
+   * não incluir controles de UI que só fazem sentido na tela.
+   */
   const exportOrganograma = useCallback(
     async (
       elementRef: RefObject<HTMLElement | null>,

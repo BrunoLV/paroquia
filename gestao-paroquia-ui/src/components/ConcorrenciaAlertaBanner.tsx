@@ -8,6 +8,18 @@ interface ConcorrenciaAlertaBannerProps {
   nivelRisco: 'BAIXO' | 'MEDIO' | 'ALTO';
 }
 
+/**
+ * Alerta de "concorrência interpastoral": exibido quando o backend detecta que duas pastorais
+ * diferentes marcaram eventos em datas próximas disputando o mesmo público-alvo (ex.: dois
+ * grupos de jovens no mesmo fim de semana) — não trata conflito de local/recurso, apenas
+ * sobreposição de público. Cada item de `conflitos` já vem com a mensagem de alerta formatada
+ * pelo backend (`ConflitoItemDto`, ver `api/metricasTypes.ts`).
+ *
+ * O banner some sozinho quando `conflitos` está vazio: isso acontece quando o período analisado
+ * não tem mais sobreposições (evento cancelado/remarcado) ou quando o indicador de concorrência
+ * interpastoral ainda não foi carregado/foi recalculado sem risco. `nivelRisco` só eleva a
+ * severidade visual (ALTO vira `error`); BAIXO/MEDIO permanecem como aviso (`warning`).
+ */
 export const ConcorrenciaAlertaBanner: React.FC<ConcorrenciaAlertaBannerProps> = ({
   conflitos,
   nivelRisco,

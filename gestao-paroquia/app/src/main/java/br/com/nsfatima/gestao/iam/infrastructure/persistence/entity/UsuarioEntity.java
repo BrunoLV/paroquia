@@ -12,6 +12,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Registro persistente de uma conta de usuário: credenciais de autenticação, papéis globais (roles) e dados
+ * cadastrais pastorais. Campos com dado pessoal sensível ({@code nome}, {@code telefone},
+ * {@code dataNascimento}) são armazenados criptografados em coluna via
+ * {@link EncryptedStringConverter}/{@link EncryptedLocalDateConverter} (LGPD) — o valor em memória do objeto
+ * é sempre o texto puro decifrado, a criptografia acontece de forma transparente na persistência.
+ */
 @Entity
 @Table(name = "usuarios", schema = "calendario")
 public class UsuarioEntity extends BaseVersionedEntity {
@@ -28,6 +35,7 @@ public class UsuarioEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean enabled = true;
 
+    /** Papéis globais do usuário, persistidos como string única separada por vírgulas (ex.: "ROLE_ADMIN,ROLE_USER"). */
     @Column
     private String roles;
 
@@ -43,6 +51,7 @@ public class UsuarioEntity extends BaseVersionedEntity {
     @Convert(converter = EncryptedLocalDateConverter.class)
     private LocalDate dataNascimento;
 
+    /** Igreja/comunidade (MATRIZ ou COMUNIDADE) informada no cadastro; distinta dos vínculos organizacionais. */
     @Column(name = "igreja_id")
     private UUID igrejaId;
 

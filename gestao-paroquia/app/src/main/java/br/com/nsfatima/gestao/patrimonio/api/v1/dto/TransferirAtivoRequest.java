@@ -6,6 +6,10 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+/**
+ * Solicitação de transferência de propriedade de um ativo patrimonial para outra organização —
+ * exige justificativa por escrito para preservar rastreabilidade do porquê o ativo mudou de dono.
+ */
 public record TransferirAtivoRequest(
         @NotNull UUID novaOrganizacaoId,
         @NotBlank @Size(min = 10, max = 2000) String justificativa

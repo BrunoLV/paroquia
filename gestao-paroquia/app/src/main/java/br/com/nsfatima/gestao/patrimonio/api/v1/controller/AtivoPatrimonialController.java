@@ -39,6 +39,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Expõe o ciclo de vida de ativos patrimoniais (bens móveis da paróquia): cadastro, transferência
+ * de organização dona, alocação/desalocação a eventos (com fluxo de aprovação quando a organização
+ * do evento diverge da organização dona), manutenção e consulta de métricas de ociosidade.
+ */
 @RestController
 @RequestMapping("/api/v1/ativos")
 @Tag(name = "Patrimônio", description = "Endpoints para gestão de ativos patrimoniais")
@@ -82,6 +87,13 @@ public class AtivoPatrimonialController {
         this.metricasOciosidadeUseCase = metricasOciosidadeUseCase;
     }
 
+    /**
+     * Cadastra um novo ativo patrimonial, sempre iniciando no status {@code DISPONIVEL} e vinculado
+     * a uma organização dona.
+     *
+     * @param request dados de cadastro do ativo
+     * @return o ativo recém-criado
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(AUTHENTICATED)
@@ -90,6 +102,12 @@ public class AtivoPatrimonialController {
         return createUseCase.execute(request);
     }
 
+    /**
+     * Lista o inventário completo de ativos patrimoniais pertencentes a uma organização.
+     *
+     * @param organizacaoId organização dona dos ativos
+     * @return ativos cadastrados para a organização
+     */
     @GetMapping("/organizacao/{organizacaoId}")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o inventário de ativos patrimoniais de uma organização")
@@ -97,6 +115,14 @@ public class AtivoPatrimonialController {
         return listUseCase.execute(organizacaoId);
     }
 
+    /**
+     * Transfere a posse de um ativo patrimonial para outra organização, sujeito às regras de
+     * {@code AtivoOrganizacaoPolicy} (ex.: bloqueio de transferência com alocação ativa).
+     *
+     * @param id      ativo a transferir
+     * @param request organização de destino
+     * @return o ativo com a organização dona atualizada
+     */
     @PatchMapping("/{id}/transferir")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Transfere um ativo patrimonial para outra organização")
@@ -105,6 +131,17 @@ public class AtivoPatrimonialController {
         return transferirUseCase.execute(id, request);
     }
 
+    /**
+     * Aloca um ativo patrimonial a um evento, exigindo o registro da nota de uso. Quando a
+     * organização do evento diverge da organização dona do ativo, a alocação não é aplicada
+     * de imediato: fica pendente de aprovação, caracterizando um empréstimo entre organizações
+     * (mesmo fluxo de aprovação usado em outras mutações sensíveis do sistema).
+     *
+     * @param id      ativo a alocar
+     * @param request evento de destino, período e nota de uso
+     * @return o resultado da operação, com status HTTP variável conforme o ativo seja alocado
+     *     imediatamente ou fique pendente de aprovação
+     */
     @PostMapping("/{id}/alocar")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Aloca um ativo patrimonial a um evento, registrando a nota de uso obrigatória. "
@@ -115,6 +152,14 @@ public class AtivoPatrimonialController {
         return ResponseEntity.status(result.status()).body(result.body());
     }
 
+    /**
+     * Desaloca um ativo patrimonial, encerrando a ocupação corrente e devolvendo-o para a
+     * organização dona.
+     *
+     * @param id      ativo a desalocar
+     * @param request motivo/observações da desalocação (opcional)
+     * @return o ativo já disponível para a organização dona
+     */
     @PatchMapping("/{id}/desalocar")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Desaloca um ativo patrimonial, devolvendo-o para a organização dona")
@@ -123,6 +168,14 @@ public class AtivoPatrimonialController {
         return desalocarUseCase.execute(id, request);
     }
 
+    /**
+     * Inicia um período de manutenção de um ativo patrimonial, retirando-o temporariamente de
+     * circulação (não pode ser alocado a eventos enquanto em manutenção).
+     *
+     * @param id      ativo a colocar em manutenção
+     * @param request motivo/período previsto da manutenção
+     * @return o ativo com o status de manutenção aplicado
+     */
     @PostMapping("/{id}/manutencao")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Inicia um período de manutenção de um ativo patrimonial")
@@ -131,6 +184,13 @@ public class AtivoPatrimonialController {
         return iniciarManutencaoUseCase.execute(id, request);
     }
 
+    /**
+     * Finaliza a manutenção corrente de um ativo patrimonial, retornando-o ao status
+     * {@code DISPONIVEL}.
+     *
+     * @param id ativo em manutenção
+     * @return o ativo já disponível novamente
+     */
     @PatchMapping("/{id}/manutencao/finalizar")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Finaliza a manutenção corrente de um ativo, devolvendo-o para DISPONIVEL")
@@ -138,6 +198,13 @@ public class AtivoPatrimonialController {
         return finalizarManutencaoUseCase.execute(id);
     }
 
+    /**
+     * Cancela uma reserva/pedido de alocação de ativo que ainda não teve seu período iniciado,
+     * incluindo pedidos pendentes de aprovação de empréstimo entre organizações.
+     *
+     * @param alocacaoId alocação a cancelar
+     * @param request    motivo do cancelamento
+     */
     @PatchMapping("/alocacoes/{alocacaoId}/cancelar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(AUTHENTICATED)
@@ -147,6 +214,13 @@ public class AtivoPatrimonialController {
         cancelarAlocacaoUseCase.execute(alocacaoId, request);
     }
 
+    /**
+     * Lista o histórico completo de ocupações de um ativo patrimonial, incluindo alocações a
+     * eventos e períodos de manutenção.
+     *
+     * @param id ativo consultado
+     * @return histórico de ocupações do ativo
+     */
     @GetMapping("/{id}/alocacoes")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o histórico de ocupações (alocações e manutenções) de um ativo patrimonial")
@@ -154,6 +228,12 @@ public class AtivoPatrimonialController {
         return listAlocacoesPorAtivoUseCase.execute(id);
     }
 
+    /**
+     * Lista todos os ativos patrimoniais alocados a um evento específico.
+     *
+     * @param eventoId evento consultado
+     * @return ativos alocados ao evento
+     */
     @GetMapping("/evento/{eventoId}/alocacoes")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista os ativos patrimoniais alocados a um evento")
@@ -161,6 +241,12 @@ public class AtivoPatrimonialController {
         return listAlocacoesPorEventoUseCase.execute(eventoId);
     }
 
+    /**
+     * Calcula métricas agregadas de ociosidade e taxa de alocação dos ativos patrimoniais, usadas
+     * para identificar bens subutilizados no acervo da paróquia.
+     *
+     * @return métricas de ociosidade/alocação agregadas
+     */
     @GetMapping("/metricas/ociosidade")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Métricas de ociosidade/alocação de ativos patrimoniais")

@@ -8,6 +8,12 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Payload para criação de um novo projeto. Se o ator não tiver nível de autorização suficiente
+ * ({@code ProjetoAuthorizationService#assertCanCreate}), este mesmo payload é serializado e
+ * persistido como {@code actionPayloadJson} em uma solicitação de aprovação pendente, para ser
+ * reconstruído e efetivado em {@code TransitionProjetoUseCase#decidir} quando aprovado.
+ */
 @Schema(description = "Solicitação para criação de um novo projeto")
 public record ProjetoCreateRequest(
         @Schema(description = "Nome do projeto", example = "Reforma da Capela")

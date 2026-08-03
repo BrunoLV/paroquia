@@ -5,6 +5,11 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
+/**
+ * Representa uma organização envolvida em um evento e o papel que ela desempenha (ex: organizadora,
+ * apoiadora, convidada), usado tanto na criação quanto na atualização da lista de envolvidos de um
+ * evento.
+ */
 public record EventoEnvolvidoInput(
         @NotNull UUID organizacaoId,
         @NotNull PapelEnvolvido papel) {

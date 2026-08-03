@@ -11,6 +11,11 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Entidade JPA que persiste um item do catálogo oficial de Pastorais e Movimentos — o espelho de
+ * armazenamento de {@code PastoralMovimentoOficial}. O nome é único no banco para impedir cadastros
+ * duplicados do mesmo item oficial sob nomes diferentes.
+ */
 @Entity
 @Table(name = "pastorais_movimentos_oficiais", schema = "calendario")
 public class PastoralMovimentoOficialEntity extends BaseVersionedEntity {

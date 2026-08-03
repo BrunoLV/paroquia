@@ -38,6 +38,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Agrega, em uma única leitura, as métricas exibidas no dashboard gerencial: elas são calculadas
+ * sob demanda a partir dos contextos de calendário, projeto e aprovação — não existe uma tabela
+ * de métricas persistida. Quando o ator autenticado possui uma organização associada
+ * ({@link EventoActorContext#organizationId()} não nulo), todas as métricas são restritas aos
+ * dados dessa organização; caso contrário, a visão é global (perfis com alcance
+ * multiorganizacional).
+ */
 @Service
 public class GetDashboardMetricsUseCase {
 
@@ -66,6 +74,42 @@ public class GetDashboardMetricsUseCase {
         this.projetoAgregacaoDomainService = projetoAgregacaoDomainService;
     }
 
+    /**
+     * Calcula e monta o snapshot completo de métricas do dashboard para o ator informado.
+     *
+     * <p>Métricas produzidas e como cada uma é obtida:
+     * <ul>
+     *   <li><b>Resumo geral</b> ({@link ResumoGeralDTO}): total de eventos cujo período de
+     *       ocorrência intersecta o mês corrente ({@code findAllInPeriod} entre o primeiro e o
+     *       último dia do mês); total de projetos cujo status é {@code ABERTO} ou
+     *       {@code EM_ANDAMENTO} ("ativos"); e total de solicitações de aprovação pendentes,
+     *       somando aprovações de evento e de projeto com status {@code PENDENTE}.</li>
+     *   <li><b>Distribuição de eventos por organização</b> ({@link DistribuicaoEventosDTO}):
+     *       contagem dos eventos do mês corrente agrupados por organização responsável,
+     *       ordenada da maior para a menor quantidade, para alimentar o gráfico de distribuição.</li>
+     *   <li><b>Detalhes de projetos ativos</b> ({@link DetalheProjetoDTO}): para cada projeto
+     *       ativo, o total de eventos vinculados, quantos já ocorreram (fim já passou em
+     *       relação ao instante corrente) e quantos ainda estão pendentes; o percentual de
+     *       tempo decorrido e a sinalização de risco são delegados a
+     *       {@code ProjetoAgregacaoDomainService}, que cruza a janela temporal do projeto
+     *       (início/fim) com a quantidade de eventos ainda pendentes para decidir se o prazo
+     *       está apertado demais para o que falta ser executado.</li>
+     *   <li><b>Eventos da semana</b> ({@link EventoSemanalDTO}): eventos cujo início cai na
+     *       semana corrente, delimitada de segunda-feira a domingo (inclusive), com nome do
+     *       local e da organização resolvidos a partir de mapas carregados uma única vez para
+     *       evitar consultas repetidas por evento.</li>
+     * </ul>
+     *
+     * <p><b>Escopo por organização:</b> quando {@code actorContext.organizationId()} não é nulo,
+     * todas as métricas acima são filtradas para considerar apenas eventos/projetos/aprovações
+     * associados àquela organização — é o caso de atores com papel restrito a uma pastoral ou
+     * comunidade específica. Quando é nulo (ator com alcance global), nenhum filtro adicional é
+     * aplicado.
+     *
+     * @param actorContext contexto do ator autenticado, usado para determinar o escopo
+     *                      organizacional das métricas
+     * @return snapshot consolidado das métricas do dashboard, já filtrado pelo escopo do ator
+     */
     @Transactional(readOnly = true)
     public DashboardMetricsDTO execute(EventoActorContext actorContext) {
         UUID orgId = actorContext.organizationId();

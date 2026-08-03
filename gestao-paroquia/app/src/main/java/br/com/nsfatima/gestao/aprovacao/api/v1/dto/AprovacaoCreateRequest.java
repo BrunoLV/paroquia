@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
+/**
+ * Corpo da requisição para criar uma nova solicitação de aprovação (status inicial PENDENTE) para um evento.
+ */
 @Schema(description = "Solicitação para criação de uma nova aprovação de evento")
 public record AprovacaoCreateRequest(
         @Schema(description = "ID do evento a ser aprovado")

@@ -9,6 +9,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Dados de cadastro de um novo ativo patrimonial.
+ *
+ * @param reservavel indica se o ativo é elegível para reserva/empréstimo entre organizações
+ *     (informativo no cadastro)
+ */
 public record CreateAtivoPatrimonialRequest(
         @NotBlank @Size(max = 200) String nome,
         @NotNull AtivoCategoria categoria,

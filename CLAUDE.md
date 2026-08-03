@@ -50,6 +50,10 @@ Frontend: http://localhost:3000, API: http://localhost:8080, Swagger UI: http://
 
 Domain/business concepts (entity names, enum values, status names, role names, DTO fields, use-case names describing a business action) are named in **Portuguese**, mirrored consistently across backend and frontend — e.g. `AtivoAlocacaoEntity`, `EventoController`, `VinculoResponse` (not `MembershipResponse`). Purely technical/architectural terms stay in **English** (`Entity`, `Controller`, `Repository`, `UseCase`, `DTO`, `Enum`, `Exception`, `Context`, `Provider`, `Policy` — e.g. `PeriodoOperacionalPolicy`), and this also applies to local variables and business-rule comments inside method bodies, not just class/method/field signatures. Prefer an enum or a named constant over a string literal used as a marker in comparisons/`switch` — reuse an existing enum via `.name()` (e.g. `AprovacaoStatus`, `ProjetoStatus`, `EventoStatusInput`) instead of repeating the literal. A JPA entity `String` field with a closed set of values should be mapped as an enum with `@Enumerated(EnumType.STRING)`, unless the persisted value doesn't match `Enum.name()` (use an `AttributeConverter` instead) or the field mixes vocabularies across different lifecycle stages (keep it `String` in that case).
 
+## Code documentation (Javadoc/JSDoc)
+
+Backend has full Javadoc coverage across all 14 bounded contexts plus a `package-info.java` per context (with Mermaid state-machine diagrams for `aprovacao`, `calendario`, `projeto`); frontend has JSDoc across `src/api/`, `types.ts`, `permissions.ts`, `AuthContext.tsx`, hooks, and the complex approval/calendar/recurrence components. Detailed rules live in `gestao-paroquia/AGENTS.md` and `gestao-paroquia-ui/AGENTS.md` ("Arquitetura de Documentação"). Keep this up: new or refactored public code needs the same treatment, written so an AI agent reading only that file — no conversation history, no other `CLAUDE.md` — can recover the invariants and business rules.
+
 ## Architecture
 
 ### Backend — DDD + Ports & Adapters, package-by-feature

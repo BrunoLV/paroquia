@@ -6,6 +6,10 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+/**
+ * Solicitação para colocar um ativo patrimonial em manutenção por um período determinado,
+ * tornando-o indisponível para alocação enquanto durar — exige motivo justificado.
+ */
 public record IniciarManutencaoRequest(
         @NotNull LocalDate dataInicio,
         @NotNull LocalDate dataFim,

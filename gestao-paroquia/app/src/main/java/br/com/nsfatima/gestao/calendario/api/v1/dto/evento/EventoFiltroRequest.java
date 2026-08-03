@@ -10,6 +10,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Filtros combináveis para a listagem paginada de eventos. Todos os campos são opcionais; quando
+ * omitidos, a listagem não restringe por aquele critério.
+ */
 @Schema(description = "Filtros para listagem de eventos")
 public record EventoFiltroRequest(
         @Parameter(description = "Data inicial para filtragem (ISO-8601)")

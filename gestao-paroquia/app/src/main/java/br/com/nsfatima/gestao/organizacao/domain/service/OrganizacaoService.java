@@ -15,6 +15,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Orquestra o ciclo de vida de {@link Organizacao} (criação, atualização, exclusão e consulta), aplicando a
+ * regra de hierarquia organizacional da paróquia — qual {@code TipoOrganizacao} pode ter qual tipo de
+ * organização-mãe, e qual vínculo obrigatório com o catálogo oficial de Pastorais/Movimentos — e registrando
+ * cada mutação na auditoria via {@code AuditoriaPersistenceService}. É o único ponto de entrada de escrita
+ * para o agregado {@code Organizacao}; nenhuma outra classe deve mutar organizações diretamente.
+ */
 @Service
 @Transactional
 public class OrganizacaoService {
@@ -40,6 +47,21 @@ public class OrganizacaoService {
         this.pastoralOficialRepository = pastoralOficialRepository;
     }
 
+    /**
+     * Cria uma nova organização, validando previamente a hierarquia (tipo compatível com o tipo da
+     * organização-mãe, vínculo obrigatório com o catálogo oficial para Pastoral/Movimento) e registrando a
+     * criação na auditoria.
+     *
+     * @param nome nome da organização
+     * @param tipo tipo organizacional
+     * @param contato informação de contato
+     * @param coordenador nome do coordenador
+     * @param viceCoordenador nome do vice-coordenador
+     * @param parentId identificador da organização-mãe, exigido para todos os tipos exceto {@code CLERO}
+     * @param pastoralOficialId vínculo com o catálogo oficial, obrigatório para {@code PASTORAL}/{@code MOVIMENTO}
+     * @return a organização recém-criada
+     * @throws OrganizacaoNegocioException se a hierarquia informada violar as regras de tipo/organização-mãe
+     */
     @Transactional
     public Organizacao createOrganization(String nome,
                                           TipoOrganizacao tipo, String contato, String coordenador,
@@ -63,6 +85,22 @@ public class OrganizacaoService {
         return org;
     }
 
+    /**
+     * Atualiza os dados de uma organização existente, revalidando a hierarquia com os novos valores e
+     * registrando a atualização na auditoria.
+     *
+     * @param id identificador da organização a atualizar
+     * @param nome novo nome
+     * @param tipo novo tipo organizacional
+     * @param contato novo contato
+     * @param coordenador novo nome do coordenador
+     * @param viceCoordenador novo nome do vice-coordenador
+     * @param ativo novo estado de atividade
+     * @param parentId novo identificador da organização-mãe
+     * @param pastoralOficialId novo vínculo com o catálogo oficial, quando aplicável
+     * @return a organização atualizada
+     * @throws OrganizacaoNegocioException se a organização não existir ou a nova hierarquia for inválida
+     */
     @Transactional
     public Organizacao updateOrganization(UUID id,
                                           String nome, TipoOrganizacao tipo, String contato, String coordenador,
@@ -87,6 +125,13 @@ public class OrganizacaoService {
         return org;
     }
 
+    /**
+     * Exclui definitivamente uma organização, impedindo a exclusão caso existam dependências ativas
+     * (membros vinculados ou eventos associados) que ficariam órfãs, e registrando a exclusão na auditoria.
+     *
+     * @param id identificador da organização a excluir
+     * @throws OrganizacaoNegocioException se a organização não existir ou possuir dependências ativas
+     */
     @Transactional
     public void deleteOrganization(UUID id) {
         if (organizacaoRepository.findById(id).isEmpty()) {
@@ -107,11 +152,22 @@ public class OrganizacaoService {
         ));
     }
 
+    /**
+     * Busca uma organização pelo seu identificador.
+     *
+     * @param id identificador da organização
+     * @return a organização encontrada, ou {@link Optional#empty()} se não existir
+     */
     @Transactional(readOnly = true)
     public Optional<Organizacao> getOrganization(UUID id) {
         return organizacaoRepository.findById(id);
     }
 
+    /**
+     * Lista todas as organizações cadastradas, ativas ou inativas.
+     *
+     * @return lista de todas as organizações
+     */
     @Transactional(readOnly = true)
     public List<Organizacao> listOrganizations() {
         return organizacaoRepository.findAll();

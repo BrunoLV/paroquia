@@ -11,6 +11,13 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Representa um tempo/ciclo litúrgico recorrente (ex.: Advento, Quaresma, Tempo Comum),
+ * com sua janela anual de vigência (mês/dia de início e fim, repetida todo ano) e um
+ * fator de demanda usado para estimar a carga de eventos/celebrações típica desse período.
+ * Distingue-se de {@link AnoLiturgicoEntity}, que representa uma instância anual concreta
+ * do ciclo dominical (A/B/C), não um tempo litúrgico recorrente.
+ */
 @Entity
 @Table(name = "tb_ciclo_liturgico", schema = "calendario")
 public class CicloLiturgicoEntity extends BaseVersionedEntity {
@@ -21,6 +28,7 @@ public class CicloLiturgicoEntity extends BaseVersionedEntity {
     @Column(nullable = false, length = 120)
     private String nome;
 
+    /** Classificação do tempo litúrgico (ex.: Advento, Natal, Quaresma, Páscoa, Tempo Comum). */
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_ciclo", nullable = false, length = 40)
     private TipoCicloLiturgico tipoCiclo;
@@ -28,24 +36,34 @@ public class CicloLiturgicoEntity extends BaseVersionedEntity {
     @Column(name = "cor_liturgica", nullable = false, length = 30)
     private String corLiturgica;
 
+    /** Mês (1-12) em que este ciclo tem início dentro do calendário anual. */
     @Column(name = "mes_inicio", nullable = false)
     private Integer mesInicio;
 
+    /** Dia do mês em que este ciclo tem início. */
     @Column(name = "dia_inicio", nullable = false)
     private Integer diaInicio;
 
+    /** Mês (1-12) em que este ciclo termina dentro do calendário anual. */
     @Column(name = "mes_fim", nullable = false)
     private Integer mesFim;
 
+    /** Dia do mês em que este ciclo termina. */
     @Column(name = "dia_fim", nullable = false)
     private Integer diaFim;
 
+    /**
+     * Fator multiplicador usado para estimar a demanda/carga de eventos esperada durante
+     * este ciclo em relação a um período comum (ex.: valores maiores que 1 indicam tempos
+     * de maior movimento pastoral, como Quaresma ou Advento).
+     */
     @Column(name = "fator_demanda", nullable = false)
     private Double fatorDemanda;
 
     @Column(length = 500)
     private String descricao;
 
+    /** Ano litúrgico de referência ({@link AnoLiturgicoEntity#getAno()}) para este ciclo, quando aplicável. */
     @Column(name = "ano_liturgico_ref")
     private Integer anoLiturgicoRef;
 

@@ -6,6 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * Contador do último número de tombamento emitido para um ano-calendário, usado por
+ * {@link br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator} para gerar
+ * números sequenciais únicos por ano.
+ */
 @Entity
 @Table(name = "patrimonio_numeracao_anual", schema = "calendario")
 public class PatrimonioNumeracaoAnualEntity extends BaseVersionedEntity {

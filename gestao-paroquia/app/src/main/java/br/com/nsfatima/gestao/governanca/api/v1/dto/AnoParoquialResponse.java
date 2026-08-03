@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 
+/**
+ * Representa, para a API, o estado de governança de um ano paroquial: em que fase do ciclo de vida
+ * ({@code EM_PLANEJAMENTO}, {@code FECHADO}, {@code CONCLUIDO}) ele se encontra e quando a trava foi aplicada.
+ */
 @Schema(description = "Resumo do estado de um ano paroquial")
 public record AnoParoquialResponse(
         @Schema(description = "O ano civil")

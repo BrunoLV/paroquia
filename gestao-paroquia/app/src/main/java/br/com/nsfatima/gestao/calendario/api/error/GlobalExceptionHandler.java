@@ -14,7 +14,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
 /**
- * Fallback exception handler for unexpected system errors.
+ * Handler de última instância: {@code ConflitoAgendaEclesialException} (conflito de agenda entre
+ * eventos eclesiais) vira 400, e qualquer outra exceção não tratada por um handler mais específico
+ * (ver {@link DomainExceptionHandler} e outros {@code @RestControllerAdvice} com {@link Order}
+ * numérico menor) vira 500 genérico — este é o único advice sem {@code Order} explícito, portanto
+ * o Spring o executa por último entre os advices desta aplicação, atuando como rede de segurança
+ * para não vazar stack traces/detalhes internos ao cliente.
  */
 @RestControllerAdvice
 @Order()

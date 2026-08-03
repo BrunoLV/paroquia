@@ -16,6 +16,13 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Entidade JPA que persiste uma solicitação de aprovação no fluxo de aprovação/execução: quem solicitou, quem
+ * decidiu, o status atual ({@link AprovacaoStatus}) e o payload JSON da ação de negócio pendente
+ * ({@code actionPayloadJson}, mapeado por {@code AprovacaoAcaoPayloadMapper}) que será efetivada por uma
+ * {@code EstrategiaExecucaoAprovacao} quando a solicitação for aprovada. Reside no schema {@code calendario}
+ * pois hoje é usada exclusivamente para aprovações de eventos de calendário.
+ */
 @Entity
 @Table(name = "aprovacoes", schema = "calendario")
 public class AprovacaoEntity extends BaseVersionedEntity {

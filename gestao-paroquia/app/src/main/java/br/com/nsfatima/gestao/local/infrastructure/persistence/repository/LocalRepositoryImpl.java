@@ -13,6 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Adapta a porta de domínio {@link LocalRepository} para a infraestrutura JPA, convertendo entre o
+ * agregado de domínio {@link Local} e a entidade {@link LocalEntity}, e resolvendo dependências
+ * cruzadas de outros contextos (Evento, Organização) apenas através de seus repositórios JPA — nunca
+ * expondo as entidades desses contextos ao domínio de {@code local}.
+ */
 @Repository
 public class LocalRepositoryImpl implements LocalRepository {
 
@@ -20,6 +26,15 @@ public class LocalRepositoryImpl implements LocalRepository {
     private final EventoJpaRepository eventoJpaRepository;
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
 
+    /**
+     * Inicializa o adaptador com os repositórios JPA necessários para persistir Locais e resolver
+     * seus vínculos com Eventos (verificação de uso) e Organizações (nome para exibição).
+     *
+     * @param localJpaRepository        repositório JPA de Locais
+     * @param eventoJpaRepository       repositório JPA de Eventos, usado para checar uso de um local
+     * @param organizacaoJpaRepository  repositório JPA de Organizações, usado para resolver o nome
+     *                                  da organização vinculada a um local
+     */
     public LocalRepositoryImpl(LocalJpaRepository localJpaRepository,
                                 EventoJpaRepository eventoJpaRepository,
                                 OrganizacaoJpaRepository organizacaoJpaRepository) {

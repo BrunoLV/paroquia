@@ -25,6 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Endpoints REST para atas, decisões e homologações dos conselhos paroquiais (CPC/CPP).
+ * Materializa o fluxo de duas etapas do contexto: qualquer membro autorizado do conselho
+ * pode registrar uma decisão ({@code POST}), mas apenas Pároco, Admin ou Mesa CPP podem
+ * homologá-la ou vetá-la ({@code PATCH .../homologacao}) para que produza efeito oficial.
+ */
 @RestController
 @RequestMapping("/api/v1/conselhos/decisoes")
 @Tag(name = "Conselhos", description = "Endpoints para atas, decisões e homologações do CPP e CPC")
@@ -43,6 +49,14 @@ public class CpcDecisaoController {
         this.listCpcDecisoesUseCase = listCpcDecisoesUseCase;
     }
 
+    /**
+     * Lista atas/decisões de conselho, opcionalmente filtradas por comunidade ou por status
+     * de homologação (ver {@link ListCpcDecisoesUseCase} para a regra de precedência dos filtros).
+     *
+     * @param comunidadeId filtro opcional por comunidade
+     * @param status filtro opcional por status de homologação
+     * @return decisões correspondentes ao filtro, mais recentes primeiro
+     */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista as atas e decisões dos conselhos com filtros por comunidade ou status")
@@ -52,6 +66,15 @@ public class CpcDecisaoController {
         return listCpcDecisoesUseCase.execute(comunidadeId, status);
     }
 
+    /**
+     * Registra uma nova ata/decisão de conselho, sempre nascendo como
+     * {@link br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao#PENDENTE_HOMOLOGACAO}.
+     * Acessível a membros e presidência do CPC/CPP, além de Pároco e Admin — mas o registro
+     * em si não aprova a decisão, apenas a documenta para posterior homologação.
+     *
+     * @param request dados da pauta/ata a registrar
+     * @return a decisão criada, com status pendente de homologação
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'PRESIDENTE_CPC', 'MESA_CPP', 'MEMBRO_CPC', 'MEMBRO_CPP')")
@@ -60,6 +83,15 @@ public class CpcDecisaoController {
         return createCpcDecisaoUseCase.execute(request);
     }
 
+    /**
+     * Homologa ou veta uma ata/decisão, restrito a Pároco, Admin ou Mesa CPP — a autoridade
+     * exclusiva que confere efeito oficial à decisão. Vetar sem informar o motivo é rejeitado
+     * pela camada de aplicação ({@link HomologarCpcDecisaoUseCase}).
+     *
+     * @param id identificador da decisão a homologar/vetar
+     * @param request status decidido e, se veto, o motivo
+     * @return a decisão já homologada/vetada
+     */
     @PatchMapping("/{id}/homologacao")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'MESA_CPP')")
     @Operation(summary = "Homologa ou veta uma ata/decisão de conselho (exclusivo para Pároco, Admin ou Mesa CPP)")

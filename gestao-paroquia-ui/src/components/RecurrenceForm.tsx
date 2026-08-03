@@ -19,6 +19,20 @@ import theme from '../theme';
 
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';
 
+/**
+ * Regra de recorrência enviada ao backend para gerar as ocorrências do evento (ver
+ * `RegraRecorrencia`/`EventoRecorrenciaEntity`). Os campos são mutuamente exclusivos conforme a
+ * combinação frequência + tipo de repetição mensal + condição de término escolhida no formulário:
+ * - `diasDaSemana` só se aplica a `SEMANAL` (dias em que o evento se repete) OU a `MENSAL` no
+ *   modo "dia da semana relativo" (nesse caso guarda um único dia, junto com `posicaoNoMes`).
+ * - `diaDoMes` só existe no modo mensal "dia fixo" (ex.: todo dia 10); é mutuamente exclusivo
+ *   com `posicaoNoMes`/`diasDaSemana`.
+ * - `posicaoNoMes` (ex.: "PRIMEIRO", "ÚLTIMO") só existe no modo mensal "relativo" (ex.:
+ *   primeira terça-feira do mês) e é sempre combinado com um `diasDaSemana` de um único dia.
+ * - `dataLimite` e `numeroOcorrencias` são as duas formas de condição de término e também se
+ *   excluem mutuamente: a série termina numa data fixa OU após um número de ocorrências, nunca
+ *   ambos (ausência dos dois significa recorrência sem fim/"nunca").
+ */
 export interface RecurrenceRule {
   frequencia: Frequency;
   intervalo: number;
@@ -68,6 +82,9 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
 
   const handleTerminationChange = (type: 'NEVER' | 'DATE' | 'COUNT') => {
     setTerminationType(type);
+    // dataLimite e numeroOcorrencias são mutuamente exclusivos na regra final: trocar o tipo de
+    // término sempre limpa o campo do modo anterior para não enviar os dois preenchidos ao
+    // backend (o que geraria ambiguidade sobre qual condição de parada vale).
     if (type === 'NEVER') {
       onChange({ ...rule, dataLimite: undefined, numeroOcorrencias: undefined });
     } else if (type === 'DATE') {
@@ -143,9 +160,13 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
               <FormLabel component="legend" sx={{ fontSize: '0.75rem', mb: 1 }}>Tipo de repetição mensal:</FormLabel>
               <RadioGroup
                 row
+                // Na ausência de posicaoNoMes/diasDaSemana já preenchidos, assume-se modo FIXED
+                // (dia fixo do mês) como padrão — é o caso mais comum de recorrência mensal.
                 value={rule.posicaoNoMes || rule.diasDaSemana?.length ? 'RELATIVE' : 'FIXED'}
                 onChange={(e) => {
                   if (e.target.value === 'FIXED') {
+                    // Alternar para "dia fixo" limpa os campos do modo relativo (posicaoNoMes/
+                    // diasDaSemana) para manter a regra consistente com apenas um modo ativo.
                     onChange({
                       ...rule,
                       diaDoMes: rule.diaDoMes || 1,
@@ -153,6 +174,9 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
                       diasDaSemana: undefined,
                     });
                   } else {
+                    // Modo relativo (ex.: "primeira terça-feira do mês"): diaDoMes não se aplica
+                    // e diasDaSemana aqui representa um único dia da semana, não uma lista de
+                    // dias como no modo SEMANAL.
                     onChange({
                       ...rule,
                       diaDoMes: undefined,

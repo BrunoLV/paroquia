@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Orquestra o ciclo de vida do catálogo oficial de Pastorais e Movimentos ({@link PastoralMovimentoOficial}),
+ * garantindo que cada item tenha nome obrigatório e único e tipo restrito a {@code PASTORAL} ou
+ * {@code MOVIMENTO}. Este catálogo é referenciado por {@code Organizacao.pastoralOficialId} para garantir
+ * que instâncias locais de uma pastoral/movimento em diferentes comunidades compartilhem o mesmo nome/tipo
+ * oficial.
+ */
 @Service
 public class PastoralMovimentoOficialService {
 
@@ -20,6 +27,14 @@ public class PastoralMovimentoOficialService {
         this.repository = repository;
     }
 
+    /**
+     * Cria um novo item do catálogo oficial, validando nome obrigatório/único e tipo permitido.
+     *
+     * @param nome nome oficial da pastoral/movimento
+     * @param tipo tipo, restrito a {@code PASTORAL} ou {@code MOVIMENTO}
+     * @return o item recém-criado
+     * @throws PastoralMovimentoOficialBusinessException se o nome for ausente/duplicado ou o tipo inválido
+     */
     @Transactional
     public PastoralMovimentoOficial create(String nome, TipoOrganizacao tipo) {
         validate(null, nome, tipo);
@@ -28,6 +43,18 @@ public class PastoralMovimentoOficialService {
         return oficial;
     }
 
+    /**
+     * Atualiza nome e tipo de um item existente do catálogo oficial, revalidando as mesmas regras de
+     * {@link #create(String, TipoOrganizacao)} (exceto que o próprio item, se já tiver este nome, não conta
+     * como duplicidade).
+     *
+     * @param id identificador do item a atualizar
+     * @param nome novo nome oficial
+     * @param tipo novo tipo, restrito a {@code PASTORAL} ou {@code MOVIMENTO}
+     * @return o item atualizado
+     * @throws PastoralMovimentoOficialBusinessException se o item não existir, o nome for ausente/duplicado
+     *     por outro item, ou o tipo for inválido
+     */
     @Transactional
     public PastoralMovimentoOficial update(UUID id, String nome, TipoOrganizacao tipo) {
         PastoralMovimentoOficial oficial = repository.findById(id)
@@ -38,6 +65,12 @@ public class PastoralMovimentoOficialService {
         return oficial;
     }
 
+    /**
+     * Remove definitivamente um item do catálogo oficial.
+     *
+     * @param id identificador do item a remover
+     * @throws PastoralMovimentoOficialBusinessException se o item não existir
+     */
     @Transactional
     public void delete(UUID id) {
         PastoralMovimentoOficial oficial = repository.findById(id)
@@ -45,11 +78,22 @@ public class PastoralMovimentoOficialService {
         repository.delete(id);
     }
 
+    /**
+     * Busca um item do catálogo oficial pelo seu identificador.
+     *
+     * @param id identificador do item
+     * @return o item encontrado, ou {@link Optional#empty()} se não existir
+     */
     @Transactional(readOnly = true)
     public Optional<PastoralMovimentoOficial> get(UUID id) {
         return repository.findById(id);
     }
 
+    /**
+     * Lista todos os itens do catálogo oficial de Pastorais e Movimentos.
+     *
+     * @return lista de todos os itens cadastrados
+     */
     @Transactional(readOnly = true)
     public List<PastoralMovimentoOficial> list() {
         return repository.findAll();

@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Publica registros de auditoria para ações realizadas sobre projetos (criação, atualização,
+ * transições de estado), sempre marcando {@code resourceType} como {@code PROJETO} e propagando
+ * o {@code correlationId} da requisição corrente (MDC), seguindo o padrão de publisher de
+ * auditoria adotado pelos demais contextos em vez de logging ad hoc.
+ */
 @Component
 public class ProjetoAuditPublisher {
 
@@ -16,18 +22,49 @@ public class ProjetoAuditPublisher {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
+    /**
+     * Publica um registro de auditoria genérico para uma ação sobre projeto, sem metadados
+     * adicionais além dos padrões (tipo de recurso, ID do recurso, correlationId).
+     *
+     * @param actor  identificador do ator que realizou a ação.
+     * @param action nome da ação realizada.
+     * @param target identificador do projeto/recurso alvo da ação.
+     * @param result resultado da ação (ex.: {@code "success"}, {@code "failure"}).
+     */
     public void publish(String actor, String action, String target, String result) {
         auditLogPersistenceService.log(actor, action, target, result, withDefaults(target, Map.of()));
     }
 
+    /**
+     * Publica um registro de auditoria para uma ação sobre projeto, incluindo metadados
+     * adicionais além dos padrões.
+     *
+     * @param actor    identificador do ator que realizou a ação.
+     * @param action   nome da ação realizada.
+     * @param target   identificador do projeto/recurso alvo da ação.
+     * @param result   resultado da ação (ex.: {@code "success"}, {@code "failure"}).
+     * @param metadata metadados adicionais a incluir no registro, mesclados com os padrões.
+     */
     public void publish(String actor, String action, String target, String result, Map<String, Object> metadata) {
         auditLogPersistenceService.log(actor, action, target, result, withDefaults(target, metadata));
     }
 
+    /**
+     * Atalho para publicar um registro de sucesso na criação de um projeto.
+     *
+     * @param actor  identificador do ator que criou o projeto.
+     * @param target identificador do projeto criado.
+     */
     public void publishCreateSuccess(String actor, String target) {
         auditLogPersistenceService.log(actor, "criar", target, "success", withDefaults(target, Map.of()));
     }
 
+    /**
+     * Atalho para publicar um registro de sucesso na atualização parcial (patch) de um projeto.
+     *
+     * @param actor  identificador do ator que atualizou o projeto.
+     * @param target identificador do projeto atualizado.
+     */
     public void publishPatchSuccess(String actor, String target) {
         auditLogPersistenceService.log(actor, "atualizar", target, "success", withDefaults(target, Map.of()));
     }

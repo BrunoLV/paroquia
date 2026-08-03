@@ -12,6 +12,13 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Entidade JPA que representa um {@code Projeto} paroquial: nome, descrição, organização
+ * responsável, período (opcional) e status do ciclo de vida ({@link ProjetoStatus}). Apesar do
+ * nome da tabela ({@code projetos_eventos}, no schema {@code calendario}), esta entidade
+ * representa o próprio projeto — não a relação de vínculo entre projeto e evento, que é feita
+ * via {@code EventoEntity#getProjetoId()}.
+ */
 @Entity
 @Table(name = "projetos_eventos", schema = "calendario")
 public class ProjetoEventoEntity extends BaseVersionedEntity {

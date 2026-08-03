@@ -32,12 +32,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Exporta uma lista de eventos do calendário para um relatório PDF (via OpenPDF), agrupado por
+ * mês, com cabeçalho, rodapé e marca d'água contendo o logo e a identidade visual (cores) da
+ * paróquia em cada página.
+ */
 @Component
 public class PdfCalendarioExporter implements CalendarioExporter {
 
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    /**
+     * Converte uma cor hexadecimal em {@link Color}, retornando uma cor padrão caso o valor seja
+     * nulo, vazio ou inválido.
+     *
+     * @param hex cor em formato hexadecimal (ex.: {@code "#1A237E"}), pode ser {@code null}
+     * @param defaultColor cor a ser usada quando {@code hex} for nulo, vazio ou inválido
+     * @return a cor decodificada, ou {@code defaultColor} em caso de ausência/erro
+     */
     private static Color parseColor(String hex, Color defaultColor) {
         if (hex == null || hex.isBlank()) {
             return defaultColor;
@@ -49,11 +62,33 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         }
     }
 
+    /**
+     * Indica se este exportador atende ao formato solicitado.
+     *
+     * @param formato identificador do formato de exportação (ex.: {@code "PDF"})
+     * @return {@code true} se o formato, ignorando caixa, for "PDF"
+     */
     @Override
     public boolean supports(String formato) {
         return "PDF".equalsIgnoreCase(formato);
     }
 
+    /**
+     * Gera o relatório PDF com título, período, e uma tabela de eventos por mês (ordenados
+     * cronologicamente pelo início), aplicando a identidade visual da paróquia (logo e cor
+     * primária) no cabeçalho, rodapé e marca d'água de cada página via
+     * {@link PdfHeaderFooterWatermarkPageListener}.
+     *
+     * @param eventos eventos a serem exportados; se vazio ou {@code null}, o relatório informa
+     *     que não há eventos cadastrados no período
+     * @param localMap mapa de ID de local para nome de exibição
+     * @param orgMap mapa de ID de organização para nome de exibição
+     * @param start início do período exibido no subtítulo do relatório
+     * @param end fim do período exibido no subtítulo do relatório
+     * @param config configuração da paróquia, usada para logo, cor primária e dados do rodapé
+     * @return bytes do arquivo PDF gerado
+     * @throws RuntimeException se ocorrer erro de geração de documento ou de E/S
+     */
     @Override
     public byte[] export(List<EventoEntity> eventos,
                          Map<UUID, String> localMap,
@@ -167,6 +202,12 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         }
     }
 
+    /**
+     * Formata um instante UTC como data/hora no fuso de São Paulo, no padrão {@code dd/MM/yyyy HH:mm}.
+     *
+     * @param instant instante a formatar, pode ser {@code null}
+     * @return string formatada, ou vazia se o instante for {@code null}
+     */
     private String formatInstant(Instant instant) {
         if (instant == null) {
             return "";
@@ -174,6 +215,13 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
 
+    /**
+     * Formata um instante UTC apenas como data (sem hora) no fuso de São Paulo, no padrão
+     * {@code dd/MM/yyyy}.
+     *
+     * @param instant instante a formatar, pode ser {@code null}
+     * @return string formatada, ou vazia se o instante for {@code null}
+     */
     private String formatInstantDateOnly(Instant instant) {
         if (instant == null) {
             return "";
@@ -181,6 +229,11 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
+    /**
+     * Listener de eventos de página do OpenPDF responsável por desenhar, em cada página do
+     * relatório, a marca d'água com o logo da paróquia (com baixa opacidade), o cabeçalho com
+     * logo e nome da paróquia, e o rodapé com endereço e diocese.
+     */
     private static class PdfHeaderFooterWatermarkPageListener extends PdfPageEventHelper {
         private final Image logoWatermark;
         private final Image logoHeader;
@@ -189,6 +242,14 @@ public class PdfCalendarioExporter implements CalendarioExporter {
         private final String paroquiaNome;
         private final String footerText;
 
+        /**
+         * Prepara as imagens (marca d'água e logo de cabeçalho), fontes e textos de rodapé a
+         * partir da configuração da paróquia, aplicando valores padrão quando a configuração ou
+         * o logo não estiverem disponíveis.
+         *
+         * @param config configuração da paróquia usada para obter logo, cores, nome, diocese e
+         *     endereço; pode ser {@code null}, caso em que valores padrão são usados
+         */
         public PdfHeaderFooterWatermarkPageListener(ParoquiaConfiguracaoEntity config) {
             Image tempWatermark = null;
             Image logoHeaderImg = null;
@@ -221,6 +282,14 @@ public class PdfCalendarioExporter implements CalendarioExporter {
             this.footerFont = new Font(Font.HELVETICA, 8, Font.NORMAL, Color.GRAY);
         }
 
+        /**
+         * Desenha a marca d'água, o cabeçalho e o rodapé ao final da renderização de cada
+         * página do documento. Falhas em qualquer uma das três etapas são ignoradas
+         * individualmente para não interromper a geração do restante do relatório.
+         *
+         * @param writer escritor PDF usado para obter os canvases de desenho
+         * @param document documento sendo gerado
+         */
         @Override
         public void onEndPage(PdfWriter writer, Document document) {
             PdfContentByte canvasUnder = writer.getDirectContentUnder();
@@ -268,6 +337,12 @@ public class PdfCalendarioExporter implements CalendarioExporter {
             }
         }
 
+        /**
+         * Monta a tabela de duas colunas (logo e nome da paróquia) usada como cabeçalho de
+         * página, com borda inferior separando-a do conteúdo.
+         *
+         * @return tabela de cabeçalho pronta para ser escrita no topo da página
+         */
         private @NonNull PdfPTable createHeaderTable() {
             PdfPTable headerTable = new PdfPTable(2);
             headerTable.setTotalWidth(770);

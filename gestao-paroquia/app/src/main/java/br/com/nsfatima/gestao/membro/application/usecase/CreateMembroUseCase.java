@@ -15,6 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Cria o vínculo de um usuário do IAM a uma organização, com o papel que ele passa a exercer ali. Garante que
+ * não exista já um vínculo ativo entre o mesmo usuário e organização, e sincroniza automaticamente os campos de
+ * liderança (coordenador/vice-coordenador) da organização quando o papel atribuído for de coordenação.
+ */
 @Service
 public class CreateMembroUseCase {
 
@@ -37,6 +42,16 @@ public class CreateMembroUseCase {
         this.auditPublisher = auditPublisher;
     }
 
+    /**
+     * Cria o vínculo usuário-organização, validando a existência de ambas as partes e a ausência de vínculo
+     * ativo prévio entre elas antes de persistir.
+     *
+     * @param request dados do vínculo a criar
+     * @param actor   identificador do agente executando a ação, usado para auditoria
+     * @return o vínculo criado, com dados de exibição resolvidos
+     * @throws IllegalArgumentException se o usuário ou a organização não existirem, ou se já houver vínculo
+     *                                   ativo entre eles
+     */
     @Transactional
     public MembroResponse execute(MembroRequest request, String actor) {
         var usuario = usuarioRepository.findById(request.usuarioId())

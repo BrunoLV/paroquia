@@ -5,6 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
+/**
+ * Resposta retornada após decidir uma solicitação de aprovação, informando o status final da aprovação
+ * (APROVADA, REPROVADA ou FALHA_EXECUCAO) e o resultado da execução da ação associada, quando aplicável.
+ */
 @Schema(description = "Resposta após a decisão de uma aprovação")
 public record AprovacaoDecisionResponse(
         @Schema(description = "ID único da aprovação")

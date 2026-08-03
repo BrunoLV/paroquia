@@ -8,6 +8,11 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Payload para atualização parcial (patch) de um projeto existente. Todos os campos são
+ * opcionais — apenas os informados são aplicados; a autorização da operação segue
+ * {@code ProjetoAuthorizationService#assertCanEdit}.
+ */
 @Schema(description = "Solicitação para atualização parcial de um projeto")
 public record ProjetoPatchRequest(
         @Schema(description = "Novo nome do projeto")

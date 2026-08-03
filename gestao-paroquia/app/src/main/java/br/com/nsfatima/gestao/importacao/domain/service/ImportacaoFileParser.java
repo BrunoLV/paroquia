@@ -21,9 +21,28 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Lida com o formato de arquivo (CSV/XLSX) do fluxo de importação em lote: gera o template de
+ * exemplo por tipo de entidade e faz o parse de um arquivo enviado para uma lista de linhas
+ * (mapa coluna→valor), agnóstica das regras de negócio de cada {@link TipoEntidadeImportacao} —
+ * essas ficam em {@code ImportacaoService}. Convenções de arquivo: primeira linha é sempre o
+ * cabeçalho (nomes de coluna), célula/valor ausente vira string vazia (nunca {@code null}), e um
+ * eventual BOM UTF-8 no início do arquivo/planilha é descartado ao ler o cabeçalho.
+ */
 @Component
 public class ImportacaoFileParser {
 
+    /**
+     * Monta um arquivo de exemplo (cabeçalho + linhas de amostra) para o tipo de entidade
+     * informado, no formato solicitado.
+     *
+     * @param tipo código de {@link TipoEntidadeImportacao}
+     * @param formato "XLSX"/"XLS" gera planilha; qualquer outro valor gera CSV
+     * @return bytes do arquivo gerado
+     * @throws IOException se houver falha ao escrever a planilha
+     * @throws IllegalArgumentException se {@code tipo} não corresponder a nenhum
+     *     {@link TipoEntidadeImportacao} conhecido
+     */
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
         TipoEntidadeImportacao tipoEntidade = TipoEntidadeImportacao.fromCode(tipo);
         if (tipoEntidade == null) {
@@ -63,6 +82,16 @@ public class ImportacaoFileParser {
         return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Faz o parse do arquivo enviado pelo usuário para uma lista de linhas (mapa coluna→valor),
+     * escolhendo o parser (Excel ou CSV) pela extensão do nome do arquivo, não pelo
+     * content-type — o content-type de upload é pouco confiável entre navegadores/clientes.
+     *
+     * @param filename nome original do arquivo enviado, usado só para decidir o formato
+     * @param inputStream conteúdo do arquivo
+     * @return uma entrada por linha de dados (cabeçalho excluído), preservando a ordem do arquivo
+     * @throws IOException se o arquivo não puder ser lido/parseado
+     */
     public List<Map<String, String>> parseFile(String filename, InputStream inputStream) throws IOException {
         if (filename.toLowerCase().endsWith(".xlsx") || filename.toLowerCase().endsWith(".xls")) {
             return parseExcel(inputStream);
@@ -70,6 +99,11 @@ public class ImportacaoFileParser {
         return parseCsv(inputStream);
     }
 
+    /**
+     * Cabeçalho de colunas esperado por tipo de entidade — precisa ficar em sincronia com os
+     * nomes de campo lidos em {@code ImportacaoService} (ex.: "usuarioUsername",
+     * "organizacaoNome") e com os que a validação por linha exige.
+     */
     private String getHeadersParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
             case MEMBRO -> "usuarioUsername,organizacaoNome,papel,igrejaId";
@@ -80,6 +114,7 @@ public class ImportacaoFileParser {
         };
     }
 
+    /** Linhas de exemplo preenchidas no template, ilustrando um preenchimento válido por tipo. */
     private List<String> getSampleRowsParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
             case MEMBRO -> List.of(
@@ -101,6 +136,12 @@ public class ImportacaoFileParser {
         };
     }
 
+    /**
+     * Parser de CSV simples (split por vírgula, sem suporte a campos entre aspas). Linhas em
+     * branco são ignoradas silenciosamente (fim de arquivo/planilha com linhas vazias no fim é
+     * comum em exports manuais). Valores ausentes em uma linha mais curta que o cabeçalho viram
+     * string vazia, nunca {@code null} — mantém o contrato de {@link #parseFile}.
+     */
     private List<Map<String, String>> parseCsv(InputStream is) throws IOException {
         List<Map<String, String>> rows = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -128,6 +169,11 @@ public class ImportacaoFileParser {
         return rows;
     }
 
+    /**
+     * Parser de XLS/XLSX: lê apenas a primeira planilha do arquivo. Uma linha é descartada
+     * quando todas as suas células ficam vazias (evita linhas fantasma que o Excel às vezes
+     * mantém no fim de uma planilha editada manualmente).
+     */
     private List<Map<String, String>> parseExcel(InputStream is) throws IOException {
         List<Map<String, String>> rows = new ArrayList<>();
         try (Workbook workbook = WorkbookFactory.create(is)) {
@@ -166,6 +212,13 @@ public class ImportacaoFileParser {
         return rows;
     }
 
+    /**
+     * Normaliza qualquer célula do Excel para {@code String}, unificando o tipo de dado com o
+     * CSV (onde tudo já é texto). Números inteiros não ganham casas decimais espúrias
+     * (ex.: "5" e não "5.0"), e células de data são convertidas para o texto do
+     * {@code LocalDateTime}, para casar com os formatos aceitos pelos parsers de data/hora do
+     * {@code ImportacaoService}.
+     */
     private String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return "";

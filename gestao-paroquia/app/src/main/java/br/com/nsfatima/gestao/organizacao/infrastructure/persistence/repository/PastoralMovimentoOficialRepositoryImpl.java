@@ -10,6 +10,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Adaptador JPA de {@link PastoralMovimentoOficialRepository}, traduzindo entre o modelo de domínio
+ * {@code PastoralMovimentoOficial} e a entidade JPA {@link PastoralMovimentoOficialEntity}.
+ */
 @Repository
 public class PastoralMovimentoOficialRepositoryImpl implements PastoralMovimentoOficialRepository {
 

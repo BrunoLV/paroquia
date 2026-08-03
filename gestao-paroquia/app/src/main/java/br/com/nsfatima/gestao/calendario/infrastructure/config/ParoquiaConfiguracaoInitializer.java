@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.util.UUID;
 
+/**
+ * Garante, na inicialização da aplicação, que exista sempre uma linha de configuração da
+ * paróquia ({@link ParoquiaConfiguracaoEntity}) persistida no banco, semeada a partir dos valores
+ * padrão definidos em {@link ParoquiaProperties}. Isso evita que telas e relatórios que dependem
+ * dessa configuração (nome, diocese, cores, logo) encontrem um estado vazio em um banco novo.
+ */
 @Component
 public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {
 
@@ -22,6 +28,14 @@ public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {
         this.properties = properties;
     }
 
+    /**
+     * Executado uma única vez na subida da aplicação: se ainda não houver nenhuma configuração
+     * de paróquia persistida, cria a linha padrão com ID fixo, copiando os valores de
+     * {@link ParoquiaProperties} e tentando carregar o logo a partir do classpath. Falhas ao
+     * carregar o logo são silenciosamente ignoradas para não impedir a subida da aplicação.
+     *
+     * @param args argumentos de inicialização da aplicação Spring Boot
+     */
     @Override
     public void run(ApplicationArguments args) {
         if (repository.count() == 0) {

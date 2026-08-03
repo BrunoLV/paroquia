@@ -9,6 +9,12 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Registro de auditoria de uma edição (revisão) do conteúdo de uma
+ * {@link ObservacaoEventoEntity}, preservando o texto anterior e o novo texto para permitir
+ * reconstruir o histórico de alterações de uma observação, independentemente da remoção
+ * lógica tratada diretamente na entidade de observação.
+ */
 @Entity
 @Table(name = "observacoes_nota_revisoes", schema = "calendario")
 public class ObservacaoNotaRevisaoEntity extends BaseVersionedEntity {
@@ -19,9 +25,11 @@ public class ObservacaoNotaRevisaoEntity extends BaseVersionedEntity {
     @Column(name = "observacao_id", nullable = false)
     private UUID observacaoId;
 
+    /** Conteúdo da observação antes desta revisão. */
     @Column(name = "conteudo_anterior", nullable = false, length = 4000)
     private String conteudoAnterior;
 
+    /** Conteúdo da observação após esta revisão. */
     @Column(name = "conteudo_novo", nullable = false, length = 4000)
     private String conteudoNovo;
 

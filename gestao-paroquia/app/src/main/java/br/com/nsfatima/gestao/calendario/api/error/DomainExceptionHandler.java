@@ -27,7 +27,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
 /**
- * Handles domain-specific business exceptions.
+ * Traduz exceções de regra de negócio do domínio (calendário, projeto, observações) para
+ * respostas HTTP padronizadas ({@link ValidationErrorResponse}). Mapeamento exceção → status:
+ * {@code CalendarioBloqueadoException}/{@code InvalidStatusTransitionException}/
+ * {@code ObservacaoTipoManualInvalidoException}/{@code ObservacaoTipoImutavelException}/
+ * {@code ImmutableEclesialRuleException} → 400 (violação de regra de negócio, requisição
+ * rejeitada); {@code EventoNotFoundException}/{@code ProjetoNotFoundException}/
+ * {@code ObservacaoNaoEncontradaException} → 404; {@code ObservacaoAutorInvalidoException} → 403
+ * (ator não é o autor exigido); {@code IdempotencyConflictException}/
+ * {@code InvalidStatusTransitionException}/{@code ObjectOptimisticLockingFailureException}/
+ * {@code DataIntegrityViolationException} → 409 (conflito — chave de idempotência repetida com
+ * payload diferente, transição de estado inválida, edição concorrente, ou violação de
+ * unicidade/integridade referencial); {@code DataAccessException} → 503 (banco indisponível).
+ * Ordem 3 (via {@link Order}) garante que handlers mais específicos de outros advices rodem antes.
  */
 @RestControllerAdvice
 @Order(3)

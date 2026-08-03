@@ -25,17 +25,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Exporta uma lista de eventos do calendário para uma planilha Excel (.xlsx) usando Apache POI,
+ * incluindo logo da paróquia, título, período e uma tabela de eventos com colunas formatadas.
+ */
 @Component
 public class ExcelCalendarioExporter implements CalendarioExporter {
 
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    /**
+     * Indica se este exportador atende ao formato solicitado.
+     *
+     * @param formato identificador do formato de exportação (ex.: {@code "EXCEL"})
+     * @return {@code true} se o formato, ignorando caixa, for "EXCEL"
+     */
     @Override
     public boolean supports(String formato) {
         return "EXCEL".equalsIgnoreCase(formato);
     }
 
+    /**
+     * Gera a planilha Excel com logo (se disponível), título, período do relatório e uma tabela
+     * com cabeçalho estilizado seguida das linhas de eventos, resolvendo nomes de local e
+     * organização a partir dos mapas fornecidos e ajustando a largura das colunas ao final.
+     *
+     * @param eventos eventos a serem exportados
+     * @param localMap mapa de ID de local para nome de exibição
+     * @param orgMap mapa de ID de organização para nome de exibição
+     * @param start início do período exibido no subtítulo do relatório
+     * @param end fim do período exibido no subtítulo do relatório
+     * @param config configuração da paróquia, usada para o logo inserido nas células A1:B4
+     * @return bytes do arquivo .xlsx gerado
+     * @throws RuntimeException se ocorrer um erro de E/S ao gerar o workbook
+     */
     @Override
     public byte[] export(List<EventoEntity> eventos,
                          Map<UUID, String> localMap,
@@ -139,6 +163,12 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
         }
     }
 
+    /**
+     * Formata um instante UTC como data/hora no fuso de São Paulo, no padrão {@code dd/MM/yyyy HH:mm}.
+     *
+     * @param instant instante a formatar, pode ser {@code null}
+     * @return string formatada, ou vazia se o instante for {@code null}
+     */
     private String formatInstant(Instant instant) {
         if (instant == null) {
             return "";
@@ -146,6 +176,13 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
 
+    /**
+     * Formata um instante UTC apenas como data (sem hora) no fuso de São Paulo, no padrão
+     * {@code dd/MM/yyyy}.
+     *
+     * @param instant instante a formatar, pode ser {@code null}
+     * @return string formatada, ou vazia se o instante for {@code null}
+     */
     private String formatInstantDateOnly(Instant instant) {
         if (instant == null) {
             return "";

@@ -14,6 +14,16 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Entidade JPA que representa uma solicitação de aprovação pendente sobre um {@code Projeto},
+ * criada quando um ator sem nível de autorização suficiente tenta uma ação sensível (hoje,
+ * apenas cancelamento, tipo {@code CANCELAMENTO}; ver
+ * {@code TransitionProjetoUseCase#cancelar}) ou quando a criação do projeto em si exige
+ * aprovação (tipo {@code CRIACAO}). O {@code actionPayloadJson} guarda os dados necessários
+ * para efetivar a ação quando a solicitação for aprovada (ex.: o {@code ProjetoCreateRequest}
+ * serializado, no caso de {@code CRIACAO}). Enquanto {@code status} permanecer
+ * {@code PENDENTE}, nenhuma mudança foi aplicada ao projeto correspondente.
+ */
 @Entity
 @Table(name = "projeto_solicitacoes_aprovacao", schema = "calendario")
 public class ProjetoSolicitacaoAprovacaoEntity {

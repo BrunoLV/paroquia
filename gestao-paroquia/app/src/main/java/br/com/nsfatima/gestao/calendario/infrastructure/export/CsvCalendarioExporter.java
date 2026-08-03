@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Exporta uma lista de eventos do calendário para o formato CSV, delimitado por ponto e vírgula
+ * (compatível com o Excel em localidade pt-BR) e com BOM UTF-8 para preservar acentuação.
+ */
 @Component
 public class CsvCalendarioExporter implements CalendarioExporter {
 
@@ -21,11 +25,30 @@ public class CsvCalendarioExporter implements CalendarioExporter {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final String DOUBLE_QUOTE = "\"";
 
+    /**
+     * Indica se este exportador atende ao formato solicitado.
+     *
+     * @param formato identificador do formato de exportação (ex.: {@code "CSV"})
+     * @return {@code true} se o formato, ignorando caixa, for "CSV"
+     */
     @Override
     public boolean supports(String formato) {
         return "CSV".equalsIgnoreCase(formato);
     }
 
+    /**
+     * Gera o conteúdo CSV com uma linha de cabeçalho e uma linha por evento, resolvendo nomes de
+     * local e organização a partir dos mapas fornecidos e convertendo os instantes UTC para o
+     * fuso horário de São Paulo antes de formatá-los.
+     *
+     * @param eventos eventos a serem exportados
+     * @param localMap mapa de ID de local para nome de exibição
+     * @param orgMap mapa de ID de organização para nome de exibição
+     * @param start início do período exportado (não utilizado diretamente no corpo do CSV)
+     * @param end fim do período exportado (não utilizado diretamente no corpo do CSV)
+     * @param config configuração da paróquia (não utilizada nesta exportação)
+     * @return bytes do arquivo CSV, codificados em UTF-8 com BOM
+     */
     @Override
     public byte[] export(List<EventoEntity> eventos,
                          Map<UUID, String> localMap,
@@ -55,6 +78,12 @@ public class CsvCalendarioExporter implements CalendarioExporter {
         return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Formata um instante UTC como data/hora no fuso de São Paulo, no padrão {@code dd/MM/yyyy HH:mm}.
+     *
+     * @param instant instante a formatar, pode ser {@code null}
+     * @return string formatada, ou vazia se o instante for {@code null}
+     */
     private String formatInstant(Instant instant) {
         if (instant == null) {
             return "";
@@ -62,6 +91,14 @@ public class CsvCalendarioExporter implements CalendarioExporter {
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DATE_FORMATTER);
     }
 
+    /**
+     * Escapa um valor para uso seguro em um campo CSV delimitado por ponto e vírgula, duplicando
+     * aspas duplas e envolvendo o valor entre aspas quando contém delimitador, aspas ou quebras
+     * de linha.
+     *
+     * @param val valor a escapar, pode ser {@code null}
+     * @return valor escapado pronto para ser inserido na linha CSV, ou vazio se {@code null}
+     */
     private String escapeCsv(Object val) {
         if (val == null) {
             return "";

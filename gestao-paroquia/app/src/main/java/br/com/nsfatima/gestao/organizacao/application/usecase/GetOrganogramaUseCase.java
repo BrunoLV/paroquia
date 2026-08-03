@@ -15,6 +15,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Monta a árvore hierárquica (organograma) de toda a estrutura organizacional da paróquia a partir das
+ * organizações e seus vínculos de membro. A raiz preferida é a organização do tipo {@code CLERO}; se ela não
+ * existir, todas as organizações-raiz (sem organização-mãe) são expostas como filhas diretas de um nó
+ * sintético "root" com o nome da paróquia. Apenas organizações ativas entram na árvore, e cada nó de
+ * organização recebe também seus membros como nós-folha filhos, junto com o nome do responsável/coordenador
+ * (e vice), resolvido preferencialmente do campo de texto livre da organização e, na ausência dele, a partir
+ * dos vínculos de membro com papel de coordenador/vice.
+ */
 @Service
 public class GetOrganogramaUseCase {
 
@@ -33,6 +42,13 @@ public class GetOrganogramaUseCase {
         this.paroquiaNome = paroquiaNome;
     }
 
+    /**
+     * Monta e retorna a árvore completa do organograma paroquial, partindo da organização raiz do clero
+     * (ou de um nó sintético "root" caso ela não exista) e descendo recursivamente por todas as organizações
+     * ativas e seus membros.
+     *
+     * @return o nó raiz da árvore do organograma, com todos os descendentes já montados
+     */
     @Transactional(readOnly = true)
     public OrganogramaNodeResponse execute() {
         List<OrganizacaoEntity> todasOrganizacoes = organizacaoRepository.findAll();

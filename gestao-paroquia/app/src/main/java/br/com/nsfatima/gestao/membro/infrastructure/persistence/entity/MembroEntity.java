@@ -9,6 +9,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Representa o vínculo de um {@code Usuario} (conta IAM) a uma {@code Organizacao}, com o papel que essa pessoa
+ * exerce ali (ex.: {@code COORDENADOR}, {@code VICE_COORDENADOR}). Não modela a pessoa física em si — apenas a
+ * associação usuário-organização-papel usada para governança/atuação dentro da paróquia. Um mesmo usuário pode
+ * ter, no máximo, um vínculo {@code ativo} por organização (regra garantida pelos casos de uso de criação/edição,
+ * não pelo schema).
+ */
 @Entity
 @Table(name = "membros", schema = "calendario")
 public class MembroEntity extends BaseVersionedEntity {

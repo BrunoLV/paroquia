@@ -14,6 +14,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Representa uma ocupação de um ativo patrimonial num período: alocação a um evento (podendo ser
+ * empréstimo entre organizações, quando {@code organizacaoOrigemId} e {@code organizacaoDestinoId}
+ * divergem) ou período de manutenção. Empréstimos nascem {@code PENDENTE_APROVACAO} e só viram
+ * {@code CONFIRMADA} após decisão do fluxo de aprovação vinculado por {@code aprovacaoId}.
+ */
 @Entity
 @Table(name = "alocacoes_ativos", schema = "calendario")
 public class AtivoAlocacaoEntity extends BaseVersionedEntity {

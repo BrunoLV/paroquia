@@ -8,6 +8,15 @@ import jakarta.persistence.Table;
 
 import java.util.UUID;
 
+/**
+ * Mapeamento JPA do agregado de domínio {@code Local} na tabela {@code calendario.locais}.
+ *
+ * <p>Invariantes de persistência: {@code nome} é obrigatório e único (impede cadastro de dois locais
+ * com o mesmo nome); {@code tipo} é obrigatório; {@code organizacaoId} é opcional e vincula o local a
+ * uma organização (Matriz/Comunidade) para fins de escopo/autorização — um local sem organização fica
+ * disponível de forma geral. O campo {@code ativo} controla a desativação lógica usada pelo fluxo de
+ * exclusão do serviço de domínio.
+ */
 @Entity
 @Table(name = "locais", schema = "calendario")
 public class LocalEntity extends BaseVersionedEntity {

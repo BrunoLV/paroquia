@@ -9,6 +9,15 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Serviço de domínio que decide, a partir do papel e escopo organizacional do
+ * ator, se o cancelamento de um evento pode ser aplicado imediatamente ou se
+ * precisa passar pelo fluxo de aprovação, e quem tem autoridade para decidir essa
+ * aprovação. Pároco e lideranças do Conselho Pastoral cancelam imediatamente;
+ * Vigário e lideranças locais (pastorais) precisam de aprovação — estas últimas
+ * apenas para eventos da própria organização; os demais papéis não podem cancelar
+ * eventos.
+ */
 @Service
 public class EventoCancelamentoAuthorizationService {
 
@@ -22,6 +31,17 @@ public class EventoCancelamentoAuthorizationService {
     private static final Set<TipoOrganizacao> LOCAL_SCOPED_ORG_TYPES = Set.of(
             TipoOrganizacao.PASTORAL);
 
+    /**
+     * Determina o modo de cancelamento aplicável ao ator para o evento informado:
+     * imediato para Pároco e lideranças do Conselho Pastoral; sujeito a aprovação
+     * para Vigário e para lideranças locais restritas à própria organização
+     * responsável pelo evento.
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento a ser cancelado
+     * @return modo de cancelamento aplicável (imediato ou sujeito a aprovação)
+     * @throws ForbiddenOperationException se o ator não tiver escopo de organização, estiver fora do escopo do evento, ou não tiver papel autorizado a cancelar eventos
+     */
     public CancelamentoRequestMode resolveRequestMode(
             EventoActorContext actorContext,
             UUID eventoOrganizacaoResponsavelId) {
@@ -51,6 +71,14 @@ public class EventoCancelamentoAuthorizationService {
         throw new ForbiddenOperationException("Usuário não tem permissão para cancelar eventos");
     }
 
+    /**
+     * Garante que o ator tem autoridade para decidir (aprovar/reprovar) uma
+     * solicitação de aprovação de cancelamento de evento — restrito a Pároco e
+     * lideranças do Conselho Pastoral.
+     *
+     * @param actorContext contexto de papel/organização do ator autenticado
+     * @throws ForbiddenOperationException se o ator não tiver papel autorizado a decidir a aprovação
+     */
     public void assertCanDecideAprovacao(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
@@ -68,8 +96,14 @@ public class EventoCancelamentoAuthorizationService {
         return LOCAL_SCOPED_ORG_TYPES.contains(organizationType) && LEADERSHIP_ROLES.contains(role);
     }
 
+    /**
+     * Modo de processamento de uma solicitação de cancelamento de evento, definido
+     * conforme o papel/escopo do ator solicitante.
+     */
     public enum CancelamentoRequestMode {
+        /** O cancelamento é aplicado imediatamente, sem passar pelo fluxo de aprovação. */
         IMMEDIATE,
+        /** O cancelamento fica pendente até ser decidido através do fluxo de aprovação. */
         REQUIRES_APROVACAO
     }
 }

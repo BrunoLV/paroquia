@@ -21,8 +21,23 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Service responsible for recording auditable operations and security events.
- * Modular version: decoupled from specific business domains.
+ * Serviço central de auditoria: recebe eventos de negócio de qualquer contexto (calendário,
+ * projeto, aprovação, patrimônio etc.) e decide, com base em um vocabulário fechado de ações
+ * ("acao"), se e como persistir um registro auditável em {@link AuditoriaOperacaoEntity}.
+ *
+ * <p>Vocabulário de "acao" atualmente aceito (ver {@link #isAuditableAction(String)}): "criar",
+ * "atualizar", "cancelar", "aprovacao-decisao", "aprovacao-decisao-solicitacao",
+ * "criar-observacao", "atualizar-observacao", "excluir-observacao", "sistema-observacao", "ler",
+ * "listar", "acao-admin", "transferir", "alocar". Ações fora dessa lista são logadas mas não
+ * persistidas — chamadores de outros contextos devem reutilizar esses literais (nunca inventar
+ * novos) para que o registro seja efetivamente auditado.
+ *
+ * <p>Convenções de chaves no {@code metadata}/JSON de detalhes que este serviço reconhece:
+ * "usuarioId" (ator autenticado), "organizacaoId" (escopo organizacional obrigatório para
+ * persistir), "resourceType"/"resourceId"/"id", "contextId"/"eventoId" e "correlationId"
+ * (propagado via MDC, ver {@link CorrelationIdFilter}). Um registro só é persistido quando o
+ * identificador do recurso e a organização puderem ser resolvidos; caso contrário, o evento
+ * fica apenas no log estruturado.
  */
 @Service
 public class AuditoriaPersistenceService {
@@ -39,10 +54,34 @@ public class AuditoriaPersistenceService {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Registra uma operação auditável sem metadados adicionais. Equivalente a chamar a
+     * sobrecarga completa com um mapa vazio — útil quando o recurso auditado é identificável
+     * apenas por {@code target} (ex.: um UUID) e não há contexto extra a propagar.
+     *
+     * @param actor identificador do ator que executou a ação (login/nome); "anonymous" se nulo/vazio
+     * @param action ação executada; deve pertencer ao vocabulário fechado documentado na classe
+     * @param target identificador do recurso afetado (tipicamente um UUID)
+     * @param result resultado da operação (ex.: "sucesso", "falha", "denied")
+     */
     public void log(String actor, String action, String target, String result) {
         log(actor, action, target, result, Map.of());
     }
 
+    /**
+     * Registra uma operação auditável, sempre emitindo uma linha de log estruturado e, quando a
+     * ação pertence ao vocabulário auditável e for possível resolver organização e recurso,
+     * persistindo o registro em {@link AuditoriaOperacaoEntity} (ver
+     * {@link #persistAuditableRecord}). O {@code metadata} é enriquecido com o correlationId
+     * corrente (MDC) e uma categoria de erro quando o resultado indica falha/negação.
+     *
+     * @param actor identificador do ator que executou a ação; "anonymous" se nulo/vazio
+     * @param action ação executada; deve pertencer ao vocabulário fechado documentado na classe
+     * @param target identificador do recurso afetado, usado como fallback de resourceId
+     * @param result resultado da operação (ex.: "sucesso", "falha", "denied")
+     * @param metadata contexto adicional; chaves reconhecidas incluem "usuarioId",
+     *     "organizacaoId", "resourceType", "resourceId"/"id", "contextId"/"eventoId"
+     */
     public void log(String actor, String action, String target, String result, Map<String, Object> metadata) {
         Map<String, Object> enriched = enrichMetadata(result, metadata);
 

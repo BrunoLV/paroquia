@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+/**
+ * Traduz as exceções de domínio do contexto de patrimônio (ativo não encontrado, transferência
+ * bloqueada, alocação/desalocação/manutenção/cancelamento inválidos, período conflitante) em
+ * respostas HTTP de erro padronizadas para a API.
+ */
 @RestControllerAdvice
 @Order(3)
 public class PatrimonioExceptionHandler extends BaseExceptionHandler {
@@ -29,6 +34,12 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
         super(auditLogPersistenceService);
     }
 
+    /**
+     * Ativo patrimonial inexistente para o id informado — retorna 404.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 404 padronizada
+     */
     @ExceptionHandler(AtivoPatrimonialNotFoundException.class)
     public ResponseEntity<ValidationErrorResponse> handleNotFound(AtivoPatrimonialNotFoundException ex) {
         return buildValidation(
@@ -38,6 +49,13 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                 List.of(new ValidationErrorItem(ErrorCodes.RESOURCE_NOT_FOUND.name(), "ativo", ex.getMessage(), null)));
     }
 
+    /**
+     * Transferência de organização dona bloqueada pela política de vinculação (ex.: ativo com
+     * alocação ativa) — retorna 409.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 409 padronizada
+     */
     @ExceptionHandler(AtivoTransferenciaBloqueadaException.class)
     public ResponseEntity<ValidationErrorResponse> handleTransferenciaBloqueada(
             AtivoTransferenciaBloqueadaException ex) {
@@ -49,6 +67,13 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                         ErrorCodes.INVALID_STATUS_TRANSITION.name(), "status", ex.getMessage(), null)));
     }
 
+    /**
+     * Pedido de alocação de ativo que viola uma regra de negócio (ex.: ativo indisponível,
+     * em manutenção) — retorna 400.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 400 padronizada
+     */
     @ExceptionHandler(AtivoAlocacaoInvalidaException.class)
     public ResponseEntity<ValidationErrorResponse> handleAlocacaoInvalida(AtivoAlocacaoInvalidaException ex) {
         return buildValidation(
@@ -59,6 +84,12 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                         ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "alocacao", ex.getMessage(), null)));
     }
 
+    /**
+     * Organização informada é inválida para a operação de patrimônio solicitada — retorna 400.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 400 padronizada
+     */
     @ExceptionHandler(AtivoOrganizacaoInvalidaException.class)
     public ResponseEntity<ValidationErrorResponse> handleOrganizacaoInvalida(AtivoOrganizacaoInvalidaException ex) {
         return buildValidation(
@@ -69,6 +100,13 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                         ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "organizacaoId", ex.getMessage(), null)));
     }
 
+    /**
+     * Período de alocação solicitado conflita com outra ocupação já registrada para o mesmo
+     * ativo — retorna 409.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 409 padronizada
+     */
     @ExceptionHandler(AtivoPeriodoConflitanteException.class)
     public ResponseEntity<ValidationErrorResponse> handlePeriodoConflitante(AtivoPeriodoConflitanteException ex) {
         return buildValidation(
@@ -79,6 +117,12 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                         ErrorCodes.INVALID_STATUS_TRANSITION.name(), "periodo", ex.getMessage(), null)));
     }
 
+    /**
+     * Pedido de desalocação inválido para o estado corrente do ativo/alocação — retorna 409.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 409 padronizada
+     */
     @ExceptionHandler(AtivoDesalocacaoInvalidaException.class)
     public ResponseEntity<ValidationErrorResponse> handleDesalocacaoInvalida(AtivoDesalocacaoInvalidaException ex) {
         return buildValidation(
@@ -89,6 +133,12 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                         ErrorCodes.INVALID_STATUS_TRANSITION.name(), "alocacao", ex.getMessage(), null)));
     }
 
+    /**
+     * Início/finalização de manutenção inválidos para o estado corrente do ativo — retorna 409.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 409 padronizada
+     */
     @ExceptionHandler(AtivoManutencaoInvalidaException.class)
     public ResponseEntity<ValidationErrorResponse> handleManutencaoInvalida(AtivoManutencaoInvalidaException ex) {
         return buildValidation(
@@ -99,6 +149,13 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                         ErrorCodes.INVALID_STATUS_TRANSITION.name(), "manutencao", ex.getMessage(), null)));
     }
 
+    /**
+     * Cancelamento de alocação inválido — a alocação já teve seu período iniciado ou já não está
+     * mais em estado cancelável — retorna 409.
+     *
+     * @param ex exceção de domínio capturada
+     * @return resposta de erro 409 padronizada
+     */
     @ExceptionHandler(AtivoAlocacaoCancelamentoInvalidoException.class)
     public ResponseEntity<ValidationErrorResponse> handleCancelamentoInvalido(
             AtivoAlocacaoCancelamentoInvalidoException ex) {

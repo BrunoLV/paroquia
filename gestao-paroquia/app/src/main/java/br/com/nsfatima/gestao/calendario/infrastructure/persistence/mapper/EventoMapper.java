@@ -17,6 +17,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Converte entre {@link EventoEntity} (persistência) e os DTOs da API de eventos
+ * ({@link CreateEventoRequest}, {@link UpdateEventoRequest}, {@link EventoResponse}), isolando o
+ * restante da aplicação dos detalhes de mapeamento — incluindo a conversão tolerante de status
+ * legado (via {@link EventoStatusResponse#fromStoredValue}), a resolução do nome do projeto
+ * vinculado e a extração dos participantes de apoio a partir dos envolvidos do evento.
+ */
 @Component
 public class EventoMapper {
 
@@ -30,6 +37,15 @@ public class EventoMapper {
         this.projetoRepository = projetoRepository;
     }
 
+    /**
+     * Cria uma nova {@link EventoEntity} a partir dos dados de uma requisição de criação,
+     * gerando um novo ID e aplicando o status inicial informado.
+     *
+     * @param request dados de criação do evento vindos da API
+     * @param status status inicial a ser aplicado ao evento (ex.: confirmado ou pendente de
+     *     aprovação, conforme decidido pelo fluxo de aprovação)
+     * @return nova entidade de evento pronta para persistência
+     */
     public EventoEntity toNewEntity(CreateEventoRequest request, EventoStatusInput status) {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
@@ -49,6 +65,15 @@ public class EventoMapper {
         return entity;
     }
 
+    /**
+     * Converte uma {@link EventoEntity} persistida para o DTO de resposta da API, resolvendo o
+     * status de forma tolerante a valores legados/inconsistentes (publicando um alerta via
+     * {@link LegacyEnumInconsistencyPublisher} quando necessário), buscando o nome do projeto
+     * vinculado (se houver) e extraindo os IDs das organizações que participam como apoio.
+     *
+     * @param entity entidade de evento persistida
+     * @return DTO de resposta com os dados do evento prontos para serialização na API
+     */
     public EventoResponse toResponse(EventoEntity entity) {
         EventoStatusResponse status = EventoStatusResponse.fromStoredValue(
                 entity.getStatus(),
@@ -89,6 +114,16 @@ public class EventoMapper {
                 entity.getMotivoConflito());
     }
 
+    /**
+     * Aplica, sobre uma {@link EventoEntity} existente, apenas os campos não nulos presentes na
+     * requisição de atualização (patch parcial), e sempre atualiza o status para o valor
+     * informado, que reflete a decisão do fluxo de aprovação/atualização para esta operação.
+     *
+     * @param entity entidade de evento a ser atualizada em memória (mutação in-place)
+     * @param request campos da requisição de atualização; campos {@code null} são ignorados e
+     *     preservam o valor atual da entidade
+     * @param status status a ser definido na entidade após aplicar o patch
+     */
     public void applyPatch(EventoEntity entity, UpdateEventoRequest request, EventoStatusInput status) {
         if (request.titulo() != null) {
             entity.setTitulo(request.titulo());

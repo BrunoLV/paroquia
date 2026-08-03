@@ -8,6 +8,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Representação pública de um ativo patrimonial da paróquia. {@code reservavel} indica se o
+ * ativo pode ser alocado/reservado para eventos (alguns ativos existem apenas para controle
+ * patrimonial e nunca são alocáveis).
+ */
 public record AtivoPatrimonialResponse(
         UUID id,
         String nome,

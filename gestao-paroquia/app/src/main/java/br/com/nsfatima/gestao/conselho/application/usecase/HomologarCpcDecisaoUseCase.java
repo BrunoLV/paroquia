@@ -14,6 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Homologa ou veta uma ata/decisão de conselho previamente registrada, encerrando o fluxo
+ * iniciado por {@link CreateCpcDecisaoUseCase}. Esta é a única forma de uma decisão sair de
+ * {@link StatusHomologacao#PENDENTE_HOMOLOGACAO} e produzir efeito oficial — reservada, na
+ * camada de API, a Pároco, Admin ou Mesa CPP (a validação de papel/role em si é feita no
+ * controller via {@code @PreAuthorize}, não aqui).
+ */
 @Service
 public class HomologarCpcDecisaoUseCase {
 
@@ -25,6 +32,18 @@ public class HomologarCpcDecisaoUseCase {
         this.actorContextResolver = actorContextResolver;
     }
 
+    /**
+     * Aplica a decisão de homologação: registra o homologador e a data/hora da decisão e,
+     * quando o status é {@link StatusHomologacao#VETADO}, exige e grava o motivo do veto —
+     * invariante de negócio que impede vetos sem justificativa. Em caso de homologação
+     * (não-veto) qualquer motivo de veto anterior é limpo.
+     *
+     * @param id identificador da decisão a homologar/vetar
+     * @param request status decidido (homologado/vetado) e, se aplicável, o motivo do veto
+     * @return a decisão atualizada, já com o resultado da homologação
+     * @throws CpcDecisaoNotFoundException se não existir decisão com o {@code id} informado
+     * @throws IllegalArgumentException se o status for {@link StatusHomologacao#VETADO} sem motivo de veto informado
+     */
     @Transactional
     public CpcDecisaoResponse execute(UUID id, HomologarCpcDecisaoRequest request) {
         EventoActorContext context = actorContextResolver.resolveRequired();

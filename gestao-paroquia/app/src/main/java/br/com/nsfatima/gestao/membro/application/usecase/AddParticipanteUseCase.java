@@ -12,6 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Inscreve um membro (vínculo usuário-organização) em uma organização adicional, criando um registro de
+ * participação distinto do vínculo principal. Exige que o membro possua usuário associado no IAM e impede
+ * duplicidade de participação ativa na mesma organização.
+ */
 @Service
 public class AddParticipanteUseCase {
 
@@ -31,13 +36,17 @@ public class AddParticipanteUseCase {
         this.auditPublisher = auditPublisher;
     }
 
-    @Transactional
-    /*
-      Registra o ingresso de um membro em uma organização, validando a inexistência de duplicidade ativa para
-      garantir a integridade dos vínculos.
-      <p>
-      Exemplo: useCase.execute(membroId, request, "admin_user")
+    /**
+     * Registra o ingresso do membro na organização informada, a partir da data de início fornecida.
+     *
+     * @param membroId identificador do membro (vínculo usuário-organização)
+     * @param request  organização de destino e data de início da participação
+     * @param actor    identificador do agente executando a ação, usado para auditoria
+     * @return a participação criada
+     * @throws IllegalArgumentException se o membro não existir, não possuir usuário associado, ou já
+     *                                   participar ativamente da organização informada
      */
+    @Transactional
     public ParticipacaoResponse execute(UUID membroId, ParticipacaoRequest request, String actor) {
         var membro = membroRepository.findById(membroId)
                 .orElseThrow(() -> new IllegalArgumentException("Membro nao encontrado: " + membroId));

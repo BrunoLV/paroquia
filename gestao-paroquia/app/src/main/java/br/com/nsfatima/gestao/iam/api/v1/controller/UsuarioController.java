@@ -34,6 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * CRUD de usuários e gestão dos seus vínculos organizacionais (membros). Cobre tanto o cadastro administrativo
+ * (por admin, já habilitado) quanto o autocadastro público via {@code /registrar} (fica pendente de aprovação
+ * até {@link ApproveUsuarioUseCase} ser executado). A autorização por endpoint combina
+ * {@code @PreAuthorize} de papel global com checagens finas de escopo organizacional feitas por
+ * {@link UsuarioAuthorizationService} (admin ou coordenador da organização do usuário-alvo).
+ */
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários e permissões (IAM)")

@@ -193,6 +193,9 @@ const Organograma: React.FC = () => {
     const coord = org.responsavelNome;
     const vice = org.viceResponsavelNome;
 
+    // O backend já retorna o nome do responsável/vice como campos próprios do nó da organização
+    // (destacados no cabeçalho do card), então eles são excluídos da lista de "membros comuns"
+    // por nome para não aparecerem duplicados dentro da seção expansível de membros.
     const membrosOrdinarios = membros.filter(
       (m: OrganogramaNode) =>
         m &&
@@ -303,6 +306,15 @@ const Organograma: React.FC = () => {
     );
   };
 
+  /**
+   * A árvore retornada pela API (`OrganogramaNode`) mistura, em `children`, tanto sub-organizações
+   * (type === 'ORGANIZACAO', ex.: uma pastoral dentro de uma comunidade) quanto membros
+   * individuais (type === 'MEMBRO'). A biblioteca `@dabeng/react-orgchart` só sabe desenhar
+   * ramos entre nós do tipo organização, então esta função separa os dois: `orgChildren`
+   * preserva a lista original completa (usada por `renderOrgNode` para achar membros/coordenador)
+   * enquanto `children` (o campo que o orgchart de fato percorre para desenhar a árvore) é
+   * filtrado para conter apenas sub-organizações, recursivamente.
+   */
   const transformToOrgchartData = (node: OrganogramaNode): any => {
     if (!node) return null;
     const childrenOrgs = (node.children || []).filter(c => c && c.type === 'ORGANIZACAO');
@@ -345,6 +357,10 @@ const Organograma: React.FC = () => {
     );
   }
 
+  // Achata recursivamente a árvore hierárquica (que reflete a estrutura organizacional real:
+  // clero > matriz/comunidades > conselhos > pastorais/movimentos) em listas planas por
+  // categoria, usadas para montar tanto a raiz da visão em árvore quanto os grupos da visão em
+  // grade — a API entrega uma única árvore aninhada, não listas já separadas por tipo.
   const collectNodesBySubtypes = (node: OrganogramaNode, subtypes: string[]): OrganogramaNode[] => {
     if (!node) return [];
     let results: OrganogramaNode[] = [];
@@ -364,6 +380,10 @@ const Organograma: React.FC = () => {
   const conselhoOrgs = collectNodesBySubtypes(organograma, ['CONSELHO', 'CONSELHO_ECONOMICO']);
   const pastoralOrgs = collectNodesBySubtypes(organograma, ['PASTORAL', 'MOVIMENTO', 'LAICATO', 'OUTRO']);
 
+  // A visão em árvore usa o Clero como raiz visual (pároco no topo da hierarquia pastoral), não
+  // o nó raiz literal devolvido pela API (que normalmente é a Paróquia/Matriz). Se a raiz da API
+  // já for o Clero, usa-se ela; senão, busca-se o primeiro nó de subtipo CLERO na árvore para
+  // servir de ponto de partida do `OrganizationChart`.
   let cleroRootNode = organograma;
   if (organograma.subtype !== 'CLERO') {
     if (cleroOrgs.length > 0) {

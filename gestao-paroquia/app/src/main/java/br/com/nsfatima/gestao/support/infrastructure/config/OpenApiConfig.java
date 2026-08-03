@@ -7,6 +7,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuração central do OpenAPI/Swagger da API, definindo metadados gerais da documentação
+ * (título, versão, descrição) e o esquema de segurança baseado em cookie de sessão
+ * ({@code JSESSIONID}) usado pela autenticação da aplicação — necessário para que o Swagger UI
+ * consiga representar corretamente endpoints protegidos e permitir testes autenticados a partir
+ * da própria documentação.
+ */
 @Configuration
 @OpenAPIDefinition(
         info = @Info(

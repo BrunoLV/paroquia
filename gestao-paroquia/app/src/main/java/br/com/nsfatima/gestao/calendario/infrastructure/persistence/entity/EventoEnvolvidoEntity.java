@@ -13,6 +13,12 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Associação (tabela de junção) entre um {@link EventoEntity} e uma organização envolvida
+ * na sua realização, registrando o papel de participação dessa organização (responsável
+ * ou apoio). A chave primária composta ({@code evento_id}, {@code organizacao_id}) impede
+ * que a mesma organização seja registrada mais de uma vez para o mesmo evento.
+ */
 @Entity
 @Table(name = "eventos_envolvidos", schema = "calendario")
 @IdClass(EventoEnvolvidoEntity.Key.class)
@@ -26,6 +32,7 @@ public class EventoEnvolvidoEntity {
     @Column(name = "organizacao_id")
     private UUID organizacaoId;
 
+    /** Papel desta organização na realização do evento: responsável principal ou apenas apoio. */
     @Enumerated(EnumType.STRING)
     @Column(name = "papel_participacao", length = 64)
     private PapelEnvolvido papelParticipacao;
@@ -54,6 +61,10 @@ public class EventoEnvolvidoEntity {
         this.papelParticipacao = papelParticipacao;
     }
 
+    /**
+     * Chave primária composta de {@link EventoEnvolvidoEntity}, formada pelo par
+     * (identificador do evento, identificador da organização).
+     */
     public static class Key implements Serializable {
         private UUID eventoId;
         private UUID organizacaoId;

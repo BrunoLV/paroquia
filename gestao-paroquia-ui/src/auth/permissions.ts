@@ -57,6 +57,7 @@ const hasRole = (user: User | null, ...roles: string[]): boolean => {
 
 // ─── Public Permission Functions ─────────────────────────────────────────────
 
+/** Administrador do sistema: acesso irrestrito, ignora qualquer regra de escopo organizacional */
 export const isAdmin = (user: User | null): boolean => {
   if (!user) return false;
   return user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN');
@@ -80,11 +81,18 @@ export const isCoordenador = (user: User | null): boolean => hasRole(user, ...CO
 /** Membro de Pastoral ou Movimento */
 export const isMembro = (user: User | null): boolean => hasRole(user, ...MEMBRO_ROLES);
 
+/** Lideranças com poder de gestão de projetos: admin, pároco/bispo, clero, CPP ou coordenador de pastoral/movimento */
 export const canManageProjetos = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
+/**
+ * Papéis com autoridade paroquial (não apenas local/setorial): admin, pároco/bispo, CPP,
+ * ou coordenador/vice-coordenador de conselho (CONSELHO_COORDENADOR, COORD_CONSELHO e variantes).
+ * Diferente de `isCoordenador`, que também cobre coordenadores de pastoral/movimento restritos
+ * à própria organização — aqui o escopo é sempre global, sem necessidade de checar `organizations`.
+ */
 export const isGlobalCreator = (user: User | null): boolean => {
   if (!user) return false;
   return (
@@ -102,6 +110,13 @@ export const isGlobalCreator = (user: User | null): boolean => {
   );
 };
 
+/**
+ * Quem pode transicionar (mudar de status) um projeto: papéis com autoridade global
+ * (`isGlobalCreator`) podem transicionar qualquer projeto; um coordenador de pastoral/movimento
+ * só pode transicionar projetos da(s) organização(ões) às quais está vinculado, comparando
+ * `projetoOrgId` com `user.organizations` — evita que um coordenador de uma pastoral altere
+ * o status de projeto de outra pastoral/movimento sem vínculo.
+ */
 export const canTransitionProjeto = (user: User | null, projetoOrgId: string): boolean => {
   if (!user) return false;
   if (isGlobalCreator(user)) return true;
@@ -121,11 +136,19 @@ export const canManageEvento = (user: User | null, _eventoOrgId: string): boolea
   return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
+/** Quem pode gerir o cadastro de ativos patrimoniais: admin, pároco/bispo, clero ou coordenador de pastoral/movimento */
 export const canManageAtivos = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user) || isClero(user) || isCoordenador(user);
 };
 
+/**
+ * Quem pode transferir a posse de um ativo patrimonial entre organizações: papéis com
+ * autoridade global (`isGlobalCreator`) podem transferir qualquer ativo; um coordenador de
+ * pastoral/movimento só pode transferir ativos que já pertencem à(s) organização(ões) às
+ * quais está vinculado (`ativoOrgId` deve casar com `user.organizations`), evitando que
+ * um coordenador movimente patrimônio de outra pastoral sem vínculo.
+ */
 export const canTransferAtivo = (user: User | null, ativoOrgId: string): boolean => {
   if (!user) return false;
   if (isGlobalCreator(user)) return true;
@@ -136,10 +159,17 @@ export const canTransferAtivo = (user: User | null, ativoOrgId: string): boolean
   return false;
 };
 
+/** Alocar um ativo a um evento segue a mesma regra de escopo organizacional de `canTransferAtivo` */
 export const canAlocarAtivo = canTransferAtivo;
 
+/** Registrar/gerir manutenção de um ativo segue a mesma regra de escopo organizacional de `canTransferAtivo` */
 export const canManageManutencaoAtivo = canTransferAtivo;
 
+/**
+ * Quem pode decidir (aprovar/rejeitar) uma solicitação de aprovação pendente: admin, pároco/bispo,
+ * CPP, ou coordenador/vice-coordenador de conselho (CONSELHO_COORDENADOR, COORD_CONSELHO e
+ * variantes) — as mesmas instâncias com autoridade deliberativa final sobre eventos/projetos.
+ */
 export const canApprove = (user: User | null): boolean => {
   if (!user) return false;
   return (
@@ -155,11 +185,18 @@ export const canApprove = (user: User | null): boolean => {
   );
 };
 
+/** Quem pode configurar o ano paroquial (calendário/período operacional): admin, pároco/bispo, CPP ou coordenador */
 export const canManageAnoParoquial = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
+/**
+ * Quem pode gerir o cadastro de locais/espaços físicos: admin, pároco/bispo, CPP, ou
+ * coordenador/vice-coordenador de conselho — mesmo conjunto de autoridade global usado em
+ * `canManageOrganizacoes`, pois locais são um recurso compartilhado da paróquia como um todo,
+ * não escopado por organização individual.
+ */
 export const canManageLocais = (user: User | null): boolean => {
   if (!user) return false;
   return (
@@ -177,6 +214,12 @@ export const canManageLocais = (user: User | null): boolean => {
   );
 };
 
+/**
+ * Quem pode gerir a própria hierarquia organizacional (Matriz, Comunidades, movimentos):
+ * admin, pároco/bispo, CPP, ou coordenador/vice-coordenador de conselho. Restrito de propósito
+ * a esse conjunto restrito de papéis, já que alterar o organograma afeta o escopo de autorização
+ * de todas as demais permissões baseadas em organização.
+ */
 export const canManageOrganizacoes = (user: User | null): boolean => {
   if (!user) return false;
   return (
@@ -194,6 +237,14 @@ export const canManageOrganizacoes = (user: User | null): boolean => {
   );
 };
 
+/**
+ * Quem pode adicionar uma observação a um registro: qualquer usuário que tenha ao menos um
+ * papel além de "membro comum" (verificado remapeando cada papel individualmente por
+ * `isMembro`) pode observar em qualquer organização. Um usuário cujos papéis são
+ * exclusivamente de membro fica restrito a observar apenas dentro da(s) organização(ões) às
+ * quais pertence (`targetOrgId` deve casar com `user.organizations`), evitando que um membro
+ * comum registre observações sobre pastorais/movimentos alheios.
+ */
 export const canAddObservation = (user: User | null, targetOrgId: string): boolean => {
   if (!user) return false;
 
@@ -207,12 +258,27 @@ export const canAddObservation = (user: User | null, targetOrgId: string): boole
   return false;
 };
 
+/**
+ * A aba/listagem de eventos pendentes de aprovação só faz sentido para quem tem alguma
+ * responsabilidade de gestão ou aprovação; um usuário cujos papéis são exclusivamente
+ * "membro comum" (MEMBRO/ROLE_PASTORAL_MEMBRO) não participa do fluxo de aprovação e não
+ * deve enxergar a fila de pendências.
+ */
 export const canViewEventosPendentes = (user: User | null): boolean => {
   if (!user) return false;
   const isApenasMembro = user.roles.length > 0 && user.roles.every((r) => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
   return !isApenasMembro;
 };
 
+/**
+ * Identifica o "usuário não vinculado": um membro/usuário comum sem nenhuma organização
+ * associada, cenário usado pela UI para solicitar que o usuário seja vinculado a uma
+ * pastoral/movimento antes de liberar funcionalidades dependentes de organização. Lideranças
+ * e clero (admin, pároco/bispo, clero, CPP, CAE, coordenador, secretário) são sempre
+ * excluídos dessa checagem, pois sua atuação não depende de vínculo com uma organização
+ * específica. Só retorna `true` quando os papéis do usuário são exclusivamente de
+ * membro/usuário comum E a lista de organizações está vazia.
+ */
 export const isUnlinkedUser = (user: User | null): boolean => {
   if (!user) return false;
 

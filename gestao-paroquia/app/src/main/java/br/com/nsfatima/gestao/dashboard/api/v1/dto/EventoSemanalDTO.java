@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
+/**
+ * Resumo de um evento agendado dentro da semana corrente (segunda a domingo), exibido na
+ * agenda semanal do dashboard.
+ */
 @Schema(description = "Resumo de um evento agendado para a semana corrente")
 public record EventoSemanalDTO(
         @Schema(description = "Título do evento")

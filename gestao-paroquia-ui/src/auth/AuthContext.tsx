@@ -24,8 +24,33 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+/**
+ * Contexto de sessão/autenticação da aplicação. A fonte da verdade da sessão é o backend
+ * (cookie de sessão via `apiClient`, `withCredentials: true`); `localStorage['user']` é
+ * apenas um cache de exibição para evitar flash de UI deslogada entre navegações — nunca é
+ * usado para autorizar chamadas, só para preencher `user` até a verificação assíncrona
+ * (`/auth/me`) confirmar ou invalidar a sessão.
+ */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Provedor de autenticação: mantém o usuário autenticado (`user`) e o estado de carregamento
+ * inicial (`isLoading`) para toda a árvore de componentes.
+ *
+ * Ciclo de vida da sessão:
+ * - Ao montar, dispara `GET /auth/me` para validar se existe uma sessão de servidor ainda
+ *   válida (o cookie de sessão é enviado automaticamente pelo Axios). Se válida, popula
+ *   `user` e espelha o resultado em `localStorage['user']` (apenas cache de exibição).
+ *   Se a chamada falhar (401/expirada/inexistente), limpa o cache local e mantém `user`
+ *   como `null` — não há refresh de token automático aqui; expirar a sessão simplesmente
+ *   desloga o usuário na próxima verificação.
+ * - `login` chama `POST /auth/login`; o backend estabelece a sessão via cookie e a resposta
+ *   traz os dados do usuário (em `response.data.user` ou diretamente em `response.data`,
+ *   dependendo do formato retornado), que são gravados em `user` e em `localStorage['user']`.
+ * - `logout` chama `POST /auth/logout` para encerrar a sessão no servidor; independente do
+ *   resultado da chamada, sempre limpa `localStorage['user']` e zera `user` no `finally`,
+ *   garantindo que a UI nunca fique presa em estado "autenticado" caso a chamada falhe.
+ */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,6 +132,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+/**
+ * Hook de acesso ao contexto de autenticação (`user`, `login`, `logout`, `isLoading`).
+ * Lança erro em tempo de execução se usado fora de um `AuthProvider`, para detectar cedo
+ * um componente montado fora da árvore protegida em vez de falhar silenciosamente com
+ * `user` indefinido.
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

@@ -8,6 +8,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * Restringe quais organizações podem ser donas de ativos patrimoniais: apenas MATRIZ ou
+ * COMUNIDADE — movimentos, conselhos e outros tipos organizacionais não possuem patrimônio
+ * próprio. Aplicada tanto no cadastro quanto na transferência de posse de um ativo.
+ */
 @Service
 public class AtivoOrganizacaoPolicy {
 
@@ -17,6 +22,12 @@ public class AtivoOrganizacaoPolicy {
         this.organizacaoRepository = organizacaoRepository;
     }
 
+    /**
+     * Valida que a organização informada existe e é de um tipo elegível para possuir patrimônio.
+     *
+     * @param organizacaoId organização candidata a proprietária do ativo
+     * @throws AtivoOrganizacaoInvalidaException se a organização não existir ou não for MATRIZ/COMUNIDADE
+     */
     public void assertOrganizacaoProprietariaPermitida(UUID organizacaoId) {
         OrganizacaoEntity organizacao = organizacaoRepository.findById(organizacaoId)
                 .orElseThrow(() -> new AtivoOrganizacaoInvalidaException(

@@ -8,6 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Calcula métricas agregadas de ociosidade do acervo patrimonial (contagem por status e taxa de
+ * ociosidade global), usadas para identificar bens subutilizados e apoiar decisões de
+ * realocação/baixa.
+ */
 @Service
 public class GetMetricasOciosidadeUseCase {
 
@@ -17,6 +22,13 @@ public class GetMetricasOciosidadeUseCase {
         this.repository = repository;
     }
 
+    /**
+     * Agrega as contagens de ativos por status e a distribuição por categoria dos ativos
+     * disponíveis (ociosos), calculando a taxa de ociosidade como a proporção de ativos
+     * disponíveis sobre o total do acervo.
+     *
+     * @return métricas agregadas de ociosidade/alocação
+     */
     public MetricasOciosidadeResponse execute() {
         long total = repository.count();
         long disponiveis = repository.countByStatus(AtivoStatus.DISPONIVEL);

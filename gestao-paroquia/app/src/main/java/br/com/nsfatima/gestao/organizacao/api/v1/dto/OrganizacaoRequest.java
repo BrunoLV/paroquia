@@ -8,6 +8,12 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+/**
+ * Payload de criação/atualização de uma organização. A combinação de {@code tipo}, {@code parentId} e
+ * {@code pastoralOficialId} é validada por {@code OrganizacaoService.validateHierarchy} contra as regras da
+ * hierarquia organizacional (ex.: Pastoral/Movimento exige {@code pastoralOficialId} e organização-mãe do
+ * tipo {@code CONSELHO_PASTORAL}).
+ */
 @Schema(description = "Request to create or update an Organization")
 public record OrganizacaoRequest(
         @Schema(description = "Organization name", example = "Pastoral da Juventude")

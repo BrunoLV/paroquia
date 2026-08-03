@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Acesso a persistência das ocupações (alocações e manutenções) de ativos patrimoniais, incluindo
+ * as consultas usadas pelo job agendado de atualização de status (início de manutenções/alocações
+ * futuras que já começaram, e detecção de ocupações atrasadas ainda sem alerta emitido).
+ */
 @Repository
 public interface AtivoAlocacaoJpaRepository extends JpaRepository<AtivoAlocacaoEntity, UUID> {
 
