@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.aprovacao.application.usecase;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.domain.exception.ApprovalRequiredException;
+import br.com.nsfatima.gestao.calendario.domain.exception.AprovacaoObrigatoriaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -20,7 +20,7 @@ public class ValidateAprovacaoUseCase {
             AprovadorPapel.PAROCO,
             AprovadorPapel.COORD_CONSELHO,
             AprovadorPapel.VICE_COORD_CONSELHO);
-    private static final String ERROR_MSG = "Approval is required for date change or cancellation";
+    private static final String ERROR_MSG = "Aprovacao is required for date change or cancellation";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
 
     public ValidateAprovacaoUseCase(AprovacaoJpaRepository aprovacaoJpaRepository) {
@@ -29,22 +29,22 @@ public class ValidateAprovacaoUseCase {
 
     public void validateRequired(UUID eventoId, UUID aprovacaoId) {
         if (aprovacaoId == null) {
-            throw new ApprovalRequiredException(ERROR_MSG);
+            throw new AprovacaoObrigatoriaException(ERROR_MSG);
         }
 
         AprovacaoEntity aprovacao = aprovacaoJpaRepository
                 .findByIdAndEventoId(aprovacaoId, eventoId)
                 .orElseThrow(
-                        () -> new ApprovalRequiredException(ERROR_MSG));
+                        () -> new AprovacaoObrigatoriaException(ERROR_MSG));
 
-        if (aprovacao.getStatusEnum() != AprovacaoStatus.APROVADA) {
-            throw new ApprovalRequiredException(ERROR_MSG);
+        if (aprovacao.getStatus() != AprovacaoStatus.APROVADA) {
+            throw new AprovacaoObrigatoriaException(ERROR_MSG);
         }
 
         AprovadorPapel role = aprovacao.getAprovadorPapelEnum();
         if (!ALLOWED_APPROVER_ROLES.contains(role)) {
-            throw new ApprovalRequiredException(
-                    "Conselho coordinator, conselho vice-coordinator, or parroco approval is required");
+            throw new AprovacaoObrigatoriaException(
+                    "Conselho coordinator, conselho vice-coordinator, or parroco aprovacao is required");
         }
     }
 
@@ -54,16 +54,17 @@ public class ValidateAprovacaoUseCase {
      * <p>
      * Usage Example:
      * {@code
-     * useCase.validateApprovalDecisionRole("COORDENADOR", "CONSELHO");
+     * useCase.validateAprovacaoDecisionRole("COORDENADOR", "CONSELHO");
      * }
      */
-    public void validateApprovalDecisionRole(String role, String organizationType) {
+    public void validateAprovacaoDecisionRole(String role, String organizationType) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(organizationType);
         if (normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN) {
             return;
         }
-        if ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP || normalizedOrgType == TipoOrganizacao.CPC)
+        if ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP
+                || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                 || normalizedRole == PapelOrganizacional.MESA_CPP
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
@@ -71,6 +72,6 @@ public class ValidateAprovacaoUseCase {
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL)) {
             return;
         }
-        throw new ForbiddenOperationException("User does not have permission to decide event approvals");
+        throw new ForbiddenOperationException("User does not have permission to decide event aprovacaos");
     }
 }

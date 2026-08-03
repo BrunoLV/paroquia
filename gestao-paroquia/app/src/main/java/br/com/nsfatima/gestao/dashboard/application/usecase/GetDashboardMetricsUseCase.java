@@ -74,14 +74,14 @@ public class GetDashboardMetricsUseCase {
         Instant agora = Instant.now();
         ZonedDateTime nowZoned = ZonedDateTime.now(ZoneOffset.UTC);
 
-        // 1. Calculate current month boundaries
+        // 1. Calcular limites do mês atual
         ZonedDateTime startOfMonth = nowZoned.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endOfMonth =
                 nowZoned.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1).truncatedTo(ChronoUnit.DAYS);
         Instant inicioMes = startOfMonth.toInstant();
         Instant fimMes = endOfMonth.toInstant();
 
-        // 2. Fetch events in current month
+        // 2. Buscar eventos do mês atual
         List<EventoEntity> eventosMes = eventoRepository.findAllInPeriod(inicioMes, fimMes);
         if (isFilterNeeded) {
             eventosMes = eventosMes.stream()
@@ -89,18 +89,18 @@ public class GetDashboardMetricsUseCase {
                     .toList();
         }
 
-        // 3. Fetch all projects
+        // 3. Buscar todos os projetos
         List<ProjetoEventoEntity> projetos = projetoRepository.findAll();
         List<ProjetoEventoEntity> projetosAtivosEntities = projetos.stream()
-                .filter(p -> ProjetoStatus.ABERTO.name().equals(p.getStatus()) || ProjetoStatus.EM_ANDAMENTO.name().equals(p.getStatus()))
+                .filter(p -> p.getStatus() == ProjetoStatus.ABERTO || p.getStatus() == ProjetoStatus.EM_ANDAMENTO)
                 .filter(p -> !isFilterNeeded || orgId.equals(p.getOrganizacaoResponsavelId()))
                 .toList();
 
-        // 4. Count pending approvals
-        // Event approvals
+        // 4. Contar aprovações pendentes
+        // Aprovações de evento
         List<AprovacaoEntity> aprovacoesPendentes =
-                aprovacaoRepository.findByStatusIgnoreCaseOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE.name());
-        long eventApprovalsCount = aprovacoesPendentes.stream()
+                aprovacaoRepository.findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE);
+        long contagemAprovacoesEvento = aprovacoesPendentes.stream()
                 .filter(a -> {
                     if (!isFilterNeeded) {
                         return true;
@@ -113,10 +113,10 @@ public class GetDashboardMetricsUseCase {
                 })
                 .count();
 
-        // Project approvals
+        // Aprovações de projeto
         List<ProjetoSolicitacaoAprovacaoEntity> projetoAprovacoesPendentes =
-                projetoAprovacaoRepository.findByStatus(AprovacaoStatus.PENDENTE.name());
-        long projectApprovalsCount = projetoAprovacoesPendentes.stream()
+                projetoAprovacaoRepository.findByStatus(AprovacaoStatus.PENDENTE);
+        long contagemAprovacoesProjeto = projetoAprovacoesPendentes.stream()
                 .filter(a -> {
                     if (!isFilterNeeded) {
                         return true;
@@ -129,7 +129,7 @@ public class GetDashboardMetricsUseCase {
                 })
                 .count();
 
-        int totalSolicitacoesPendentes = (int) (eventApprovalsCount + projectApprovalsCount);
+        int totalSolicitacoesPendentes = (int) (contagemAprovacoesEvento + contagemAprovacoesProjeto);
 
         ResumoGeralDTO resumoGeral = new ResumoGeralDTO(
                 eventosMes.size(),
@@ -137,51 +137,51 @@ public class GetDashboardMetricsUseCase {
                 totalSolicitacoesPendentes
         );
 
-        // 5. Calculate distribution of events by organization
-        Map<UUID, String> orgNames = new HashMap<>();
-        organizacaoRepository.findAll().forEach(o -> orgNames.put(o.getId(), o.getNome()));
+        // 5. Calcular distribuição de eventos por organização
+        Map<UUID, String> nomesOrganizacoes = new HashMap<>();
+        organizacaoRepository.findAll().forEach(o -> nomesOrganizacoes.put(o.getId(), o.getNome()));
 
-        Map<UUID, Long> countByOrg = eventosMes.stream()
+        Map<UUID, Long> contagemPorOrganizacao = eventosMes.stream()
                 .collect(Collectors.groupingBy(EventoEntity::getOrganizacaoResponsavelId, Collectors.counting()));
 
-        List<DistribuicaoEventosDTO> eventosPorOrganizacao = countByOrg.entrySet().stream()
+        List<DistribuicaoEventosDTO> eventosPorOrganizacao = contagemPorOrganizacao.entrySet().stream()
                 .map(entry -> new DistribuicaoEventosDTO(
-                        orgNames.getOrDefault(entry.getKey(), "Organização Desconhecida"),
+                        nomesOrganizacoes.getOrDefault(entry.getKey(), "Organização Desconhecida"),
                         entry.getValue()
                 ))
                 .sorted(Comparator.comparingLong(DistribuicaoEventosDTO::quantidadeEventos).reversed())
                 .toList();
 
-        // 6. Build active projects details
+        // 6. Montar detalhes dos projetos ativos
         List<DetalheProjetoDTO> projetosAtivosDetalhes = projetosAtivosEntities.stream()
                 .map(p -> {
-                    int totalEvents = (int) eventoRepository.countByProjetoId(p.getId());
-                    int eventsDone = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
-                    int eventsPending =
+                    int totalEventos = (int) eventoRepository.countByProjetoId(p.getId());
+                    int eventosConcluidos = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
+                    int eventosPendentes =
                             (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
 
                     double percent = projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(),
                             p.getFimUtc());
                     boolean emRisco =
                             projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(),
-                                    eventsPending);
+                                    eventosPendentes);
 
-                    List<String> involvedOrgs = eventoRepository.findInvolvedOrganizationNames(p.getId());
+                    List<String> organizacoesEnvolvidas = eventoRepository.findInvolvedOrganizationNames(p.getId());
 
                     return new DetalheProjetoDTO(
                             p.getNome(),
-                            p.getStatus(),
+                            p.getStatus().name(),
                             percent,
-                            totalEvents,
-                            eventsDone,
+                            totalEventos,
+                            eventosConcluidos,
                             emRisco,
-                            involvedOrgs
+                            organizacoesEnvolvidas
                     );
                 })
                 .toList();
 
         // 7. Fetch events for the current week (Monday to Sunday)
-        // Find Monday and Sunday of this week
+        // Encontrar segunda e domingo desta semana
         ZonedDateTime startOfWeek =
                 nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endOfWeek =
@@ -196,15 +196,15 @@ public class GetDashboardMetricsUseCase {
                     .toList();
         }
 
-        Map<UUID, String> localNames = new HashMap<>();
-        localRepository.findAll().forEach(l -> localNames.put(l.getId(), l.getNome()));
+        Map<UUID, String> nomesLocais = new HashMap<>();
+        localRepository.findAll().forEach(l -> nomesLocais.put(l.getId(), l.getNome()));
 
         List<EventoSemanalDTO> eventosSemana = eventosSemanaEntities.stream()
                 .map(e -> new EventoSemanalDTO(
                         e.getTitulo(),
                         LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
-                        localNames.getOrDefault(e.getLocalId(), "Sem Local"),
-                        orgNames.getOrDefault(e.getOrganizacaoResponsavelId(), "Organização Desconhecida")
+                        nomesLocais.getOrDefault(e.getLocalId(), "Sem Local"),
+                        nomesOrganizacoes.getOrDefault(e.getOrganizacaoResponsavelId(), "Organização Desconhecida")
                 ))
                 .toList();
 

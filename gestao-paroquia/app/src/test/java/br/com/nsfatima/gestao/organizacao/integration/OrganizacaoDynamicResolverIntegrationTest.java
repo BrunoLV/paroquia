@@ -75,7 +75,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         m1.setId(UUID.randomUUID());
         m1.setUsuarioId(coord.getId());
         m1.setOrganizacaoId(org.getId());
-        m1.setTipoOrganizacao(TipoOrganizacao.PASTORAL.name());
+        m1.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m1.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         m1.setAtivo(true);
         vinculoRepository.save(m1);
@@ -84,7 +84,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         m2.setId(UUID.randomUUID());
         m2.setUsuarioId(vice.getId());
         m2.setOrganizacaoId(org.getId());
-        m2.setTipoOrganizacao(TipoOrganizacao.PASTORAL.name());
+        m2.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m2.setPapel("vice-coordenador-pastoral-local");
         m2.setAtivo(true);
         vinculoRepository.save(m2);

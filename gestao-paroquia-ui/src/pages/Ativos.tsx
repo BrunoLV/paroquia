@@ -60,7 +60,7 @@ import PageHeader from '../components/PageHeader';
 import AtivoAlocacoesModal from '../components/AtivoAlocacoesModal';
 import { formatCurrencyBRL } from '../utils/currencyUtils';
 
-const isOwnerEligibleOrg = (org: Organizacao): boolean => org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
+const isOrganizacaoElegivelProprietaria = (org: Organizacao): boolean => org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
 
 const addDays = (date: Date, days: number): string => {
   const result = new Date(date);
@@ -135,7 +135,7 @@ const Ativos = () => {
     return [];
   };
 
-  const getOwnerEligibleOrgs = () => getSelectableOrgs().filter(isOwnerEligibleOrg);
+  const getOrganizacoesElegiveisProprietarias = () => getSelectableOrgs().filter(isOrganizacaoElegivelProprietaria);
 
   const loadOrganizations = async () => {
     try {
@@ -247,7 +247,7 @@ const Ativos = () => {
   };
 
   const openCreateDialog = () => {
-    const eligibleOrgs = getOwnerEligibleOrgs();
+    const eligibleOrgs = getOrganizacoesElegiveisProprietarias();
     const defaultOrgId = eligibleOrgs.some((org) => org.id === selectedOrgId)
       ? selectedOrgId
       : (eligibleOrgs[0]?.id || '');
@@ -416,7 +416,7 @@ const Ativos = () => {
           value={selectedOrgId}
           onChange={(e) => setSelectedOrgId(e.target.value as string)}
         >
-          {getOwnerEligibleOrgs().map((org) => (
+          {getOrganizacoesElegiveisProprietarias().map((org) => (
             <MenuItem key={org.id} value={org.id}>
               {org.nome}
             </MenuItem>
@@ -558,7 +558,7 @@ const Ativos = () => {
                 value={formOrgId}
                 onChange={(e) => setFormOrgId(e.target.value as string)}
               >
-                {getOwnerEligibleOrgs().map((org) => (
+                {getOrganizacoesElegiveisProprietarias().map((org) => (
                   <MenuItem key={org.id} value={org.id}>
                     {org.nome}
                   </MenuItem>
@@ -631,7 +631,7 @@ const Ativos = () => {
                 value={transferNovaOrgId}
                 onChange={(e) => setTransferNovaOrgId(e.target.value as string)}
               >
-                {organizations.filter(isOwnerEligibleOrg).map((org) => (
+                {organizations.filter(isOrganizacaoElegivelProprietaria).map((org) => (
                   <MenuItem key={org.id} value={org.id}>
                     {org.nome}
                   </MenuItem>

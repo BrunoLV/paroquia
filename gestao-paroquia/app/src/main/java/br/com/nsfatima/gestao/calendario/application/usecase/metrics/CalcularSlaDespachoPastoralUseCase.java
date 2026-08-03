@@ -33,10 +33,10 @@ public class CalcularSlaDespachoPastoralUseCase {
 
         long total = aprovacoes.size();
         long aprovadas = aprovacoes.stream()
-                .filter(a -> AprovacaoStatus.APROVADA.name().equalsIgnoreCase(a.getStatus()))
+                .filter(a -> a.getStatus() == AprovacaoStatus.APROVADA)
                 .count();
         long rejeitadas = aprovacoes.stream()
-                .filter(a -> AprovacaoStatus.REPROVADA.name().equalsIgnoreCase(a.getStatus()))
+                .filter(a -> a.getStatus() == AprovacaoStatus.REPROVADA)
                 .count();
 
         List<Double> duracoesHoras = aprovacoes.stream()

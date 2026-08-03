@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.api.error;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoAlocacaoCancelamentoInvalidoException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoAlocacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoDesalocacaoInvalidaException;
@@ -25,7 +25,7 @@ import java.util.List;
 @Order(3)
 public class PatrimonioExceptionHandler extends BaseExceptionHandler {
 
-    public PatrimonioExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
+    public PatrimonioExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
 

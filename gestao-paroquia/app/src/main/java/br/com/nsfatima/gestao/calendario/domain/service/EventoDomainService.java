@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.service;
 
-import br.com.nsfatima.gestao.calendario.domain.policy.CalendarIntegrityPolicy;
+import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
+import br.com.nsfatima.gestao.calendario.domain.policy.IntegridadeCalendarioPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,9 @@ import java.util.UUID;
 @Service
 public class EventoDomainService {
 
-    private final CalendarIntegrityPolicy calendarIntegrityPolicy;
+    private final IntegridadeCalendarioPolicy calendarIntegrityPolicy;
 
-    public EventoDomainService(CalendarIntegrityPolicy calendarIntegrityPolicy) {
+    public EventoDomainService(IntegridadeCalendarioPolicy calendarIntegrityPolicy) {
         this.calendarIntegrityPolicy = calendarIntegrityPolicy;
     }
 
@@ -44,11 +45,11 @@ public class EventoDomainService {
         }
     }
 
-    public String resolveConflictState(boolean hasOverlap) {
-        return calendarIntegrityPolicy.resolveConflictState(hasOverlap);
+    public EstadoConflitoAgenda resolveEstadoConflito(boolean hasOverlap) {
+        return calendarIntegrityPolicy.resolveEstadoConflito(hasOverlap);
     }
 
-    public String resolveConflictReason(boolean hasOverlap) {
-        return calendarIntegrityPolicy.resolveConflictReason(hasOverlap);
+    public String resolveMotivoConflito(boolean hasOverlap) {
+        return calendarIntegrityPolicy.resolveMotivoConflito(hasOverlap);
     }
 }

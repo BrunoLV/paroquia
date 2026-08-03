@@ -22,6 +22,6 @@ public record EventoResponse(
         UUID igrejaVinculoId,
         List<UUID> participantes,
         UUID recorrenciaId,
-        String conflictState,
-        String conflictReason) {
+        String estadoConflito,
+        String motivoConflito) {
 }

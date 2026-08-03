@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.iam.api.v1.controller;
 
 import br.com.nsfatima.gestao.iam.api.v1.dto.PasswordResetRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.RolesUpdateRequest;
-import br.com.nsfatima.gestao.iam.api.v1.dto.UserStatusRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioStatusRequest;
 import br.com.nsfatima.gestao.iam.domain.service.UsuarioAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +41,7 @@ public class UsuarioAdminController {
       <p>
       Exemplo: PATCH /api/v1/usuarios/{id}/status { "enabled": false }
      */
-    public void toggleStatus(@PathVariable UUID id, @RequestBody @Valid UserStatusRequest request) {
+    public void toggleStatus(@PathVariable UUID id, @RequestBody @Valid UsuarioStatusRequest request) {
         usuarioAdminService.toggleActiveStatus(id, request.enabled());
     }
 

@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -78,6 +79,8 @@ public class ExportacaoCalendarioUseCase {
                 Sort.by(Sort.Direction.ASC, "inicioUtc")
         );
 
+        List<CategoriaEvento> categoriasEnum = categorias == null ? null
+                : categorias.stream().map(CategoriaEvento::fromValue).toList();
         List<EventoEntity> eventos = eventRepository.findAllWithFilters(
                 start,
                 true,
@@ -89,8 +92,8 @@ public class ExportacaoCalendarioUseCase {
                 false,
                 null,
                 false,
-                categorias,
-                categorias != null && !categorias.isEmpty(),
+                categoriasEnum,
+                categoriasEnum != null && !categoriasEnum.isEmpty(),
                 null,
                 false,
                 pageable

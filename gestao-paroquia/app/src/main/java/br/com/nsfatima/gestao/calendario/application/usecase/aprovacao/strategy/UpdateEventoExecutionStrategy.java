@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.strategy;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.UpdateEventoUseCase;
@@ -15,19 +15,19 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class UpdateEventoExecutionStrategy implements ApprovalExecutionStrategy {
+public class UpdateEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
     private final UpdateEventoUseCase updateEventoUseCase;
     private final EventoJpaRepository eventoRepository;
-    private final ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     public UpdateEventoExecutionStrategy(
             UpdateEventoUseCase updateEventoUseCase,
             EventoJpaRepository eventoRepository,
-            ApprovalActionPayloadMapper approvalActionPayloadMapper) {
+            AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
         this.updateEventoUseCase = updateEventoUseCase;
         this.eventoRepository = eventoRepository;
-        this.approvalActionPayloadMapper = approvalActionPayloadMapper;
+        this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
     }
 
     @Override
@@ -39,16 +39,16 @@ public class UpdateEventoExecutionStrategy implements ApprovalExecutionStrategy 
     public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
 
-        ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
+        AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         UUID eventoId = payload.eventoId() != null ? payload.eventoId() : aprovacao.getEventoId();
 
         if (eventoId == null) {
-            throw new IllegalArgumentException("eventoId must be present in approval payload or entity");
+            throw new IllegalArgumentException("eventoId deve estar presente no payload de aprovação ou na entidade");
         }
 
         EventoResponse response = updateEventoUseCase.executeApprovedUpdate(
                 eventoId,
-                updateEventoUseCase.restoreFromApprovalPayload(payload));
+                updateEventoUseCase.restoreFromAprovacaoPayload(payload));
 
         aprovacao.setEventoId(response.id());
 
@@ -63,7 +63,7 @@ public class UpdateEventoExecutionStrategy implements ApprovalExecutionStrategy 
     public String fetchResourceStatus(AprovacaoEntity aprovacao) {
         UUID eventoId = aprovacao.getEventoId();
         if (eventoId == null) {
-            ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
+            AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
             eventoId = payload.eventoId();
         }
 

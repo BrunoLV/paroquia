@@ -68,7 +68,7 @@ public class UpdateMembroUseCase {
 
         MembroEntity saved = repository.save(entity);
 
-        // Synchronize leadership with Organizacao if applicable
+        // Sincronizar liderança com Organizacao, se aplicável
         if ("COORDENADOR".equalsIgnoreCase(request.papel())) {
             organizacao.setCoordenador(usuario.getNome());
             organizacaoRepository.save(organizacao);
@@ -77,7 +77,7 @@ public class UpdateMembroUseCase {
             organizacaoRepository.save(organizacao);
         }
 
-        auditPublisher.publish(actor, "update", saved.getId().toString(), "success");
+        auditPublisher.publish(actor, "atualizar", saved.getId().toString(), "sucesso");
 
         return mapper.toResponse(saved);
     }
@@ -88,6 +88,6 @@ public class UpdateMembroUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado: " + id));
         entity.setAtivo(ativo);
         repository.save(entity);
-        auditPublisher.publish(actor, ativo ? "activate" : "deactivate", id.toString(), "success");
+        auditPublisher.publish(actor, ativo ? "ativar" : "desativar", id.toString(), "sucesso");
     }
 }

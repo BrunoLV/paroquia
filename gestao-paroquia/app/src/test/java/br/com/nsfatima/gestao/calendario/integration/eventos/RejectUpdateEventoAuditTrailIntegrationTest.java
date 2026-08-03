@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
 
         // Verify audit state: REPROVADA + no executadoEmUtc + correct timestamps
         var aprovacao = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
-        assert aprovacao.getStatus().equals("REPROVADA");
+        assert aprovacao.getStatus() == AprovacaoStatus.REPROVADA;
         assert aprovacao.getExecutadoEmUtc() == null : "rejectedecution should have null executadoEmUtc";
         assert aprovacao.getDecididoEmUtc() != null : "rejected should set decidoEmUtc";
         assert aprovacao.getCriadoEmUtc() != null : "should have criadoEmUtc";

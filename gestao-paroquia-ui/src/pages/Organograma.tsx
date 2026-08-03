@@ -103,7 +103,7 @@ const Organograma: React.FC = () => {
     }
   };
 
-  const renderMemberNode = (member: OrganogramaNode, orgType?: string) => {
+  const renderMembroNode = (member: OrganogramaNode, orgType?: string) => {
     const isEconomic = orgType === 'CONSELHO_ECONOMICO';
     const roleColor = isEconomic ? '#2e7d32' : getRoleBadgeColor(member.subtype);
     const initials = member.label
@@ -188,12 +188,12 @@ const Organograma: React.FC = () => {
   const renderOrgNode = (org: OrganogramaNode, isInsideTree: boolean = false) => {
     if (!org) return null;
     const isExpanded = expandedMap[org.id] ?? false;
-    const members = org.orgChildren || org.children || [];
+    const membros = org.orgChildren || org.children || [];
 
     const coord = org.responsavelNome;
     const vice = org.viceResponsavelNome;
 
-    const ordinaryMembers = members.filter(
+    const membrosOrdinarios = membros.filter(
       (m: OrganogramaNode) =>
         m &&
         m.type === 'MEMBRO' &&
@@ -271,7 +271,7 @@ const Organograma: React.FC = () => {
             </Box>
           )}
 
-          {ordinaryMembers.length > 0 && (
+          {membrosOrdinarios.length > 0 && (
             <Box sx={{ mt: 'auto', pt: 0.5 }}>
               <Button
                 size="small"
@@ -287,12 +287,12 @@ const Organograma: React.FC = () => {
                   p: 0,
                 }}
               >
-                {isExpanded ? 'Ocultar Membros' : `Ver Membros (${ordinaryMembers.length})`}
+                {isExpanded ? 'Ocultar Membros' : `Ver Membros (${membrosOrdinarios.length})`}
               </Button>
 
               <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                 <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column' }}>
-                  {ordinaryMembers.map((m: OrganogramaNode) => renderMemberNode(m, org.subtype))}
+                  {membrosOrdinarios.map((m: OrganogramaNode) => renderMembroNode(m, org.subtype))}
 
                 </Box>
               </Collapse>

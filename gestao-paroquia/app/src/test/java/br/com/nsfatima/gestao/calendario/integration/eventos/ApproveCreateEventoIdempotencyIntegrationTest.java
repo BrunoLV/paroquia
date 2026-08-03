@@ -1,7 +1,9 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -36,7 +38,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
     private AprovacaoJpaRepository aprovacaoJpaRepository;
 
     @Autowired
-    private ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     @Test
     @SuppressWarnings("null")
@@ -45,7 +47,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
         String idempotencyKey = "idempotency-create-" + UUID.randomUUID();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
-        ApprovalActionPayload payload = new ApprovalActionPayload(
+        AprovacaoAcaoPayload payload = new AprovacaoAcaoPayload(
                 idempotencyKey,
                 null,
                 "Evento idempotente pos-aprovacao",
@@ -67,9 +69,9 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
         aprovacao.setEventoId(null);
         aprovacao.setTipoSolicitacao("CRIACAO_EVENTO");
         aprovacao.setAprovadorPapel("conselho-coordenador");
-        aprovacao.setStatus("PENDENTE");
+        aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
-        aprovacao.setActionPayloadJson(approvalActionPayloadMapper.toJson(payload));
+        aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
         aprovacaoJpaRepository.save(aprovacao);
 
         long eventsBefore = eventoJpaRepository.count();
@@ -87,7 +89,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
 
         assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore + 1);
 
-        // Attempting to approve again must fail with APPROVAL_ALREADY_DECIDED (409)
+        // Attempting to approve again must fail with APROVACAO_JA_DECIDIDA (409)
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")

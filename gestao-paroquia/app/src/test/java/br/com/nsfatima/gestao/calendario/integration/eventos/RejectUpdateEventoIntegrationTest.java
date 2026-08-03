@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class RejectUpdateEventoIntegrationTest {
         UUID eventoId = UUID.fromString(
                 objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
-        // PATCH with sensitive fields → 202 PENDING
+        // PATCH with sensitive fields → 202 PENDENTE
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
@@ -82,7 +83,7 @@ class RejectUpdateEventoIntegrationTest {
                 objectMapper.readTree(patchResult.getResponse().getContentAsString())
                         .get("solicitacaoAprovacaoId").asString());
 
-        // Reject the approval
+        // Reject the aprovacao
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
@@ -101,9 +102,9 @@ class RejectUpdateEventoIntegrationTest {
         var evento = eventoJpaRepository.findById(eventoId).orElseThrow();
         assertThat(evento.getInicioUtc().toString()).contains("2027-10-01");
 
-        // Approval should be REPROVADA with no executadoEmUtc
+        // Aprovacao should be REPROVADA with no executadoEmUtc
         var savedAprovacao = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
-        assertThat(savedAprovacao.getStatus()).isEqualTo("REPROVADA");
+        assertThat(savedAprovacao.getStatus()).isEqualTo(AprovacaoStatus.REPROVADA);
         assertThat(savedAprovacao.getExecutadoEmUtc()).isNull();
         assertThat(savedAprovacao.getEventoId()).isEqualTo(eventoId);
     }

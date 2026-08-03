@@ -64,10 +64,10 @@ public class GetTaxaEventosExtraUseCase {
     private void assertAccessToOrganization(UUID organizacaoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
-            throw new AccessDeniedException("Authenticated user required");
+            throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
         if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
-            throw new AccessDeniedException("User cannot query metrics outside the responsible organization scope");
+            throw new AccessDeniedException("Usuário não pode consultar métricas fora do escopo da organização responsável");
         }
     }
 }

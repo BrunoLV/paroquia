@@ -141,14 +141,14 @@ export interface Evento {
   participantes?: string[];
   recorrenciaId?: string | null;
   recorrencia?: any;
-  conflictState: string | null;
-  conflictReason: string | null;
+  estadoConflito: string | null;
+  motivoConflito: string | null;
   adicionadoExtraJustificativa?: string | null;
   igrejaVinculoId?: string | null;
-  pendingApprovalId?: string;
-  pendingSolicitanteId?: string;
-  pendingTipoSolicitacao?: string;
-  pendingActionType?: string;
+  aprovacaoPendenteId?: string;
+  solicitantePendenteId?: string;
+  tipoSolicitacaoPendente?: string;
+  tipoAcaoPendente?: string;
   /** Nível de prioridade da agenda (1=Solenidade, 2=Preceito, 3=Pastoral, 4=Movimento) */
   nivelPrioridade?: 1 | 2 | 3 | 4;
   /** Liberado pelo Conselho Pastoral Paroquial (CPP) para conflitos de agenda */
@@ -392,7 +392,7 @@ export interface AtivoAlocacaoResponse {
   devolvidoEmUtc: string | null;
 }
 
-export interface AlocacaoAtivoApprovalPendingResponse {
+export interface AlocacaoAtivoAprovacaoPendenteResponse {
   solicitacaoAprovacaoId: string;
   status: string;
   ativoId: string;
@@ -402,7 +402,7 @@ export interface AlocacaoAtivoApprovalPendingResponse {
 
 export type AlocarAtivoResultado =
   | { kind: 'ALOCADO'; ativo: AtivoPatrimonial }
-  | { kind: 'PENDENTE'; pendente: AlocacaoAtivoApprovalPendingResponse };
+  | { kind: 'PENDENTE'; pendente: AlocacaoAtivoAprovacaoPendenteResponse };
 
 export interface MetricasOciosidade {
   totalAtivos: number;

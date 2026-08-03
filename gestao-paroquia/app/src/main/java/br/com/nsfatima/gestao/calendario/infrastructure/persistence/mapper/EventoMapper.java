@@ -40,7 +40,7 @@ public class EventoMapper {
         entity.setLocalId(request.localId());
         entity.setIgrejaVinculoId(request.igrejaVinculoId());
         if (request.categoria() != null) {
-            entity.setCategoria(request.categoria().name());
+            entity.setCategoria(request.categoria());
         }
         entity.setInicioUtc(request.inicio());
         entity.setFimUtc(request.fim());
@@ -74,7 +74,7 @@ public class EventoMapper {
                 entity.getId(),
                 entity.getTitulo(),
                 entity.getDescricao(),
-                CategoriaEvento.fromValue(entity.getCategoria()),
+                entity.getCategoria(),
                 entity.getOrganizacaoResponsavelId(),
                 entity.getProjetoId(),
                 nomeProjeto,
@@ -85,8 +85,8 @@ public class EventoMapper {
                 entity.getIgrejaVinculoId(),
                 participantes,
                 entity.getRecorrenciaId(),
-                entity.getConflictState(),
-                entity.getConflictReason());
+                entity.getEstadoConflito() == null ? null : entity.getEstadoConflito().name(),
+                entity.getMotivoConflito());
     }
 
     public void applyPatch(EventoEntity entity, UpdateEventoRequest request, EventoStatusInput status) {
@@ -121,7 +121,7 @@ public class EventoMapper {
             entity.setIgrejaVinculoId(request.igrejaVinculoId());
         }
         if (request.categoria() != null) {
-            entity.setCategoria(request.categoria().name());
+            entity.setCategoria(request.categoria());
         }
         entity.setStatus(status.name());
     }

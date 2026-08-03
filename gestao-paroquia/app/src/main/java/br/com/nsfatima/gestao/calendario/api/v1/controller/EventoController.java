@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoApprovalPendingResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoAprovacaoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
@@ -96,7 +96,7 @@ public class EventoController {
             @ApiResponse(responseCode = "201", description = "Evento criado com sucesso", content = @Content(schema =
             @Schema(implementation = EventoResponse.class))),
             @ApiResponse(responseCode = "202", description = "Solicitação de criação enviada para aprovação",
-                    content = @Content(schema = @Schema(implementation = EventoApprovalPendingResponse.class))),
+                    content = @Content(schema = @Schema(implementation = EventoAprovacaoPendenteResponse.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou violação de regras de negócio"),
             @ApiResponse(responseCode = "409", description = "Conflito de idempotência")
     })
@@ -157,7 +157,7 @@ public class EventoController {
         cadastroEventoMetricsPublisher.publishCalendarQueryLatency(
                 "/api/v1/eventos/" + eventoId,
                 Duration.ofNanos(System.nanoTime() - startedAt));
-        eventoAuditPublisher.publish(actorContext.actor(), "read", eventoId.toString(), "success");
+        eventoAuditPublisher.publish(actorContext.actor(), "ler", eventoId.toString(), "success");
 
         return response;
     }
@@ -194,7 +194,7 @@ public class EventoController {
             String actor = resolveActor();
             Map<String, Object> metadata = Map.of(
                     "sensitiveChange", request.changesSensitiveFields());
-            eventoAuditPublisher.publish(actor, "patch", eventoId.toString(), "failure", metadata);
+            eventoAuditPublisher.publish(actor, "atualizar", eventoId.toString(), "failure", metadata);
             throw ex;
         }
     }

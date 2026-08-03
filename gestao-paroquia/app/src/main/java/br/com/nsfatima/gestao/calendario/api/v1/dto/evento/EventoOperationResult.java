@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 import org.springframework.http.HttpStatus;
 
 /**
- * Sealed interface for event operation results, ensuring explicit types for success and pending outcomes.
+ * Sealed interface for event operation results, ensuring explicit types for success and pendente outcomes.
  */
 public sealed interface EventoOperationResult {
 
@@ -18,7 +18,7 @@ public sealed interface EventoOperationResult {
         }
     }
 
-    record Pending(Object response, HttpStatus status) implements EventoOperationResult {
+    record Pendente(Object response, HttpStatus status) implements EventoOperationResult {
         @Override
         public Object body() {
             return response;

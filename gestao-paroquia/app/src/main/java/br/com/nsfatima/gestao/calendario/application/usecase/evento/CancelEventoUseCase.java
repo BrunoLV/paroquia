@@ -1,7 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -38,7 +39,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Use case for cancelling an event, either immediately or via an approval flow.
+ * Use case for cancelling an event, either immediately or via an aprovacao flow.
  */
 @Service
 public class CancelEventoUseCase {
@@ -50,7 +51,7 @@ public class CancelEventoUseCase {
     private final RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase;
     private final EventoAuditPublisher auditPublisher;
     private final CadastroEventoMetricsPublisher metricsPublisher;
-    private final ApprovalActionPayloadMapper payloadMapper;
+    private final AprovacaoAcaoPayloadMapper payloadMapper;
     private final CacheManager cacheManager;
 
     public CancelEventoUseCase(
@@ -61,7 +62,7 @@ public class CancelEventoUseCase {
             RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase,
             EventoAuditPublisher auditPublisher,
             CadastroEventoMetricsPublisher metricsPublisher,
-            ApprovalActionPayloadMapper payloadMapper,
+            AprovacaoAcaoPayloadMapper payloadMapper,
             CacheManager cacheManager) {
         this.eventoJpaRepository = eventoJpaRepository;
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
@@ -75,7 +76,7 @@ public class CancelEventoUseCase {
     }
 
     /**
-     * Attempts to cancel an event. Returns 200 OK for immediate cancellation or 202 ACCEPTED if approval is needed.
+     * Attempts to cancel an event. Returns 200 OK for immediate cancellation or 202 ACCEPTED if aprovacao is needed.
      * <p>
      * Usage Example:
      * useCase.execute(id, new CancelEventoRequest("Personal reasons"));
@@ -94,7 +95,7 @@ public class CancelEventoUseCase {
             return processImmediate(evento, request, actorContext);
         }
 
-        return processApproval(evento, request, actorContext);
+        return processAprovacao(evento, request, actorContext);
     }
 
     /**
@@ -112,8 +113,8 @@ public class CancelEventoUseCase {
 
         EventoEntity evento = findEntity(eventoId);
         validateCancellableStatus(evento);
-        metricsPublisher.publishCancellationFlow("EXECUTED_AFTER_APPROVAL", "SUCCESS");
-        return applyCancellation(evento, motivo, actor, usuarioId, "executed-after-approval");
+        metricsPublisher.publishCancellationFlow("EXECUTED_AFTER_APROVACAO", "SUCCESS");
+        return applyCancellation(evento, motivo, actor, usuarioId, "executed-after-aprovacao");
     }
 
     private EventoEntity findEntity(UUID eventoId) {
@@ -133,18 +134,18 @@ public class CancelEventoUseCase {
                                                    CancelEventoRequest request, EventoActorContext actorContext) {
 
         EventoCanceladoResponse response = applyCancellation(evento,
-                request.motivo(), actorContext.actor(), actorContext.usuarioId(), "success");
+                request.motivo(), actorContext.actor(), actorContext.usuarioId(), "sucesso");
 
         metricsPublisher.publishCancellationFlow("IMMEDIATE", "SUCCESS");
         return new EventoOperationResult.Success(response, HttpStatus.OK);
     }
 
-    private EventoOperationResult processApproval(EventoEntity evento,
+    private EventoOperationResult processAprovacao(EventoEntity evento,
                                                   CancelEventoRequest request, EventoActorContext actorContext) {
 
-        CancelamentoPendenteResponse response = createPendingApproval(evento, request, actorContext);
-        metricsPublisher.publishCancellationFlow("PENDING_CREATED", "PENDING");
-        return new EventoOperationResult.Pending(response, HttpStatus.ACCEPTED);
+        CancelamentoPendenteResponse response = criarAprovacaoPendente(evento, request, actorContext);
+        metricsPublisher.publishCancellationFlow("PENDENTE_CREATED", "PENDENTE");
+        return new EventoOperationResult.Pendente(response, HttpStatus.ACCEPTED);
     }
 
     private EventoCanceladoResponse applyCancellation(EventoEntity evento,
@@ -159,7 +160,7 @@ public class CancelEventoUseCase {
 
 
         metricsPublisher.publishAdministrativeRework(false, true, false);
-        auditPublisher.publish(actor, "cancel", saved.getId().toString(), auditResult, Map.of(
+        auditPublisher.publish(actor, "cancelar", saved.getId().toString(), auditResult, Map.of(
                 "eventoId", saved.getId(),
                 "organizacaoId", saved.getOrganizacaoResponsavelId(),
                 "status", saved.getStatus(),
@@ -181,7 +182,7 @@ public class CancelEventoUseCase {
         }
     }
 
-    private CancelamentoPendenteResponse createPendingApproval(EventoEntity evento,
+    private CancelamentoPendenteResponse criarAprovacaoPendente(EventoEntity evento,
                                                                CancelEventoRequest request,
                                                                EventoActorContext actorContext) {
 
@@ -194,20 +195,20 @@ public class CancelEventoUseCase {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId().toString());
         aprovacao.setSolicitantePapel(actorContext.role());
-        aprovacao.setSolicitanteTipoOrganizacao(actorContext.organizationType());
+        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
         aprovacao.setMotivoCancelamentoSnapshot(request.motivo());
-        aprovacao.setActionPayloadJson(payloadMapper.toJson(new ApprovalActionPayload(
+        aprovacao.setActionPayloadJson(payloadMapper.toJson(new AprovacaoAcaoPayload(
                 null, evento.getId(), null, null, null, null, null, null, null, null,
                 null, null, request.motivo() != null ? request.motivo() : "", null, null, null, null, null)));
         aprovacao.setCorrelationId(evento.getId().toString());
         aprovacaoJpaRepository.save(aprovacao);
 
-        auditPublisher.publishCancellationPending(actorContext.actor(),
+        auditPublisher.publishCancellationPendente(actorContext.actor(),
                 evento.getId().toString(), aprovacao.getId().toString(), request.motivo());
 
 
         return new CancelamentoPendenteResponse(aprovacao.getId(),
-                aprovacao.getStatusEnum().name(), evento.getId(), "APPROVAL_PENDING");
+                aprovacao.getStatus().name(), evento.getId(), "APROVACAO_PENDENTE");
 
     }
 }

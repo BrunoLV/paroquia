@@ -22,28 +22,29 @@ public class PatrimonioAuthorizationService {
             PapelOrganizacional.MESA_CPP);
 
     public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoId) {
-        assertScoped(actorContext, organizacaoId, "User does not have permission to create assets",
-                "User cannot create assets for another organization");
+        assertScoped(actorContext, organizacaoId, "Usuário não tem permissão para criar ativos",
+                "Usuário não pode criar ativos para outra organização");
     }
 
     public void assertCanTransfer(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "User does not have permission to transfer assets",
-                "User cannot transfer assets of another organization");
+        assertScoped(actorContext, ativoOrganizacaoId, "Usuário não tem permissão para transferir ativos",
+                "Usuário não pode transferir ativos de outra organização");
     }
 
     public void assertCanAlocar(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "User does not have permission to allocate assets",
-                "User cannot allocate assets of another organization");
+        assertScoped(actorContext, ativoOrganizacaoId, "Usuário não tem permissão para alocar ativos",
+                "Usuário não pode alocar ativos de outra organização");
     }
 
     public void assertCanDesalocar(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "User does not have permission to deallocate assets",
-                "User cannot deallocate assets of another organization");
+        assertScoped(actorContext, ativoOrganizacaoId, "Usuário não tem permissão para desalocar ativos",
+                "Usuário não pode desalocar ativos de outra organização");
     }
 
     public void assertCanIniciarManutencao(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "User does not have permission to put assets into maintenance",
-                "User cannot put assets of another organization into maintenance");
+        assertScoped(actorContext, ativoOrganizacaoId,
+                "Usuário não tem permissão para colocar ativos em manutenção",
+                "Usuário não pode colocar ativos de outra organização em manutenção");
     }
 
     private void assertScoped(EventoActorContext actorContext, UUID organizacaoId, String roleMessage,

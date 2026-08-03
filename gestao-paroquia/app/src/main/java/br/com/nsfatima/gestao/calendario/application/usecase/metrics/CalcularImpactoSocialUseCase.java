@@ -56,14 +56,14 @@ public class CalcularImpactoSocialUseCase {
     }
 
     private boolean isEventoSocialOuCaridade(EventoEntity e) {
-        String cat = e.getCategoria() != null ? e.getCategoria().toUpperCase() : "";
+        String cat = e.getCategoria() != null ? e.getCategoria().name() : "";
         String titulo = e.getTitulo() != null ? e.getTitulo().toUpperCase() : "";
         return cat.contains("SOCIAL") || cat.contains("CARIDADE") || cat.contains("MISERICORDIA") ||
                 titulo.contains("BAZAR") || titulo.contains("DONATIVO") || titulo.contains("SOLIDARI");
     }
 
     private boolean isReuniaoInterna(EventoEntity e) {
-        String cat = e.getCategoria() != null ? e.getCategoria().toUpperCase() : "";
+        String cat = e.getCategoria() != null ? e.getCategoria().name() : "";
         String titulo = e.getTitulo() != null ? e.getTitulo().toUpperCase() : "";
         return cat.contains("REUNIAO") || cat.contains("INTERNA") || cat.contains("ADMIN") ||
                 titulo.contains("REUNIÃO") || titulo.contains("REUNIAO") || titulo.contains("CONSELHO");

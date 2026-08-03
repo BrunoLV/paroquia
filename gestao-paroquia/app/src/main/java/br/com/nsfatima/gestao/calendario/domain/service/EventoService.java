@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -35,9 +36,7 @@ public class EventoService {
     }
 
     public Page<EventoEntity> list(EventoFiltroRequest filters, Pageable pageable) {
-        List<String> categories = Optional.ofNullable(filters.categoria())
-                .map(list -> list.stream().map(Enum::name).toList())
-                .orElse(null);
+        List<CategoriaEvento> categories = filters.categoria();
 
         List<String> statuses = Optional.ofNullable(filters.status())
                 .map(list -> list.stream().map(Enum::name).toList())

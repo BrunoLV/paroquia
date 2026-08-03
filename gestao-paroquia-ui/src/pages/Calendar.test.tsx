@@ -40,8 +40,8 @@ const mockEvents = [
     inicio: new Date().toISOString(),
     fim: new Date(Date.now() + 3600000).toISOString(),
     status: 'CONFIRMADO',
-    conflictState: null,
-    conflictReason: null,
+    estadoConflito: null,
+    motivoConflito: null,
   }
 ];
 
@@ -264,7 +264,7 @@ test('opens and submits event creation form', async () => {
 }, 15000);
 
 test('displays events with pending actions with reduced opacity and indicator', async () => {
-  const pendingApprovals = [
+  const aprovacoesPendentes = [
     {
       id: 'approval-1',
       eventoId: 'event-1',
@@ -276,7 +276,7 @@ test('displays events with pending actions with reduced opacity and indicator', 
     }
   ];
 
-  await renderCalendar(mockUser, pendingApprovals);
+  await renderCalendar(mockUser, aprovacoesPendentes);
 
   // It should render the event with [Pendente] indicator
   expect(screen.getByText(/\[Pendente\] Missa Paroquial/i)).toBeInTheDocument();
@@ -291,7 +291,7 @@ test('displays events with pending actions with reduced opacity and indicator', 
 });
 
 test('parses and renders transient events from pending creation requests', async () => {
-  const pendingApprovals = [
+  const aprovacoesPendentes = [
     {
       id: 'approval-2',
       eventoId: null,
@@ -312,7 +312,7 @@ test('parses and renders transient events from pending creation requests', async
     }
   ];
 
-  await renderCalendar(mockUser, pendingApprovals);
+  await renderCalendar(mockUser, aprovacoesPendentes);
 
   // The transient event should be rendered on the calendar grid
   expect(screen.getByText(/\[Pendente\] Missa das Crianças/i)).toBeInTheDocument();

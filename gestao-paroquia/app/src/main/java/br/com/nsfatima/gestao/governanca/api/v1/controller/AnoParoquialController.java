@@ -128,9 +128,7 @@ public class AnoParoquialController {
 
         AnoParoquialStatus newStatus = AnoParoquialStatus.fromJson(request.status());
 
-        AnoParoquialStatus currentStatus = (entity.getStatus() != null)
-                ? AnoParoquialStatus.valueOf(entity.getStatus())
-                : null;
+        AnoParoquialStatus currentStatus = entity.getStatus();
 
         // 1. Concluded years are immutable
         if (currentStatus == AnoParoquialStatus.CONCLUIDO) {
@@ -138,7 +136,7 @@ public class AnoParoquialController {
         }
         // 2. Succession Rule: N can only transition to FECHADO or CONCLUIDO if all prior years are CONCLUIDO
         if (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO) {
-            if (repository.existsByAnoLessThanAndStatusNot(ano, AnoParoquialStatus.CONCLUIDO.name())) {
+            if (repository.existsByAnoLessThanAndStatusNot(ano, AnoParoquialStatus.CONCLUIDO)) {
                 throw new IllegalArgumentException(
                         "O ano anterior precisa estar concluído antes que este ano possa ser fechado ou concluído.");
             }
@@ -157,7 +155,7 @@ public class AnoParoquialController {
             rolloverService.concludeYear(ano);
             entity = repository.findByAno(ano).orElse(entity);
         } else {
-            entity.setStatus(newStatus.name());
+            entity.setStatus(newStatus);
 
             if (newStatus == AnoParoquialStatus.FECHADO && entity.getDataFechamentoUtc() == null) {
                 entity.setDataFechamentoUtc(Instant.now());
@@ -173,7 +171,7 @@ public class AnoParoquialController {
     private AnoParoquialResponse toResponse(AnoParoquialEntity entity) {
         return new AnoParoquialResponse(
                 entity.getAno(),
-                entity.getStatus(),
+                entity.getStatus().name(),
                 entity.getDataFechamentoUtc(),
                 entity.getUpdatedAt());
     }

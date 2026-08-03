@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.foundation;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.time.TimezoneConfig;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class FoundationInfrastructureTest {
 
     @Autowired
-    private AuditLogPersistenceService auditLogPersistenceService;
+    private AuditoriaPersistenceService auditLogPersistenceService;
 
     @Autowired
     private TimezoneConfig timezoneConfig;

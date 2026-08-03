@@ -1,8 +1,13 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -44,11 +49,12 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "adicionado_extra_justificativa", length = 4000)
     private String adicionadoExtraJustificativa;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "conflict_state", length = 32)
-    private String conflictState;
+    private EstadoConflitoAgenda estadoConflito;
 
     @Column(name = "conflict_reason", length = 2000)
-    private String conflictReason;
+    private String motivoConflito;
 
     @Column(name = "recorrencia_id")
     private UUID recorrenciaId;
@@ -56,8 +62,9 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "projeto_id")
     private UUID projetoId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "categoria", length = 32)
-    private String categoria;
+    private CategoriaEvento categoria;
 
     @Column(name = "ano_liturgico_ref")
     private Integer anoLiturgicoRef;
@@ -77,8 +84,9 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(name = "autorizado_pelo_cpp", nullable = false)
     private Boolean autorizadoPeloCpp = false;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "setor_pastoral", length = 64)
-    private String setorPastoral;
+    private SetorPastoral setorPastoral;
 
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -157,20 +165,20 @@ public class EventoEntity extends BaseVersionedEntity {
         this.adicionadoExtraJustificativa = adicionadoExtraJustificativa;
     }
 
-    public String getConflictState() {
-        return conflictState;
+    public EstadoConflitoAgenda getEstadoConflito() {
+        return estadoConflito;
     }
 
-    public void setConflictState(String conflictState) {
-        this.conflictState = conflictState;
+    public void setEstadoConflito(EstadoConflitoAgenda estadoConflito) {
+        this.estadoConflito = estadoConflito;
     }
 
-    public String getConflictReason() {
-        return conflictReason;
+    public String getMotivoConflito() {
+        return motivoConflito;
     }
 
-    public void setConflictReason(String conflictReason) {
-        this.conflictReason = conflictReason;
+    public void setMotivoConflito(String motivoConflito) {
+        this.motivoConflito = motivoConflito;
     }
 
     public UUID getRecorrenciaId() {
@@ -189,11 +197,11 @@ public class EventoEntity extends BaseVersionedEntity {
         this.projetoId = projetoId;
     }
 
-    public String getCategoria() {
+    public CategoriaEvento getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(CategoriaEvento categoria) {
         this.categoria = categoria;
     }
 
@@ -237,11 +245,11 @@ public class EventoEntity extends BaseVersionedEntity {
         this.autorizadoPeloCpp = autorizadoPeloCpp;
     }
 
-    public String getSetorPastoral() {
+    public SetorPastoral getSetorPastoral() {
         return setorPastoral;
     }
 
-    public void setSetorPastoral(String setorPastoral) {
+    public void setSetorPastoral(SetorPastoral setorPastoral) {
         this.setorPastoral = setorPastoral;
     }
 

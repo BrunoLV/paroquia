@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
@@ -38,7 +39,7 @@ public class CreateSolicitacaoAprovacaoUseCase {
     }
 
     /**
-     * Initiates the governance workflow by persisting a pending request and notifying the auditing system.
+     * Initiates the governance workflow by persisting a pendente request and notifying the auditing system.
      * <p>
      * Usage Example:
      * {@code
@@ -48,7 +49,7 @@ public class CreateSolicitacaoAprovacaoUseCase {
     @Transactional
     public AprovacaoResponse create(UUID eventoId, TipoSolicitacaoInput tipoSolicitacao) {
         EventoActorContext actorContext = eventoActorContextResolver.resolveRequired();
-        AprovadorPapel aprovadorPapel = AprovadorPapel.resolveForApproval(actorContext.role(),
+        AprovadorPapel aprovadorPapel = AprovadorPapel.resolveForAprovacao(actorContext.role(),
                 actorContext.organizationType());
 
 
@@ -63,12 +64,12 @@ public class CreateSolicitacaoAprovacaoUseCase {
 
         entity.setSolicitanteId(actorContext.usuarioId().toString());
         entity.setSolicitantePapel(actorContext.role());
-        entity.setSolicitanteTipoOrganizacao(actorContext.organizationType());
+        entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
 
         aprovacaoJpaRepository.save(entity);
 
         if (eventoAuditPublisher != null) {
-            eventoAuditPublisher.publishCreatePending(
+            eventoAuditPublisher.publishCreatePendente(
                     actorContext.actor(),
                     entity.getId().toString(),
                     "N/A");

@@ -23,7 +23,7 @@ public class UsuarioAuthorizationService {
     public void requireAdminOrCoordinatorOf(UUID targetUserId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Not authenticated");
+            throw new AccessDeniedException("Não autenticado");
         }
 
         if (isAdmin(auth)) {
@@ -32,7 +32,7 @@ public class UsuarioAuthorizationService {
 
         UUID actorId = getActorId(auth);
         if (actorId == null) {
-            throw new AccessDeniedException("Actor ID not found");
+            throw new AccessDeniedException("ID do ator não encontrado");
         }
 
         // If actor is COORDENADOR, they must share an organization with targetUserId where they are COORDENADOR
@@ -43,7 +43,7 @@ public class UsuarioAuthorizationService {
                 .toList();
 
         if (coordinatorOrgIds.isEmpty()) {
-            throw new AccessDeniedException("Actor is not a coordinator");
+            throw new AccessDeniedException("Ator não é um coordenador");
         }
 
         List<MembroOrganizacaoEntity> targetVinculos =
@@ -52,14 +52,14 @@ public class UsuarioAuthorizationService {
                 .anyMatch(m -> coordinatorOrgIds.contains(m.getOrganizacaoId()));
 
         if (!sharesOrg) {
-            throw new AccessDeniedException("Coordinator can only manage members of their own organization");
+            throw new AccessDeniedException("Coordenador só pode gerenciar membros da própria organização");
         }
     }
 
     public void requireAdminOrCoordinatorOfOrganization(UUID organizationId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Not authenticated");
+            throw new AccessDeniedException("Não autenticado");
         }
 
         if (isAdmin(auth)) {
@@ -68,7 +68,7 @@ public class UsuarioAuthorizationService {
 
         UUID actorId = getActorId(auth);
         if (actorId == null) {
-            throw new AccessDeniedException("Actor ID not found");
+            throw new AccessDeniedException("ID do ator não encontrado");
         }
 
         boolean isCoordinator = vinculoRepository.findByUsuarioIdAndAtivoTrue(actorId).stream()
@@ -76,7 +76,7 @@ public class UsuarioAuthorizationService {
                 .anyMatch(m -> isCoordinatorRole(m.getPapel()));
 
         if (!isCoordinator) {
-            throw new AccessDeniedException("Only Admin or Organization Coordinator can perform this action");
+            throw new AccessDeniedException("Apenas Admin ou Coordenador de Organização pode executar esta ação");
         }
     }
 

@@ -124,7 +124,7 @@ class MembroUseCaseTest {
         assertNotNull(result);
         assertEquals(usuarioId, result.usuarioId());
         verify(repository).save(any(MembroEntity.class));
-        verify(auditPublisher).publish(eq("admin"), eq("create"), anyString(), eq("success"));
+        verify(auditPublisher).publish(eq("admin"), eq("criar"), anyString(), eq("sucesso"));
     }
 
     @Test
@@ -151,7 +151,7 @@ class MembroUseCaseTest {
 
         assertNotNull(result);
         verify(repository).save(entity);
-        verify(auditPublisher).publish(eq("admin"), eq("update"), eq(id.toString()), eq("success"));
+        verify(auditPublisher).publish(eq("admin"), eq("atualizar"), eq(id.toString()), eq("sucesso"));
     }
 
     @Test
@@ -177,6 +177,6 @@ class MembroUseCaseTest {
 
         assertFalse(entity.isAtivo());
         verify(repository).save(entity);
-        verify(auditPublisher).publish(eq("admin"), eq("deactivate"), eq(id.toString()), eq("success"));
+        verify(auditPublisher).publish(eq("admin"), eq("desativar"), eq(id.toString()), eq("sucesso"));
     }
 }

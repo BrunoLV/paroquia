@@ -77,7 +77,7 @@ class FormLoginIntegrationTest {
                                 }
                                 """))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorCode").value("APPROVAL_REQUIRED"))
+                .andExpect(jsonPath("$.errorCode").value("APROVACAO_OBRIGATORIA"))
                 .andExpect(jsonPath("$.message").value("Cadastro pendente de aprovacao por um administrador."));
     }
 

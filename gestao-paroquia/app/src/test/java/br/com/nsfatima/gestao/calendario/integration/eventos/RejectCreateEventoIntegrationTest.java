@@ -1,7 +1,9 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -37,7 +39,7 @@ class RejectCreateEventoIntegrationTest {
     private AprovacaoJpaRepository aprovacaoJpaRepository;
 
     @Autowired
-    private ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     @Test
     @SuppressWarnings("null")
@@ -45,7 +47,7 @@ class RejectCreateEventoIntegrationTest {
         UUID aprovacaoId = UUID.randomUUID();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
-        ApprovalActionPayload payload = new ApprovalActionPayload(
+        AprovacaoAcaoPayload payload = new AprovacaoAcaoPayload(
                 UUID.randomUUID().toString(),
                 null,
                 "Evento que sera reprovado",
@@ -67,9 +69,9 @@ class RejectCreateEventoIntegrationTest {
         aprovacao.setEventoId(null);
         aprovacao.setTipoSolicitacao("CRIACAO_EVENTO");
         aprovacao.setAprovadorPapel("conselho-coordenador");
-        aprovacao.setStatus("PENDENTE");
+        aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
-        aprovacao.setActionPayloadJson(approvalActionPayloadMapper.toJson(payload));
+        aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
         aprovacaoJpaRepository.save(aprovacao);
 
         long eventsBefore = eventoJpaRepository.count();
@@ -93,7 +95,7 @@ class RejectCreateEventoIntegrationTest {
         assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore);
 
         AprovacaoEntity saved = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
-        assertThat(saved.getStatus()).isEqualTo("REPROVADA");
+        assertThat(saved.getStatus()).isEqualTo(AprovacaoStatus.REPROVADA);
         assertThat(saved.getEventoId()).isNull();
         assertThat(saved.getExecutadoEmUtc()).isNull();
         assertThat(saved.getDecisionObservacao()).isEqualTo("Evento fora do calendario liturgico");

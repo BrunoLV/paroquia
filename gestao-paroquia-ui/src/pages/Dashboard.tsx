@@ -4,13 +4,13 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import UpcomingEvents from '../components/dashboard/UpcomingEvents';
 import QuickActions from '../components/dashboard/QuickActions';
-import PendingApprovals from '../components/dashboard/PendingApprovals';
+import AprovacoesPendentes from '../components/dashboard/AprovacoesPendentes';
 import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
 import ActiveProjectsProgressList from '../components/dashboard/ActiveProjectsProgressList';
 import WeeklyTimeline from '../components/dashboard/WeeklyTimeline';
 import MetricasEstrategicasWidget from '../components/dashboard/MetricasEstrategicasWidget';
 import apiClient from '../api/client';
-import EventRegistrationModal from '../components/EventRegistrationModal';
+import CadastroEventoModal from '../components/CadastroEventoModal';
 import {useAuth} from '../auth/AuthContext';
 import {useNotification} from '../context/NotificationContext';
 import {DashboardMetrics, Evento, Local, Organizacao, Projeto} from '../api/types';
@@ -189,7 +189,7 @@ const Dashboard = () => {
     if (metrics?.resumoGeral) {
       return {
         monthlyEvents: metrics.resumoGeral.totalEventosMes,
-        pendingApprovals: metrics.resumoGeral.solicitacoesPendentes,
+        aprovacoesPendentes: metrics.resumoGeral.solicitacoesPendentes,
         activeProjects: metrics.resumoGeral.projetosAtivos,
       };
     }
@@ -276,12 +276,12 @@ const Dashboard = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3}>
             <QuickActions onNewEvent={() => setIsModalOpen(true)} />
-            <PendingApprovals />
+            <AprovacoesPendentes />
           </Stack>
         </Grid>
       </Grid>
 
-      <EventRegistrationModal
+      <CadastroEventoModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateEvent}

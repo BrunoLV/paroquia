@@ -2,8 +2,8 @@ package br.com.nsfatima.gestao.support.api.error;
 
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizationBusinessException;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
@@ -20,7 +20,7 @@ import java.util.List;
 @Order(2)
 public class GlobalDomainExceptionHandler extends BaseExceptionHandler {
 
-    public GlobalDomainExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
+    public GlobalDomainExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
 
@@ -38,8 +38,8 @@ public class GlobalDomainExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    @ExceptionHandler(OrganizationBusinessException.class)
-    public ResponseEntity<ValidationErrorResponse> handleOrganizationBusiness(OrganizationBusinessException ex) {
+    @ExceptionHandler(OrganizacaoNegocioException.class)
+    public ResponseEntity<ValidationErrorResponse> handleOrganizationBusiness(OrganizacaoNegocioException ex) {
         HttpStatus status = ex.getMessage().contains("not found") ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
         return buildValidation(
                 status,

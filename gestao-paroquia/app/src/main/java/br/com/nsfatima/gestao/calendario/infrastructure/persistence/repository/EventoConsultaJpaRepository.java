@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,7 @@ public interface EventoConsultaJpaRepository {
             @Param("hasProjetoId") boolean hasProjetoId,
             @Param("envolvidoId") UUID envolvidoId,
             @Param("hasEnvolvidoId") boolean hasEnvolvidoId,
-            @Param("categorias") List<String> categorias,
+            @Param("categorias") List<CategoriaEvento> categorias,
             @Param("hasCategorias") boolean hasCategorias,
             @Param("statuses") List<String> statuses,
             @Param("hasStatuses") boolean hasStatuses,

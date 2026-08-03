@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.importacao.domain.service;
 
+import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -222,7 +224,7 @@ class ImportacaoServiceTest {
         var anoRepoMock = mock(AnoParoquialJpaRepository.class);
         var anoFechado = new AnoParoquialEntity();
         anoFechado.setAno(2026);
-        anoFechado.setStatus("FECHADO");
+        anoFechado.setStatus(AnoParoquialStatus.FECHADO);
 
         when(anoRepoMock.findByAno(2026)).thenReturn(Optional.of(anoFechado));
 
@@ -241,7 +243,7 @@ class ImportacaoServiceTest {
         int count = serviceComAno.confirmarImportacao("EVENTO", List.of(eventoMap), "admin");
         assertEquals(1, count);
         verify(eventoJpaRepository, atLeastOnce()).save(argThat(entity ->
-                "PENDENTE".equals(entity.getStatus()) && "PENDING_APPROVAL".equals(entity.getConflictState())
+                "PENDENTE".equals(entity.getStatus()) && EstadoConflitoAgenda.PENDENTE.equals(entity.getEstadoConflito())
         ));
     }
 }

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +10,9 @@ import java.util.Map;
 @Component
 public class ObservacaoAuditPublisher {
 
-    private final AuditLogPersistenceService auditLogPersistenceService;
+    private final AuditoriaPersistenceService auditLogPersistenceService;
 
-    public ObservacaoAuditPublisher(AuditLogPersistenceService auditLogPersistenceService) {
+    public ObservacaoAuditPublisher(AuditoriaPersistenceService auditLogPersistenceService) {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
@@ -21,23 +21,23 @@ public class ObservacaoAuditPublisher {
     }
 
     public void publishCreate(String actor, String target, String result, Map<String, Object> metadata) {
-        auditLogPersistenceService.log(actor, "create-observacao", target, result, withDefaults(target, metadata));
+        auditLogPersistenceService.log(actor, "criar-observacao", target, result, withDefaults(target, metadata));
     }
 
     public void publishUpdate(String actor, String target, String result, Map<String, Object> metadata) {
-        auditLogPersistenceService.log(actor, "update-observacao", target, result, withDefaults(target, metadata));
+        auditLogPersistenceService.log(actor, "atualizar-observacao", target, result, withDefaults(target, metadata));
     }
 
     public void publishDelete(String actor, String target, String result, Map<String, Object> metadata) {
-        auditLogPersistenceService.log(actor, "delete-observacao", target, result, withDefaults(target, metadata));
+        auditLogPersistenceService.log(actor, "excluir-observacao", target, result, withDefaults(target, metadata));
     }
 
     public void publishList(String actor, String target, String result, Map<String, Object> metadata) {
-        auditLogPersistenceService.log(actor, "list-observacao", target, result, withDefaults(target, metadata));
+        auditLogPersistenceService.log(actor, "listar-observacao", target, result, withDefaults(target, metadata));
     }
 
     public void publishSystem(String actor, String target, String result, Map<String, Object> metadata) {
-        auditLogPersistenceService.log(actor, "system-observacao", target, result, withDefaults(target, metadata));
+        auditLogPersistenceService.log(actor, "sistema-observacao", target, result, withDefaults(target, metadata));
     }
 
     private Map<String, Object> withDefaults(String target, Map<String, Object> metadata) {

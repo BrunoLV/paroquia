@@ -27,19 +27,19 @@ public class AnoParoquialRolloverService {
     }
 
     /**
-     * Scheduled task to rollover the parish year.
-     * Runs automatically on December 31st at 23:59:59.
+     * Tarefa agendada para rollover do ano paroquial.
+     * Executa automaticamente em 31 de dezembro às 23:59:59.
      */
     @Scheduled(cron = "59 59 23 31 12 *")
     @Transactional
     public void rolloverYearAutomatically() {
         int currentYear = LocalDate.now().getYear();
-        LOGGER.info("Starting automated Parish Year rollover for year {}", currentYear);
+        LOGGER.info("Iniciando rollover automático do Ano Paroquial para o ano {}", currentYear);
         concludeYear(currentYear);
     }
 
     /**
-     * Concludes a given year and automatically creates the next one in EM_PLANEJAMENTO if not exists.
+     * Conclui um dado ano e cria automaticamente o próximo em EM_PLANEJAMENTO caso não exista.
      */
     @Transactional
     public void concludeYear(int year) {
@@ -50,32 +50,34 @@ public class AnoParoquialRolloverService {
                     return newEntity;
                 });
 
-        if (AnoParoquialStatus.CONCLUIDO.name().equals(entity.getStatus())) {
-            LOGGER.info("Parish Year {} is already CONCLUIDO.", year);
+        if (AnoParoquialStatus.CONCLUIDO.equals(entity.getStatus())) {
+            LOGGER.info("Ano Paroquial {} já está CONCLUIDO.", year);
             return;
         }
 
-        if (repository.existsByAnoLessThanAndStatusNot(year, AnoParoquialStatus.CONCLUIDO.name())) {
+        if (repository.existsByAnoLessThanAndStatusNot(year, AnoParoquialStatus.CONCLUIDO)) {
             throw new IllegalArgumentException(
                     "Existe um ano anterior não concluído. O ano " + year + " não pode ser concluído.");
         }
 
-        entity.setStatus(AnoParoquialStatus.CONCLUIDO.name());
+        entity.setStatus(AnoParoquialStatus.CONCLUIDO);
         repository.save(entity);
 
         int nextYear = year + 1;
         if (repository.findByAno(nextYear).isEmpty()) {
-            AnoParoquialEntity nextEntity = new AnoParoquialEntity();
-            nextEntity.setAno(nextYear);
-            nextEntity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO.name());
-            repository.save(nextEntity);
+            AnoParoquialEntity proximaEntidade = new AnoParoquialEntity();
+            proximaEntidade.setAno(nextYear);
+            proximaEntidade.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO);
+            repository.save(proximaEntidade);
             LOGGER.info(
-                    "Parish Year rollover completed: Year {} set to CONCLUIDO, initialized Year {} as EM_PLANEJAMENTO",
+                    "Rollover do Ano Paroquial concluído: ano {} definido como CONCLUIDO, ano {} inicializado como "
+                            + "EM_PLANEJAMENTO",
                     year, nextYear);
 
         } else {
             LOGGER.info(
-                    "Parish Year rollover completed: Year {} set to CONCLUIDO. Next year {} was already initialized.",
+                    "Rollover do Ano Paroquial concluído: ano {} definido como CONCLUIDO. O ano {} já estava "
+                            + "inicializado.",
                     year, nextYear);
 
         }

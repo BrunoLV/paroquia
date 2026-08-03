@@ -2,9 +2,14 @@ package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoOrganizacaoAttributeConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -27,8 +32,9 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     @Column(name = "aprovador_papel", nullable = false, length = 64)
     private String aprovadorPapel;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)
-    private String status;
+    private AprovacaoStatus status;
 
     @Column(name = "criado_em_utc", nullable = false)
     private Instant criadoEmUtc;
@@ -45,8 +51,9 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     @Column(name = "solicitante_papel", length = 64)
     private String solicitantePapel;
 
+    @Convert(converter = TipoOrganizacaoAttributeConverter.class)
     @Column(name = "solicitante_tipo_organizacao", length = 64)
-    private String solicitanteTipoOrganizacao;
+    private TipoOrganizacao solicitanteTipoOrganizacao;
 
     @Column(name = "aprovador_id")
     private String aprovadorId;
@@ -114,20 +121,12 @@ public class AprovacaoEntity extends BaseVersionedEntity {
         return AprovadorPapel.fromStoredValue(aprovadorPapel);
     }
 
-    public String getStatus() {
+    public AprovacaoStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public void setStatus(AprovacaoStatus status) {
-        this.status = status == null ? null : status.name();
-    }
-
-    public AprovacaoStatus getStatusEnum() {
-        return AprovacaoStatus.fromJson(status);
+        this.status = status;
     }
 
     public Instant getDecididoEmUtc() {
@@ -162,11 +161,11 @@ public class AprovacaoEntity extends BaseVersionedEntity {
         this.solicitantePapel = solicitantePapel;
     }
 
-    public String getSolicitanteTipoOrganizacao() {
+    public TipoOrganizacao getSolicitanteTipoOrganizacao() {
         return solicitanteTipoOrganizacao;
     }
 
-    public void setSolicitanteTipoOrganizacao(String solicitanteTipoOrganizacao) {
+    public void setSolicitanteTipoOrganizacao(TipoOrganizacao solicitanteTipoOrganizacao) {
         this.solicitanteTipoOrganizacao = solicitanteTipoOrganizacao;
     }
 

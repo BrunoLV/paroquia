@@ -144,7 +144,7 @@ class AnoParoquialTransitionTest {
     private void saveAno(int ano, AnoParoquialStatus status) {
         AnoParoquialEntity entity = new AnoParoquialEntity();
         entity.setAno(ano);
-        entity.setStatus(status.name());
+        entity.setStatus(status);
         repository.saveAndFlush(entity);
     }
 }

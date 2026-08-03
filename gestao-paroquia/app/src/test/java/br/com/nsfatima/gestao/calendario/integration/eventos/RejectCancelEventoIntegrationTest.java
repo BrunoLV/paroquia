@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
@@ -53,7 +55,7 @@ class RejectCancelEventoIntegrationTest {
         aprovacao.setEventoId(eventoId);
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
         aprovacao.setAprovadorPapel("conselho-coordenador");
-        aprovacao.setStatus("PENDENTE");
+        aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setMotivoCancelamentoSnapshot("Nao executar cancelamento");
         aprovacaoJpaRepository.save(aprovacao);
@@ -74,6 +76,6 @@ class RejectCancelEventoIntegrationTest {
                 .andExpect(jsonPath("$.actionExecution.eventStatus").value("CONFIRMADO"));
 
         assertThat(eventoJpaRepository.findById(eventoId).orElseThrow().getStatus()).isEqualTo("CONFIRMADO");
-        assertThat(aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow().getStatus()).isEqualTo("REPROVADA");
+        assertThat(aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow().getStatus()).isEqualTo(AprovacaoStatus.REPROVADA);
     }
 }

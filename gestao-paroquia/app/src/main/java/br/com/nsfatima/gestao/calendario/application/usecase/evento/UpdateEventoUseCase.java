@@ -1,14 +1,14 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEditScope;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
-import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.UpdateEventoApprovalRequestUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.UpdateEventoSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.service.AgendaPriorityValidatorService;
+import br.com.nsfatima.gestao.calendario.domain.service.PrioridadeAgendaValidatorService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Use case responsible for updating event data, handling authorization and approval flows.
+ * Caso de uso responsável por atualizar dados de evento, tratando autorização e fluxos de aprovação.
  */
 @Service
 public class UpdateEventoUseCase {
@@ -57,9 +57,9 @@ public class UpdateEventoUseCase {
     private final ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase;
     private final ProjetoVincularPolicy projetoVincularPolicy;
     private final CadastroEventoMetricsPublisher metricsPublisher;
-    private final UpdateEventoApprovalRequestUseCase approvalRequestUseCase;
+    private final UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
     private final EventoAuditPublisher auditPublisher;
-    private final AgendaPriorityValidatorService agendaPriorityValidatorService;
+    private final PrioridadeAgendaValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
 
     public UpdateEventoUseCase(
@@ -74,9 +74,9 @@ public class UpdateEventoUseCase {
             ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase,
             ProjetoVincularPolicy projetoVincularPolicy,
             CadastroEventoMetricsPublisher metricsPublisher,
-            UpdateEventoApprovalRequestUseCase approvalRequestUseCase,
+            UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
             EventoAuditPublisher auditPublisher,
-            AgendaPriorityValidatorService agendaPriorityValidatorService,
+            PrioridadeAgendaValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager) {
         this.domainService = domainService;
         this.repository = repository;
@@ -89,17 +89,18 @@ public class UpdateEventoUseCase {
         this.clearEnvolvidosUseCase = clearEnvolvidosUseCase;
         this.projetoVincularPolicy = projetoVincularPolicy;
         this.metricsPublisher = metricsPublisher;
-        this.approvalRequestUseCase = approvalRequestUseCase;
+        this.aprovacaoRequestUseCase = aprovacaoRequestUseCase;
         this.auditPublisher = auditPublisher;
         this.agendaPriorityValidatorService = agendaPriorityValidatorService;
         this.cacheManager = cacheManager;
     }
 
     /**
-     * Executes the update request. May return 200 OK with the updated event or 202 ACCEPTED if approval is required.
+     * Executa a requisição de atualização. Pode retornar 200 OK com o evento atualizado ou 202 ACCEPTED
+     * caso aprovação seja necessária.
      * <p>
-     * Usage Example:
-     * useCase.execute(id, new UpdateEventoRequest("New Title", null, ...));
+     * Exemplo de uso:
+     * useCase.execute(id, new UpdateEventoRequest("Novo Título", null, ...));
      */
     @Transactional
     public EventoOperationResult execute(UUID eventoId, UpdateEventoRequest request) {
@@ -109,29 +110,29 @@ public class UpdateEventoUseCase {
 
         validateAuthorization(entity, request, actorContext);
 
-        if (request.changesSensitiveFields() && requiresApproval(entity, actorContext)) {
-            return new EventoOperationResult.Pending(approvalRequestUseCase.execute(eventoId,
+        if (request.changesSensitiveFields() && requiresAprovacao(entity, actorContext)) {
+            return new EventoOperationResult.Pendente(aprovacaoRequestUseCase.execute(eventoId,
                     request), HttpStatus.ACCEPTED);
 
         }
 
-        EventoResponse response = performUpdate(entity, request, actorContext, "success", false);
+        EventoResponse response = performUpdate(entity, request, actorContext, "sucesso", false);
         return new EventoOperationResult.Success(response, HttpStatus.OK);
     }
 
     /**
-     * Executes an update that has already been approved through the approval flow.
+     * Executa uma atualização que já foi aprovada através do fluxo de aprovação.
      */
     @Transactional(noRollbackFor = RuntimeException.class)
     public EventoResponse executeApprovedUpdate(UUID eventoId, UpdateEventoRequest request) {
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        return performUpdate(entity, request, actorContext, "executed", true);
+        return performUpdate(entity, request, actorContext, "executado", true);
     }
 
     private void validateRequest(UpdateEventoRequest request) {
         if (request == null || request.isEmptyPayload()) {
-            throw new IllegalArgumentException("PATCH payload must not be empty");
+            throw new IllegalArgumentException("Corpo do PATCH não pode ser vazio");
         }
     }
 
@@ -163,17 +164,17 @@ public class UpdateEventoUseCase {
         }
     }
 
-    private boolean requiresApproval(EventoEntity entity, EventoActorContext actorContext) {
+    private boolean requiresAprovacao(EventoEntity entity, EventoActorContext actorContext) {
         return authorizationService.resolveCreateRequestMode(actorContext,
                 entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId())
 
-                == CreateRequestMode.REQUIRES_APPROVAL;
+                == CreateRequestMode.REQUIRES_APROVACAO;
     }
 
     private EventoResponse performUpdate(EventoEntity entity,
                                          UpdateEventoRequest request, EventoActorContext actorContext,
                                          String auditResult,
-                                         boolean isApprovalFlow) {
+                                         boolean isAprovacaoFlow) {
 
         UUID oldProjectId = entity.getProjetoId();
         EventoStatusInput status =
@@ -197,7 +198,7 @@ public class UpdateEventoUseCase {
 
         applyParticipantChanges(entity.getId(), request.participantes());
 
-        // Manually fetch involvement to ensure response is complete (especially for EAGER loading consistency)
+        // Busca manualmente o envolvimento para garantir resposta completa (especialmente para consistência de carregamento EAGER)
         List<EventoEnvolvidoEntity> involvement = involvementRepository.findByEventoId(saved.getId());
         if (saved.getEnvolvidos() != null) {
             saved.getEnvolvidos().clear();
@@ -207,7 +208,7 @@ public class UpdateEventoUseCase {
         }
 
         publishMetrics(entity, request);
-        publishAudit(saved, request, actorContext, auditResult, isApprovalFlow);
+        publishAudit(saved, request, actorContext, auditResult, isAprovacaoFlow);
 
         evictProjectCaches(oldProjectId, saved.getProjetoId());
 
@@ -215,23 +216,23 @@ public class UpdateEventoUseCase {
     }
 
     private void updateAllInstances(UUID recorrenciaId, UpdateEventoRequest request, EventoStatusInput status) {
-        // 1. Update the template event (base event of the recurrence rule)
-        recurrenceRepository.findById(recorrenciaId).flatMap(rule -> repository.findById(rule.getEventoBaseId()))
-                .ifPresent(baseEvent -> {
+        // 1. Atualizar o evento modelo (evento base da regra de recorrência)
+        recurrenceRepository.findById(recorrenciaId).flatMap(regra -> repository.findById(regra.getEventoBaseId()))
+                .ifPresent(eventoBase -> {
                     UpdateEventoRequest templateRequest = new UpdateEventoRequest(
                             request.titulo(), request.descricao(), request.categoria(),
-                            null, null, // Don't update template start/end times via instance update
+                            null, null, // Don't update template start/end times via instancia update
                             request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
                             request.organizacaoResponsavelId(), request.participantes(),
                             null, request.projetoId(), request.localId(), request.igrejaVinculoId());
-                    mapper.applyPatch(baseEvent, templateRequest, status);
-                    repository.save(baseEvent);
-                    applyParticipantChanges(baseEvent.getId(), request.participantes());
+                    mapper.applyPatch(eventoBase, templateRequest, status);
+                    repository.save(eventoBase);
+                    applyParticipantChanges(eventoBase.getId(), request.participantes());
                 });
 
-        // 2. Update all existing instances
+        // 2. Atualizar todas as instâncias existentes
         List<EventoEntity> allInstances = repository.findByRecorrenciaId(recorrenciaId);
-        for (EventoEntity instance : allInstances) {
+        for (EventoEntity instancia : allInstances) {
             UpdateEventoRequest siblingRequest = new UpdateEventoRequest(
                     request.titulo(), request.descricao(), request.categoria(),
                     null, null, // Don't change time for siblings
@@ -239,9 +240,9 @@ public class UpdateEventoUseCase {
                     request.organizacaoResponsavelId(), request.participantes(),
                     null, request.projetoId(), request.localId(), request.igrejaVinculoId());
 
-            mapper.applyPatch(instance, siblingRequest, status);
-            repository.save(instance);
-            applyParticipantChanges(instance.getId(), request.participantes());
+            mapper.applyPatch(instancia, siblingRequest, status);
+            repository.save(instancia);
+            applyParticipantChanges(instancia.getId(), request.participantes());
         }
     }
 
@@ -258,20 +259,20 @@ public class UpdateEventoUseCase {
 
     private void splitRecurrenceSeries(EventoEntity entity) {
         UUID oldRecorrenciaId = entity.getRecorrenciaId();
-        recurrenceRepository.findById(oldRecorrenciaId).ifPresent(oldRule -> {
-            // 1. Terminate old rule at previous day
+        recurrenceRepository.findById(oldRecorrenciaId).ifPresent(regraAnterior -> {
+            // 1. Encerrar regra anterior no dia anterior
             Instant yesterday = entity.getInicioUtc().minus(Duration.ofDays(1));
-            oldRule.setDataFimUtc(yesterday);
-            recurrenceRepository.save(oldRule);
+            regraAnterior.setDataFimUtc(yesterday);
+            recurrenceRepository.save(regraAnterior);
 
-            // 2. Create new rule starting from this instance
+            // 2. Criar nova regra a partir desta instância
             EventoRecorrenciaEntity newRule = new EventoRecorrenciaEntity();
             newRule.setId(UUID.randomUUID());
             newRule.setEventoBaseId(entity.getId());
-            newRule.setRegra(oldRule.getRegra()); // Same pattern
+            newRule.setRegra(regraAnterior.getRegra()); // Same pattern
             recurrenceRepository.save(newRule);
 
-            // 3. Link this and future instances to new rule
+            // 3. Vincular esta e as futuras instâncias à nova regra
             entity.setRecorrenciaId(newRule.getId());
         });
     }
@@ -304,7 +305,7 @@ public class UpdateEventoUseCase {
 
         br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento cat = request.categoria() != null
                 ? request.categoria()
-                : br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento.fromValue(entity.getCategoria());
+                : entity.getCategoria();
         UUID local = request.localId() != null ? request.localId() : entity.getLocalId();
         UUID igreja = request.igrejaVinculoId() != null ? request.igrejaVinculoId() : entity.getIgrejaVinculoId();
 
@@ -346,32 +347,32 @@ public class UpdateEventoUseCase {
 
     private void publishAudit(EventoEntity saved,
                               UpdateEventoRequest request, EventoActorContext actorContext, String result,
-                              boolean approvalFlow) {
+                              boolean fluxoAprovacao) {
 
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
         boolean cancellation = request.status() == EventoStatusInput.CANCELADO;
         boolean orgChanged = request.organizacaoResponsavelId() != null &&
                 !request.organizacaoResponsavelId().equals(saved.getOrganizacaoResponsavelId());
 
-        auditPublisher.publish(actorContext.actor(), "patch", saved.getId().toString(), result, Map.of(
+        auditPublisher.publish(actorContext.actor(), "atualizar", saved.getId().toString(), result, Map.of(
                 "organizacaoId", saved.getOrganizacaoResponsavelId(),
-                "scheduleChanged", scheduleChanged,
-                "cancellation", cancellation,
-                "responsibleOrgChanged", orgChanged,
-                "sensitiveChange", request.changesSensitiveFields(),
-                "approvalFlow", approvalFlow));
+                "agendaAlterada", scheduleChanged,
+                "cancelamento", cancellation,
+                "organizacaoResponsavelAlterada", orgChanged,
+                "alteracaoSensivel", request.changesSensitiveFields(),
+                "fluxoAprovacao", fluxoAprovacao));
     }
 
     /**
-     * Recovers the original modification intent from an approval record, enabling the system to apply the changes
-     * once authorization is granted.
+     * Recupera a intenção original de modificação a partir de um registro de aprovação, permitindo que o
+     * sistema aplique as mudanças assim que a autorização for concedida.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
-     * UpdateEventoRequest request = useCase.restoreFromApprovalPayload(payload);
+     * UpdateEventoRequest request = useCase.restoreFromAprovacaoPayload(payload);
      * }
      */
-    public UpdateEventoRequest restoreFromApprovalPayload(ApprovalActionPayload payload) {
+    public UpdateEventoRequest restoreFromAprovacaoPayload(AprovacaoAcaoPayload payload) {
         return new UpdateEventoRequest(payload.titulo(),
                 payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
 

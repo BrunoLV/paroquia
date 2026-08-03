@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.CalendarLockedException;
+import br.com.nsfatima.gestao.calendario.domain.exception.CalendarioBloqueadoException;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleException;
@@ -9,7 +9,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalid
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -33,12 +33,12 @@ import java.util.List;
 @Order(3)
 public class DomainExceptionHandler extends BaseExceptionHandler {
 
-    public DomainExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
+    public DomainExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
 
-    @ExceptionHandler(CalendarLockedException.class)
-    public ResponseEntity<ValidationErrorResponse> handleCalendarLocked(CalendarLockedException ex) {
+    @ExceptionHandler(CalendarioBloqueadoException.class)
+    public ResponseEntity<ValidationErrorResponse> handleCalendarLocked(CalendarioBloqueadoException ex) {
         return buildValidation(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.CALENDAR_LOCKED_FOR_YEAR,

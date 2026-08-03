@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.application.usecase.aprovacao.strategy;
 
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -47,7 +47,7 @@ class AlocacaoAtivoExecutionStrategyTest {
     @BeforeEach
     void setUp() {
         strategy = new AlocacaoAtivoExecutionStrategy(alocarAtivoParaEventoUseCase, ativoRepository,
-                alocacaoRepository, new ApprovalActionPayloadMapper(new ObjectMapper()));
+                alocacaoRepository, new AprovacaoAcaoPayloadMapper(new ObjectMapper()));
         ativoId = UUID.randomUUID();
         organizacaoDonaId = UUID.randomUUID();
     }

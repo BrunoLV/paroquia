@@ -51,7 +51,7 @@ public class EventoActorContextResolver {
             LeitorVinculoExterno.Vinculo vinculo = usuarioDetails.getVinculos().stream()
                     .filter(m -> authorizationPolicy.isRoleAllowed(m.organizationType(), m.role()))
                     .findFirst()
-                    .orElseThrow(() -> new RoleScopeInvalidException("Role is incompatible with organization type"));
+                    .orElseThrow(() -> new PapelEscopoInvalidoException("Papel incompatível com o tipo de organização"));
 
             return new EventoActorContext(
                     authentication.getName(),

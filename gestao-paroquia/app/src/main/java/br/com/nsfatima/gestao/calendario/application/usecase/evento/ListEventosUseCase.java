@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.springframework.data.domain.Page;
@@ -32,9 +33,7 @@ public class ListEventosUseCase {
      * }
      */
     public Page<EventoResponse> execute(EventoFiltroRequest filters, Pageable pageable) {
-        List<String> categories = Optional.ofNullable(filters.categoria())
-                .map(list -> list.stream().map(Enum::name).toList())
-                .orElse(null);
+        List<CategoriaEvento> categories = filters.categoria();
 
         List<String> statuses = Optional.ofNullable(filters.status())
                 .map(list -> list.stream().map(Enum::name).toList())

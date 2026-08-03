@@ -4,6 +4,8 @@ import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -23,8 +25,9 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
     @Column(length = 2000)
     private String descricao;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private String status = ProjetoStatus.ABERTO.name();
+    private ProjetoStatus status = ProjetoStatus.ABERTO;
 
     @Column(name = "organizacao_responsavel_id")
     private UUID organizacaoResponsavelId;
@@ -59,20 +62,12 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
         this.descricao = descricao;
     }
 
-    public String getStatus() {
+    public ProjetoStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public void setStatus(ProjetoStatus status) {
-        this.status = status == null ? null : status.name();
-    }
-
-    public ProjetoStatus getStatusEnum() {
-        return ProjetoStatus.fromJson(status);
+        this.status = status;
     }
 
     public UUID getOrganizacaoResponsavelId() {

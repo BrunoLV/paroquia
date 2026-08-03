@@ -40,7 +40,7 @@ public enum AprovadorPapel {
         return null;
     }
 
-    public static AprovadorPapel resolveForApproval(String role, String organizationType) {
+    public static AprovadorPapel resolveForAprovacao(String role, String organizationType) {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(role);
         TipoOrganizacao tipoOrganizacao = TipoOrganizacao.fromStoredValue(organizationType);
 

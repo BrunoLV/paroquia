@@ -73,7 +73,7 @@ public class EventoPatchAuthorizationService {
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
         if (!ORG_CREATOR_ROLES.contains(normalizedRole)) {
-            throw new AccessDeniedException("User does not have permission for this create operation");
+            throw new AccessDeniedException("Usuário não tem permissão para esta operação de criação");
         }
 
         if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
@@ -87,7 +87,7 @@ public class EventoPatchAuthorizationService {
 
                 if (!hasOtherValidVinculo) {
                     throw new AccessDeniedException(
-                            "User cannot create events outside the responsible organization scope");
+                            "Usuário não pode criar eventos fora do escopo da organização responsável");
                 }
             }
         }
@@ -102,7 +102,7 @@ public class EventoPatchAuthorizationService {
             return CreateRequestMode.IMMEDIATE;
         }
 
-        return CreateRequestMode.REQUIRES_APPROVAL;
+        return CreateRequestMode.REQUIRES_APROVACAO;
     }
 
     public void assertCanEditGeneral(EventoActorContext actorContext,
@@ -110,7 +110,7 @@ public class EventoPatchAuthorizationService {
 
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (!ORG_EDITOR_ROLES.contains(normalizedRole)) {
-            throw new ForbiddenOperationException("User does not have permission for this patch operation");
+            throw new ForbiddenOperationException("Usuário não tem permissão para esta operação de alteração");
         }
 
         if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
@@ -124,7 +124,7 @@ public class EventoPatchAuthorizationService {
 
                 if (!hasOtherValidVinculo) {
                     throw new ForbiddenOperationException(
-                            "User cannot edit events outside the responsible organization scope");
+                            "Usuário não pode editar eventos fora do escopo da organização responsável");
                 }
             }
         }
@@ -149,7 +149,7 @@ public class EventoPatchAuthorizationService {
 
         if (!conselhoCoordinator && !parroco) {
             throw new ForbiddenOperationException(
-                    "Only conselho coordinator or parroco can change responsible organization");
+                    "Apenas coordenador de conselho ou pároco pode alterar a organização responsável");
         }
     }
 
@@ -175,6 +175,6 @@ public class EventoPatchAuthorizationService {
 
     public enum CreateRequestMode {
         IMMEDIATE,
-        REQUIRES_APPROVAL
+        REQUIRES_APROVACAO
     }
 }

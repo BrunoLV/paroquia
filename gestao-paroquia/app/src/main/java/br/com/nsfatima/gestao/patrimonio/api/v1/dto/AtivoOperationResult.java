@@ -15,7 +15,7 @@ public sealed interface AtivoOperationResult {
         }
     }
 
-    record Pending(Object response, HttpStatus status) implements AtivoOperationResult {
+    record Pendente(Object response, HttpStatus status) implements AtivoOperationResult {
         @Override
         public Object body() {
             return response;

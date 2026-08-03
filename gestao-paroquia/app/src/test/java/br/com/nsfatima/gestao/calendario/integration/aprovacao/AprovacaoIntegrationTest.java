@@ -58,11 +58,11 @@ class AprovacaoIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should perform full approval lifecycle starting from event creation")
+    @DisplayName("Should perform full aprovacao lifecycle starting from event creation")
     void deveRealizarCompletoCicloVida() throws Exception {
         String orgId = "00000000-0000-0000-0000-000000000001";
 
-        // 1. Request Event Creation (Requires Approval)
+        // 1. Request Event Creation (Requires Aprovacao)
         String createEventPayload = """
                 {
                   "titulo": "Evento Pendente",
@@ -87,7 +87,7 @@ class AprovacaoIntegrationTest {
         String createEventResponse = createResult.getResponse().getContentAsString();
         String aprovacaoId = JsonPath.read(createEventResponse, "$.solicitacaoAprovacaoId");
 
-        // 2. List Approvals (Verify it's there)
+        // 2. List Aprovacaos (Verify it's there)
         mockMvc.perform(get("/api/v1/aprovacoes")
                         .param("status", "PENDENTE")
                         .header("X-Actor-Role", "paroco")

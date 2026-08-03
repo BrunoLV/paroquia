@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.domain.service;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizationBusinessException;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -37,12 +37,12 @@ class OrganizacaoServiceTest {
     private final UUID movimentoOficialId = UUID.randomUUID();
     private OrganizacaoService service;
     private OrganizacaoRepository repository;
-    private AuditLogPersistenceService auditLogService;
+    private AuditoriaPersistenceService auditLogService;
 
     @BeforeEach
     void setUp() {
         repository = mock(OrganizacaoRepository.class);
-        auditLogService = mock(AuditLogPersistenceService.class);
+        auditLogService = mock(AuditoriaPersistenceService.class);
         PastoralMovimentoOficialRepository pastoralOficialRepository = mock(PastoralMovimentoOficialRepository.class);
         service = new OrganizacaoService(repository, auditLogService, pastoralOficialRepository);
 
@@ -122,7 +122,7 @@ class OrganizacaoServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(org));
         when(repository.hasDependencies(id)).thenReturn(true);
 
-        assertThrows(OrganizationBusinessException.class, () -> service.deleteOrganization(id));
+        assertThrows(OrganizacaoNegocioException.class, () -> service.deleteOrganization(id));
         verify(repository, never()).delete(id);
         verify(auditLogService, never()).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
@@ -155,12 +155,12 @@ class OrganizacaoServiceTest {
 
     @Test
     void deveFalhaParaCriarMatrizSemCleroPai() {
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Matriz Sem Pai",
                         TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", null, null)
 
         );
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Matriz Com Pai Incorreto",
                         TipoOrganizacao.MATRIZ, "test@test.com", "Coord", "Vice", conselhoId, null)
 
@@ -169,12 +169,12 @@ class OrganizacaoServiceTest {
 
     @Test
     void deveFalhaParaCriarConselhoSemMatrizOuComunidadePai() {
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Conselho Sem Pai",
                         TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", null, null)
 
         );
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Conselho Com Pai Incorreto",
                         TipoOrganizacao.CONSELHO_PASTORAL, "test@test.com", "Coord", "Vice", cleroId, null)
 
@@ -183,12 +183,12 @@ class OrganizacaoServiceTest {
 
     @Test
     void deveFalhaParaCriarPastoralSemConselhoPai() {
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Pastoral Sem Pai",
                         TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
 
         );
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Pastoral Com Pai Incorreto",
                         TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
 
@@ -204,7 +204,7 @@ class OrganizacaoServiceTest {
 
         when(repository.findById(inactiveId)).thenReturn(Optional.of(inactiveParent));
 
-        assertThrows(OrganizationBusinessException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.createOrganization("Pastoral Novo",
                         TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
 

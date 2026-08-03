@@ -112,7 +112,7 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
                 Row row = sheet.createRow(rowIdx++);
                 row.createCell(0).setCellValue(e.getTitulo());
                 row.createCell(1).setCellValue(e.getDescricao() != null ? e.getDescricao() : "");
-                row.createCell(2).setCellValue(e.getCategoria() != null ? e.getCategoria() : "");
+                row.createCell(2).setCellValue(e.getCategoria() != null ? e.getCategoria().name() : "");
                 row.createCell(3).setCellValue(formatInstant(e.getInicioUtc()));
                 row.createCell(4).setCellValue(formatInstant(e.getFimUtc()));
                 row.createCell(5).setCellValue(localMap.getOrDefault(e.getLocalId(), "N/A"));

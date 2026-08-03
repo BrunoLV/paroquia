@@ -35,32 +35,32 @@ public class GetOrganogramaUseCase {
 
     @Transactional(readOnly = true)
     public OrganogramaNodeResponse execute() {
-        List<OrganizacaoEntity> allOrgs = organizacaoRepository.findAll();
+        List<OrganizacaoEntity> todasOrganizacoes = organizacaoRepository.findAll();
 
-        List<OrganizacaoEntity> rootOrgs = allOrgs.stream()
+        List<OrganizacaoEntity> organizacoesRaiz = todasOrganizacoes.stream()
                 .filter(OrganizacaoEntity::isAtivo)
                 .filter(org -> !org.getId().toString().equals(ORGANIZACAO_RAIZ_ID))
                 .filter(org -> org.getParentId() == null)
                 .toList();
 
-        OrganizacaoEntity rootClero = rootOrgs.stream()
+        OrganizacaoEntity rootClero = organizacoesRaiz.stream()
                 .filter(org -> org.getTipo() == TipoOrganizacao.CLERO)
                 .findFirst()
                 .orElse(null);
 
-        Map<UUID, List<OrganizacaoEntity>> childrenByParentId = allOrgs.stream()
+        Map<UUID, List<OrganizacaoEntity>> filhosPorPaiId = todasOrganizacoes.stream()
                 .filter(OrganizacaoEntity::isAtivo)
                 .filter(org -> !org.getId().toString().equals(ORGANIZACAO_RAIZ_ID))
                 .filter(org -> org.getParentId() != null)
                 .collect(Collectors.groupingBy(OrganizacaoEntity::getParentId));
 
         if (rootClero != null) {
-            return buildOrgNodeRecursively(rootClero, childrenByParentId);
+            return buildOrgNodeRecursively(rootClero, filhosPorPaiId);
         }
 
         // Fallback caso não haja organização do clero raiz
-        List<OrganogramaNodeResponse> rootChildren = rootOrgs.stream()
-                .map(org -> buildOrgNodeRecursively(org, childrenByParentId))
+        List<OrganogramaNodeResponse> rootChildren = organizacoesRaiz.stream()
+                .map(org -> buildOrgNodeRecursively(org, filhosPorPaiId))
                 .toList();
 
         return new OrganogramaNodeResponse(
@@ -76,16 +76,16 @@ public class GetOrganogramaUseCase {
     }
 
     private OrganogramaNodeResponse buildOrgNodeRecursively(OrganizacaoEntity org,
-                                                            Map<UUID, List<OrganizacaoEntity>> childrenByParentId) {
+                                                            Map<UUID, List<OrganizacaoEntity>> filhosPorPaiId) {
 
-        List<OrganizacaoEntity> childOrgs = childrenByParentId.getOrDefault(org.getId(), List.of());
-        List<OrganogramaNodeResponse> childNodes = childOrgs.stream()
-                .map(child -> buildOrgNodeRecursively(child, childrenByParentId))
+        List<OrganizacaoEntity> organizacoesFilhas = filhosPorPaiId.getOrDefault(org.getId(), List.of());
+        List<OrganogramaNodeResponse> nosFilhos = organizacoesFilhas.stream()
+                .map(child -> buildOrgNodeRecursively(child, filhosPorPaiId))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         List<OrganizacaoMembroResponse> membros = listMembrosUseCase.execute(org.getId());
 
-        List<OrganogramaNodeResponse> memberNodes = membros.stream()
+        List<OrganogramaNodeResponse> nosMembros = membros.stream()
                 .map(m -> new OrganogramaNodeResponse(
                         m.usuarioId().toString(),
                         m.usuarioNome(),
@@ -120,7 +120,7 @@ public class GetOrganogramaUseCase {
                     .orElse(null);
         }
 
-        childNodes.addAll(memberNodes);
+        nosFilhos.addAll(nosMembros);
 
         return new OrganogramaNodeResponse(
                 org.getId().toString(),
@@ -130,7 +130,7 @@ public class GetOrganogramaUseCase {
                 responsavelNome,
                 responsavelPapel,
                 viceResponsavelNome,
-                childNodes
+                nosFilhos
         );
     }
 }

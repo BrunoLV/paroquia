@@ -25,14 +25,14 @@ public class FakeEventoAuditPublisher extends EventoAuditPublisher {
 
     @Override
     public void publishCreateSuccess(String actor, String eventoId, boolean replayed, String conflictState) {
-        publish(actor, "create", eventoId, "success", Map.of("replayed", replayed, "conflictState", conflictState));
+        publish(actor, "criar", eventoId, "sucesso", Map.of("replayed", replayed, "conflictState", conflictState));
     }
 
     @Override
-    public void publishApprovalDecision(String actor,
+    public void publishAprovacaoDecision(String actor,
                                         AprovacaoEntity aprovacao, String result, Map<String, Object> metadata) {
 
-        publish(actor, "approval-decision", aprovacao.getId().toString(), result, metadata);
+        publish(actor, "aprovacao-decisao", aprovacao.getId().toString(), result, metadata);
     }
 
     public List<AuditEvent> getEvents() {

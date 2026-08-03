@@ -53,25 +53,25 @@ public class RegistrarUsuarioUseCase {
             throw new IllegalArgumentException("A igreja selecionada deve ser do tipo MATRIZ ou COMUNIDADE");
         }
 
-        UsuarioEntity user = new UsuarioEntity();
-        UUID userId = UUID.randomUUID();
-        user.setId(userId);
-        user.setNome(request.nome());
-        user.setUsername(request.username());
-        user.setPasswordHash(passwordEncoder.encode(request.password()));
-        user.setTelefone(request.telefone());
-        user.setDataNascimento(request.dataNascimento());
-        user.setIgrejaId(request.igrejaId());
-        user.setBatizado(Boolean.TRUE.equals(request.batizado()));
-        user.setPrimeiraComunhao(Boolean.TRUE.equals(request.primeiraComunhao()));
-        user.setCrismado(Boolean.TRUE.equals(request.crismado()));
-        user.setCasadoIgrejaCatolica(Boolean.TRUE.equals(request.casadoIgrejaCatolica()));
-        user.setEnabled(isAdminOrParoco); // Active directly if registered by admin
+        UsuarioEntity usuario = new UsuarioEntity();
+        UUID usuarioId = UUID.randomUUID();
+        usuario.setId(usuarioId);
+        usuario.setNome(request.nome());
+        usuario.setUsername(request.username());
+        usuario.setPasswordHash(passwordEncoder.encode(request.password()));
+        usuario.setTelefone(request.telefone());
+        usuario.setDataNascimento(request.dataNascimento());
+        usuario.setIgrejaId(request.igrejaId());
+        usuario.setBatizado(Boolean.TRUE.equals(request.batizado()));
+        usuario.setPrimeiraComunhao(Boolean.TRUE.equals(request.primeiraComunhao()));
+        usuario.setCrismado(Boolean.TRUE.equals(request.crismado()));
+        usuario.setCasadoIgrejaCatolica(Boolean.TRUE.equals(request.casadoIgrejaCatolica()));
+        usuario.setEnabled(isAdminOrParoco); // Ativo diretamente se cadastrado por admin
 
-        user.setRoles("ROLE_USER"); // Standard non-admin role
+        usuario.setRoles("ROLE_USER"); // Papel padrão não administrativo
 
-        usuarioRepository.save(user);
+        usuarioRepository.save(usuario);
 
-        return userId;
+        return usuarioId;
     }
 }

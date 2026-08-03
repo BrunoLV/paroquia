@@ -55,7 +55,7 @@ public class TransferirAtivoPatrimonialUseCase {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanTransfer(actorContext, ativo.getOrganizacaoId());
-        organizacaoPolicy.assertOwnerOrganizacaoPermitida(request.novaOrganizacaoId());
+        organizacaoPolicy.assertOrganizacaoProprietariaPermitida(request.novaOrganizacaoId());
 
         UUID organizacaoOrigemId = ativo.getOrganizacaoId();
         ativo.setOrganizacaoId(request.novaOrganizacaoId());

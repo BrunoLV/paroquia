@@ -44,7 +44,7 @@ public class ListarVinculosUseCase {
                             m.getId(),
                             m.getOrganizacaoId(),
                             orgNome,
-                            m.getTipoOrganizacao(),
+                            m.getTipoOrganizacao().name(),
                             m.getPapel(),
                             m.isAtivo(),
                             m.getIgrejaVinculoId(),

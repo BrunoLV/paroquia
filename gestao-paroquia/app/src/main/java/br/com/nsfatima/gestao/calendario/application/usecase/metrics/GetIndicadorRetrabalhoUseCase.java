@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
-import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
+import br.com.nsfatima.gestao.calendario.application.service.CalculadoraTaxaRetrabalho;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,11 +17,11 @@ import java.util.UUID;
 public class GetIndicadorRetrabalhoUseCase {
 
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
-    private final ReworkRateCalculator reworkRateCalculator;
+    private final CalculadoraTaxaRetrabalho reworkRateCalculator;
 
     public GetIndicadorRetrabalhoUseCase(
             PeriodoOperacionalPolicy periodoOperacionalPolicy,
-            ReworkRateCalculator reworkRateCalculator) {
+            CalculadoraTaxaRetrabalho reworkRateCalculator) {
         this.periodoOperacionalPolicy = periodoOperacionalPolicy;
         this.reworkRateCalculator = reworkRateCalculator;
     }
@@ -45,7 +45,7 @@ public class GetIndicadorRetrabalhoUseCase {
     private void assertAccessToOrganization(UUID organizacaoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
-            throw new AccessDeniedException("Authenticated user required");
+            throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
         if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
             throw new AccessDeniedException(

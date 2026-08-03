@@ -145,7 +145,7 @@ public class PdfCalendarioExporter implements CalendarioExporter {
                     Font fontBody = new Font(Font.HELVETICA, 8, Font.NORMAL);
                     currentTable.addCell(new Phrase(e.getTitulo(), fontBody));
                     currentTable.addCell(new Phrase(e.getDescricao() != null ? e.getDescricao() : "", fontBody));
-                    currentTable.addCell(new Phrase(e.getCategoria() != null ? e.getCategoria() : "", fontBody));
+                    currentTable.addCell(new Phrase(e.getCategoria() != null ? e.getCategoria().name() : "", fontBody));
                     currentTable.addCell(new Phrase(formatInstant(e.getInicioUtc()), fontBody));
                     currentTable.addCell(new Phrase(formatInstant(e.getFimUtc()), fontBody));
                     currentTable.addCell(new Phrase(localMap.getOrDefault(e.getLocalId(), "N/A"), fontBody));

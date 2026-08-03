@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
@@ -41,8 +42,9 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
     @Column(name = "pastoral_oficial_id")
     private UUID pastoralOficialId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "setor_pastoral", length = 64)
-    private String setorPastoral;
+    private SetorPastoral setorPastoral;
 
     public UUID getId() {
 
@@ -117,11 +119,11 @@ public class OrganizacaoEntity extends BaseVersionedEntity {
         this.ativo = ativo;
     }
 
-    public String getSetorPastoral() {
+    public SetorPastoral getSetorPastoral() {
         return setorPastoral;
     }
 
-    public void setSetorPastoral(String setorPastoral) {
+    public void setSetorPastoral(SetorPastoral setorPastoral) {
         this.setorPastoral = setorPastoral;
     }
 }

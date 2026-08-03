@@ -24,7 +24,7 @@ public class ProjetoMapper {
                 entity.getOrganizacaoResponsavelId(),
                 entity.getInicioUtc(),
                 entity.getFimUtc(),
-                entity.getStatusEnum(),
+                entity.getStatus(),
                 updated
         );
     }
@@ -37,7 +37,7 @@ public class ProjetoMapper {
                 entity.getId(),
                 entity.getProjetoId(),
                 entity.getTipoSolicitacao(),
-                entity.getStatus(),
+                entity.getStatus().name(),
                 entity.getSolicitanteId(),
                 entity.getCriadoEmUtc(),
                 entity.getDecididoEmUtc(),

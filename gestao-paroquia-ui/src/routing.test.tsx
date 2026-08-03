@@ -14,7 +14,7 @@ const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 vi.mock('./pages/Calendar', () => ({ default: () => <div data-testid="calendar-page">Calendar Page</div> }));
 vi.mock('./pages/Login', () => ({ default: () => <div data-testid="login-page">Login Page</div> }));
 vi.mock('./pages/Dashboard', () => ({ default: () => <div data-testid="dashboard-page">Dashboard Page</div> }));
-vi.mock('./pages/Approvals', () => ({ default: () => <div data-testid="approvals-page">Approvals Page</div> }));
+vi.mock('./pages/Aprovacoes', () => ({ default: () => <div data-testid="approvals-page">Approvals Page</div> }));
 vi.mock('./pages/Settings', () => ({ default: () => <div data-testid="settings-page">Settings Page</div> }));
 
 describe('Routing', () => {

@@ -38,6 +38,6 @@ class AnoParoquialSeedingTest {
         int currentYear = LocalDate.now().getYear();
         Optional<AnoParoquialEntity> seeded = repository.findByAno(currentYear);
         assertThat(seeded).isPresent();
-        assertThat(seeded.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO.name());
+        assertThat(seeded.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO);
     }
 }

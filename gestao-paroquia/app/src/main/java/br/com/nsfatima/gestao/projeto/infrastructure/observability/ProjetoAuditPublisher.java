@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +10,9 @@ import java.util.Map;
 @Component
 public class ProjetoAuditPublisher {
 
-    private final AuditLogPersistenceService auditLogPersistenceService;
+    private final AuditoriaPersistenceService auditLogPersistenceService;
 
-    public ProjetoAuditPublisher(AuditLogPersistenceService auditLogPersistenceService) {
+    public ProjetoAuditPublisher(AuditoriaPersistenceService auditLogPersistenceService) {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
@@ -25,11 +25,11 @@ public class ProjetoAuditPublisher {
     }
 
     public void publishCreateSuccess(String actor, String target) {
-        auditLogPersistenceService.log(actor, "create", target, "success", withDefaults(target, Map.of()));
+        auditLogPersistenceService.log(actor, "criar", target, "success", withDefaults(target, Map.of()));
     }
 
     public void publishPatchSuccess(String actor, String target) {
-        auditLogPersistenceService.log(actor, "patch", target, "success", withDefaults(target, Map.of()));
+        auditLogPersistenceService.log(actor, "atualizar", target, "success", withDefaults(target, Map.of()));
     }
 
     private Map<String, Object> withDefaults(String target, Map<String, Object> metadata) {

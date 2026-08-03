@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
@@ -46,7 +47,7 @@ class EventoProjetoLinkIntegrationTest {
         projeto.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
         projeto.setInicioUtc(Instant.parse("2026-01-01T00:00:00Z"));
         projeto.setFimUtc(Instant.parse("2026-01-31T23:59:59Z"));
-        projeto.setStatus("EM_ANDAMENTO");
+        projeto.setStatus(ProjetoStatus.EM_ANDAMENTO);
         projetoId = projetoRepository.save(projeto).getId();
     }
 
@@ -95,7 +96,7 @@ class EventoProjetoLinkIntegrationTest {
     @Test
     void deveFalhaQuandoProjetoEInativo() throws Exception {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId).get();
-        projeto.setStatus("CANCELADO");
+        projeto.setStatus(ProjetoStatus.CANCELADO);
         projetoRepository.save(projeto);
 
         mockMvc.perform(post("/api/v1/eventos")

@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.auditoria;
 
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
@@ -99,8 +101,8 @@ class AuditoriaIntegradaIntegrationTest {
                         .param("granularidade", "MENSAL")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items[?(@.recursoTipo == 'PROJETO' && @.acao == 'create')]").exists())
-                .andExpect(jsonPath("$.items[?(@.recursoTipo == 'PROJETO' && @.acao == 'patch')]").exists());
+                .andExpect(jsonPath("$.items[?(@.recursoTipo == 'PROJETO' && @.acao == 'criar')]").exists())
+                .andExpect(jsonPath("$.items[?(@.recursoTipo == 'PROJETO' && @.acao == 'atualizar')]").exists());
     }
 
     @Test
@@ -122,7 +124,7 @@ class AuditoriaIntegradaIntegrationTest {
         aprovacao.setEventoId(evento.getId());
         aprovacao.setTipoSolicitacao("ALTERACAO_HORARIO");
         aprovacao.setAprovadorPapel("conselho-coordenador");
-        aprovacao.setStatus("PENDENTE");
+        aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setCorrelationId("decide-audit-test");
         aprovacaoRepository.save(aprovacao);
@@ -141,6 +143,6 @@ class AuditoriaIntegradaIntegrationTest {
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
                 .andExpect(
-                        jsonPath("$.items[?(@.recursoTipo == 'APROVACAO' && @.acao == 'approval-decision')]").exists());
+                        jsonPath("$.items[?(@.recursoTipo == 'APROVACAO' && @.acao == 'aprovacao-decisao')]").exists());
     }
 }

@@ -38,10 +38,10 @@ class IndicadorRetrabalhoIntegrationTest {
         UUID eventoA = UUID.randomUUID();
         UUID eventoB = UUID.randomUUID();
 
-        auditoriaOperacaoJpaRepository.save(record(organizacaoId, eventoA, "patch", "{\"scheduleChanged\":true}"));
-        auditoriaOperacaoJpaRepository.save(record(organizacaoId, eventoA, "cancel", "{}"));
+        auditoriaOperacaoJpaRepository.save(record(organizacaoId, eventoA, "atualizar", "{\"agendaAlterada\":true}"));
+        auditoriaOperacaoJpaRepository.save(record(organizacaoId, eventoA, "cancelar", "{}"));
         auditoriaOperacaoJpaRepository
-                .save(record(organizacaoId, eventoB, "patch", "{\"responsibleOrgChanged\":true}"));
+                .save(record(organizacaoId, eventoB, "atualizar", "{\"organizacaoResponsavelAlterada\":true}"));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
                         .param("organizacaoId", organizacaoId.toString())
@@ -62,7 +62,7 @@ class IndicadorRetrabalhoIntegrationTest {
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
         entity.setAcao(acao);
-        entity.setResultado("success");
+        entity.setResultado("sucesso");
         entity.setAtor("tester");
         entity.setCorrelationId("corr-metric");
         entity.setDetalhesAuditaveisJson(detalhes);

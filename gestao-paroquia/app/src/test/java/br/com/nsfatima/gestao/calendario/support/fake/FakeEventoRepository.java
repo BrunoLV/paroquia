@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.support.fake;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.springframework.data.domain.Example;
@@ -52,7 +53,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
             List<UUID> organizacaoIds, boolean hasOrganizacaoIds,
             UUID projetoId, boolean hasProjetoId,
             UUID envolvidoId, boolean hasEnvolvidoId,
-            List<String> categorias, boolean hasCategorias,
+            List<CategoriaEvento> categorias, boolean hasCategorias,
             List<String> statuses, boolean hasStatuses,
             Pageable pageable) {
         List<EventoEntity> filtered = storage.stream()

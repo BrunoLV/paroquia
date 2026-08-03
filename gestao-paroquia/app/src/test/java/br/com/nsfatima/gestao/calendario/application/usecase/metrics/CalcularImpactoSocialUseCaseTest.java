@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.CoeficienteImpactoSocialResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -33,12 +34,12 @@ class CalcularImpactoSocialUseCaseTest {
         EventoEntity ev1 = new EventoEntity();
         ev1.setId(UUID.randomUUID());
         ev1.setTitulo("Ação Social Bazar Solidário");
-        ev1.setCategoria("SOCIAL");
+        ev1.setCategoria(CategoriaEvento.SOCIAL);
 
         EventoEntity ev2 = new EventoEntity();
         ev2.setId(UUID.randomUUID());
         ev2.setTitulo("Reunião da Secretaria");
-        ev2.setCategoria("REUNIAO_INTERNA");
+        ev2.setCategoria(CategoriaEvento.ADMINISTRATIVO);
 
         when(eventoJpaRepository.findAll()).thenReturn(List.of(ev1, ev2));
 

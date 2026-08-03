@@ -98,11 +98,10 @@ class EventoFiltragemAvancadaIntegrationTest {
         e.setId(UUID.randomUUID());
         e.setTitulo(titulo);
         e.setOrganizacaoResponsavelId(orgId);
-        e.setCategoria(cat.name());
+        e.setCategoria(cat);
         e.setStatus(status.name());
         e.setInicioUtc(Instant.now());
         e.setFimUtc(Instant.now().plusSeconds(3600));
-        e.setConflictState("NO_CONFLICT");
         return e;
     }
 }

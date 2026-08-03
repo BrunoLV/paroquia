@@ -94,7 +94,7 @@ class CreateAtivoPatrimonialUseCaseTest {
                 .thenReturn(new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
                         organizacaoId, UUID.randomUUID(), null));
         doThrow(new AtivoOrganizacaoInvalidaException("tipo inválido"))
-                .when(organizacaoPolicy).assertOwnerOrganizacaoPermitida(organizacaoId);
+                .when(organizacaoPolicy).assertOrganizacaoProprietariaPermitida(organizacaoId);
 
         assertThatThrownBy(() -> useCase.execute(new CreateAtivoPatrimonialRequest(
                 "Projetor Epson", AtivoCategoria.ELETRONICO, organizacaoId, true,

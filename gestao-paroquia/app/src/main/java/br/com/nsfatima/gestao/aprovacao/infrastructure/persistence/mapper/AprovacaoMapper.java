@@ -27,7 +27,7 @@ public class AprovacaoMapper {
                         entity.getTipoSolicitacao(),
                         legacyEnumInconsistencyPublisher,
                         entity.getId().toString()),
-                entity.getStatus(),
+                entity.getStatus().name(),
                 entity.getAprovadorPapel(),
                 entity.getCriadoEmUtc(),
                 entity.getDecididoEmUtc(),

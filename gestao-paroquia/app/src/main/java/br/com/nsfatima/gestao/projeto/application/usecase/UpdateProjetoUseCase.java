@@ -88,7 +88,7 @@ public class UpdateProjetoUseCase {
 
         if (entity.getFimUtc() != null && entity.getInicioUtc() != null
                 && entity.getFimUtc().isBefore(entity.getInicioUtc())) {
-            throw new IllegalArgumentException("Project end date cannot be before start date");
+            throw new IllegalArgumentException("Data de fim do projeto não pode ser anterior à data de início");
         }
 
         ProjetoEventoEntity saved = repository.save(entity);

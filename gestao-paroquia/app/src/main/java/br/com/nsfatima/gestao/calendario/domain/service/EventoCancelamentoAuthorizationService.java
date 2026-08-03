@@ -33,31 +33,31 @@ public class EventoCancelamentoAuthorizationService {
         }
 
         if (normalizedRole == PapelOrganizacional.VIGARIO) {
-            return CancelamentoRequestMode.REQUIRES_APPROVAL;
+            return CancelamentoRequestMode.REQUIRES_APROVACAO;
         }
 
         if (isLocalLeadership(normalizedRole, normalizedOrgType)) {
             UUID actorOrganizationId = actorContext.organizationId();
             if (actorOrganizationId == null) {
-                throw new ForbiddenOperationException("User cannot cancel events without an organization scope");
+                throw new ForbiddenOperationException("Usuário não pode cancelar eventos sem um escopo de organização");
             }
             if (eventoOrganizacaoResponsavelId == null || !eventoOrganizacaoResponsavelId.equals(actorOrganizationId)) {
                 throw new ForbiddenOperationException(
                         "User cannot cancel events outside the responsible organization scope");
             }
-            return CancelamentoRequestMode.REQUIRES_APPROVAL;
+            return CancelamentoRequestMode.REQUIRES_APROVACAO;
         }
 
-        throw new ForbiddenOperationException("User does not have permission to cancel events");
+        throw new ForbiddenOperationException("Usuário não tem permissão para cancelar eventos");
     }
 
-    public void assertCanDecideApproval(EventoActorContext actorContext) {
+    public void assertCanDecideAprovacao(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
         if (normalizedRole == PapelOrganizacional.PAROCO || isConselhoLeadership(normalizedRole, normalizedOrgType)) {
             return;
         }
-        throw new ForbiddenOperationException("User does not have permission to decide event approvals");
+        throw new ForbiddenOperationException("Usuário não tem permissão para decidir aprovações de evento");
     }
 
     private boolean isConselhoLeadership(PapelOrganizacional role, TipoOrganizacao organizationType) {
@@ -70,6 +70,6 @@ public class EventoCancelamentoAuthorizationService {
 
     public enum CancelamentoRequestMode {
         IMMEDIATE,
-        REQUIRES_APPROVAL
+        REQUIRES_APROVACAO
     }
 }

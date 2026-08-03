@@ -43,12 +43,12 @@ class ProjetoAutoActivationSchedulerTest {
         project.setNome("Projeto Teste");
         project.setStatus(ProjetoStatus.ABERTO);
 
-        when(repository.findByStatusAndInicioUtcLessThanEqual(eq(ProjetoStatus.ABERTO.name()), any()))
+        when(repository.findByStatusAndInicioUtcLessThanEqual(eq(ProjetoStatus.ABERTO), any()))
                 .thenReturn(List.of(project));
 
         scheduler.activateProjects();
 
-        assertEquals(ProjetoStatus.EM_ANDAMENTO, project.getStatusEnum());
+        assertEquals(ProjetoStatus.EM_ANDAMENTO, project.getStatus());
         verify(repository, times(1)).save(project);
         verify(lockRepository, times(1)).releaseLock(eq("PROJECT_AUTO_ACTIVATION_JOB"));
     }
@@ -59,7 +59,7 @@ class ProjetoAutoActivationSchedulerTest {
 
         scheduler.activateProjects();
 
-        verify(repository, never()).findByStatusAndInicioUtcLessThanEqual(anyString(), any());
+        verify(repository, never()).findByStatusAndInicioUtcLessThanEqual(any(), any());
         verify(lockRepository, never()).releaseLock(anyString());
     }
 }

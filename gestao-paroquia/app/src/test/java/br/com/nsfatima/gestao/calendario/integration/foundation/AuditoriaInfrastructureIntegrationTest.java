@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.integration.foundation;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.hasSize;
 class AuditoriaInfrastructureIntegrationTest {
 
     @Autowired
-    private AuditLogPersistenceService auditLogPersistenceService;
+    private AuditoriaPersistenceService auditLogPersistenceService;
 
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
@@ -49,10 +49,10 @@ class AuditoriaInfrastructureIntegrationTest {
         evento.setStatus("RASCUNHO");
         eventoJpaRepository.save(evento);
 
-        auditLogPersistenceService.log("tester", "patch", eventoId.toString(), "success", Map.of(
+        auditLogPersistenceService.log("tester", "atualizar", eventoId.toString(), "sucesso", Map.of(
                 "organizacaoId", organizacaoId,
                 "contextId", eventoId,
-                "scheduleChanged", true,
+                "agendaAlterada", true,
                 "correlationId", "corr-infra-001"));
 
         assertThat(auditoriaOperacaoJpaRepository.findAll())
@@ -62,9 +62,9 @@ class AuditoriaInfrastructureIntegrationTest {
                     assertThat(record.getOrganizacaoId()).isEqualTo(organizacaoId);
                     assertThat(record.getEventoId()).isEqualTo(eventoId);
 
-                    assertThat(record.getAcao()).isEqualTo("patch");
+                    assertThat(record.getAcao()).isEqualTo("atualizar");
                     assertThat(record.getCorrelationId()).isEqualTo("corr-infra-001");
-                    assertThat(record.getDetalhesAuditaveisJson()).contains("scheduleChanged");
+                    assertThat(record.getDetalhesAuditaveisJson()).contains("agendaAlterada");
                 });
     }
 }

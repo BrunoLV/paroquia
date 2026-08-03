@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.contract;
 
-import br.com.nsfatima.gestao.calendario.domain.policy.CalendarIntegrityPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.IntegridadeCalendarioPolicy;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AddedExtraValidationContractTest {
 
-    private final EventoDomainService service = new EventoDomainService(new CalendarIntegrityPolicy());
+    private final EventoDomainService service = new EventoDomainService(new IntegridadeCalendarioPolicy());
 
     @Test
     void deveRejeitarAdicionadoExtraSemJustificativa() {

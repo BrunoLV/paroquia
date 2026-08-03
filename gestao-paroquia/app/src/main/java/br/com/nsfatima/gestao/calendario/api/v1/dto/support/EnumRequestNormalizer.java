@@ -12,7 +12,7 @@ public final class EnumRequestNormalizer {
 
         String candidate = rawValue.trim();
         if (candidate.isEmpty()) {
-            throw new IllegalArgumentException("Enum value must not be blank");
+            throw new IllegalArgumentException("Valor do enum não pode ser vazio");
         }
 
         for (E constant : enumType.getEnumConstants()) {

@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
-import br.com.nsfatima.gestao.aprovacao.application.port.out.ApprovalAuditPublisher;
+import br.com.nsfatima.gestao.aprovacao.application.port.out.AprovacaoAuditPublisher;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -11,19 +11,19 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-public class EventoAuditPublisher implements ApprovalAuditPublisher {
+public class EventoAuditPublisher implements AprovacaoAuditPublisher {
 
     /**
      * Publishes an audit log entry with additional metadata.
      * <p>
      * Usage Example:
-     * publisher.publish("admin", "update", "evento:123", "success", Map.of("fields", List.of("titulo")));
+     * publisher.publish("admin", "atualizar", "evento:123", "success", Map.of("fields", List.of("titulo")));
      */
     private static final String KEY_RESOURCE_TYPE = "resourceType";
     private static final String TYPE_EVENTO = "EVENTO";
     private static final String TYPE_APROVACAO = "APROVACAO";
-    private static final String ACTION_CREATE = "create";
-    private static final String ACTION_APPROVAL_DECISION = "approval-decision";
+    private static final String ACTION_CREATE = "criar";
+    private static final String ACTION_APROVACAO_DECISION = "aprovacao-decisao";
     private static final String KEY_SOLICITACAO_APROVACAO_ID = "solicitacaoAprovacaoId";
     private static final String KEY_APROVACAO_ID = "aprovacaoId";
     private static final String KEY_EVENTO_ID = "eventoId";
@@ -32,8 +32,8 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     private static final String VAL_NONE = "NONE";
     private static final String VAL_UNKNOWN = "UNKNOWN";
     private static final String KEY_CORRELATION_ID = "correlationId";
-    private final AuditLogPersistenceService auditLogPersistenceService;
-    public EventoAuditPublisher(AuditLogPersistenceService auditLogPersistenceService) {
+    private final AuditoriaPersistenceService auditLogPersistenceService;
+    public EventoAuditPublisher(AuditoriaPersistenceService auditLogPersistenceService) {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
@@ -41,7 +41,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
      * Publishes a simple audit log entry.
      * <p>
      * Usage Example:
-     * publisher.publish("admin", "read", "evento:123", "success");
+     * publisher.publish("admin", "ler", "evento:123", "success");
      */
     public void publish(String actor, String action, String target, String result) {
         auditLogPersistenceService.log(actor,
@@ -88,7 +88,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
      * Records a successful event listing.
      */
     public void publishListSuccess(String actor, int totalItems) {
-        auditLogPersistenceService.log(actor, "list", "eventos", "success", Map.of("totalItems", totalItems));
+        auditLogPersistenceService.log(actor, "listar", "eventos", "success", Map.of("totalItems", totalItems));
     }
 
     /**
@@ -96,20 +96,20 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
      */
     public void publishDeniedWrite(String actor, String target) {
         auditLogPersistenceService.log(actor,
-                "write-denied", target, "ACCESS_DENIED", Map.of("errorCategory", "AUTHZ"));
+                "escrita-negada", target, "ACCESS_DENIED", Map.of("errorCategory", "AUTHZ"));
 
     }
 
     /**
-     * Records a pending event cancellation request.
+     * Records a pendente event cancellation request.
      */
-    public void publishCancellationPending(String actor, String eventoId, String solicitacaoAprovacaoId,
+    public void publishCancellationPendente(String actor, String eventoId, String solicitacaoAprovacaoId,
                                            String motivo) {
         auditLogPersistenceService.log(
                 actor,
-                "cancel",
+                "cancelar",
                 eventoId,
-                "pending",
+                "pendente",
                 withDefaults(TYPE_EVENTO, eventoId, Map.of(
                         KEY_SOLICITACAO_APROVACAO_ID, solicitacaoAprovacaoId,
                         "canceladoMotivo", motivo)));
@@ -121,7 +121,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     public void publishCancellationRejected(String actor, String aprovacaoId, String eventoId) {
         auditLogPersistenceService.log(
                 actor,
-                ACTION_APPROVAL_DECISION,
+                ACTION_APROVACAO_DECISION,
                 aprovacaoId,
                 "rejected",
                 withDefaults(TYPE_APROVACAO, aprovacaoId,
@@ -134,7 +134,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     public void publishCancellationExecuted(String actor, String aprovacaoId, String eventoId) {
         auditLogPersistenceService.log(
                 actor,
-                ACTION_APPROVAL_DECISION,
+                ACTION_APROVACAO_DECISION,
                 aprovacaoId,
                 "executed",
                 withDefaults(TYPE_APROVACAO, aprovacaoId,
@@ -147,7 +147,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     public void publishCancellationExecutionFailed(String actor, String aprovacaoId, String eventoId, String error) {
         auditLogPersistenceService.log(
                 actor,
-                ACTION_APPROVAL_DECISION,
+                ACTION_APROVACAO_DECISION,
                 aprovacaoId,
                 "failed",
                 withDefaults(TYPE_APROVACAO, aprovacaoId, Map.of(
@@ -157,14 +157,14 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     }
 
     /**
-     * Records a pending event creation request.
+     * Records a pendente event creation request.
      */
-    public void publishCreatePending(String actor, String aprovacaoId, String organizacaoId) {
+    public void publishCreatePendente(String actor, String aprovacaoId, String organizacaoId) {
         auditLogPersistenceService.log(
                 actor,
                 ACTION_CREATE,
                 aprovacaoId,
-                "pending",
+                "pendente",
                 withDefaults(TYPE_APROVACAO, aprovacaoId,
                         Map.of(
                                 KEY_SOLICITACAO_APROVACAO_ID, aprovacaoId,
@@ -176,10 +176,10 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     /**
      * Records a successful automatic execution of an event creation.
      */
-    public void publishCreateApprovalExecuted(String actor, String aprovacaoId, String eventoId) {
+    public void publishCreateAprovacaoExecuted(String actor, String aprovacaoId, String eventoId) {
         auditLogPersistenceService.log(
                 actor,
-                ACTION_APPROVAL_DECISION,
+                ACTION_APROVACAO_DECISION,
                 aprovacaoId,
                 "executed",
                 withDefaults(TYPE_APROVACAO, aprovacaoId,
@@ -190,10 +190,10 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     /**
      * Records a rejected creation request.
      */
-    public void publishCreateApprovalRejected(String actor, String aprovacaoId) {
+    public void publishCreateAprovacaoRejected(String actor, String aprovacaoId) {
         auditLogPersistenceService.log(
                 actor,
-                ACTION_APPROVAL_DECISION,
+                ACTION_APROVACAO_DECISION,
                 aprovacaoId,
                 "rejected",
                 withDefaults(TYPE_APROVACAO, aprovacaoId,
@@ -203,10 +203,10 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     /**
      * Records a failure during automatic creation execution.
      */
-    public void publishCreateApprovalFailed(String actor, String aprovacaoId, String error) {
+    public void publishCreateAprovacaoFailed(String actor, String aprovacaoId, String error) {
         auditLogPersistenceService.log(
                 actor,
-                ACTION_APPROVAL_DECISION,
+                ACTION_APROVACAO_DECISION,
                 aprovacaoId,
                 "failed",
                 withDefaults(TYPE_APROVACAO, aprovacaoId,
@@ -215,9 +215,9 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     }
 
     /**
-     * Records a generic approval decision.
+     * Records a generic aprovacao decision.
      */
-    public void publishApprovalDecision(
+    public void publishAprovacaoDecision(
             String actor,
             AprovacaoEntity aprovacao,
             String result,
@@ -234,7 +234,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
         metadata.put(KEY_EVENTO_ID, aprovacao.getEventoId() == null
                 ? VAL_NONE : aprovacao.getEventoId().toString());
         metadata.putAll(additionalMetadata == null ? Map.of() : additionalMetadata);
-        auditLogPersistenceService.log(actor, ACTION_APPROVAL_DECISION, aprovacao.getId().toString(), result,
+        auditLogPersistenceService.log(actor, ACTION_APROVACAO_DECISION, aprovacao.getId().toString(), result,
                 withDefaults(TYPE_APROVACAO, aprovacao.getId().toString(), metadata));
     }
 
@@ -265,7 +265,7 @@ public class EventoAuditPublisher implements ApprovalAuditPublisher {
     }
 
     private String resolveResourceType(String action) {
-        if (action != null && action.startsWith("approval")) {
+        if (action != null && action.startsWith("aprovacao")) {
             return "APROVACAO";
         }
         return "EVENTO";

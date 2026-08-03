@@ -36,8 +36,8 @@ public class ProjetoVincularPolicy {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projetoId));
 
-        if (projeto.getStatusEnum() == ProjetoStatus.CANCELADO || projeto.getStatusEnum() == ProjetoStatus.CONCLUIDO) {
-            throw new IllegalStateException("Cannot link event to a CANCELLED or COMPLETED project");
+        if (projeto.getStatus() == ProjetoStatus.CANCELADO || projeto.getStatus() == ProjetoStatus.CONCLUIDO) {
+            throw new IllegalStateException("Não é possível vincular evento a um projeto CANCELADO ou CONCLUÍDO");
         }
 
         if (projeto.getInicioUtc() == null || projeto.getFimUtc() == null) {
@@ -67,8 +67,8 @@ public class ProjetoVincularPolicy {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projetoId));
 
-        if (projeto.getStatusEnum() == ProjetoStatus.CANCELADO || projeto.getStatusEnum() == ProjetoStatus.CONCLUIDO) {
-            throw new IllegalStateException("Cannot link event to a CANCELLED or COMPLETED project");
+        if (projeto.getStatus() == ProjetoStatus.CANCELADO || projeto.getStatus() == ProjetoStatus.CONCLUIDO) {
+            throw new IllegalStateException("Não é possível vincular evento a um projeto CANCELADO ou CONCLUÍDO");
         }
 
         if (projeto.getInicioUtc() == null || projeto.getFimUtc() == null) {

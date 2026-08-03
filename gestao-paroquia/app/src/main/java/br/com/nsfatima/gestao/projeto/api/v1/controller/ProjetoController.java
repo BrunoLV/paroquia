@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.projeto.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoDecisaoRequest;
@@ -48,7 +49,7 @@ public class ProjetoController {
     private final TransitionProjetoUseCase transitionProjetoUseCase;
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
-    private final ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
+    private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
     private final ProjetoMapper mapper;
 
     /**
@@ -62,7 +63,7 @@ public class ProjetoController {
      * @param transitionProjetoUseCase Caso de uso para transição e aprovação de projetos
      * @param auditPublisher           Publicador de eventos de auditoria para rastreabilidade de ações
      * @param actorContextResolver     Resolvedor de contexto do usuário/ator da requisição
-     * @param approvalRepository       Repositório para solicitações de aprovação
+     * @param aprovacaoRepository       Repositório para solicitações de aprovação
      * @param mapper                   Mapeador de projetos
      */
     public ProjetoController(
@@ -73,7 +74,7 @@ public class ProjetoController {
             TransitionProjetoUseCase transitionProjetoUseCase,
             ProjetoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver,
-            ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository,
+            ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository,
             ProjetoMapper mapper) {
         this.createProjetoUseCase = createProjetoUseCase;
         this.listProjetosUseCase = listProjetosUseCase;
@@ -82,7 +83,7 @@ public class ProjetoController {
         this.transitionProjetoUseCase = transitionProjetoUseCase;
         this.auditPublisher = auditPublisher;
         this.actorContextResolver = actorContextResolver;
-        this.approvalRepository = approvalRepository;
+        this.aprovacaoRepository = aprovacaoRepository;
         this.mapper = mapper;
     }
 
@@ -106,7 +107,7 @@ public class ProjetoController {
     public ResponseEntity<?> create(@RequestBody @Valid ProjetoCreateRequest request) {
         var context = actorContextResolver.resolveRequired();
         var result = createProjetoUseCase.create(request);
-        if (result.isPendingApproval()) {
+        if (result.isPendenteAprovacao()) {
             auditPublisher.publish(context.actor(),
                     "request-create-project", result.aprovacao().id().toString(), RESULT_SUCCESS);
 
@@ -201,7 +202,7 @@ public class ProjetoController {
             @RequestBody CancelarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
         var result = transitionProjetoUseCase.cancelar(projetoId, request.cancelarEventosVinculados());
-        if (result.isPendingApproval()) {
+        if (result.isPendenteAprovacao()) {
             auditPublisher.publish(context.actor(),
                     "request-cancel-project", result.aprovacao().id().toString(), RESULT_SUCCESS);
 
@@ -227,8 +228,8 @@ public class ProjetoController {
     public List<ProjetoAprovacaoResponse> listSolicitacoes(
             @RequestParam(required = false) String status) {
         var solicitacoes = status != null ?
-                approvalRepository.findByStatus(status) :
-                approvalRepository.findAll();
+                aprovacaoRepository.findByStatus(AprovacaoStatus.fromJson(status)) :
+                aprovacaoRepository.findAll();
         return solicitacoes.stream()
                 .map(mapper::toAprovacaoResponse)
                 .toList();

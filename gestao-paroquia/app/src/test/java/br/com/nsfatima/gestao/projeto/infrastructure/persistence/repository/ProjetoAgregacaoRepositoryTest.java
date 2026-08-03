@@ -86,7 +86,7 @@ class ProjetoAgregacaoRepositoryTest {
         saveEvento(projetoId, EventoStatusInput.CONFIRMADO, agora.minus(2, ChronoUnit.DAYS));
         saveEvento(projetoId, EventoStatusInput.CONFIRMADO, agora.minus(1, ChronoUnit.DAYS));
 
-        // Pending (future)
+        // Pendente (future)
         saveEvento(projetoId, EventoStatusInput.CONFIRMADO, agora.plus(1, ChronoUnit.DAYS));
 
         long realizados = eventoRepository.countByProjetoIdAndFimUtcLessThan(projetoId, agora);

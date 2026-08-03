@@ -37,11 +37,11 @@ import {
 import {useAuth} from '../auth/AuthContext';
 import apiClient from '../api/client';
 import {useNotification} from '../context/NotificationContext';
-import EventRegistrationModal from '../components/EventRegistrationModal';
-import EventCancelDialog from '../components/EventCancelDialog';
+import CadastroEventoModal from '../components/CadastroEventoModal';
+import CancelarEventoDialog from '../components/CancelarEventoDialog';
 import EditScopeDialog, {EditScope} from '../components/EditScopeDialog';
 import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
-import EventObservations from '../components/EventObservations';
+import ObservacoesEvento from '../components/ObservacoesEvento';
 import AtivosAlocadosSection from '../components/AtivosAlocadosSection';
 import PageHeader from '../components/PageHeader';
 import theme from '../theme';
@@ -136,7 +136,7 @@ const Calendar = () => {
 
   // Status/loading states
   const [isLoading, setIsLoading] = useState(false);
-  const [pendingApprovals, setPendingApprovals] = useState<any[]>([]);
+  const [aprovacoesPendentes, setAprovacoesPendentes] = useState<any[]>([]);
 
   // Modal details states
   const [selectedEvent, setSelectedEvent] = useState<Evento | null>(null);
@@ -337,21 +337,21 @@ const Calendar = () => {
         }
       };
 
-      const fetchApprovals = async () => {
+      const buscarAprovacoes = async () => {
         try {
           const res = await apiClient.get<any>('/aprovacoes', {
             params: { status: 'PENDENTE', size: 100 }
           });
           if (res.data && Array.isArray(res.data.content)) {
-            setPendingApprovals(res.data.content);
+            setAprovacoesPendentes(res.data.content);
           } else if (Array.isArray(res.data)) {
-            setPendingApprovals(res.data);
+            setAprovacoesPendentes(res.data);
           } else {
-            setPendingApprovals([]);
+            setAprovacoesPendentes([]);
           }
         } catch (err) {
           console.warn('Could not fetch pending approvals:', err);
-          setPendingApprovals([]);
+          setAprovacoesPendentes([]);
         }
       };
 
@@ -366,7 +366,7 @@ const Calendar = () => {
         }
       };
 
-      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), fetchApprovals(), fetchAnosParoquiais()]);
+      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), buscarAprovacoes(), fetchAnosParoquiais()]);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       const errMsg = 'Não foi possível carregar as informações do calendário.';
@@ -520,7 +520,7 @@ const Calendar = () => {
   // Combine API events with transient events from pending creation requests
   const combinedEvents = useMemo(() => {
     // 1. Transient creation events
-    const transientEvents = pendingApprovals
+    const transientEvents = aprovacoesPendentes
       .filter((a) => a.tipoSolicitacao === 'CRIACAO_EVENTO' && a.actionPayloadJson)
       .map((a): Evento | null => {
         try {
@@ -537,11 +537,11 @@ const Calendar = () => {
             inicio: payload.inicio,
             fim: payload.fim,
             status: 'PENDENTE_CRIACAO', // custom status for pending creation
-            conflictState: null,
-            conflictReason: null,
-            pendingApprovalId: a.id,
-            pendingSolicitanteId: a.solicitanteId,
-            pendingTipoSolicitacao: a.tipoSolicitacao
+            estadoConflito: null,
+            motivoConflito: null,
+            aprovacaoPendenteId: a.id,
+            solicitantePendenteId: a.solicitanteId,
+            tipoSolicitacaoPendente: a.tipoSolicitacao
           };
         } catch (e) {
           return null;
@@ -551,21 +551,21 @@ const Calendar = () => {
 
     // 2. Decorated events
     const decoratedEvents = events.map((e) => {
-      const pendingAction = pendingApprovals.find((a) => a.eventoId === e.id);
-      if (pendingAction) {
+      const acaoPendente = aprovacoesPendentes.find((a) => a.eventoId === e.id);
+      if (acaoPendente) {
         return {
           ...e,
-          pendingApprovalId: pendingAction.id,
-          pendingSolicitanteId: pendingAction.solicitanteId,
-          pendingTipoSolicitacao: pendingAction.tipoSolicitacao,
-          pendingActionType: pendingAction.tipoSolicitacao
+          aprovacaoPendenteId: acaoPendente.id,
+          solicitantePendenteId: acaoPendente.solicitanteId,
+          tipoSolicitacaoPendente: acaoPendente.tipoSolicitacao,
+          tipoAcaoPendente: acaoPendente.tipoSolicitacao
         };
       }
       return e;
     });
 
     return [...decoratedEvents, ...transientEvents];
-  }, [events, pendingApprovals]);
+  }, [events, aprovacoesPendentes]);
 
   // Map events to their dates for quick lookup
   const getEventsForDay = (day: Date) => {
@@ -893,15 +893,15 @@ const Calendar = () => {
                             transition: 'all 0.2s',
                             boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                             textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none',
-                            opacity: evt.pendingApprovalId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1),
+                            opacity: evt.aprovacaoPendenteId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1),
                             '&:hover': {
                               filter: 'brightness(0.93)',
                               transform: 'translateX(2px)',
                             },
                           }}
-                          title={evt.pendingApprovalId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                          title={evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
                         >
-                          {evt.pendingApprovalId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                          {evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
                         </Box>
                       );
                     })}
@@ -935,7 +935,7 @@ const Calendar = () => {
                     boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                     borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
                     transition: 'transform 0.2s, box-shadow 0.2s',
-                    opacity: evt.pendingApprovalId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1),
+                    opacity: evt.aprovacaoPendenteId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1),
                     '&:hover': {
                       transform: 'translateY(-2px)',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -965,7 +965,7 @@ const Calendar = () => {
                             textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none'
                           }}
                         >
-                          {evt.pendingApprovalId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                          {evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
                           {evt.descricao || 'Sem descrição.'}
@@ -1006,13 +1006,13 @@ const Calendar = () => {
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                {selectedEvent.pendingTipoSolicitacao && (
+                {selectedEvent.tipoSolicitacaoPendente && (
                   <Alert severity="warning">
-                    {selectedEvent.pendingTipoSolicitacao === 'CRIACAO_EVENTO'
+                    {selectedEvent.tipoSolicitacaoPendente === 'CRIACAO_EVENTO'
                       ? 'Solicitação de Criação Pendente'
-                      : selectedEvent.pendingTipoSolicitacao === 'CANCELAMENTO'
+                      : selectedEvent.tipoSolicitacaoPendente === 'CANCELAMENTO'
                       ? 'Solicitação de Cancelamento Pendente'
-                      : selectedEvent.pendingTipoSolicitacao === 'EDICAO_EVENTO'
+                      : selectedEvent.tipoSolicitacaoPendente === 'EDICAO_EVENTO'
                       ? 'Solicitação de Edição Pendente'
                       : 'Solicitação Pendente'}
                   </Alert>
@@ -1118,9 +1118,9 @@ const Calendar = () => {
                 )}
 
                 {/* Extra Justification */}
-                {selectedEvent.conflictReason && (
+                {selectedEvent.motivoConflito && (
                   <Alert severity="warning">
-                    Conflito detectado: {selectedEvent.conflictReason}
+                    Conflito detectado: {selectedEvent.motivoConflito}
                   </Alert>
                 )}
 
@@ -1128,14 +1128,14 @@ const Calendar = () => {
                 <AtivosAlocadosSection eventoId={selectedEvent.id} />
 
                 {/* Event Observations */}
-                <EventObservations eventoId={selectedEvent.id} />
+                <ObservacoesEvento eventoId={selectedEvent.id} />
               </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setIsDetailsOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>
                 Fechar
               </Button>
-              {selectedEvent.status !== 'CANCELADO' && !selectedEvent.pendingApprovalId && canEditEvent(selectedEvent) && (
+              {selectedEvent.status !== 'CANCELADO' && !selectedEvent.aprovacaoPendenteId && canEditEvent(selectedEvent) && (
                 <>
                   <Button 
                     onClick={() => handleOpenCancel(selectedEvent)} 
@@ -1161,7 +1161,7 @@ const Calendar = () => {
       </Dialog>
 
       {/* Create/Edit Dialog Modal Component */}
-      <EventRegistrationModal
+      <CadastroEventoModal
         open={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={handleEventSubmit}
@@ -1174,7 +1174,7 @@ const Calendar = () => {
       />
 
       {/* Cancel Event Dialog Modal Component */}
-      <EventCancelDialog
+      <CancelarEventoDialog
         open={isCancelOpen}
         onClose={() => setIsCancelOpen(false)}
         onConfirm={handleCancelConfirm}

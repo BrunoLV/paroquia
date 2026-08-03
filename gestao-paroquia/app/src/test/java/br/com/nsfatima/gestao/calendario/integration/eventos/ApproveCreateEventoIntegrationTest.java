@@ -1,7 +1,9 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -40,7 +42,7 @@ class ApproveCreateEventoIntegrationTest {
     private AprovacaoJpaRepository aprovacaoJpaRepository;
 
     @Autowired
-    private ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -97,7 +99,7 @@ class ApproveCreateEventoIntegrationTest {
 
         // Verify approval updated with eventoId
         AprovacaoEntity savedAprovacao = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
-        assertThat(savedAprovacao.getStatus()).isEqualTo("APROVADA");
+        assertThat(savedAprovacao.getStatus()).isEqualTo(AprovacaoStatus.APROVADA);
         assertThat(savedAprovacao.getEventoId()).isNotNull();
         var evento = eventoJpaRepository.findById(savedAprovacao.getEventoId()).orElseThrow();
         assertThat(evento.getTitulo()).isEqualTo("Evento auto-criado pos-aprovacao");
@@ -111,7 +113,7 @@ class ApproveCreateEventoIntegrationTest {
         UUID aprovacaoId = UUID.randomUUID();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-0000000000dd");
 
-        ApprovalActionPayload payload = new ApprovalActionPayload(
+        AprovacaoAcaoPayload payload = new AprovacaoAcaoPayload(
                 UUID.randomUUID().toString(),
                 null,
                 "Evento direto do snapshot",
@@ -133,9 +135,9 @@ class ApproveCreateEventoIntegrationTest {
         aprovacao.setEventoId(null);
         aprovacao.setTipoSolicitacao("CRIACAO_EVENTO");
         aprovacao.setAprovadorPapel("conselho-coordenador");
-        aprovacao.setStatus("PENDENTE");
+        aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
-        aprovacao.setActionPayloadJson(approvalActionPayloadMapper.toJson(payload));
+        aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
         aprovacaoJpaRepository.save(aprovacao);
 
         long eventsBefore = eventoJpaRepository.count();

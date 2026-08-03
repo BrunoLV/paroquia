@@ -8,7 +8,7 @@ import theme from '../../theme';
 describe('Dashboard Widgets', () => {
   describe('SummaryCards', () => {
     test('renders metrics when provided', () => {
-      const metrics = { monthlyEvents: 5, pendingApprovals: 2 };
+      const metrics = { monthlyEvents: 5, aprovacoesPendentes: 2 };
       render(
         <ThemeProvider theme={theme}>
           <SummaryCards metrics={metrics} />

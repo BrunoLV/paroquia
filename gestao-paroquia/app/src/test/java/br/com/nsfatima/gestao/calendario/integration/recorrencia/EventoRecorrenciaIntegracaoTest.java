@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.YearlyRecurrenceGeneratorJob;
+import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.GeradorRecorrenciaAnualJob;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class EventoRecorrenciaIntegracaoTest {
     @Autowired
     private AprovacaoJpaRepository aprovacaoRepository;
     @Autowired
-    private YearlyRecurrenceGeneratorJob generationJob;
+    private GeradorRecorrenciaAnualJob generationJob;
 
     @BeforeEach
     void setUp() {

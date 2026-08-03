@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.importacao.domain.service;
 
+import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -17,8 +19,8 @@ import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOfi
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
-import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalProvisioningService;
+import br.com.nsfatima.gestao.calendario.domain.service.MotorLiturgico;
+import br.com.nsfatima.gestao.calendario.domain.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
@@ -58,9 +60,9 @@ public class ImportacaoService {
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final ImportacaoFileParser importacaoFileParser;
     private final AnoParoquialJpaRepository anoParoquialJpaRepository;
-    private final LiturgicalEngine liturgicalEngine;
+    private final MotorLiturgico liturgicalEngine;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
-    private final LiturgicalProvisioningService liturgicalProvisioningService;
+    private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
 
     public ImportacaoService(CreateMembroUseCase createMembroUseCase,
                               MembroJpaRepository membroJpaRepository,
@@ -72,9 +74,9 @@ public class ImportacaoService {
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
                               ImportacaoFileParser importacaoFileParser,
                               AnoParoquialJpaRepository anoParoquialJpaRepository,
-                              LiturgicalEngine liturgicalEngine,
+                              MotorLiturgico liturgicalEngine,
                               CicloLiturgicoRepository cicloLiturgicoRepository,
-                              LiturgicalProvisioningService liturgicalProvisioningService) {
+                              ProvisionamentoLiturgicoService liturgicalProvisioningService) {
         this.createMembroUseCase = createMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
@@ -136,8 +138,8 @@ public class ImportacaoService {
         if (username.isBlank()) {
             return "O campo 'usuarioUsername' é obrigatório.";
         }
-        var userOpt = usuarioJpaRepository.findByUsernameIgnoreCase(username);
-        if (userOpt.isEmpty()) {
+        var usuarioOpt = usuarioJpaRepository.findByUsernameIgnoreCase(username);
+        if (usuarioOpt.isEmpty()) {
             return "Usuário não encontrado: " + username;
         }
 
@@ -201,6 +203,7 @@ public class ImportacaoService {
                     case USUARIO -> importUsuario(data);
                     case ORGANIZACAO -> importOrganizacao(data);
                     case EVENTO -> importEvento(data);
+                    default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
                 }
                 count++;
             } catch (Exception e) {
@@ -285,7 +288,7 @@ public class ImportacaoService {
         int anoCivil = entity.getInicioUtc().atZone(java.time.ZoneOffset.UTC).getYear();
         boolean isAnoFechado = anoParoquialJpaRepository != null &&
                 anoParoquialJpaRepository.findByAno(anoCivil)
-                        .map(a -> AnoParoquialStatus.FECHADO.name().equals(a.getStatus()))
+                        .map(a -> AnoParoquialStatus.FECHADO.equals(a.getStatus()))
                         .orElse(false);
 
         String inputStatus = Optional.ofNullable(data.get("status")).orElse("APROVADO").toUpperCase();
@@ -298,8 +301,8 @@ public class ImportacaoService {
             } else {
                 // Resolução Silenciosa: Converte para PENDENTE em ano fechado sem estourar rollback no lote
                 entity.setStatus("PENDENTE");
-                entity.setConflictState("PENDING_APPROVAL");
-                entity.setConflictReason("Importado em lote durante Ano Paroquial Fechado - aguardando homologação");
+                entity.setEstadoConflito(EstadoConflitoAgenda.PENDENTE);
+                entity.setMotivoConflito("Importado em lote durante Ano Paroquial Fechado - aguardando homologação");
             }
         } else {
             entity.setStatus(inputStatus);
@@ -307,7 +310,9 @@ public class ImportacaoService {
 
         entity.setCategoria(
                 Optional.ofNullable(data.get("categoria"))
-                        .filter(c -> !c.isBlank()).orElse("GERAL"));
+                        .filter(c -> !c.isBlank())
+                        .map(CategoriaEvento::fromValue)
+                        .orElse(CategoriaEvento.ADMINISTRATIVO));
         entity.setLocalId(parseUuid(data.get("localId")));
         entity.setIgrejaVinculoId(parseUuid(data.get(KEY_IGREJA_ID)));
         entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));

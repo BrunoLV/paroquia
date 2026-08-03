@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,31 +16,31 @@ public interface AprovacaoJpaRepository extends JpaRepository<AprovacaoEntity, U
 
     Optional<AprovacaoEntity> findByIdAndEventoId(UUID id, UUID eventoId);
 
-    Optional<AprovacaoEntity> findByIdAndStatusIgnoreCase(UUID id, String status);
+    Optional<AprovacaoEntity> findByIdAndStatus(UUID id, AprovacaoStatus status);
 
-    Optional<AprovacaoEntity> findTopByEventoIdAndTipoSolicitacaoAndStatusIgnoreCaseOrderByCriadoEmUtcDesc(
+    Optional<AprovacaoEntity> findTopByEventoIdAndTipoSolicitacaoAndStatusOrderByCriadoEmUtcDesc(
             UUID eventoId,
             String tipoSolicitacao,
-            String status);
+            AprovacaoStatus status);
 
-    boolean existsByEventoIdAndTipoSolicitacaoAndStatusIgnoreCase(
+    boolean existsByEventoIdAndTipoSolicitacaoAndStatus(
             UUID eventoId,
             String tipoSolicitacao,
-            String status);
+            AprovacaoStatus status);
 
     List<AprovacaoEntity>
-    findByTipoSolicitacaoAndStatusIgnoreCaseOrderByCriadoEmUtcAsc(
+    findByTipoSolicitacaoAndStatusOrderByCriadoEmUtcAsc(
             String tipoSolicitacao,
-            String status);
+            AprovacaoStatus status);
 
     List<AprovacaoEntity>
-    findByStatusIgnoreCaseOrderByCriadoEmUtcAsc(String status);
+    findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus status);
 
     @Query("SELECT a FROM AprovacaoEntity a WHERE " +
             "(:eventoId IS NULL OR a.eventoId = :eventoId) AND " +
-            "(:status IS NULL OR LOWER(a.status) = LOWER(:status))")
+            "(:status IS NULL OR a.status = :status)")
     Page<AprovacaoEntity> findByFilter(
             @Param("eventoId") UUID eventoId,
-            @Param("status") String status,
+            @Param("status") AprovacaoStatus status,
             Pageable pageable);
 }

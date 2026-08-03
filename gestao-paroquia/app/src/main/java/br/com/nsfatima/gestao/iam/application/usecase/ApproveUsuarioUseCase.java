@@ -24,18 +24,18 @@ public class ApproveUsuarioUseCase {
 
     @Transactional
     public void execute(UUID userId) {
-        UsuarioEntity user = usuarioRepository.findById(userId)
+        UsuarioEntity usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new UsuarioNotFoundException(userId));
 
-        user.setEnabled(true);
-        if (user.getRoles() == null || !user.getRoles().contains("ROLE_USER")) {
-            if (user.getRoles() == null || user.getRoles().isBlank()) {
-                user.setRoles("ROLE_USER");
+        usuario.setEnabled(true);
+        if (usuario.getRoles() == null || !usuario.getRoles().contains("ROLE_USER")) {
+            if (usuario.getRoles() == null || usuario.getRoles().isBlank()) {
+                usuario.setRoles("ROLE_USER");
             } else {
-                user.setRoles(user.getRoles() + ",ROLE_USER");
+                usuario.setRoles(usuario.getRoles() + ",ROLE_USER");
             }
         }
-        usuarioRepository.save(user);
+        usuarioRepository.save(usuario);
 
         // Activate requested vinculos
         var vinculos = vinculoRepository.findByUsuarioId(userId);

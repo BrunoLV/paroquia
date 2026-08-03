@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
@@ -31,7 +32,7 @@ public class CreateProjetoUseCase {
     private final EventoActorContextResolver actorContextResolver;
     private final ProjetoAuthorizationService authorizationService;
     private final AnoParoquialJpaRepository anoParoquialRepository;
-    private final ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
+    private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
     private final ObjectMapper objectMapper;
 
     public CreateProjetoUseCase(
@@ -41,7 +42,7 @@ public class CreateProjetoUseCase {
             EventoActorContextResolver actorContextResolver,
             ProjetoAuthorizationService authorizationService,
             AnoParoquialJpaRepository anoParoquialRepository,
-            ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository,
+            ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository,
             ObjectMapper objectMapper) {
         this.repository = repository;
         this.mapper = mapper;
@@ -49,7 +50,7 @@ public class CreateProjetoUseCase {
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
         this.anoParoquialRepository = anoParoquialRepository;
-        this.approvalRepository = approvalRepository;
+        this.aprovacaoRepository = aprovacaoRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -67,7 +68,7 @@ public class CreateProjetoUseCase {
         authorizationService.assertCanCreate(actorContext, request.organizacaoResponsavelId());
 
         if (request.fim().isBefore(request.inicio())) {
-            throw new IllegalArgumentException("Project end date cannot be before start date");
+            throw new IllegalArgumentException("Data de fim do projeto não pode ser anterior à data de início");
         }
 
         int startYear = request.inicio().atZone(ZoneOffset.UTC).getYear();
@@ -75,35 +76,35 @@ public class CreateProjetoUseCase {
 
         boolean isLocked = false;
         if (anoParoquialOpt.isPresent()) {
-            String status = anoParoquialOpt.get().getStatus();
-            if (AnoParoquialStatus.FECHADO.name().equals(status) || AnoParoquialStatus.CONCLUIDO.name().equals(status)) {
+            AnoParoquialStatus status = anoParoquialOpt.get().getStatus();
+            if (status == AnoParoquialStatus.FECHADO || status == AnoParoquialStatus.CONCLUIDO) {
                 isLocked = true;
             }
         }
 
         if (isLocked) {
-            ProjetoSolicitacaoAprovacaoEntity approval = new ProjetoSolicitacaoAprovacaoEntity();
-            approval.setId(UUID.randomUUID());
-            approval.setProjetoId(null);
-            approval.setTipoSolicitacao("CRIACAO");
-            approval.setStatus(AprovacaoStatus.PENDENTE.name());
-            approval.setSolicitanteId(actorContext.actor());
-            approval.setSolicitantePapel(actorContext.role());
-            approval.setSolicitanteTipoOrganizacao(actorContext.organizationType());
+            ProjetoSolicitacaoAprovacaoEntity aprovacao = new ProjetoSolicitacaoAprovacaoEntity();
+            aprovacao.setId(UUID.randomUUID());
+            aprovacao.setProjetoId(null);
+            aprovacao.setTipoSolicitacao("CRIACAO");
+            aprovacao.setStatus(AprovacaoStatus.PENDENTE);
+            aprovacao.setSolicitanteId(actorContext.actor());
+            aprovacao.setSolicitantePapel(actorContext.role());
+            aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
             try {
-                approval.setActionPayloadJson(objectMapper.writeValueAsString(request));
+                aprovacao.setActionPayloadJson(objectMapper.writeValueAsString(request));
             } catch (Exception e) {
                 throw new RuntimeException("Error serializing project request", e);
             }
-            approval.setCancelarEventosVinculados(false);
-            approval.setCriadoEmUtc(Instant.now());
+            aprovacao.setCancelarEventosVinculados(false);
+            aprovacao.setCriadoEmUtc(Instant.now());
 
-            ProjetoSolicitacaoAprovacaoEntity savedApproval = approvalRepository.save(approval);
+            ProjetoSolicitacaoAprovacaoEntity savedAprovacao = aprovacaoRepository.save(aprovacao);
             auditPublisher.publish(actorContext.actor(),
-                    "request-create-project", savedApproval.getId().toString(), "success");
+                    "request-create-project", savedAprovacao.getId().toString(), "success");
 
 
-            return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedApproval));
+            return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedAprovacao));
         }
 
         ProjetoEventoEntity entity = new ProjetoEventoEntity();
@@ -113,7 +114,7 @@ public class CreateProjetoUseCase {
         entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
         entity.setInicioUtc(request.inicio());
         entity.setFimUtc(request.fim());
-        entity.setStatus(ProjetoStatus.ABERTO.name());
+        entity.setStatus(ProjetoStatus.ABERTO);
 
         ProjetoEventoEntity saved = repository.save(entity);
 

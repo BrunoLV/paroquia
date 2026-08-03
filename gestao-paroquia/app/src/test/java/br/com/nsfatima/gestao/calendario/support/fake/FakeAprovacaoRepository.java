@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.support.fake;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import org.springframework.data.domain.Example;
@@ -45,51 +46,51 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     }
 
     @Override
-    public Optional<AprovacaoEntity> findByIdAndStatusIgnoreCase(UUID id, String status) {
-        return storage.stream().filter(e -> e.getId().equals(id) && e.getStatus().equalsIgnoreCase(status)).findFirst();
+    public Optional<AprovacaoEntity> findByIdAndStatus(UUID id, AprovacaoStatus status) {
+        return storage.stream().filter(e -> e.getId().equals(id) && e.getStatus() == status).findFirst();
     }
 
     @Override
-    public List<AprovacaoEntity> findByTipoSolicitacaoAndStatusIgnoreCaseOrderByCriadoEmUtcAsc(String type,
-                                                                                               String status) {
+    public List<AprovacaoEntity> findByTipoSolicitacaoAndStatusOrderByCriadoEmUtcAsc(String type,
+                                                                                               AprovacaoStatus status) {
 
         return storage.stream()
-                .filter(e -> e.getTipoSolicitacao().equals(type) && e.getStatus().equalsIgnoreCase(status))
+                .filter(e -> e.getTipoSolicitacao().equals(type) && e.getStatus() == status)
                 .toList();
     }
 
     @Override
-    public List<AprovacaoEntity> findByStatusIgnoreCaseOrderByCriadoEmUtcAsc(String status) {
+    public List<AprovacaoEntity> findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus status) {
         return storage.stream()
-                .filter(e -> e.getStatus().equalsIgnoreCase(status))
+                .filter(e -> e.getStatus() == status)
                 .toList();
     }
 
     @Override
-    public Page<AprovacaoEntity> findByFilter(UUID eventoId, String status, Pageable pageable) {
+    public Page<AprovacaoEntity> findByFilter(UUID eventoId, AprovacaoStatus status, Pageable pageable) {
         List<AprovacaoEntity> filtered = storage.stream()
                 .filter(e -> (eventoId == null || e.getEventoId().equals(eventoId))
-                        && (status == null || e.getStatus().equalsIgnoreCase(status)))
+                        && (status == null || e.getStatus() == status))
                 .toList();
         return new PageImpl<>(filtered, pageable, filtered.size());
     }
 
     @Override
-    public boolean existsByEventoIdAndTipoSolicitacaoAndStatusIgnoreCase(UUID eventoId, String tipo, String status) {
+    public boolean existsByEventoIdAndTipoSolicitacaoAndStatus(UUID eventoId, String tipo, AprovacaoStatus status) {
         return storage.stream().anyMatch(e -> e.getEventoId().equals(eventoId)
                 && e.getTipoSolicitacao().equals(tipo)
-                && e.getStatus().equalsIgnoreCase(status));
+                && e.getStatus() == status);
     }
 
     @Override
     public Optional<AprovacaoEntity>
-    findTopByEventoIdAndTipoSolicitacaoAndStatusIgnoreCaseOrderByCriadoEmUtcDesc(
-            UUID eventoId, String tipo, String status) {
+    findTopByEventoIdAndTipoSolicitacaoAndStatusOrderByCriadoEmUtcDesc(
+            UUID eventoId, String tipo, AprovacaoStatus status) {
 
         return storage.stream()
                 .filter(e -> e.getEventoId().equals(eventoId)
                         && e.getTipoSolicitacao().equals(tipo)
-                        && e.getStatus().equalsIgnoreCase(status))
+                        && e.getStatus() == status)
                 .max(Comparator.comparing(AprovacaoEntity::getCriadoEmUtc));
     }
 

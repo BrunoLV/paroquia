@@ -60,11 +60,11 @@ class IndicadorRetrabalhoContractTest {
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
-        entity.setAcao("patch");
-        entity.setResultado("success");
+        entity.setAcao("atualizar");
+        entity.setResultado("sucesso");
         entity.setAtor("tester");
         entity.setCorrelationId("corr-rework");
-        entity.setDetalhesAuditaveisJson("{\"scheduleChanged\":true}");
+        entity.setDetalhesAuditaveisJson("{\"agendaAlterada\":true}");
         entity.setOcorridoEmUtc(Instant.parse("2026-10-03T10:15:00Z"));
         return entity;
     }

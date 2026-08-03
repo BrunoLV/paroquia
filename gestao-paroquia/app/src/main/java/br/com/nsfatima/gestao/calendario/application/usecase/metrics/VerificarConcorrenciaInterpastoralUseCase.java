@@ -69,7 +69,7 @@ public class VerificarConcorrenciaInterpastoralUseCase {
             return false;
         }
 
-        boolean mesmaCategoria = a.getCategoria() != null && a.getCategoria().equalsIgnoreCase(b.getCategoria());
+        boolean mesmaCategoria = a.getCategoria() != null && a.getCategoria() == b.getCategoria();
         boolean mesmoTema = extrairPalavraChave(a.getTitulo()).equalsIgnoreCase(extrairPalavraChave(b.getTitulo()));
 
         return mesmaCategoria || mesmoTema;
@@ -92,10 +92,10 @@ public class VerificarConcorrenciaInterpastoralUseCase {
         return new ConflitoItemDto(
                 a.getId(),
                 a.getTitulo(),
-                a.getCategoria() != null ? a.getCategoria() : "Pastoral A",
+                a.getCategoria() != null ? a.getCategoria().name() : "Pastoral A",
                 b.getId(),
                 b.getTitulo(),
-                b.getCategoria() != null ? b.getCategoria() : "Pastoral B",
+                b.getCategoria() != null ? b.getCategoria().name() : "Pastoral B",
                 fmt.format(a.getInicioUtc()),
                 "Público Geral/Familiar",
                 "Risco de esvaziamento por concorrência de eventos similares em datas próximas."

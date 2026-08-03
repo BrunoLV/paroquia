@@ -31,39 +31,40 @@ public class ListOrganizacaoMembrosUseCase {
 
     @Transactional(readOnly = true)
     public List<OrganizacaoMembroResponse> execute(UUID organizacaoId) {
-        var rawMembers = new java.util.ArrayList<>(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
-        var churchMembers = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
-        for (var cm : churchMembers) {
-            if (rawMembers.stream().noneMatch(m -> m.getUsuarioId().equals(cm.getUsuarioId()))) {
-                rawMembers.add(cm);
+        var vinculosBrutos =
+                new java.util.ArrayList<>(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
+        var membrosIgreja = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
+        for (var cm : membrosIgreja) {
+            if (vinculosBrutos.stream().noneMatch(m -> m.getUsuarioId().equals(cm.getUsuarioId()))) {
+                vinculosBrutos.add(cm);
             }
         }
 
-        List<OrganizacaoMembroResponse> dbMembers = rawMembers.stream()
+        List<OrganizacaoMembroResponse> membrosBanco = vinculosBrutos.stream()
                 .map(m -> {
-                    String userNome = usuarioRepository.findById(m.getUsuarioId())
+                    String nomeUsuario = usuarioRepository.findById(m.getUsuarioId())
                             .map(UsuarioEntity::getNome)
                             .orElse("Usuário Desconhecido");
                     return new OrganizacaoMembroResponse(
                             m.getId(),
                             m.getUsuarioId(),
-                            userNome,
+                            nomeUsuario,
                             m.getPapel(),
                             m.isAtivo()
                     );
                 })
                 .toList();
 
-        List<OrganizacaoMembroResponse> members = new java.util.ArrayList<>(dbMembers);
+        List<OrganizacaoMembroResponse> membros = new java.util.ArrayList<>(membrosBanco);
 
         var orgOpt = organizacaoRepository.findById(organizacaoId);
         if (orgOpt.isPresent()) {
             var org = orgOpt.get();
-            addDynamicMemberIfMissing(members, org.getCoordenador(), "COORDENADOR");
-            addDynamicMemberIfMissing(members, org.getViceCoordenador(), "VICE_COORDENADOR");
+            addDynamicMemberIfMissing(membros, org.getCoordenador(), "COORDENADOR");
+            addDynamicMemberIfMissing(membros, org.getViceCoordenador(), "VICE_COORDENADOR");
         }
 
-        return members;
+        return membros;
     }
 
     private void addDynamicMemberIfMissing(List<OrganizacaoMembroResponse> list, String name, String papel) {

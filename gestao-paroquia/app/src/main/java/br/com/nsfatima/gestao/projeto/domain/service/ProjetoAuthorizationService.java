@@ -31,7 +31,7 @@ public class ProjetoAuthorizationService {
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
         if (!PROJECT_EDITOR_ROLES.contains(normalizedRole)) {
-            throw new AccessDeniedException("User does not have permission to create projects");
+            throw new AccessDeniedException("Usuário não tem permissão para criar projetos");
         }
 
         // Only Paroco or Conselho Coordinators can create projects for any organization.
@@ -40,7 +40,7 @@ public class ProjetoAuthorizationService {
 
         if (!isHighLevelActor && actorContext.organizationId() != null
                 && !actorContext.organizationId().equals(organizacaoResponsavelId)) {
-            throw new AccessDeniedException("User cannot create projects for another organization");
+            throw new AccessDeniedException("Usuário não pode criar projetos para outra organização");
         }
     }
 
@@ -48,14 +48,14 @@ public class ProjetoAuthorizationService {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
 
         if (!PROJECT_EDITOR_ROLES.contains(normalizedRole)) {
-            throw new ForbiddenOperationException("User does not have permission to edit projects");
+            throw new ForbiddenOperationException("Usuário não tem permissão para editar projetos");
         }
 
         boolean isHighLevelActor = isHighLevelActor(actorContext);
 
         if (!isHighLevelActor && actorContext.organizationId() != null
                 && !actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
-            throw new ForbiddenOperationException("User cannot edit projects of another organization");
+            throw new ForbiddenOperationException("Usuário não pode editar projetos de outra organização");
         }
     }
 
@@ -84,7 +84,7 @@ public class ProjetoAuthorizationService {
                 && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
             return;
         }
-        throw new ForbiddenOperationException("User does not have permission to perform this project transition");
+        throw new ForbiddenOperationException("Usuário não tem permissão para executar esta transição de projeto");
     }
 
     public void assertCanCancel(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {

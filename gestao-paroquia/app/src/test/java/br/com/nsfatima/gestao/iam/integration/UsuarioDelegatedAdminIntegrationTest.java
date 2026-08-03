@@ -99,7 +99,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         m.setId(UUID.randomUUID());
         m.setUsuarioId(userId);
         m.setOrganizacaoId(organizationId);
-        m.setTipoOrganizacao("PASTORAL");
+        m.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m.setPapel(papel);
         m.setAtivo(true);
         vinculoRepository.save(m);

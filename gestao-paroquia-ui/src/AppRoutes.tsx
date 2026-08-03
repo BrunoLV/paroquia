@@ -4,7 +4,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 import Login from './pages/Login';
 import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
-import Approvals from './pages/Approvals';
+import Aprovacoes from './pages/Aprovacoes';
 import Projects from './pages/Projects';
 import Ativos from './pages/Ativos';
 import Settings from './pages/Settings';
@@ -15,7 +15,7 @@ import Layout from './components/Layout';
 import {useAuth} from './auth/AuthContext';
 import {canApprove, canManageAnoParoquial, canManageLocais} from './auth/permissions';
 
-const ApprovalsRoute = ({ children }: { children: React.ReactNode }) => {
+const AprovacoesRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   if (!canApprove(user)) {
     return <Navigate to="/dashboard" replace />;
@@ -49,9 +49,9 @@ const AppRoutes = () => {
                 <Route
                   path="approvals"
                   element={
-                    <ApprovalsRoute>
-                      <Approvals />
-                    </ApprovalsRoute>
+                    <AprovacoesRoute>
+                      <Aprovacoes />
+                    </AprovacoesRoute>
                   }
                 />
                 <Route path="projects" element={<Projects />} />

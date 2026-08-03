@@ -1,7 +1,8 @@
 package br.com.nsfatima.gestao.patrimonio.application.usecase;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -14,7 +15,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AlocacaoAtivoApprovalPendingResponse;
+import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AlocacaoAtivoAprovacaoPendenteResponse;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AlocarAtivoRequest;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoOperationResult;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
@@ -25,6 +26,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFou
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoStatus;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoTipo;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
+import br.com.nsfatima.gestao.patrimonio.domain.model.TipoNotaAtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoVinculacaoPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
@@ -44,7 +46,6 @@ import java.util.UUID;
 @Service
 public class AlocarAtivoParaEventoUseCase {
 
-    private static final String TIPO_NOTA_ALOCACAO = "ALOCACAO";
 
     private final AtivoPatrimonialJpaRepository ativoRepository;
     private final EventoJpaRepository eventoRepository;
@@ -56,7 +57,7 @@ public class AlocarAtivoParaEventoUseCase {
     private final AtivoVinculacaoPolicy vinculacaoPolicy;
     private final CreateNotaAtivoPatrimonialUseCase createNotaUseCase;
     private final PatrimonioAuditPublisher auditPublisher;
-    private final ApprovalActionPayloadMapper payloadMapper;
+    private final AprovacaoAcaoPayloadMapper payloadMapper;
     private final ApplicationEventPublisher eventPublisher;
 
     public AlocarAtivoParaEventoUseCase(AtivoPatrimonialJpaRepository ativoRepository,
@@ -69,7 +70,7 @@ public class AlocarAtivoParaEventoUseCase {
                                         AtivoVinculacaoPolicy vinculacaoPolicy,
                                         CreateNotaAtivoPatrimonialUseCase createNotaUseCase,
                                         PatrimonioAuditPublisher auditPublisher,
-                                        ApprovalActionPayloadMapper payloadMapper,
+                                        AprovacaoAcaoPayloadMapper payloadMapper,
                                         ApplicationEventPublisher eventPublisher) {
         this.ativoRepository = ativoRepository;
         this.eventoRepository = eventoRepository;
@@ -116,9 +117,9 @@ public class AlocarAtivoParaEventoUseCase {
             return new AtivoOperationResult.Success(response, HttpStatus.OK);
         }
 
-        AlocacaoAtivoApprovalPendingResponse pending = createPendingApproval(ativo, evento, local, request,
+        AlocacaoAtivoAprovacaoPendenteResponse pendente = criarAprovacaoPendente(ativo, evento, local, request,
                 actorContext);
-        return new AtivoOperationResult.Pending(pending, HttpStatus.ACCEPTED);
+        return new AtivoOperationResult.Pendente(pendente, HttpStatus.ACCEPTED);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -149,7 +150,8 @@ public class AlocarAtivoParaEventoUseCase {
         ativo.setStatus(AtivoStatus.ALOCADO);
         AtivoPatrimonialEntity saved = ativoRepository.save(ativo);
 
-        createNotaUseCase.execute(saved.getId(), usuarioId, TIPO_NOTA_ALOCACAO, ocupacao.getJustificativa());
+        createNotaUseCase.execute(saved.getId(), usuarioId, TipoNotaAtivoPatrimonial.ALOCACAO,
+                ocupacao.getJustificativa());
         auditPublisher.publishAlocacao(actor, saved.getId(), saved.getOrganizacaoId(), ocupacao.getEventoId());
 
         return CreateAtivoPatrimonialUseCase.toResponse(saved);
@@ -173,7 +175,7 @@ public class AlocarAtivoParaEventoUseCase {
         return ocupacao;
     }
 
-    private AlocacaoAtivoApprovalPendingResponse createPendingApproval(AtivoPatrimonialEntity ativo,
+    private AlocacaoAtivoAprovacaoPendenteResponse criarAprovacaoPendente(AtivoPatrimonialEntity ativo,
                                                                         EventoEntity evento, LocalEntity local,
                                                                         AlocarAtivoRequest request,
                                                                         EventoActorContext actorContext) {
@@ -191,8 +193,8 @@ public class AlocarAtivoParaEventoUseCase {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId() != null ? actorContext.usuarioId().toString() : null);
         aprovacao.setSolicitantePapel(actorContext.role());
-        aprovacao.setSolicitanteTipoOrganizacao(actorContext.organizationType());
-        aprovacao.setActionPayloadJson(payloadMapper.toJson(new ApprovalActionPayload(
+        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
+        aprovacao.setActionPayloadJson(payloadMapper.toJson(new AprovacaoAcaoPayload(
                 null, evento.getId(), null, null, null, ativo.getOrganizacaoId(), null, null, null, null,
                 null, null, request.justificativaAlocacao(), null, local.getId(), null, ativo.getId(),
                 ativo.getNome())));
@@ -205,7 +207,7 @@ public class AlocarAtivoParaEventoUseCase {
         eventPublisher.publishEvent(new AlocacaoAtivoPendenteEvent(
                 aprovacao.getId(), ativo.getId(), evento.getId(), aprovacao.getSolicitanteId()));
 
-        return new AlocacaoAtivoApprovalPendingResponse(aprovacao.getId(), aprovacao.getStatusEnum().name(),
-                ativo.getId(), evento.getId(), "APPROVAL_PENDING");
+        return new AlocacaoAtivoAprovacaoPendenteResponse(aprovacao.getId(), aprovacao.getStatus().name(),
+                ativo.getId(), evento.getId(), "APROVACAO_PENDENTE");
     }
 }

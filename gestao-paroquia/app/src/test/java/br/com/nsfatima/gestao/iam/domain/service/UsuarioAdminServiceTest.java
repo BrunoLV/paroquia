@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.iam.domain.service;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,13 +27,13 @@ class UsuarioAdminServiceTest {
     private UsuarioAdminService service;
     private UsuarioJpaRepository repository;
     private PasswordEncoder passwordEncoder;
-    private AuditLogPersistenceService auditLogService;
+    private AuditoriaPersistenceService auditLogService;
 
     @BeforeEach
     void setUp() {
         repository = mock(UsuarioJpaRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
-        auditLogService = mock(AuditLogPersistenceService.class);
+        auditLogService = mock(AuditoriaPersistenceService.class);
         UsuarioAuthorizationService authorizationService = mock(UsuarioAuthorizationService.class);
         service = new UsuarioAdminService(repository, passwordEncoder, auditLogService, authorizationService);
     }

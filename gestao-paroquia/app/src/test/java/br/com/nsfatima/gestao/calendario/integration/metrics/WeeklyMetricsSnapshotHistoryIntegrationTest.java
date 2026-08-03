@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.integration.metrics;
 
-import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
+import br.com.nsfatima.gestao.calendario.application.service.CalculadoraTaxaRetrabalho;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
-import br.com.nsfatima.gestao.calendario.infrastructure.observability.WeeklyMetricsSnapshotJob;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.SnapshotMetricasSemanaisJob;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 class WeeklyMetricsSnapshotHistoryIntegrationTest {
 
-    private WeeklyMetricsSnapshotJob snapshotJob;
+    private SnapshotMetricasSemanaisJob snapshotJob;
 
     @BeforeEach
     void setUp() {
@@ -36,10 +36,10 @@ class WeeklyMetricsSnapshotHistoryIntegrationTest {
                         UUID.fromString("00000000-0000-0000-0000-0000000000aa"),
                         UUID.randomUUID()
                 )));
-        snapshotJob = new WeeklyMetricsSnapshotJob(
+        snapshotJob = new SnapshotMetricasSemanaisJob(
                 new CadastroEventoMetricsPublisher(),
                 new PeriodoOperacionalPolicy(),
-                new ReworkRateCalculator(auditoriaOperacaoJpaRepository, new ObjectMapper()));
+                new CalculadoraTaxaRetrabalho(auditoriaOperacaoJpaRepository, new ObjectMapper()));
     }
 
     @Test
@@ -59,11 +59,11 @@ class WeeklyMetricsSnapshotHistoryIntegrationTest {
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
-        entity.setAcao("patch");
-        entity.setResultado("success");
+        entity.setAcao("atualizar");
+        entity.setResultado("sucesso");
         entity.setAtor("tester");
         entity.setCorrelationId("corr-history");
-        entity.setDetalhesAuditaveisJson("{\"scheduleChanged\":true}");
+        entity.setDetalhesAuditaveisJson("{\"agendaAlterada\":true}");
         entity.setOcorridoEmUtc(Instant.now());
         return entity;
     }

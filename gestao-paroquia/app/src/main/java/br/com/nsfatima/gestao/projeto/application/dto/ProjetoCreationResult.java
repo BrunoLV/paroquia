@@ -7,7 +7,7 @@ public record ProjetoCreationResult(
         ProjetoResponse projeto,
         ProjetoAprovacaoResponse aprovacao
 ) {
-    public boolean isPendingApproval() {
+    public boolean isPendenteAprovacao() {
         return aprovacao != null;
     }
 }

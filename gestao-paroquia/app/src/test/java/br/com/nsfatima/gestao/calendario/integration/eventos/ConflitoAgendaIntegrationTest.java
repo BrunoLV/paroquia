@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.calendario.domain.policy.CalendarIntegrityPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.IntegridadeCalendarioPolicy;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConflitoAgendaIntegrationTest {
 
-    private final CalendarIntegrityPolicy policy = new CalendarIntegrityPolicy();
+    private final IntegridadeCalendarioPolicy policy = new IntegridadeCalendarioPolicy();
 
     @Test
     void deveRejeitarInvalidoIntervalo() {

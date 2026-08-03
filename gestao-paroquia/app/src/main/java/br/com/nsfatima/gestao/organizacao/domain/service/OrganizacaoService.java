@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.domain.service;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
-import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizationBusinessException;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -20,20 +20,20 @@ import java.util.UUID;
 public class OrganizacaoService {
 
     private static final String AUDIT_ACTOR = "admin";
-    private static final String AUDIT_ACTION = "admin-action";
-    private static final String AUDIT_TARGET = "organization";
-    private static final String AUDIT_RESULT = "success";
+    private static final String AUDIT_ACTION = "acao-admin";
+    private static final String AUDIT_TARGET = "organizacao";
+    private static final String AUDIT_RESULT = "sucesso";
     private static final String KEY_RESOURCE_TYPE = "resourceType";
-    private static final String VALUE_RESOURCE_TYPE = "ORGANIZATION";
+    private static final String VALUE_RESOURCE_TYPE = "ORGANIZACAO";
     private static final String KEY_RESOURCE_ID = "resourceId";
     private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
     private static final String KEY_ACTION = "action";
     private final OrganizacaoRepository organizacaoRepository;
-    private final AuditLogPersistenceService auditLogService;
+    private final AuditoriaPersistenceService auditLogService;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     public OrganizacaoService(
             OrganizacaoRepository organizacaoRepository,
-            AuditLogPersistenceService auditLogService,
+            AuditoriaPersistenceService auditLogService,
             PastoralMovimentoOficialRepository pastoralOficialRepository) {
         this.organizacaoRepository = organizacaoRepository;
         this.auditLogService = auditLogService;
@@ -56,7 +56,7 @@ public class OrganizacaoService {
                 KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
                 KEY_RESOURCE_ID, org.getId(),
                 KEY_ORGANIZACAO_ID, org.getId(),
-                KEY_ACTION, "CREATE",
+                KEY_ACTION, "CRIAR",
                 "nome", nome
         ));
 
@@ -70,7 +70,7 @@ public class OrganizacaoService {
                                           boolean ativo, UUID parentId, UUID pastoralOficialId) {
 
         Organizacao org = organizacaoRepository.findById(id)
-                .orElseThrow(() -> OrganizationBusinessException.notFound(id));
+                .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
 
         validateHierarchy(id, tipo, parentId, pastoralOficialId);
 
@@ -81,7 +81,7 @@ public class OrganizacaoService {
                 KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
                 KEY_RESOURCE_ID, id,
                 KEY_ORGANIZACAO_ID, id,
-                KEY_ACTION, "UPDATE"
+                KEY_ACTION, "ATUALIZAR"
         ));
 
         return org;
@@ -90,11 +90,11 @@ public class OrganizacaoService {
     @Transactional
     public void deleteOrganization(UUID id) {
         if (organizacaoRepository.findById(id).isEmpty()) {
-            throw OrganizationBusinessException.notFound(id);
+            throw OrganizacaoNegocioException.notFound(id);
         }
 
         if (organizacaoRepository.hasDependencies(id)) {
-            throw OrganizationBusinessException.inUse(id);
+            throw OrganizacaoNegocioException.inUse(id);
         }
 
         organizacaoRepository.delete(id);
@@ -103,7 +103,7 @@ public class OrganizacaoService {
                 KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
                 KEY_RESOURCE_ID, id,
                 KEY_ORGANIZACAO_ID, id,
-                KEY_ACTION, "DELETE"
+                KEY_ACTION, "EXCLUIR"
         ));
     }
 
@@ -119,12 +119,12 @@ public class OrganizacaoService {
 
     private void validateHierarchy(UUID id, TipoOrganizacao tipo, UUID parentId, UUID pastoralOficialId) {
         if (parentId != null && parentId.equals(id)) {
-            throw new OrganizationBusinessException("An organization cannot be its own parent.");
+            throw new OrganizacaoNegocioException("Uma organização não pode ser sua própria organização-mãe.");
         }
 
         if (tipo == TipoOrganizacao.CLERO) {
             if (parentId != null) {
-                throw new OrganizationBusinessException("Clero organization cannot have a parent organization.");
+                throw new OrganizacaoNegocioException("Organização do tipo Clero não pode ter organização-mãe.");
             }
             return;
         }
@@ -135,21 +135,21 @@ public class OrganizacaoService {
                 tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
 
             if (parentId == null) {
-                throw new OrganizationBusinessException(tipo.name() + " organization must have a parent organization.");
+                throw new OrganizacaoNegocioException(tipo.name() + " deve ter uma organização-mãe.");
             }
         }
 
         // Validate mandatory link to Pastoral/Movimento Oficial
         if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
             if (pastoralOficialId == null) {
-                throw new OrganizationBusinessException("Vínculo com Pastoral ou Movimento Oficial é obrigatório.");
+                throw new OrganizacaoNegocioException("Vínculo com Pastoral ou Movimento Oficial é obrigatório.");
             }
             PastoralMovimentoOficial oficial = pastoralOficialRepository.findById(pastoralOficialId)
-                    .orElseThrow(() -> new OrganizationBusinessException(
+                    .orElseThrow(() -> new OrganizacaoNegocioException(
                             "Pastoral ou Movimento Oficial não encontrado com ID: "
                                     + pastoralOficialId));
             if (oficial.getTipo() != tipo) {
-                throw new OrganizationBusinessException(
+                throw new OrganizacaoNegocioException(
                         "O tipo da Pastoral/Movimento Oficial (" + oficial.getTipo()
                                 + ") não coincide com o tipo da organização (" + tipo + ").");
             }
@@ -157,11 +157,11 @@ public class OrganizacaoService {
 
         if (parentId != null) {
             Organizacao parent = organizacaoRepository.findById(parentId)
-                    .orElseThrow(() -> new OrganizationBusinessException(
-                            "Parent organization not found with ID: " + parentId));
+                    .orElseThrow(() -> new OrganizacaoNegocioException(
+                            "Organização-mãe não encontrada com ID: " + parentId));
 
             if (!parent.isAtivo()) {
-                throw new OrganizationBusinessException("Parent organization is not active.");
+                throw new OrganizacaoNegocioException("Organização-mãe não está ativa.");
             }
 
             TipoOrganizacao parentTipo = parent.getTipo();
@@ -170,24 +170,24 @@ public class OrganizacaoService {
                 case MATRIZ:
                 case COMUNIDADE:
                     if (parentTipo != TipoOrganizacao.CLERO) {
-                        throw new OrganizationBusinessException(
-                                tipo.name() + " organization parent must be a CLERO organization.");
+                        throw new OrganizacaoNegocioException(
+                                tipo.name() + " deve ter uma organização-mãe do tipo CLERO.");
                     }
                     break;
                 case CONSELHO_PASTORAL:
                 case CONSELHO_ECONOMICO:
                     if (parentTipo != TipoOrganizacao.MATRIZ && parentTipo != TipoOrganizacao.COMUNIDADE) {
-                        throw new OrganizationBusinessException(
+                        throw new OrganizacaoNegocioException(
                                 tipo.name()
-                                        + " organization parent must be a MATRIZ or COMUNIDADE organization.");
+                                        + " deve ter uma organização-mãe do tipo MATRIZ ou COMUNIDADE.");
                     }
                     break;
                 case PASTORAL:
                 case MOVIMENTO:
                     if (parentTipo != TipoOrganizacao.CONSELHO_PASTORAL) {
-                        throw new OrganizationBusinessException(
+                        throw new OrganizacaoNegocioException(
                                 tipo.name()
-                                        + " organization parent must be a CONSELHO_PASTORAL organization.");
+                                        + " deve ter uma organização-mãe do tipo CONSELHO_PASTORAL.");
                     }
                     break;
                 default:

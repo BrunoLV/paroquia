@@ -1,8 +1,10 @@
 package br.com.nsfatima.gestao.calendario.integration.projetos;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
@@ -202,10 +204,10 @@ class ProjetoGovernancaIntegrationTest {
         ProjetoSolicitacaoAprovacaoEntity req = new ProjetoSolicitacaoAprovacaoEntity();
         req.setId(UUID.randomUUID());
         req.setTipoSolicitacao("CRIACAO");
-        req.setStatus("PENDENTE");
+        req.setStatus(AprovacaoStatus.PENDENTE);
         req.setSolicitanteId("solicitante");
         req.setSolicitantePapel("coordenador-pastoral-local");
-        req.setSolicitanteTipoOrganizacao("PASTORAL");
+        req.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);
         req.setCriadoEmUtc(Instant.now());
         req.setActionPayloadJson(payloadJson);
         approvalRepository.saveAndFlush(req);
@@ -222,7 +224,7 @@ class ProjetoGovernancaIntegrationTest {
         var projects = repository.findAll();
         assertEquals(1, projects.size());
         assertEquals("Projeto Aprovado Criacao", projects.getFirst().getNome());
-        assertEquals(ProjetoStatus.ABERTO.name(), projects.getFirst().getStatus());
+        assertEquals(ProjetoStatus.ABERTO, projects.getFirst().getStatus());
     }
 
     @Test
@@ -250,7 +252,7 @@ class ProjetoGovernancaIntegrationTest {
 
         // Verify project is CANCELADO
         var savedProject = repository.findById(project.getId()).get();
-        assertEquals(ProjetoStatus.CANCELADO, savedProject.getStatusEnum());
+        assertEquals(ProjetoStatus.CANCELADO, savedProject.getStatus());
 
         // Verify linked event is CANCELADO
         var savedEvent = eventRepository.findById(event.getId()).get();
@@ -283,7 +285,7 @@ class ProjetoGovernancaIntegrationTest {
 
         // Verify project is CANCELADO
         var savedProject = repository.findById(project.getId()).get();
-        assertEquals(ProjetoStatus.CANCELADO, savedProject.getStatusEnum());
+        assertEquals(ProjetoStatus.CANCELADO, savedProject.getStatus());
 
         // Verify linked event is NOT CANCELADO but project association is removed
         var savedEvent = eventRepository.findById(event.getId()).get();
@@ -294,7 +296,7 @@ class ProjetoGovernancaIntegrationTest {
     private void saveAnoParoquial(int ano, AnoParoquialStatus status) {
         AnoParoquialEntity entity = new AnoParoquialEntity();
         entity.setAno(ano);
-        entity.setStatus(status.name());
+        entity.setStatus(status);
         anoParoquialRepository.saveAndFlush(entity);
     }
 

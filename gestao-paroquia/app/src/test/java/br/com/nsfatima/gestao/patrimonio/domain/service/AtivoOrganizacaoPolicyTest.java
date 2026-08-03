@@ -45,7 +45,7 @@ class AtivoOrganizacaoPolicyTest {
         OrganizacaoEntity organizacao = organizacaoComTipo(tipo);
         when(organizacaoRepository.findById(organizacao.getId())).thenReturn(Optional.of(organizacao));
 
-        assertThatCode(() -> policy.assertOwnerOrganizacaoPermitida(organizacao.getId()))
+        assertThatCode(() -> policy.assertOrganizacaoProprietariaPermitida(organizacao.getId()))
                 .doesNotThrowAnyException();
     }
 
@@ -55,7 +55,7 @@ class AtivoOrganizacaoPolicyTest {
         OrganizacaoEntity organizacao = organizacaoComTipo(tipo);
         when(organizacaoRepository.findById(organizacao.getId())).thenReturn(Optional.of(organizacao));
 
-        assertThatThrownBy(() -> policy.assertOwnerOrganizacaoPermitida(organizacao.getId()))
+        assertThatThrownBy(() -> policy.assertOrganizacaoProprietariaPermitida(organizacao.getId()))
                 .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
     }
 
@@ -64,7 +64,7 @@ class AtivoOrganizacaoPolicyTest {
         UUID organizacaoId = UUID.randomUUID();
         when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> policy.assertOwnerOrganizacaoPermitida(organizacaoId))
+        assertThatThrownBy(() -> policy.assertOrganizacaoProprietariaPermitida(organizacaoId))
                 .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
     }
 }

@@ -42,7 +42,7 @@ public class ProjetoAutoActivationScheduler {
         try {
             LOGGER.info("Starting automatic project activation check...");
             List<ProjetoEventoEntity> projectsToActivate = repository.findByStatusAndInicioUtcLessThanEqual(
-                    ProjetoStatus.ABERTO.name(), now);
+                    ProjetoStatus.ABERTO, now);
 
             if (!projectsToActivate.isEmpty()) {
                 LOGGER.info("Found {} project(s) to activate.", projectsToActivate.size());

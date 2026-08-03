@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ class MembroOrganizacaoJpaRepositoryTest {
         membro.setId(UUID.randomUUID());
         membro.setUsuarioId(userId);
         membro.setOrganizacaoId(orgId);
-        membro.setTipoOrganizacao("CATEQUESE");
+        membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         membro.setPapel("COORDENADOR");
         membro.setAtivo(true);
         repository.save(membro);
@@ -45,13 +46,13 @@ class MembroOrganizacaoJpaRepositoryTest {
         inativo.setId(UUID.randomUUID());
         inativo.setUsuarioId(userId);
         inativo.setOrganizacaoId(orgId);
-        inativo.setTipoOrganizacao("LITURGIA");
+        inativo.setTipoOrganizacao(TipoOrganizacao.MOVIMENTO);
         inativo.setPapel("MEMBRO");
         inativo.setAtivo(false);
         repository.save(inativo);
 
         List<MembroOrganizacaoEntity> results = repository.findByUsuarioIdAndAtivoTrue(userId);
         assertEquals(1, results.size());
-        assertEquals("CATEQUESE", results.getFirst().getTipoOrganizacao());
+        assertEquals(TipoOrganizacao.PASTORAL, results.getFirst().getTipoOrganizacao());
     }
 }

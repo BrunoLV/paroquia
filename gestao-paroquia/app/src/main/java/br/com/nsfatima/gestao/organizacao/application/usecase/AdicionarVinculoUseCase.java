@@ -39,9 +39,9 @@ public class AdicionarVinculoUseCase {
         }
         var usuarioOpt = usuarioRepository.findById(usuarioId);
         if (usuarioOpt.isPresent() && usuarioOpt.get().getIgrejaId() != null) {
-            UUID userChurchId = usuarioOpt.get().getIgrejaId();
-            UUID targetChurchId = resolveTargetChurchId(organizacaoId, igrejaVinculoId);
-            if (targetChurchId != null && !userChurchId.equals(targetChurchId)) {
+            UUID igrejaUsuarioId = usuarioOpt.get().getIgrejaId();
+            UUID igrejaAlvoId = resolveTargetChurchId(organizacaoId, igrejaVinculoId);
+            if (igrejaAlvoId != null && !igrejaUsuarioId.equals(igrejaAlvoId)) {
                 throw new IllegalArgumentException(
                         "O usuário pertence a outra igreja/comunidade"
                                 + " e não pode ser vinculado a esta organização");
@@ -70,7 +70,7 @@ public class AdicionarVinculoUseCase {
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
         boolean isParoco = auth.getAuthorities().stream().anyMatch(a -> "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
 
-        // Hierarchy rule: Leadership of CONSELHO / CPP / CPC / CONSELHO_ECONOMICO can only be defined by PAROCO or ADMIN
+        // Regra de hierarquia: liderança de CONSELHO / CPP / CPC / CONSELHO_ECONOMICO só pode ser definida por PAROCO ou ADMIN
         if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CPP || tipo == TipoOrganizacao.CPC || tipo == TipoOrganizacao.CONSELHO_ECONOMICO)
                 && (papel == PapelOrganizacional.PRESIDENTE_CPC
                 || papel == PapelOrganizacional.MESA_CPP
@@ -83,14 +83,14 @@ public class AdicionarVinculoUseCase {
             }
         }
 
-        // Hierarchy rule: PAROCO can only be defined by ADMIN
+        // Regra de hierarquia: PAROCO só pode ser definido por ADMIN
         if (tipo == TipoOrganizacao.CLERO && papel == PapelOrganizacional.PAROCO) {
             if (!isAdmin) {
                 throw new AccessDeniedException("Apenas o Admin pode definir o Pároco");
             }
         }
 
-        // Duplicate check: Prevent duplicate vinculos for the exact same combination of {usuarioId,
+        // Verificação de duplicidade: evitar vínculos duplicados para exatamente a mesma combinação de {usuarioId,
         // organizacaoId, papel, igrejaVinculoId}
         var existingVinculo = vinculoRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
                 usuarioId, organizacaoId, papel.name(), igrejaVinculoId);
@@ -105,14 +105,14 @@ public class AdicionarVinculoUseCase {
             }
         }
 
-        // Unicity rule: Organizations can only have 1 coordinator active at a time per church context
-        boolean isCoordinatorRole = papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+        // Regra de unicidade: organizações só podem ter 1 coordenador ativo por vez, por contexto de igreja
+        boolean isPapelCoordenador = papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
                 || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
                 || papel == PapelOrganizacional.COORD_MOVIMENTO
                 || papel == PapelOrganizacional.COORD_PASTORAL
                 || papel == PapelOrganizacional.PRESIDENTE_CPC;
 
-        if (isCoordinatorRole) {
+        if (isPapelCoordenador) {
             java.util.Optional<MembroOrganizacaoEntity> existing;
             if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
                 existing = vinculoRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
@@ -127,12 +127,13 @@ public class AdicionarVinculoUseCase {
                 old.setAtivo(false);
                 vinculoRepository.save(old);
 
-                // Transition: Demote previous coordinator to member role
-                String demotedRole = tipo == TipoOrganizacao.MOVIMENTO ? "MEMBRO_MOVIMENTO" : "VOLUNTARIO_PASTORAL_LOCAL";
-                var oldMembroOpt = vinculoRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
-                        old.getUsuarioId(), organizacaoId, demotedRole, igrejaVinculoId);
-                if (oldMembroOpt.isPresent()) {
-                    var m = oldMembroOpt.get();
+                // Transição: rebaixar coordenador anterior para papel de membro
+                String papelRebaixado =
+                        tipo == TipoOrganizacao.MOVIMENTO ? "MEMBRO_MOVIMENTO" : "VOLUNTARIO_PASTORAL_LOCAL";
+                var membroAnteriorOpt = vinculoRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+                        old.getUsuarioId(), organizacaoId, papelRebaixado, igrejaVinculoId);
+                if (membroAnteriorOpt.isPresent()) {
+                    var m = membroAnteriorOpt.get();
                     m.setAtivo(true);
                     vinculoRepository.save(m);
                 } else {
@@ -140,8 +141,8 @@ public class AdicionarVinculoUseCase {
                     demoted.setId(UUID.randomUUID());
                     demoted.setUsuarioId(old.getUsuarioId());
                     demoted.setOrganizacaoId(organizacaoId);
-                    demoted.setTipoOrganizacao(tipo.name());
-                    demoted.setPapel(demotedRole);
+                    demoted.setTipoOrganizacao(tipo);
+                    demoted.setPapel(papelRebaixado);
                     demoted.setIgrejaVinculoId(igrejaVinculoId);
                     demoted.setAtivo(true);
                     vinculoRepository.save(demoted);
@@ -153,7 +154,7 @@ public class AdicionarVinculoUseCase {
         entity.setId(UUID.randomUUID());
         entity.setUsuarioId(usuarioId);
         entity.setOrganizacaoId(organizacaoId);
-        entity.setTipoOrganizacao(tipo.name());
+        entity.setTipoOrganizacao(tipo);
         entity.setPapel(papel.name());
         entity.setIgrejaVinculoId(igrejaVinculoId);
         entity.setAtivo(true);

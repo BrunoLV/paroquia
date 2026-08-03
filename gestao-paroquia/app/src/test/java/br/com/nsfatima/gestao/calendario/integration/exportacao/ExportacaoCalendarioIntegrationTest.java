@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.exportacao;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,7 +122,7 @@ class ExportacaoCalendarioIntegrationTest {
         event1.setId(UUID.randomUUID());
         event1.setTitulo("Festa Liturgica");
         event1.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
-        event1.setCategoria("LITURGICO");
+        event1.setCategoria(CategoriaEvento.LITURGICO);
         event1.setStatus("CONFIRMADO");
         event1.setInicioUtc(Instant.parse("2026-05-15T18:00:00Z"));
         event1.setFimUtc(Instant.parse("2026-05-15T20:00:00Z"));
@@ -131,7 +132,7 @@ class ExportacaoCalendarioIntegrationTest {
         event2.setId(UUID.randomUUID());
         event2.setTitulo("Reuniao Administrativa");
         event2.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000bb"));
-        event2.setCategoria("ADMINISTRATIVO");
+        event2.setCategoria(CategoriaEvento.ADMINISTRATIVO);
         event2.setStatus("CONFIRMADO");
         event2.setInicioUtc(Instant.parse("2026-05-16T18:00:00Z"));
         event2.setFimUtc(Instant.parse("2026-05-16T20:00:00Z"));

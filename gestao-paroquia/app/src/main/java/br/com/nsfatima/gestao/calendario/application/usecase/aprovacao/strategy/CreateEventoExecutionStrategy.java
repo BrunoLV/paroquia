@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.strategy;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.CreateEventoUseCase;
@@ -13,19 +13,19 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateEventoExecutionStrategy implements ApprovalExecutionStrategy {
+public class CreateEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
     private final CreateEventoUseCase createEventoUseCase;
     private final EventoJpaRepository eventoRepository;
-    private final ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     public CreateEventoExecutionStrategy(
             CreateEventoUseCase createEventoUseCase,
             EventoJpaRepository eventoRepository,
-            ApprovalActionPayloadMapper approvalActionPayloadMapper) {
+            AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
         this.createEventoUseCase = createEventoUseCase;
         this.eventoRepository = eventoRepository;
-        this.approvalActionPayloadMapper = approvalActionPayloadMapper;
+        this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
     }
 
     @Override
@@ -37,13 +37,13 @@ public class CreateEventoExecutionStrategy implements ApprovalExecutionStrategy 
     public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
 
-        ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
+        AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         String idempotencyKey = payload.idempotencyKey() == null
-                ? "approval-exec-" + aprovacao.getId()
+                ? "aprovacao-exec-" + aprovacao.getId()
                 : payload.idempotencyKey();
 
         EventoResponse response = createEventoUseCase.executeApprovedCreation(
-                createEventoUseCase.restoreFromApprovalPayload(payload),
+                createEventoUseCase.restoreFromAprovacaoPayload(payload),
                 idempotencyKey);
 
         aprovacao.setEventoId(response.id());

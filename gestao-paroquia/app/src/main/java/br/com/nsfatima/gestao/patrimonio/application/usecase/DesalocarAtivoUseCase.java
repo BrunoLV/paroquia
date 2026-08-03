@@ -10,6 +10,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFou
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoStatus;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoTipo;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
+import br.com.nsfatima.gestao.patrimonio.domain.model.TipoNotaAtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoAlocacaoEntity;
@@ -26,7 +27,6 @@ import java.util.UUID;
 @Service
 public class DesalocarAtivoUseCase {
 
-    private static final String TIPO_NOTA_DEVOLUCAO = "DEVOLUCAO";
     private static final List<AtivoAlocacaoStatus> STATUS_DESALOCAVEIS = List.of(
             AtivoAlocacaoStatus.CONFIRMADA, AtivoAlocacaoStatus.ATRASADA);
 
@@ -76,7 +76,8 @@ public class DesalocarAtivoUseCase {
 
         String observacao = request != null && request.observacao() != null
                 ? request.observacao() : "Ativo devolvido";
-        createNotaUseCase.execute(saved.getId(), actorContext.usuarioId(), TIPO_NOTA_DEVOLUCAO, observacao);
+        createNotaUseCase.execute(saved.getId(), actorContext.usuarioId(), TipoNotaAtivoPatrimonial.DEVOLUCAO,
+                observacao);
         auditPublisher.publishDesalocacao(actorContext.actor(), saved.getId(), saved.getOrganizacaoId());
 
         return CreateAtivoPatrimonialUseCase.toResponse(saved);

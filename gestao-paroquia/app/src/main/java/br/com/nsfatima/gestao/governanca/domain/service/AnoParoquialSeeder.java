@@ -34,7 +34,7 @@ public class AnoParoquialSeeder {
             int currentYear = LocalDate.now().getYear();
             AnoParoquialEntity entity = new AnoParoquialEntity();
             entity.setAno(currentYear);
-            entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO.name());
+            entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO);
             repository.save(entity);
             LOGGER.info("Parish Year initialized: Seeded year {} as EM_PLANEJAMENTO because the database was empty.",
                     currentYear);

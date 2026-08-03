@@ -2,14 +2,14 @@ package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.policy.CalendarLockPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioCalendarioPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoRecorrenciaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
-import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.YearlyRecurrenceGeneratorJob;
+import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.GeradorRecorrenciaAnualJob;
 import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,15 +29,15 @@ public class CreateEventoRecorrenciaUseCase {
 
     private final EventoRecorrenciaJpaRepository recurrenceRepository;
     private final EventoJpaRepository eventRepository;
-    private final YearlyRecurrenceGeneratorJob generationJob;
-    private final CalendarLockPolicy calendarLockPolicy;
+    private final GeradorRecorrenciaAnualJob generationJob;
+    private final BloqueioCalendarioPolicy calendarLockPolicy;
     private final ProjetoVincularPolicy projetoVincularPolicy;
 
     public CreateEventoRecorrenciaUseCase(
             EventoRecorrenciaJpaRepository recurrenceRepository,
             EventoJpaRepository eventRepository,
-            YearlyRecurrenceGeneratorJob generationJob,
-            CalendarLockPolicy calendarLockPolicy,
+            GeradorRecorrenciaAnualJob generationJob,
+            BloqueioCalendarioPolicy calendarLockPolicy,
             ProjetoVincularPolicy projetoVincularPolicy) {
         this.recurrenceRepository = recurrenceRepository;
         this.eventRepository = eventRepository;

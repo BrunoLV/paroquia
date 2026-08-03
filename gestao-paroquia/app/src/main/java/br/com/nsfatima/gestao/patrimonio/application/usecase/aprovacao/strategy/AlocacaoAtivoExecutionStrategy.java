@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.patrimonio.application.usecase.aprovacao.strategy;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.ApprovalExecutionStrategy;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
@@ -21,21 +21,21 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class AlocacaoAtivoExecutionStrategy implements ApprovalExecutionStrategy {
+public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
     private final AlocarAtivoParaEventoUseCase alocarAtivoParaEventoUseCase;
     private final AtivoPatrimonialJpaRepository ativoRepository;
     private final AtivoAlocacaoJpaRepository alocacaoRepository;
-    private final ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     public AlocacaoAtivoExecutionStrategy(AlocarAtivoParaEventoUseCase alocarAtivoParaEventoUseCase,
                                           AtivoPatrimonialJpaRepository ativoRepository,
                                           AtivoAlocacaoJpaRepository alocacaoRepository,
-                                          ApprovalActionPayloadMapper approvalActionPayloadMapper) {
+                                          AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
         this.alocarAtivoParaEventoUseCase = alocarAtivoParaEventoUseCase;
         this.ativoRepository = ativoRepository;
         this.alocacaoRepository = alocacaoRepository;
-        this.approvalActionPayloadMapper = approvalActionPayloadMapper;
+        this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AlocacaoAtivoExecutionStrategy implements ApprovalExecutionStrategy
     @Override
     public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
-        ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
+        AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         AtivoPatrimonialEntity ativo = ativoRepository.findById(payload.ativoId())
                 .orElseThrow(() -> new AtivoPatrimonialNotFoundException(
                         "Ativo patrimonial não encontrado: " + payload.ativoId()));
@@ -62,7 +62,7 @@ public class AlocacaoAtivoExecutionStrategy implements ApprovalExecutionStrategy
 
     @Override
     public String fetchResourceStatus(AprovacaoEntity aprovacao) {
-        ApprovalActionPayload payload = approvalActionPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
+        AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
         if (payload.ativoId() == null) {
             return null;
         }

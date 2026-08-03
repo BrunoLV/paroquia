@@ -48,15 +48,15 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
             where a.organizacao_id = :organizacaoId
               and a.ocorrido_em_utc >= :inicioUtc
               and a.ocorrido_em_utc < :fimUtc
-              and lower(a.resultado) in ('success', 'executed')
+              and lower(a.resultado) in ('sucesso', 'executado')
               and (
-                    lower(a.acao) = 'cancel'
+                    lower(a.acao) = 'cancelar'
                     or (
-                        lower(a.acao) = 'patch'
+                        lower(a.acao) = 'atualizar'
                         and (
-                            a.detalhes_auditaveis_json like '%"scheduleChanged":true%'
-                            or a.detalhes_auditaveis_json like '%"responsibleOrgChanged":true%'
-                            or a.detalhes_auditaveis_json like '%"cancellation":true%'
+                            a.detalhes_auditaveis_json like '%"agendaAlterada":true%'
+                            or a.detalhes_auditaveis_json like '%"organizacaoResponsavelAlterada":true%'
+                            or a.detalhes_auditaveis_json like '%"cancelamento":true%'
                         )
                     )
               )

@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogQueryService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaQueryService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,11 +16,11 @@ import java.util.UUID;
 @Service
 public class ListAuditTrailUseCase {
 
-    private final AuditLogQueryService auditLogQueryService;
+    private final AuditoriaQueryService auditLogQueryService;
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
 
     public ListAuditTrailUseCase(
-            AuditLogQueryService auditLogQueryService,
+            AuditoriaQueryService auditLogQueryService,
             PeriodoOperacionalPolicy periodoOperacionalPolicy) {
         this.auditLogQueryService = auditLogQueryService;
         this.periodoOperacionalPolicy = periodoOperacionalPolicy;
@@ -63,10 +63,10 @@ public class ListAuditTrailUseCase {
     private void assertAccessToOrganization(UUID organizacaoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
-            throw new AccessDeniedException("Authenticated user required");
+            throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
         if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
-            throw new AccessDeniedException("User cannot query audit data outside the responsible organization scope");
+            throw new AccessDeniedException("Usuário não pode consultar dados de auditoria fora do escopo da organização responsável");
         }
     }
 }

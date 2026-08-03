@@ -1,7 +1,10 @@
 package br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,8 +18,9 @@ public class AnoParoquialEntity {
     @Id
     private Integer ano;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private String status;
+    private AnoParoquialStatus status;
 
     @Column(name = "data_fechamento_utc")
     private Instant dataFechamentoUtc;
@@ -33,11 +37,11 @@ public class AnoParoquialEntity {
         this.ano = ano;
     }
 
-    public String getStatus() {
+    public AnoParoquialStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AnoParoquialStatus status) {
         this.status = status;
     }
 

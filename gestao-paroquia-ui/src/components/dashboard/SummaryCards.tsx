@@ -9,7 +9,7 @@ import {
 interface SummaryCardsProps {
   metrics?: {
     monthlyEvents: number;
-    pendingApprovals: number;
+    aprovacoesPendentes: number;
     activeProjects?: number;
   };
 }
@@ -32,7 +32,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
     },
     {
       title: 'Pendentes',
-      value: metrics ? metrics.pendingApprovals : '--',
+      value: metrics ? metrics.aprovacoesPendentes : '--',
       color: '#f57c00',
       bgGradient: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
       icon: PendingIcon,

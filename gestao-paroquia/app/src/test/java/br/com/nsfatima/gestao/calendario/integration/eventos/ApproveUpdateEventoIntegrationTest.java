@@ -1,7 +1,10 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -43,7 +46,7 @@ class ApproveUpdateEventoIntegrationTest {
     private AprovacaoJpaRepository aprovacaoJpaRepository;
 
     @Autowired
-    private ApprovalActionPayloadMapper approvalActionPayloadMapper;
+    private AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     @Test
     @SuppressWarnings("null")
@@ -69,7 +72,7 @@ class ApproveUpdateEventoIntegrationTest {
         UUID eventoId = UUID.fromString(
                 objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
-        // Step 2: PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDING
+        // Step 2: PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDENTE
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
@@ -89,8 +92,8 @@ class ApproveUpdateEventoIntegrationTest {
                         .get("solicitacaoAprovacaoId").asString());
 
         // Event should not be changed yet
-        var eventoBeforeApproval = eventoJpaRepository.findById(eventoId).orElseThrow();
-        assertThat(eventoBeforeApproval.getInicioUtc().toString()).contains("2027-08-01");
+        var eventoBeforeAprovacao = eventoJpaRepository.findById(eventoId).orElseThrow();
+        assertThat(eventoBeforeAprovacao.getInicioUtc().toString()).contains("2027-08-01");
 
         // Step 3: PATCH approve → update applied automatically
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
@@ -109,10 +112,10 @@ class ApproveUpdateEventoIntegrationTest {
                 .andExpect(jsonPath("$.actionExecution.eventoId").value(eventoId.toString()));
 
         // Event should now have updated fields
-        var eventoAfterApproval = eventoJpaRepository.findById(eventoId).orElseThrow();
-        assertThat(eventoAfterApproval.getInicioUtc().toString()).contains("2027-08-05");
+        var eventoAfterAprovacao = eventoJpaRepository.findById(eventoId).orElseThrow();
+        assertThat(eventoAfterAprovacao.getInicioUtc().toString()).contains("2027-08-05");
 
-        // Approval should have executadoEmUtc set
+        // Aprovacao should have executadoEmUtc set
         var savedAprovacao = aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow();
         assertThat(savedAprovacao.getExecutadoEmUtc()).isNotNull();
     }
@@ -141,9 +144,9 @@ class ApproveUpdateEventoIntegrationTest {
         UUID eventoId = UUID.fromString(
                 objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
-        // Setup approval directly
+        // Setup aprovacao directly
         UUID aprovacaoId = UUID.randomUUID();
-        ApprovalActionPayload payload = new ApprovalActionPayload(
+        AprovacaoAcaoPayload payload = new AprovacaoAcaoPayload(
                 null,
                 eventoId,
                 null,
@@ -164,14 +167,14 @@ class ApproveUpdateEventoIntegrationTest {
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(eventoId);
         aprovacao.setTipoSolicitacao("EDICAO_EVENTO");
-        aprovacao.setStatus("PENDENTE");
+        aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
         aprovacao.setSolicitantePapel("coordenador-pastoral-local");
-        aprovacao.setSolicitanteTipoOrganizacao("PASTORAL");
+        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);
         aprovacao.setCorrelationId(aprovacaoId.toString());
         aprovacao.setAprovadorPapel("conselho-coordenador");
-        aprovacao.setActionPayloadJson(approvalActionPayloadMapper.toJson(payload));
+        aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
         aprovacaoJpaRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)

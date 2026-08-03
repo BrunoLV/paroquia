@@ -66,7 +66,7 @@ public class CancelarAlocacaoAtivoUseCase {
     }
 
     private void cancelarAprovacaoVinculada(AprovacaoEntity aprovacao, String motivo) {
-        if (aprovacao.getStatusEnum() != AprovacaoStatus.PENDENTE) {
+        if (aprovacao.getStatus() != AprovacaoStatus.PENDENTE) {
             return;
         }
         aprovacao.setStatus(AprovacaoStatus.REPROVADA);

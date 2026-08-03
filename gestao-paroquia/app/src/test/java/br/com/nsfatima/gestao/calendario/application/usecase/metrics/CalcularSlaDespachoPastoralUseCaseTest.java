@@ -38,7 +38,7 @@ class CalcularSlaDespachoPastoralUseCaseTest {
 
         AprovacaoEntity ap1 = new AprovacaoEntity();
         ap1.setId(UUID.randomUUID());
-        ap1.setStatus(AprovacaoStatus.APROVADA.name());
+        ap1.setStatus(AprovacaoStatus.APROVADA);
         ap1.setCriadoEmUtc(duasHorasAtras);
         ap1.setDecididoEmUtc(agora);
 

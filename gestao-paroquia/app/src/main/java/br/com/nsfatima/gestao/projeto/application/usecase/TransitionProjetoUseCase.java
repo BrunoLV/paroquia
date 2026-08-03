@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
@@ -31,7 +32,7 @@ import java.util.UUID;
 public class TransitionProjetoUseCase {
 
     private final ProjetoEventoJpaRepository repository;
-    private final ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository;
+    private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
     private final EventoJpaRepository eventoRepository;
     private final ProjetoMapper mapper;
     private final ProjetoAuthorizationService authorizationService;
@@ -40,14 +41,14 @@ public class TransitionProjetoUseCase {
 
     public TransitionProjetoUseCase(
             ProjetoEventoJpaRepository repository,
-            ProjetoSolicitacaoAprovacaoJpaRepository approvalRepository,
+            ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository,
             EventoJpaRepository eventoRepository,
             ProjetoMapper mapper,
             ProjetoAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
             ObjectMapper objectMapper) {
         this.repository = repository;
-        this.approvalRepository = approvalRepository;
+        this.aprovacaoRepository = aprovacaoRepository;
         this.eventoRepository = eventoRepository;
         this.mapper = mapper;
         this.authorizationService = authorizationService;
@@ -57,103 +58,104 @@ public class TransitionProjetoUseCase {
 
     @Transactional
     public ProjetoResponse iniciar(UUID id) {
-        ProjetoEventoEntity project = repository.findById(id)
+        ProjetoEventoEntity projeto = repository.findById(id)
                 .orElseThrow(() -> new ProjetoNotFoundException(id));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanStartOrConclude(actorContext, project.getOrganizacaoResponsavelId());
+        authorizationService.assertCanStartOrConclude(actorContext, projeto.getOrganizacaoResponsavelId());
 
-        if (project.getStatusEnum() != ProjetoStatus.ABERTO) {
-            throw new IllegalStateException("Only ABERTO projects can be started");
+        if (projeto.getStatus() != ProjetoStatus.ABERTO) {
+            throw new IllegalStateException("Somente projetos ABERTO podem ser iniciados");
         }
 
-        project.setStatus(ProjetoStatus.EM_ANDAMENTO);
-        ProjetoEventoEntity saved = repository.save(project);
+        projeto.setStatus(ProjetoStatus.EM_ANDAMENTO);
+        ProjetoEventoEntity saved = repository.save(projeto);
         return mapper.toResponse(saved);
     }
 
     @Transactional
     public ProjetoResponse concluir(UUID id) {
-        ProjetoEventoEntity project = repository.findById(id)
+        ProjetoEventoEntity projeto = repository.findById(id)
                 .orElseThrow(() -> new ProjetoNotFoundException(id));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanStartOrConclude(actorContext, project.getOrganizacaoResponsavelId());
+        authorizationService.assertCanStartOrConclude(actorContext, projeto.getOrganizacaoResponsavelId());
 
-        if (project.getStatusEnum() != ProjetoStatus.EM_ANDAMENTO) {
-            throw new IllegalStateException("Only EM_ANDAMENTO projects can be completed");
+        if (projeto.getStatus() != ProjetoStatus.EM_ANDAMENTO) {
+            throw new IllegalStateException("Somente projetos EM_ANDAMENTO podem ser concluídos");
         }
 
-        project.setStatus(ProjetoStatus.CONCLUIDO);
-        ProjetoEventoEntity saved = repository.save(project);
+        projeto.setStatus(ProjetoStatus.CONCLUIDO);
+        ProjetoEventoEntity saved = repository.save(projeto);
         return mapper.toResponse(saved);
     }
 
     @Transactional
     public ProjetoCreationResult cancelar(UUID id, boolean cancelarEventosVinculados) {
-        ProjetoEventoEntity project = repository.findById(id)
+        ProjetoEventoEntity projeto = repository.findById(id)
                 .orElseThrow(() -> new ProjetoNotFoundException(id));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanCancel(actorContext, project.getOrganizacaoResponsavelId());
+        authorizationService.assertCanCancel(actorContext, projeto.getOrganizacaoResponsavelId());
 
-        if (project.getStatusEnum() != ProjetoStatus.ABERTO && project.getStatusEnum() != ProjetoStatus.EM_ANDAMENTO) {
-            throw new IllegalStateException("Only ABERTO or EM_ANDAMENTO projects can be cancelled");
+        if (projeto.getStatus() != ProjetoStatus.ABERTO && projeto.getStatus() != ProjetoStatus.EM_ANDAMENTO) {
+            throw new IllegalStateException("Somente projetos ABERTO ou EM_ANDAMENTO podem ser cancelados");
         }
 
         if (authorizationService.isHighLevelActor(actorContext)) {
-            // Cancel immediately
-            project.setStatus(ProjetoStatus.CANCELADO);
-            ProjetoEventoEntity savedProject = repository.save(project);
+            // Cancelar imediatamente
+            projeto.setStatus(ProjetoStatus.CANCELADO);
+            ProjetoEventoEntity projetoSalvo = repository.save(projeto);
 
-            // Handle linked events
-            List<EventoEntity> linkedEvents = eventoRepository.findByProjetoId(id);
+            // Tratar eventos vinculados
+            List<EventoEntity> eventosVinculados = eventoRepository.findByProjetoId(id);
             if (cancelarEventosVinculados) {
-                for (EventoEntity event : linkedEvents) {
-                    event.setStatus(EventoStatusInput.CANCELADO.name());
+                for (EventoEntity evento : eventosVinculados) {
+                    evento.setStatus(EventoStatusInput.CANCELADO.name());
                 }
             } else {
-                for (EventoEntity event : linkedEvents) {
-                    event.setProjetoId(null);
+                for (EventoEntity evento : eventosVinculados) {
+                    evento.setProjetoId(null);
                 }
             }
-            eventoRepository.saveAll(linkedEvents);
+            eventoRepository.saveAll(eventosVinculados);
 
-            return new ProjetoCreationResult(mapper.toResponse(savedProject), null);
+            return new ProjetoCreationResult(mapper.toResponse(projetoSalvo), null);
         } else {
-            // Create a pending cancellation request
-            ProjetoSolicitacaoAprovacaoEntity approval = new ProjetoSolicitacaoAprovacaoEntity();
-            approval.setId(UUID.randomUUID());
-            approval.setProjetoId(id);
-            approval.setTipoSolicitacao("CANCELAMENTO");
-            approval.setStatus(AprovacaoStatus.PENDENTE.name());
-            approval.setSolicitanteId(actorContext.actor());
-            approval.setSolicitantePapel(actorContext.role());
-            approval.setSolicitanteTipoOrganizacao(actorContext.organizationType());
-            approval.setCancelarEventosVinculados(cancelarEventosVinculados);
-            approval.setCriadoEmUtc(Instant.now());
+            // Criar uma solicitação de cancelamento pendente
+            ProjetoSolicitacaoAprovacaoEntity aprovacao = new ProjetoSolicitacaoAprovacaoEntity();
+            aprovacao.setId(UUID.randomUUID());
+            aprovacao.setProjetoId(id);
+            aprovacao.setTipoSolicitacao("CANCELAMENTO");
+            aprovacao.setStatus(AprovacaoStatus.PENDENTE);
+            aprovacao.setSolicitanteId(actorContext.actor());
+            aprovacao.setSolicitantePapel(actorContext.role());
+            aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
+            aprovacao.setCancelarEventosVinculados(cancelarEventosVinculados);
+            aprovacao.setCriadoEmUtc(Instant.now());
 
-            ProjetoSolicitacaoAprovacaoEntity savedApproval = approvalRepository.save(approval);
-            return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedApproval));
+            ProjetoSolicitacaoAprovacaoEntity savedAprovacao = aprovacaoRepository.save(aprovacao);
+            return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedAprovacao));
         }
     }
 
     @Transactional
     public ProjetoAprovacaoResponse decidir(UUID solicitacaoId, boolean aprovado, String observacao) {
-        ProjetoSolicitacaoAprovacaoEntity req = approvalRepository.findById(solicitacaoId)
-                .orElseThrow(() -> new IllegalArgumentException("Approval request not found: " + solicitacaoId));
+        ProjetoSolicitacaoAprovacaoEntity req = aprovacaoRepository.findById(solicitacaoId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Solicitação de aprovação não encontrada: " + solicitacaoId));
 
-        if (!AprovacaoStatus.PENDENTE.name().equals(req.getStatus())) {
-            throw new IllegalStateException("This request is already decided");
+        if (req.getStatus() != AprovacaoStatus.PENDENTE) {
+            throw new IllegalStateException("Esta solicitação já foi decidida");
         }
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         if (!authorizationService.isHighLevelActor(actorContext)) {
             throw new ForbiddenOperationException(
-                    "Only ADMIN, PAROCO or CONSELHO coordinators can decide on project requests");
+                    "Apenas ADMIN, PAROCO ou coordenadores do CONSELHO podem decidir solicitações de projeto");
         }
 
-        req.setStatus(aprovado ? "APROVADA" : "REJEITADA");
+        req.setStatus(aprovado ? AprovacaoStatus.APROVADA : AprovacaoStatus.REPROVADA);
         req.setDecididoEmUtc(Instant.now());
         req.setAprovadorId(actorContext.actor());
         req.setDecisionObservacao(observacao);
@@ -161,47 +163,47 @@ public class TransitionProjetoUseCase {
         if ("CRIACAO".equals(req.getTipoSolicitacao())) {
             if (aprovado) {
                 try {
-                    ProjetoCreateRequest creationPayload = objectMapper.readValue(
+                    ProjetoCreateRequest payloadCriacao = objectMapper.readValue(
                             req.getActionPayloadJson(), ProjetoCreateRequest.class);
 
-                    ProjetoEventoEntity project = new ProjetoEventoEntity();
-                    project.setId(UUID.randomUUID());
-                    project.setNome(creationPayload.nome());
-                    project.setDescricao(creationPayload.descricao());
-                    project.setOrganizacaoResponsavelId(creationPayload.organizacaoResponsavelId());
-                    project.setInicioUtc(creationPayload.inicio());
-                    project.setFimUtc(creationPayload.fim());
-                    project.setStatus(ProjetoStatus.ABERTO);
+                    ProjetoEventoEntity projeto = new ProjetoEventoEntity();
+                    projeto.setId(UUID.randomUUID());
+                    projeto.setNome(payloadCriacao.nome());
+                    projeto.setDescricao(payloadCriacao.descricao());
+                    projeto.setOrganizacaoResponsavelId(payloadCriacao.organizacaoResponsavelId());
+                    projeto.setInicioUtc(payloadCriacao.inicio());
+                    projeto.setFimUtc(payloadCriacao.fim());
+                    projeto.setStatus(ProjetoStatus.ABERTO);
 
-                    ProjetoEventoEntity saved = repository.save(project);
+                    ProjetoEventoEntity saved = repository.save(projeto);
                     req.setProjetoId(saved.getId());
                 } catch (Exception e) {
-                    throw new RuntimeException("Failed to process approved project creation", e);
+                    throw new RuntimeException("Falha ao processar a criação de projeto aprovada", e);
                 }
             }
         } else if ("CANCELAMENTO".equals(req.getTipoSolicitacao())) {
             if (aprovado) {
-                ProjetoEventoEntity project = repository.findById(req.getProjetoId())
+                ProjetoEventoEntity projeto = repository.findById(req.getProjetoId())
                         .orElseThrow(() -> new ProjetoNotFoundException(req.getProjetoId()));
 
-                project.setStatus(ProjetoStatus.CANCELADO);
-                repository.save(project);
+                projeto.setStatus(ProjetoStatus.CANCELADO);
+                repository.save(projeto);
 
-                List<EventoEntity> linkedEvents = eventoRepository.findByProjetoId(project.getId());
+                List<EventoEntity> eventosVinculados = eventoRepository.findByProjetoId(projeto.getId());
                 if (Boolean.TRUE.equals(req.getCancelarEventosVinculados())) {
-                    for (EventoEntity event : linkedEvents) {
-                        event.setStatus(EventoStatusInput.CANCELADO.name());
+                    for (EventoEntity evento : eventosVinculados) {
+                        evento.setStatus(EventoStatusInput.CANCELADO.name());
                     }
                 } else {
-                    for (EventoEntity event : linkedEvents) {
-                        event.setProjetoId(null);
+                    for (EventoEntity evento : eventosVinculados) {
+                        evento.setProjetoId(null);
                     }
                 }
-                eventoRepository.saveAll(linkedEvents);
+                eventoRepository.saveAll(eventosVinculados);
             }
         }
 
-        ProjetoSolicitacaoAprovacaoEntity savedRequest = approvalRepository.save(req);
-        return mapper.toAprovacaoResponse(savedRequest);
+        ProjetoSolicitacaoAprovacaoEntity solicitacaoSalva = aprovacaoRepository.save(req);
+        return mapper.toAprovacaoResponse(solicitacaoSalva);
     }
 }

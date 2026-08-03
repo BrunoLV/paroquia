@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.domain.exception.PersistenciaAuditoriaObrigatoriaException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
@@ -31,7 +31,7 @@ import java.util.List;
 @Order(4)
 public class ValidationExceptionHandler extends BaseExceptionHandler {
 
-    public ValidationExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
+    public ValidationExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
 

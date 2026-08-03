@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.application.usecase;
 
-import br.com.nsfatima.gestao.aprovacao.application.mapper.ApprovalActionPayloadMapper;
+import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -10,7 +10,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AlocacaoAtivoApprovalPendingResponse;
+import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AlocacaoAtivoAprovacaoPendenteResponse;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AlocarAtivoRequest;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoOperationResult;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
@@ -93,7 +93,7 @@ class AlocarAtivoParaEventoUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        ApprovalActionPayloadMapper payloadMapper = new ApprovalActionPayloadMapper(
+        AprovacaoAcaoPayloadMapper payloadMapper = new AprovacaoAcaoPayloadMapper(
                 new tools.jackson.databind.ObjectMapper());
         useCase = new AlocarAtivoParaEventoUseCase(ativoRepository, eventoRepository, localRepository,
                 alocacaoRepository, aprovacaoRepository, actorContextResolver,
@@ -167,9 +167,9 @@ class AlocarAtivoParaEventoUseCaseTest {
         AtivoOperationResult result = useCase.execute(ativoId,
                 new AlocarAtivoRequest(eventoId, "Utilização para exibição de slides", dataInicio, dataFim));
 
-        assertThat(result).isInstanceOf(AtivoOperationResult.Pending.class);
+        assertThat(result).isInstanceOf(AtivoOperationResult.Pendente.class);
         assertThat(result.status()).isEqualTo(HttpStatus.ACCEPTED);
-        assertThat(((AlocacaoAtivoApprovalPendingResponse) result.body()).ativoId()).isEqualTo(ativoId);
+        assertThat(((AlocacaoAtivoAprovacaoPendenteResponse) result.body()).ativoId()).isEqualTo(ativoId);
         assertThat(ativo.getStatus()).isEqualTo(AtivoStatus.DISPONIVEL);
         verify(ativoRepository, never()).save(any());
         verify(createNotaUseCase, never()).execute(any(), any(), any(), any());
@@ -181,7 +181,7 @@ class AlocarAtivoParaEventoUseCaseTest {
 
         ArgumentCaptor<AprovacaoEntity> aprovacaoCaptor = ArgumentCaptor.forClass(AprovacaoEntity.class);
         verify(aprovacaoRepository).save(aprovacaoCaptor.capture());
-        assertThat(aprovacaoCaptor.getValue().getStatusEnum()).isEqualTo(AprovacaoStatus.PENDENTE);
+        assertThat(aprovacaoCaptor.getValue().getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.support.api.v1.error;
 
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -19,9 +19,9 @@ import java.util.Map;
 @SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 public abstract class BaseExceptionHandler {
 
-    protected final AuditLogPersistenceService auditLogPersistenceService;
+    protected final AuditoriaPersistenceService auditLogPersistenceService;
 
-    protected BaseExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
+    protected BaseExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
@@ -51,12 +51,12 @@ public abstract class BaseExceptionHandler {
 
         String userId = resolveUserId();
         if (userId != null) {
-            metadata.put("userId", userId);
+            metadata.put("usuarioId", userId);
         }
 
         String organizationId = resolveOrganizationId();
         if (organizationId != null) {
-            metadata.put("organizationId", organizationId);
+            metadata.put("organizacaoId", organizationId);
         }
 
         auditLogPersistenceService.log(

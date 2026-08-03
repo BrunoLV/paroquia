@@ -1,7 +1,13 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoOrganizacaoAttributeConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -21,8 +27,9 @@ public class ProjetoSolicitacaoAprovacaoEntity {
     @Column(name = "tipo_solicitacao", nullable = false, length = 64)
     private String tipoSolicitacao;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private String status;
+    private AprovacaoStatus status;
 
     @Column(name = "solicitante_id", nullable = false)
     private String solicitanteId;
@@ -30,8 +37,9 @@ public class ProjetoSolicitacaoAprovacaoEntity {
     @Column(name = "solicitante_papel", nullable = false, length = 64)
     private String solicitantePapel;
 
+    @Convert(converter = TipoOrganizacaoAttributeConverter.class)
     @Column(name = "solicitante_tipo_organizacao", nullable = false, length = 64)
-    private String solicitanteTipoOrganizacao;
+    private TipoOrganizacao solicitanteTipoOrganizacao;
 
     @Column(name = "action_payload_json", length = 4000)
     private String actionPayloadJson;
@@ -77,11 +85,11 @@ public class ProjetoSolicitacaoAprovacaoEntity {
         this.tipoSolicitacao = tipoSolicitacao;
     }
 
-    public String getStatus() {
+    public AprovacaoStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AprovacaoStatus status) {
         this.status = status;
     }
 
@@ -101,11 +109,11 @@ public class ProjetoSolicitacaoAprovacaoEntity {
         this.solicitantePapel = solicitantePapel;
     }
 
-    public String getSolicitanteTipoOrganizacao() {
+    public TipoOrganizacao getSolicitanteTipoOrganizacao() {
         return solicitanteTipoOrganizacao;
     }
 
-    public void setSolicitanteTipoOrganizacao(String solicitanteTipoOrganizacao) {
+    public void setSolicitanteTipoOrganizacao(TipoOrganizacao solicitanteTipoOrganizacao) {
         this.solicitanteTipoOrganizacao = solicitanteTipoOrganizacao;
     }
 

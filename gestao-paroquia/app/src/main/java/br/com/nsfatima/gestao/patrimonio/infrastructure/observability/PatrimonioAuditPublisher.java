@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -13,14 +13,14 @@ public class PatrimonioAuditPublisher {
     private static final String TYPE_ATIVO = "ATIVO_PATRIMONIAL";
     private static final String RESULT_SUCCESS = "success";
 
-    private final AuditLogPersistenceService auditLogPersistenceService;
+    private final AuditoriaPersistenceService auditLogPersistenceService;
 
-    public PatrimonioAuditPublisher(AuditLogPersistenceService auditLogPersistenceService) {
+    public PatrimonioAuditPublisher(AuditoriaPersistenceService auditLogPersistenceService) {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
     public void publishCreateSuccess(String actor, UUID ativoId, UUID organizacaoId) {
-        auditLogPersistenceService.log(actor, "create", ativoId.toString(), RESULT_SUCCESS,
+        auditLogPersistenceService.log(actor, "criar", ativoId.toString(), RESULT_SUCCESS,
                 withDefaults(ativoId, organizacaoId, Map.of()));
     }
 
@@ -43,7 +43,7 @@ public class PatrimonioAuditPublisher {
     }
 
     public void publishDeniedWrite(String actor, UUID ativoId) {
-        auditLogPersistenceService.log(actor, "write-denied", ativoId == null ? "ativo" : ativoId.toString(),
+        auditLogPersistenceService.log(actor, "escrita-negada", ativoId == null ? "ativo" : ativoId.toString(),
                 "ACCESS_DENIED", Map.of("resourceType", TYPE_ATIVO, "errorCategory", "AUTHZ"));
     }
 

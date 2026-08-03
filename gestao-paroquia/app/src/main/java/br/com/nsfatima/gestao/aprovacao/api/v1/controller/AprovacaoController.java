@@ -117,9 +117,9 @@ public class AprovacaoController {
             @RequestBody @Valid AprovacaoDecisionRequest request) {
         eventoAuditPublisher.publish(
                 "system",
-                "approval-decision-request",
+                "aprovacao-decisao-solicitacao",
                 id.toString(),
-                "received",
+                "recebido",
                 Map.of("correlationId", MDC.get("correlationId") == null ? "n/a" : MDC.get("correlationId")));
 
         return decideSolicitacaoAprovacaoUseCase.decide(id, request);

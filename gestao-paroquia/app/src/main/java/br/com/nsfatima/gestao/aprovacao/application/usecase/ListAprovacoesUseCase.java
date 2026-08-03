@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ListAprovacoesUseCase {
      */
     @Transactional(readOnly = true)
     public Page<AprovacaoResponse> execute(UUID eventoId, String status, Pageable pageable) {
-        return repository.findByFilter(eventoId, status, pageable)
+        return repository.findByFilter(eventoId, AprovacaoStatus.fromJson(status), pageable)
                 .map(mapper::toResponse);
     }
 }

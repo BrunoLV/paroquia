@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LiturgicalGovernanceTest {
 
-    private final LiturgicalProvisioningService service = new LiturgicalProvisioningService(null, null, new LiturgicalEngine());
+    private final ProvisionamentoLiturgicoService service = new ProvisionamentoLiturgicoService(null, null, new MotorLiturgico());
 
     @Test
     @DisplayName("Deve permitir edição manual apenas para perfis PAROCO e VIGARIO")

@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
@@ -57,7 +58,7 @@ class ListOrganizacaoMembrosUseCaseTest {
         memberEntity.setId(UUID.randomUUID());
         memberEntity.setOrganizacaoId(orgId);
         memberEntity.setUsuarioId(userId);
-        memberEntity.setTipoOrganizacao("PASTORAL");
+        memberEntity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         memberEntity.setPapel("COORDENADOR");
         memberEntity.setAtivo(true);
 

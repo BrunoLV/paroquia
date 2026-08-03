@@ -1,19 +1,20 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.aprovacao.application.dto.ApprovalActionPayload;
+import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
+import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
-import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CreateEventoApprovalRequestUseCase;
-import br.com.nsfatima.gestao.calendario.domain.policy.CalendarLockPolicy;
-import br.com.nsfatima.gestao.calendario.domain.service.AgendaPriorityValidatorService;
+import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CreateEventoSolicitacaoAprovacaoUseCase;
+import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioCalendarioPolicy;
+import br.com.nsfatima.gestao.calendario.domain.service.PrioridadeAgendaValidatorService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
-import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalEngine;
-import br.com.nsfatima.gestao.calendario.domain.service.LiturgicalProvisioningService;
+import br.com.nsfatima.gestao.calendario.domain.service.MotorLiturgico;
+import br.com.nsfatima.gestao.calendario.domain.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
@@ -42,7 +43,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Use case responsible for creating new events, handling idempotency, authorization, and approval flows.
+ * Use case responsible for creating new events, handling idempotency, authorization, and aprovacao flows.
  */
 @Service
 public class CreateEventoUseCase {
@@ -56,15 +57,15 @@ public class CreateEventoUseCase {
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final EventoPatchAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
-    private final CreateEventoApprovalRequestUseCase approvalRequestUseCase;
+    private final CreateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
     private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
     private final ProjetoVincularPolicy projetoVincularPolicy;
-    private final CalendarLockPolicy calendarLockPolicy;
-    private final AgendaPriorityValidatorService agendaPriorityValidatorService;
+    private final BloqueioCalendarioPolicy calendarLockPolicy;
+    private final PrioridadeAgendaValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
-    private final LiturgicalEngine liturgicalEngine;
+    private final MotorLiturgico liturgicalEngine;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
-    private final LiturgicalProvisioningService liturgicalProvisioningService;
+    private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
 
     public CreateEventoUseCase(
             EventoDomainService domainService,
@@ -76,15 +77,15 @@ public class CreateEventoUseCase {
             CadastroEventoMetricsPublisher metricsPublisher,
             EventoPatchAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
-            CreateEventoApprovalRequestUseCase approvalRequestUseCase,
+            CreateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
             UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
             ProjetoVincularPolicy projetoVincularPolicy,
-            CalendarLockPolicy calendarLockPolicy,
-            AgendaPriorityValidatorService agendaPriorityValidatorService,
+            BloqueioCalendarioPolicy calendarLockPolicy,
+            PrioridadeAgendaValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager,
-            LiturgicalEngine liturgicalEngine,
+            MotorLiturgico liturgicalEngine,
             CicloLiturgicoRepository cicloLiturgicoRepository,
-            LiturgicalProvisioningService liturgicalProvisioningService) {
+            ProvisionamentoLiturgicoService liturgicalProvisioningService) {
         this.domainService = domainService;
         this.repository = repository;
         this.involvementRepository = involvementRepository;
@@ -94,7 +95,7 @@ public class CreateEventoUseCase {
         this.metricsPublisher = metricsPublisher;
         this.authorizationService = authorizationService;
         this.actorContextResolver = actorContextResolver;
-        this.approvalRequestUseCase = approvalRequestUseCase;
+        this.aprovacaoRequestUseCase = aprovacaoRequestUseCase;
         this.updateEnvolvidosUseCase = updateEnvolvidosUseCase;
         this.projetoVincularPolicy = projetoVincularPolicy;
         this.calendarLockPolicy = calendarLockPolicy;
@@ -106,7 +107,7 @@ public class CreateEventoUseCase {
     }
 
     /**
-     * Executes the creation request. Returns 201 CREATED with the event or 202 ACCEPTED if approval is needed.
+     * Executes the creation request. Returns 201 CREATED with the event or 202 ACCEPTED if aprovacao is needed.
      * <p>
      * Usage Example:
      * useCase.execute("idemp-001", new CreateEventoRequest("Title", "Desc", ...));
@@ -124,8 +125,8 @@ public class CreateEventoUseCase {
                 request.organizacaoResponsavelId(), request.igrejaVinculoId());
 
 
-        if (mode == CreateRequestMode.REQUIRES_APPROVAL) {
-            return new EventoOperationResult.Pending(approvalRequestUseCase.execute(idempotencyKey,
+        if (mode == CreateRequestMode.REQUIRES_APROVACAO) {
+            return new EventoOperationResult.Pendente(aprovacaoRequestUseCase.execute(idempotencyKey,
                     request), HttpStatus.ACCEPTED);
 
         }
@@ -136,16 +137,16 @@ public class CreateEventoUseCase {
     }
 
     /**
-     * Executes a creation that has already been approved through the approval flow.
+     * Executes a creation that has already been approved through the aprovacao flow.
      */
     @Transactional
     public EventoResponse executeApprovedCreation(CreateEventoRequest request, String idempotencyKey) {
-        return createImmediate(idempotencyKey, request, "approval-flow");
+        return createImmediate(idempotencyKey, request, "fluxo-aprovacao");
     }
 
     private void validateIdempotencyKey(String key) {
         if (key == null || key.isBlank()) {
-            throw new IllegalArgumentException("Idempotency-Key header is required");
+            throw new IllegalArgumentException("Cabeçalho Idempotency-Key é obrigatório");
         }
     }
 
@@ -205,8 +206,8 @@ public class CreateEventoUseCase {
         }
 
         boolean hasOverlap = repository.existsByInicioUtcLessThanAndFimUtcGreaterThan(request.fim(), request.inicio());
-        entity.setConflictState(domainService.resolveConflictState(hasOverlap));
-        entity.setConflictReason(domainService.resolveConflictReason(hasOverlap));
+        entity.setEstadoConflito(domainService.resolveEstadoConflito(hasOverlap));
+        entity.setMotivoConflito(domainService.resolveMotivoConflito(hasOverlap));
 
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
@@ -229,29 +230,29 @@ public class CreateEventoUseCase {
                                          Instant inicio, String actor) {
 
         EventoResponse response = result.response();
-        boolean conflictPending = "CONFLICT_PENDING".equals(response.conflictState());
+        boolean conflictPendente = EstadoConflitoAgenda.PENDENTE.name().equals(response.estadoConflito());
 
-        metricsPublisher.publishCreateSuccess(conflictPending, result.replay());
+        metricsPublisher.publishCreateSuccess(conflictPendente, result.replay());
         metricsPublisher.publishEventRegistrationLeadTime(Duration.between(Instant.now(), inicio));
 
-        auditPublisher.publishCreateSuccess(actor, response.id().toString(), result.replay(), response.conflictState());
+        auditPublisher.publishCreateSuccess(actor, response.id().toString(), result.replay(), response.estadoConflito());
     }
 
     private void handleCreationFailure(String actor, RuntimeException ex) {
-        metricsPublisher.publishCreateFailure("BUSINESS_OR_VALIDATION");
-        auditPublisher.publishCreateFailure(actor, "BUSINESS_OR_VALIDATION", ex.getMessage());
+        metricsPublisher.publishCreateFailure("NEGOCIO_OU_VALIDACAO");
+        auditPublisher.publishCreateFailure(actor, "NEGOCIO_OU_VALIDACAO", ex.getMessage());
     }
 
     /**
-     * Reconstructs the original creation request from stored approval data to allow for final execution after
+     * Reconstructs the original creation request from stored aprovacao data to allow for final execution after
      * governance vetting.
      * <p>
      * Usage Example:
      * {@code
-     * CreateEventoRequest request = useCase.restoreFromApprovalPayload(payload);
+     * CreateEventoRequest request = useCase.restoreFromAprovacaoPayload(payload);
      * }
      */
-    public CreateEventoRequest restoreFromApprovalPayload(ApprovalActionPayload payload) {
+    public CreateEventoRequest restoreFromAprovacaoPayload(AprovacaoAcaoPayload payload) {
         Objects.requireNonNull(payload.organizacaoResponsavelId(), "organizacaoResponsavelId is required");
         Objects.requireNonNull(payload.inicio(), "inicio is required");
         Objects.requireNonNull(payload.fim(), "fim is required");

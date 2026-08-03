@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.membro.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -8,9 +8,9 @@ import java.util.Map;
 @Component
 public class MembroAuditPublisher {
 
-    private final AuditLogPersistenceService auditLogService;
+    private final AuditoriaPersistenceService auditLogService;
 
-    public MembroAuditPublisher(AuditLogPersistenceService auditLogService) {
+    public MembroAuditPublisher(AuditoriaPersistenceService auditLogService) {
         this.auditLogService = auditLogService;
     }
 

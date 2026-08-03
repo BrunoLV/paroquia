@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.ConcorrenciaInterpastoralResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -43,7 +44,7 @@ class VerificarConcorrenciaInterpastoralUseCaseTest {
         evA.setOrganizacaoResponsavelId(orgA);
         evA.setInicioUtc(agora);
         evA.setFimUtc(agora.plus(2, ChronoUnit.HOURS));
-        evA.setCategoria("FAMILIA");
+        evA.setCategoria(CategoriaEvento.PASTORAL);
 
         EventoEntity evB = new EventoEntity();
         evB.setId(UUID.randomUUID());
@@ -51,7 +52,7 @@ class VerificarConcorrenciaInterpastoralUseCaseTest {
         evB.setOrganizacaoResponsavelId(orgB);
         evB.setInicioUtc(agora.plus(1, ChronoUnit.DAYS));
         evB.setFimUtc(agora.plus(1, ChronoUnit.DAYS).plus(2, ChronoUnit.HOURS));
-        evB.setCategoria("FAMILIA");
+        evB.setCategoria(CategoriaEvento.PASTORAL);
 
         when(eventoJpaRepository.findAll()).thenReturn(List.of(evA, evB));
 

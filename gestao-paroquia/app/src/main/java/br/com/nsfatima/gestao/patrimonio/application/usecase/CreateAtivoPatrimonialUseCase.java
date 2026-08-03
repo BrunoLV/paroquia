@@ -46,7 +46,7 @@ public class CreateAtivoPatrimonialUseCase {
     public AtivoPatrimonialResponse execute(CreateAtivoPatrimonialRequest request) {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanCreate(actorContext, request.organizacaoId());
-        organizacaoPolicy.assertOwnerOrganizacaoPermitida(request.organizacaoId());
+        organizacaoPolicy.assertOrganizacaoProprietariaPermitida(request.organizacaoId());
 
         AtivoPatrimonialEntity entity = new AtivoPatrimonialEntity();
         entity.setId(UUID.randomUUID());

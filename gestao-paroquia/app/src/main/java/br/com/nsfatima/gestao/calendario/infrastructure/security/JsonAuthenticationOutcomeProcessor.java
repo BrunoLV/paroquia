@@ -105,7 +105,7 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
             writeError(
                     response,
                     HttpStatus.UNAUTHORIZED,
-                    ErrorCodes.APPROVAL_REQUIRED,
+                    ErrorCodes.APROVACAO_OBRIGATORIA,
                     "Cadastro pendente de aprovacao por um administrador.");
             return;
         }
@@ -139,7 +139,7 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
             HttpServletRequest request,
             HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException {
-        ErrorCodes errorCode = accessDeniedException instanceof RoleScopeInvalidException
+        ErrorCodes errorCode = accessDeniedException instanceof PapelEscopoInvalidoException
                 ? ErrorCodes.ROLE_SCOPE_INVALID
                 : ErrorCodes.ACCESS_DENIED;
         writeError(

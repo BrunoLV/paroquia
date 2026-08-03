@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +19,7 @@ class ConflitoAgendaEclesialExceptionTest {
     @Test
     @DisplayName("Deve tratar ConflitoAgendaEclesialException retornando HTTP 400 Bad Request")
     void deveTratarConflitoAgendaEclesialException() {
-        AuditLogPersistenceService auditLog = Mockito.mock(AuditLogPersistenceService.class);
+        AuditoriaPersistenceService auditLog = Mockito.mock(AuditoriaPersistenceService.class);
         GlobalExceptionHandler handler = new GlobalExceptionHandler(auditLog);
 
         ConflitoAgendaEclesialException exception = new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial");

@@ -99,7 +99,7 @@ class TransferirAtivoPatrimonialUseCaseTest {
         UUID novaOrganizacaoId = UUID.randomUUID();
         when(repository.findById(ativoId)).thenReturn(Optional.of(ativo));
         doThrow(new AtivoOrganizacaoInvalidaException("tipo inválido"))
-                .when(organizacaoPolicy).assertOwnerOrganizacaoPermitida(novaOrganizacaoId);
+                .when(organizacaoPolicy).assertOrganizacaoProprietariaPermitida(novaOrganizacaoId);
 
         assertThatThrownBy(() -> useCase.execute(ativoId,
                 new TransferirAtivoRequest(novaOrganizacaoId, "Justificativa válida")))

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
@@ -20,7 +20,7 @@ import java.util.List;
 @Order()
 public class GlobalExceptionHandler extends BaseExceptionHandler {
 
-    public GlobalExceptionHandler(AuditLogPersistenceService auditLogPersistenceService) {
+    public GlobalExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
 

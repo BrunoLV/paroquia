@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.projetos;
 
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
@@ -119,7 +120,7 @@ class VinculoProjetoEventoIntegrationTest {
         projeto.setNome("Projeto Sem Limites");
         projeto.setDescricao("Sem limites de datas");
         projeto.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
-        projeto.setStatus("EM_ANDAMENTO");
+        projeto.setStatus(ProjetoStatus.EM_ANDAMENTO);
         projeto.setInicioUtc(null);
         projeto.setFimUtc(null);
         repository.save(projeto);

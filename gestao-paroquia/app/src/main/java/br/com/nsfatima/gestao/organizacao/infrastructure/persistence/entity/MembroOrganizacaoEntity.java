@@ -1,8 +1,11 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -21,8 +24,9 @@ public class MembroOrganizacaoEntity extends BaseVersionedEntity {
     @Column(name = "organizacao_id", nullable = false)
     private UUID organizacaoId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_organizacao", nullable = false, length = 32)
-    private String tipoOrganizacao;
+    private TipoOrganizacao tipoOrganizacao;
 
     @Column(nullable = false, length = 64)
     private String papel;
@@ -56,11 +60,11 @@ public class MembroOrganizacaoEntity extends BaseVersionedEntity {
         this.organizacaoId = organizacaoId;
     }
 
-    public String getTipoOrganizacao() {
+    public TipoOrganizacao getTipoOrganizacao() {
         return tipoOrganizacao;
     }
 
-    public void setTipoOrganizacao(String tipoOrganizacao) {
+    public void setTipoOrganizacao(TipoOrganizacao tipoOrganizacao) {
         this.tipoOrganizacao = tipoOrganizacao;
     }
 

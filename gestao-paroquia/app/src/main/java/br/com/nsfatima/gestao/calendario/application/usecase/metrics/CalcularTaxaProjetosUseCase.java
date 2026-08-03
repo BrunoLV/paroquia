@@ -62,9 +62,6 @@ public class CalcularTaxaProjetosUseCase {
     }
 
     private boolean isStatus(ProjetoEventoEntity projeto, ProjetoStatus targetStatus) {
-        if (projeto.getStatus() == null) {
-            return false;
-        }
-        return targetStatus == ProjetoStatus.valueOf(projeto.getStatus());
+        return targetStatus == projeto.getStatus();
     }
 }

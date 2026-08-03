@@ -47,8 +47,8 @@ import {
 import {useAuth} from '../auth/AuthContext';
 import PageHeader from '../components/PageHeader';
 import {
-    canManageProjects as userCanManageProjects,
-    canTransitionProject as userCanTransitionProject,
+    canManageProjetos as userCanManageProjetos,
+    canTransitionProjeto as userCanTransitionProjeto,
     isGlobalCreator as userIsGlobalCreator
 } from '../auth/permissions';
 import apiClient from '../api/client';
@@ -111,16 +111,16 @@ const Projects = () => {
 
 
   // 1. Permission checks
-  const canManageProjects = () => {
-    return userCanManageProjects(user);
+  const canManageProjetos = () => {
+    return userCanManageProjetos(user);
   };
 
   const isGlobalCreator = () => {
     return userIsGlobalCreator(user);
   };
 
-  const canTransitionProject = (project: Projeto) => {
-    return userCanTransitionProject(user, project.organizacaoResponsavelId);
+  const canTransitionProjeto = (project: Projeto) => {
+    return userCanTransitionProjeto(user, project.organizacaoResponsavelId);
   };
 
   // Determine which organizations are selectable in the form
@@ -345,7 +345,7 @@ const Projects = () => {
         title="Projetos Paroquiais"
         subtitle="Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais."
         actions={
-          canManageProjects() && (
+          canManageProjetos() && (
             <Button
               variant="contained"
               color="primary"
@@ -371,7 +371,7 @@ const Projects = () => {
           <Typography variant="h6" color="textSecondary" gutterBottom>
             Nenhum projeto cadastrado.
           </Typography>
-          {canManageProjects() && (
+          {canManageProjetos() && (
             <Button
               variant="outlined"
               color="primary"
@@ -433,7 +433,7 @@ const Projects = () => {
                       <IconButton size="small" color="primary" onClick={() => handleRowClick(project)} title="Visualizar Indicadores">
                         <VisibilityIcon />
                       </IconButton>
-                      {canManageProjects() && (
+                      {canManageProjetos() && (
                         <IconButton size="small" color="secondary" onClick={(e) => handleOpenEdit(project, e)} title="Editar Projeto" sx={{ ml: 1 }}>
                           <EditIcon />
                         </IconButton>
@@ -743,7 +743,7 @@ const Projects = () => {
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                {selectedProject.status === 'ABERTO' && canTransitionProject(selectedProject) && (
+                {selectedProject.status === 'ABERTO' && canTransitionProjeto(selectedProject) && (
                   <Button
                     variant="contained"
                     color="success"
@@ -753,7 +753,7 @@ const Projects = () => {
                     Iniciar
                   </Button>
                 )}
-                {selectedProject.status === 'EM_ANDAMENTO' && canTransitionProject(selectedProject) && (
+                {selectedProject.status === 'EM_ANDAMENTO' && canTransitionProjeto(selectedProject) && (
                   <Button
                     variant="contained"
                     color="primary"
@@ -763,7 +763,7 @@ const Projects = () => {
                     Concluir
                   </Button>
                 )}
-                {(selectedProject.status === 'ABERTO' || selectedProject.status === 'EM_ANDAMENTO') && canTransitionProject(selectedProject) && (
+                {(selectedProject.status === 'ABERTO' || selectedProject.status === 'EM_ANDAMENTO') && canTransitionProjeto(selectedProject) && (
                   <Button
                     variant="contained"
                     color="error"

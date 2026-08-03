@@ -64,8 +64,8 @@ class UpdateEventoAuditIntegrationTest {
                         .content(payload))
                 .andExpect(status().isOk());
 
-        verify(eventoAuditPublisher).publish(eq("tester-success"), eq("patch"), eq(eventoId.toString()), eq("success"),
-                anyMap());
+        verify(eventoAuditPublisher).publish(eq("tester-success"), eq("atualizar"), eq(eventoId.toString()),
+                eq("sucesso"), anyMap());
     }
 
     @Test
@@ -86,7 +86,7 @@ class UpdateEventoAuditIntegrationTest {
                         .content(payload))
                 .andExpect(status().isNotFound());
 
-        verify(eventoAuditPublisher).publish(eq("tester-failure"), eq("patch"), eq(inexistente.toString()),
+        verify(eventoAuditPublisher).publish(eq("tester-failure"), eq("atualizar"), eq(inexistente.toString()),
                 eq("failure"), anyMap());
     }
 }

@@ -17,7 +17,7 @@ public class AtivoOrganizacaoPolicy {
         this.organizacaoRepository = organizacaoRepository;
     }
 
-    public void assertOwnerOrganizacaoPermitida(UUID organizacaoId) {
+    public void assertOrganizacaoProprietariaPermitida(UUID organizacaoId) {
         OrganizacaoEntity organizacao = organizacaoRepository.findById(organizacaoId)
                 .orElseThrow(() -> new AtivoOrganizacaoInvalidaException(
                         "Organização não encontrada: " + organizacaoId));

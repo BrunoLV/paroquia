@@ -63,7 +63,7 @@ public class AddParticipanteUseCase {
         entity.setAtivo(true);
 
         ParticipanteOrganizacaoEntity saved = repository.save(entity);
-        auditPublisher.publish(actor, "add-participation", membroId.toString(), "success");
+        auditPublisher.publish(actor, "adicionar-participacao", membroId.toString(), "success");
 
         return mapper.toParticipacaoResponse(saved);
     }

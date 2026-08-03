@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.integration.metrics;
 
-import br.com.nsfatima.gestao.calendario.application.service.ReworkRateCalculator;
+import br.com.nsfatima.gestao.calendario.application.service.CalculadoraTaxaRetrabalho;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
-import br.com.nsfatima.gestao.calendario.infrastructure.observability.WeeklyMetricsSnapshotJob;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.SnapshotMetricasSemanaisJob;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
@@ -27,10 +27,10 @@ class WeeklyMetricsSnapshotIntegrationTest {
                 any()))
                 .thenReturn(List.of());
 
-        WeeklyMetricsSnapshotJob job = new WeeklyMetricsSnapshotJob(
+        SnapshotMetricasSemanaisJob job = new SnapshotMetricasSemanaisJob(
                 new CadastroEventoMetricsPublisher(),
                 new PeriodoOperacionalPolicy(),
-                new ReworkRateCalculator(auditRepository, new ObjectMapper()));
+                new CalculadoraTaxaRetrabalho(auditRepository, new ObjectMapper()));
         assertEquals("ok", job.snapshot().get("status"));
         assertNotNull(job.snapshot().get("cadastroEvento"));
         assertNotNull(job.snapshot().get("administrativeRework"));

@@ -89,8 +89,8 @@ class AuditTrailQueryIntegrationTest {
                         .header("X-Actor-Org-Id", organizacaoId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items.length()").value(2))
-                .andExpect(jsonPath("$.items[0].acao").value("patch"))
-                .andExpect(jsonPath("$.items[1].acao").value("create-observacao"));
+                .andExpect(jsonPath("$.items[0].acao").value("atualizar"))
+                .andExpect(jsonPath("$.items[1].acao").value("criar-observacao"));
     }
 
     private UUID persistEvent(UUID organizacaoId, String titulo) {

@@ -89,7 +89,7 @@ class CancelarAlocacaoAtivoUseCaseTest {
 
         assertThat(ocupacao.getStatus()).isEqualTo(AtivoAlocacaoStatus.CANCELADA);
         assertThat(ocupacao.getMotivoCancelamento()).isEqualTo("Não será mais necessário");
-        assertThat(aprovacao.getStatusEnum()).isEqualTo(AprovacaoStatus.REPROVADA);
+        assertThat(aprovacao.getStatus()).isEqualTo(AprovacaoStatus.REPROVADA);
     }
 
     @Test

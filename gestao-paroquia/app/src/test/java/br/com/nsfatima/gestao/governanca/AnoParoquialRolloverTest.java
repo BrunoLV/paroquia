@@ -46,7 +46,7 @@ class AnoParoquialRolloverTest {
         // Arrange: Year 2026 is EM_PLANEJAMENTO
         AnoParoquialEntity entity = new AnoParoquialEntity();
         entity.setAno(2026);
-        entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO.name());
+        entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO);
         repository.saveAndFlush(entity);
 
         // Act: conclude Year 2026
@@ -55,11 +55,11 @@ class AnoParoquialRolloverTest {
         // Assert: 2026 is CONCLUIDO
         Optional<AnoParoquialEntity> year2026 = repository.findByAno(2026);
         assertThat(year2026).isPresent();
-        assertThat(year2026.get().getStatus()).isEqualTo(AnoParoquialStatus.CONCLUIDO.name());
+        assertThat(year2026.get().getStatus()).isEqualTo(AnoParoquialStatus.CONCLUIDO);
 
         // Assert: 2027 is created as EM_PLANEJAMENTO
         Optional<AnoParoquialEntity> year2027 = repository.findByAno(2027);
         assertThat(year2027).isPresent();
-        assertThat(year2027.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO.name());
+        assertThat(year2027.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO);
     }
 }

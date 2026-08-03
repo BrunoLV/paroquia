@@ -51,21 +51,21 @@ class CancelEventoAuditTrailIntegrationTest {
         evento.setStatus("CONFIRMADO");
         eventoJpaRepository.save(evento);
 
-        String pending = mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        String pendente = mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "motivo": "Gerar trilha de pending"
+                                  "motivo": "Gerar trilha de pendente"
                                 }
                                 """))
                 .andExpect(status().isAccepted())
                 .andReturn().getResponse().getContentAsString();
 
         UUID aprovacaoId = UUID
-                .fromString(pending.replaceAll(".*\\\"solicitacaoAprovacaoId\\\":\\\"([^\\\"]+)\\\".*", "$1"));
+                .fromString(pendente.replaceAll(".*\\\"solicitacaoAprovacaoId\\\":\\\"([^\\\"]+)\\\".*", "$1"));
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
                         .header("X-Actor-Role", "presidente-cpc")
@@ -79,11 +79,11 @@ class CancelEventoAuditTrailIntegrationTest {
                                 """))
                 .andExpect(status().isOk());
 
-        verify(eventoAuditPublisher, atLeastOnce()).publishCancellationPending(eq("joao.silva"),
-                eq(eventoId.toString()), eq(aprovacaoId.toString()), eq("Gerar trilha de pending"));
-        verify(eventoAuditPublisher, atLeastOnce()).publishApprovalDecision(eq("ana.conselho"),
-                any(), eq("executed"), anyMap());
-        verify(eventoAuditPublisher, atLeastOnce()).publish(eq("system"), eq("approval-decision-request"),
-                eq(aprovacaoId.toString()), eq("received"), anyMap());
+        verify(eventoAuditPublisher, atLeastOnce()).publishCancellationPendente(eq("joao.silva"),
+                eq(eventoId.toString()), eq(aprovacaoId.toString()), eq("Gerar trilha de pendente"));
+        verify(eventoAuditPublisher, atLeastOnce()).publishAprovacaoDecision(eq("ana.conselho"),
+                any(), eq("executado"), anyMap());
+        verify(eventoAuditPublisher, atLeastOnce()).publish(eq("system"), eq("aprovacao-decisao-solicitacao"),
+                eq(aprovacaoId.toString()), eq("recebido"), anyMap());
     }
 }

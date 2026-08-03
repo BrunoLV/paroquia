@@ -65,7 +65,7 @@ public class CreateMembroUseCase {
         // Synchronize leadership with Organizacao if applicable
         syncLeadership(request.papel(), usuario.getNome(), organizacao);
 
-        auditPublisher.publish(actor, "create", saved.getId().toString(), "success");
+        auditPublisher.publish(actor, "criar", saved.getId().toString(), "sucesso");
 
         return mapper.toResponse(saved);
     }

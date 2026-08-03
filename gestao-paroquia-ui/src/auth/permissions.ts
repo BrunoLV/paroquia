@@ -80,7 +80,7 @@ export const isCoordenador = (user: User | null): boolean => hasRole(user, ...CO
 /** Membro de Pastoral ou Movimento */
 export const isMembro = (user: User | null): boolean => hasRole(user, ...MEMBRO_ROLES);
 
-export const canManageProjects = (user: User | null): boolean => {
+export const canManageProjetos = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
@@ -102,12 +102,12 @@ export const isGlobalCreator = (user: User | null): boolean => {
   );
 };
 
-export const canTransitionProject = (user: User | null, projectOrgId: string): boolean => {
+export const canTransitionProjeto = (user: User | null, projetoOrgId: string): boolean => {
   if (!user) return false;
   if (isGlobalCreator(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
-    return user.organizations.some((org: any) => org.id === projectOrgId);
+    return user.organizations.some((org: any) => org.id === projetoOrgId);
   }
   return false;
 };
@@ -115,7 +115,7 @@ export const canTransitionProject = (user: User | null, projectOrgId: string): b
 /**
  * Determines if a user can manage (edit or cancel) an event.
  */
-export const canManageEvent = (user: User | null, _eventOrgId: string): boolean => {
+export const canManageEvento = (user: User | null, _eventoOrgId: string): boolean => {
   if (!user) return false;
   if (isAdmin(user)) return true;
   return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
@@ -197,8 +197,8 @@ export const canManageOrganizacoes = (user: User | null): boolean => {
 export const canAddObservation = (user: User | null, targetOrgId: string): boolean => {
   if (!user) return false;
 
-  const isOnlyMember = user.roles.length > 0 && user.roles.every((r) => isMembro({ ...user, roles: [r] }));
-  if (!isOnlyMember) return true;
+  const isApenasMembro = user.roles.length > 0 && user.roles.every((r) => isMembro({ ...user, roles: [r] }));
+  if (!isApenasMembro) return true;
 
   if (Array.isArray(user.organizations)) {
     return user.organizations.some((org) => org.id === targetOrgId);
@@ -207,10 +207,10 @@ export const canAddObservation = (user: User | null, targetOrgId: string): boole
   return false;
 };
 
-export const canViewPendingEvents = (user: User | null): boolean => {
+export const canViewEventosPendentes = (user: User | null): boolean => {
   if (!user) return false;
-  const isOnlyMember = user.roles.length > 0 && user.roles.every((r) => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
-  return !isOnlyMember;
+  const isApenasMembro = user.roles.length > 0 && user.roles.every((r) => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
+  return !isApenasMembro;
 };
 
 export const isUnlinkedUser = (user: User | null): boolean => {
@@ -227,11 +227,11 @@ export const isUnlinkedUser = (user: User | null): boolean => {
 
   if (isLeaderOrClero) return false;
 
-  const isRegularUserOrMember = user.roles.every(
+  const isUsuarioComumOuMembro = user.roles.every(
     (r) => r === 'MEMBRO' || r === 'MEMBRO_PASTORAL' || r === 'MEMBRO_MOVIMENTO' || r === 'ROLE_PASTORAL_MEMBRO' || r === 'ROLE_USER' || r === 'USER'
   );
 
-  if (isRegularUserOrMember && Array.isArray(user.organizations) && user.organizations.length === 0) {
+  if (isUsuarioComumOuMembro && Array.isArray(user.organizations) && user.organizations.length === 0) {
     return true;
   }
 

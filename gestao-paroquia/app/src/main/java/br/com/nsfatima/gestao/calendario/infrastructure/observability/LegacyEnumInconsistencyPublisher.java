@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditLogPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -8,9 +8,9 @@ import java.util.Map;
 @Component
 public class LegacyEnumInconsistencyPublisher {
 
-    private final AuditLogPersistenceService auditLogPersistenceService;
+    private final AuditoriaPersistenceService auditLogPersistenceService;
 
-    public LegacyEnumInconsistencyPublisher(AuditLogPersistenceService auditLogPersistenceService) {
+    public LegacyEnumInconsistencyPublisher(AuditoriaPersistenceService auditLogPersistenceService) {
         this.auditLogPersistenceService = auditLogPersistenceService;
     }
 
