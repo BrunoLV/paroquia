@@ -321,6 +321,10 @@
 - [x] **Track: Correção de Inconsistências do Conductor (conductor.yml, tech-stack.md, product.md, residual de track)**
 *Link: [./archive/conductor_config_fixes_20260804/](./archive/conductor_config_fixes_20260804/)*
 
+---
+
+- [x] **Track: Redução de Densidade Visual da UI (Tipografia, Espaçamento e Componentes, até 20%)**
+*Link: [./archive/ui_densidade_visual_20260804/index.md](./archive/ui_densidade_visual_20260804/index.md)*
 
 
 

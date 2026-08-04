@@ -14,6 +14,11 @@ declare module '@mui/material/styles' {
   }
 }
 
+const DENSITY_SCALE = 0.8; // 20% reduction (max allowed) across typography, spacing and component sizing
+const BODY_TEXT_FONT_SIZE_REM = 0.875; // body1 stays at the 14px accessibility floor, exempt from DENSITY_SCALE
+
+const scaledRem = (baseRem: number): string => `${Math.round(baseRem * DENSITY_SCALE * 10000) / 10000}rem`;
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -37,6 +42,7 @@ const theme = createTheme({
   shape: {
     borderRadius: 12,
   },
+  spacing: 8 * DENSITY_SCALE,
   typography: {
     fontFamily: [
       'Roboto',
@@ -44,8 +50,44 @@ const theme = createTheme({
       'sans-serif',
     ].join(','),
     h1: {
-      fontSize: '2.5rem',
+      fontSize: scaledRem(2.5),
       fontWeight: 500,
+    },
+    h2: {
+      fontSize: scaledRem(3.75),
+    },
+    h3: {
+      fontSize: scaledRem(3),
+    },
+    h4: {
+      fontSize: scaledRem(2.125),
+    },
+    h5: {
+      fontSize: scaledRem(1.5),
+    },
+    h6: {
+      fontSize: scaledRem(1.25),
+    },
+    subtitle1: {
+      fontSize: scaledRem(1),
+    },
+    subtitle2: {
+      fontSize: scaledRem(0.875),
+    },
+    body1: {
+      fontSize: `${BODY_TEXT_FONT_SIZE_REM}rem`,
+    },
+    body2: {
+      fontSize: scaledRem(0.875),
+    },
+    button: {
+      fontSize: scaledRem(0.875),
+    },
+    caption: {
+      fontSize: scaledRem(0.75),
+    },
+    overline: {
+      fontSize: scaledRem(0.75),
     },
   },
   components: {
@@ -54,6 +96,7 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: '10px',
+          padding: `${Math.round(6 * DENSITY_SCALE)}px ${Math.round(16 * DENSITY_SCALE)}px`,
         },
       },
     },
@@ -61,6 +104,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '10px',
+        },
+        input: {
+          padding: `${Math.round(16.5 * DENSITY_SCALE)}px ${Math.round(14 * DENSITY_SCALE)}px`,
+        },
+        sizeSmall: {
+          paddingTop: `${Math.round(8.5 * DENSITY_SCALE)}px`,
+          paddingBottom: `${Math.round(8.5 * DENSITY_SCALE)}px`,
         },
       },
     },
@@ -87,6 +137,19 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '8px',
+        },
+        sizeMedium: {
+          height: `${Math.round(32 * DENSITY_SCALE)}px`,
+        },
+        sizeSmall: {
+          height: `${Math.round(24 * DENSITY_SCALE)}px`,
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: `${Math.round(16 * DENSITY_SCALE)}px`,
         },
       },
     },
