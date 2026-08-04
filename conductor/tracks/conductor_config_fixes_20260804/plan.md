@@ -1,0 +1,37 @@
+# Plan: Correção de Inconsistências do Conductor
+
+### Phase 0 — Setup
+- [x] Task: Preparar branch de trabalho
+  - [x] Confirmar que a working tree estava em `master`
+  - [x] Criar e mudar para a branch `chore/conductor-config-fixes-20260804` a partir de `master`
+
+### Phase 1 — Corrigir `conductor.yml` e residual de track
+- [ ] Task: Corrigir referência quebrada ao arquivo de LGPD em `conductor.yml`
+  - [ ] Substituir `regras_duras_lgpd.md` por `regra_dura_lgpd.md` na regra `pre_spec`
+  - [ ] Verificar: `grep -n "regra" conductor.yml` aponta para o caminho correto e o arquivo existe
+- [ ] Task: Remover diretório residual de track já arquivada
+  - [ ] Confirmar que `conductor/tracks/motor_liturgico_universal_eclesial_20260731/` é idêntico ao conteúdo em `conductor/archive/` (`diff -rq`)
+  - [ ] Remover `conductor/tracks/motor_liturgico_universal_eclesial_20260731/`
+  - [ ] Verificar: `conductor/tracks/` fica sem tracks ativas residuais; `conductor/archive/` permanece intacto
+- [ ] Task: Verificação e checkpoint da Fase 1 (conforme workflow.md)
+
+### Phase 2 — Atualizar `conductor/tech-stack.md`
+- [ ] Task: Remover `@mui/x-charts` da lista de dependências ativas
+  - [ ] Editar a seção "UI Component Library & Styling" removendo a referência
+  - [ ] Verificar: `grep -n "x-charts" conductor/tech-stack.md` só aparece na nota histórica de migração, não como dependência ativa
+- [ ] Task: Remover `ThemeContext` da lista de Context API
+  - [ ] Editar a seção "State Management & Data Fetching → Context API" para listar apenas `AuthContext` e `NotificationContext`
+  - [ ] Verificar: `grep -n "ThemeContext" conductor/tech-stack.md` não retorna resultados
+- [ ] Task: Verificação e checkpoint da Fase 2 (conforme workflow.md)
+
+### Phase 3 — Atualizar `conductor/product.md`
+- [ ] Task: Adicionar módulos de Patrimônio e Conselho às Core Features
+  - [ ] Adicionar bullet descrevendo o módulo de Patrimônio (ativos, alocação/reserva, manutenção)
+  - [ ] Adicionar bullet descrevendo o módulo de Conselho (decisões/homologação do CPC)
+  - [ ] Verificar: `grep -n "Patrimônio\|Conselho" conductor/product.md` retorna as novas entradas
+- [ ] Task: Verificação e checkpoint da Fase 3 (conforme workflow.md)
+
+### Phase 4 — Encerramento
+- [ ] Task: Revisão final de todos os arquivos alterados (`git diff master`)
+- [ ] Task: Commit das alterações na branch `chore/conductor-config-fixes-20260804`
+- [ ] Task: Verificação e checkpoint final da track (conforme workflow.md)
