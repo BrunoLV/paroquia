@@ -324,7 +324,7 @@
 ---
 
 - [x] **Track: Redução de Densidade Visual da UI (Tipografia, Espaçamento e Componentes, até 20%)**
-*Link: [./tracks/ui_densidade_visual_20260804/index.md](./tracks/ui_densidade_visual_20260804/index.md)*
+*Link: [./archive/ui_densidade_visual_20260804/index.md](./archive/ui_densidade_visual_20260804/index.md)*
 
 
 
