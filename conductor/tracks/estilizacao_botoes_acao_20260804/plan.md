@@ -9,10 +9,10 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Diálogos de Formulário (Salvar/Cancelar/Confirmar)
-- [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de Salvar/Cancelar dos diálogos principais (`CadastroEventoModal`, `EditScopeDialog`, `CancelarEventoDialog`, `ImportModal`, `ExportCalendarDialog`, `AtivoAlocacoesModal`, `ObservacoesEvento`), e confirmar que falha
-- [ ] Task: Implementar (Green) `startIcon`/`color` nos botões desses diálogos conforme o mapeamento, e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário (extrair ícones repetidos, evitar duplicação) e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de Salvar/Cancelar dos diálogos principais (`CadastroEventoModal`, `EditScopeDialog`, `CancelarEventoDialog`, `ImportModal`, `ExportCalendarDialog`, `AtivoAlocacoesModal`, `ObservacoesEvento`), e confirmar que falha `d986c0bb`
+- [x] Task: Implementar (Green) `startIcon`/`color` nos botões desses diálogos conforme o mapeamento, e rodar os testes até passarem `d986c0bb`
+- [x] Task: Refatorar se necessário (extrair ícones repetidos, evitar duplicação) e re-rodar os testes `d986c0bb`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Páginas de Listagem/CRUD (Ações Primárias)
 - [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de ação primária das páginas (`Ativos.tsx`, `Projects.tsx`, `Calendar.tsx`, `ConselhosAtas.tsx`, `Settings.tsx`, `Reports.tsx`, `Aprovacoes.tsx`, `Membros`/`Organizacoes`/`Eventos` conforme aplicável), e confirmar que falha
