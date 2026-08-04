@@ -319,7 +319,7 @@
 ---
 
 - [x] **Track: Correção de Inconsistências do Conductor (conductor.yml, tech-stack.md, product.md, residual de track)**
-*Link: [./tracks/conductor_config_fixes_20260804/](./tracks/conductor_config_fixes_20260804/)*
+*Link: [./archive/conductor_config_fixes_20260804/](./archive/conductor_config_fixes_20260804/)*
 
 
 
