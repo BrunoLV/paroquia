@@ -1,0 +1,25 @@
+# Frontend & Dependências JS
+gestao-paroquia-ui/node_modules/
+gestao-paroquia-ui/dist/
+gestao-paroquia-ui/build/
+gestao-paroquia-ui/coverage/
+
+# Backend Java / Gradle
+gestao-paroquia/build/
+gestao-paroquia/app/build/
+gestao-paroquia/app/bin/
+.gradle/
+
+# Saídas e caches do próprio Graphify
+graphify-out/
+
+# Metadados de IA / Conductor / Arquivos arquivados
+conductor/archive/
+gestao-paroquia/conductor/archive/
+
+# Outros arquivos binários / temporários
+*.jar
+*.class
+*.png
+*.jpg
+*.pdf
