@@ -41,6 +41,10 @@ pipeline:
         condition: "changes_in('gestao-paroquia-ui/**')"
         commands:
           - "cd gestao-paroquia-ui && npm run lint && npm run typecheck && npm run test:run"
+      update_architecture_graph:
+        condition: "always"
+        commands:
+          - "graphify update ."
 
   agent_execution:
     enforce_config_alignment: true
@@ -65,3 +69,4 @@ pipeline:
       - "MANDATORY APPROVAL: The agent MUST present the proposed changes, the specific file diffs, and the commit message to the user, waiting for explicit confirmation ('yes'/'approve') BEFORE executing the git commit."
       - "NO FORCE PUSH: The agent is strictly prohibited from executing destructive git operations (--force, --delete)."
       - "TRACEABLE COMMITS: Automated commits should append the tracking context identifier or spec file reference at the end of the commit message when available."
+      - "GRAPHIFY SYNC: Before committing any changes, the agent MUST ensure that 'graphify update .' has been executed successfully so that the semantic cache and analytic graphs represent the final implemented state."
