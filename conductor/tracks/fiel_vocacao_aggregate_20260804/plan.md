@@ -3,7 +3,7 @@
 ## Phase 0: Setup
 - [x] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b feat/fiel-vocacao-aggregate-<data>`) — branch `feat/fiel-vocacao-aggregate-20260804`
 - [x] Task: Confirmar próximo número de migração Flyway livre (`V056` em diante) e reservar o nome do arquivo — próximo livre: `V056`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `00cd10f`
 
 ## Phase 1: Enum `Vocacao`
 - [ ] Task: Escrever testes (Red) para `Vocacao.fromStoredValue`/`fromJson` cobrindo os 4 valores
