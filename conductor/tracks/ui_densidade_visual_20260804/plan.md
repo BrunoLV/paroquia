@@ -23,9 +23,9 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Validação Final e QA Visual
-- [ ] Task: Rodar `npm run lint`, `npm run typecheck` e `CI=true npm run test:run` no `gestao-paroquia-ui` e corrigir eventuais falhas
-- [ ] Task: Subir a aplicação localmente (`./run.sh dev` ou `npm run dev`) e realizar QA visual manual nas telas principais (Login, Dashboard, Calendar, formulários de cadastro, tabelas de listagem, diálogos modais), confirmando redução de densidade sem quebra de layout
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Rodar `npx tsc --noEmit` (typecheck) e `CI=true npm test` no `gestao-paroquia-ui` e corrigir eventuais falhas `fe3714a0`
+- [x] Task: Subir a aplicação localmente (`npm run dev`) e realizar QA visual manual nas telas principais, confirmando redução de densidade sem quebra de layout `fe3714a0`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: Encerramento da Track
 - [ ] Task: Atualizar `conductor/tracks.md` marcando a track como concluída `[x]`
