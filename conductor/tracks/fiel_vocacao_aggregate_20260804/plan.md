@@ -1,9 +1,9 @@
 # Plan: Agregado `Fiel` e Enum `Vocacao`
 
 ## Phase 0: Setup
-- [ ] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b feat/fiel-vocacao-aggregate-<data>`)
-- [ ] Task: Confirmar próximo número de migração Flyway livre (`V056` em diante) e reservar o nome do arquivo
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b feat/fiel-vocacao-aggregate-<data>`) — branch `feat/fiel-vocacao-aggregate-20260804`
+- [x] Task: Confirmar próximo número de migração Flyway livre (`V056` em diante) e reservar o nome do arquivo — próximo livre: `V056`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 1: Enum `Vocacao`
 - [ ] Task: Escrever testes (Red) para `Vocacao.fromStoredValue`/`fromJson` cobrindo os 4 valores
