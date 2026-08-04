@@ -21,10 +21,10 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: IconButtons de Ação em Tabelas/Linhas
-- [ ] Task: Escrever teste (Red) verificando a cor semântica esperada (`color="secondary"` para editar, `color="error"` para excluir, etc.) nos `IconButton` de ação em linhas de tabela/lista, e confirmar que falha
-- [ ] Task: Implementar (Green) o `color` correto nesses `IconButton`, e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) verificando a cor semântica esperada (`color="secondary"` para editar, `color="error"` para excluir, etc.) nos `IconButton` de ação em linhas de tabela/lista, e confirmar que falha `f91ae86f`
+- [x] Task: Implementar (Green) o `color` correto nesses `IconButton`, e rodar os testes até passarem `f91ae86f`
+- [x] Task: Refatorar se necessário e re-rodar os testes `f91ae86f`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: Diálogos de Confirmação Destrutiva e Aprovação/Homologação
 - [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de confirmação destrutiva (Excluir, Vetar, Rejeitar) e de aprovação/homologação (Aprovar, Homologar), e confirmar que falha
