@@ -358,3 +358,8 @@
 
 - [ ] **Track: Alinhar Linguagem Ubíqua — separar UnidadeTerritorial de GrupoParoquial, renomear Organizacao/TipoOrganizacao — Track 5/7 da iniciativa SDD**
 *Link: [./tracks/linguagem_ubiqua_dominio_20260804/index.md](./tracks/linguagem_ubiqua_dominio_20260804/index.md)*
+
+---
+
+- [ ] **Track: Adaptar o frontend (gestao-paroquia-ui) aos novos contratos de Fiel/GrupoParoquial/IAM — Track 6/7 da iniciativa SDD**
+*Link: [./tracks/fiel_ui_iam_frontend_20260804/index.md](./tracks/fiel_ui_iam_frontend_20260804/index.md)*
