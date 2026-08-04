@@ -1,8 +1,8 @@
 # Plan: Padronização de Cor e Ícone por Ação nos Botões do Sistema
 
 ## Phase 0: Setup de Branch
-- [ ] Task: Sincronizar `master` local com `origin/master` e criar branch dedicada `feat/estilizacao-botoes-acao-20260804` a partir dela
-- [ ] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações)
+- [x] Task: Sincronizar `master` local com `origin/master` e criar branch dedicada `feat/estilizacao-botoes-acao-20260804` a partir dela `9afe9a57`
+- [x] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações) `66e5d94a`
 
 ## Phase 1: Documentação do Padrão (Guia de Estilo)
 - [ ] Task: Adicionar a seção "Action Button Color & Icon Mapping" em `.agents/skills/react-frontend.md`, com a tabela ação → cor → ícone definida no spec.md
