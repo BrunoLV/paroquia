@@ -9,30 +9,90 @@
 
 Sistema unificado de gestão administrativa e pastoral para a Paróquia Nossa Senhora de Fátima, integrando backend monolítico modular em **Java 25 (Spring Boot 3)** e frontend em **React 19 (TypeScript + Material UI 9 + Vite)**.
 
+O sistema cobre o ciclo operacional completo da paróquia: agendamento de eventos e espaços, fluxos de aprovação, gestão de membros e da estrutura organizacional (pastorais, movimentos, conselhos), controle de patrimônio (ativos e alocações), importação/exportação de relatórios e um dashboard executivo com métricas consolidadas — tudo sob rígidos controles de auditoria e conformidade com a LGPD.
+
 ---
 
 ## 🏗️ Estrutura do Monorepo
 
-O repositório é organizado em módulos independentes com regras de arquitetura bem definidas:
+O repositório é organizado em módulos independentes, cada um com suas próprias regras de arquitetura, testes e documentação:
 
-- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 3**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**.
+- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 3**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 14 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
 - **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
-- **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, backend API, frontend UI, pgAdmin 4 e seeder automático de dados.
-- **[Conductor (`conductor/`)](./conductor):** Especificações funcionais, diretrizes do produto e trilhas de tarefas.
-- **[Documentação (`gestao-paroquia/docs/`)](./gestao-paroquia/docs):** Portal de documentação técnica, arquitetura, domínios e conformidade com a LGPD.
+- **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4 e seeder automático de dados. Variáveis de ambiente em [`.env.example`](./.env.example).
+- **[Conductor (`conductor/`)](./conductor):** Especificações funcionais, diretrizes de produto, stack tecnológica, workflow de desenvolvimento e trilhas (tracks) de tarefas em execução.
+- **[Documentação (`gestao-paroquia/docs/`)](./gestao-paroquia/docs):** Portal de documentação técnica — arquitetura, guia de início rápido, documentação por domínio e regras de conformidade com a LGPD.
+- **Scripts utilitários (`run.sh`, `restart-docker.sh`):** Atalhos para o ciclo de vida completo do ambiente (subir, testar, checar qualidade, buildar e reiniciar os contêineres).
+
+---
+
+## 🧭 Domínios de Negócio
+
+O backend está organizado em 14 bounded contexts sob o pacote `br.com.nsfatima.gestao`. Resumo funcional (detalhes técnicos no [README do backend](./gestao-paroquia/README.md)):
+
+| Domínio | Responsabilidade |
+| :--- | :--- |
+| `calendario` | Ciclo de vida de eventos paroquiais, agendamento e recorrência |
+| `aprovacao` | Workflows de aprovação de eventos e solicitações |
+| `local` | Cadastro e controle de espaços físicos |
+| `iam` | Identidade, acesso, roles e autenticação JWT |
+| `governanca` | Auditoria, políticas de segurança e rastreabilidade |
+| `organizacao` | Hierarquia organizacional (pastorais, movimentos, setores, comunidades) |
+| `membro` | Cadastro e acompanhamento de fiéis e membros atuantes |
+| `projeto` | Vinculação de eventos a projetos paroquiais e métricas |
+| `conselho` | Decisões e homologações do Conselho Paroquial (CPC) |
+| `patrimonio` | Ativos patrimoniais, alocação, transferência e manutenção |
+| `importacao` | Importação/exportação em lote (Excel, PDF) |
+| `dashboard` | Métricas executivas e visão consolidada |
+| `observabilidade` | Logs estruturados, telemetria e healthchecks |
+| `support` | Utilitários transversais e tratamento global de exceções |
 
 ---
 
 ## 🚀 Como Iniciar
 
-A forma recomendada de executar a aplicação completa é via **Docker Compose**:
+### Pré-requisitos
+
+- **Docker** e **Docker Compose** (v2+)
+- Para desenvolvimento fora de contêineres: **Java 25**, **Node.js 18+** e **npm 9+** (veja os READMEs de [backend](./gestao-paroquia/README.md) e [frontend](./gestao-paroquia-ui/README.md))
+
+### Configuração inicial
+
+Antes de subir o ambiente, copie o arquivo de variáveis de ambiente de exemplo e ajuste os valores conforme necessário:
+
+```bash
+cp .env.example .env
+```
+
+A forma recomendada de executar a aplicação completa é via **Docker Compose**, usando o script utilitário `run.sh` (que também expõe atalhos para testes e build):
 
 ```bash
 # Subir todos os serviços (PostgreSQL, Backend API, Frontend UI, pgAdmin e Seeder)
-docker compose up -d
+./run.sh dev
+# equivalente a: docker compose up -d
+
+# Executar as suítes de teste (backend Gradle + frontend Vitest)
+./run.sh test
+
+# Executar as travas de qualidade (Checkstyle, PMD, SpotBugs) e os testes
+./run.sh check
+
+# Gerar os artefatos de build de produção (backend + frontend)
+./run.sh build
+
+# Reiniciar/recompor os contêineres Docker (aceita -c/--clean, --no-cache, -r/--no-build)
+./run.sh docker [opções]
 ```
 
-### 🌐 Serviços e Ambientes Disponíveis:
+Alternativamente, o ambiente Docker pode ser controlado diretamente:
+
+```bash
+docker compose up -d
+# ou, com opções de limpeza/rebuild:
+./restart-docker.sh --help
+```
+
+### 🌐 Serviços e Ambientes Disponíveis
 
 | Serviço | URL / Endereço | Credenciais / Notas |
 | :--- | :--- | :--- |
@@ -41,6 +101,8 @@ docker compose up -d
 | **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Documentação interativa OpenAPI |
 | **pgAdmin 4** | [http://localhost:5050](http://localhost:5050) | Email: `admin@admin.com` \| Senha: `admin` |
 | **PostgreSQL DB** | `localhost:5432` | DB: `calendario` \| User: `postgres` \| Pass: `password` |
+
+Além desses serviços expostos, o Docker Compose também orquestra dois serviços de apoio sem porta publicada: **`builder`** (compila o backend antes de subir a API) e **`db-seeder`** (popula o banco com dados de exemplo após o healthcheck da API).
 
 ---
 
@@ -56,19 +118,25 @@ docker compose up -d
 
 ---
 
-## 🛡️ Governança, Qualidade e LGPD
+## 🛡️ Governança, Qualidade e Conformidade (LGPD)
 
 - **Engenharia e Padrões de Codificação:** Consulte [`AGENTS.md`](./AGENTS.md) e [`gestao-paroquia/AGENTS.md`](./gestao-paroquia/AGENTS.md) para diretrizes de desenvolvimento, TDD e linters.
-- **Privacidade e Proteção de Dados (LGPD):** Consulte a diretiva em [`gestao-paroquia/docs/ia/regra_dura_lgpd.md`](./gestao-paroquia/docs/ia/regra_dura_lgpd.md).
+- **Travas de Qualidade (Quality Gates):** Todo código de backend passa por Checkstyle, PMD, SpotBugs e JaCoCo antes de ser aceito; o frontend passa por `tsc` e pela suíte Vitest. Rode tudo de uma vez com `./run.sh check`.
+- **Auditoria e Rastreabilidade:** O domínio `governanca` registra logs de auditoria estruturados para operações sensíveis, com histórico consultável.
+- **Privacidade e Proteção de Dados (LGPD):** Consulte a diretiva mandatória em [`gestao-paroquia/docs/ia/regra_dura_lgpd.md`](./gestao-paroquia/docs/ia/regra_dura_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs que envolvam dados pessoais.
 
 ---
 
 ## 📖 Documentação Adicional
 
+- [Portal de Documentação do Backend](./gestao-paroquia/docs/README.md)
 - [Visão Geral da Arquitetura do Backend](./gestao-paroquia/docs/architecture.md)
+- [Guia de Início Rápido do Backend](./gestao-paroquia/docs/getting-started.md)
+- [Documentação por Domínio](./gestao-paroquia/docs/domains/)
 - [Guia do Produto (Conductor)](./conductor/product.md)
+- [Diretrizes de Produto (Conductor)](./conductor/product-guidelines.md)
 - [Stack Tecnológica (Conductor)](./conductor/tech-stack.md)
 - [Workflow de Desenvolvimento (Conductor)](./conductor/workflow.md)
 
 ---
-*Desenvolvido com foco em eficiência, alta confiabilidade e organização paroquial.*
+*Sistema desenvolvido para apoiar a gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima, com foco em eficiência, alta confiabilidade e conformidade com a LGPD.* ⛪

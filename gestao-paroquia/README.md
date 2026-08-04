@@ -1,4 +1,4 @@
-# ⚙️ Paróquia - Backend (`gestao-paroquia`)
+# ⚙️ Paróquia — Backend (`gestao-paroquia`)
 
 API RESTful para o sistema de gestão paroquial da Paróquia Nossa Senhora de Fátima. É um monolito modular desenvolvido em **Java 25 (Spring Boot 3)** com foco em alta confiabilidade, segurança, desacoplamento e privacidade de dados (LGPD).
 
@@ -6,11 +6,16 @@ API RESTful para o sistema de gestão paroquial da Paróquia Nossa Senhora de F�
 
 ## 🚀 Visão Geral e Arquitetura
 
-O projeto adota estritamente os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters / Arquitetura Hexagonal)**, isolando o núcleo de regras de negócio das camadas de infraestrutura e frameworks.
+O projeto adota estritamente os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters / Arquitetura Hexagonal)**, isolando o núcleo de regras de negócio das camadas de infraestrutura e frameworks. Cada bounded context segue internamente a mesma separação em camadas:
+
+* **`domain/`** — Entidades, agregados, value objects e regras de negócio puras, sem dependência de frameworks.
+* **`application/usecase/`** — Casos de uso que orquestram o domínio (um use case por operação de negócio).
+* **`api/v1/`** — Controllers REST, DTOs de request/response e mapeamento HTTP.
+* **`infrastructure/`** — Adapters de persistência (JPA), observabilidade, agendamento (Quartz) e integrações externas.
 
 ### 🏛️ Bounded Contexts (Contextos Delimitados)
 
-A aplicação está dividida em 12 domínios explicados sob o pacote raiz `br.com.nsfatima.gestao`:
+A aplicação está dividida em 14 domínios explicados sob o pacote raiz `br.com.nsfatima.gestao`:
 
 * **`calendario`**: Gestão do ciclo de vida de eventos paroquiais, solicitações de agendamento e regras de recorrência.
 * **`aprovacao`**: Workflows de aprovação de eventos e solicitações com histórico e pareceres.
@@ -20,6 +25,8 @@ A aplicação está dividida em 12 domínios explicados sob o pacote raiz `br.co
 * **`organizacao`**: Hierarquia organizacional da paróquia (Pastorais, Movimentos, Setores, Conselho e Comunidades).
 * **`membro`**: Cadastro, fichas cadastrais e acompanhamento de fiéis e membros atuantes.
 * **`projeto`**: Vinculação de eventos a projetos paroquiais com consolidação de métricas e status.
+* **`conselho`**: Decisões e homologações do Conselho Paroquial para Assuntos Econômicos (CPC), com histórico de pareceres.
+* **`patrimonio`**: Cadastro de ativos patrimoniais, alocação/reserva por evento, transferência entre organizações, manutenção e métricas de ociosidade.
 * **`importacao`**: Processamento batch de importação e exportação de dados (relatórios em Excel via Apache POI e PDF via OpenPDF).
 * **`dashboard`**: Métricas executivas, estatísticas gerais e visão consolidada para a gestão paroquial.
 * **`observabilidade`**: Emissão de logs estruturados em formato JSON com MDC, telemetria e healthchecks.
@@ -48,13 +55,14 @@ A aplicação está dividida em 12 domínios explicados sob o pacote raiz `br.co
 * **SpotBugs** (detecção de falhas de segurança e riscos de ponteiro nulo)
 * **JaCoCo** (relatórios de cobertura de código da suíte de testes)
 
-
+* **Agendamento:** Quartz Scheduler (jobs de snapshot de métricas e alocação de ativos)
+* **Observabilidade:** Logs estruturados em JSON com MDC, publicadores de métricas e healthchecks via Spring Boot Actuator
 
 ---
 
 ## 📏 Diretrizes de Engenharia e Padrões (`AGENTS.md`)
 
-O desenvolvimento no backend deve respeitar rigorosamente as normas de engenharia definidas em [`AGENTS.md`](https://www.google.com/search?q=./AGENTS.md):
+O desenvolvimento no backend deve respeitar rigorosamente as normas de engenharia definidas em [`AGENTS.md`](./AGENTS.md):
 
 * **Tipos Fortes sobre Strings:** Uso obrigatório de `enum`, `sealed classes` e Value Objects (`record`) em vez de `String` genéricas para representar estados ou domínios fixos.
 * **Value Objects Imutáveis:** Implementados obrigatoriamente utilizando Java `record` (ex: Email, CPF, Endereço).
@@ -65,7 +73,7 @@ O desenvolvimento no backend deve respeitar rigorosamente as normas de engenhari
 
 ---
 
-## 🧪 Estratégia de Testes & TDD (Test-Driven Development)
+## 🧪 Estratégia de Testes e TDD (Test-Driven Development)
 
 A cobertura de testes é estruturada em três camadas obrigatórias (mão dupla TDD Red-Green-Refactor):
 
@@ -73,12 +81,14 @@ A cobertura de testes é estruturada em três camadas obrigatórias (mão dupla 
 2. **Integration Tests (Testes de Integração):** Validação de persistência JPA com H2, repositórios e contextos Spring.
 3. **End-to-End Tests (E2E):** Testes de fluxo completo via `MockMvc` / `WebTestClient` cobrindo da controller ao banco de dados.
 
+Os testes ficam em `app/src/test/java`, espelhando o pacote do bounded context correspondente (ex.: `integration/eventos`, `integration/metrics`, `support/fake` para fakes reutilizáveis de infraestrutura). O relatório de cobertura JaCoCo é gerado em `build/reports/jacoco/` após `./gradlew check`.
+
 ---
 
 ## 🔒 Privacidade e Conformidade (LGPD)
 
 A aplicação manipula dados pessoais e sensíveis sob rígidas regras em conformidade com a LGPD (Lei Geral de Proteção de Dados).
-Consulte a documentação mandatória em [`docs/ia/regras_duras_lgpd.md`](https://www.google.com/search?q=./docs/ia/regras_duras_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs.
+Consulte a documentação mandatória em [`docs/ia/regra_dura_lgpd.md`](./docs/ia/regra_dura_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs — a diretiva cobre minimização de dados, mascaramento em logs e critérios de retenção.
 
 ---
 
@@ -121,21 +131,27 @@ gestao-paroquia/
 │   ├── init-data.sql           # Schema inicial do banco de dados
 │   └── seed-data.sql           # Dados de semente para ambiente local/dev
 ├── docs/                       # Portal de documentação técnica, arquitetura e LGPD
+│   ├── architecture.md         # Visão geral da arquitetura
+│   ├── getting-started.md      # Guia de início rápido
+│   ├── domains/                # Documentação detalhada por bounded context
+│   └── ia/regra_dura_lgpd.md   # Diretiva mandatória de conformidade LGPD
+├── demo_mvp.sh                 # Demonstração automatizada do ciclo de vida do MVP
+├── build.gradle.kts            # Configuração raiz do Gradle
 └── AGENTS.md                   # Diretrizes completas de engenharia do backend
 
 ```
 
 ---
 
-## 📚 Links e Referências Úteis
+## 📚 Referências
 
 * **Swagger UI (com a API em execução):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 * **OpenAPI Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-* **Documentação do Sistema:** [`docs/README.md`](https://www.google.com/search?q=./docs/README.md)
-* [Visão Geral da Arquitetura](https://www.google.com/search?q=./docs/architecture.md)
-* [Guia de Início Rápido](https://www.google.com/search?q=./docs/getting-started.md)
-* [Documentação dos Domínios](https://www.google.com/search?q=./docs/domains/)
-* [Regra Dura LGPD](https://www.google.com/search?q=./docs/ia/regras_duras_lgpd.md)
+* **Documentação do Sistema:** [`docs/README.md`](./docs/README.md)
+* [Visão Geral da Arquitetura](./docs/architecture.md)
+* [Guia de Início Rápido](./docs/getting-started.md)
+* [Documentação dos Domínios](./docs/domains/)
+* [Regra Dura LGPD](./docs/ia/regra_dura_lgpd.md)
 
 
-* **Padrões de Engenharia Backend:** [`AGENTS.md`](https://www.google.com/search?q=./AGENTS.md)
+* **Padrões de Engenharia Backend:** [`AGENTS.md`](./AGENTS.md)
