@@ -6,14 +6,14 @@
   - [x] Criar e mudar para a branch `chore/conductor-config-fixes-20260804` a partir de `master`
 
 ### Phase 1 — Corrigir `conductor.yml` e residual de track
-- [ ] Task: Corrigir referência quebrada ao arquivo de LGPD em `conductor.yml`
-  - [ ] Substituir `regras_duras_lgpd.md` por `regra_dura_lgpd.md` na regra `pre_spec`
-  - [ ] Verificar: `grep -n "regra" conductor.yml` aponta para o caminho correto e o arquivo existe
-- [ ] Task: Remover diretório residual de track já arquivada
-  - [ ] Confirmar que `conductor/tracks/motor_liturgico_universal_eclesial_20260731/` é idêntico ao conteúdo em `conductor/archive/` (`diff -rq`)
-  - [ ] Remover `conductor/tracks/motor_liturgico_universal_eclesial_20260731/`
-  - [ ] Verificar: `conductor/tracks/` fica sem tracks ativas residuais; `conductor/archive/` permanece intacto
-- [ ] Task: Verificação e checkpoint da Fase 1 (conforme workflow.md)
+- [x] Task: Corrigir referência quebrada ao arquivo de LGPD em `conductor.yml`
+  - [x] Substituir `regras_duras_lgpd.md` por `regra_dura_lgpd.md` na regra `pre_spec`
+  - [x] Verificar: `grep -n "regra" conductor.yml` aponta para o caminho correto e o arquivo existe
+- [x] Task: Remover diretório residual de track já arquivada
+  - [x] Confirmar que `conductor/tracks/motor_liturgico_universal_eclesial_20260731/` é idêntico ao conteúdo em `conductor/archive/` (`diff -rq`)
+  - [x] Remover `conductor/tracks/motor_liturgico_universal_eclesial_20260731/`
+  - [x] Verificar: `conductor/tracks/` fica sem tracks ativas residuais; `conductor/archive/` permanece intacto
+- [x] Task: Verificação e checkpoint da Fase 1 (conforme workflow.md)
 
 ### Phase 2 — Atualizar `conductor/tech-stack.md`
 - [ ] Task: Remover `@mui/x-charts` da lista de dependências ativas

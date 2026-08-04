@@ -15,7 +15,7 @@ pipeline:
     rules:
       - "GIT SYNC: Before initiating any spec or code generation, the agent MUST fetch and pull the latest changes from the remote tracking branch to avoid drift."
       - "READ and internalize the root AGENTS.md and the target child project's AGENTS.md before creating any specification."
-      - "CONSULT the global privacy boundaries in gestao-paroquia/docs/ia/regras_duras_lgpd.md. Spec definitions must NEVER expose or outline PII (Personally Identifiable Information) patterns."
+      - "CONSULT the global privacy boundaries in gestao-paroquia/docs/ia/regra_dura_lgpd.md. Spec definitions must NEVER expose or outline PII (Personally Identifiable Information) patterns."
       - "CONSULT Graphify (graphify-out/cache/semantic/) to better understand the project architecture and dependencies before manual exploration."
       - "ALIGN with the specialized agent capabilities and styleguides defined inside the target module's conductor/code_styleguides/ and docs/ directories."
       - "MANDATORY DIRECTORY UTILIZATION: The agent MUST explicitly leverage and honor all structural constraints defined in this configuration file."
