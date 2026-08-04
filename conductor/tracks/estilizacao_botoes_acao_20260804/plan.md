@@ -5,8 +5,8 @@
 - [x] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações) `66e5d94a`
 
 ## Phase 1: Documentação do Padrão (Guia de Estilo)
-- [ ] Task: Adicionar a seção "Action Button Color & Icon Mapping" em `.agents/skills/react-frontend.md`, com a tabela ação → cor → ícone definida no spec.md
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Adicionar a seção "Action Button Color & Icon Mapping" em `.agents/skills/react-frontend.md`, com a tabela ação → cor → ícone definida no spec.md `71a7459b`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Diálogos de Formulário (Salvar/Cancelar/Confirmar)
 - [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de Salvar/Cancelar dos diálogos principais (`CadastroEventoModal`, `EditScopeDialog`, `CancelarEventoDialog`, `ImportModal`, `ExportCalendarDialog`, `AtivoAlocacoesModal`, `ObservacoesEvento`), e confirmar que falha
