@@ -363,3 +363,8 @@
 
 - [ ] **Track: Adaptar o frontend (gestao-paroquia-ui) aos novos contratos de Fiel/GrupoParoquial/IAM — Track 6/7 da iniciativa SDD**
 *Link: [./tracks/fiel_ui_iam_frontend_20260804/index.md](./tracks/fiel_ui_iam_frontend_20260804/index.md)*
+
+---
+
+- [ ] **Track: Regressão final, cenários BDD da spec original e fechamento da iniciativa SDD — Track 7/7 (última) da iniciativa SDD**
+*Link: [./tracks/sdd_regressao_final_20260804/index.md](./tracks/sdd_regressao_final_20260804/index.md)*

@@ -1,0 +1,20 @@
+{
+  "track_id": "sdd_regressao_final_20260804",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-08-04T00:00:00Z",
+  "updated_at": "2026-08-04T00:00:00Z",
+  "sequence": {
+    "position": 7,
+    "of": 7,
+    "initiative": "Aderência ao SDD de Domínio (Fiel / GrupoParoquial / IAM)"
+  },
+  "depends_on": [
+    "fiel_vocacao_aggregate_20260804",
+    "usuario_fiel_decoupling_20260804",
+    "membro_grupo_por_fiel_20260804",
+    "roles_globais_vs_escopo_20260804",
+    "linguagem_ubiqua_dominio_20260804",
+    "fiel_ui_iam_frontend_20260804"
+  ]
+}
