@@ -230,4 +230,13 @@ describe('OrganizacaoFormModal', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(submitButton).toBeInTheDocument();
   });
+
+  test('renders action buttons with their semantic icons', () => {
+    renderModal();
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    expect(submitButton.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
+  });
 });

@@ -31,9 +31,11 @@ import {
 import {
   Add as AddIcon,
   Build as BuildIcon,
+  CheckCircle as CheckCircleIcon,
   Close as CloseIcon,
   SwapHoriz as TransferIcon,
   EventAvailable as AllocateIcon,
+  EventBusy as DeallocateIcon,
   Inventory as InventoryIcon,
   MoreVert as MoreVertIcon,
   Save as SaveIcon,
@@ -513,6 +515,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
+            <DeallocateIcon fontSize="small" sx={{ mr: 1 }} />
             Desalocar
           </MenuItem>
         )}
@@ -523,6 +526,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
+            <BuildIcon fontSize="small" sx={{ mr: 1 }} />
             Iniciar Manutenção
           </MenuItem>
         )}
@@ -533,6 +537,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
+            <CheckCircleIcon fontSize="small" sx={{ mr: 1 }} />
             Finalizar Manutenção
           </MenuItem>
         )}

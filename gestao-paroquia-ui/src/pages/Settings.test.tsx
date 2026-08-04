@@ -183,6 +183,24 @@ describe('Settings page', () => {
       expect(mockUpdateAnoParoquialStatus).toHaveBeenCalledWith(2026, 'CONCLUIDO');
     });
   });
+
+  test('renders Cancelar and Confirmar buttons in the conclusion dialog with semantic icons', async () => {
+    mockGetAnosParoquiais.mockResolvedValue(mockAnos);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('2026')).toBeInTheDocument();
+    });
+
+    const concludeButton = screen.getByRole('button', { name: /Concluir/i });
+    fireEvent.click(concludeButton);
+
+    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
+    const confirmButton = screen.getByRole('button', { name: /^Confirmar$/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    expect(confirmButton.querySelector('[data-testid="CheckIcon"]')).toBeInTheDocument();
+  });
 });
 
 const mockLocais = [
@@ -254,6 +272,27 @@ describe('Settings page - Locais CRUD', () => {
     });
   });
 
+  test('renders the Inativar/Ativar toggle button in Locais list with a semantic icon', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValueOnce(mockLocais);
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+
+    const toggleButtons = screen.getAllByRole('button', { name: /^(Inativar|Ativar)$/i });
+    expect(toggleButtons.length).toBeGreaterThan(0);
+    const hasToggleIcon = toggleButtons.some((btn) =>
+      btn.querySelector('[data-testid="ToggleOffIcon"]') || btn.querySelector('[data-testid="ToggleOnIcon"]')
+    );
+    expect(hasToggleIcon).toBe(true);
+  });
+
   test('renders Editar button in Locais list with the secondary semantic icon', async () => {
     mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
     mockGetLocais.mockResolvedValueOnce(mockLocais);
@@ -294,9 +333,13 @@ describe('Settings page - Locais CRUD', () => {
     });
 
     const newBtn = screen.getByRole('button', { name: /Novo Local/i });
+    expect(newBtn.querySelector('[data-testid="AddIcon"]')).toBeInTheDocument();
     fireEvent.click(newBtn);
 
     expect(screen.getByRole('heading', { name: 'Novo Local' })).toBeInTheDocument();
+
+    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
 
     const nomeInput = screen.getByLabelText(/Nome do Local/i);
     const tipoSelect = screen.getByLabelText(/Tipo/i);
@@ -311,6 +354,7 @@ describe('Settings page - Locais CRUD', () => {
     fireEvent.change(enderecoInput, { target: { value: '2º Andar' } });
 
     const submitBtn = screen.getByRole('button', { name: /^Salvar$/i });
+    expect(submitBtn.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
     fireEvent.click(submitBtn);
 
     await waitFor(() => {

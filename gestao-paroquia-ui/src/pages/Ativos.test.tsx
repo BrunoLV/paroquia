@@ -362,6 +362,40 @@ describe('Ativos Page', () => {
     expect(optionLabels).toContain('Matriz');
   });
 
+  test('renders Desalocar and Iniciar Manutenção menu items with semantic icons', async () => {
+    const coordenadorUser = {
+      id: '3',
+      name: 'Coordenador',
+      roles: ['ROLE_PASTORAL_COORDENADOR'],
+      organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
+    };
+    await renderAtivos(coordenadorUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    // ativo[0] is DISPONIVEL: expect "Iniciar Manutenção" with icon
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[0].click();
+    });
+    const manutencaoItem = screen.getByRole('menuitem', { name: /Iniciar Manutenção/i });
+    expect(manutencaoItem.querySelector('[data-testid="BuildIcon"]')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.keyDown(document.activeElement || document.body, { key: 'Escape' });
+    });
+
+    // ativo[1] is ALOCADO: expect "Desalocar" with icon
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[1].click();
+    });
+    const desalocarItem = screen.getByRole('menuitem', { name: /Desalocar/i });
+    expect(desalocarItem.querySelector('[data-testid="EventBusyIcon"]')).toBeInTheDocument();
+  });
+
   test('renders create dialog Cancelar and Salvar buttons with semantic icons', async () => {
     await renderAtivos(adminUser);
 
