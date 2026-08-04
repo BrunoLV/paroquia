@@ -33,9 +33,9 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 6: Validação Final e QA Visual
-- [ ] Task: Rodar `npx tsc --noEmit` e `CI=true npm test` no `gestao-paroquia-ui` e corrigir eventuais falhas
-- [ ] Task: Subir a aplicação localmente (`npm run dev`) e realizar QA visual manual nas telas principais (formulários de cadastro, diálogos de confirmação, tabelas de listagem, menus/ações de contexto), confirmando aplicação consistente do padrão
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Rodar `npx tsc --noEmit` e `CI=true npm test` no `gestao-paroquia-ui` e corrigir eventuais falhas `3656f124`
+- [x] Task: Subir a aplicação localmente (`npm run dev`) e realizar QA visual manual nas telas principais, confirmando aplicação consistente do padrão `3656f124` — QA encontrou e corrigiu lacunas em Ativos (menu de ações), CpcDecisaoModal, LocalFormModal, OrganizacaoFormModal e diversos pontos de Settings.tsx em 2 rodadas de feedback
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 7: Encerramento da Track
 - [ ] Task: Atualizar `conductor/tracks.md` marcando a track como concluída `[x]`
