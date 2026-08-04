@@ -14,7 +14,10 @@ declare module '@mui/material/styles' {
   }
 }
 
-const DENSITY_SCALE = 0.875; // ~12.5% reduction, keeps body1 at the 14px accessibility floor
+const DENSITY_SCALE = 0.8; // 20% reduction (max allowed) across typography, spacing and component sizing
+const BODY_TEXT_FONT_SIZE_REM = 0.875; // body1 stays at the 14px accessibility floor, exempt from DENSITY_SCALE
+
+const scaledRem = (baseRem: number): string => `${Math.round(baseRem * DENSITY_SCALE * 10000) / 10000}rem`;
 
 const theme = createTheme({
   palette: {
@@ -47,44 +50,44 @@ const theme = createTheme({
       'sans-serif',
     ].join(','),
     h1: {
-      fontSize: `${2.5 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(2.5),
       fontWeight: 500,
     },
     h2: {
-      fontSize: `${3.75 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(3.75),
     },
     h3: {
-      fontSize: `${3 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(3),
     },
     h4: {
-      fontSize: `${2.125 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(2.125),
     },
     h5: {
-      fontSize: `${1.5 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(1.5),
     },
     h6: {
-      fontSize: `${1.25 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(1.25),
     },
     subtitle1: {
-      fontSize: `${1 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(1),
     },
     subtitle2: {
-      fontSize: `${0.875 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(0.875),
     },
     body1: {
-      fontSize: `${1 * DENSITY_SCALE}rem`,
+      fontSize: `${BODY_TEXT_FONT_SIZE_REM}rem`,
     },
     body2: {
-      fontSize: `${0.875 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(0.875),
     },
     button: {
-      fontSize: `${0.875 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(0.875),
     },
     caption: {
-      fontSize: `${0.75 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(0.75),
     },
     overline: {
-      fontSize: `${0.75 * DENSITY_SCALE}rem`,
+      fontSize: scaledRem(0.75),
     },
   },
   components: {

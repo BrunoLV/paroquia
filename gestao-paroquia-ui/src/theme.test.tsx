@@ -55,50 +55,50 @@ test('theme should standardize links to underline on hover only', () => {
   expect(linkProps?.underline).toBe('hover');
 });
 
-test('theme should reduce heading font sizes by ~12.5% for a more compact layout', () => {
-  expect(theme.typography.h1.fontSize).toBe('2.1875rem');
-  expect(theme.typography.h2.fontSize).toBe('3.28125rem');
-  expect(theme.typography.h3.fontSize).toBe('2.625rem');
-  expect(theme.typography.h4.fontSize).toBe('1.859375rem');
-  expect(theme.typography.h5.fontSize).toBe('1.3125rem');
-  expect(theme.typography.h6.fontSize).toBe('1.09375rem');
+test('theme should reduce heading font sizes by 20% for a more compact layout', () => {
+  expect(theme.typography.h1.fontSize).toBe('2rem');
+  expect(theme.typography.h2.fontSize).toBe('3rem');
+  expect(theme.typography.h3.fontSize).toBe('2.4rem');
+  expect(theme.typography.h4.fontSize).toBe('1.7rem');
+  expect(theme.typography.h5.fontSize).toBe('1.2rem');
+  expect(theme.typography.h6.fontSize).toBe('1rem');
 });
 
 test('theme should keep body1 font size at the 14px accessibility floor', () => {
   expect(theme.typography.body1.fontSize).toBe('0.875rem');
 });
 
-test('theme should reduce secondary text font sizes for a more compact layout', () => {
-  expect(theme.typography.subtitle1.fontSize).toBe('0.875rem');
-  expect(theme.typography.subtitle2.fontSize).toBe('0.765625rem');
-  expect(theme.typography.body2.fontSize).toBe('0.765625rem');
-  expect(theme.typography.button.fontSize).toBe('0.765625rem');
-  expect(theme.typography.caption.fontSize).toBe('0.65625rem');
-  expect(theme.typography.overline.fontSize).toBe('0.65625rem');
+test('theme should reduce secondary text font sizes by 20% for a more compact layout', () => {
+  expect(theme.typography.subtitle1.fontSize).toBe('0.8rem');
+  expect(theme.typography.subtitle2.fontSize).toBe('0.7rem');
+  expect(theme.typography.body2.fontSize).toBe('0.7rem');
+  expect(theme.typography.button.fontSize).toBe('0.7rem');
+  expect(theme.typography.caption.fontSize).toBe('0.6rem');
+  expect(theme.typography.overline.fontSize).toBe('0.6rem');
 });
 
-test('theme should reduce the base spacing unit by ~12.5% for a more compact layout', () => {
-  expect(theme.spacing(1)).toBe('7px');
-  expect(theme.spacing(2)).toBe('14px');
+test('theme should reduce the base spacing unit by 20% for a more compact layout', () => {
+  expect(theme.spacing(1)).toBe('6.4px');
+  expect(theme.spacing(2)).toBe('12.8px');
 });
 
-test('theme should reduce button padding for a more compact layout', () => {
+test('theme should reduce button padding by 20% for a more compact layout', () => {
   const buttonStyle: any = theme.components?.MuiButton?.styleOverrides?.root;
-  expect(buttonStyle?.padding).toBe('5px 14px');
+  expect(buttonStyle?.padding).toBe('5px 13px');
 });
 
-test('theme should reduce outlined input padding for a more compact layout', () => {
+test('theme should reduce outlined input padding by 20% for a more compact layout', () => {
   const inputStyle: any = theme.components?.MuiOutlinedInput?.styleOverrides?.input;
-  expect(inputStyle?.padding).toBe('14px 12px');
+  expect(inputStyle?.padding).toBe('13px 11px');
 });
 
-test('theme should reduce table cell padding for a more compact layout', () => {
+test('theme should reduce table cell padding by 20% for a more compact layout', () => {
   const cellStyle: any = theme.components?.MuiTableCell?.styleOverrides?.root;
-  expect(cellStyle?.padding).toBe('14px');
+  expect(cellStyle?.padding).toBe('13px');
 });
 
-test('theme should reduce chip height for a more compact layout', () => {
+test('theme should reduce chip height by 20% for a more compact layout', () => {
   const chipStyle: any = theme.components?.MuiChip?.styleOverrides?.root;
-  expect(chipStyle?.height).toBe('28px');
+  expect(chipStyle?.height).toBe('26px');
 });
 
