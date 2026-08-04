@@ -1,59 +1,46 @@
 # AGENTS.md - Frontend Engineering Standards & Guidelines
 
-## Architecture & State Management (React & TypeScript)
-- **Domain-Driven UI:** Mantenha a lógica de negócio separada da representação visual. Transformações de dados pesadas, lógica de validação e gerenciamento de estado pertencem ao interior de custom hooks (`hooks/`), mantendo os componentes focados na apresentação.
-- **Tipagem Estrita:** Nunca use `any`. Evite `unknown` sem um estreitamento de tipo (type narrowing) imediato. Todas as props de componentes, custom hooks e respostas de API devem ter definições explícitas e imutáveis de `type` ou `interface` do TypeScript.
-- **Tipos sobre Strings:** Sempre prefira Java/TypeScript `enum` ou tipos estritos de união de literais de modelo (ex: `'success' | 'error' | 'pending'`) em vez de `string` pura para representar estados, categorias, status ou domínios fixos.
-- **Restrições de Componentes e Funções:** Componentes React devem ter entre 10 e 60 linhas. Funções puras e hooks devem permanecer entre 4 e 20 linhas. Divida a lógica antecipadamente em componentes filhos ou hooks modulares caso os limites sejam excedidos.
-- **Convenções de Nomenclatura:** Os nomes devem ser específicos, únicos e orientados ao domínio. Termos genéricos ABSOLUTAMENTE PROIBIDOS: `Data`, `Handler`, `Manager`, `Helper`, `Utility`, `Component`. Prefira nomes precisos que retornem menos de 5 resultados de grep na base de código.
-- **Idioma — Domínio em Português, Técnico em Inglês:** Tipos/interfaces/DTOs que representam conceitos de domínio devem ser nomeados em português, espelhando o backend (ex.: `VinculoResponse`, não `MembershipResponse`). Termos puramente técnicos (`Response`, `Request`, `Props`, `Context`, `Provider`) permanecem em inglês. A convenção vale também para identificadores locais (variáveis, estado de componente, funções internas), não só para tipos/interfaces exportados.
-- **Fluxo de Controle:** Prefira retornos antecipados (early returns) e cláusulas de guarda (guard clauses) em vez de blocos `if-else` aninhados ou operadores ternários de JSX profundamente aninhados. A profundidade máxima de indentação permitida é de 2 níveis dentro de qualquer bloco.
+Este documento unifica as diretrizes de arquitetura, padrões de UI/UX e comandos de ferramentas para atuar no frontend do "Projeto Paróquia".
 
-## Data Privacy & Compliance (LGPD Mandate)
-- **Roteamento de Compliance Estrito:** Este projeto manipula dados pessoais e é apenas para uso interno. O agente DEVE ABSOLUTAMENTE ler, internalizar e aplicar estritamente os limites de privacidade e segurança definidos no arquivo `docs/ia/regras_duras_lgpd.md` antes de autorar componentes de UI, expor contratos de dados ou lidar com persistência/logs no lado do cliente (client-side).
+## 1. Arquitetura e Contexto do Projeto
+- **Escopo e Stack:** Este diretório (`gestao-paroquia-ui/`) contém o frontend em React 19, TypeScript e Vite 5[cite: 6]. A aplicação consome a API REST do backend via Axios e utiliza TanStack React Query (v5) para cache de estado do servidor, com Material UI (MUI 9) como sistema de design principal[cite: 5, 6].
+- **Domain-Driven UI:** A aplicação é orientada a páginas (page-oriented)[cite: 6]. A lógica de negócio, transformações pesadas e validações devem ser isoladas em custom hooks (`src/hooks/`), mantendo os componentes de UI focados estritamente na apresentação[cite: 5].
+- **Estrutura e Topologia:** A co-localização é obrigatória. Testes e estilos devem ficar próximos ao componente pai[cite: 5]. A estrutura inclui: `src/api/` (wrappers de requisições pareados com os contextos do backend), `src/auth/` (regras centralizadas de permissões), `src/pages/`, `src/components/` (divididos por feature, não um balde plano), `src/context/` e `src/utils/`[cite: 5, 6].
 
-## Otimização de Janela de Contexto
-- **Consulta Prévia Mandatória:** Sempre consulte `graphify-out/graph.json` ou execute buscas semânticas locais antes de abrir múltiplos arquivos de código.
-- **Eficiência de Tokens:** Nunca consuma tokens carregando arquivos inteiros se a relação mapeada pelo Graphify exigir modificações em apenas algumas linhas isoladas.
+## 2. Regras de Negócio e Integração com a API
+- **Pareamento de Backend:** A superfície de API (`src/api/`) espelha os bounded contexts do backend. Se um contrato no backend mudar, o respectivo módulo e os tipos em `types.ts` devem ser atualizados simultaneamente[cite: 6].
+- **Permissões Centralizadas:** Verificações de permissão (ex: `canManageProjects()`) pertencem ao `src/auth/permissions.ts` e nunca devem ser espalhadas inline pelos componentes[cite: 6].
+- **Fluxo de Aprovação:** Muitas operações de mutação (criar/atualizar evento) não são aplicadas imediatamente, passando por uma máquina de estados de aprovação refletida em `src/api/approvals.ts` e na página de `Approvals`[cite: 6].
 
-## Agent Capabilities, Custom Skills & Graphify Mandate
-- **Exploração da Base de Código via Graphify:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar componentes UI, páginas ou hooks via buscas manuais.
-- **Economia de Tokens:** É proibida a leitura em lote de múltiplos arquivos fonte inteiros quando a estrutura de dependências puder ser obtida diretamente via consulta aos artefatos do Graphify, garantindo economia de tokens e navegação precisa.
-- **Alinhamento Obrigatório de Skills do Projeto:** O agente DEVE obrigatoriamente consultar e aplicar as diretrizes contidas nos guias de skill em `.agents/skills/` (`react-frontend.md`) antes de gerar ou refatorar qualquer componente, hook ou página no frontend.
+## 3. Governança de IA e LGPD
+- **Graphify Obrigatório:** Consulte sempre os artefatos em `../graphify-out/` (na raiz do monorepo) antes de buscar cegamente por componentes ou páginas[cite: 5, 6].
+- **Privacidade de Dados:** A aplicação manipula PII (Personal Identifiable Information). Leia e aplique rigorosamente `docs/ia/regras_duras_lgpd.md` antes de autorar componentes, logs (limpe `console.log` antes de commitar) ou persistência local[cite: 5].
+- **Habilidades (Skills):** Consulte o guia `react-frontend.md` na pasta `.agents/skills/` antes de gerar refatorações[cite: 5].
 
-## Static Analysis, Linters & Tools
-- **Conformidade com Ferramentas:** A base de código impõe rigidamente portões de qualidade (quality gates) via **ESLint**, **TypeScript (`tsc`)** e **Prettier**. Todo código gerado ou refatorado deve estar em total conformidade com essas configurações.
-- **Política de Zero Avisos:** Nenhum aviso de compilação (warning), code smell ou violação de estilo deve ser introduzido. O agente deve verificar se o código compila perfeitamente (`npm run build`) e passa por todas as validações de linting/formatação antes de finalizar as alterações.
-- **Stack de Framework:** Adira estritamente à stack principal do framework do projeto: **Vite** como empacotador/servidor de desenvolvimento, **React 19**, **Material UI (MUI 9)** para o sistema de design/componentes, **Axios** para execução do cliente HTTP e **TanStack React Query (v5)** para cache de estado do servidor.
+## 4. Padrões de Código e Tipagem
+- **Tipagem Estrita e Imutável:** É estritamente proibido o uso de `any`[cite: 5]. Prefira uniões de literais estritos (ex: `'success' | 'error'`) ou `enum` ao invés de `string` livre[cite: 5].
+- **Limites Físicos:** Componentes React devem conter entre 10 e 60 linhas[cite: 5]. Funções puras e custom hooks entre 4 e 20 linhas[cite: 5]. Divida a lógica se ultrapassar esses limites.
+- **Nomenclatura (Domínio em PT / Técnico em EN):** Tipos, interfaces e DTOs que representam o negócio devem ser em Português (ex: `VinculoResponse`). Termos técnicos (`Props`, `Context`) ficam em Inglês[cite: 5]. O uso de nomes genéricos (`Manager`, `Helper`) é proibido[cite: 5].
+- **Importações:** Use sempre caminhos absolutos (`@/...`) e agrupe imports logicamente (Bibliotecas -> Imports absolutos -> Estilos/Tipos)[cite: 5, 6]. 
 
-## Arquitetura de Documentação
-- **Documentação de API & Query:** Cada custom hook que encapsula um TanStack Query (`useQuery` / `useMutation`) deve incluir JSDoc detalhando o contrato de rede, estratégia de invalidação de query key e o formato de dados esperado. Todos os módulos de `src/api/` já têm essa documentação (auditoria concluída) — siga o mesmo padrão em qualquer módulo/hook novo.
-- **JSDoc de Componentes:** Primitivos de UI reaproveitáveis públicos e componentes estruturais complexos devem ter um bloco Javadoc/JSDoc declarando sua intenção visual primária, requisitos de acessibilidade e exatamente um exemplo de uso de JSX válido.
-- **Campos de DTO não-óbvios em `types.ts`:** Documente com JSDoc os campos cujo significado não é óbvio a partir do nome/tipo (ex.: os campos de aprovação pendente e de estado de conflito em `Evento` — `estadoConflito`/`motivoConflito`/`aprovacaoPendenteId`/`tipoSolicitacaoPendente` já servem de referência de padrão); não é preciso documentar campos triviais como `id: string`.
-- **Intenção sobre Mecanismo:** Os comentários dentro do código devem explicar o **PORQUÊ**, não o **O QUÊ**. Não comente códigos autoexplicativos (ex: pule `// set loading to true` acima de `setIsLoading(true)`). O mesmo vale para agentes de IA lendo o código: a documentação deve tornar a regra de negócio compreensível sem depender de contexto de conversa ou histórico de commits.
-- **Preservar o Contexto:** Retenha os comentários existentes durante a refatoração; eles carregam intenção histórica e proveniência.
+## 5. Qualidade, Documentação e Testes (TDD)
+- **Zero Avisos:** O código não deve gerar avisos de linting (ESLint), formatação (Prettier) ou falhas na compilação do TypeScript (`tsc`)[cite: 5, 6].
+- **Documentação de Código (JSDoc):** Hooks envolvendo requisições (TanStack Query) devem ter JSDoc explicando o contrato de rede e invalidação. Documente propriedades de DTO não óbvias (ex: motivos de conflito) e explique o PORQUÊ das lógicas nos comentários, garantindo legibilidade autônoma para IA[cite: 5].
+- **Mandato de TDD:** O ciclo Red-Green-Refactor é exigido. Desenvolva testes Unitários, de Integração/Componente (usando RTL e `user-event`) e de Ponta a Ponta (E2E)[cite: 5].
+- **Isolamento de Testes:** É proibido realizar chamadas de rede reais nos testes do frontend; todos os acessos via Axios devem ser mockados[cite: 5, 6].
 
-## Importações & Higiene de Caminhos
-- **Mapeamentos Absolutos:** SEMPRE use mapeamentos de caminhos absolutos (ex: `@/components/Button` ou `@/hooks/useAuth`) em vez de caminhos relativos (ex: `../../../../components/Button`). Caminhos relativos profundamente aninhados são estritamente proibidos.
-- **Importações Limpas:** Agrupe as importações logicamente: React/Bibliotecas de terceiros primeiro, componentes/hooks absolutos do projeto em segundo, estilos/tipos por último.
+## 6. Instruções de Ferramentas (Tools) e Comandos
+### Exploração via Graphify (A partir da raiz do monorepo)
+- `graphify query "<question>"`: Para dúvidas na base de código[cite: 6].
+- `graphify path "<A>" "<B>"`: Rastrear conexões[cite: 6].
+- `graphify explain "<concept>"`: Explorar componentes/conceitos[cite: 6].
+- `graphify update .`: Atualizar a AST após modificar código[cite: 6].
 
-## Suíte de Testes & Mandato de TDD
-- **Aplicação Estrita de TDD:** O Desenvolvimento Orientado a Testes (TDD) é a base absoluta da segurança do frontend neste projeto. Você DEVE escrever o teste antes de escrever qualquer lógica de UI de produção, utilitário ou hook (ciclo Red-Green-Refactor).
-- **Execução:** Todos os testes em todos os níveis devem rodar perfeitamente através do comando na raiz: `npm test` (alimentado por **Vitest** e **jsdom**).
-- **Camadas Obrigatórias da Suíte de Testes:** Para cada nova funcionalidade, página ou hook, o agente DEVE implementar três camadas distintas de teste:
-  1. **Testes Unitários:** Testes isolados para funções utilitárias, lógica pura de domínio e custom hooks (usando `renderHook` do `@testing-library/react`).
-  2. **Testes de Integração/Componente:** Testes comportamentais de componentes de UI usando **React Testing Library** e `@testing-library/user-event` para simular interações reais de usuários.
-  3. **Testes de Ponta a Ponta (E2E) / Fatia Completa:** Verificação de jornadas completas de usuários, transições de rotas via `react-router-dom` e árvores de componentes completas interagindo com fronteiras de rede mockadas.
-- **Isolamento Estrito de I/O:** Mocke todas as camadas de rede HTTP externas usando simuladores de API (fakes) nomeados ou ferramentas de mock. Nunca permita que um teste de frontend realize atividades de rede reais contra o backend real.
-- **Princípios F.I.R.S.T.:** Os testes devem ser Rápidos (Fast), Independentes (Independent), Repetíveis (Repeatable), Auto-validáveis (Self-Validating) e Oportunos/Na hora certa (Timely).
-
-## Gerenciamento de Dependências & Desacoplamento
-- **Props e Contexto sobre Globais:** Injete todo estado, configurações e manipuladores externos explicitamente através de Props ou React Context. É proibido depender de objetos globais `window` ou singletons não gerenciados espalhados.
-- **Isolamento de UI de Terceiros:** Envolva bibliotecas de terceiros pesadas ou altamente voláteis (como motores de gráficos ou utilitários complexos) atrás de uma interface fina ou custom hook de propriedade deste projeto antes de usá-las dentro dos componentes.
-
-## Estrutura & Topologia
-- **Co-localização Estrita de Componentes:** Mantenha testes (`__tests__/`), estilos e componentes filhos próximos à rota ou ao componente pai que os utiliza, em vez de pastas globais distantes.
-- **Topologia Previsível:** Adira estritamente à estrutura do projeto: `src/components/`, `src/hooks/`, `src/pages/`, `src/utils/`.
-
-## Observabilidade & Logs
-- **Higiene do Console:** `console.log` é apenas para desenvolvimento local. Limpe-os completamente antes de commitar. Nunca vaze logs técnicos, stack traces puros ou payloads de erro de API para o console do navegador voltado ao usuário em produção.
+### Comandos NPM (A partir de gestao-paroquia-ui/)
+- `npm install`: Instalar dependências[cite: 6].
+- `npm run dev` ou `npm start`: Iniciar o Vite (porta 3000, com proxy configurado para o backend via `VITE_API_PROXY_TARGET`)[cite: 6].
+- `npm run build`: Checagem rigorosa de tipos (`tsc`) e build de produção[cite: 6].
+- `npm run preview`: Servir o build de produção localmente[cite: 6].
+- `npm test`: Executar testes no Vitest (com jsdom configurado)[cite: 6].
+- `npm run test:watch`: Vitest em modo watch[cite: 6].
+- `npx vitest run path/to/File.test.tsx`: Executar um arquivo de teste isolado[cite: 6].
