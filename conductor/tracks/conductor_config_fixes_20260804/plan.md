@@ -32,6 +32,6 @@
 - [x] Task: Verificação e checkpoint da Fase 3 (conforme workflow.md)
 
 ### Phase 4 — Encerramento
-- [ ] Task: Revisão final de todos os arquivos alterados (`git diff master`)
-- [ ] Task: Commit das alterações na branch `chore/conductor-config-fixes-20260804`
-- [ ] Task: Verificação e checkpoint final da track (conforme workflow.md)
+- [x] Task: Revisão final de todos os arquivos alterados (`git diff master`)
+- [x] Task: Commit das alterações na branch `chore/conductor-config-fixes-20260804`
+- [x] Task: Verificação e checkpoint final da track (conforme workflow.md)
