@@ -1,0 +1,13 @@
+{
+  "track_id": "membro_grupo_por_fiel_20260804",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-08-04T00:00:00Z",
+  "updated_at": "2026-08-04T00:00:00Z",
+  "sequence": {
+    "position": 3,
+    "of": 7,
+    "initiative": "Aderência ao SDD de Domínio (Fiel / GrupoParoquial / IAM)"
+  },
+  "depends_on": ["fiel_vocacao_aggregate_20260804", "usuario_fiel_decoupling_20260804"]
+}
