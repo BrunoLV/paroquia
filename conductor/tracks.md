@@ -328,7 +328,7 @@
 
 ---
 
-- [~] **Track: Padronização de Cor e Ícone por Ação nos Botões do Sistema**
+- [x] **Track: Padronização de Cor e Ícone por Ação nos Botões do Sistema**
 *Link: [./tracks/estilizacao_botoes_acao_20260804/index.md](./tracks/estilizacao_botoes_acao_20260804/index.md)*
 
 
