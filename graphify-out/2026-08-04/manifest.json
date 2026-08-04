@@ -675,13 +675,13 @@
     "semantic_hash": "d70fc6b8901a8717d63529b63aebac84"
   },
   "gestao-paroquia-ui/src/theme.test.tsx": {
-    "mtime": 1785817001.9689896,
-    "ast_hash": "8c771c08d0d7e076f5a214de3c73e4ea",
+    "mtime": 1785817492.4460518,
+    "ast_hash": "6ec3ada8b8ff33d8d92297b3e08334f0",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/theme.ts": {
-    "mtime": 1785817054.779157,
-    "ast_hash": "e58eea0355f7f081cb778334f134e4df",
+    "mtime": 1785817488.7678814,
+    "ast_hash": "93452128c1acaceb63b02de989fb9f5c",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/types/react-orgchart.d.ts": {
@@ -6630,8 +6630,8 @@
     "semantic_hash": ""
   },
   "conductor/tracks/ui_densidade_visual_20260804/plan.md": {
-    "mtime": 1785817212.1571045,
-    "ast_hash": "fe13cc5257afb4f4d6e0e166f31eb31f",
+    "mtime": 1785817632.4679937,
+    "ast_hash": "87d62fc3fab5c1749b4ebdf166cdc64d",
     "semantic_hash": ""
   },
   "conductor/tracks/ui_densidade_visual_20260804/spec.md": {
