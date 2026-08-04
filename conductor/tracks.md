@@ -326,5 +326,10 @@
 - [x] **Track: Redução de Densidade Visual da UI (Tipografia, Espaçamento e Componentes, até 20%)**
 *Link: [./archive/ui_densidade_visual_20260804/index.md](./archive/ui_densidade_visual_20260804/index.md)*
 
+---
+
+- [ ] **Track: Padronização de Cor e Ícone por Ação nos Botões do Sistema**
+*Link: [./tracks/estilizacao_botoes_acao_20260804/index.md](./tracks/estilizacao_botoes_acao_20260804/index.md)*
+
 
 

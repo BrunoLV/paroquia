@@ -1,0 +1,42 @@
+# Plan: Padronização de Cor e Ícone por Ação nos Botões do Sistema
+
+## Phase 0: Setup de Branch
+- [ ] Task: Sincronizar `master` local com `origin/master` e criar branch dedicada `feat/estilizacao-botoes-acao-20260804` a partir dela
+- [ ] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações)
+
+## Phase 1: Documentação do Padrão (Guia de Estilo)
+- [ ] Task: Adicionar a seção "Action Button Color & Icon Mapping" em `.agents/skills/react-frontend.md`, com a tabela ação → cor → ícone definida no spec.md
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 2: Diálogos de Formulário (Salvar/Cancelar/Confirmar)
+- [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de Salvar/Cancelar dos diálogos principais (`CadastroEventoModal`, `EditScopeDialog`, `CancelarEventoDialog`, `ImportModal`, `ExportCalendarDialog`, `AtivoAlocacoesModal`, `ObservacoesEvento`), e confirmar que falha
+- [ ] Task: Implementar (Green) `startIcon`/`color` nos botões desses diálogos conforme o mapeamento, e rodar os testes até passarem
+- [ ] Task: Refatorar se necessário (extrair ícones repetidos, evitar duplicação) e re-rodar os testes
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 3: Páginas de Listagem/CRUD (Ações Primárias)
+- [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de ação primária das páginas (`Ativos.tsx`, `Projects.tsx`, `Calendar.tsx`, `ConselhosAtas.tsx`, `Settings.tsx`, `Reports.tsx`, `Aprovacoes.tsx`, `Membros`/`Organizacoes`/`Eventos` conforme aplicável), e confirmar que falha
+- [ ] Task: Implementar (Green) `startIcon`/`color` nesses botões conforme o mapeamento, e rodar os testes até passarem
+- [ ] Task: Refatorar se necessário e re-rodar os testes
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 4: IconButtons de Ação em Tabelas/Linhas
+- [ ] Task: Escrever teste (Red) verificando a cor semântica esperada (`color="secondary"` para editar, `color="error"` para excluir, etc.) nos `IconButton` de ação em linhas de tabela/lista, e confirmar que falha
+- [ ] Task: Implementar (Green) o `color` correto nesses `IconButton`, e rodar os testes até passarem
+- [ ] Task: Refatorar se necessário e re-rodar os testes
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 5: Diálogos de Confirmação Destrutiva e Aprovação/Homologação
+- [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de confirmação destrutiva (Excluir, Vetar, Rejeitar) e de aprovação/homologação (Aprovar, Homologar), e confirmar que falha
+- [ ] Task: Implementar (Green) `startIcon`/`color` nesses botões conforme o mapeamento, e rodar os testes até passarem
+- [ ] Task: Refatorar se necessário e re-rodar os testes
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 6: Validação Final e QA Visual
+- [ ] Task: Rodar `npx tsc --noEmit` e `CI=true npm test` no `gestao-paroquia-ui` e corrigir eventuais falhas
+- [ ] Task: Subir a aplicação localmente (`npm run dev`) e realizar QA visual manual nas telas principais (formulários de cadastro, diálogos de confirmação, tabelas de listagem, menus/ações de contexto), confirmando aplicação consistente do padrão
+- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+## Phase 7: Encerramento da Track
+- [ ] Task: Atualizar `conductor/tracks.md` marcando a track como concluída `[x]`
+- [ ] Task: Sincronizar documentação de projeto (`product.md`/`tech-stack.md`) se aplicável (Refer to conductor-implement Section 4)
