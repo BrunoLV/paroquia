@@ -5,10 +5,10 @@
 - [x] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações) `1f033f52`
 
 ## Phase 1: Redução de Tipografia (até 20%)
-- [ ] Task: Escrever teste (Red) em `theme.test.tsx` que afirma os novos tamanhos de fonte esperados para as variantes usadas (`h1`, `body1`, `body2`, `button`, `caption`) com redução de até 20% frente aos defaults do MUI, e confirmar que falha
-- [ ] Task: Implementar (Green) os novos valores de `typography` em `theme.ts` (fontSize por variante), garantindo `body1` ≥ 14px, e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário (extrair fator de escala nomeado, evitar números mágicos duplicados) e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) em `theme.test.tsx` que afirma os novos tamanhos de fonte esperados para as variantes usadas (`h1`, `body1`, `body2`, `button`, `caption`) com redução de até 20% frente aos defaults do MUI, e confirmar que falha `e38cb290`
+- [x] Task: Implementar (Green) os novos valores de `typography` em `theme.ts` (fontSize por variante), garantindo `body1` ≥ 14px, e rodar os testes até passarem `e38cb290`
+- [x] Task: Refatorar se necessário (extrair fator de escala nomeado, evitar números mágicos duplicados) e re-rodar os testes `e38cb290`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Redução de Espaçamento Base (até 20%)
 - [ ] Task: Escrever teste (Red) que afirma o novo valor de `theme.spacing(1)` reduzido em até 20% frente ao default do MUI (8px), e confirmar que falha
