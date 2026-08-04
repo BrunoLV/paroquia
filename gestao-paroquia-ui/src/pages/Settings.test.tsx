@@ -254,6 +254,23 @@ describe('Settings page - Locais CRUD', () => {
     });
   });
 
+  test('renders Editar button in Locais list with the secondary semantic icon', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetLocais.mockResolvedValueOnce(mockLocais);
+
+    renderPage();
+
+    const locaisTab = screen.getByRole('tab', { name: /Locais/i });
+    fireEvent.click(locaisTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+
+    const editButtons = screen.getAllByRole('button', { name: /^Editar$/i });
+    expect(editButtons[0].querySelector('[data-testid="EditIcon"]')).toBeInTheDocument();
+  });
+
   test('allows creating a location via the form modal', async () => {
     mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
     mockGetLocais.mockResolvedValue(mockLocais);

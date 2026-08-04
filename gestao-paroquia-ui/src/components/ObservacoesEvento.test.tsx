@@ -107,6 +107,17 @@ describe('ObservacoesEvento Component', () => {
     expect(deleteButtons.length).toBeGreaterThan(0);
   });
 
+  test('renders the edit IconButton with the secondary semantic color', async () => {
+    await renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Esta é uma nota minha')).toBeInTheDocument();
+    });
+
+    const editButtons = screen.getAllByRole('button', { name: /edit/i });
+    expect(editButtons[0].className).toContain('MuiIconButton-colorSecondary');
+  });
+
   test('renders Cancelar and Excluir buttons with semantic icons in the delete confirmation dialog', async () => {
     await renderComponent();
 

@@ -224,7 +224,7 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
                     </Typography>
                     {isNote && isOwn && (
                       <Stack direction="row" spacing={0.5}>
-                        <IconButton size="small" aria-label="edit" onClick={() => handleStartEdit(obs)}>
+                        <IconButton size="small" aria-label="edit" color="secondary" onClick={() => handleStartEdit(obs)}>
                           <EditIcon fontSize="small" sx={{ fontSize: '1rem' }} />
                         </IconButton>
                         <IconButton size="small" aria-label="delete" onClick={() => setDeleteConfirmId(obs.id)} color="error">

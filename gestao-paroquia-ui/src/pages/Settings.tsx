@@ -35,6 +35,8 @@ import {
   CalendarMonth as CalendarIcon,
   Category as CategoryIcon,
   CloudUpload as UploadIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
   Groups as GroupsIcon,
   LocationOn as LocationIcon,
   People as PeopleIcon,
@@ -797,14 +799,15 @@ const Settings = () => {
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                               <Button
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 size="small"
+                                startIcon={<EditIcon />}
                                 onClick={() => {
                                   setSelectedLocal(local);
                                   setModalOpen(true);
                                 }}
                                 disabled={toggleLocalStatusMutation.isPending}
-                               
+
                               >
                                 Editar
                               </Button>
@@ -957,14 +960,15 @@ const Settings = () => {
                               <>
                                 <Button
                                   variant="outlined"
-                                  color="primary"
+                                  color="secondary"
                                   size="small"
+                                  startIcon={<EditIcon />}
                                   onClick={() => {
                                     setSelectedOrg(org);
                                     setOrgModalOpen(true);
                                   }}
                                   disabled={toggleOrgStatusMutation.isPending}
-                                 
+
                                 >
                                   Editar
                                 </Button>
@@ -1187,10 +1191,11 @@ const Settings = () => {
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                               <Button
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 size="small"
+                                startIcon={<EditIcon />}
                                 onClick={() => handleEditPO(po)}
-                               
+
                               >
                                 Editar
                               </Button>
@@ -1198,13 +1203,14 @@ const Settings = () => {
                                 variant="outlined"
                                 color="error"
                                 size="small"
+                                startIcon={<DeleteIcon />}
                                 onClick={() => {
                                   if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
                                     deletePOMutation.mutate(po.id);
                                   }
                                 }}
                                 disabled={deletePOMutation.isPending}
-                               
+
                               >
                                 Excluir
                               </Button>
@@ -1280,6 +1286,7 @@ const Settings = () => {
                             variant="text"
                             color="error"
                             size="small"
+                            startIcon={<DeleteIcon />}
                             onClick={() => removeVinculoMutation.mutate(m.id)}
                             disabled={removeVinculoMutation.isPending}
                             sx={{ textTransform: 'none' }}
@@ -1485,6 +1492,7 @@ const Settings = () => {
                             variant="text"
                             color="error"
                             size="small"
+                            startIcon={<DeleteIcon />}
                             onClick={() => removeMembroOrgMutation.mutate({ userId: m.usuarioId, vinculoId: m.vinculoId })}
                             disabled={removeMembroOrgMutation.isPending}
                             sx={{ textTransform: 'none' }}
