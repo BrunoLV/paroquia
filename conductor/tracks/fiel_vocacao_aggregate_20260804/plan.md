@@ -6,12 +6,12 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `00cd10f`
 
 ## Phase 1: Enum `Vocacao`
-- [ ] Task: Escrever testes (Red) para `Vocacao.fromStoredValue`/`fromJson` cobrindo os 4 valores
-      (`LEIGO, SACERDOTE, DIACONO, RELIGIOSO`), normalização de caixa/separador e valor inválido/nulo
-- [ ] Task: Implementar o enum `Vocacao` em `fiel/domain/model/Vocacao.java`, seguindo o padrão de
-      `TipoOrganizacao`/`PapelOrganizacional` (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever testes (Red) para `Vocacao.fromStoredValue`/`fromJson` cobrindo os 4 valores
+      (`LEIGO, SACERDOTE, DIACONO, RELIGIOSO`), normalização de caixa/separador e valor inválido/nulo `4770b04`
+- [x] Task: Implementar o enum `Vocacao` em `fiel/domain/model/Vocacao.java`, seguindo o padrão de
+      `TipoOrganizacao`/`PapelOrganizacional` (Green) `4770b04`
+- [x] Task: Refatorar se necessário — não necessário, implementação já segue o padrão estabelecido
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Entidade `Fiel` e tabela `fieis`
 - [ ] Task: Escrever teste de integração (Red) que persiste um `Fiel` válido e falha ao tentar persistir
