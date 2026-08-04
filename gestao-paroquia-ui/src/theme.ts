@@ -39,6 +39,7 @@ const theme = createTheme({
   shape: {
     borderRadius: 12,
   },
+  spacing: 8 * DENSITY_SCALE,
   typography: {
     fontFamily: [
       'Roboto',

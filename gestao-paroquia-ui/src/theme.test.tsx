@@ -77,3 +77,8 @@ test('theme should reduce secondary text font sizes for a more compact layout', 
   expect(theme.typography.overline.fontSize).toBe('0.65625rem');
 });
 
+test('theme should reduce the base spacing unit by ~12.5% for a more compact layout', () => {
+  expect(theme.spacing(1)).toBe('7px');
+  expect(theme.spacing(2)).toBe('14px');
+});
+
