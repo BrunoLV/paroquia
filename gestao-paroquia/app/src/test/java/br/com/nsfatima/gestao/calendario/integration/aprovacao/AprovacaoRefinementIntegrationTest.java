@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.calendario.integration.aprovacao;
 
-import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
@@ -20,10 +19,6 @@ import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class AprovacaoRefinementIntegrationTest {

@@ -45,8 +45,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
 @ExtendWith(MockitoExtension.class)
 class ImportacaoServiceTest {
 
@@ -243,7 +241,8 @@ class ImportacaoServiceTest {
         int count = serviceComAno.confirmarImportacao("EVENTO", List.of(eventoMap), "admin");
         assertEquals(1, count);
         verify(eventoJpaRepository, atLeastOnce()).save(argThat(entity ->
-                "PENDENTE".equals(entity.getStatus()) && EstadoConflitoAgenda.PENDENTE.equals(entity.getEstadoConflito())
+                "PENDENTE".equals(entity.getStatus())
+                        && EstadoConflitoAgenda.PENDENTE.equals(entity.getEstadoConflito())
         ));
     }
 }

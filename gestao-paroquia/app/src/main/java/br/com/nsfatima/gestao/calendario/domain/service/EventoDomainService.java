@@ -36,7 +36,8 @@ public class EventoDomainService {
      * @param fim instante de fim do evento
      * @param status status do evento; {@code null} é tratado como {@code RASCUNHO}
      * @param justificativa justificativa do evento, obrigatória apenas para status {@code ADICIONADO_EXTRA}
-     * @throws IllegalArgumentException se o intervalo for inconsistente, ou se o status for {@code ADICIONADO_EXTRA} sem justificativa
+     * @throws IllegalArgumentException se o intervalo for inconsistente, ou se o status for {@code ADICIONADO_EXTRA}
+     *     sem justificativa
      */
     public void validateEvento(Instant inicio, Instant fim, EventoStatusInput status, String justificativa) {
         calendarIntegrityPolicy.validateInterval(inicio, fim);
@@ -55,7 +56,8 @@ public class EventoDomainService {
      *
      * @param organizacaoResponsavelId identificador da organização responsável pelo evento
      * @param participantes lista de identificadores das organizações participantes, ou {@code null}/vazia
-     * @throws IllegalArgumentException se a organização responsável estiver ausente, se ela se repetir entre os participantes, ou se a lista de participantes tiver duplicatas
+     * @throws IllegalArgumentException se a organização responsável estiver ausente, se ela se repetir entre os
+     *     participantes, ou se a lista de participantes tiver duplicatas
      */
     public void validateOrganizacaoParticipantes(UUID organizacaoResponsavelId, List<UUID> participantes) {
         if (organizacaoResponsavelId == null) {

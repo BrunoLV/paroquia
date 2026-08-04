@@ -40,7 +40,8 @@ public interface EventoConsultaJpaRepository {
      * @param hasOrganizacaoIds indica se o filtro de organizações deve ser aplicado
      * @param projetoId identificador do projeto ao qual o evento pertence, quando o filtro estiver ativo
      * @param hasProjetoId indica se o filtro de projeto deve ser aplicado
-     * @param envolvidoId identificador de organização envolvida (responsável ou participante), quando o filtro estiver ativo
+     * @param envolvidoId identificador de organização envolvida (responsável ou participante), quando o filtro estiver
+     *     ativo
      * @param hasEnvolvidoId indica se o filtro de envolvido deve ser aplicado
      * @param categorias categorias de evento aceitas, quando o filtro estiver ativo
      * @param hasCategorias indica se o filtro de categorias deve ser aplicado

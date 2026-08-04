@@ -165,7 +165,10 @@ public class CreateEventoUseCase {
                 request.igrejaVinculoId(),
                 null,
                 request.isBypassAgendaConflict());
-        agendaPriorityValidatorService.processAutoCancellation(autoCancel, "Cancelado automaticamente devido a agendamento de Solenidade Global / Evento de Maior Prioridade");
+        agendaPriorityValidatorService.processAutoCancellation(
+                autoCancel,
+                "Cancelado automaticamente devido a agendamento"
+                + " de Solenidade Global / Evento de Maior Prioridade");
     }
 
     private EventoResponse createImmediate(String idempotencyKey, CreateEventoRequest request, String actor) {
@@ -202,7 +205,8 @@ public class CreateEventoUseCase {
             entity.setAnoLiturgicoRef(anoLiturgicoRef);
         }
         if (cicloLiturgicoRepository != null) {
-            cicloLiturgicoRepository.findAll().stream().findFirst().ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
+            cicloLiturgicoRepository.findAll().stream().findFirst()
+                    .ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
         }
 
         boolean hasOverlap = repository.existsByInicioUtcLessThanAndFimUtcGreaterThan(request.fim(), request.inicio());
@@ -235,7 +239,8 @@ public class CreateEventoUseCase {
         metricsPublisher.publishCreateSuccess(conflictPendente, result.replay());
         metricsPublisher.publishEventRegistrationLeadTime(Duration.between(Instant.now(), inicio));
 
-        auditPublisher.publishCreateSuccess(actor, response.id().toString(), result.replay(), response.estadoConflito());
+        auditPublisher.publishCreateSuccess(
+                actor, response.id().toString(), result.replay(), response.estadoConflito());
     }
 
     private void handleCreationFailure(String actor, RuntimeException ex) {

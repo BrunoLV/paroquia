@@ -127,11 +127,16 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
         if ("membro".equals(normalizedRole) || "voluntario-pastoral-local".equals(normalizedRole)) {
             return UUID.fromString("00000000-0000-0000-0000-000000000003");
         }
-        if ("secretario".equals(normalizedRole) && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
+        if ("secretario".equals(normalizedRole)
+                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
             return UUID.fromString("00000000-0000-0000-0000-000000000002");
         }
-        if (("coordenador".equals(normalizedRole) || "presidente-cpc".equals(normalizedRole) || "mesa-diretora-cpp".equals(normalizedRole))
-                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType))) {
+        if (("coordenador".equals(normalizedRole) ||
+                        "presidente-cpc".equals(normalizedRole)        || "mesa-diretora-cpp".equals(normalizedRole))
+               
+&& ("conselho".equals(normalizedType)
+                        || "cpc".equals(normalizedType)
+                        || "cpp".equals(normalizedType))) {
             return UUID.fromString("00000000-0000-0000-0000-000000000004");
         }
         return UUID.fromString("00000000-0000-0000-0000-000000000001");
@@ -143,11 +148,16 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
         if ("membro".equals(normalizedRole) || "voluntario-pastoral-local".equals(normalizedRole)) {
             return "pedro.membro";
         }
-        if ("secretario".equals(normalizedRole) && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
+        if ("secretario".equals(normalizedRole)
+                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
             return "maria.secretaria";
         }
-        if (("coordenador".equals(normalizedRole) || "presidente-cpc".equals(normalizedRole) || "mesa-diretora-cpp".equals(normalizedRole))
-                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType))) {
+        if (("coordenador".equals(normalizedRole) ||
+                        "presidente-cpc".equals(normalizedRole)        || "mesa-diretora-cpp".equals(normalizedRole))
+               
+&& ("conselho".equals(normalizedType)
+                        || "cpc".equals(normalizedType)
+                        || "cpp".equals(normalizedType))) {
             return "ana.conselho";
         }
         return "joao.silva";

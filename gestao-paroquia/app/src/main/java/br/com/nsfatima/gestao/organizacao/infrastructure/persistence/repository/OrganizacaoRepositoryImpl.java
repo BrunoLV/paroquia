@@ -17,13 +17,16 @@ import java.util.stream.Collectors;
 /**
  * Adaptador JPA de {@link OrganizacaoRepository}. Além do CRUD básico sobre {@code OrganizacaoEntity}, resolve
  * dinamicamente o nome de exibição de coordenador/vice-coordenador a partir dos vínculos de membro ativos
- * (papel contendo "coord"/"presidente"/"mesa" para coordenador, "vice" para vice-coordenador), com fallback
+ * (papel contendo "coord"/"presidente"/"mesa" para coordenador, PAPEL_VICE para vice-coordenador), com fallback
  * para o texto livre gravado na própria organização quando nenhum vínculo correspondente é encontrado — e
  * calcula {@code hasDependencies} verificando tanto vínculos de membro quanto eventos associados, para que
  * {@code OrganizacaoService} possa bloquear exclusões que deixariam referências órfãs.
  */
 @Repository
 public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
+
+    private static final String PAPEL_COORDENADOR = "coordenador";
+    private static final String PAPEL_VICE = "vice";
 
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository;
@@ -86,8 +89,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     }
 
     private Organizacao toDomain(OrganizacaoEntity entity) {
-        String coordName = resolveRoleMemberName(entity.getId(), "coordenador", entity.getCoordenador());
-        String viceName = resolveRoleMemberName(entity.getId(), "vice", entity.getViceCoordenador());
+        String coordName = resolveRoleMemberName(entity.getId(), PAPEL_COORDENADOR, entity.getCoordenador());
+        String viceName = resolveRoleMemberName(entity.getId(), PAPEL_VICE, entity.getViceCoordenador());
 
         return new Organizacao(
                 entity.getId(),
@@ -105,14 +108,17 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {
         return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
                 .filter(m -> {
-                    if (m.getPapel() == null) return false;
-                    String p = m.getPapel().toLowerCase();
-                    if ("coordenador".equalsIgnoreCase(roleKeyword)) {
-                        return (p.contains("coord") || p.contains("coordenador") || p.contains("presidente") || p.contains("mesa"))
-                                && !p.contains("vice");
+                    if (m.getPapel() == null) {
+                        return false;
                     }
-                    if ("vice".equalsIgnoreCase(roleKeyword)) {
-                        return p.contains("vice");
+                    String p = m.getPapel().toLowerCase();
+                    if (PAPEL_COORDENADOR.equalsIgnoreCase(roleKeyword)) {
+                        return (p.contains("coord") || p.contains("coordenador")
+                                || p.contains("presidente") || p.contains("mesa"))
+                                && !p.contains(PAPEL_VICE);
+                    }
+                    if (PAPEL_VICE.equalsIgnoreCase(roleKeyword)) {
+                        return p.contains(PAPEL_VICE);
                     }
                     return p.contains(roleKeyword.toLowerCase());
                 })

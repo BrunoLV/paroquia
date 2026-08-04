@@ -11,7 +11,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LiturgicalGovernanceTest {
 
-    private final ProvisionamentoLiturgicoService service = new ProvisionamentoLiturgicoService(null, null, new MotorLiturgico());
+    private final ProvisionamentoLiturgicoService service = new ProvisionamentoLiturgicoService(null, null,
+            new MotorLiturgico());
 
     @Test
     @DisplayName("Deve permitir edição manual apenas para perfis PAROCO e VIGARIO")
@@ -32,11 +33,13 @@ class LiturgicalGovernanceTest {
     @Test
     @DisplayName("Deve disparar ImmutableEclesialRuleException ao tentar alterar cicloLetra ou data da Páscoa")
     void deveDispararExcecaoParaCamposImutaveis() {
-        assertThatThrownBy(() -> service.validateManualMutationRights("PAROCO", "cicloLetra", "A", "Tentativa de alteração"))
+        assertThatThrownBy(() -> service.validateManualMutationRights("PAROCO", "cicloLetra", "A",
+                "Tentativa de alteração"))
                 .isInstanceOf(ImmutableEclesialRuleException.class)
                 .hasMessageContaining("regras eclesiais imutáveis");
 
-        assertThatThrownBy(() -> service.validateManualMutationRights("PAROCO", "PASCOA", "2026-04-10", "Tentativa de alteração"))
+        assertThatThrownBy(() -> service.validateManualMutationRights("PAROCO", "PASCOA", "2026-04-10",
+                "Tentativa de alteração"))
                 .isInstanceOf(ImmutableEclesialRuleException.class)
                 .hasMessageContaining("regras eclesiais imutáveis");
     }

@@ -34,5 +34,6 @@ public interface CicloLiturgicoRepository extends JpaRepository<CicloLiturgicoEn
      * @return o ciclo litúrgico correspondente, ou {@link Optional#empty()} caso não exista
      *     combinação cadastrada para o tipo e ano informados
      */
-    Optional<CicloLiturgicoEntity> findByTipoCicloAndAnoLiturgicoRef(TipoCicloLiturgico tipoCiclo, Integer anoLiturgicoRef);
+    Optional<CicloLiturgicoEntity> findByTipoCicloAndAnoLiturgicoRef(
+            TipoCicloLiturgico tipoCiclo, Integer anoLiturgicoRef);
 }

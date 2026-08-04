@@ -53,7 +53,9 @@ public class SeedDataSqlIntegrityTest {
 
         // Replace PostgreSQL ON CONFLICT for H2 compatibility in tests
         sqlContent = sqlContent.replaceAll("ON CONFLICT\\s*\\([^)]+\\)\\s*DO NOTHING", "")
-                               .replaceAll("ON CONFLICT\\s*\\(ano\\)\\s*DO UPDATE SET status = EXCLUDED.status, data_fechamento_utc = EXCLUDED.data_fechamento_utc", "")
+                               .replaceAll(
+                                       "ON CONFLICT\\s*\\(ano\\)\\s*DO UPDATE SET status = EXCLUDED.status,"
+                                       + " data_fechamento_utc = EXCLUDED.data_fechamento_utc", "")
                                .replaceAll("ON CONFLICT\\s*DO NOTHING", "");
 
         String[] statements = sqlContent.split(";");

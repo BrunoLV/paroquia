@@ -22,7 +22,8 @@ public class EventoIdempotencyEntity {
     @Column(name = "idempotency_key", nullable = false, length = 128)
     private String idempotencyKey;
 
-    /** Hash do corpo da requisição original; usado para detectar reuso indevido da mesma chave com payload diferente. */
+    /** Hash do corpo da requisição original; usado para detectar reuso indevido da mesma chave com payload diferente.
+     * */
     @Column(name = "request_hash", nullable = false, length = 64)
     private String requestHash;
 

@@ -67,7 +67,8 @@ public class GetTaxaEventosExtraUseCase {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
         if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
-            throw new AccessDeniedException("Usuário não pode consultar métricas fora do escopo da organização responsável");
+            throw new AccessDeniedException(
+                    "Usuário não pode consultar métricas fora do escopo da organização responsável");
         }
     }
 }

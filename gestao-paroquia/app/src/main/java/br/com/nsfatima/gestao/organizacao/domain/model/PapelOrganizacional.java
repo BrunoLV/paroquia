@@ -59,10 +59,12 @@ public enum PapelOrganizacional {
         if ("mesa-diretora-cpp".equals(normalized) || "mesa_diretora_cpp".equalsIgnoreCase(rawValue.trim())) {
             return MESA_CPP;
         }
-        if ("coordenador-pastoral-global".equals(normalized) || "coordenador_pastoral_global".equalsIgnoreCase(rawValue.trim())) {
+        if ("coordenador-pastoral-global".equals(normalized)
+                || "coordenador_pastoral_global".equalsIgnoreCase(rawValue.trim())) {
             return COORD_PASTORAL_GLOBAL;
         }
-        if ("coordenador-pastoral-local".equals(normalized) || "coordenador_pastoral_local".equalsIgnoreCase(rawValue.trim())) {
+        if ("coordenador-pastoral-local".equals(normalized)
+                || "coordenador_pastoral_local".equalsIgnoreCase(rawValue.trim())) {
             return COORD_PASTORAL_LOCAL;
         }
         if ("coordenador-pastoral".equals(normalized) || "coordenador_pastoral".equalsIgnoreCase(rawValue.trim())) {

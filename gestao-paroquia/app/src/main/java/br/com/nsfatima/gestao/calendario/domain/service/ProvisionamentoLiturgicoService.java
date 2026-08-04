@@ -33,6 +33,8 @@ import java.util.UUID;
 @Service
 public class ProvisionamentoLiturgicoService {
 
+    private static final String COR_BRANCO = "BRANCO";
+
     private final AnoLiturgicoRepository anoLiturgicoRepository;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final MotorLiturgico liturgicalEngine;
@@ -52,7 +54,8 @@ public class ProvisionamentoLiturgicoService {
                                         MotorLiturgico liturgicalEngine,
                                         @Autowired(required = false) EventoJpaRepository eventoJpaRepository,
                                         @Autowired(required = false) OrganizacaoJpaRepository organizacaoJpaRepository,
-                                        @Autowired(required = false) SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
+                                        @Autowired(required = false)
+            SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
         this.anoLiturgicoRepository = anoLiturgicoRepository;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.liturgicalEngine = liturgicalEngine;
@@ -94,7 +97,8 @@ public class ProvisionamentoLiturgicoService {
         Instant inicioAdvento = output.dataInicio().atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant fimAnoLiturgico = output.dataFim().atTime(23, 59, 59).atZone(ZoneOffset.UTC).toInstant();
 
-        AnoLiturgicoEntity anoEntity = new AnoLiturgicoEntity(year, output.cicloLetra(), inicioAdvento, fimAnoLiturgico, Instant.now());
+        AnoLiturgicoEntity anoEntity = new AnoLiturgicoEntity(
+                year, output.cicloLetra(), inicioAdvento, fimAnoLiturgico, Instant.now());
         AnoLiturgicoEntity savedAno = anoLiturgicoRepository.save(anoEntity);
 
         List<CicloLiturgicoEntity> ciclos = new ArrayList<>();
@@ -107,7 +111,7 @@ public class ProvisionamentoLiturgicoService {
                 "Tempo de preparação e expectativa do nascimento de Cristo", year));
 
         // 2. Natal
-        ciclos.add(createCiclo("Tempo do Natal " + year, TipoCicloLiturgico.NATAL, "BRANCO",
+        ciclos.add(createCiclo("Tempo do Natal " + year, TipoCicloLiturgico.NATAL, COR_BRANCO,
                 12, 25, 1, 10, 2.0,
                 "Celebração do Nascimento do Senhor e Epifania", year));
 
@@ -125,7 +129,7 @@ public class ProvisionamentoLiturgicoService {
         MarcoLiturgico easter = marcos.get("PASCOA");
         MarcoLiturgico pentecostes = marcos.get("PENTECOSTES");
         if (easter != null && pentecostes != null) {
-            ciclos.add(createCiclo("Tempo Pascal " + year, TipoCicloLiturgico.PASCOA, "BRANCO",
+            ciclos.add(createCiclo("Tempo Pascal " + year, TipoCicloLiturgico.PASCOA, COR_BRANCO,
                     easter.data().getMonthValue(), easter.data().getDayOfMonth(),
                     pentecostes.data().getMonthValue(), pentecostes.data().getDayOfMonth(), 2.5,
                     "Cinquenta dias de alegria da Ressurreição até Pentecostes", year));
@@ -137,7 +141,7 @@ public class ProvisionamentoLiturgicoService {
                 "Caminhada ordinária da Igreja", year));
 
         // 6. Festa Padroeira
-        ciclos.add(createCiclo("Festa Padroeira " + year, TipoCicloLiturgico.FESTA_PADROEIRA, "BRANCO",
+        ciclos.add(createCiclo("Festa Padroeira " + year, TipoCicloLiturgico.FESTA_PADROEIRA, COR_BRANCO,
                 5, 4, 5, 13, 3.0,
                 "Novena e Festa da Padroeira Nossa Senhora de Fátima", year));
 
@@ -179,7 +183,9 @@ public class ProvisionamentoLiturgicoService {
                 EventoEntity evento = new EventoEntity();
                 evento.setId(UUID.randomUUID());
                 evento.setTitulo(marco.nome());
-                evento.setDescricao("Solenidade / Marco Litúrgico provisionado automaticamente a partir do banco de dados (" + marco.chave() + ")");
+                evento.setDescricao(
+                "Solenidade / Marco Litúrgico provisionado automaticamente"
+                        + " a partir do banco de dados (" + marco.chave() + ")");
                 evento.setOrganizacaoResponsavelId(igreja.getId());
                 evento.setCategoria(CategoriaEvento.LITURGICO);
                 evento.setStatus(EventoStatusInput.CONFIRMADO.name());
@@ -239,7 +245,8 @@ public class ProvisionamentoLiturgicoService {
     /**
      * Valida direitos de alteração manual: permite EXCLUSIVAMENTE para PAROCO ou VIGARIO.
      */
-    public void validateManualMutationRights(String userRole, String campoModificado, String novoValor, String justificativaPastoral) {
+    public void validateManualMutationRights(
+            String userRole, String campoModificado, String novoValor, String justificativaPastoral) {
         String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";
         if (!"PAROCO".equals(roleUpper) && !"VIGARIO".equals(roleUpper)) {
             throw new ForbiddenOperationException("Apenas Pároco ou Vigário podem alterar cadastros litúrgicos.");
@@ -248,7 +255,8 @@ public class ProvisionamentoLiturgicoService {
         if (campoModificado != null) {
             String campoLower = campoModificado.toLowerCase();
             if (campoLower.contains("cicloletra") || campoLower.contains("pascoa") || "ciclo".equals(campoLower)) {
-                throw new ImmutableEclesialRuleException("O Ciclo Litúrgico e o Domingo de Páscoa são regras eclesiais imutáveis.");
+                throw new ImmutableEclesialRuleException(
+                    "O Ciclo Litúrgico e o Domingo de Páscoa são regras eclesiais imutáveis.");
             }
         }
     }

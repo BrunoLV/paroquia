@@ -30,6 +30,8 @@ import java.util.List;
 @Order(3)
 public class PatrimonioExceptionHandler extends BaseExceptionHandler {
 
+    private static final String CAMPO_ALOCACAO = "alocacao";
+
     public PatrimonioExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
         super(auditLogPersistenceService);
     }
@@ -81,7 +83,7 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                 ErrorCodes.DOMAIN_RULE_VIOLATION,
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
-                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "alocacao", ex.getMessage(), null)));
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), CAMPO_ALOCACAO, ex.getMessage(), null)));
     }
 
     /**
@@ -130,7 +132,7 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                 ErrorCodes.INVALID_STATUS_TRANSITION,
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
-                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), "alocacao", ex.getMessage(), null)));
+                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), CAMPO_ALOCACAO, ex.getMessage(), null)));
     }
 
     /**
@@ -164,6 +166,6 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                 ErrorCodes.INVALID_STATUS_TRANSITION,
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
-                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), "alocacao", ex.getMessage(), null)));
+                        ErrorCodes.INVALID_STATUS_TRANSITION.name(), CAMPO_ALOCACAO, ex.getMessage(), null)));
     }
 }

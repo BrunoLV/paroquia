@@ -103,17 +103,39 @@ public class SolenidadeLiturgicaService {
         SolenidadeLiturgicaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Solenidade litúrgica não encontrada: " + id));
 
-        if (req.chave() != null) entity.setChave(req.chave());
-        if (req.nome() != null) entity.setNome(req.nome());
-        if (req.tipoSolenidade() != null) entity.setTipoSolenidade(req.tipoSolenidade());
-        if (req.mesFixo() != null) entity.setMesFixo(req.mesFixo());
-        if (req.diaFixo() != null) entity.setDiaFixo(req.diaFixo());
-        if (req.offsetDiasPascoa() != null) entity.setOffsetDiasPascoa(req.offsetDiasPascoa());
-        if (req.corLiturgica() != null) entity.setCorLiturgica(req.corLiturgica().toUpperCase());
-        if (req.fatorDemanda() != null) entity.setFatorDemanda(req.fatorDemanda());
-        if (req.nivelPrioridade() != null) entity.setNivelPrioridade(req.nivelPrioridade());
-        if (req.descricao() != null) entity.setDescricao(req.descricao());
-        if (req.ativo() != null) entity.setAtivo(req.ativo());
+        if (req.chave() != null) {
+            entity.setChave(req.chave());
+        }
+        if (req.nome() != null) {
+            entity.setNome(req.nome());
+        }
+        if (req.tipoSolenidade() != null) {
+            entity.setTipoSolenidade(req.tipoSolenidade());
+        }
+        if (req.mesFixo() != null) {
+            entity.setMesFixo(req.mesFixo());
+        }
+        if (req.diaFixo() != null) {
+            entity.setDiaFixo(req.diaFixo());
+        }
+        if (req.offsetDiasPascoa() != null) {
+            entity.setOffsetDiasPascoa(req.offsetDiasPascoa());
+        }
+        if (req.corLiturgica() != null) {
+            entity.setCorLiturgica(req.corLiturgica().toUpperCase());
+        }
+        if (req.fatorDemanda() != null) {
+            entity.setFatorDemanda(req.fatorDemanda());
+        }
+        if (req.nivelPrioridade() != null) {
+            entity.setNivelPrioridade(req.nivelPrioridade());
+        }
+        if (req.descricao() != null) {
+            entity.setDescricao(req.descricao());
+        }
+        if (req.ativo() != null) {
+            entity.setAtivo(req.ativo());
+        }
 
         SolenidadeLiturgicaEntity saved = repository.save(entity);
         return toResponse(saved);
@@ -141,7 +163,8 @@ public class SolenidadeLiturgicaService {
     private void validateRole(String userRole) {
         String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";
         if (!"PAROCO".equals(roleUpper) && !"VIGARIO".equals(roleUpper)) {
-            throw new ForbiddenOperationException("Apenas Pároco ou Vigário podem gerenciar o cadastro de solenidades litúrgicas.");
+            throw new ForbiddenOperationException(
+                    "Apenas Pároco ou Vigário podem gerenciar o cadastro de solenidades litúrgicas.");
         }
     }
 

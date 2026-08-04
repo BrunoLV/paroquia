@@ -17,8 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-
 /**
  * Fake implementation of AprovacaoJpaRepository for testing without a database.
  */

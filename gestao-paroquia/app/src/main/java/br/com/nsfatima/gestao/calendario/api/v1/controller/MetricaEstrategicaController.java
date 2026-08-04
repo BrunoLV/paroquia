@@ -29,7 +29,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/metricas/estrategicas")
-@Tag(name = "Métricas Estratégicas e Preditivas", description = "Endpoints para consulta de inteligência pastoral e governança paroquial (Clero, CPP e CAE)")
+@Tag(
+        name = "Métricas Estratégicas e Preditivas",
+        description = "Endpoints para consulta de inteligência pastoral e governança paroquial (Clero, CPP e CAE)")
 public class MetricaEstrategicaController {
 
     private final CalcularSazonalidadeLiturgicaUseCase calcularSazonalidadeLiturgicaUseCase;

@@ -21,7 +21,8 @@ public class AuthorizationPolicy {
      *
      * @param organizationType código do tipo de organização (ex.: pastoral, matriz, clero)
      * @param role código do papel organizacional do usuário
-     * @return {@code true} se o papel é compatível com o tipo de organização; {@code false} se algum dos dois não for reconhecido ou não for compatível
+     * @return {@code true} se o papel é compatível com o tipo de organização; {@code false} se algum dos dois não for
+     *     reconhecido ou não for compatível
      */
     public boolean isRoleAllowed(String organizationType, String role) {
         TipoOrganizacao normalizedOrg = TipoOrganizacao.fromStoredValue(organizationType);

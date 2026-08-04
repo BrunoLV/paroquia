@@ -3,7 +3,6 @@ package br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
-import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusResponse;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;

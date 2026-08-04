@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
@@ -19,9 +18,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class CreateEventoAprovacaoSnapshotImmutabilityIntegrationTest {

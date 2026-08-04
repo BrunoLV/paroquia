@@ -18,10 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class AprovacaoFlowRegressionTest {
@@ -60,7 +56,8 @@ class AprovacaoFlowRegressionTest {
                 .andExpect(status().isAccepted())
                 .andReturn();
 
-        UUID createAprovacaoId = UUID.fromString(objectMapper.readTree(createPendente.getResponse().getContentAsString())
+        UUID createAprovacaoId = UUID.fromString(
+                objectMapper.readTree(createPendente.getResponse().getContentAsString())
                 .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", createAprovacaoId)
@@ -109,7 +106,8 @@ class AprovacaoFlowRegressionTest {
                 .andExpect(status().isAccepted())
                 .andReturn();
 
-        UUID updateAprovacaoId = UUID.fromString(objectMapper.readTree(updatePendente.getResponse().getContentAsString())
+        UUID updateAprovacaoId = UUID.fromString(
+                objectMapper.readTree(updatePendente.getResponse().getContentAsString())
                 .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", updateAprovacaoId)

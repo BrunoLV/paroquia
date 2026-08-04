@@ -27,7 +27,8 @@ public class HomologarCpcDecisaoUseCase {
     private final CpcDecisaoJpaRepository repository;
     private final EventoActorContextResolver actorContextResolver;
 
-    public HomologarCpcDecisaoUseCase(CpcDecisaoJpaRepository repository, EventoActorContextResolver actorContextResolver) {
+    public HomologarCpcDecisaoUseCase(
+            CpcDecisaoJpaRepository repository, EventoActorContextResolver actorContextResolver) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
     }
@@ -51,7 +52,8 @@ public class HomologarCpcDecisaoUseCase {
         CpcDecisaoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new CpcDecisaoNotFoundException(id));
 
-        if (request.status() == StatusHomologacao.VETADO && (request.motivoVeto() == null || request.motivoVeto().isBlank())) {
+        if (request.status() == StatusHomologacao.VETADO
+                && (request.motivoVeto() == null || request.motivoVeto().isBlank())) {
             throw new IllegalArgumentException("Motivo do veto é obrigatório ao vetar uma decisão");
         }
 
