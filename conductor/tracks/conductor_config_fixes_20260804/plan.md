@@ -25,11 +25,11 @@
 - [x] Task: Verificação e checkpoint da Fase 2 (conforme workflow.md)
 
 ### Phase 3 — Atualizar `conductor/product.md`
-- [ ] Task: Adicionar módulos de Patrimônio e Conselho às Core Features
-  - [ ] Adicionar bullet descrevendo o módulo de Patrimônio (ativos, alocação/reserva, manutenção)
-  - [ ] Adicionar bullet descrevendo o módulo de Conselho (decisões/homologação do CPC)
-  - [ ] Verificar: `grep -n "Patrimônio\|Conselho" conductor/product.md` retorna as novas entradas
-- [ ] Task: Verificação e checkpoint da Fase 3 (conforme workflow.md)
+- [x] Task: Adicionar módulos de Patrimônio e Conselho às Core Features
+  - [x] Adicionar bullet descrevendo o módulo de Patrimônio (ativos, alocação/reserva, manutenção)
+  - [x] Adicionar bullet descrevendo o módulo de Conselho (decisões/homologação do CPC)
+  - [x] Verificar: `grep -n "Patrimônio\|Conselho" conductor/product.md` retorna as novas entradas
+- [x] Task: Verificação e checkpoint da Fase 3 (conforme workflow.md)
 
 ### Phase 4 — Encerramento
 - [ ] Task: Revisão final de todos os arquivos alterados (`git diff master`)
