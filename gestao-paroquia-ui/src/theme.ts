@@ -108,6 +108,10 @@ const theme = createTheme({
         input: {
           padding: `${Math.round(16.5 * DENSITY_SCALE)}px ${Math.round(14 * DENSITY_SCALE)}px`,
         },
+        sizeSmall: {
+          paddingTop: `${Math.round(8.5 * DENSITY_SCALE)}px`,
+          paddingBottom: `${Math.round(8.5 * DENSITY_SCALE)}px`,
+        },
       },
     },
     MuiLink: {
@@ -133,7 +137,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '8px',
+        },
+        sizeMedium: {
           height: `${Math.round(32 * DENSITY_SCALE)}px`,
+        },
+        sizeSmall: {
+          height: `${Math.round(24 * DENSITY_SCALE)}px`,
         },
       },
     },

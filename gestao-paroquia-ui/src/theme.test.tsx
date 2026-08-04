@@ -97,8 +97,16 @@ test('theme should reduce table cell padding by 20% for a more compact layout', 
   expect(cellStyle?.padding).toBe('13px');
 });
 
-test('theme should reduce chip height by 20% for a more compact layout', () => {
-  const chipStyle: any = theme.components?.MuiChip?.styleOverrides?.root;
-  expect(chipStyle?.height).toBe('26px');
+test('theme should reduce chip height by 20% for both medium and small sizes', () => {
+  const mediumChipStyle: any = theme.components?.MuiChip?.styleOverrides?.sizeMedium;
+  const smallChipStyle: any = theme.components?.MuiChip?.styleOverrides?.sizeSmall;
+  expect(mediumChipStyle?.height).toBe('26px');
+  expect(smallChipStyle?.height).toBe('19px');
+});
+
+test('theme should reduce outlined input small-size vertical padding by 20%', () => {
+  const inputSmallStyle: any = theme.components?.MuiOutlinedInput?.styleOverrides?.sizeSmall;
+  expect(inputSmallStyle?.paddingTop).toBe('7px');
+  expect(inputSmallStyle?.paddingBottom).toBe('7px');
 });
 
