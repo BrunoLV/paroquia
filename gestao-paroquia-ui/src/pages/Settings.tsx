@@ -35,6 +35,7 @@ import {
   CalendarMonth as CalendarIcon,
   Category as CategoryIcon,
   CloudUpload as UploadIcon,
+  CheckCircle as CheckCircleIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
   Groups as GroupsIcon,
@@ -1094,8 +1095,9 @@ const Settings = () => {
                               {!u.enabled && (
                                 <Button
                                   variant="contained"
-                                  color="primary"
+                                  color="success"
                                   size="small"
+                                  startIcon={<CheckCircleIcon />}
                                   onClick={() => approveUserMutation.mutate(u.id)}
                                   disabled={approveUserMutation.isPending}
                                   sx={{ fontWeight: 600 }}

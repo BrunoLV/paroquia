@@ -536,6 +536,24 @@ describe('Settings page - Membros / Usuários', () => {
       expect(mockApproveUsuario).toHaveBeenCalledWith('user-1');
     });
   });
+
+  test('renders the Aprovar button for a pending user with success color and icon', async () => {
+    mockGetAnosParoquiais.mockResolvedValueOnce(mockAnos);
+    mockGetUsuarios.mockResolvedValueOnce(mockUsers);
+
+    renderPage();
+
+    const membrosTab = screen.getByRole('tab', { name: /Membros \/ Usuários/i });
+    fireEvent.click(membrosTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('João Pending')).toBeInTheDocument();
+    });
+
+    const approveBtn = screen.getByRole('button', { name: /Aprovar/i });
+    expect(approveBtn.className).toContain('MuiButton-colorSuccess');
+    expect(approveBtn.querySelector('[data-testid="CheckCircleIcon"]')).toBeInTheDocument();
+  });
 });
 
 describe('Settings page - Membros por Pastoral', () => {
