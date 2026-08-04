@@ -27,10 +27,10 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: Diálogos de Confirmação Destrutiva e Aprovação/Homologação
-- [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de confirmação destrutiva (Excluir, Vetar, Rejeitar) e de aprovação/homologação (Aprovar, Homologar), e confirmar que falha
-- [ ] Task: Implementar (Green) `startIcon`/`color` nesses botões conforme o mapeamento, e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de confirmação destrutiva (Excluir, Vetar, Rejeitar) e de aprovação/homologação (Aprovar, Homologar), e confirmar que falha `6d257e16` — a maior parte já coberta nas Phases 2-4 (CancelarEventoDialog, veto ConselhosAtas, Aprovar/Rejeitar em Aprovacoes.tsx); varredura final encontrou e corrigiu o botão "Aprovar" de usuários pendentes em Settings.tsx
+- [x] Task: Implementar (Green) `startIcon`/`color` nesses botões conforme o mapeamento, e rodar os testes até passarem `6d257e16`
+- [x] Task: Refatorar se necessário e re-rodar os testes `6d257e16`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 6: Validação Final e QA Visual
 - [ ] Task: Rodar `npx tsc --noEmit` e `CI=true npm test` no `gestao-paroquia-ui` e corrigir eventuais falhas
