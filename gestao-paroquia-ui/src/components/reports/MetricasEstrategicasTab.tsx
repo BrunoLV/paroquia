@@ -173,7 +173,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
               </Box>
 
               <Box sx={{ p: 1.5, bgcolor: 'background.default', borderLeft: '4px solid #00796b' }}>
-                <Typography variant="caption" color="text.secondary" display="block">
+                <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
                   Diagnóstico CPP/CAE
                 </Typography>
                 <Chip

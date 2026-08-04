@@ -171,7 +171,7 @@ export const ConselhosAtas: React.FC = () => {
           backgroundColor: theme.custom.subtlePanelBg,
         }}
       >
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" flexWrap="wrap">
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
           <FormControl size="small" sx={{ minWidth: 240, flex: { xs: 1, sm: 'initial' } }}>
             <InputLabel id="filter-comunidade-label">Comunidade de Origem</InputLabel>
             <Select
@@ -250,14 +250,14 @@ export const ConselhosAtas: React.FC = () => {
                 decisoes.map((item) => (
                   <TableRow key={item.id} hover>
                     <TableCell sx={{ maxW: 400 }}>
-                      <Typography variant="subtitle2" fontWeight={600}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                         {item.titulo}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
                         {item.pautaDescricao}
                       </Typography>
                       {item.motivoVeto && (
-                        <Typography variant="caption" display="block" color="error.main" sx={{ mt: 0.5, fontWeight: 500 }}>
+                        <Typography variant="caption" sx={{ display: 'block', color: 'error.main', mt: 0.5, fontWeight: 500 }}>
                           Motivo do Veto: {item.motivoVeto}
                         </Typography>
                       )}
@@ -267,7 +267,7 @@ export const ConselhosAtas: React.FC = () => {
                     <TableCell>{getStatusChip(item.statusHomologacao)}</TableCell>
                     <TableCell align="center">
                       {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
-                        <Box display="flex" justifyContent="center" gap={1}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                           <Tooltip title="Homologar Ata (Aprovar)">
                             <IconButton
                               color="success"
