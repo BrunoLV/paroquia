@@ -40,7 +40,8 @@ public class EventoCancelamentoAuthorizationService {
      * @param actorContext contexto de papel/organização do ator autenticado
      * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento a ser cancelado
      * @return modo de cancelamento aplicável (imediato ou sujeito a aprovação)
-     * @throws ForbiddenOperationException se o ator não tiver escopo de organização, estiver fora do escopo do evento, ou não tiver papel autorizado a cancelar eventos
+     * @throws ForbiddenOperationException se o ator não tiver escopo de organização, estiver fora do escopo do
+     *     evento, ou não tiver papel autorizado a cancelar eventos
      */
     public CancelamentoRequestMode resolveRequestMode(
             EventoActorContext actorContext,

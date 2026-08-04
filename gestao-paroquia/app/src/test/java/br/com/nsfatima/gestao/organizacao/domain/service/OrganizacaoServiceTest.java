@@ -26,8 +26,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-
 class OrganizacaoServiceTest {
 
     private final UUID cleroId = UUID.randomUUID();

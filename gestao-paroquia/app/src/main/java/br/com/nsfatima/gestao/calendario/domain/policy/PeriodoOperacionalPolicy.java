@@ -44,11 +44,14 @@ public class PeriodoOperacionalPolicy {
      * intervalo explícito informado, validando que exatamente uma das duas formas
      * foi utilizada e que o intervalo resultante é temporalmente consistente.
      *
-     * @param granularidade código de granularidade pré-definida, ou {@code null}/vazio se um intervalo explícito for usado
+     * @param granularidade código de granularidade pré-definida, ou {@code null}/vazio se um intervalo explícito for
+     *     usado
      * @param inicio início do intervalo explícito, ou {@code null} se uma granularidade for usada
      * @param fim fim do intervalo explícito, ou {@code null} se uma granularidade for usada
      * @return período operacional resolvido, com granularidade e/ou intervalo efetivo
-     * @throws PeriodoOperacionalInvalidoException se granularidade e intervalo forem combinados, se nenhum dos dois for informado, se apenas um de início/fim for informado, se a granularidade não for suportada, ou se o fim não for posterior ao início
+     * @throws PeriodoOperacionalInvalidoException se granularidade e intervalo forem combinados, se nenhum dos dois
+     *     for informado, se apenas um de início/fim for informado, se a granularidade não for suportada, ou se o fim
+     *     não for posterior ao início
      */
     public ResolvedPeriod resolve(String granularidade, Instant inicio, Instant fim) {
         boolean hasGranularidade = granularidade != null && !granularidade.isBlank();
@@ -132,7 +135,8 @@ public class PeriodoOperacionalPolicy {
      * Período operacional já resolvido, pronto para ser usado como janela de
      * consulta de métricas.
      *
-     * @param granularidade granularidade que originou o período, ou {@code null} se resolvido a partir de intervalo explícito
+     * @param granularidade granularidade que originou o período, ou {@code null} se resolvido a partir de intervalo
+     *     explícito
      * @param inicio início efetivo do período
      * @param fim fim efetivo do período
      */

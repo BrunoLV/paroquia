@@ -97,7 +97,8 @@ public class CryptoUtils {
      *
      * @param value valor cifrado codificado em Base64 (IV + texto cifrado); {@code null} é retornado como {@code null}
      * @return valor original em texto claro, ou {@code null} se a entrada for nula
-     * @throws RuntimeException se o valor estiver corrompido, com tamanho inválido, ou se a chave/algoritmo não corresponderem
+     * @throws RuntimeException se o valor estiver corrompido, com tamanho inválido, ou se a chave/algoritmo não
+     *     corresponderem
      */
     public static String decrypt(String value) {
         if (value == null) {

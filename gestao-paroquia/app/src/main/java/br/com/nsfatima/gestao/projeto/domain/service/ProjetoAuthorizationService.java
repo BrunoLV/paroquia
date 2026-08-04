@@ -128,7 +128,9 @@ public class ProjetoAuthorizationService {
         TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
         return normalizedRole == PapelOrganizacional.PAROCO
                 || normalizedRole == PapelOrganizacional.ADMIN
-                || ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL || normalizedOrgType == TipoOrganizacao.CPP || normalizedOrgType == TipoOrganizacao.CPC)
+                || ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
+                        || normalizedOrgType == TipoOrganizacao.CPP
+                        || normalizedOrgType == TipoOrganizacao.CPC)
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                 || normalizedRole == PapelOrganizacional.MESA_CPP
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL));

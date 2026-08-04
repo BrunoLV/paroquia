@@ -56,7 +56,8 @@ public class VerificarConcorrenciaInterpastoralUseCase {
     }
 
     private boolean isConcorrencia(EventoEntity a, EventoEntity b) {
-        if (a.getOrganizacaoResponsavelId() != null && a.getOrganizacaoResponsavelId().equals(b.getOrganizacaoResponsavelId())) {
+if (a.getOrganizacaoResponsavelId() != null
+                && a.getOrganizacaoResponsavelId().equals(b.getOrganizacaoResponsavelId())) {
             return false;
         }
 
@@ -80,9 +81,15 @@ public class VerificarConcorrenciaInterpastoralUseCase {
             return "";
         }
         String t = titulo.toLowerCase();
-        if (t.contains("casais") || t.contains("familia")) return "CASAI_FAMILIA";
-        if (t.contains("jovens") || t.contains("juventude")) return "JOVENS";
-        if (t.contains("catequese") || t.contains("crisma")) return "CATEQUESE";
+        if (t.contains("casais") || t.contains("familia")) {
+            return "CASAI_FAMILIA";
+        }
+        if (t.contains("jovens") || t.contains("juventude")) {
+            return "JOVENS";
+        }
+        if (t.contains("catequese") || t.contains("crisma")) {
+            return "CATEQUESE";
+        }
         return titulo;
     }
 

@@ -47,15 +47,20 @@ public class PrioridadeAgendaValidatorService {
      * prioridade que devem ser cancelados automaticamente como consequência da
      * criação deste evento.
      *
-     * @param categoria categoria do novo evento, cujo nível de prioridade rege a validação; {@code null} pula a validação
+     * @param categoria categoria do novo evento, cujo nível de prioridade rege a validação; {@code null} pula a
+     *     validação
      * @param inicioUtc início do intervalo do novo evento, em UTC
      * @param fimUtc fim do intervalo do novo evento, em UTC
      * @param localId identificador do local físico do novo evento, usado para detectar mesmo espaço
-     * @param igrejaVinculoId identificador da igreja/comunidade vinculada ao novo evento, usado para detectar mesmo espaço
-     * @param currentEventoId identificador do próprio evento (para excluí-lo da busca de sobreposição em atualizações), ou {@code null} em criação
+     * @param igrejaVinculoId identificador da igreja/comunidade vinculada ao novo evento, usado para detectar mesmo
+     *     espaço
+     * @param currentEventoId identificador do próprio evento (para excluí-lo da busca de sobreposição em
+     *     atualizações), ou {@code null} em criação
      * @param bypass se {@code true}, ignora completamente a validação de prioridade/conflito
-     * @return lista de eventos existentes que devem ser cancelados automaticamente em decorrência da prioridade do novo evento; vazia se nenhum
-     * @throws ConflitoAgendaEclesialException se o novo evento sobrepõe um evento existente com o qual não pode coexistir segundo a hierarquia de prioridade
+     * @return lista de eventos existentes que devem ser cancelados automaticamente em decorrência
+     *     da prioridade do novo evento; vazia se nenhum
+     * @throws ConflitoAgendaEclesialException se o novo evento sobrepõe um evento existente com o qual não pode
+     *     coexistir segundo a hierarquia de prioridade
      */
     @Transactional
     public List<EventoEntity> validatePriorityAndConflicts(
@@ -76,7 +81,8 @@ public class PrioridadeAgendaValidatorService {
         }
 
         int newPriority = categoria.getNivelPrioridade();
-        List<EventoEntity> overlappingEvents = eventoJpaRepository.findOverlappingEvents(inicioUtc, fimUtc, currentEventoId);
+        List<EventoEntity> overlappingEvents =
+                eventoJpaRepository.findOverlappingEvents(inicioUtc, fimUtc, currentEventoId);
 
         List<EventoEntity> eventsToAutoCancel = new ArrayList<>();
 
@@ -88,36 +94,53 @@ public class PrioridadeAgendaValidatorService {
                     (igrejaVinculoId != null && Objects.equals(igrejaVinculoId, existing.getIgrejaVinculoId()));
 
             if (newPriority == 1) {
-                // Nível 1 (Solenidade Global): Solenidades de Nível 1 cancelam automaticamente todos os eventos de menor prioridade (2, 3, 4) em todas as igrejas/comunidades
+                // Nível 1 (Solenidade Global): cancelam automaticamente eventos de menor
+                // prioridade (2, 3, 4) em todas as igrejas/comunidades
                 if (existingPriority > 1) {
                     eventsToAutoCancel.add(existing);
                 } else if (existingPriority == 1) {
-                    throw new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial: Já existe uma Solenidade Global (Nível 1) cadastrada para o mesmo período");
+                    throw new ConflitoAgendaEclesialException(
+                            "Conflito de Agenda Eclesial: Já existe uma"
+                            + " Solenidade Global (Nível 1) cadastrada para o mesmo período");
                 }
             } else if (newPriority == 2) {
-                // Nível 2 (Litúrgico Territorial): Não pode conflitar com Nível 1 (em lugar nenhum) ou outro Nível 2 na mesma igreja/comunidade/local
+                // Nível 2 (Litúrgico Territorial): não pode conflitar com Nível 1
+                // (em lugar nenhum) ou outro Nível 2 na mesma igreja/comunidade/local
                 if (existingPriority == 1) {
-                    throw new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial: Atividades de Nível 2 não podem sobrepor uma Solenidade Global (Nível 1)");
+                    throw new ConflitoAgendaEclesialException(
+                            "Conflito de Agenda Eclesial: Atividades de Nível 2"
+                            + " não podem sobrepor uma Solenidade Global (Nível 1)");
                 }
                 if (existingPriority == 2 && sameLocationOrChurch) {
-                    throw new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial: Já existe um evento Litúrgico (Nível 2) no mesmo espaço/comunidade");
+                    throw new ConflitoAgendaEclesialException(
+                            "Conflito de Agenda Eclesial: Já existe um evento"
+                            + " Litúrgico (Nível 2) no mesmo espaço/comunidade");
                 }
                 if (existingPriority > 2 && sameLocationOrChurch) {
-                    // Atividades de menor prioridade (3 e 4) na mesma comunidade/local são bloqueadas/canceladas pelo evento litúrgico Nível 2
+                    // Atividades de menor prioridade (3 e 4) na mesma comunidade/local
+                    // são bloqueadas/canceladas pelo evento litúrgico Nível 2
                     eventsToAutoCancel.add(existing);
                 }
             } else if (newPriority == 3) {
-                // Nível 3 (Ação Orgânica Regular): Não pode sobrepor Nível 1 (em lugar nenhum) nem Nível 2/3 no mesmo espaço/comunidade
+                // Nível 3 (Ação Orgânica Regular): não pode sobrepor Nível 1
+                // (em lugar nenhum) nem Nível 2/3 no mesmo espaço/comunidade
                 if (existingPriority < 3) {
-                    throw new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial: Atividades de Nível 3 não podem sobrepor eventos de maior prioridade (Nível 1 ou 2)");
+                    throw new ConflitoAgendaEclesialException(
+                            "Conflito de Agenda Eclesial: Atividades de Nível 3 não podem"
+                            + " sobrepor eventos de maior prioridade (Nível 1 ou 2)");
                 }
                 if (sameLocationOrChurch) {
-                    throw new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial: Conflito de espaço com atividade de Nível " + existingPriority);
+                    throw new ConflitoAgendaEclesialException(
+                            "Conflito de Agenda Eclesial: Conflito de espaço"
+                            + " com atividade de Nível " + existingPriority);
                 }
             } else if (newPriority == 4) {
-                // Nível 4 (Atividades de Movimentos): Rejeitar se houver sobreposição com Nível 1, 2 ou 3 (ou outro Nível 4 no mesmo local)
+                // Nível 4 (Atividades de Movimentos): rejeitar se houver sobreposição com
+                // Nível 1, 2 ou 3 (ou outro Nível 4 no mesmo local)
                 if (existingPriority < 4 || sameLocationOrChurch) {
-                    throw new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial: Atividades de Movimento (Nível 4) não podem sobrepor eventos de Nível " + existingPriority);
+                    throw new ConflitoAgendaEclesialException(
+                            "Conflito de Agenda Eclesial: Atividades de Movimento (Nível 4)"
+                            + " não podem sobrepor eventos de Nível " + existingPriority);
                 }
             }
         }
@@ -131,7 +154,8 @@ public class PrioridadeAgendaValidatorService {
      * prioridade ter sido criado. Não faz nada se a lista estiver vazia ou nula.
      *
      * @param eventsToCancel eventos a serem cancelados automaticamente
-     * @param motivo motivo do cancelamento a ser registrado; se ausente, usa uma mensagem padrão referindo o conflito de prioridade
+     * @param motivo motivo do cancelamento a ser registrado; se ausente, usa uma mensagem padrão referindo o conflito
+     *     de prioridade
      */
     @Transactional
     public void processAutoCancellation(List<EventoEntity> eventsToCancel, String motivo) {

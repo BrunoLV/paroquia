@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-
 @SpringBootTest
 @Transactional
 @Sql(scripts = "classpath:sql/security-fixtures.sql")

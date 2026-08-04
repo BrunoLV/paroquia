@@ -55,7 +55,8 @@ public interface EventoValidacaoJpaRepository {
      *
      * @param recorrenciaId identificador da recorrência (série) de eventos
      * @param inicioUtc instante de início da ocorrência a ser verificada
-     * @return {@code true} caso já exista uma ocorrência com esse início para a recorrência, {@code false} caso contrário
+     * @return {@code true} caso já exista uma ocorrência com esse início para a recorrência, {@code false} caso
+     *     contrário
      */
     boolean existsByRecorrenciaIdAndInicioUtc(UUID recorrenciaId, Instant inicioUtc);
 }

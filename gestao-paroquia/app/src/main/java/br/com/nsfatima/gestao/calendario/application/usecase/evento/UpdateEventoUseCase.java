@@ -198,7 +198,8 @@ public class UpdateEventoUseCase {
 
         applyParticipantChanges(entity.getId(), request.participantes());
 
-        // Busca manualmente o envolvimento para garantir resposta completa (especialmente para consistência de carregamento EAGER)
+        // Busca manualmente o envolvimento para garantir resposta completa
+        // (especialmente para consistência de carregamento EAGER)
         List<EventoEnvolvidoEntity> involvement = involvementRepository.findByEventoId(saved.getId());
         if (saved.getEnvolvidos() != null) {
             saved.getEnvolvidos().clear();
@@ -317,7 +318,10 @@ public class UpdateEventoUseCase {
                 igreja,
                 entity.getId(),
                 request.isBypassAgendaConflict());
-        agendaPriorityValidatorService.processAutoCancellation(autoCancel, "Cancelado automaticamente devido a agendamento de Solenidade Global / Evento de Maior Prioridade");
+        agendaPriorityValidatorService.processAutoCancellation(
+                autoCancel,
+                "Cancelado automaticamente devido a agendamento"
+                + " de Solenidade Global / Evento de Maior Prioridade");
     }
 
     private void applyParticipantChanges(UUID eventoId, List<UUID> participantes) {

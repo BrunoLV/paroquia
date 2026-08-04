@@ -26,7 +26,8 @@ public class CreateCpcDecisaoUseCase {
     private final CpcDecisaoJpaRepository repository;
     private final EventoActorContextResolver actorContextResolver;
 
-    public CreateCpcDecisaoUseCase(CpcDecisaoJpaRepository repository, EventoActorContextResolver actorContextResolver) {
+    public CreateCpcDecisaoUseCase(
+            CpcDecisaoJpaRepository repository, EventoActorContextResolver actorContextResolver) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
     }

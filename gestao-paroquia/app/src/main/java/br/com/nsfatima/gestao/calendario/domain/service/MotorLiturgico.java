@@ -207,7 +207,8 @@ public class MotorLiturgico {
                 cor = CorLiturgica.BRANCO;
             }
 
-            marcos.put(s.getChave(), new MarcoLiturgico(s.getChave(), s.getNome(), dataMarco, cor, s.getFatorDemanda()));
+            marcos.put(s.getChave(), new MarcoLiturgico(
+                    s.getChave(), s.getNome(), dataMarco, cor, s.getFatorDemanda()));
         }
 
         return new SaidaLiturgica(anoNominal, dataInicio, dataFim, cicloLetra, Collections.unmodifiableMap(marcos));
@@ -224,29 +225,92 @@ public class MotorLiturgico {
         Map<String, MarcoLiturgico> marcos = new LinkedHashMap<>();
 
         // Marcos móveis
-        marcos.put("QUARTA_CINZAS", new MarcoLiturgico("QUARTA_CINZAS", "Quarta-feira de Cinzas", calculateQuartaDeCinzas(anoNominal), CorLiturgica.ROXO, 2.50));
-        marcos.put("QUARTA_SANTA", new MarcoLiturgico("QUARTA_SANTA", "Quarta-feira Santa", calculateQuartaSanta(anoNominal), CorLiturgica.ROXO, 2.00));
-        marcos.put("QUINTA_SANTA", new MarcoLiturgico("QUINTA_SANTA", "Quinta-feira Santa", calculateQuintaSanta(anoNominal), CorLiturgica.BRANCO, 3.00));
-        marcos.put("SABADO_SANTO", new MarcoLiturgico("SABADO_SANTO", "Sábado Santo", calculateVesperaPascoa(anoNominal), CorLiturgica.BRANCO, 3.00));
-        marcos.put("PASCOA", new MarcoLiturgico("PASCOA", "Domingo de Páscoa", calculateEaster(anoNominal), CorLiturgica.BRANCO, 3.00));
-        marcos.put("ASCENSAO", new MarcoLiturgico("ASCENSAO", "Ascensão do Senhor", calculateAscensao(anoNominal), CorLiturgica.BRANCO, 2.50));
-        marcos.put("PENTECOSTES", new MarcoLiturgico("PENTECOSTES", "Domingo de Pentecostes", calculatePentecostes(anoNominal), CorLiturgica.VERMELHO, 3.00));
-        marcos.put("SANTISSIMA_TRINDADE", new MarcoLiturgico("SANTISSIMA_TRINDADE", "Santíssima Trindade", calculateSantissimaTrindade(anoNominal), CorLiturgica.BRANCO, 2.50));
-        marcos.put("CORPUS_CHRISTI", new MarcoLiturgico("CORPUS_CHRISTI", "Corpus Christi", calculateCorpusChristi(anoNominal), CorLiturgica.BRANCO, 3.00));
-        marcos.put("SAGRADO_CORACAO", new MarcoLiturgico("SAGRADO_CORACAO", "Sagrado Coração de Jesus", calculateSagradoCoracao(anoNominal), CorLiturgica.BRANCO, 2.50));
-        marcos.put("CRISTO_REI", new MarcoLiturgico("CRISTO_REI", "Nosso Senhor Jesus Cristo, Rei do Universo", calculateCristoRei(anoNominal), CorLiturgica.BRANCO, 2.50));
-        marcos.put("EPIFANIA", new MarcoLiturgico("EPIFANIA", "Epifania do Senhor", calculateEpifania(anoNominal), CorLiturgica.BRANCO, 2.50));
+        marcos.put("QUARTA_CINZAS", new MarcoLiturgico(
+                "QUARTA_CINZAS", "Quarta-feira de Cinzas",
+                calculateQuartaDeCinzas(anoNominal),
+                CorLiturgica.ROXO, 2.50));
+        marcos.put("QUARTA_SANTA", new MarcoLiturgico(
+                "QUARTA_SANTA", "Quarta-feira Santa",
+                calculateQuartaSanta(anoNominal),
+                CorLiturgica.ROXO, 2.00));
+        marcos.put("QUINTA_SANTA", new MarcoLiturgico(
+                "QUINTA_SANTA", "Quinta-feira Santa",
+                calculateQuintaSanta(anoNominal),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("SABADO_SANTO", new MarcoLiturgico(
+                "SABADO_SANTO", "Sábado Santo",
+                calculateVesperaPascoa(anoNominal),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("PASCOA", new MarcoLiturgico(
+                "PASCOA", "Domingo de Páscoa",
+                calculateEaster(anoNominal),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("ASCENSAO", new MarcoLiturgico(
+                "ASCENSAO", "Ascensão do Senhor",
+                calculateAscensao(anoNominal),
+                CorLiturgica.BRANCO, 2.50));
+        marcos.put("PENTECOSTES", new MarcoLiturgico(
+                "PENTECOSTES", "Domingo de Pentecostes",
+                calculatePentecostes(anoNominal),
+                CorLiturgica.VERMELHO, 3.00));
+        marcos.put("SANTISSIMA_TRINDADE", new MarcoLiturgico(
+                "SANTISSIMA_TRINDADE", "Santíssima Trindade",
+                calculateSantissimaTrindade(anoNominal),
+                CorLiturgica.BRANCO, 2.50));
+        marcos.put("CORPUS_CHRISTI", new MarcoLiturgico(
+                "CORPUS_CHRISTI", "Corpus Christi",
+                calculateCorpusChristi(anoNominal),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("SAGRADO_CORACAO", new MarcoLiturgico(
+                "SAGRADO_CORACAO", "Sagrado Coração de Jesus",
+                calculateSagradoCoracao(anoNominal),
+                CorLiturgica.BRANCO, 2.50));
+        marcos.put("CRISTO_REI", new MarcoLiturgico(
+                "CRISTO_REI", "Nosso Senhor Jesus Cristo, Rei do Universo",
+                calculateCristoRei(anoNominal),
+                CorLiturgica.BRANCO, 2.50));
+        marcos.put("EPIFANIA", new MarcoLiturgico(
+                "EPIFANIA", "Epifania do Senhor",
+                calculateEpifania(anoNominal),
+                CorLiturgica.BRANCO, 2.50));
 
         // Solenidades fixas (Santoral)
-        marcos.put("MAE_DE_DEUS", new MarcoLiturgico("MAE_DE_DEUS", "Santa Maria, Mãe de Deus", LocalDate.of(anoNominal, 1, 1), CorLiturgica.BRANCO, 3.00));
-        marcos.put("SAO_JOSE", new MarcoLiturgico("SAO_JOSE", "São José, Esposo da Virgem Maria", LocalDate.of(anoNominal, 3, 19), CorLiturgica.BRANCO, 3.00));
-        marcos.put("ANUNCIACAO_SENHOR", new MarcoLiturgico("ANUNCIACAO_SENHOR", "Anunciação do Senhor", LocalDate.of(anoNominal, 3, 25), CorLiturgica.BRANCO, 3.00));
-        marcos.put("NATIVIDADE_JOAO_BATISTA", new MarcoLiturgico("NATIVIDADE_JOAO_BATISTA", "Natividade de São João Batista", LocalDate.of(anoNominal, 6, 24), CorLiturgica.BRANCO, 3.00));
-        marcos.put("SAO_PEDRO_SAO_PAULO", new MarcoLiturgico("SAO_PEDRO_SAO_PAULO", "São Pedro e São Paulo, Apóstolos", LocalDate.of(anoNominal, 6, 29), CorLiturgica.VERMELHO, 3.00));
-        marcos.put("ASSUNCAO_NOSSA_SENHORA", new MarcoLiturgico("ASSUNCAO_NOSSA_SENHORA", "Assunção de Nossa Senhora", LocalDate.of(anoNominal, 8, 15), CorLiturgica.BRANCO, 3.00));
-        marcos.put("TODOS_OS_SANTOS", new MarcoLiturgico("TODOS_OS_SANTOS", "Todos os Santos", LocalDate.of(anoNominal, 11, 1), CorLiturgica.BRANCO, 3.00));
-        marcos.put("IMACULADA_CONCEICAO", new MarcoLiturgico("IMACULADA_CONCEICAO", "Imaculada Conceição de Nossa Senhora", LocalDate.of(anoNominal, 12, 8), CorLiturgica.BRANCO, 3.00));
-        marcos.put("NATAL_SENHOR", new MarcoLiturgico("NATAL_SENHOR", "Natal do Senhor", LocalDate.of(anoNominal, 12, 25), CorLiturgica.BRANCO, 3.00));
+        marcos.put("MAE_DE_DEUS", new MarcoLiturgico(
+                "MAE_DE_DEUS", "Santa Maria, Mãe de Deus",
+                LocalDate.of(anoNominal, 1, 1),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("SAO_JOSE", new MarcoLiturgico(
+                "SAO_JOSE", "São José, Esposo da Virgem Maria",
+                LocalDate.of(anoNominal, 3, 19),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("ANUNCIACAO_SENHOR", new MarcoLiturgico(
+                "ANUNCIACAO_SENHOR", "Anunciação do Senhor",
+                LocalDate.of(anoNominal, 3, 25),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("NATIVIDADE_JOAO_BATISTA", new MarcoLiturgico(
+                "NATIVIDADE_JOAO_BATISTA", "Natividade de São João Batista",
+                LocalDate.of(anoNominal, 6, 24),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("SAO_PEDRO_SAO_PAULO", new MarcoLiturgico(
+                "SAO_PEDRO_SAO_PAULO", "São Pedro e São Paulo, Apóstolos",
+                LocalDate.of(anoNominal, 6, 29),
+                CorLiturgica.VERMELHO, 3.00));
+        marcos.put("ASSUNCAO_NOSSA_SENHORA", new MarcoLiturgico(
+                "ASSUNCAO_NOSSA_SENHORA", "Assunção de Nossa Senhora",
+                LocalDate.of(anoNominal, 8, 15),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("TODOS_OS_SANTOS", new MarcoLiturgico(
+                "TODOS_OS_SANTOS", "Todos os Santos",
+                LocalDate.of(anoNominal, 11, 1),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("IMACULADA_CONCEICAO", new MarcoLiturgico(
+                "IMACULADA_CONCEICAO", "Imaculada Conceição de Nossa Senhora",
+                LocalDate.of(anoNominal, 12, 8),
+                CorLiturgica.BRANCO, 3.00));
+        marcos.put("NATAL_SENHOR", new MarcoLiturgico(
+                "NATAL_SENHOR", "Natal do Senhor",
+                LocalDate.of(anoNominal, 12, 25),
+                CorLiturgica.BRANCO, 3.00));
 
         return new SaidaLiturgica(anoNominal, dataInicio, dataFim, cicloLetra, Collections.unmodifiableMap(marcos));
     }

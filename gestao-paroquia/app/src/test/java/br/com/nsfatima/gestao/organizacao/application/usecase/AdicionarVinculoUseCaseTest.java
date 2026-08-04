@@ -174,12 +174,14 @@ class AdicionarVinculoUseCaseTest {
         when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
 
         IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, null)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL,
+                        PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, null)
         );
         assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex1.getMessage());
 
         IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, () ->
-                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.MOVIMENTO, PapelOrganizacional.MEMBRO_MOVIMENTO, null)
+                useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.MOVIMENTO,
+                        PapelOrganizacional.MEMBRO_MOVIMENTO, null)
         );
         assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex2.getMessage());
     }
@@ -195,7 +197,8 @@ class AdicionarVinculoUseCaseTest {
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId,
-                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, igrejaId)
+                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+                                igrejaId)
 
         );
         assertEquals("Igreja de vinculo nao encontrada: " + igrejaId, ex.getMessage());
@@ -216,7 +219,8 @@ class AdicionarVinculoUseCaseTest {
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId,
-                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, igrejaId)
+                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+                                igrejaId)
 
         );
         assertEquals("Igreja de vinculo deve ser do tipo MATRIZ ou COMUNIDADE", ex.getMessage());
@@ -347,7 +351,8 @@ class AdicionarVinculoUseCaseTest {
                 .thenReturn(Optional.of(existing));
         when(vinculoRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL, churchA);
+        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL,
+                churchA);
 
         assertFalse(existing.isAtivo());
         verify(vinculoRepository).save(existing);
@@ -383,7 +388,8 @@ class AdicionarVinculoUseCaseTest {
 
         when(vinculoRepository.save(any(MembroOrganizacaoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        useCase.execute(newCoordId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL, churchId);
+        useCase.execute(newCoordId, organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL,
+                churchId);
 
         assertFalse(existingCoord.isAtivo());
         // Verify demoted VOLUNTARIO vinculo was created and saved
@@ -391,7 +397,8 @@ class AdicionarVinculoUseCaseTest {
         verify(vinculoRepository, atLeast(2)).save(captor.capture());
 
         boolean demotedSaved = captor.getAllValues().stream()
-                .anyMatch(m -> oldCoordId.equals(m.getUsuarioId()) && "VOLUNTARIO_PASTORAL_LOCAL".equals(m.getPapel()) && m.isAtivo());
+                .anyMatch(m -> oldCoordId.equals(m.getUsuarioId())
+                        && "VOLUNTARIO_PASTORAL_LOCAL".equals(m.getPapel()) && m.isAtivo());
         assertTrue(demotedSaved, "Previous coordinator should have an active VOLUNTARIO vinculo saved");
     }
 
@@ -413,7 +420,8 @@ class AdicionarVinculoUseCaseTest {
 
         var ex = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId,
-                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, differentChurchId)
+                        organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+                                differentChurchId)
 
         );
 

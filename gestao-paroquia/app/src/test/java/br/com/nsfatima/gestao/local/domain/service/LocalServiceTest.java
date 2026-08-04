@@ -14,9 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
 class LocalServiceTest {
 
     private LocalService localService;
@@ -56,7 +53,8 @@ class LocalServiceTest {
         Local local = new Local(UUID.randomUUID(), "Velho Nome", "SALA", "End", 10, "Nada", true);
         localRepository.save(local);
 
-        Local updated = localService.updateLocal(local.getId(), "Novo Nome", "SALÃO", "Novo End", 20, "Ar", false, orgId);
+        Local updated = localService.updateLocal(local.getId(), "Novo Nome", "SALÃO", "Novo End", 20, "Ar", false,
+                orgId);
 
         assertEquals("Novo Nome", updated.getNome());
         assertEquals(20, updated.getCapacidade());
@@ -114,7 +112,9 @@ class LocalServiceTest {
 
         @Override
         public List<Local> findByOrganizacaoId(UUID organizacaoId) {
-            return storage.stream().filter(l -> organizacaoId != null && organizacaoId.equals(l.getOrganizacaoId())).toList();
+            return storage.stream()
+                    .filter(l -> organizacaoId != null && organizacaoId.equals(l.getOrganizacaoId()))
+                    .toList();
         }
 
         @Override

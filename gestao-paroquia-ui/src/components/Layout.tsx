@@ -34,7 +34,6 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser } from '../auth/permissions';
-import { ScopeSelector } from './ScopeSelector';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();

@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -20,9 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class RejectCancelEventoIntegrationTest {
@@ -76,6 +72,7 @@ class RejectCancelEventoIntegrationTest {
                 .andExpect(jsonPath("$.actionExecution.eventStatus").value("CONFIRMADO"));
 
         assertThat(eventoJpaRepository.findById(eventoId).orElseThrow().getStatus()).isEqualTo("CONFIRMADO");
-        assertThat(aprovacaoJpaRepository.findById(aprovacaoId).orElseThrow().getStatus()).isEqualTo(AprovacaoStatus.REPROVADA);
+        assertThat(aprovacaoJpaRepository.findById(aprovacaoId)
+                .orElseThrow().getStatus()).isEqualTo(AprovacaoStatus.REPROVADA);
     }
 }

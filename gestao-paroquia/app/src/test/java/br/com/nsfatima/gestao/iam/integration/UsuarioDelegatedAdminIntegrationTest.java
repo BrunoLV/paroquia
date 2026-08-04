@@ -24,8 +24,6 @@ import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -155,8 +153,8 @@ class UsuarioDelegatedAdminIntegrationTest {
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"organizacaoId\": \"" + orgId
-                                + "\", \"tipo\": \"PASTORAL\", \"papel\": \"VOLUNTARIO_PASTORAL_LOCAL\", \"igrejaVinculoId\": \""
-                                + churchId + "\"}"))
+                                + "\", \"tipo\": \"PASTORAL\", \"papel\": \"VOLUNTARIO_PASTORAL_LOCAL\""
+                                + ", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isCreated());
     }
 

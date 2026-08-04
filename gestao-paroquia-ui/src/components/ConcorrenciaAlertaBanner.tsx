@@ -55,7 +55,7 @@ export const ConcorrenciaAlertaBanner: React.FC<ConcorrenciaAlertaBannerProps> =
                 borderColor: severity === 'error' ? 'error.main' : 'warning.main',
               }}
             >
-              <Typography variant="caption" display="block" color="text.secondary">
+              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
                 {c.dataEvento} • Público: {c.publicoAlvoCompartilhado}
               </Typography>
               <Typography variant="body2" sx={{ fontWeight: 600 }}>

@@ -1,85 +1,50 @@
 # AGENTS.md - Backend Engineering Standards & Guidelines
 
-## Domain-Driven Design (DDD) Core Principles
-- **Padrões Orientados ao Domínio:** Siga estritamente os princípios puros de Domain-Driven Design para modelar as capacidades de negócio.
-- **Linguagem Ubíqua:** Os elementos de código (classes, métodos, variáveis, schemas de banco de dados) devem espelhar exatamente a linguagem do domínio de negócio. Nunca use jargões técnicos onde exista um termo do domínio.
-- **Contextos Delimitados (Bounded Contexts):** Mantenha uma separação rigorosa entre contextos de domínio distintos. Não vaze conceitos, entidades ou estruturas de banco de dados de um contexto delimitado para outro.
-- **Modelo de Domínio Rico sobre Membros Anêmicos:** As entidades devem conter tanto dados quanto comportamento. Regras de negócio, transições de estado e validações de domínio pertencem ao interior das Entidades de Domínio e Agregados, NUNCA vazadas para os Services.
-- **Agregados e Raízes (Roots):** Desenhe Raízes de Agregados claras para manter os limites transacionais e invariantes. Referencie agregados externos estritamente por Identidade (ID), nunca mantendo referências diretas a objetos.
-- **Objetos de Valor (Value Objects):** Sempre encapsule atributos que não possuem identidade conceitual em Objetos de Valor imutáveis (implementados como Java `record`). Exemplos: Money, Address, Email.
+Este documento unifica as diretrizes arquiteturais, regras de domínio e comandos de ferramentas para atuar no backend do "Projeto Paróquia".
 
-## Data Privacy & Compliance (Mandato da LGPD)
-- **Roteamento de Compliance Estrito:** Este projeto manipula dados pessoais e é apenas para uso interno. O agente DEVE ABSOLUTAMENTE ler, internalizar e aplicar estritamente os limites de privacidade e segurança definidos no arquivo `docs/ia/regras_duras_lgpd.md` antes de autorar, refatorar ou expor qualquer código, contrato de dados ou log interno.
+## 1. Arquitetura e Contexto do Projeto
+- **Escopo do Módulo:** Este diretório (`gestao-paroquia/`) contém um monólito modular desenvolvido em Java 25 com Spring Boot 3, responsável pela API REST do sistema de gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima[cite: 4].
+- **Arquitetura Limpa e DDD:** O backend adota Domain-Driven Design (DDD) e arquitetura Portas e Adaptadores (Hexagonal). O Domínio Core deve ser estritamente isolado da Infraestrutura[cite: 3, 4].
+- **Contextos Delimitados (Bounded Contexts):** O sistema é dividido por funcionalidades (ex: `calendario`, `aprovacao`, `local`, `organizacao`, `membro`). É estritamente proibido vazar entidades ou estruturas de banco de dados entre os contextos[cite: 3, 4].
+- **Camadas Estratégicas:** Cada contexto segue a estruturação: `domain/model` (zero dependência de frameworks), `domain/service`, `application/usecase` (orquestração transacional) e `infrastructure` (Controllers, Repositories, Adapters)[cite: 3, 4].
 
-## Otimização de Janela de Contexto
-- **Consulta Prévia Mandatória:** Sempre consulte `graphify-out/graph.json` ou execute buscas semânticas locais antes de abrir múltiplos arquivos de código.
-- **Eficiência de Tokens:** Nunca consuma tokens carregando arquivos inteiros se a relação mapeada pelo Graphify exigir modificações em apenas algumas linhas isoladas.
+## 2. Regras de Negócio e Preocupações Transversais (Cross-cutting)
+- **Fluxo de Aprovação:** Modificações de estado (criar/atualizar/cancelar eventos ou projetos) frequentemente passam por uma máquina de estados de aprovação (`AprovacaoEntity`, `DecideSolicitacaoAprovacaoUseCase`) em vez de aplicar o CRUD direto. Verifique essa necessidade antes de implementar mutações[cite: 4].
+- **Gestão de Eventos:** O contexto `Evento` utiliza um padrão de segregação de repositórios por responsabilidade. Novas consultas devem seguir esse padrão em vez de sobrecarregar uma única interface de repositório[cite: 4].
+- **Autorização Baseada em Organização:** As permissões não são simples verificações de propriedade, mas baseadas no papel do ator e no escopo organizacional da paróquia (Matriz, Comunidades, movimentos)[cite: 4].
+- **Ciclo de Vida do Ano Paroquial:** O provisionamento de eventos é governado pelo ciclo de vida do `AnoParoquialEntity` e seu respectivo status[cite: 4].
 
-## Agent Capabilities, Custom Skills & Graphify Mandate
-- **Exploração da Base de Código via Graphify:** A pasta `graphify-out/` localizada na raiz do monorepo contém os grafos de conhecimento e dependências de todo o projeto. O agente DEVE obrigatoriamente consultar `graphify-out/GRAPH_REPORT.md` e os arquivos de grafo antes de explorar classes, pacotes ou repositories do backend via buscas manuais.
-- **Economia de Tokens:** É proibida a leitura em lote de múltiplos arquivos fonte inteiros quando a estrutura de dependências puder ser obtida diretamente via consulta aos artefatos do Graphify, garantindo economia de tokens e navegação precisa.
-- **Alinhamento Obrigatório de Skills do Projeto:** O agente DEVE obrigatoriamente consultar e aplicar as diretrizes contidas nos guias de skill em `.agents/skills/` (`ddd.md`, `java.md`, `solid.md`, `tdd.md`, `tdd_2.md`, `flyway.md`, `sql.md` e `gradle.md`) antes de gerar ou refatorar qualquer código no backend.
+## 3. Governança de IA e Otimização de Tokens
+- **Graphify Obrigatório:** É mandatório consultar os artefatos em `../graphify-out/` antes de explorar classes ou repositórios via buscas manuais[cite: 3, 4].
+- **Economia de Tokens:** É proibida a leitura em lote de arquivos inteiros se a estrutura puder ser obtida diretamente via consulta aos artefatos do Graphify[cite: 3].
+- **Isolamento de Privacidade (LGPD):** A leitura e aplicação das regras em `docs/ia/regras_duras_lgpd.md` é uma etapa prévia inegociável antes de autorar código, logs ou contratos de dados[cite: 3, 4].
+- **Consulta de Habilidades (Skills):** O agente deve aplicar as diretrizes contidas nos guias em `.agents/skills/` (ex: `ddd.md`, `java.md`, `tdd.md`) antes de refatorar o backend[cite: 3, 4].
 
-## Estilo de Código & Arquitetura (Java & Segurança de Tipos)
-- **Tipos sobre Strings:** Sempre prefira Java `enum`, `sealed classes` ou wrappers de objetos fortemente tipados (Objetos de Valor) em vez de `String` pura para representar estados, categorias ou domínios fixos.
-- **Tipagem Estrita:** Nunca use tipos brutos (raw types), coleções não tipadas ou mapas genéricos de `Object` para dados estruturais. Use Genéricos precisos e `java.util.Optional` em vez de retornar `null`.
-- **Carregadores de Dados Imutáveis:** Use Java `record` para Objetos de Valor, DTOs e payloads de eventos para garantir a imutabilidade por padrão.
-- **Restrições de Funções:** Mantenha os métodos entre 4 e 20 linhas. Se um método exceder 20 linhas, extraia os blocos coesos para métodos auxiliares privados (private helper methods).
-- **Limites de Arquivo:** Mantenha os arquivos abaixo de 500 linhas. Divida as classes pelo Princípio da Responsabilidade Única (SRP) quando elas crescerem além desse limite.
-- **Convenções de Nomenclatura:** Os nomes devem ser específicos, únicos e orientados ao domínio. Termos ABSOLUTAMENTE PROIBIDOS: `Data`, `Handler`, `Manager`, `Helper`, `Utility`. Prefira nomes precisos que retornem menos de 5 resultados de grep na base de código.
-- **Idioma — Domínio em Português, Técnico em Inglês:** Conceitos de domínio (entidades, enums, campos, DTOs, use cases que descrevem uma ação de negócio, métodos de teste) DEVEM ser nomeados em português (ex.: `AtivoAlocacaoEntity`, `VinculoResponse`, `AdicionarVinculoUseCase`, `deveCancelarEventoImediatamente`). Sufixos/termos puramente técnicos permanecem em inglês (`Entity`, `Controller`, `Repository`, `UseCase`, `DTO`, `Enum`, `Exception`, `Policy` — ex.: `PeriodoOperacionalPolicy`). Essa convenção vale também para **variáveis locais e comentários de regra de negócio dentro de métodos**, não só para assinaturas de classe/método/campo. Prefira enum ou constante nomeada a `String` literal usada como marcador em comparações/`switch` — reutilize o enum já existente via `.name()` quando houver um (`AprovacaoStatus`, `ProjetoStatus`, `EventoStatusInput`) em vez de repetir o literal. Campo de entidade JPA `String` com conjunto fechado de valores deve virar `@Enumerated(EnumType.STRING)`; se o valor persistido não bate com `Enum.name()` (kebab-case, aliases legados), use `AttributeConverter` em vez de `@Enumerated` puro; se o campo mistura vocabulários distintos em momentos diferentes do ciclo de vida, mantenha `String` — forçar um enum único nesse caso perde informação ou produz `NULL`s inválidos.
-- **Fluxo de Controle:** Prefira retornos antecipados (early returns) e cláusulas de guarda (guard clauses) em vez de blocos `if-else` aninhados. A profundidade máxima de indentação permitida é de 2 níveis dentro de qualquer bloco.
-- **Dry & Extract:** Zero duplicação de código permitida. Extraia a lógica compartilhada em componentes reutilizáveis e testáveis ou em funções puras.
-- **Exceções Expressivas:** Exceções customizadas devem ser não checadas (`RuntimeException`). As mensagens de exceção devem incluir explicitamente o valor incorreto em tempo de execução, o contexto e o limite/formato esperado.
+## 4. Padrões de Código e Tipagem Estrita
+- **Idioma de Nomenclatura:** Conceitos de domínio, testes e variáveis locais devem ser nomeados em Português. Termos técnicos/arquiteturais devem permanecer em Inglês[cite: 3].
+- **Termos Proibidos:** O uso de sufixos genéricos como `Data`, `Handler`, `Manager`, `Helper` ou `Utility` é estritamente proibido[cite: 3, 4].
+- **Imutabilidade e Tipagem:** Utilize Java `record` para Objetos de Valor e DTOs, e `java.util.Optional` em vez de retornos `null`. Evite tipos brutos (raw types) ou strings literais para domínios fixos, preferindo `enum`[cite: 3, 4].
+- **Injeção de Dependências:** É exigida a injeção via construtor. O uso de `@Autowired` em atributos (fields) é proibido[cite: 3, 4].
 
-## Análise Estática & Linters (Quality Gates)
-- **Conformidade com Ferramentas:** A base de código impõe rigidamente portões de qualidade (quality gates) via **PMD**, **SpotBugs** e **Checkstyle**. Todo código gerado ou refatorado deve estar em total conformidade com as configurações dessas ferramentas.
-- **Política de Zero Avisos:** Nenhum aviso (warning), code smell ou violação de estilo deve ser introduzido. O agente deve verificar se o código não dispara violações de regras do PMD (ex: otimização, propensão a erros), alertas do SpotBugs (ex: riscos de ponteiro nulo, má práticas) ou erros de layout do Checkstyle antes de finalizar as alterações.
+## 5. Qualidade, Testes e Documentação
+- **Limites Físicos:** Arquivos não devem ultrapassar 500 linhas e métodos devem conter entre 4 e 20 linhas[cite: 3, 4].
+- **Política de Zero Avisos:** Todo código deve passar pelos portões de qualidade do PMD, SpotBugs e Checkstyle sem disparar avisos[cite: 3, 4].
+- **Higiene de Importações:** É proibida a utilização de nomes totalmente qualificados inline (FQNs) ou importações com caracteres coringa (star imports/wildcards)[cite: 3, 4].
+- **Mandato de TDD:** O ciclo Red-Green-Refactor é obrigatório. Devem ser implementadas as camadas de testes Unitários, de Integração e End-to-End (E2E)[cite: 3, 4].
+- **Documentação Exaustiva:** Cada contexto exige um arquivo `package-info.java`. Interfaces públicas e contratos de API (OpenAPI/Swagger) devem ser documentados, e regras de negócio complexas devem utilizar diagramas Mermaid.js[cite: 3].
+- **Comentários de Intenção:** Os comentários no código devem explicar o PORQUÊ (razão de negócio), não o O QUÊ (mecânica), e garantir que invariantes estejam declaradas para leitura autônoma por IA[cite: 3].
 
-## Arquitetura de Documentação
-- **Documentação Viva:** Cada mudança arquitetural não trivial, introdução de padrão estrutural ou grande escolha de integração DEVE ser documentada por meio de um **Registro de Decisão Arquitetural (ADR)** em formato Markdown no local designado do repositório.
-- **Documentação de API e Contratos:** Os contratos de API pública devem ser totalmente decorados com anotações OpenAPI/Swagger (`@Operation`, `@ApiResponse`) para produzir documentação de API exaustiva, precisa e interativa automaticamente em tempo de execução.
-- **Javadoc Público:** Cada interface pública, controller, classe de configuração e método de serviço deve ter um bloco Javadoc declarando sua intenção primária, contexto de negócio e exatamente um exemplo de uso válido. Todos os 14 bounded contexts do backend têm hoje cobertura completa de Javadoc (auditoria concluída) — mantenha esse padrão em qualquer classe/método público novo, não deixe a cobertura regredir.
-- **`package-info.java` obrigatório por bounded context:** Todo pacote raiz de bounded context (`br.com.nsfatima.gestao.<contexto>`) DEVE ter um `package-info.java` documentando a responsabilidade do contexto e como ele se relaciona com os demais — não é opcional, é a mesma exigência do item de Mermaid abaixo, só que agora explícita: nenhum contexto deve ficar sem esse arquivo.
-- **Documentação de Domínio & Fluxo:** Regras de negócio complexas, sagas entre agregados e máquinas de estado devem ser explicitamente documentadas usando diagramas Mermaid.js incorporados diretamente nos arquivos Markdown de acompanhamento ou nos Javadocs em nível de pacote (ver `package-info.java` de `aprovacao`, `calendario` e `projeto` como referência de formato).
-- **Rastreabilidade:** Referencie IDs de rastreamento de issues ou SHAs de commit diretamente nos comentários quando uma linha de código existir unicamente para corrigir um bug upstream ou um caso de borda de terceiros.
-- **Intenção sobre Mechanism:** Os comentários dentro do código devem explicar o **PORQUÊ**, não o **O QUÊ**. Não comente códigos autoexplicativos (ex: pule `// incrementa o contador` acima de `i++`). Explique a restrição de negócio ou a razão arquitetural por trás de uma lógica não óbvia.
-- **Documentação também para agentes de IA:** Javadoc e comentários devem declarar invariantes e condições de contorno explicitamente no próprio código — um agente de IA lendo só aquele arquivo, sem o histórico de commits ou os arquivos `CLAUDE.md`, deve conseguir entender a regra de negócio. Não presuma que quem lê o código tem acesso ao contexto desta conversa ou de decisões passadas.
-- **Preservar o Contexto:** Retenha os comentários existentes durante a refatoração; eles carregam intenção histórica e proveniência.
+## 6. Instruções de Ferramentas (Tools) e Comandos
+### Exploração via Graphify (A partir do diretório gestao-paroquia/)
+- `graphify query "<question>"`: Para perguntas sobre a base de código[cite: 4].
+- `graphify path "<A>" "<B>"`: Para relações entre dois símbolos[cite: 4].
+- `graphify explain "<concept>"`: Para focar em um conceito específico[cite: 4].
+- `graphify update .`: Para atualizar a AST após alterações no código[cite: 4].
 
-## Importações & Higiene de Pacotes
-- **Sem Nomes Totalmente Qualificados (No Inline FQNs):** NUNCA use nomes de classes totalmente qualificados em linha (ex: `com.example.domain.MyClass`) dentro do corpo do código. Aplicado estritamente tanto ao código produtivo (`src/main`) quanto ao código de testes (`src/test`) e checado via Checkstyle (`IllegalTokenText`).
-- **Importações Limpas no Topo:** SEMPRE use importações explícitas no topo (top-level) no início do arquivo.
-- **Sem Caracteres Coringa (Proibição Absoluta de Wildcards/Star Imports):** NÃO use importações com caracteres coringa (ex: `import java.util.*` ou `import static org.mockito.Mockito.*`). Importe cada classe ou membro estático explicitamente. Aplicado estritamente tanto em `src/main` quanto em `src/test` e checado via Checkstyle (`AvoidStarImport` com `allowClassImports=false` e `allowStaticMemberImports=false`).
-
-## Tratamento de Erros & Resiliência
-- **Validação Fail-Fast:** Valide as entradas na fronteira (ex: Controllers, Event Listeners) usando Jakarta Validation (`@NotNull`, `@Valid`) ou `Objects.requireNonNull()` explícito antes de passar os dados para os serviços core.
-- **Captura Específica:** Nunca capture `Throwable` ou `Exception` genéricos, a menos que esteja construindo explicitamente um manipulador de erros global de fallback. Capture a subclasse mais específica possível.
-
-## Suíte de Testes & Mandato de TDD
-- **Aplicação Estrita de TDD:** O Desenvolvimento Orientado a Testes (TDD) é a base absoluta da segurança do código neste projeto. Você DEVE escrever o teste antes de escrever qualquer código de produção (ciclo Red-Green-Refactor). Nenhuma alteração no código de produção é permitida sem uma alteração prévia no teste.
-- **Camadas Obrigatórias da Suíte de Testes:** Para cada nova funcionalidade ou comportamento de domínio, o agente DEVE implementar três camadas distintas de teste:
-  1. **Testes Unitários:** Testes rápidos e isolados para a lógica central do domínio, Objetos de Valor e invariantes de Agregados. I/O externo deve ser mockado ou simulado (faked).
-  2. **Testes de Integração:** Testes que verificam a interação entre componentes e fronteiras de infraestrutura (ex: persistência em banco de dados com `@DataJpaTest`, fatias de contexto do Spring, contratos de API).
-  3. **Testes de Ponta a Ponta (E2E):** Testes de fatia completa que atravessam toda a stack da aplicação, desde o ponto de entrada público (ex: requisição HTTP usando `@SpringBootTest` + `WebTestClient`) até o banco de dados/integrações externas, provando que o sistema funciona como um todo coeso.
-- **Execução:** Todos os testes em todos os níveis devem rodar perfeitamente através de um único comando na raiz: `./gradlew test`.
-- **Isolamento Estrito de I/O no Nível Unitário:** Mocke as fronteiras de I/O externo (APIs REST, Bancos de Dados, Sistemas de Arquivos, Relógios). Prefira simuladores de teste nomeados (`FakeUserRepository`) ou mocks do Mockito. Nunca permita que um teste unitário realize atividades reais de rede ou disco.
-- **Princípios F.I.R.S.T.:** Os testes devem ser Rápidos (Fast), Independentes (Independent), Repetíveis (Repeatable), Auto-validáveis (Self-Validating) e Oportunos/Na hora certa (Timely).
-
-## Gerenciamento de Dependências & Desacoplamento
-- **Injeção de Dependência:** Injete todas as dependências explicitamente via injeção por construtor. Evite `@Autowired` em atributos para garantir a testabilidade da classe sem a necessidade de orquestração do contexto do Spring.
-- **Camada Anticorrupção (ACL):** Envolva bibliotecas de terceiros e SDKs externos atrás de uma interface fina de propriedade deste projeto. Não vaze modelos de bibliotecas externas para a camada core do domínio.
-
-## Framework & Estrutura (Spring Boot & Arquitetura Limpa)
-- **Camadas Estratégicas:** Isole o Domínio Core da Infraestrutura. Siga um layout de arquitetura limpa do tipo Portas e Adaptadores (Hexagonal) ou Onion:
-  - `domain/model`: Agregados, Entidades, Objetos de Valor e Eventos de Domínio. (Zero dependências de frameworks).
-  - `domain/service`: Serviços de domínio puros que lidam com operações que abrangem múltiplos agregados.
-  - `application`: Casos de uso, handlers de CQRS e serviços de aplicação que coordenam transações.
-  - `infrastructure`: Spring Controllers, Repositories, Mappers de Banco de Dados e clientes de API externa.
-- **Spring Boot Idiomático:** Siga estritamente as convenções padrão do Spring Boot dentro da camada de infraestrutura, garantindo que ela implemente as interfaces (Portas) definidas pela camada de domínio.
-- **Componentes Granulares:** Prefira classes Spring `@Component` pequenas e altamente focadas em vez de "Serviços Deuses" (God Services) inflados.
-
-## Observabilidade & Formatação
-- **Log Estruturado:** Use SLF4J/Logback para emitir o formato JSON estruturado para os logs da aplicação (info, warn, error).
-- **Logs Contextuais:** Inclua identificadores de rastreamento relevantes (como MDC / Trace IDs) nos logs e sempre registre contextos que permitam ação, não apenas stack traces genéricos.
-- **Zero Debates sobre Estilo:** Use a configuração padrão de formatador do projeto/IDE. Não altere ou debate estilos de formatação além das regras automatizadas do checkstyle.
+### Build e Testes (Gradle Wrapper)
+- `./gradlew check`: Executar testes e portões de qualidade (checkstyle, pmd, spotbugs)[cite: 4].
+- `./gradlew build`: Build completo com qualidade e testes[cite: 4].
+- `./gradlew test`: Executar todas as suítes de testes em memória[cite: 4].
+- `./gradlew test --tests "NomeDaClasse"`: Executar classe de teste específica[cite: 4].
+- `./gradlew bootRun`: Iniciar a API localmente[cite: 4].
+- `./demo_mvp.sh`: Executar script de testes End-to-End para gerar relatório de MVP[cite: 4].

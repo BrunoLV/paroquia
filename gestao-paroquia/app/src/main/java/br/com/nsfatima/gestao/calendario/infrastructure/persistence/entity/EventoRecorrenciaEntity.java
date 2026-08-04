@@ -40,7 +40,8 @@ public class EventoRecorrenciaEntity extends BaseVersionedEntity {
     @Column(nullable = false, length = 32)
     private String frequencia;
 
-    /** Intervalo de repetição (ex.: a cada N dias/semanas/meses/anos), espelhando {@link RegraRecorrencia#intervalo()}. */
+    /** Intervalo de repetição (ex.: a cada N dias/semanas/meses/anos), espelhando {@link RegraRecorrencia#intervalo()}.
+     * */
     @Column(nullable = false)
     private Integer intervalo;
 
@@ -52,7 +53,8 @@ public class EventoRecorrenciaEntity extends BaseVersionedEntity {
     @Convert(converter = RegraRecorrenciaConverter.class)
     private RegraRecorrencia regra;
 
-    /** Data/hora (UTC) limite para geração de novas ocorrências desta série; {@code null} significa sem data-limite explícita. */
+    /** Data/hora (UTC) limite para geração de novas ocorrências desta série; {@code null} significa sem data-limite
+     * explícita. */
     @Column(name = "data_fim_utc")
     private Instant dataFimUtc;
 

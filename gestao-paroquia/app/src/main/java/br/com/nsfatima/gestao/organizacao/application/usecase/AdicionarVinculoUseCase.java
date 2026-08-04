@@ -103,8 +103,12 @@ public class AdicionarVinculoUseCase {
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
         boolean isParoco = auth.getAuthorities().stream().anyMatch(a -> "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
 
-        // Regra de hierarquia: liderança de CONSELHO / CPP / CPC / CONSELHO_ECONOMICO só pode ser definida por PAROCO ou ADMIN
-        if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CPP || tipo == TipoOrganizacao.CPC || tipo == TipoOrganizacao.CONSELHO_ECONOMICO)
+        // Regra de hierarquia: liderança de CONSELHO / CPP / CPC / CONSELHO_ECONOMICO
+        // só pode ser definida por PAROCO ou ADMIN
+        if ((tipo == TipoOrganizacao.CONSELHO_PASTORAL
+                || tipo == TipoOrganizacao.CPP
+                || tipo == TipoOrganizacao.CPC
+                || tipo == TipoOrganizacao.CONSELHO_ECONOMICO)
                 && (papel == PapelOrganizacional.PRESIDENTE_CPC
                 || papel == PapelOrganizacional.MESA_CPP
                 || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL

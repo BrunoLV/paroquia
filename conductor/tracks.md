@@ -311,6 +311,11 @@
 - [x] **Track: Modernização de Gráficos e Visualizações (ApexCharts, Recharts)**
 *Link: [./archive/modernizacao_graficos_visualizacoes_20260731/index.md](./archive/modernizacao_graficos_visualizacoes_20260731/index.md)*
 
+---
+
+- [x] **Track: Enforcement de Qualidade do Harness de Testes (CI/CD, JaCoCo Threshold, Performance Tests)**
+*Link: [./archive/harness_quality_enforcement_20260803/](./archive/harness_quality_enforcement_20260803/)*
+
 
 
 

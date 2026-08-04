@@ -66,7 +66,8 @@ public class ListAuditTrailUseCase {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
         if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
-            throw new AccessDeniedException("Usuário não pode consultar dados de auditoria fora do escopo da organização responsável");
+            throw new AccessDeniedException(
+                    "Usuário não pode consultar dados de auditoria fora do escopo da organização responsável");
         }
     }
 }

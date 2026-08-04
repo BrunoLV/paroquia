@@ -48,7 +48,8 @@ public class ObservacaoMutationPolicyService {
      */
     public void assertCanEditOrDelete(ObservacaoEventoEntity observacao, UUID solicitanteId) {
         if (!TIPO_NOTA.equalsIgnoreCase(observacao.getTipo())) {
-            throw new ObservacaoTipoImutavelException("Tipos de observação de sistema são imutáveis em endpoints manuais");
+            throw new ObservacaoTipoImutavelException(
+                    "Tipos de observação de sistema são imutáveis em endpoints manuais");
         }
 
         if (observacao.isRemovida()) {

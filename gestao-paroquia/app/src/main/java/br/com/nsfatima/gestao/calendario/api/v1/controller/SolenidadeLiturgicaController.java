@@ -66,7 +66,8 @@ public class SolenidadeLiturgicaController {
      */
     @PostMapping
     public ResponseEntity<SolenidadeLiturgicaResponseDTO> create(@RequestBody SolenidadeLiturgicaRequestDTO request,
-                                                                 @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+                                                                 @RequestHeader(value = "X-User-Role", required = false)
+            String userRole) {
         SolenidadeLiturgicaResponseDTO response = service.create(request, userRole);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -83,7 +84,8 @@ public class SolenidadeLiturgicaController {
     @PutMapping("/{id}")
     public ResponseEntity<SolenidadeLiturgicaResponseDTO> update(@PathVariable UUID id,
                                                                  @RequestBody SolenidadeLiturgicaRequestDTO request,
-                                                                 @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+                                                                 @RequestHeader(value = "X-User-Role", required = false)
+            String userRole) {
         SolenidadeLiturgicaResponseDTO response = service.update(id, request, userRole);
         return ResponseEntity.ok(response);
     }
@@ -99,7 +101,8 @@ public class SolenidadeLiturgicaController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id,
-                                       @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+                                       @RequestHeader(value = "X-User-Role", required = false)
+            String userRole) {
         service.delete(id, userRole);
         return ResponseEntity.noContent().build();
     }

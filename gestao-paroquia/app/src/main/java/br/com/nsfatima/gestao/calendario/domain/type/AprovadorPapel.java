@@ -44,7 +44,8 @@ public enum AprovadorPapel {
         if ("conselho-coordenador".equals(normalized) || "conselho_coordenador".equalsIgnoreCase(rawValue.trim())) {
             return COORD_CONSELHO;
         }
-        if ("conselho-vice-coordenador".equals(normalized) || "conselho_vice_coordenador".equalsIgnoreCase(rawValue.trim())) {
+if ("conselho-vice-coordenador".equals(normalized)
+                || "conselho_vice_coordenador".equalsIgnoreCase(rawValue.trim())) {
             return VICE_COORD_CONSELHO;
         }
 
@@ -77,7 +78,9 @@ public enum AprovadorPapel {
         boolean isViceOrMembroCpp = papel == PapelOrganizacional.MEMBRO_CPP
                 || papel == PapelOrganizacional.MEMBRO_CPC
                 || papel == PapelOrganizacional.MESA_CPP;
-        if ((tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL || tipoOrganizacao == TipoOrganizacao.CPP || tipoOrganizacao == TipoOrganizacao.CPC)
+if ((tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL
+                || tipoOrganizacao == TipoOrganizacao.CPP
+                || tipoOrganizacao == TipoOrganizacao.CPC)
                 && isViceOrMembroCpp) {
             return VICE_COORD_CONSELHO;
         }

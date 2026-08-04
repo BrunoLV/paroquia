@@ -36,15 +36,18 @@ public class SolenidadeLiturgicaEntity extends BaseVersionedEntity {
     @Column(name = "tipo_solenidade", nullable = false, length = 32)
     private TipoSolenidade tipoSolenidade;
 
-    /** Mês (1-12) de ocorrência da solenidade quando ela tem data fixa no calendário civil; {@code null} se a data é móvel (baseada na Páscoa). */
+    /** Mês (1-12) de ocorrência da solenidade quando ela tem data fixa no calendário civil; {@code null} se a data é
+     * móvel (baseada na Páscoa). */
     @Column(name = "mes_fixo")
     private Integer mesFixo;
 
-    /** Dia do mês de ocorrência da solenidade quando ela tem data fixa; {@code null} se a data é móvel (baseada na Páscoa). */
+    /** Dia do mês de ocorrência da solenidade quando ela tem data fixa; {@code null} se a data é móvel (baseada na
+     * Páscoa). */
     @Column(name = "dia_fixo")
     private Integer diaFixo;
 
-    /** Deslocamento em dias em relação ao Domingo de Páscoa, usado para calcular datas móveis (ex.: Quarta-feira de Cinzas, Corpus Christi); {@code null} se a data é fixa. */
+    /** Deslocamento em dias em relação ao Domingo de Páscoa, usado para calcular datas móveis (ex.: Quarta-feira de
+     * Cinzas, Corpus Christi); {@code null} se a data é fixa. */
     @Column(name = "offset_dias_pascoa")
     private Integer offsetDiasPascoa;
 
@@ -55,14 +58,16 @@ public class SolenidadeLiturgicaEntity extends BaseVersionedEntity {
     @Column(name = "fator_demanda", nullable = false)
     private Double fatorDemanda = 1.0;
 
-    /** Nível de prioridade padrão atribuído aos eventos provisionados para esta solenidade na resolução de conflitos de agenda. */
+    /** Nível de prioridade padrão atribuído aos eventos provisionados para esta solenidade na resolução de conflitos de
+     * agenda. */
     @Column(name = "nivel_prioridade", nullable = false)
     private Integer nivelPrioridade = 2;
 
     @Column(length = 500)
     private String descricao;
 
-    /** Indica se a solenidade está ativa para fins de provisionamento automático de eventos; {@code false} desativa a geração sem remover o registro histórico. */
+    /** Indica se a solenidade está ativa para fins de provisionamento automático de eventos; {@code false} desativa a
+     * geração sem remover o registro histórico. */
     @Column(nullable = false)
     private boolean ativo = true;
 

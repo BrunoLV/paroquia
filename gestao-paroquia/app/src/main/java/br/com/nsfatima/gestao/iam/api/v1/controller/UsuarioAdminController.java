@@ -46,7 +46,7 @@ public class UsuarioAdminController {
      * @param id      identificador do usuário alvo
      * @param request novo estado desejado ({@code enabled})
      * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
-     *                                                                    coordenador de uma organização à qual o usuário-alvo pertence
+     *     coordenador de uma organização à qual o usuário-alvo pertence
      */
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -86,7 +86,7 @@ public class UsuarioAdminController {
      * @param id      identificador do usuário alvo
      * @param request nova senha em texto puro, a ser criptografada antes da persistência
      * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
-     *                                                                    coordenador de uma organização à qual o usuário-alvo pertence
+     *     coordenador de uma organização à qual o usuário-alvo pertence
      */
     @PostMapping("/{id}/password-reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)

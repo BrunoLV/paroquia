@@ -101,8 +101,8 @@ public record CreateEventoRequest(
             String adicionadoExtraJustificativa,
             List<UUID> participantes) {
         this(titulo,
-                descricao, categoria, organizacaoResponsavelId, projetoId, localId, igrejaVinculoId, inicio, fim, status,
-                adicionadoExtraJustificativa, participantes, false);
+                descricao, categoria, organizacaoResponsavelId, projetoId, localId,
+                igrejaVinculoId, inicio, fim, status, adicionadoExtraJustificativa, participantes, false);
 
     }
 

@@ -152,7 +152,8 @@ class UserScopeAuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("VOLUNTARIO can only add observations if event belongs to their pastoral or pastoral is participant")
+        @DisplayName("VOLUNTARIO can only add observations if event belongs"
+                + " to their pastoral or pastoral is participant")
         void membroAddObservationPermissions() {
             assertThat(service.canManageOrganizationData(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
                     TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isFalse();
@@ -193,17 +194,23 @@ class UserScopeAuthorizationServiceTest {
         void globalRolesHaveCrossCommunityAccess() {
             assertThat(service.hasTerritorialAccess(PapelOrganizacional.ADMIN, matrizId, comunidadeBId)).isTrue();
             assertThat(service.hasTerritorialAccess(PapelOrganizacional.PAROCO, matrizId, comunidadeBId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_GLOBAL, matrizId, comunidadeBId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_MOVIMENTO, matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_GLOBAL, matrizId,
+                    comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_MOVIMENTO, matrizId,
+                    comunidadeBId)).isTrue();
         }
 
         @Test
         @DisplayName("Local roles are restricted strictly to their community")
         void localRolesRestrictedToCommunity() {
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId, matrizId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId, comunidadeBId)).isFalse();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, matrizId, comunidadeBId)).isFalse();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.PRESIDENTE_CPC, matrizId, comunidadeBId)).isFalse();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId,
+                    matrizId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId,
+                    comunidadeBId)).isFalse();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, matrizId,
+                    comunidadeBId)).isFalse();
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.PRESIDENTE_CPC, matrizId,
+                    comunidadeBId)).isFalse();
         }
     }
 }

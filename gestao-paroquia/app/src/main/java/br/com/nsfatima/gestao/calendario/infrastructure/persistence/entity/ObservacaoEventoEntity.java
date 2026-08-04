@@ -38,7 +38,8 @@ public class ObservacaoEventoEntity extends BaseVersionedEntity {
     @Column(name = "criado_em_utc", nullable = false)
     private Instant criadoEmUtc;
 
-    /** Indica remoção lógica (soft delete): {@code true} quando a observação foi removida e não deve mais ser exibida ativamente. */
+    /** Indica remoção lógica (soft delete): {@code true} quando a observação foi removida e não deve mais ser exibida
+     * ativamente. */
     @Column(name = "removida", nullable = false)
     private boolean removida;
 

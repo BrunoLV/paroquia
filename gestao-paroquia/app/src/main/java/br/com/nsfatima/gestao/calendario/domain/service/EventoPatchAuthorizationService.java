@@ -91,7 +91,8 @@ public class EventoPatchAuthorizationService {
         }
 
         if (!isParoco) {
-            throw new AccessDeniedException("Apenas o Pároco possui permissão para utilizar o bypass de conflito de agenda eclesial");
+            throw new AccessDeniedException(
+                    "Apenas o Pároco possui permissão para utilizar o bypass de conflito de agenda eclesial");
         }
     }
 
