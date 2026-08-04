@@ -361,4 +361,25 @@ describe('Ativos Page', () => {
     expect(optionLabels).toContain('Comunidade Santo Agostinho');
     expect(optionLabels).toContain('Matriz');
   });
+
+  test('renders create dialog Cancelar and Salvar buttons with semantic icons', async () => {
+    await renderAtivos(adminUser);
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByLabelText('Organização'));
+    });
+    await act(async () => {
+      screen.getByText('Comunidade Santo Agostinho').click();
+    });
+
+    await act(async () => {
+      screen.getByRole('button', { name: /Novo Ativo/i }).click();
+    });
+
+    await screen.findByText('Novo Ativo Patrimonial');
+    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
+    const saveButton = screen.getByRole('button', { name: /^Salvar$/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    expect(saveButton.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
+  });
 });

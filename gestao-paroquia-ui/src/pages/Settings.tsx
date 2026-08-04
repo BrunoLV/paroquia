@@ -34,6 +34,7 @@ import {
 import {
   CalendarMonth as CalendarIcon,
   Category as CategoryIcon,
+  CloudUpload as UploadIcon,
   Groups as GroupsIcon,
   LocationOn as LocationIcon,
   People as PeopleIcon,
@@ -583,6 +584,7 @@ const Settings = () => {
           <Button
             variant="outlined"
             color="primary"
+            startIcon={<UploadIcon />}
             onClick={() => setIsImportModalOpen(true)}
             sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
           >
