@@ -27,6 +27,9 @@
 - [x] Task: Subir a aplicação localmente (`npm run dev`) e realizar QA visual manual nas telas principais, confirmando redução de densidade sem quebra de layout `fe3714a0`
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions `1edbdf47`
+
 ## Phase 5: Encerramento da Track
 - [ ] Task: Atualizar `conductor/tracks.md` marcando a track como concluída `[x]`
 - [ ] Task: Sincronizar documentação de projeto (`product.md`/`tech-stack.md`) se aplicável (Refer to conductor-implement Section 4)
