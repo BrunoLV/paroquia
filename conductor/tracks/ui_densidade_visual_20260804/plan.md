@@ -1,8 +1,8 @@
 # Plan: Redução de Densidade Visual da UI
 
 ## Phase 0: Setup de Branch
-- [ ] Task: Sincronizar `master` local com `origin/master` e criar branch dedicada `chore/ui-densidade-visual-20260804` a partir dela
-- [ ] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações)
+- [x] Task: Sincronizar `master` local com `origin/master` e criar branch dedicada `chore/ui-densidade-visual-20260804` a partir dela `8e489020`
+- [x] Task: Commit de checkpoint inicial (estado zero da branch, sem alterações) `1f033f52`
 
 ## Phase 1: Redução de Tipografia (até 20%)
 - [ ] Task: Escrever teste (Red) em `theme.test.tsx` que afirma os novos tamanhos de fonte esperados para as variantes usadas (`h1`, `body1`, `body2`, `button`, `caption`) com redução de até 20% frente aos defaults do MUI, e confirmar que falha
