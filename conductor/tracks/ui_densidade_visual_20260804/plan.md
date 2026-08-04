@@ -17,10 +17,10 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Redução de Densidade de Componentes Interativos
-- [ ] Task: Escrever teste (Red) que afirma padding/size reduzidos nos `styleOverrides`/`defaultProps` de `MuiButton`, `MuiOutlinedInput`/`MuiTextField`, `MuiTableCell` e `MuiChip` em `theme.ts`, e confirmar que falha
-- [ ] Task: Implementar (Green) os overrides necessários em `theme.ts`, preservando `borderRadius` e cores existentes, e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) que afirma padding/size reduzidos nos `styleOverrides`/`defaultProps` de `MuiButton`, `MuiOutlinedInput`/`MuiTextField`, `MuiTableCell` e `MuiChip` em `theme.ts`, e confirmar que falha `6bf42c18`
+- [x] Task: Implementar (Green) os overrides necessários em `theme.ts`, preservando `borderRadius` e cores existentes, e rodar os testes até passarem `6bf42c18`
+- [x] Task: Refatorar se necessário e re-rodar os testes `6bf42c18`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Validação Final e QA Visual
 - [ ] Task: Rodar `npm run lint`, `npm run typecheck` e `CI=true npm run test:run` no `gestao-paroquia-ui` e corrigir eventuais falhas
