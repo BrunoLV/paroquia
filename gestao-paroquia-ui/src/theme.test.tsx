@@ -82,3 +82,23 @@ test('theme should reduce the base spacing unit by ~12.5% for a more compact lay
   expect(theme.spacing(2)).toBe('14px');
 });
 
+test('theme should reduce button padding for a more compact layout', () => {
+  const buttonStyle: any = theme.components?.MuiButton?.styleOverrides?.root;
+  expect(buttonStyle?.padding).toBe('5px 14px');
+});
+
+test('theme should reduce outlined input padding for a more compact layout', () => {
+  const inputStyle: any = theme.components?.MuiOutlinedInput?.styleOverrides?.input;
+  expect(inputStyle?.padding).toBe('14px 12px');
+});
+
+test('theme should reduce table cell padding for a more compact layout', () => {
+  const cellStyle: any = theme.components?.MuiTableCell?.styleOverrides?.root;
+  expect(cellStyle?.padding).toBe('14px');
+});
+
+test('theme should reduce chip height for a more compact layout', () => {
+  const chipStyle: any = theme.components?.MuiChip?.styleOverrides?.root;
+  expect(chipStyle?.height).toBe('28px');
+});
+

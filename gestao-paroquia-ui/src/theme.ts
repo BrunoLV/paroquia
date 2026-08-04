@@ -93,6 +93,7 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: '10px',
+          padding: `${Math.round(6 * DENSITY_SCALE)}px ${Math.round(16 * DENSITY_SCALE)}px`,
         },
       },
     },
@@ -100,6 +101,9 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '10px',
+        },
+        input: {
+          padding: `${Math.round(16.5 * DENSITY_SCALE)}px ${Math.round(14 * DENSITY_SCALE)}px`,
         },
       },
     },
@@ -126,6 +130,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '8px',
+          height: `${Math.round(32 * DENSITY_SCALE)}px`,
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: `${Math.round(16 * DENSITY_SCALE)}px`,
         },
       },
     },
