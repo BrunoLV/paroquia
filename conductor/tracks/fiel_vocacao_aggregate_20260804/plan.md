@@ -11,7 +11,7 @@
 - [x] Task: Implementar o enum `Vocacao` em `fiel/domain/model/Vocacao.java`, seguindo o padrão de
       `TipoOrganizacao`/`PapelOrganizacional` (Green) `4770b04`
 - [x] Task: Refatorar se necessário — não necessário, implementação já segue o padrão estabelecido
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `980ad8d`
 
 ## Phase 2: Entidade `Fiel` e tabela `fieis`
 - [ ] Task: Escrever teste de integração (Red) que persiste um `Fiel` válido e falha ao tentar persistir
