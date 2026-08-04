@@ -15,10 +15,10 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Páginas de Listagem/CRUD (Ações Primárias)
-- [ ] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de ação primária das páginas (`Ativos.tsx`, `Projects.tsx`, `Calendar.tsx`, `ConselhosAtas.tsx`, `Settings.tsx`, `Reports.tsx`, `Aprovacoes.tsx`, `Membros`/`Organizacoes`/`Eventos` conforme aplicável), e confirmar que falha
-- [ ] Task: Implementar (Green) `startIcon`/`color` nesses botões conforme o mapeamento, e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) verificando ícone + cor esperados nos botões de ação primária das páginas (`Ativos.tsx`, `Projects.tsx`, `Calendar.tsx`, `ConselhosAtas.tsx`, `Settings.tsx`, `Reports.tsx`, `Aprovacoes.tsx`, `Membros`/`Organizacoes`/`Eventos` conforme aplicável), e confirmar que falha `c0fc6abd`
+- [x] Task: Implementar (Green) `startIcon`/`color` nesses botões conforme o mapeamento, e rodar os testes até passarem `c0fc6abd`
+- [x] Task: Refatorar se necessário e re-rodar os testes `c0fc6abd`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: IconButtons de Ação em Tabelas/Linhas
 - [ ] Task: Escrever teste (Red) verificando a cor semântica esperada (`color="secondary"` para editar, `color="error"` para excluir, etc.) nos `IconButton` de ação em linhas de tabela/lista, e confirmar que falha
