@@ -14,6 +14,8 @@ declare module '@mui/material/styles' {
   }
 }
 
+const DENSITY_SCALE = 0.875; // ~12.5% reduction, keeps body1 at the 14px accessibility floor
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -44,8 +46,44 @@ const theme = createTheme({
       'sans-serif',
     ].join(','),
     h1: {
-      fontSize: '2.5rem',
+      fontSize: `${2.5 * DENSITY_SCALE}rem`,
       fontWeight: 500,
+    },
+    h2: {
+      fontSize: `${3.75 * DENSITY_SCALE}rem`,
+    },
+    h3: {
+      fontSize: `${3 * DENSITY_SCALE}rem`,
+    },
+    h4: {
+      fontSize: `${2.125 * DENSITY_SCALE}rem`,
+    },
+    h5: {
+      fontSize: `${1.5 * DENSITY_SCALE}rem`,
+    },
+    h6: {
+      fontSize: `${1.25 * DENSITY_SCALE}rem`,
+    },
+    subtitle1: {
+      fontSize: `${1 * DENSITY_SCALE}rem`,
+    },
+    subtitle2: {
+      fontSize: `${0.875 * DENSITY_SCALE}rem`,
+    },
+    body1: {
+      fontSize: `${1 * DENSITY_SCALE}rem`,
+    },
+    body2: {
+      fontSize: `${0.875 * DENSITY_SCALE}rem`,
+    },
+    button: {
+      fontSize: `${0.875 * DENSITY_SCALE}rem`,
+    },
+    caption: {
+      fontSize: `${0.75 * DENSITY_SCALE}rem`,
+    },
+    overline: {
+      fontSize: `${0.75 * DENSITY_SCALE}rem`,
     },
   },
   components: {

@@ -55,5 +55,25 @@ test('theme should standardize links to underline on hover only', () => {
   expect(linkProps?.underline).toBe('hover');
 });
 
+test('theme should reduce heading font sizes by ~12.5% for a more compact layout', () => {
+  expect(theme.typography.h1.fontSize).toBe('2.1875rem');
+  expect(theme.typography.h2.fontSize).toBe('3.28125rem');
+  expect(theme.typography.h3.fontSize).toBe('2.625rem');
+  expect(theme.typography.h4.fontSize).toBe('1.859375rem');
+  expect(theme.typography.h5.fontSize).toBe('1.3125rem');
+  expect(theme.typography.h6.fontSize).toBe('1.09375rem');
+});
 
+test('theme should keep body1 font size at the 14px accessibility floor', () => {
+  expect(theme.typography.body1.fontSize).toBe('0.875rem');
+});
+
+test('theme should reduce secondary text font sizes for a more compact layout', () => {
+  expect(theme.typography.subtitle1.fontSize).toBe('0.875rem');
+  expect(theme.typography.subtitle2.fontSize).toBe('0.765625rem');
+  expect(theme.typography.body2.fontSize).toBe('0.765625rem');
+  expect(theme.typography.button.fontSize).toBe('0.765625rem');
+  expect(theme.typography.caption.fontSize).toBe('0.65625rem');
+  expect(theme.typography.overline.fontSize).toBe('0.65625rem');
+});
 
