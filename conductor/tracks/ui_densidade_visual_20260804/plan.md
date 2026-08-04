@@ -11,10 +11,10 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Redução de Espaçamento Base (até 20%)
-- [ ] Task: Escrever teste (Red) que afirma o novo valor de `theme.spacing(1)` reduzido em até 20% frente ao default do MUI (8px), e confirmar que falha
-- [ ] Task: Implementar (Green) o novo `spacing` em `theme.ts` e rodar os testes até passarem
-- [ ] Task: Refatorar se necessário e re-rodar os testes
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste (Red) que afirma o novo valor de `theme.spacing(1)` reduzido em até 20% frente ao default do MUI (8px), e confirmar que falha `c2ff25df`
+- [x] Task: Implementar (Green) o novo `spacing` em `theme.ts` e rodar os testes até passarem `c2ff25df`
+- [x] Task: Refatorar se necessário e re-rodar os testes `c2ff25df`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Redução de Densidade de Componentes Interativos
 - [ ] Task: Escrever teste (Red) que afirma padding/size reduzidos nos `styleOverrides`/`defaultProps` de `MuiButton`, `MuiOutlinedInput`/`MuiTextField`, `MuiTableCell` e `MuiChip` em `theme.ts`, e confirmar que falha
