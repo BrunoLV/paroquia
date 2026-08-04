@@ -9,6 +9,7 @@ target/
 **/target/
 out/
 **/out/
+!**/port/out/
 
 # Java Compilation Artifacts
 *.class
