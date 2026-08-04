@@ -14,15 +14,23 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `980ad8d`
 
 ## Phase 2: Entidade `Fiel` e tabela `fieis`
-- [ ] Task: Escrever teste de integração (Red) que persiste um `Fiel` válido e falha ao tentar persistir
-      dois `Fiel` com o mesmo `cpf`
-- [ ] Task: Criar migração Flyway `V0XX__create_fieis_table.sql` (schema `calendario`, todas as colunas de
-      FR1 obrigatórias, constraint de unicidade em `cpf`)
-- [ ] Task: Implementar `Fiel` (domain/model), `FielEntity` (infrastructure/persistence/entity, estendendo
+- [x] Task: Escrever teste de integração (Red) que persiste um `Fiel` válido e falha ao tentar persistir
+      dois `Fiel` com o mesmo `cpf` `a3ec410`
+- [x] Task: Criar migração Flyway `V056__create_fieis_table.sql` (schema `calendario`, todas as colunas de
+      FR1 obrigatórias, constraint de unicidade) `a3ec410`
+- [x] Task: Implementar `Fiel` (domain/model), `FielEntity` (infrastructure/persistence/entity, estendendo
       `BaseVersionedEntity`, aplicando `EncryptedStringConverter`/`EncryptedLocalDateConverter` em
-      `nome/cpf/telefone/dataNascimento/endereco`) e `FielJpaRepository` (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      `nome/cpf/telefone/dataNascimento/endereco`) e `FielJpaRepository` (Green) `a3ec410`
+- [x] Task: Refatorar se necessário — corrigido hint de lint (catch específico de `NoSuchAlgorithmException`
+      em vez de `Exception` genérico) `a3ec410`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+  **Desvio descoberto durante a implementação:** a constraint de unicidade não pôde ser aplicada
+  diretamente sobre `cpf`, pois `EncryptedStringConverter` usa IV aleatório por chamada (o mesmo CPF em
+  claro produz ciphertext diferente a cada gravação). Adicionada uma coluna `cpf_hash` (SHA-256
+  determinístico, não-reversível, mantida em sincronia por `FielEntity.setCpf()`), com a constraint
+  `UNIQUE` aplicada nela em vez de em `cpf`. Confirmado com o usuário antes de implementar — ver git note
+  do commit `a3ec410`.
 
 ## Phase 3: `UsuarioEntity.fielId` + auditoria (Fiel e Usuario)
 - [ ] Task: Escrever testes (Red) confirmando que `UsuarioEntity` aceita `fielId` nullable e possui os
