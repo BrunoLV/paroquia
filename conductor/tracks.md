@@ -313,8 +313,8 @@
 
 ---
 
-- [~] **Track: Enforcement de Qualidade do Harness de Testes (CI/CD, JaCoCo Threshold, Performance Tests)**
-*Link: [./tracks/harness_quality_enforcement_20260803/](./tracks/harness_quality_enforcement_20260803/)*
+- [x] **Track: Enforcement de Qualidade do Harness de Testes (CI/CD, JaCoCo Threshold, Performance Tests)**
+*Link: [./archive/harness_quality_enforcement_20260803/](./archive/harness_quality_enforcement_20260803/)*
 
 
 
