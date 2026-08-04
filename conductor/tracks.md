@@ -333,3 +333,8 @@
 
 
 
+
+---
+
+- [ ] **Track: Introduzir o agregado `Fiel` e o enum `Vocacao` no backend (Contexto Paroquial), fundação da iniciativa de aderência ao SDD de domínio**
+*Link: [./tracks/fiel_vocacao_aggregate_20260804/index.md](./tracks/fiel_vocacao_aggregate_20260804/index.md)*
