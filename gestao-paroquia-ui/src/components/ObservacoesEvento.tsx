@@ -275,10 +275,10 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirmId(null)} color="secondary" disabled={isDeleting}>
+          <Button onClick={() => setDeleteConfirmId(null)} color="secondary" startIcon={<CloseIcon />} disabled={isDeleting}>
             Cancelar
           </Button>
-          <Button onClick={handleDeleteNote} color="error" variant="contained" disabled={isDeleting} autoFocus>
+          <Button onClick={handleDeleteNote} color="error" variant="contained" startIcon={isDeleting ? undefined : <DeleteIcon />} disabled={isDeleting} autoFocus>
             {isDeleting ? <CircularProgress size={20} color="inherit" /> : 'Excluir'}
           </Button>
         </DialogActions>

@@ -47,4 +47,10 @@ describe('EditScopeDialog', () => {
     fireEvent.click(screen.getByText(/Todos os eventos da série/i));
     expect(mockOnSelect).toHaveBeenCalledWith('EDIT_ALL');
   });
+
+  it('renders the Cancelar button with a CloseIcon', () => {
+    render(<EditScopeDialog {...defaultProps} />);
+    const cancelButton = screen.getByText(/Cancelar/i).closest('button');
+    expect(cancelButton?.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+  });
 });

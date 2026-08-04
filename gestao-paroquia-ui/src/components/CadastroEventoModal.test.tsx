@@ -49,6 +49,14 @@ describe('CadastroEventoModal', () => {
     expect(screen.queryByText(/Criar Novo Evento/i)).not.toBeInTheDocument();
   });
 
+  it('renders Salvar and Cancelar buttons with their semantic icons', () => {
+    render(<CadastroEventoModal {...defaultProps} />);
+    const saveButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
+    expect(saveButton.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+  });
+
   it('renders all organizations for ADMIN', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     

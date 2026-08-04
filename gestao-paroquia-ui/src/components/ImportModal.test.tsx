@@ -46,6 +46,14 @@ describe('ImportModal', () => {
     expect(screen.getByText(/Importação de Registros em Lote/i)).toBeInTheDocument();
   });
 
+  it('renders Cancelar and Validar Arquivo buttons with their semantic icons', () => {
+    renderModal(<ImportModal open={true} onClose={mockOnClose} />);
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+    const validateButton = screen.getByRole('button', { name: /Validar Arquivo/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    expect(validateButton.querySelector('[data-testid="CheckIcon"]')).toBeInTheDocument();
+  });
+
   it('triggers CSV template download', async () => {
     mockDownloadTemplate.mockResolvedValueOnce(undefined);
     renderModal(<ImportModal open={true} onClose={mockOnClose} />);

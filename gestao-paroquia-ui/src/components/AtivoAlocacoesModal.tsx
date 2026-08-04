@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { ArrowBack as ArrowBackIcon, Block as BlockIcon, Close as CloseIcon } from '@mui/icons-material';
 import { cancelarAlocacao, getAlocacoesPorAtivo } from '../api/ativos';
 import { AtivoAlocacaoResponse } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
@@ -154,7 +155,7 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
                       </TableCell>
                       <TableCell align="right">
                         {isCancelavel(alocacao) && (
-                          <Button size="small" color="error" onClick={() => setCancelandoAlocacao(alocacao)}>
+                          <Button size="small" color="error" startIcon={<BlockIcon />} onClick={() => setCancelandoAlocacao(alocacao)}>
                             Cancelar Reserva
                           </Button>
                         )}
@@ -167,7 +168,7 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="secondary">Fechar</Button>
+          <Button onClick={onClose} color="secondary" startIcon={<CloseIcon />}>Fechar</Button>
         </DialogActions>
       </Dialog>
 
@@ -191,8 +192,8 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCancelandoAlocacao(null)} color="secondary">Voltar</Button>
-          <Button variant="contained" color="error" onClick={handleConfirmCancelamento}>
+          <Button onClick={() => setCancelandoAlocacao(null)} color="secondary" startIcon={<ArrowBackIcon />}>Voltar</Button>
+          <Button variant="contained" color="error" startIcon={<BlockIcon />} onClick={handleConfirmCancelamento}>
             Confirmar Cancelamento
           </Button>
         </DialogActions>
