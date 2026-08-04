@@ -16,13 +16,13 @@
 - [x] Task: Verificação e checkpoint da Fase 1 (conforme workflow.md)
 
 ### Phase 2 — Atualizar `conductor/tech-stack.md`
-- [ ] Task: Remover `@mui/x-charts` da lista de dependências ativas
-  - [ ] Editar a seção "UI Component Library & Styling" removendo a referência
-  - [ ] Verificar: `grep -n "x-charts" conductor/tech-stack.md` só aparece na nota histórica de migração, não como dependência ativa
-- [ ] Task: Remover `ThemeContext` da lista de Context API
-  - [ ] Editar a seção "State Management & Data Fetching → Context API" para listar apenas `AuthContext` e `NotificationContext`
-  - [ ] Verificar: `grep -n "ThemeContext" conductor/tech-stack.md` não retorna resultados
-- [ ] Task: Verificação e checkpoint da Fase 2 (conforme workflow.md)
+- [x] Task: Remover `@mui/x-charts` da lista de dependências ativas
+  - [x] Editar a seção "UI Component Library & Styling" removendo a referência
+  - [x] Verificar: `grep -n "x-charts" conductor/tech-stack.md` só aparece na nota histórica de migração, não como dependência ativa
+- [x] Task: Remover `ThemeContext` da lista de Context API
+  - [x] Editar a seção "State Management & Data Fetching → Context API" para listar apenas `AuthContext` e `NotificationContext`
+  - [x] Verificar: `grep -n "ThemeContext" conductor/tech-stack.md` não retorna resultados
+- [x] Task: Verificação e checkpoint da Fase 2 (conforme workflow.md)
 
 ### Phase 3 — Atualizar `conductor/product.md`
 - [ ] Task: Adicionar módulos de Patrimônio e Conselho às Core Features

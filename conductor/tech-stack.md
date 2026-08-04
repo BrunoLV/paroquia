@@ -42,12 +42,12 @@
 - **React 19 (via Vite 5):** Foundational library for building the user interface, bundled and served using Vite 5 for instant HMR startup and optimized production builds.
 
 ### UI Component Library & Styling
-- **Material UI (MUI 9):** Comprehensive suite of pre-built React components following Marian Fátima design tokens (`@emotion/react`, `@emotion/styled`, `@mui/x-charts`).
+- **Material UI (MUI 9):** Comprehensive suite of pre-built React components following Marian Fátima design tokens (`@emotion/react`, `@emotion/styled`).
 
 ### State Management & Data Fetching
 - **TanStack React Query 5:** Manages server state, data fetching, caching, synchronization, and optimistic UI updates.
 - **Axios:** Base HTTP client with `withCredentials` enabled for cookie session handling and response interceptors for 401 redirection.
-- **Context API:** Handles application-wide global UI state (`AuthContext`, `ThemeContext`, `NotificationContext`).
+- **Context API:** Handles application-wide global UI state (`AuthContext`, `NotificationContext`).
 
 ### Routing
 - **React Router (v6):** Client-side routing, protected routes, and permission-based page guards.
