@@ -27,6 +27,24 @@ A dedicated standardization pass (2026-07) unified header, loading, dialog, and 
   - `maxWidth`: `xs` for 0-1 field confirmations, `sm` for forms up to ~6 fields, `md` for more complex/table-containing dialogs.
   - Every `TextField`/`Select`/`FormControl` in a dialog gets `size="small"`.
   - Submit button labels: "Salvar" for create, "Salvar Alterações" for edit (swap on the component's existing edit/create mode flag), "Confirmar {Ação}" for destructive confirmations; Cancel buttons use `color="secondary"` unless intentionally destructive-adjacent (then `color="error"`, e.g. a veto/cancel confirm).
+* **Action button color & icon mapping (2026-08):** every `Button`/`IconButton` that performs an action MUST carry both a semantic `color` and a `startIcon` (or `icon`, for `IconButton`) from `@mui/icons-material` representing that action — mirroring the pattern already used for sidebar menu items in `Layout.tsx`. Do not ship a new action button without both.
+
+  | Action | `color` | Icon |
+  | :--- | :--- | :--- |
+  | Salvar / Confirmar (não-destrutivo) | `primary` | `SaveIcon` (Salvar) / `CheckIcon` (Confirmar genérico) |
+  | Cancelar / Fechar | `secondary` | `CloseIcon` |
+  | Voltar | `secondary` | `ArrowBackIcon` |
+  | Excluir / Remover | `error` | `DeleteIcon` |
+  | Vetar / Rejeitar | `error` | `BlockIcon` / `CloseIcon` |
+  | Adicionar / Novo / Criar | `primary` | `AddIcon` |
+  | Editar | `secondary` | `EditIcon` |
+  | Exportar / Download | `info` | `DownloadIcon` |
+  | Importar / Enviar | `primary` | `UploadIcon` / `SendIcon` |
+  | Aprovar / Homologar | `success` | `CheckCircleIcon` |
+  | Transferir / Alocar / Reservar | `primary` | `SwapHorizIcon` / `EventAvailableIcon` (conforme o contexto) |
+  | Sair (logout) | `inherit` | `LogoutIcon` |
+
+  For actions not covered above, pick the color by severity/intent (destructive → `error`, affirmative/creation → `primary`, neutral/dismissive → `secondary`, positive outcome → `success`) and an icon from `@mui/icons-material` that literally represents the action — never ship an icon-less or color-less (`Button` with no `color` prop defaulting to `primary` by accident) action button.
 * **Server state on pages:** every page's data fetching goes through TanStack Query (`useQuery`/`useMutation`), never raw `useState`+`useEffect`+manual `axios`/`api/*` calls — this was retrofitted onto `ConselhosAtas.tsx`, which is now the reference example for this pattern next to `Approvals.tsx`.
 
 ### 3. Test-Driven Development (TDD) Mandate

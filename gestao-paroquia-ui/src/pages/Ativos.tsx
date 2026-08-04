@@ -30,10 +30,15 @@ import {
 } from '@mui/material';
 import {
   Add as AddIcon,
+  Build as BuildIcon,
+  CheckCircle as CheckCircleIcon,
+  Close as CloseIcon,
   SwapHoriz as TransferIcon,
   EventAvailable as AllocateIcon,
+  EventBusy as DeallocateIcon,
   Inventory as InventoryIcon,
   MoreVert as MoreVertIcon,
+  Save as SaveIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -510,6 +515,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
+            <DeallocateIcon fontSize="small" sx={{ mr: 1 }} />
             Desalocar
           </MenuItem>
         )}
@@ -520,6 +526,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
+            <BuildIcon fontSize="small" sx={{ mr: 1 }} />
             Iniciar Manutenção
           </MenuItem>
         )}
@@ -530,6 +537,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
+            <CheckCircleIcon fontSize="small" sx={{ mr: 1 }} />
             Finalizar Manutenção
           </MenuItem>
         )}
@@ -612,8 +620,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)} color="secondary">Cancelar</Button>
-          <Button variant="contained" onClick={handleCreate}>
+          <Button onClick={() => setCreateDialogOpen(false)} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
+          <Button variant="contained" onClick={handleCreate} startIcon={<SaveIcon />}>
             Salvar
           </Button>
         </DialogActions>
@@ -651,8 +659,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setTransferDialogAtivo(null)} color="secondary">Cancelar</Button>
-          <Button variant="contained" onClick={handleTransferir}>
+          <Button onClick={() => setTransferDialogAtivo(null)} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
+          <Button variant="contained" onClick={handleTransferir} startIcon={<TransferIcon />}>
             Transferir
           </Button>
         </DialogActions>
@@ -727,8 +735,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeAlocarDialog} color="secondary">Cancelar</Button>
-          <Button variant="contained" onClick={handleAlocar}>
+          <Button onClick={closeAlocarDialog} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
+          <Button variant="contained" onClick={handleAlocar} startIcon={<AllocateIcon />}>
             Alocar
           </Button>
         </DialogActions>
@@ -775,8 +783,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeManutencaoDialog} color="secondary">Cancelar</Button>
-          <Button variant="contained" onClick={handleIniciarManutencao}>
+          <Button onClick={closeManutencaoDialog} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
+          <Button variant="contained" onClick={handleIniciarManutencao} startIcon={<BuildIcon />}>
             Salvar
           </Button>
         </DialogActions>

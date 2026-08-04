@@ -19,6 +19,7 @@ import {
     Switch,
     TextField,
 } from '@mui/material';
+import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
 import {useNotification} from '../context/NotificationContext';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
@@ -638,10 +639,10 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={isSubmitting} color="secondary" sx={{ fontWeight: 600, textTransform: 'none' }}>
+          <Button onClick={onClose} disabled={isSubmitting} color="secondary" startIcon={<CloseIcon />} sx={{ fontWeight: 600, textTransform: 'none' }}>
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600, textTransform: 'none' }}>
+          <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600, textTransform: 'none' }}>
             {initialEvent ? 'Salvar Alterações' : 'Salvar'}
           </Button>
         </DialogActions>

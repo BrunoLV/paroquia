@@ -378,6 +378,14 @@ test('renders liturgical season background colors and season labels on calendar 
   expect(screen.getAllByText(/TEMPO COMUM/i).length).toBeGreaterThan(0);
 });
 
+test('renders Solenidades and Exportar buttons with their semantic icon/color', async () => {
+  await renderCalendar();
+  const solemnitiesButton = screen.getByRole('button', { name: /Solenidades & Santoral/i });
+  const exportButton = screen.getByRole('button', { name: /^Exportar$/i });
+  expect(solemnitiesButton.querySelector('[data-testid="EventIcon"]')).toBeInTheDocument();
+  expect(exportButton.className).toContain('MuiButton-colorInfo');
+});
+
 test('opens solemnities dialog when clicking Solenidades & Santoral button', async () => {
   await renderCalendar();
   const btn = screen.getByRole('button', { name: /Solenidades & Santoral/i });

@@ -13,6 +13,7 @@ import {
   Box,
   Typography,
 } from '@mui/material';
+import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
 import { Organizacao } from '../api/types';
 
 interface CpcDecisaoModalProps {
@@ -132,6 +133,7 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             onClick={onClose}
             disabled={isSubmitting}
             color="secondary"
+            startIcon={<CloseIcon />}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Cancelar
@@ -140,6 +142,7 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             type="submit"
             variant="contained"
             color="primary"
+            startIcon={<SendIcon />}
             disabled={isSubmitting}
             sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
           >

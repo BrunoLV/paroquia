@@ -34,6 +34,19 @@ import {
 import {
   CalendarMonth as CalendarIcon,
   Category as CategoryIcon,
+  CloudUpload as UploadIcon,
+  Add as AddIcon,
+  Check as CheckIcon,
+  CheckCircle as CheckCircleIcon,
+  Close as CloseIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  Link as LinkIcon,
+  Lock as LockIcon,
+  LockOpen as LockOpenIcon,
+  Save as SaveIcon,
+  ToggleOff as ToggleOffIcon,
+  ToggleOn as ToggleOnIcon,
   Groups as GroupsIcon,
   LocationOn as LocationIcon,
   People as PeopleIcon,
@@ -583,6 +596,7 @@ const Settings = () => {
           <Button
             variant="outlined"
             color="primary"
+            startIcon={<UploadIcon />}
             onClick={() => setIsImportModalOpen(true)}
             sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
           >
@@ -667,6 +681,7 @@ const Settings = () => {
                                       variant="outlined"
                                       color="primary"
                                       size="small"
+                                      startIcon={<LockIcon />}
                                       onClick={() => handleClosePlanejamento(y.ano)}
                                       disabled={updateMutation.isPending || hasUnconcludedPriorYear}
                                       title={hasUnconcludedPriorYear ? "O ano anterior precisa estar concluído." : undefined}
@@ -679,6 +694,7 @@ const Settings = () => {
                                       variant="outlined"
                                       color="primary"
                                       size="small"
+                                      startIcon={<LockOpenIcon />}
                                       onClick={() => handleReopenPlanejamento(y.ano)}
                                       disabled={updateMutation.isPending}
                                     >
@@ -689,6 +705,7 @@ const Settings = () => {
                                     variant="contained"
                                     color="error"
                                     size="small"
+                                    startIcon={<CheckCircleIcon />}
                                     onClick={() => handleConcludeClick(y.ano)}
                                     disabled={updateMutation.isPending || hasUnconcludedPriorYear}
                                     title={hasUnconcludedPriorYear ? "O ano anterior precisa estar concluído." : undefined}
@@ -743,6 +760,7 @@ const Settings = () => {
                   <Button
                     variant="contained"
                     color="primary"
+                    startIcon={<AddIcon />}
                     onClick={() => {
                       setSelectedLocal(null);
                       setModalOpen(true);
@@ -795,14 +813,15 @@ const Settings = () => {
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                               <Button
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 size="small"
+                                startIcon={<EditIcon />}
                                 onClick={() => {
                                   setSelectedLocal(local);
                                   setModalOpen(true);
                                 }}
                                 disabled={toggleLocalStatusMutation.isPending}
-                               
+
                               >
                                 Editar
                               </Button>
@@ -810,9 +829,10 @@ const Settings = () => {
                                 variant="outlined"
                                 color={local.ativo ? 'error' : 'primary'}
                                 size="small"
+                                startIcon={local.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
                                 onClick={() => toggleLocalStatusMutation.mutate(local)}
                                 disabled={toggleLocalStatusMutation.isPending}
-                               
+
                               >
                                 {local.ativo ? 'Inativar' : 'Ativar'}
                               </Button>
@@ -889,6 +909,7 @@ const Settings = () => {
                     <Button
                       variant="contained"
                       color="primary"
+                      startIcon={<AddIcon />}
                       onClick={() => {
                         setSelectedOrg(null);
                         setOrgModalOpen(true);
@@ -941,13 +962,14 @@ const Settings = () => {
                           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                             <Button
                               variant="outlined"
-                              color="primary"
+                              color="secondary"
                               size="small"
+                              startIcon={<GroupsIcon />}
                               onClick={() => {
                                 setOrganizacaoSelecionadaParaMembros(org);
                                 setIsModalMembrosOrgAberto(true);
                               }}
-                             
+
                             >
                               Membros
                             </Button>
@@ -955,14 +977,15 @@ const Settings = () => {
                               <>
                                 <Button
                                   variant="outlined"
-                                  color="primary"
+                                  color="secondary"
                                   size="small"
+                                  startIcon={<EditIcon />}
                                   onClick={() => {
                                     setSelectedOrg(org);
                                     setOrgModalOpen(true);
                                   }}
                                   disabled={toggleOrgStatusMutation.isPending}
-                                 
+
                                 >
                                   Editar
                                 </Button>
@@ -970,9 +993,10 @@ const Settings = () => {
                                   variant="outlined"
                                   color={org.ativo ? 'error' : 'primary'}
                                   size="small"
+                                  startIcon={org.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
                                   onClick={() => toggleOrgStatusMutation.mutate(org)}
                                   disabled={toggleOrgStatusMutation.isPending}
-                                 
+
                                 >
                                   {org.ativo ? 'Inativar' : 'Ativar'}
                                 </Button>
@@ -1029,6 +1053,7 @@ const Settings = () => {
                   <Button
                     variant="contained"
                     color="primary"
+                    startIcon={<AddIcon />}
                     onClick={() => setIsAdminRegisterModalOpen(true)}
                     sx={{ fontWeight: 600 }}
                   >
@@ -1088,8 +1113,9 @@ const Settings = () => {
                               {!u.enabled && (
                                 <Button
                                   variant="contained"
-                                  color="primary"
+                                  color="success"
                                   size="small"
+                                  startIcon={<CheckCircleIcon />}
                                   onClick={() => approveUserMutation.mutate(u.id)}
                                   disabled={approveUserMutation.isPending}
                                   sx={{ fontWeight: 600 }}
@@ -1099,13 +1125,14 @@ const Settings = () => {
                               )}
                               <Button
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 size="small"
+                                startIcon={<LinkIcon />}
                                 onClick={() => {
                                   setSelectedUserForVinculos(u);
                                   setIsVinculosModalOpen(true);
                                 }}
-                               
+
                               >
                                 Gerenciar Vínculos
                               </Button>
@@ -1160,6 +1187,7 @@ const Settings = () => {
                   <Button
                     variant="contained"
                     color="primary"
+                    startIcon={<AddIcon />}
                     onClick={handleCreatePO}
                     sx={{ fontWeight: 600 }}
                   >
@@ -1185,10 +1213,11 @@ const Settings = () => {
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                               <Button
                                 variant="outlined"
-                                color="primary"
+                                color="secondary"
                                 size="small"
+                                startIcon={<EditIcon />}
                                 onClick={() => handleEditPO(po)}
-                               
+
                               >
                                 Editar
                               </Button>
@@ -1196,13 +1225,14 @@ const Settings = () => {
                                 variant="outlined"
                                 color="error"
                                 size="small"
+                                startIcon={<DeleteIcon />}
                                 onClick={() => {
                                   if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
                                     deletePOMutation.mutate(po.id);
                                   }
                                 }}
                                 disabled={deletePOMutation.isPending}
-                               
+
                               >
                                 Excluir
                               </Button>
@@ -1278,6 +1308,7 @@ const Settings = () => {
                             variant="text"
                             color="error"
                             size="small"
+                            startIcon={<DeleteIcon />}
                             onClick={() => removeVinculoMutation.mutate(m.id)}
                             disabled={removeVinculoMutation.isPending}
                             sx={{ textTransform: 'none' }}
@@ -1387,6 +1418,8 @@ const Settings = () => {
 
                 <Button
                   variant="contained"
+                  color="primary"
+                  startIcon={addVinculoMutation.isPending ? undefined : <AddIcon />}
                   onClick={() => {
                     const selectedOrgObj = orgs.find((o) => o.id === newVinculoOrgId);
                     if (!selectedOrgObj) return;
@@ -1421,7 +1454,8 @@ const Settings = () => {
               setNewVinculoPapel('');
               setNewVinculoChurchId('');
             }}
-            color="inherit"
+            color="secondary"
+            startIcon={<CloseIcon />}
           >
             Fechar
           </Button>
@@ -1483,6 +1517,7 @@ const Settings = () => {
                             variant="text"
                             color="error"
                             size="small"
+                            startIcon={<DeleteIcon />}
                             onClick={() => removeMembroOrgMutation.mutate({ userId: m.usuarioId, vinculoId: m.vinculoId })}
                             disabled={removeMembroOrgMutation.isPending}
                             sx={{ textTransform: 'none' }}
@@ -1584,6 +1619,8 @@ const Settings = () => {
 
                 <Button
                   variant="contained"
+                  color="primary"
+                  startIcon={addMembroOrgMutation.isPending ? undefined : <AddIcon />}
                   onClick={() => {
                     if (!organizacaoSelecionadaParaMembros) return;
                     if (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') {
@@ -1620,7 +1657,8 @@ const Settings = () => {
               setNovoMembroOrgPapel('');
               setNovoMembroOrgIgrejaId('');
             }}
-            color="inherit"
+            color="secondary"
+            startIcon={<CloseIcon />}
           >
             Fechar
           </Button>
@@ -1777,13 +1815,15 @@ const Settings = () => {
               setAdminRegisterCrismado(false);
               setAdminRegisterCasadoIgrejaCatolica(false);
             }}
-            color="inherit"
+            color="secondary"
+            startIcon={<CloseIcon />}
           >
             Cancelar
           </Button>
           <Button
             variant="contained"
             color="primary"
+            startIcon={registerUserMutation.isPending ? undefined : <SaveIcon />}
             disabled={
               !adminRegisterNome.trim() ||
               !adminRegisterUsername.trim() ||
@@ -1826,13 +1866,14 @@ const Settings = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)} color="inherit">
+          <Button onClick={() => setConfirmOpen(false)} color="secondary" startIcon={<CloseIcon />}>
             Cancelar
           </Button>
           <Button
             onClick={handleConfirmConclude}
             color="error"
             variant="contained"
+            startIcon={<CheckIcon />}
             disabled={updateMutation.isPending}
           >
             Confirmar
@@ -1922,13 +1963,14 @@ const Settings = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setPoModalOpen(false)} color="inherit">
+            <Button onClick={() => setPoModalOpen(false)} color="secondary" startIcon={<CloseIcon />}>
               Cancelar
             </Button>
             <Button
               type="submit"
               variant="contained"
               color="primary"
+              startIcon={(createPOMutation.isPending || updatePOMutation.isPending) ? undefined : <SaveIcon />}
               disabled={createPOMutation.isPending || updatePOMutation.isPending}
               sx={{ fontWeight: 600 }}
             >

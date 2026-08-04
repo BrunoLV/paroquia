@@ -12,7 +12,12 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
-import {Event as EventIcon, EventRepeat as EventRepeatIcon, Update as UpdateIcon,} from '@mui/icons-material';
+import {
+    Close as CloseIcon,
+    Event as EventIcon,
+    EventRepeat as EventRepeatIcon,
+    Update as UpdateIcon,
+} from '@mui/icons-material';
 
 export type EditScope = 'ONLY_THIS' | 'THIS_AND_FOLLOWING' | 'EDIT_ALL';
 
@@ -79,7 +84,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" sx={{ textTransform: 'none' }}>
+        <Button onClick={onClose} color="secondary" startIcon={<CloseIcon />} sx={{ textTransform: 'none' }}>
           Cancelar
         </Button>
       </DialogActions>

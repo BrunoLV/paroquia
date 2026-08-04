@@ -15,6 +15,7 @@ import {
     TextField,
 } from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {Organizacao, PastoralMovimentoOficial} from '../api/types';
 import {Usuario} from '../api/usuarios';
 import {getOrganizacaoMembros} from '../api/organizacoes';
@@ -317,6 +318,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             onClick={onClose}
             disabled={isPending}
             color="secondary"
+            startIcon={<CloseIcon />}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Cancelar
@@ -325,6 +327,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             type="submit"
             variant="contained"
             color="primary"
+            startIcon={<SaveIcon />}
             disabled={isPending}
             sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
           >

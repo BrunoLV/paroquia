@@ -23,7 +23,15 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import {Close as CloseIcon, EventNote as EventNoteIcon, FactCheck as FactCheckIcon, WorkHistory as WorkHistoryIcon} from '@mui/icons-material';
+import {
+    Cancel as CancelIcon,
+    CheckCircle as CheckCircleIcon,
+    Close as CloseIcon,
+    EventNote as EventNoteIcon,
+    FactCheck as FactCheckIcon,
+    Visibility as VisibilityIcon,
+    WorkHistory as WorkHistoryIcon,
+} from '@mui/icons-material';
 import {decideAprovacao, getAprovacoes} from '../api/aprovacoes';
 import {decideAprovacaoProjeto, getAprovacoesProjeto} from '../api/projects';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
@@ -353,7 +361,9 @@ const Aprovacoes = () => {
                           <TableCell align="right">
                             <Button
                               variant="outlined"
+                              color="secondary"
                               size="small"
+                              startIcon={<VisibilityIcon />}
                               onClick={() => setAprovacaoSelecionada(approval)}
                               sx={{ textTransform: 'none' }}
                             >
@@ -432,7 +442,9 @@ const Aprovacoes = () => {
                         <TableCell align="right">
                           <Button
                             variant="outlined"
+                            color="secondary"
                             size="small"
+                            startIcon={<VisibilityIcon />}
                             onClick={() => setAprovacaoProjetoSelecionada(approval)}
                             sx={{ textTransform: 'none' }}
                           >
@@ -559,6 +571,7 @@ const Aprovacoes = () => {
                     variant="contained"
                     color="success"
                     fullWidth
+                    startIcon={<CheckCircleIcon />}
                     onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'APROVADA', observacao })}
                     disabled={decisionMutation.isPending}
                   >
@@ -568,6 +581,7 @@ const Aprovacoes = () => {
                     variant="outlined"
                     color="error"
                     fullWidth
+                    startIcon={<CancelIcon />}
                     onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'REPROVADA', observacao })}
                     disabled={decisionMutation.isPending}
                   >
@@ -679,6 +693,7 @@ const Aprovacoes = () => {
                     variant="contained"
                     color="success"
                     fullWidth
+                    startIcon={<CheckCircleIcon />}
                     onClick={() => projectDecisionMutation.mutate({ id: aprovacaoProjetoSelecionada.id, aprovado: true, observacao })}
                     disabled={projectDecisionMutation.isPending}
                   >
@@ -688,6 +703,7 @@ const Aprovacoes = () => {
                     variant="outlined"
                     color="error"
                     fullWidth
+                    startIcon={<CancelIcon />}
                     onClick={() => projectDecisionMutation.mutate({ id: aprovacaoProjetoSelecionada.id, aprovado: false, observacao })}
                     disabled={projectDecisionMutation.isPending}
                   >

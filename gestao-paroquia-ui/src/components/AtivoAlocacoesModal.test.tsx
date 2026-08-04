@@ -47,6 +47,17 @@ describe('AtivoAlocacoesModal', () => {
     expect(screen.getByText(/Nenhuma alocação ou manutenção registrada/i)).toBeInTheDocument();
   });
 
+  it('renders the Fechar button with a CloseIcon', async () => {
+    mockedGetAlocacoes.mockResolvedValue([]);
+
+    await act(async () => {
+      renderModal();
+    });
+
+    const closeButton = screen.getByRole('button', { name: /Fechar/i });
+    expect(closeButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+  });
+
   it('lists allocations with type, period and status', async () => {
     mockedGetAlocacoes.mockResolvedValue([
       {

@@ -26,8 +26,12 @@ import {
     Typography,
 } from '@mui/material';
 import {
+    ArrowBack as ArrowBackIcon,
+    ArrowForward as ArrowForwardIcon,
+    Check as CheckIcon,
     CheckCircle as ValidIcon,
     CloudUpload as UploadIcon,
+    Close as CloseIcon,
     Download as DownloadIcon,
     Error as ErrorIcon,
 } from '@mui/icons-material';
@@ -253,11 +257,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleCloseModal} color="secondary" sx={{ textTransform: 'none' }}>
+        <Button onClick={handleCloseModal} color="secondary" startIcon={<CloseIcon />} sx={{ textTransform: 'none' }}>
           Cancelar
         </Button>
         {activeStep > 0 && (
-          <Button onClick={() => setActiveStep(activeStep - 1)} sx={{ textTransform: 'none' }}>
+          <Button onClick={() => setActiveStep(activeStep - 1)} color="secondary" startIcon={<ArrowBackIcon />} sx={{ textTransform: 'none' }}>
             Voltar
           </Button>
         )}
@@ -266,6 +270,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             variant="contained"
             onClick={handleProceedToValidation}
             disabled={!selectedFile || isValidating}
+            startIcon={isValidating ? undefined : <CheckIcon />}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             {isValidating ? <CircularProgress size={24} /> : 'Validar Arquivo'}
@@ -276,6 +281,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             variant="contained"
             onClick={() => setActiveStep(2)}
             disabled={validationResult?.totalValidos === 0}
+            startIcon={<ArrowForwardIcon />}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Avançar para Confirmação
@@ -287,6 +293,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             color="primary"
             onClick={handleConfirmImport}
             disabled={isConfirming}
+            startIcon={isConfirming ? undefined : <UploadIcon />}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             {isConfirming ? <CircularProgress size={24} /> : 'Confirmar Importação'}

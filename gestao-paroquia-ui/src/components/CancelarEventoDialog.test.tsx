@@ -61,4 +61,12 @@ describe('CancelarEventoDialog', () => {
     expect(screen.getByText(/Voltar/i)).toBeDisabled();
     expect(screen.getByText(/Cancelando.../i)).toBeDisabled();
   });
+
+  it('renders Voltar and Confirmar Cancelamento buttons with their semantic icons', () => {
+    render(<CancelarEventoDialog {...defaultProps} />);
+    const backButton = screen.getByRole('button', { name: /Voltar/i });
+    const confirmButton = screen.getByRole('button', { name: /Confirmar Cancelamento/i });
+    expect(backButton.querySelector('[data-testid="ArrowBackIcon"]')).toBeInTheDocument();
+    expect(confirmButton.querySelector('[data-testid="BlockIcon"]')).toBeInTheDocument();
+  });
 });

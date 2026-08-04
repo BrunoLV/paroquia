@@ -18,6 +18,7 @@ import {
     TextField,
 } from '@mui/material';
 
+import {Close as CloseIcon, Download as DownloadIcon} from '@mui/icons-material';
 import {Organizacao} from '../api/types';
 
 export interface ExportCalendarDialogProps {
@@ -224,12 +225,13 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" size="small" sx={{ textTransform: 'none' }}>Cancelar</Button>
+        <Button onClick={onClose} color="secondary" size="small" startIcon={<CloseIcon />} sx={{ textTransform: 'none' }}>Cancelar</Button>
         <Button
           onClick={handleExport}
           variant="contained"
           color="primary"
           size="small"
+          startIcon={<DownloadIcon />}
           disabled={opcao === 'PERIODO' && (!dataInicio || !dataFim)}
           sx={{ textTransform: 'none', fontWeight: 600 }}
         >

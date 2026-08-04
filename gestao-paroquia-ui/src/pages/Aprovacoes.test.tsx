@@ -197,6 +197,30 @@ describe('Aprovacoes page', () => {
     expect(screen.getByText('Título do Evento:')).toBeInTheDocument();
   });
 
+  test('renders Aprovar and Rejeitar buttons with their semantic icons', async () => {
+    mockGetAprovacoes.mockResolvedValueOnce({
+      content: mockAprovacoes,
+      totalElements: 2,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
+    fireEvent.click(viewButtons[0]);
+
+    const approveButton = screen.getByRole('button', { name: /Aprovar/i });
+    const rejectButton = screen.getByRole('button', { name: /Rejeitar/i });
+    expect(approveButton.querySelector('[data-testid="CheckCircleIcon"]')).toBeInTheDocument();
+    expect(rejectButton.querySelector('[data-testid="CancelIcon"]')).toBeInTheDocument();
+  });
+
   test('calls decideAprovacao with APROVADA status and comment on approve', async () => {
     mockGetAprovacoes.mockResolvedValue({
       content: mockAprovacoes,

@@ -38,4 +38,13 @@ describe('ReportExportButtons', () => {
     expect(screen.getByRole('button', { name: /exportar csv/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /exportar pdf/i })).toBeDisabled();
   });
+
+  it('uses the semantic info color instead of hardcoded hex colors', () => {
+    render(<ReportExportButtons {...defaultProps} />);
+
+    const csvButton = screen.getByRole('button', { name: /exportar csv/i });
+    const pdfButton = screen.getByRole('button', { name: /exportar pdf/i });
+    expect(csvButton.className).toContain('MuiButton-colorInfo');
+    expect(pdfButton.className).toContain('MuiButton-colorInfo');
+  });
 });

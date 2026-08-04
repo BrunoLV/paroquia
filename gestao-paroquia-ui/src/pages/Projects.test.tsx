@@ -175,6 +175,21 @@ describe('Projects Page', () => {
     expect(within(listbox).queryByText('Pastoral da Juventude')).not.toBeInTheDocument();
   });
 
+  test('renders create dialog Cancelar and Salvar buttons with semantic icons', async () => {
+    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    await renderProjects(adminUser);
+
+    const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
+    await act(async () => {
+      newProjectBtn.click();
+    });
+
+    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
+    const saveButton = screen.getByRole('button', { name: /^Salvar$/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    expect(saveButton.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
+  });
+
   test('shows error notification when save project fails', async () => {
     const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
     await renderProjects(adminUser);

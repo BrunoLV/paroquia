@@ -14,6 +14,7 @@ import {
     Select,
     TextField,
 } from '@mui/material';
+import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {Local} from '../api/types';
 import {getOrganizacoes} from '../api/organizacoes';
 
@@ -202,6 +203,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             onClick={onClose}
             disabled={isPending}
             color="secondary"
+            startIcon={<CloseIcon />}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Cancelar
@@ -210,6 +212,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
             type="submit"
             variant="contained"
             color="primary"
+            startIcon={<SaveIcon />}
             disabled={isPending}
             sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
           >

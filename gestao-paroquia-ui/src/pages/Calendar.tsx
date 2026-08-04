@@ -28,6 +28,7 @@ import {
     ChevronRight,
     Description as DescriptionIcon,
     Download as DownloadIcon,
+    Event as EventIcon,
     FormatListBulleted as ListIcon,
     Groups as PeopleIcon,
     LocationOn as LocationIcon,
@@ -660,6 +661,7 @@ const Calendar = () => {
             <Button
               variant="outlined"
               color="secondary"
+              startIcon={<EventIcon />}
               onClick={() => setIsSolemnitiesOpen(true)}
               sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
             >
@@ -667,7 +669,7 @@ const Calendar = () => {
             </Button>
             <Button
               variant="outlined"
-              color="primary"
+              color="info"
               startIcon={<DownloadIcon />}
               onClick={() => setIsExportOpen(true)}
               sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}

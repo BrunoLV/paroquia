@@ -31,6 +31,7 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useAuth } from '../auth/AuthContext';
@@ -331,10 +332,10 @@ export const ConselhosAtas: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setVetoDialogItem(null)} color="secondary">
+          <Button onClick={() => setVetoDialogItem(null)} color="secondary" startIcon={<CloseIcon />}>
             Cancelar
           </Button>
-          <Button onClick={handleConfirmVeto} variant="contained" color="error">
+          <Button onClick={handleConfirmVeto} variant="contained" color="error" startIcon={<CancelIcon />}>
             Confirmar Veto
           </Button>
         </DialogActions>

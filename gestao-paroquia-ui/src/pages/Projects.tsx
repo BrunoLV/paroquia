@@ -39,8 +39,12 @@ import {
     Cancel as CancelIcon,
     Business as BusinessIcon,
     CalendarToday as CalendarIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
     Edit as EditIcon,
     Info as InfoIcon,
+    PlayArrow as PlayArrowIcon,
+    Save as SaveIcon,
     Visibility as VisibilityIcon,
     Warning as WarningIcon,
 } from '@mui/icons-material';
@@ -539,8 +543,8 @@ const Projects = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDialogOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>Cancelar</Button>
-            <Button type="submit" variant="contained" color="primary" sx={{ fontWeight: 600 }}>
+            <Button onClick={() => setDialogOpen(false)} color="secondary" startIcon={<CloseIcon />} sx={{ fontWeight: 600 }}>Cancelar</Button>
+            <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} sx={{ fontWeight: 600 }}>
               {isEditMode ? 'Salvar Alterações' : 'Salvar'}
             </Button>
           </DialogActions>
@@ -747,6 +751,7 @@ const Projects = () => {
                   <Button
                     variant="contained"
                     color="success"
+                    startIcon={<PlayArrowIcon />}
                     onClick={() => handleOpenTransition('INICIAR')}
                     sx={{ textTransform: 'none' }}
                   >
@@ -757,6 +762,7 @@ const Projects = () => {
                   <Button
                     variant="contained"
                     color="primary"
+                    startIcon={<CheckIcon />}
                     onClick={() => handleOpenTransition('CONCLUIR')}
                     sx={{ textTransform: 'none' }}
                   >
@@ -767,6 +773,7 @@ const Projects = () => {
                   <Button
                     variant="contained"
                     color="error"
+                    startIcon={<CancelIcon />}
                     onClick={() => handleOpenTransition('CANCELAR')}
                     sx={{ textTransform: 'none' }}
                   >
@@ -774,7 +781,7 @@ const Projects = () => {
                   </Button>
                 )}
               </Box>
-              <Button variant="outlined" onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none' }}>
+              <Button variant="outlined" color="secondary" startIcon={<CloseIcon />} onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none' }}>
                 Fechar
               </Button>
             </Box>
@@ -818,6 +825,7 @@ const Projects = () => {
           <Button
             onClick={() => setTransitionDialogOpen(false)}
             color="secondary"
+            startIcon={<CloseIcon />}
             disabled={isTransitioning}
             sx={{ fontWeight: 600 }}
           >
@@ -827,6 +835,7 @@ const Projects = () => {
             onClick={handleTransitionSubmit}
             variant="contained"
             color={transitionType === 'CANCELAR' ? 'error' : 'primary'}
+            startIcon={isTransitioning ? undefined : <CheckIcon />}
             disabled={isTransitioning}
             sx={{ fontWeight: 600 }}
           >

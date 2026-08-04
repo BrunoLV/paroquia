@@ -18,37 +18,24 @@ const ReportExportButtons: React.FC<ReportExportButtonsProps> = ({
     <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
       <Button
         variant="contained"
+        color="info"
         size="small"
         disabled={isExporting}
         onClick={onExportCSV}
         startIcon={<FileDownloadIcon />}
-        sx={{
-          
-          backgroundColor: '#1a237e',
-          '&:hover': { backgroundColor: '#0d1757' },
-          textTransform: 'none',
-          fontWeight: 600,
-          px: 2,
-        }}
+        sx={{ textTransform: 'none', fontWeight: 600, px: 2 }}
       >
         Exportar CSV
       </Button>
 
       <Button
         variant="outlined"
+        color="info"
         size="small"
         disabled={isExporting}
         onClick={onExportPDF}
         startIcon={<PictureAsPdfIcon />}
-        sx={{
-          
-          color: '#1a237e',
-          borderColor: '#1a237e',
-          '&:hover': { borderColor: '#0d1757', backgroundColor: 'rgba(26,35,126,0.04)' },
-          textTransform: 'none',
-          fontWeight: 600,
-          px: 2,
-        }}
+        sx={{ textTransform: 'none', fontWeight: 600, px: 2 }}
       >
         Exportar PDF
       </Button>

@@ -106,4 +106,31 @@ describe('ObservacoesEvento Component', () => {
     expect(editButtons.length).toBeGreaterThan(0);
     expect(deleteButtons.length).toBeGreaterThan(0);
   });
+
+  test('renders the edit IconButton with the secondary semantic color', async () => {
+    await renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Esta é uma nota minha')).toBeInTheDocument();
+    });
+
+    const editButtons = screen.getAllByRole('button', { name: /edit/i });
+    expect(editButtons[0].className).toContain('MuiIconButton-colorSecondary');
+  });
+
+  test('renders Cancelar and Excluir buttons with semantic icons in the delete confirmation dialog', async () => {
+    await renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Esta é uma nota minha')).toBeInTheDocument();
+    });
+
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    fireEvent.click(deleteButtons[0]);
+
+    const cancelButton = await screen.findByRole('button', { name: /^Cancelar$/i });
+    const confirmDeleteButton = screen.getByRole('button', { name: /^Excluir$/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    expect(confirmDeleteButton.querySelector('[data-testid="DeleteIcon"]')).toBeInTheDocument();
+  });
 });

@@ -9,6 +9,7 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
+import {ArrowBack as ArrowBackIcon, Block as BlockIcon} from '@mui/icons-material';
 import {useNotification} from '../context/NotificationContext';
 
 interface CancelarEventoDialogProps {
@@ -73,13 +74,14 @@ const CancelarEventoDialog: React.FC<CancelarEventoDialogProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSubmitting} color="secondary">
+          <Button onClick={handleClose} disabled={isSubmitting} color="secondary" startIcon={<ArrowBackIcon />}>
             Voltar
           </Button>
-          <Button 
+          <Button
             type="submit"
-            variant="contained" 
-            color="error" 
+            variant="contained"
+            color="error"
+            startIcon={<BlockIcon />}
             disabled={isSubmitting}
             sx={{ fontWeight: 600 }}
           >
