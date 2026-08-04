@@ -14,6 +14,8 @@ projeto @gestao-paroquia-ui será um app web para permitir que os usuários inte
 - **Batch Data Importation & Template Downloads:** Support for bulk uploading Membros, Usuários, Organizações, and Eventos via CSV and Excel (.xlsx) files, line-by-line validation preview, and sample template downloads.
 - **Approval Workflows UI:** Interfaces to review, approve, or reject pending requests.
 - **Management Modules:** CRUD interfaces for managing events, members, and resources.
+- **Patrimônio (Asset Management):** Registration of parish assets, allocation/reservation per event, transfer between organizations, and maintenance tracking with ociosidade (idleness) metrics.
+- **Conselho (CPC Governance):** Registration and homologation of Conselho Paroquial para Assuntos Econômicos (CPC) decisions, with historical tracking of opinions and approvals.
 
 ## Goals & Objectives
 - **Process Automation:** Streamline administrative tasks and reduce manual paperwork.

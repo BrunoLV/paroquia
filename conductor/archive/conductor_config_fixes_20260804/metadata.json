@@ -1,0 +1,8 @@
+{
+  "track_id": "conductor_config_fixes_20260804",
+  "type": "chore",
+  "status": "completed",
+  "created_at": "2026-08-04T00:00:00Z",
+  "updated_at": "2026-08-04T00:30:00Z",
+  "description": "Correção de inconsistências de configuração e documentação do Conductor (conductor.yml, tech-stack.md, product.md, tracks/ residual)"
+}

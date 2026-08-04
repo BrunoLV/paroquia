@@ -316,6 +316,11 @@
 - [x] **Track: Enforcement de Qualidade do Harness de Testes (CI/CD, JaCoCo Threshold, Performance Tests)**
 *Link: [./archive/harness_quality_enforcement_20260803/](./archive/harness_quality_enforcement_20260803/)*
 
+---
+
+- [x] **Track: Correção de Inconsistências do Conductor (conductor.yml, tech-stack.md, product.md, residual de track)**
+*Link: [./archive/conductor_config_fixes_20260804/](./archive/conductor_config_fixes_20260804/)*
+
 
 
 

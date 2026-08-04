@@ -1,6 +1,6 @@
-# 🎨 Paróquia - Frontend (`gestao-paroquia-ui`)
+# 🎨 Paróquia — Frontend (`gestao-paroquia-ui`)
 
-Interface administrativa moderna desenvolvida em **React 19** para o sistema de gestão da Paróquia Nossa Senhora de Fátima.
+Interface administrativa desenvolvida em **React 19** para o sistema de gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima. Cobre agendamento de eventos, aprovações, cadastro de membros, organograma, controle de patrimônio, importação/exportação de dados e um dashboard de métricas executivas — tudo consumindo a API REST do [backend](../gestao-paroquia).
 
 ---
 
@@ -8,8 +8,10 @@ Interface administrativa moderna desenvolvida em **React 19** para o sistema de 
 
 - **Framework UI:** **React 19** (`react` / `react-dom`)
 - **Linguagem:** **TypeScript 5**
-- **Bundler & Dev Server:** **Vite 5** (HMR ultra-rápido e suporte nativo a ES Modules)
-- **UI Kit & Estilização:** **Material UI (MUI 9)**, Emotion (`@emotion/react`, `@emotion/styled`), `@mui/x-charts`
+- **Bundler & Dev Server:** **Vite 5** (Hot Module Replacement ultra-rápido e suporte nativo a ES Modules)
+- **UI Kit & Estilização:** **Material UI (MUI 9)**, Emotion (`@emotion/react`, `@emotion/styled`)
+- **Gráficos:** **ApexCharts** (`apexcharts` / `react-apexcharts`) e **Recharts**
+- **Organograma:** `@dabeng/react-orgchart`
 - **Gerenciamento de Estado de Servidor:** **TanStack React Query 5** (cache, re-fetching e sincronização)
 - **Cliente HTTP:** **Axios** (configurado com `withCredentials: true`, interceptors de 401 e tratamento centralizado)
 - **Roteamento:** **React Router DOM 6** (rotas protegidas e controle de acesso por permissões)
@@ -55,7 +57,7 @@ npm run preview
 
 ## 🌍 Variáveis de Ambiente
 
-O projeto utiliza variáveis prefixadas com `VITE_` gerenciadas via Vite:
+O projeto utiliza variáveis prefixadas com `VITE_` gerenciadas via Vite (declare-as em um arquivo `.env` local, ou use o `.env.example` da raiz do monorepo como referência):
 
 | Variável | Descrição | Valor Padrão (Local) |
 | :--- | :--- | :--- |
@@ -72,9 +74,17 @@ src/
 ├── api/                  # Cliente Axios, QueryProvider e módulos de integração por domínio
 │   ├── client.ts         # Instância base do Axios com interceptors de resposta
 │   ├── QueryProvider.tsx # Provider do TanStack React Query
-│   ├── approvals.ts      # Integração com o bounded context de aprovações
+│   ├── aprovacoes.ts     # Integração com o bounded context de aprovações
+│   ├── ativos.ts         # Integração com o bounded context de patrimônio (ativos)
+│   ├── conselhos.ts      # Integração com decisões/homologações do Conselho (CPC)
+│   ├── eventos.ts        # Integração com o calendário de eventos paroquiais
+│   ├── locais.ts         # Integração com o cadastro de espaços físicos
 │   ├── membros.ts        # Integração com o bounded context de membros
+│   ├── metricas.ts       # Integração com métricas estratégicas do dashboard
 │   ├── organizacoes.ts   # Integração com a estrutura organizacional
+│   ├── pastoraisOficiais.ts # Integração com pastorais/movimentos oficiais
+│   ├── projects.ts       # Integração com projetos paroquiais
+│   ├── solenidades.ts    # Integração com o calendário litúrgico
 │   ├── usuarios.ts       # Integração com gestão de usuários (IAM)
 │   └── importacao.ts     # Processamento de arquivos Excel/PDF
 ├── auth/                 # Contexto de autenticação, JWT e verificação de autorização/roles
@@ -82,13 +92,15 @@ src/
 │   ├── ProtectedRoute.tsx# Componente de guarda de rota protegida
 │   └── permissions.ts   # Utilitários de matriz de permissões por papel
 ├── components/           # Componentes reutilizáveis de interface
-│   ├── layout/           # Sidebar, Navbar e Container base
-│   ├── modals/           # Modais de cadastro, edição e confirmação
-│   └── OrganogramaCanvas # Renderizador interativo do organograma paroquial
-├── context/              # Contextos globais da aplicação React (Auth, Tema)
-├── hooks/                # Hooks customizados React (ex: exportação de organograma)
-├── pages/                # Páginas e visões da aplicação (Dashboard, Agendamentos, Aprovações, etc.)
-├── utils/                # Utilitários de exportação (CSV, PDF) e formatadores de data/moeda
+│   ├── dashboard/         # Widgets do Dashboard (cards, gráfico de distribuição, timeline semanal, aprovações pendentes)
+│   ├── organograma/       # Exportação/renderização do organograma paroquial
+│   ├── reports/           # Filtros, gráficos de volume e exportação de relatórios
+│   └── ...                # Modais e diálogos de cadastro/edição (CadastroEventoModal, ImportModal, AtivoAlocacoesModal, CpcDecisaoModal, RecurrenceForm etc.)
+├── context/              # Contextos globais da aplicação React (ex: NotificationContext)
+├── hooks/                # Hooks customizados React (useMetricasEstrategicas, useOrganogramaExport)
+├── pages/                # Páginas da aplicação: Dashboard, Calendar, Aprovacoes, Ativos, ConselhosAtas, Organograma, Projects, Reports, Settings, Login
+├── types/                # Definições de tipos auxiliares (ex: react-orgchart.d.ts)
+├── utils/                # Utilitários de exportação (CSV, PDF), calendário litúrgico e formatadores
 ├── theme.ts              # Configuração centralizada do tema Material UI (paleta Fátima, tipografia)
 ├── setupTests.ts         # Setup do ambiente de testes Vitest com @testing-library/jest-dom
 ├── AppRoutes.tsx         # Mapeamento centralizado de rotas da aplicação
@@ -99,9 +111,12 @@ src/
 
 ## 🧪 Estratégia de Testes
 
-Os testes da interface são executados com **Vitest** e **React Testing Library**, cobrindo:
-- Renderização e comportamento de modais e formulários.
-- Integração de páginas com a API utilizando mocks de respostas.
-- Guardas de autenticação e rotas protegidas.
-- Utilitários de exportação e manipulação de estado.
+Os testes da interface são executados com **Vitest** e **React Testing Library**, seguindo o padrão `*.test.tsx` / `*.test.ts` colocalizado junto ao arquivo testado. Cobrem:
+- Renderização e comportamento de modais e formulários (ex.: `CadastroEventoModal.test.tsx`, `RecurrenceForm.test.tsx`).
+- Integração de páginas com a API utilizando mocks de respostas (`DataFetching.test.tsx` e os `*.test.ts` de `src/api/`).
+- Guardas de autenticação, contexto de sessão e rotas protegidas (`AuthContext.test.tsx`, `ProtectedRoute.test.tsx`, `permissions.test.ts`).
+- Utilitários de exportação (CSV/PDF), calendário litúrgico e formatação de moeda/data.
+- Interceptors HTTP e tratamento centralizado de erros (`interceptors.test.ts`).
+
+Execute `npm test` para rodar a suíte completa uma única vez, ou `npm run test:watch` durante o desenvolvimento.
 
