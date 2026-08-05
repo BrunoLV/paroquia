@@ -23,7 +23,7 @@
       `nome/cpf/telefone/dataNascimento/endereco`) e `FielJpaRepository` (Green) `a3ec410`
 - [x] Task: Refatorar se necessário — corrigido hint de lint (catch específico de `NoSuchAlgorithmException`
       em vez de `Exception` genérico) `a3ec410`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `0f743b1`
 
   **Desvio descoberto durante a implementação:** a constraint de unicidade não pôde ser aplicada
   diretamente sobre `cpf`, pois `EncryptedStringConverter` usa IV aleatório por chamada (o mesmo CPF em
