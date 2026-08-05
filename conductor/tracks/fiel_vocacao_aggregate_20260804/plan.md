@@ -33,18 +33,24 @@
   do commit `a3ec410`.
 
 ## Phase 3: `UsuarioEntity.fielId` + auditoria (Fiel e Usuario)
-- [ ] Task: Escrever testes (Red) confirmando que `UsuarioEntity` aceita `fielId` nullable e possui os
-      novos campos de auditoria (`criadoEmUtc`, `atualizadoEmUtc`, `criadoPor`, `atualizadoPor`)
-- [ ] Task: Criar migração Flyway adicionando `fiel_id` (nullable), `criado_em_utc`, `atualizado_em_utc`,
-      `criado_por`, `atualizado_por` em `usuarios` (backfill de `criado_em_utc`/`atualizado_em_utc` com
-      `now()` para linhas existentes; `criado_por`/`atualizado_por` nullable para linhas legadas)
-- [ ] Task: Implementar os campos em `UsuarioEntity` (Green)
-- [ ] Task: Escrever testes (Red) para `CreateUsuarioUseCase`, `RegistrarUsuarioUseCase`,
+- [x] Task: Escrever testes (Red) confirmando que `UsuarioEntity` aceita `fielId` nullable e possui os
+      novos campos de auditoria (`criadoEmUtc`, `atualizadoEmUtc`, `criadoPor`, `atualizadoPor`) `950b675`
+- [x] Task: Criar migração Flyway adicionando `fiel_id` (nullable), `criado_em_utc`, `atualizado_em_utc`,
+      `criado_por`, `atualizado_por` em `usuarios` (V057) `950b675`
+- [x] Task: Implementar os campos em `UsuarioEntity` (Green) `950b675`
+- [x] Task: Escrever testes (Red) para `CreateUsuarioUseCase`, `RegistrarUsuarioUseCase`,
       `UpdateUsuarioUseCase` e `ApproveUsuarioUseCase` verificando que os campos de auditoria são
-      populados a partir do actor autenticado
-- [ ] Task: Implementar a população dos campos de auditoria nos 4 casos de uso (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      populados a partir do actor autenticado `4271d38`
+- [x] Task: Implementar a população dos campos de auditoria nos 4 casos de uso (Green) `4271d38`
+- [x] Task: Refatorar se necessário — não necessário
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+  **Desvio descoberto durante a implementação:** tornar `criado_em_utc`/`atualizado_em_utc` `NOT NULL`
+  quebrou 37 classes de teste pré-existentes que criam `UsuarioEntity` sem passar pelos 4 use cases
+  (fixtures diretas e um fixture SQL raw — `security-fixtures.sql`). Resolvido com `@PrePersist`/
+  `@PreUpdate` na entidade (cobre criação via JPA) + `DEFAULT CURRENT_TIMESTAMP` na coluna (cobre INSERT
+  via SQL raw). `criadoPor`/`atualizadoPor` permanecem nullable — só os 4 use cases de fato os populam.
+  Ver git note do commit `4271d38`.
 
 ## Phase 4: Documentação para agentes de IA
 - [ ] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante em `.agents/skills/`) descrevendo o
