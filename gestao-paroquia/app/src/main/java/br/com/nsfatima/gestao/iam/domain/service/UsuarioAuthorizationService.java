@@ -1,8 +1,9 @@
 package br.com.nsfatima.gestao.iam.domain.service;
 
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,10 +22,13 @@ import java.util.UUID;
 @Service
 public class UsuarioAuthorizationService {
 
-    private final MembroOrganizacaoJpaRepository vinculoRepository;
+    private final MembroGrupoJpaRepository vinculoRepository;
+    private final UsuarioJpaRepository usuarioRepository;
 
-    public UsuarioAuthorizationService(MembroOrganizacaoJpaRepository vinculoRepository) {
+    public UsuarioAuthorizationService(MembroGrupoJpaRepository vinculoRepository,
+                                        UsuarioJpaRepository usuarioRepository) {
         this.vinculoRepository = vinculoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     /**
@@ -52,19 +56,23 @@ public class UsuarioAuthorizationService {
             throw new AccessDeniedException("ID do ator não encontrado");
         }
 
+        UUID actorFielId = resolveFielId(actorId);
+        UUID targetFielId = resolveFielId(targetUserId);
+
         // If actor is COORDENADOR, they must share an organization with targetUserId where they are COORDENADOR
-        List<MembroOrganizacaoEntity> actorVinculos = vinculoRepository.findByUsuarioIdAndAtivoTrue(actorId);
+        List<MembroGrupoEntity> actorVinculos = actorFielId == null
+                ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(actorFielId);
         List<UUID> coordinatorOrgIds = actorVinculos.stream()
                 .filter(m -> isCoordinatorRole(m.getPapel()))
-                .map(MembroOrganizacaoEntity::getOrganizacaoId)
+                .map(MembroGrupoEntity::getOrganizacaoId)
                 .toList();
 
         if (coordinatorOrgIds.isEmpty()) {
             throw new AccessDeniedException("Ator não é um coordenador");
         }
 
-        List<MembroOrganizacaoEntity> targetVinculos =
-                vinculoRepository.findByUsuarioIdAndAtivoTrue(targetUserId);
+        List<MembroGrupoEntity> targetVinculos = targetFielId == null
+                ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(targetFielId);
         boolean sharesOrg = targetVinculos.stream()
                 .anyMatch(m -> coordinatorOrgIds.contains(m.getOrganizacaoId()));
 
@@ -99,12 +107,43 @@ public class UsuarioAuthorizationService {
             throw new AccessDeniedException("ID do ator não encontrado");
         }
 
-        boolean isCoordinator = vinculoRepository.findByUsuarioIdAndAtivoTrue(actorId).stream()
+        UUID actorFielId = resolveFielId(actorId);
+        boolean isCoordinator = actorFielId != null && vinculoRepository.findByFielIdAndAtivoTrue(actorFielId)
+                .stream()
                 .filter(m -> organizationId.equals(m.getOrganizacaoId()))
                 .anyMatch(m -> isCoordinatorRole(m.getPapel()));
 
         if (!isCoordinator) {
             throw new AccessDeniedException("Apenas Admin ou Coordenador de Organização pode executar esta ação");
+        }
+    }
+
+    /**
+     * Garante que o ator autenticado tem uma das authorities restritas a quem pode promover um Fiel membro a
+     * uma posição de liderança com criação de login (Pároco, Vigário, Mesa do CPP ou Admin) — usado por
+     * {@code PromoverACoordenadorUseCase}. Diferente de {@link #isAdmin(Authentication)}, também aceita
+     * Vigário e Mesa do CPP.
+     *
+     * @throws AccessDeniedException se não houver autenticação, ou se o ator não tiver nenhuma dessas
+     *                               authorities
+     */
+    public void requireParocoVigarioMesaCppOuAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AccessDeniedException("Não autenticado");
+        }
+
+        boolean autorizado = auth.getAuthorities().stream().anyMatch(a -> {
+            String authority = a.getAuthority();
+            return "ROLE_ADMIN".equals(authority)
+                    || "ROLE_CLERO_PAROCO".equals(authority)
+                    || "ROLE_CLERO_VIGARIO".equals(authority)
+                    || "ROLE_CPP_MESA_CPP".equals(authority);
+        });
+
+        if (!autorizado) {
+            throw new AccessDeniedException(
+                    "Apenas Pároco, Vigário, Mesa do CPP ou Admin podem promover um Fiel a coordenador");
         }
     }
 
@@ -121,6 +160,10 @@ public class UsuarioAuthorizationService {
     private boolean isAdmin(Authentication auth) {
         return auth.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
+    }
+
+    private UUID resolveFielId(UUID usuarioId) {
+        return usuarioRepository.findById(usuarioId).map(u -> u.getFielId()).orElse(null);
     }
 
     private UUID getActorId(Authentication auth) {

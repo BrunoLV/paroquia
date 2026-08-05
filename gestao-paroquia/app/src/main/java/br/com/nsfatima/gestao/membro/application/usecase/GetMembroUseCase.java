@@ -1,24 +1,24 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 /**
- * Recupera um vínculo usuário-organização (membro) pelo identificador, para consulta de detalhes.
+ * Recupera um vínculo Fiel-organização (membro) pelo identificador, para consulta de detalhes.
  */
 @Service
 public class GetMembroUseCase {
 
-    private final MembroJpaRepository repository;
+    private final MembroGrupoJpaRepository repository;
     private final MembroMapper mapper;
 
-    public GetMembroUseCase(MembroJpaRepository repository, MembroMapper mapper) {
+    public GetMembroUseCase(MembroGrupoJpaRepository repository, MembroMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
@@ -32,7 +32,7 @@ public class GetMembroUseCase {
      */
     @Transactional(readOnly = true)
     public MembroResponse execute(UUID id) {
-        MembroEntity entity = repository.findById(id)
+        MembroGrupoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro nao encontrado: " + id));
         return mapper.toResponse(entity);
     }

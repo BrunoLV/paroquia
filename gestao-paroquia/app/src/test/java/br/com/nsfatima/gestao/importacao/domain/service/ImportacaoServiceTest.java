@@ -5,8 +5,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
-import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -48,10 +47,7 @@ import static org.mockito.Mockito.when;
 class ImportacaoServiceTest {
 
     @Mock
-    private CreateMembroUseCase createMembroUseCase;
-
-    @Mock
-    private MembroJpaRepository membroJpaRepository;
+    private AdicionarMembroUseCase adicionarMembroUseCase;
 
     @Mock
     private UsuarioJpaRepository usuarioJpaRepository;
@@ -73,8 +69,7 @@ class ImportacaoServiceTest {
     @BeforeEach
     void setUp() {
         importacaoService = new ImportacaoService(
-                createMembroUseCase,
-                membroJpaRepository,
+                adicionarMembroUseCase,
                 usuarioJpaRepository,
                 organizacaoService,
                 eventoJpaRepository,
@@ -183,7 +178,7 @@ class ImportacaoServiceTest {
         );
         int countMembro = importacaoService.confirmarImportacao("MEMBRO", List.of(membroMap), "admin");
         assertEquals(1, countMembro);
-        verify(createMembroUseCase).execute(any(), eq("admin"));
+        verify(adicionarMembroUseCase).execute(any(), eq("admin"));
 
         Map<String, String> orgMap = Map.of(
                 "nome", "Pastoral da Música",
@@ -214,7 +209,7 @@ class ImportacaoServiceTest {
         when(anoRepoMock.findByAno(2026)).thenReturn(Optional.of(anoFechado));
 
         ImportacaoService serviceComAno = new ImportacaoService(
-                createMembroUseCase, membroJpaRepository, usuarioJpaRepository, organizacaoService,
+                adicionarMembroUseCase, usuarioJpaRepository, organizacaoService,
                 eventoJpaRepository, organizacaoJpaRepository, pastoralOficialRepository,
                 new ImportacaoFileParser(), anoRepoMock, null, null, null
         );

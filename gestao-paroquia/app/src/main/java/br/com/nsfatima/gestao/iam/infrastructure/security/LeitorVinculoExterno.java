@@ -44,10 +44,11 @@ public class LeitorVinculoExterno {
                                 m.tipo_organizacao, m.papel, m.igreja_vinculo_id, o.nome as organizacao_nome,
                                 o.contato as organizacao_contato, o.coordenador as organizacao_coordenador,
                                 o.vice_coordenador as organizacao_vice_coordenador, o.ativo as organizacao_ativo
-                        
-                        FROM calendario.membros_organizacao m
+
+                        FROM calendario.membro_grupo m
                         JOIN calendario.organizacoes o ON o.id = m.organizacao_id
-                        WHERE m.usuario_id = ?
+                        JOIN calendario.usuarios u ON u.fiel_id = m.fiel_id
+                        WHERE u.id = ?
                           AND m.ativo = TRUE
                           AND o.ativo = TRUE
                         ORDER BY m.tipo_organizacao, m.papel, m.organizacao_id

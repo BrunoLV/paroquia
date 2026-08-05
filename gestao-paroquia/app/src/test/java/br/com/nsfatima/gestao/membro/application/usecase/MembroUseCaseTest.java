@@ -1,14 +1,14 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPublisher;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,16 +31,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
 class MembroUseCaseTest {
 
     @Mock
-    private MembroJpaRepository repository;
-
-    @Mock
-    private UsuarioJpaRepository usuarioRepository;
+    private MembroGrupoJpaRepository repository;
 
     @Mock
     private OrganizacaoJpaRepository organizacaoRepository;
@@ -55,7 +51,7 @@ class MembroUseCaseTest {
     private MembroAuditPublisher auditPublisher;
 
     @InjectMocks
-    private CreateMembroUseCase createUseCase;
+    private AdicionarMembroUseCase adicionarUseCase;
 
     @InjectMocks
     private UpdateMembroUseCase updateUseCase;
@@ -64,40 +60,41 @@ class MembroUseCaseTest {
     private GetMembroUseCase getUseCase;
 
     private MembroRequest request;
-    private MembroEntity entity;
+    private MembroGrupoEntity entity;
     private MembroResponse response;
-    private UUID usuarioId;
+    private UUID fielId;
     private UUID organizacaoId;
 
     @BeforeEach
     void setUp() {
-        usuarioId = UUID.randomUUID();
+        fielId = UUID.randomUUID();
         organizacaoId = UUID.randomUUID();
 
         request = new MembroRequest(
-                usuarioId,
+                fielId,
                 organizacaoId,
-                "MEMBRO",
+                "MEMBRO_PASTORAL",
                 LocalDate.now(),
                 null,
                 true
         );
 
-        entity = new MembroEntity();
+        entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setUsuarioId(usuarioId);
+        entity.setFielId(fielId);
         entity.setOrganizacaoId(organizacaoId);
-        entity.setPapel("MEMBRO");
+        entity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        entity.setPapel("MEMBRO_PASTORAL");
 
         response = new MembroResponse(
                 entity.getId(),
-                usuarioId,
+                fielId,
                 "João da Silva",
                 "joao@example.com",
                 "11999999999",
                 organizacaoId,
                 "Pastoral da Música",
-                "MEMBRO",
+                "MEMBRO_PASTORAL",
                 LocalDate.now(),
                 true,
                 null
@@ -107,25 +104,27 @@ class MembroUseCaseTest {
     @Test
     @DisplayName("Deve criar um membro com sucesso")
     void deveCriarMembro() {
-        UsuarioEntity user = new UsuarioEntity();
-        user.setId(usuarioId);
+        FielEntity fiel = new FielEntity();
+        fiel.setId(fielId);
+        fiel.setNome("João da Silva");
 
         OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(organizacaoId);
+        org.setTipo(TipoOrganizacao.PASTORAL);
 
-        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(user));
+        when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
         when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
-        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId,
+        when(repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId,
                 organizacaoId)).thenReturn(Optional.empty());
 
-        when(repository.save(any(MembroEntity.class))).thenReturn(entity);
-        when(mapper.toResponse(any(MembroEntity.class))).thenReturn(response);
+        when(repository.save(any(MembroGrupoEntity.class))).thenReturn(entity);
+        when(mapper.toResponse(any(MembroGrupoEntity.class))).thenReturn(response);
 
-        MembroResponse result = createUseCase.execute(request, "admin");
+        MembroResponse result = adicionarUseCase.execute(request, "admin");
 
         assertNotNull(result);
-        assertEquals(usuarioId, result.usuarioId());
-        verify(repository).save(any(MembroEntity.class));
+        assertEquals(fielId, result.fielId());
+        verify(repository).save(any(MembroGrupoEntity.class));
         verify(auditPublisher).publish(eq("admin"), eq("criar"), anyString(), eq("sucesso"));
     }
 
@@ -133,20 +132,22 @@ class MembroUseCaseTest {
     @DisplayName("Deve atualizar um membro com sucesso")
     void deveAtualizarMembro() {
         UUID id = entity.getId();
-        UsuarioEntity user = new UsuarioEntity();
-        user.setId(usuarioId);
+        FielEntity fiel = new FielEntity();
+        fiel.setId(fielId);
+        fiel.setNome("João da Silva");
 
         OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(organizacaoId);
+        org.setTipo(TipoOrganizacao.PASTORAL);
 
         when(repository.findById(id)).thenReturn(Optional.of(entity));
-        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(user));
+        when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
         when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
-        when(repository.findByUsuarioIdAndOrganizacaoIdAndAtivoTrue(usuarioId,
+        when(repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId,
                 organizacaoId)).thenReturn(Optional.empty());
 
-        when(repository.save(any(MembroEntity.class))).thenReturn(entity);
-        when(mapper.toResponse(any(MembroEntity.class))).thenReturn(response);
+        when(repository.save(any(MembroGrupoEntity.class))).thenReturn(entity);
+        when(mapper.toResponse(any(MembroGrupoEntity.class))).thenReturn(response);
 
         MembroResponse result = updateUseCase.execute(id, request, "admin");
 

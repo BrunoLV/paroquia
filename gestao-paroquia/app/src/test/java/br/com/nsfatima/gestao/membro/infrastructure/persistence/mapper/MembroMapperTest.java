@@ -3,10 +3,8 @@ package br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper;
 import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,35 +19,27 @@ import static org.mockito.Mockito.when;
 
 class MembroMapperTest {
 
-    private UsuarioJpaRepository usuarioRepository;
     private OrganizacaoJpaRepository organizacaoRepository;
     private FielJpaRepository fielRepository;
     private MembroMapper mapper;
 
     @BeforeEach
     void setUp() {
-        usuarioRepository = mock(UsuarioJpaRepository.class);
         organizacaoRepository = mock(OrganizacaoJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
-        mapper = new MembroMapper(usuarioRepository, organizacaoRepository, fielRepository);
+        mapper = new MembroMapper(organizacaoRepository, fielRepository);
     }
 
     @Test
-    void deveResolverNomeETelefoneDoUsuarioAPartirDoFielVinculado() {
+    void deveResolverNomeEContatoDiretamenteDoFielVinculado() {
         UUID membroId = UUID.randomUUID();
-        UUID usuarioId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 
-        MembroEntity entity = new MembroEntity();
+        MembroGrupoEntity entity = new MembroGrupoEntity();
         entity.setId(membroId);
-        entity.setUsuarioId(usuarioId);
-        entity.setPapel("COORDENADOR");
+        entity.setFielId(fielId);
+        entity.setPapel("COORD_PASTORAL_LOCAL");
         entity.setAtivo(true);
-
-        UsuarioEntity usuario = new UsuarioEntity();
-        usuario.setId(usuarioId);
-        usuario.setUsername("joao.silva");
-        usuario.setFielId(fielId);
 
         FielEntity fiel = new FielEntity();
         fiel.setId(fielId);
@@ -61,13 +51,12 @@ class MembroMapperTest {
         fiel.setEndereco("Rua Z, 3");
         fiel.setVocacao(Vocacao.LEIGO);
 
-        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
 
         MembroResponse response = mapper.toResponse(entity);
 
-        assertThat(response.usuarioNome()).isEqualTo("João da Silva");
-        assertThat(response.usuarioTelefone()).isEqualTo("11911112222");
-        assertThat(response.usuarioEmail()).isEqualTo("joao.silva");
+        assertThat(response.fielNome()).isEqualTo("João da Silva");
+        assertThat(response.fielTelefone()).isEqualTo("11911112222");
+        assertThat(response.fielEmail()).isEqualTo("joao@example.com");
     }
 }

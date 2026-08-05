@@ -4,15 +4,16 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Representação do vínculo usuário-organização já enriquecida com os dados de exibição do usuário e da
- * organização (nome, e-mail, telefone), resolvidos em {@code MembroMapper} a partir dos respectivos contextos.
+ * Representação do vínculo Fiel-organização já enriquecida com os dados de exibição do Fiel e da organização
+ * (nome, e-mail de contato, telefone), resolvidos em {@code MembroMapper} diretamente do {@code Fiel}
+ * vinculado — sem depender de um {@code Usuario}, que pode nem existir.
  */
 public record MembroResponse(
         UUID id,
-        UUID usuarioId,
-        String usuarioNome,
-        String usuarioEmail,
-        String usuarioTelefone,
+        UUID fielId,
+        String fielNome,
+        String fielEmail,
+        String fielTelefone,
         UUID organizacaoId,
         String organizacaoNome,
         String papel,

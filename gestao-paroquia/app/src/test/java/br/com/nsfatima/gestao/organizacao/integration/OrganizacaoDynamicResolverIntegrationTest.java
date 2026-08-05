@@ -6,9 +6,9 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
     private FielJpaRepository fielRepository;
 
     @Autowired
-    private MembroOrganizacaoJpaRepository vinculoRepository;
+    private MembroGrupoJpaRepository vinculoRepository;
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -76,18 +76,18 @@ class OrganizacaoDynamicResolverIntegrationTest {
         organizacaoRepository.save(org);
 
         // Create vinculos
-        MembroOrganizacaoEntity m1 = new MembroOrganizacaoEntity();
+        MembroGrupoEntity m1 = new MembroGrupoEntity();
         m1.setId(UUID.randomUUID());
-        m1.setUsuarioId(coord.getId());
+        m1.setFielId(coord.getFielId());
         m1.setOrganizacaoId(org.getId());
         m1.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m1.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
         m1.setAtivo(true);
         vinculoRepository.save(m1);
 
-        MembroOrganizacaoEntity m2 = new MembroOrganizacaoEntity();
+        MembroGrupoEntity m2 = new MembroGrupoEntity();
         m2.setId(UUID.randomUUID());
-        m2.setUsuarioId(vice.getId());
+        m2.setFielId(vice.getFielId());
         m2.setOrganizacaoId(org.getId());
         m2.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m2.setPapel("vice-coordenador-pastoral-local");

@@ -2,13 +2,10 @@ package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,13 +25,9 @@ import static org.mockito.Mockito.when;
 class ListOrganizacaoMembrosUseCaseTest {
 
     @Mock
-    private MembroOrganizacaoJpaRepository vinculoRepository;
-    @Mock
-    private UsuarioJpaRepository usuarioRepository;
+    private MembroGrupoJpaRepository vinculoRepository;
     @Mock
     private FielJpaRepository fielRepository;
-    @Mock
-    private MembroJpaRepository membroRepository;
     @Mock
     private OrganizacaoJpaRepository organizacaoRepository;
 
@@ -44,31 +37,24 @@ class ListOrganizacaoMembrosUseCaseTest {
     void setUp() {
         useCase = new ListOrganizacaoMembrosUseCase(
                 vinculoRepository,
-                usuarioRepository,
                 fielRepository,
-                membroRepository,
                 organizacaoRepository
         );
     }
 
     @Test
-    @DisplayName("Deve listar membros de uma organização resolvendo nomes de usuários e membros leigos")
-    void deveListarOrganizacaoMembrosResolvingUsuarioEMembroNomes() {
+    @DisplayName("Deve listar membros de uma organização resolvendo nomes a partir do Fiel")
+    void deveListarOrganizacaoMembrosResolvendoNomeDoFiel() {
         UUID orgId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 
-        MembroOrganizacaoEntity memberEntity = new MembroOrganizacaoEntity();
+        MembroGrupoEntity memberEntity = new MembroGrupoEntity();
         memberEntity.setId(UUID.randomUUID());
         memberEntity.setOrganizacaoId(orgId);
-        memberEntity.setUsuarioId(userId);
+        memberEntity.setFielId(fielId);
         memberEntity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
-        memberEntity.setPapel("COORDENADOR");
+        memberEntity.setPapel("COORD_PASTORAL_LOCAL");
         memberEntity.setAtivo(true);
-
-        UsuarioEntity userEntity = new UsuarioEntity();
-        userEntity.setId(userId);
-        userEntity.setFielId(fielId);
 
         FielEntity fielEntity = new FielEntity();
         fielEntity.setId(fielId);
@@ -76,14 +62,13 @@ class ListOrganizacaoMembrosUseCaseTest {
 
         when(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(orgId)).thenReturn(List.of(memberEntity));
         when(vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(orgId)).thenReturn(Collections.emptyList());
-        when(usuarioRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fielEntity));
         when(organizacaoRepository.findById(orgId)).thenReturn(Optional.empty());
 
         List<OrganizacaoMembroResponse> response = useCase.execute(orgId);
 
         assertThat(response).hasSize(1);
-        assertThat(response.getFirst().usuarioNome()).isEqualTo("João da Silva");
-        assertThat(response.getFirst().papel()).isEqualTo("COORDENADOR");
+        assertThat(response.getFirst().fielNome()).isEqualTo("João da Silva");
+        assertThat(response.getFirst().papel()).isEqualTo("COORD_PASTORAL_LOCAL");
     }
 }

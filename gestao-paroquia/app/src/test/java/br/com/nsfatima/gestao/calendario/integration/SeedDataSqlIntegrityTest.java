@@ -34,8 +34,7 @@ public class SeedDataSqlIntegrityTest {
         jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_recorrencia;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.projetos_eventos;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_paroquiais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.membros_organizacao;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.membros;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.membro_grupo;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.usuarios;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.locais;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.organizacoes;");

@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +20,11 @@ import java.util.UUID;
 public class ApproveUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
-    private final MembroOrganizacaoJpaRepository vinculoRepository;
+    private final MembroGrupoJpaRepository vinculoRepository;
 
     public ApproveUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
-            MembroOrganizacaoJpaRepository vinculoRepository) {
+            MembroGrupoJpaRepository vinculoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.vinculoRepository = vinculoRepository;
     }
@@ -55,7 +55,7 @@ public class ApproveUsuarioUseCase {
         usuarioRepository.save(usuario);
 
         // Activate requested vinculos
-        var vinculos = vinculoRepository.findByUsuarioId(userId);
+        var vinculos = vinculoRepository.findByFielId(usuario.getFielId());
         for (var vinculo : vinculos) {
             if (!vinculo.isAtivo()) {
                 vinculo.setAtivo(true);
