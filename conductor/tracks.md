@@ -336,10 +336,6 @@
 
 ---
 
-- [x] **Track: Consolidar vínculos de membro em `MembroGrupo` por `fielId` (elimina exigência de login para participação pastoral) — Track 3/7 da iniciativa SDD**
-*Link: [./tracks/membro_grupo_por_fiel_20260804/index.md](./tracks/membro_grupo_por_fiel_20260804/index.md)*
-
----
 
 - [ ] **Track: Formalizar Roles Globais (`papel_global`: PAROCO/VIGARIO/ADMIN/SECRETARIA_PAROQUIAL, sem organizacaoId) e centralizar o bypass de acesso irrestrito — Track 4/7 da iniciativa SDD**
 *Link: [./tracks/roles_globais_vs_escopo_20260804/index.md](./tracks/roles_globais_vs_escopo_20260804/index.md)*
