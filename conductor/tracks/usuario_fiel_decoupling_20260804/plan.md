@@ -51,11 +51,11 @@
   removido como dead code, não como regressão de comportamento.
 
 ## Phase 3: Criação de `Usuario` exige `Fiel` existente
-- [ ] Task: Escrever testes (Red) para `CreateUsuarioUseCase` cobrindo: sucesso com `fielId` existente,
-      falha com `fielId` inexistente
-- [ ] Task: Implementar a validação em `CreateUsuarioUseCase` (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever testes (Red) para `CreateUsuarioUseCase` cobrindo: sucesso com `fielId` existente,
+      falha com `fielId` inexistente `e0b4cb8`
+- [x] Task: Implementar a validação em `CreateUsuarioUseCase` (Green) `e0b4cb8`
+- [x] Task: Refatorar se necessário — não necessário
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Remoção do autocadastro público
 - [x] Task: Remover/ajustar testes existentes de `RegistrarUsuarioUseCase`/endpoint `/registrar` (Red —
