@@ -336,11 +336,6 @@
 
 ---
 
-- [x] **Track: Desacoplar `UsuarioEntity` dos dados pessoais do `Fiel` (torna `fielId` obrigatório, remove autocadastro público) — Track 2/7 da iniciativa SDD**
-*Link: [./tracks/usuario_fiel_decoupling_20260804/index.md](./tracks/usuario_fiel_decoupling_20260804/index.md)*
-
----
-
 - [ ] **Track: Consolidar vínculos de membro em `MembroGrupo` por `fielId` (elimina exigência de login para participação pastoral) — Track 3/7 da iniciativa SDD**
 *Link: [./tracks/membro_grupo_por_fiel_20260804/index.md](./tracks/membro_grupo_por_fiel_20260804/index.md)*
 
