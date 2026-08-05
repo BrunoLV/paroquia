@@ -95,7 +95,7 @@
 ## Phase 7: Validação final e fechamento da track
 - [x] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões `a9cb30b`
 - [x] Task: Verificar cobertura de código dos trechos novos/alterados (target >80%) `a9cb30b`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `71f1e82`
 
   **Resultado da cobertura:** `PromoverACoordenadorUseCase` 100%, `ListarVinculosUseCase` 100%,
   `RemoverVinculoUseCase` 100%, `LiderancaSyncSupport` 100%, `GetMembroUseCase`/`ListMembrosUseCase` 100%,
