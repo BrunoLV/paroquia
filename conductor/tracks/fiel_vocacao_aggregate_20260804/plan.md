@@ -43,7 +43,7 @@
       populados a partir do actor autenticado `4271d38`
 - [x] Task: Implementar a população dos campos de auditoria nos 4 casos de uso (Green) `4271d38`
 - [x] Task: Refatorar se necessário — não necessário
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `c1f8179`
 
   **Desvio descoberto durante a implementação:** tornar `criado_em_utc`/`atualizado_em_utc` `NOT NULL`
   quebrou 37 classes de teste pré-existentes que criam `UsuarioEntity` sem passar pelos 4 use cases
