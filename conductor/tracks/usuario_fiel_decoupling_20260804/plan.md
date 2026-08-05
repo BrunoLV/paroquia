@@ -13,7 +13,7 @@
       de constraint `NOT NULL` `e5a0874`
 - [x] Task: Criar migração Flyway tornando `usuarios.fiel_id` `NOT NULL` (Green) `e5a0874`
 - [x] Task: Refatorar se necessário — não necessário
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `0030bac`
 
   **Escopo ampliado (confirmado com o usuário):** a constraint NOT NULL quebrou 8 classes de teste que
   criam `UsuarioEntity` diretamente (além do fixture `security-fixtures.sql`, já usado por ~28 classes,
