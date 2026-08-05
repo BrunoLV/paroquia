@@ -37,7 +37,7 @@
       (sincronização de liderança), `ListOrganizacaoMembrosUseCase` e `OrganizacaoRepositoryImpl` (resolução
       dinâmica de nome de coordenador/vice-coordenador), não listados no FR3 original mas quebrados pela
       remoção dos campos `67727ce`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `857eba9`
 
   **Escopo fundido com a Phase 4 (confirmado com o usuário):** `RegistrarUsuarioUseCase` chamava
   diretamente os setters que esta fase remove, então sua remoção (originalmente Phase 4) teve que
@@ -67,7 +67,7 @@
       diretamente (só `enabled`/`roles`), nenhuma mudança de código necessária além do ajuste de Javadoc;
       cobertura existente (`ApproveUsuarioUseCaseTest`, da Track 1) permanece válida `67727ce`
 - [x] Task: Refatorar se necessário — não necessário
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `857eba9`
 
   **Executada antecipadamente dentro da Phase 2** por dependência técnica rígida — ver nota acima. Esta
   fase fica registrada aqui por completude do plano, mas todo o trabalho já está no commit `67727ce`.
