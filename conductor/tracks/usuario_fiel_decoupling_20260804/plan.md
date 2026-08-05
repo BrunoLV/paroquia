@@ -81,7 +81,7 @@
 ## Phase 6: Validação final e fechamento da track
 - [x] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
 - [x] Task: Verificar cobertura de código dos trechos alterados (target >80%) `15821d6`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `90fd6bd`
 
   **Resultado da cobertura:** `UsuarioEntity` 100%, `CreateUsuarioUseCase` 92%, `MembroMapper` 96%,
   `OrganizacaoRepositoryImpl` 83%, `GetUsuarioUseCase` 81%, `ListUsuariosUseCase` 80% (ambos elevados
