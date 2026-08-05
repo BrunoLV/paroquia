@@ -336,7 +336,7 @@
 
 ---
 
-- [ ] **Track: Desacoplar `UsuarioEntity` dos dados pessoais do `Fiel` (torna `fielId` obrigatório, remove autocadastro público) — Track 2/7 da iniciativa SDD**
+- [~] **Track: Desacoplar `UsuarioEntity` dos dados pessoais do `Fiel` (torna `fielId` obrigatório, remove autocadastro público) — Track 2/7 da iniciativa SDD**
 *Link: [./tracks/usuario_fiel_decoupling_20260804/index.md](./tracks/usuario_fiel_decoupling_20260804/index.md)*
 
 ---
