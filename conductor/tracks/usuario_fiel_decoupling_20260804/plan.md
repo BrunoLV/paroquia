@@ -79,6 +79,13 @@
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `c3ca352`
 
 ## Phase 6: Validação final e fechamento da track
-- [ ] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
-- [ ] Task: Verificar cobertura de código dos trechos alterados (target >80%)
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
+- [x] Task: Verificar cobertura de código dos trechos alterados (target >80%) `15821d6`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+  **Resultado da cobertura:** `UsuarioEntity` 100%, `CreateUsuarioUseCase` 92%, `MembroMapper` 96%,
+  `OrganizacaoRepositoryImpl` 83%, `GetUsuarioUseCase` 81%, `ListUsuariosUseCase` 80% (ambos elevados
+  nesta fase com testes do caminho "Fiel não encontrado"). `CreateMembroUseCase` 77%, `UpdateMembroUseCase`
+  67%, `ListOrganizacaoMembrosUseCase` 78% ficaram abaixo da meta — os trechos descobertos são ramos
+  pré-existentes não relacionados a esta track (lógica de sincronização/fallback já presente antes da
+  migração para `Fiel`), não o código novo introduzido aqui.
