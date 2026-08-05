@@ -73,10 +73,10 @@
   fase fica registrada aqui por completude do plano, mas todo o trabalho já está no commit `67727ce`.
 
 ## Phase 5: Documentação para agentes de IA
-- [ ] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) documentando que `Usuario` não
+- [x] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) documentando que `Usuario` não
       carrega mais dados pessoais, que toda criação de `Usuario` parte de um `Fiel` existente, e que o
-      autocadastro público foi removido
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      autocadastro público foi removido `b442ac6`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 6: Validação final e fechamento da track
 - [ ] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
