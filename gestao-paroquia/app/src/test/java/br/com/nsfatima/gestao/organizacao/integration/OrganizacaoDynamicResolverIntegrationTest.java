@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.integration;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -36,6 +38,9 @@ class OrganizacaoDynamicResolverIntegrationTest {
     private UsuarioJpaRepository usuarioRepository;
 
     @Autowired
+    private FielJpaRepository fielRepository;
+
+    @Autowired
     private MembroOrganizacaoJpaRepository vinculoRepository;
 
     @Test
@@ -48,6 +53,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         coord.setPasswordHash("hash");
         coord.setNome("João da Silva Coordenador");
         coord.setEnabled(true);
+        coord.setFielId(FielTestFixtures.criarFiel(fielRepository));
         usuarioRepository.save(coord);
 
         // Create vice coordinator user
@@ -57,6 +63,7 @@ class OrganizacaoDynamicResolverIntegrationTest {
         vice.setPasswordHash("hash");
         vice.setNome("Maria de Souza Vice");
         vice.setEnabled(true);
+        vice.setFielId(FielTestFixtures.criarFiel(fielRepository));
         usuarioRepository.save(vice);
 
         // Create organization

@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.integration;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,9 @@ class UsuarioAprovacaoIntegrationTest {
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
 
+    @Autowired
+    private FielJpaRepository fielRepository;
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveAprovarUsuarioQuandoAutorizado() throws Exception {
@@ -35,6 +40,7 @@ class UsuarioAprovacaoIntegrationTest {
         user.setPasswordHash("hash");
         user.setEnabled(false);
         user.setRoles("ROLE_USER");
+        user.setFielId(FielTestFixtures.criarFiel(fielRepository));
         usuarioRepository.save(user);
 
         mockMvc.perform(put("/api/v1/usuarios/" + user.getId() + "/approve")
