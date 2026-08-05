@@ -62,7 +62,7 @@
 - [x] Task: Refatorar se necessário — removidos `ParticipanteOrganizacaoEntity` e seus 2 use cases/endpoints
       (participação múltipla vira múltiplas chamadas a `AdicionarMembroUseCase`); `MembroResponse`/
       `OrganizacaoMembroResponse` trocaram `usuarioId/usuarioNome` por `fielId/fielNome` `cc730dc`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc` `b6bec1a`
 
   **Escopo fundido com as Phases 1, 3 e 5 (confirmado com o usuário antes da Phase 1):** a migração V061
   dropa as 3 tabelas legadas na mesma transação lógica em que cria `membro_grupo` — não existe um estado
