@@ -55,7 +55,7 @@
       falha com `fielId` inexistente `e0b4cb8`
 - [x] Task: Implementar a validação em `CreateUsuarioUseCase` (Green) `e0b4cb8`
 - [x] Task: Refatorar se necessário — não necessário
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `ef362cd`
 
 ## Phase 4: Remoção do autocadastro público
 - [x] Task: Remover/ajustar testes existentes de `RegistrarUsuarioUseCase`/endpoint `/registrar` (Red —
