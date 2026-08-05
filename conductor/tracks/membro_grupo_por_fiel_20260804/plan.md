@@ -22,51 +22,69 @@
      `ROLE_CLERO_VIGARIO`/`ROLE_CONSELHO_MESA_CPP`), reaproveitando o padrão de `isAdmin`.
 
 ## Phase 1: Tabela e entidade `MembroGrupo`
-- [ ] Task: Escrever teste de integração (Red) que persiste um `MembroGrupo` válido (`fielId` +
-      `organizacaoId` + `papel`)
-- [ ] Task: Criar migração Flyway que dropa `membros`, `membros_organizacao`, `membros_organizacoes` e cria
-      `calendario.membro_grupo`
-- [ ] Task: Implementar `MembroGrupo` (domain/model), `MembroGrupoEntity` (infrastructure/persistence/entity)
-      e `MembroGrupoJpaRepository` (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Escrever teste de integração (Red) que persiste um `MembroGrupo` válido (`fielId` +
+      `organizacaoId` + `papel`) `cc730dc`
+- [x] Task: Criar migração Flyway que dropa `membros`, `membros_organizacao`, `membros_organizacoes` e cria
+      `calendario.membro_grupo` `cc730dc`
+- [x] Task: Implementar `MembroGrupoEntity` (infrastructure/persistence/entity) e `MembroGrupoJpaRepository`
+      (Green) `cc730dc`
+- [x] Task: Refatorar se necessário — não necessário
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc`
 
 ## Phase 2: `AdicionarMembroUseCase`
-- [ ] Task: Escrever testes (Red): cria vínculo com sucesso para um `fielId` existente; falha se `fielId` ou
+- [x] Task: Escrever testes (Red): cria vínculo com sucesso para um `fielId` existente; falha se `fielId` ou
       `organizacaoId` não existirem; teste que verifica explicitamente **zero interação** com o repositório
-      de `Usuario`
-- [ ] Task: Implementar `AdicionarMembroUseCase`, incluindo a sincronização de liderança (FR5) via nome do
-      `Fiel` (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      de `Usuario` `cc730dc`
+- [x] Task: Implementar `AdicionarMembroUseCase`, incluindo a sincronização de liderança (FR5) via nome do
+      `Fiel` (Green) `cc730dc`
+- [x] Task: Refatorar se necessário — extraído `LiderancaSyncSupport` compartilhado com
+      `UpdateMembroUseCase`/`PromoverACoordenadorUseCase` `cc730dc`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc`
 
 ## Phase 3: `PromoverACoordenadorUseCase`
-- [ ] Task: Escrever testes (Red): sucesso ao promover um Fiel membro sem Usuario prévio (cria Usuario
+- [x] Task: Escrever testes (Red): sucesso ao promover um Fiel membro sem Usuario prévio (cria Usuario
       vinculado); sucesso ao promover um Fiel que já tem Usuario (não duplica); falha se o `fielId` não for
       membro ativo do grupo; falha de autorização para actor sem papel PAROCO/VIGARIO/MESA_CPP/ADMIN
-- [ ] Task: Implementar `PromoverACoordenadorUseCase`, reutilizando a checagem de autorização atual
-      (mecanismo existente em `EscopoUsuarioAuthorizationService`/`UsuarioAuthorizationService`) (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      `cc730dc`
+- [x] Task: Implementar `PromoverACoordenadorUseCase`, reutilizando a checagem de autorização atual — via
+      novo método dedicado `UsuarioAuthorizationService.requireParocoVigarioMesaCppOuAdmin()` (Green)
+      `cc730dc`
+- [x] Task: Refatorar se necessário — não necessário
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc`
 
 ## Phase 4: Migração dos consumidores existentes de vínculo
-- [ ] Task: Escrever/ajustar testes (Red) para `ListMembrosUseCase`, `UpdateMembroUseCase`,
+- [x] Task: Escrever/ajustar testes (Red) para `ListMembrosUseCase`, `UpdateMembroUseCase`,
       `GetMembroUseCase`, `AdicionarVinculoUseCase`, `RemoverVinculoUseCase`, `ListarVinculosUseCase`,
-      `ListOrganizacaoMembrosUseCase` operando sobre `MembroGrupo`/`fielId`
-- [ ] Task: Atualizar esses casos de uso e seus controllers/DTOs (`MembroController`, `MembroRequest`,
+      `ListOrganizacaoMembrosUseCase` operando sobre `MembroGrupo`/`fielId` `cc730dc`
+- [x] Task: Atualizar esses casos de uso e seus controllers/DTOs (`MembroController`, `MembroRequest`,
       `MembroResponse`, `OrganizacaoController`) para a nova estrutura, resolvendo dados de exibição via
-      `Fiel` (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      `Fiel` (Green) `cc730dc`
+- [x] Task: Refatorar se necessário — removidos `ParticipanteOrganizacaoEntity` e seus 2 use cases/endpoints
+      (participação múltipla vira múltiplas chamadas a `AdicionarMembroUseCase`); `MembroResponse`/
+      `OrganizacaoMembroResponse` trocaram `usuarioId/usuarioNome` por `fielId/fielNome` `cc730dc`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc`
+
+  **Escopo fundido com as Phases 1, 3 e 5 (confirmado com o usuário antes da Phase 1):** a migração V061
+  dropa as 3 tabelas legadas na mesma transação lógica em que cria `membro_grupo` — não existe um estado
+  intermediário compilável onde só a Phase 1 está pronta, já que toda entidade/repositório/caso de uso que
+  referenciava as tabelas antigas (Phase 4) e o mecanismo de autenticação que consultava
+  `membros_organizacao` por `usuario_id` (Phase 5) quebrariam imediatamente. Todas as 5 fases foram
+  implementadas e commitadas juntas no commit `cc730dc`. 552 testes, 0 falhas (mais detalhes no git note
+  desse commit, incluindo a checagem de escopo territorial via `Usuario.igrejaId` removida de
+  `AdicionarVinculoUseCase` por não existir equivalente em `Fiel`).
 
 ## Phase 5: Ajuste do mecanismo de autenticação
-- [ ] Task: Escrever teste de integração (Red) que simula login completo (Usuario com fielId vinculado a
+- [x] Task: Escrever teste de integração (Red) que simula login completo (Usuario com fielId vinculado a
       linhas de `membro_grupo`) e verifica que as authorities Spring Security resultantes estão corretas
-- [ ] Task: Atualizar `LeitorVinculoExterno.findVinculosAtivos`/`findRolesByUserAndOrganization` para
-      resolver `fielId` via `usuarios.fiel_id` e consultar `membro_grupo` (Green)
-- [ ] Task: Confirmar que `UsuarioDetailsService` continua funcionando sem mudança de contrato externo
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      `cc730dc`
+- [x] Task: Atualizar `LeitorVinculoExterno.findVinculosAtivos`/`findRolesByUserAndOrganization` para
+      resolver `fielId` via `usuarios.fiel_id` e consultar `membro_grupo` (Green) `cc730dc`
+- [x] Task: Confirmar que `UsuarioDetailsService` continua funcionando sem mudança de contrato externo —
+      confirmado: assinatura/contrato inalterados `cc730dc`
+- [x] Task: Refatorar se necessário — não necessário
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `cc730dc`
+
+  **Executada junto às Phases 1-4** — ver nota na Phase 4 acima.
 
 ## Phase 6: Documentação para agentes de IA
 - [ ] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) descrevendo o vínculo `MembroGrupo`
