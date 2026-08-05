@@ -53,9 +53,9 @@
   Ver git note do commit `4271d38`.
 
 ## Phase 4: Documentação para agentes de IA
-- [ ] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante em `.agents/skills/`) descrevendo o
-      agregado `Fiel`, o enum `Vocacao`, e a distinção Fiel (pessoa/contato) vs. Usuario (login/credenciais)
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante em `.agents/skills/`) descrevendo o
+      agregado `Fiel`, o enum `Vocacao`, e a distinção Fiel (pessoa/contato) vs. Usuario (login/credenciais) `248bd84`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 5: Validação final e fechamento da track
 - [ ] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
