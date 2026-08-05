@@ -1,11 +1,12 @@
 # Plan: Desacoplamento de `UsuarioEntity` dos Dados Pessoais do `Fiel`
 
 ## Phase 0: Setup
-- [ ] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b
-      refactor/usuario-fiel-decoupling-<data>`)
-- [ ] Task: Confirmar que a Track 1 está implementada na base atual (agregado `Fiel`, `UsuarioEntity.fielId`
-      nullable, campos de auditoria) — se não estiver, HALT e avisar o usuário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b
+      refactor/usuario-fiel-decoupling-<data>`) — branch `refactor/usuario-fiel-decoupling-20260805`
+- [x] Task: Confirmar que a Track 1 está implementada na base atual (agregado `Fiel`, `UsuarioEntity.fielId`
+      nullable, campos de auditoria) — se não estiver, HALT e avisar o usuário — confirmado: PR #5 mergeado
+      em master antes desta branch ser criada
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 1: `fielId` obrigatório
 - [ ] Task: Escrever teste (Red) confirmando que persistir `UsuarioEntity` sem `fielId` falha por violação
