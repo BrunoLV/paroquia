@@ -76,7 +76,7 @@
 - [x] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) documentando que `Usuario` não
       carrega mais dados pessoais, que toda criação de `Usuario` parte de um `Fiel` existente, e que o
       autocadastro público foi removido `b442ac6`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `c3ca352`
 
 ## Phase 6: Validação final e fechamento da track
 - [ ] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
