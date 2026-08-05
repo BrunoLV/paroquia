@@ -64,4 +64,34 @@ class ListUsuariosUseCaseTest {
         assertThat(responses.getFirst().telefone()).isEqualTo("11933332222");
         assertThat(responses.getFirst().dataNascimento()).isEqualTo(LocalDate.of(1978, 9, 3));
     }
+
+    @Test
+    void deveRetornarListaVaziaQuandoNaoHaUsuarios() {
+        when(usuarioRepository.findAll()).thenReturn(List.of());
+        when(fielRepository.findAllById(List.of())).thenReturn(List.of());
+
+        List<UsuarioResponse> responses = useCase.execute();
+
+        assertThat(responses).isEmpty();
+    }
+
+    @Test
+    void deveRetornarCamposNulosQuandoFielNaoEncontrado() {
+        UUID usuarioId = UUID.randomUUID();
+        UUID fielId = UUID.randomUUID();
+
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(usuarioId);
+        usuario.setUsername("orfao.usuario");
+        usuario.setEnabled(true);
+        usuario.setFielId(fielId);
+
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
+        when(fielRepository.findAllById(List.of(fielId))).thenReturn(List.of());
+
+        List<UsuarioResponse> responses = useCase.execute();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().nome()).isNull();
+    }
 }

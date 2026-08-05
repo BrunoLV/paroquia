@@ -71,4 +71,36 @@ class GetUsuarioUseCaseTest {
         assertThat(response.crismado()).isFalse();
         assertThat(response.casadoIgrejaCatolica()).isFalse();
     }
+
+    @Test
+    void deveRetornarCamposNulosQuandoFielNaoEncontrado() {
+        UUID usuarioId = UUID.randomUUID();
+        UUID fielId = UUID.randomUUID();
+
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(usuarioId);
+        usuario.setUsername("orfao.usuario");
+        usuario.setEnabled(true);
+        usuario.setFielId(fielId);
+
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(fielRepository.findById(fielId)).thenReturn(Optional.empty());
+
+        UsuarioResponse response = useCase.execute(usuarioId);
+
+        assertThat(response.nome()).isNull();
+        assertThat(response.telefone()).isNull();
+        assertThat(response.dataNascimento()).isNull();
+        assertThat(response.batizado()).isFalse();
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoUsuarioNaoEncontrado() {
+        UUID usuarioId = UUID.randomUUID();
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException.class,
+                () -> useCase.execute(usuarioId));
+    }
 }
