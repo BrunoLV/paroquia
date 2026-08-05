@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -180,5 +181,17 @@ class MembroUseCaseTest {
         assertFalse(entity.isAtivo());
         verify(repository).save(entity);
         verify(auditPublisher).publish(eq("admin"), eq("desativar"), eq(id.toString()), eq("sucesso"));
+    }
+
+    @Test
+    @DisplayName("Nunca depende de nada do pacote iam/usuario (AC2)")
+    void nuncaDependeDeUsuario() {
+        // AdicionarMembroUseCase deve permanecer capaz de operar sem nunca ler/criar/alterar UsuarioEntity —
+        // fixa esse invariante para que um futuro refactor não reintroduza silenciosamente essa dependência.
+        var tiposDosCampos = java.util.Arrays.stream(AdicionarMembroUseCase.class.getDeclaredFields())
+                .map(f -> f.getType().getName())
+                .toList();
+
+        assertThat(tiposDosCampos).noneMatch(tipo -> tipo.contains(".iam."));
     }
 }
