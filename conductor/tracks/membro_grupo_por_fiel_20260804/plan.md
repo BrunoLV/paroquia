@@ -1,11 +1,25 @@
 # Plan: Vínculo de Membro por `Fiel` (`MembroGrupo`)
 
 ## Phase 0: Setup
-- [ ] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b
-      feat/membro-grupo-por-fiel-<data>`)
-- [ ] Task: Confirmar que as Tracks 1 e 2 estão implementadas na base atual — se não estiverem, HALT e
-      avisar o usuário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Criar branch nova a partir da `master` atualizada (`git pull` + `git checkout -b
+      feat/membro-grupo-por-fiel-<data>`) — branch `feat/membro-grupo-por-fiel-20260805`
+- [x] Task: Confirmar que as Tracks 1 e 2 estão implementadas na base atual — se não estiverem, HALT e
+      avisar o usuário — confirmado: PR #5 e PR #6 mergeados em master antes desta branch ser criada
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+  **Decisões de design confirmadas com o usuário antes da Phase 1 (afetam FR4/FR6 diretamente):**
+  1. `MembroGrupo.papel` é tipado como `PapelOrganizacional` (reuso do enum existente, sem valor genérico
+     novo `COORDENADOR`/`VICE_COORDENADOR`); `PromoverACoordenadorUseCase` recebe um dos valores já
+     existentes (`COORD_PASTORAL_LOCAL/GLOBAL`, `COORD_MOVIMENTO`, `PRESIDENTE_CPC`, `SECRETARIO`).
+  2. A lógica de negócio de `AdicionarVinculoUseCase` (auto-demoção de titular único, escopo por igreja,
+     restrição de liderança de conselhos a ADMIN/PAROCO) é preservada 100%, apenas trocando `usuarioId` por
+     `fielId`/`MembroOrganizacaoEntity` por `MembroGrupo`.
+  3. `ParticipanteOrganizacaoEntity`/`ListParticipacoesUseCase`/`AddParticipanteUseCase` (participação extra
+     em pastorais) são removidos; o mesmo efeito é obtido chamando `AdicionarMembroUseCase` novamente para
+     outra `organizacaoId`. Endpoints `POST/GET /membros/{id}/organizacoes` removidos de `MembroController`.
+  4. Autorização de `PromoverACoordenadorUseCase` implementada como novo método dedicado em
+     `UsuarioAuthorizationService` (checagem de authorities `ROLE_ADMIN`/`ROLE_CLERO_PAROCO`/
+     `ROLE_CLERO_VIGARIO`/`ROLE_CONSELHO_MESA_CPP`), reaproveitando o padrão de `isAdmin`.
 
 ## Phase 1: Tabela e entidade `MembroGrupo`
 - [ ] Task: Escrever teste de integração (Red) que persiste um `MembroGrupo` válido (`fielId` +
