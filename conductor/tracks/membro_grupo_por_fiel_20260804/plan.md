@@ -109,3 +109,13 @@
   administrativos de CRUD (get/list/update/toggle) já indiretamente exercitados mas sem asserção dedicada, e
   o método `findRolesByUserAndOrganization` de `LeitorVinculoExterno` (não alterado nesta track). Suíte
   completa: 570 testes, 0 falhas.
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions `c749443`
+
+  Revisão formal (conductor-review) encontrou apenas 1 achado Low: AC2 ("AdicionarMembroUseCase nunca
+  interage com o repositório de Usuario") era garantido apenas estruturalmente (ausência de dependência no
+  construtor), sem um teste que fixasse esse invariante contra um futuro refactor. Adicionado teste de
+  reflexão em `MembroUseCaseTest` verificando que nenhum campo da classe pertence ao pacote `iam`. Checagens
+  de autorização/autenticação (o foco principal da revisão, dado que a track toca `LeitorVinculoExterno` e
+  `UsuarioAuthorizationService`) foram confirmadas corretas sem ressalvas.
