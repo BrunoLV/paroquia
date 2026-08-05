@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,8 @@ public class ApproveUsuarioUseCase {
                 .orElseThrow(() -> new UsuarioNotFoundException(userId));
 
         usuario.setEnabled(true);
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        usuario.setAtualizadoPor(authentication != null ? authentication.getName() : null);
         if (usuario.getRoles() == null || !usuario.getRoles().contains("ROLE_USER")) {
             if (usuario.getRoles() == null || usuario.getRoles().isBlank()) {
                 usuario.setRoles("ROLE_USER");
