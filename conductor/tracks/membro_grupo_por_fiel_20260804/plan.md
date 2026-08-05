@@ -90,7 +90,7 @@
 - [x] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) descrevendo o vínculo `MembroGrupo`
       por `fielId`, e a distinção entre `AdicionarMembroUseCase` (nunca toca Usuario) e
       `PromoverACoordenadorUseCase` (restrito, pode criar Usuario) `f039f70`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `078c8b4`
 
 ## Phase 7: Validação final e fechamento da track
 - [ ] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
