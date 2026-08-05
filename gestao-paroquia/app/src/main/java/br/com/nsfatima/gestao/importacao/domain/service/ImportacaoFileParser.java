@@ -107,8 +107,6 @@ public class ImportacaoFileParser {
     private String getHeadersParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
             case MEMBRO -> "usuarioUsername,organizacaoNome,papel,igrejaId";
-            case USUARIO -> "nome,username,telefone,dataNascimento,igrejaId,roles,"
-                    + "batizado,primeiraComunhao,crismado,casadoIgrejaCatolica";
             case ORGANIZACAO -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
             case EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
         };
@@ -120,10 +118,6 @@ public class ImportacaoFileParser {
             case MEMBRO -> List.of(
                     "joao.silva@email.com,Pastoral da Comunicação,COORDENADOR,",
                     "maria.souza@email.com,Pastoral da Catequese,MEMBRO,"
-            );
-            case USUARIO -> List.of(
-                    "Carlos Eduardo,carlos.eduardo@email.com,11977776666,1988-03-10,,ROLE_USER,true,true,true,false",
-                    "Ana Beatriz,ana.beatriz@email.com,11966665555,1995-11-25,,ROLE_USER,true,true,false,false"
             );
             case ORGANIZACAO -> List.of(
                     "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,,",

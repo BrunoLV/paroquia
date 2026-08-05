@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.membro.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
@@ -23,6 +25,9 @@ class MembroJpaRepositoryTest {
 
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
+
+    @Autowired
+    private FielJpaRepository fielRepository;
 
     @Test
     @DisplayName("Deve salvar e buscar um membro por ID")
@@ -82,7 +87,7 @@ class MembroJpaRepositoryTest {
         usuario.setId(UUID.randomUUID());
         usuario.setUsername("user_" + UUID.randomUUID() + "@test.com");
         usuario.setPasswordHash("hash");
-        usuario.setNome("Usuario Teste");
+        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository));
         return usuarioRepository.save(usuario);
     }
 

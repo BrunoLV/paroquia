@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.integration;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -34,6 +36,9 @@ class UsuarioDelegatedAdminIntegrationTest {
 
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
+
+    @Autowired
+    private FielJpaRepository fielRepository;
 
     @Autowired
     private MembroOrganizacaoJpaRepository vinculoRepository;
@@ -89,6 +94,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         user.setUsername(username);
         user.setPasswordHash("hash");
         user.setEnabled(true);
+        user.setFielId(FielTestFixtures.criarFiel(fielRepository));
         return usuarioRepository.save(user).getId();
     }
 

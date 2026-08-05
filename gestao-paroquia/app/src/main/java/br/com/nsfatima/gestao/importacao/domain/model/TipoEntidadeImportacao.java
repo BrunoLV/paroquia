@@ -10,8 +10,6 @@ package br.com.nsfatima.gestao.importacao.domain.model;
 public enum TipoEntidadeImportacao {
     /** Vínculo de um usuário já existente a uma organização, com papel organizacional. */
     MEMBRO,
-    /** Cadastro de um novo usuário do sistema (conta + dados sacramentais). */
-    USUARIO,
     /** Cadastro de uma organização na hierarquia paroquial (comunidade, pastoral, conselho etc.). */
     ORGANIZACAO,
     /** Cadastro de um evento de agenda. */

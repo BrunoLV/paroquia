@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
@@ -32,17 +34,20 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     private final MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
     private final UsuarioJpaRepository usuarioRepository;
+    private final FielJpaRepository fielRepository;
 
     public OrganizacaoRepositoryImpl(
             OrganizacaoJpaRepository organizacaoJpaRepository,
             MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository,
             EventoJpaRepository eventoJpaRepository,
             UsuarioJpaRepository usuarioRepository,
+            FielJpaRepository fielRepository,
             MembroJpaRepository membroRepository) {
         this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.membroOrganizacaoJpaRepository = membroOrganizacaoJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.fielRepository = fielRepository;
     }
 
     @Override
@@ -125,7 +130,9 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 .findFirst()
                 .map(m -> {
                     String name = usuarioRepository.findById(m.getUsuarioId())
-                            .map(UsuarioEntity::getNome)
+                            .map(UsuarioEntity::getFielId)
+                            .flatMap(fielRepository::findById)
+                            .map(FielEntity::getNome)
                             .orElse(fallback);
                     return (name != null && !name.trim().isEmpty()) ? name : fallback;
                 })

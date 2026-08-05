@@ -21,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -64,9 +63,6 @@ class ImportacaoServiceTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private OrganizacaoJpaRepository organizacaoJpaRepository;
 
     @Mock
@@ -82,7 +78,6 @@ class ImportacaoServiceTest {
                 usuarioJpaRepository,
                 organizacaoService,
                 eventoJpaRepository,
-                passwordEncoder,
                 organizacaoJpaRepository,
                 pastoralOficialRepository,
                 new ImportacaoFileParser(),
@@ -170,7 +165,7 @@ class ImportacaoServiceTest {
     }
 
     @Test
-    void deveConfirmarImportacaoParaMembroEUsuarioEOrganizacaoEEvento() {
+    void deveConfirmarImportacaoParaMembroEOrganizacaoEEvento() {
         var user = new UsuarioEntity();
         user.setId(UUID.randomUUID());
         var org = new OrganizacaoEntity();
@@ -189,14 +184,6 @@ class ImportacaoServiceTest {
         int countMembro = importacaoService.confirmarImportacao("MEMBRO", List.of(membroMap), "admin");
         assertEquals(1, countMembro);
         verify(createMembroUseCase).execute(any(), eq("admin"));
-
-        Map<String, String> usuarioMap = Map.of(
-                "nome", "Carlos Eduardo",
-                "username", "carlos.eduardo@email.com"
-        );
-        int countUsuario = importacaoService.confirmarImportacao("USUARIO", List.of(usuarioMap), "admin");
-        assertEquals(1, countUsuario);
-        verify(usuarioJpaRepository).save(any());
 
         Map<String, String> orgMap = Map.of(
                 "nome", "Pastoral da Música",
@@ -228,7 +215,7 @@ class ImportacaoServiceTest {
 
         ImportacaoService serviceComAno = new ImportacaoService(
                 createMembroUseCase, membroJpaRepository, usuarioJpaRepository, organizacaoService,
-                eventoJpaRepository, passwordEncoder, organizacaoJpaRepository, pastoralOficialRepository,
+                eventoJpaRepository, organizacaoJpaRepository, pastoralOficialRepository,
                 new ImportacaoFileParser(), anoRepoMock, null, null, null
         );
 

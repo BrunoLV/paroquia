@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -22,6 +24,9 @@ class MembroOrganizacaoJpaRepositoryTest {
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
 
+    @Autowired
+    private FielJpaRepository fielRepository;
+
     @Test
     void deveBuscarActiveVinculosPorUsuarioId() {
         UUID userId = UUID.randomUUID();
@@ -29,6 +34,7 @@ class MembroOrganizacaoJpaRepositoryTest {
         user.setId(userId);
         user.setUsername("membro_teste");
         user.setPasswordHash("hash");
+        user.setFielId(FielTestFixtures.criarFiel(fielRepository));
         usuarioRepository.save(user);
 
         UUID orgId = UUID.randomUUID();

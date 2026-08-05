@@ -71,6 +71,18 @@ public class FielEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean ativo = true;
 
+    @Column(name = "batizado", nullable = false)
+    private boolean batizado;
+
+    @Column(name = "primeira_comunhao", nullable = false)
+    private boolean primeiraComunhao;
+
+    @Column(name = "crismado", nullable = false)
+    private boolean crismado;
+
+    @Column(name = "casado_igreja_catolica", nullable = false)
+    private boolean casadoIgrejaCatolica;
+
     @Column(name = "criado_em_utc", nullable = false)
     private Instant criadoEmUtc;
 
@@ -164,6 +176,38 @@ public class FielEntity extends BaseVersionedEntity {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public boolean isBatizado() {
+        return batizado;
+    }
+
+    public void setBatizado(boolean batizado) {
+        this.batizado = batizado;
+    }
+
+    public boolean isPrimeiraComunhao() {
+        return primeiraComunhao;
+    }
+
+    public void setPrimeiraComunhao(boolean primeiraComunhao) {
+        this.primeiraComunhao = primeiraComunhao;
+    }
+
+    public boolean isCrismado() {
+        return crismado;
+    }
+
+    public void setCrismado(boolean crismado) {
+        this.crismado = crismado;
+    }
+
+    public boolean isCasadoIgrejaCatolica() {
+        return casadoIgrejaCatolica;
+    }
+
+    public void setCasadoIgrejaCatolica(boolean casadoIgrejaCatolica) {
+        this.casadoIgrejaCatolica = casadoIgrejaCatolica;
     }
 
     public Instant getCriadoEmUtc() {

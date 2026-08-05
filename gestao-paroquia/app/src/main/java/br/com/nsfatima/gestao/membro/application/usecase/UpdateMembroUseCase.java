@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
@@ -24,6 +26,7 @@ public class UpdateMembroUseCase {
     private final MembroJpaRepository repository;
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
+    private final FielJpaRepository fielRepository;
     private final MembroMapper mapper;
     private final MembroAuditPublisher auditPublisher;
 
@@ -31,11 +34,13 @@ public class UpdateMembroUseCase {
             MembroJpaRepository repository,
             UsuarioJpaRepository usuarioRepository,
             OrganizacaoJpaRepository organizacaoRepository,
+            FielJpaRepository fielRepository,
             MembroMapper mapper,
             MembroAuditPublisher auditPublisher) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
+        this.fielRepository = fielRepository;
         this.mapper = mapper;
         this.auditPublisher = auditPublisher;
     }
@@ -85,11 +90,15 @@ public class UpdateMembroUseCase {
         MembroEntity saved = repository.save(entity);
 
         // Sincronizar liderança com Organizacao, se aplicável
-        if ("COORDENADOR".equalsIgnoreCase(request.papel())) {
-            organizacao.setCoordenador(usuario.getNome());
-            organizacaoRepository.save(organizacao);
-        } else if ("VICE_COORDENADOR".equalsIgnoreCase(request.papel())) {
-            organizacao.setViceCoordenador(usuario.getNome());
+        if ("COORDENADOR".equalsIgnoreCase(request.papel()) || "VICE_COORDENADOR".equalsIgnoreCase(request.papel())) {
+            String nomeUsuario = fielRepository.findById(usuario.getFielId())
+                    .map(FielEntity::getNome)
+                    .orElse(null);
+            if ("COORDENADOR".equalsIgnoreCase(request.papel())) {
+                organizacao.setCoordenador(nomeUsuario);
+            } else {
+                organizacao.setViceCoordenador(nomeUsuario);
+            }
             organizacaoRepository.save(organizacao);
         }
 

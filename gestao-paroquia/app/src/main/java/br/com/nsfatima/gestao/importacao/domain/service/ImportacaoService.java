@@ -5,7 +5,6 @@ import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoItemResultadoDTO;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
@@ -26,7 +25,6 @@ import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,7 +61,6 @@ public class ImportacaoService {
     private final UsuarioJpaRepository usuarioJpaRepository;
     private final OrganizacaoService organizacaoService;
     private final EventoJpaRepository eventoJpaRepository;
-    private final PasswordEncoder passwordEncoder;
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final ImportacaoFileParser importacaoFileParser;
@@ -77,7 +74,6 @@ public class ImportacaoService {
                               UsuarioJpaRepository usuarioJpaRepository,
                               OrganizacaoService organizacaoService,
                               EventoJpaRepository eventoJpaRepository,
-                              PasswordEncoder passwordEncoder,
                               OrganizacaoJpaRepository organizacaoJpaRepository,
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
                               ImportacaoFileParser importacaoFileParser,
@@ -89,7 +85,6 @@ public class ImportacaoService {
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.passwordEncoder = passwordEncoder;
         this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.pastoralOficialRepository = pastoralOficialRepository;
         this.importacaoFileParser = importacaoFileParser;
@@ -165,7 +160,6 @@ public class ImportacaoService {
         }
         return switch (tipoEntidade) {
             case MEMBRO -> validarMembro(data);
-            case USUARIO -> validarUsuario(data);
             case ORGANIZACAO -> validarOrganizacao(data);
             case EVENTO -> validarEvento(data);
         };
@@ -198,21 +192,6 @@ public class ImportacaoService {
 
         if (data.getOrDefault("papel", "").isBlank()) {
             return "O campo 'papel' é obrigatório.";
-        }
-        return null;
-    }
-
-    /**
-     * Valida uma linha de importação de USUARIO: apenas nome e username são obrigatórios —
-     * demais campos (telefone, sacramentos, roles) recebem defaults seguros na importação
-     * ({@link #importUsuario}), então não bloqueiam a linha aqui.
-     */
-    private String validarUsuario(Map<String, String> data) {
-        if (data.getOrDefault(KEY_NOME, "").isBlank()) {
-            return ERR_NOME_REQUIRED;
-        }
-        if (data.getOrDefault("username", "").isBlank()) {
-            return "O campo 'username' é obrigatório.";
         }
         return null;
     }
@@ -274,7 +253,6 @@ public class ImportacaoService {
             try {
                 switch (tipoEntidade) {
                     case MEMBRO -> importMembro(data, actor);
-                    case USUARIO -> importUsuario(data);
                     case ORGANIZACAO -> importOrganizacao(data);
                     case EVENTO -> importEvento(data);
                     default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
@@ -314,34 +292,6 @@ public class ImportacaoService {
                         user.getId(), org.getId(), papel,
                         LocalDate.now(), igrejaId, true),
                 actor);
-    }
-
-    /**
-     * Cria um novo usuário a partir de uma linha do arquivo. Toda conta importada recebe a
-     * senha temporária fixa "Mudar123!" (hash gerado via {@code passwordEncoder}) — o usuário
-     * é obrigado a trocá-la no primeiro acesso — e, na ausência de "roles" na linha, o papel
-     * padrão {@code ROLE_USER}. Flags sacramentais (batizado, primeira comunhão, crisma,
-     * casamento católico) são opcionais e assumem {@code false} quando ausentes/ilegíveis.
-     */
-    private void importUsuario(Map<String, String> data) {
-        UsuarioEntity entity = new UsuarioEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setNome(data.get(KEY_NOME));
-        entity.setUsername(data.get("username"));
-        entity.setPasswordHash(passwordEncoder.encode("Mudar123!"));
-        entity.setTelefone(data.get("telefone"));
-        entity.setDataNascimento(parseLocalDate(data.get("dataNascimento")));
-        entity.setRoles(
-                Optional.ofNullable(data.get("roles"))
-                        .filter(r -> !r.isBlank())
-                        .orElse("ROLE_USER"));
-        entity.setIgrejaId(parseUuid(data.get(KEY_IGREJA_ID)));
-        entity.setBatizado(parseBoolean(data.get("batizado")));
-        entity.setPrimeiraComunhao(parseBoolean(data.get("primeiraComunhao")));
-        entity.setCrismado(parseBoolean(data.get("crismado")));
-        entity.setCasadoIgrejaCatolica(parseBoolean(data.get("casadoIgrejaCatolica")));
-        entity.setEnabled(true);
-        usuarioJpaRepository.save(entity);
     }
 
     /**
@@ -550,21 +500,6 @@ public class ImportacaoService {
         return null;
     }
 
-    private LocalDate parseLocalDate(String input) {
-        if (input == null || input.isBlank()) {
-            return null;
-        }
-        for (DateTimeFormatter fmt : List.of(
-                DateTimeFormatter.ISO_LOCAL_DATE,
-                DateTimeFormatter.ofPattern("dd/MM/yyyy"))) {
-            try {
-                return LocalDate.parse(input.trim(), fmt);
-            } catch (Exception ignored) {
-            }
-        }
-        return null;
-    }
-
     private Instant parseInstant(String input) {
         if (input == null || input.isBlank()) {
             return null;
@@ -587,14 +522,6 @@ public class ImportacaoService {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private boolean parseBoolean(String input) {
-        if (input == null || input.isBlank()) {
-            return false;
-        }
-        String trimmed = input.trim().toLowerCase();
-        return "true".equals(trimmed) || "1".equals(trimmed) || "sim".equals(trimmed) || "s".equals(trimmed);
     }
 
     /**

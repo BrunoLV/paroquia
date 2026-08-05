@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.integration;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,9 @@ class UsuarioAdminApiIntegrationTest {
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
 
+    @Autowired
+    private FielJpaRepository fielRepository;
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveAlternarUsuarioStatus() throws Exception {
@@ -33,6 +38,7 @@ class UsuarioAdminApiIntegrationTest {
         user.setUsername("user_to_disable");
         user.setPasswordHash("hash");
         user.setEnabled(true);
+        user.setFielId(FielTestFixtures.criarFiel(fielRepository));
         usuarioRepository.save(user);
 
         mockMvc.perform(patch("/api/v1/usuarios/" + user.getId() + "/status")

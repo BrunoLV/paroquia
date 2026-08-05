@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
@@ -26,6 +28,7 @@ public class CreateMembroUseCase {
     private final MembroJpaRepository repository;
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
+    private final FielJpaRepository fielRepository;
     private final MembroMapper mapper;
     private final MembroAuditPublisher auditPublisher;
 
@@ -33,11 +36,13 @@ public class CreateMembroUseCase {
             MembroJpaRepository repository,
             UsuarioJpaRepository usuarioRepository,
             OrganizacaoJpaRepository organizacaoRepository,
+            FielJpaRepository fielRepository,
             MembroMapper mapper,
             MembroAuditPublisher auditPublisher) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
+        this.fielRepository = fielRepository;
         this.mapper = mapper;
         this.auditPublisher = auditPublisher;
     }
@@ -78,7 +83,10 @@ public class CreateMembroUseCase {
         MembroEntity saved = repository.save(entity);
 
         // Synchronize leadership with Organizacao if applicable
-        syncLeadership(request.papel(), usuario.getNome(), organizacao);
+        String nomeUsuario = fielRepository.findById(usuario.getFielId())
+                .map(FielEntity::getNome)
+                .orElse(null);
+        syncLeadership(request.papel(), nomeUsuario, organizacao);
 
         auditPublisher.publish(actor, "criar", saved.getId().toString(), "sucesso");
 

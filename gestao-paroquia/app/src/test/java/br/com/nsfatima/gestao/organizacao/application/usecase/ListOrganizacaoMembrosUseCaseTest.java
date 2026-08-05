@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
@@ -30,6 +32,8 @@ class ListOrganizacaoMembrosUseCaseTest {
     @Mock
     private UsuarioJpaRepository usuarioRepository;
     @Mock
+    private FielJpaRepository fielRepository;
+    @Mock
     private MembroJpaRepository membroRepository;
     @Mock
     private OrganizacaoJpaRepository organizacaoRepository;
@@ -41,6 +45,7 @@ class ListOrganizacaoMembrosUseCaseTest {
         useCase = new ListOrganizacaoMembrosUseCase(
                 vinculoRepository,
                 usuarioRepository,
+                fielRepository,
                 membroRepository,
                 organizacaoRepository
         );
@@ -51,6 +56,7 @@ class ListOrganizacaoMembrosUseCaseTest {
     void deveListarOrganizacaoMembrosResolvingUsuarioEMembroNomes() {
         UUID orgId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
+        UUID fielId = UUID.randomUUID();
 
         MembroOrganizacaoEntity memberEntity = new MembroOrganizacaoEntity();
         memberEntity.setId(UUID.randomUUID());
@@ -62,11 +68,16 @@ class ListOrganizacaoMembrosUseCaseTest {
 
         UsuarioEntity userEntity = new UsuarioEntity();
         userEntity.setId(userId);
-        userEntity.setNome("João da Silva");
+        userEntity.setFielId(fielId);
+
+        FielEntity fielEntity = new FielEntity();
+        fielEntity.setId(fielId);
+        fielEntity.setNome("João da Silva");
 
         when(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(orgId)).thenReturn(List.of(memberEntity));
         when(vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(orgId)).thenReturn(Collections.emptyList());
         when(usuarioRepository.findById(userId)).thenReturn(Optional.of(userEntity));
+        when(fielRepository.findById(fielId)).thenReturn(Optional.of(fielEntity));
         when(organizacaoRepository.findById(orgId)).thenReturn(Optional.empty());
 
         List<OrganizacaoMembroResponse> response = useCase.execute(orgId);
