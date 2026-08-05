@@ -96,10 +96,11 @@ public class UsuarioController {
     /*
       Registra novos usuários no sistema, permitindo que iniciem o processo de integração e obtenção de acessos.
       <p>
-      Exemplo: POST /api/v1/usuarios { "username": "joao.silva", "password": "SafePassword123" }
+      Exemplo: POST /api/v1/usuarios { "username": "joao.silva", "password": "SafePassword123",
+      "fielId": "..." }
      */
     public UUID create(@RequestBody @Valid CreateUsuarioRequest request) {
-        return createUsuarioUseCase.execute(request.username(), request.password());
+        return createUsuarioUseCase.execute(request.username(), request.password(), request.fielId());
     }
 
     @GetMapping("/{id}")
