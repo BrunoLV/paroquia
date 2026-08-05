@@ -70,3 +70,11 @@
   `ApproveUsuarioUseCase` 67% — este último abaixo da meta, mas por branches pré-existentes não
   relacionadas a esta track (lógica de append de `ROLE_USER`); as linhas adicionadas por esta track
   (população de `atualizadoPor`) estão cobertas pelo novo teste.
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions `0819060`
+
+  Added `fk_usuarios_fiel` FK constraint (`usuarios.fiel_id` → `fieis.id`) to `V057`. Fixed
+  `UsuarioJpaRepositoryTest.devePersistirComFielIdECamposDeAuditoria` to persist a real `FielEntity`
+  first, since it previously used a dangling random UUID that the new constraint correctly rejects. The
+  other review finding (Fiel.email not encrypted) required no change — it matches the approved spec.
