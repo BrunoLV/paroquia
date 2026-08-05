@@ -23,18 +23,32 @@
   commit `e5a0874`.
 
 ## Phase 2: Remover dados pessoais de `UsuarioEntity`
-- [ ] Task: Escrever/ajustar testes (Red) que capturam o comportamento atual de `UsuarioResponse`,
+- [x] Task: Escrever/ajustar testes (Red) que capturam o comportamento atual de `UsuarioResponse`,
       `MembroMapper` e demais consumidores listados em FR3, usando dados agora vindos de um `Fiel` associado
-      (fixtures de teste passam a criar um `Fiel` + `Usuario` vinculado)
-- [ ] Task: Criar migração Flyway removendo as colunas pessoais (`nome`, `telefone`, `data_nascimento`,
-      `batizado`, `primeira_comunhao`, `crismado`, `casado_igreja_catolica`) de `usuarios`
-- [ ] Task: Remover os campos e converters correspondentes de `UsuarioEntity` (Green)
-- [ ] Task: Atualizar `MembroMapper` para resolver nome/telefone via `Fiel` (Green)
-- [ ] Task: Atualizar `UsuarioResponse`/mapeamento em `UsuarioController`/`UsuarioAdminController`,
-      `UpdateUsuarioUseCase`, `GetUsuarioUseCase`, `ListUsuariosUseCase` para resolver via `Fiel`, mantendo o
-      formato de resposta (Green)
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      (fixtures de teste passam a criar um `Fiel` + `Usuario` vinculado) `67727ce`
+- [x] Task: Criar migração Flyway removendo as colunas pessoais (`nome`, `telefone`, `data_nascimento`,
+      `batizado`, `primeira_comunhao`, `crismado`, `casado_igreja_catolica`) de `usuarios` (V060) `67727ce`
+- [x] Task: Remover os campos e converters correspondentes de `UsuarioEntity` (Green) `67727ce`
+- [x] Task: Atualizar `MembroMapper` para resolver nome/telefone via `Fiel` (Green) `67727ce`
+- [x] Task: Atualizar `UsuarioResponse`/mapeamento em `UsuarioController`, `UpdateUsuarioUseCase`,
+      `GetUsuarioUseCase`, `ListUsuariosUseCase` para resolver via `Fiel`, mantendo o formato de resposta
+      (Green) `67727ce`
+- [x] Task: Refatorar se necessário — corrigidos também `CreateMembroUseCase`/`UpdateMembroUseCase`
+      (sincronização de liderança), `ListOrganizacaoMembrosUseCase` e `OrganizacaoRepositoryImpl` (resolução
+      dinâmica de nome de coordenador/vice-coordenador), não listados no FR3 original mas quebrados pela
+      remoção dos campos `67727ce`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+  **Escopo fundido com a Phase 4 (confirmado com o usuário):** `RegistrarUsuarioUseCase` chamava
+  diretamente os setters que esta fase remove, então sua remoção (originalmente Phase 4) teve que
+  acontecer no mesmo commit — não é possível compilar um estado intermediário onde a Phase 2 está pronta
+  mas a Phase 4 não. Ver detalhes completos na Phase 4 abaixo e no git note do commit `67727ce`.
+
+  **Outros dois desvios não previstos:** o import em lote de USUARIO (`ImportacaoService`) também setava
+  os mesmos campos e não tinha coluna de CPF (exigido por `Fiel`) — removido, mantendo MEMBRO/ORGANIZACAO/
+  EVENTO intocados. E `UsuarioPerfilJpaRepository.findByNomeIgnoreCase`, que buscava pelo `nome`
+  criptografado de `Usuario`, nunca funcionava de fato (mesmo problema de IV aleatório do CPF na Track 1) —
+  removido como dead code, não como regressão de comportamento.
 
 ## Phase 3: Criação de `Usuario` exige `Fiel` existente
 - [ ] Task: Escrever testes (Red) para `CreateUsuarioUseCase` cobrindo: sucesso com `fielId` existente,
@@ -44,14 +58,19 @@
 - [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Remoção do autocadastro público
-- [ ] Task: Remover/ajustar testes existentes de `RegistrarUsuarioUseCase`/endpoint `/registrar` (Red —
-      confirmar que o endpoint deixa de responder 200/201 e passa a 404)
-- [ ] Task: Remover `RegistrarUsuarioUseCase`, `RegistrarUsuarioRequest`, o método/mapping `/registrar` em
-      `UsuarioController`, e a regra `permitAll()` correspondente em `SecurityConfig` (Green)
-- [ ] Task: Revisar `ApproveUsuarioUseCase`: ajustar leitura de dados pessoais para vir do `Fiel` associado
-      ao `Usuario` pendente, com teste cobrindo o fluxo de aprovação
-- [ ] Task: Refatorar se necessário
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Remover/ajustar testes existentes de `RegistrarUsuarioUseCase`/endpoint `/registrar` (Red —
+      confirmar que o endpoint deixa de responder 200/201 e passa a 404) `67727ce`
+- [x] Task: Remover `RegistrarUsuarioUseCase`, `RegistrarUsuarioRequest`, o método/mapping `/registrar` em
+      `UsuarioController`, e a regra `permitAll()` correspondente em `SecurityConfig` (Green) `67727ce`
+- [x] Task: Revisar `ApproveUsuarioUseCase`: ajustar leitura de dados pessoais para vir do `Fiel` associado
+      ao `Usuario` pendente, com teste cobrindo o fluxo de aprovação — revisado: nunca leu dados pessoais
+      diretamente (só `enabled`/`roles`), nenhuma mudança de código necessária além do ajuste de Javadoc;
+      cobertura existente (`ApproveUsuarioUseCaseTest`, da Track 1) permanece válida `67727ce`
+- [x] Task: Refatorar se necessário — não necessário
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+
+  **Executada antecipadamente dentro da Phase 2** por dependência técnica rígida — ver nota acima. Esta
+  fase fica registrada aqui por completude do plano, mas todo o trabalho já está no commit `67727ce`.
 
 ## Phase 5: Documentação para agentes de IA
 - [ ] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) documentando que `Usuario` não
