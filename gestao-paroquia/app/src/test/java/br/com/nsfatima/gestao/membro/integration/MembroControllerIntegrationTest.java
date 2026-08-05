@@ -146,6 +146,25 @@ class MembroControllerIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @DisplayName("Deve promover um Fiel membro a coordenador criando um novo Usuario")
+    void devePromoverFielACoordenadorCriandoUsuario() throws Exception {
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Carlos Promovido");
+        createMembro(fielId);
+
+        var request = new br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest(
+                fielId, orgId, "coord-pastoral-local", "carlos.promovido", "senhaForte123");
+
+        mockMvc.perform(post("/api/v1/membros/promover-coordenador")
+                        .with(authentication(getAdminAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usuarioCriado").value(true))
+                .andExpect(jsonPath("$.fielId").value(fielId.toString()));
+    }
+
     private void createMembro(UUID fielId) {
         var entity = new br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
