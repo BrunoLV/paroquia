@@ -61,7 +61,7 @@
 - [x] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
 - [x] Task: Verificar cobertura de código do novo pacote `fiel/` e dos trechos alterados em `iam/`
       (target >80%, conforme workflow.md) `6cfebb1`
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `f418d65`
 
   **Resultado da cobertura:** `fiel.domain.model` 100%, `fiel.infrastructure.persistence.entity` 92% (só
   ficou abaixo de 100% por caminhos defensivos triviais de getters não exercitados),
