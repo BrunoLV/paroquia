@@ -87,10 +87,10 @@
   **Executada junto às Phases 1-4** — ver nota na Phase 4 acima.
 
 ## Phase 6: Documentação para agentes de IA
-- [ ] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) descrevendo o vínculo `MembroGrupo`
+- [x] Task: Atualizar `gestao-paroquia/AGENTS.md` (e/ou skill relevante) descrevendo o vínculo `MembroGrupo`
       por `fielId`, e a distinção entre `AdicionarMembroUseCase` (nunca toca Usuario) e
-      `PromoverACoordenadorUseCase` (restrito, pode criar Usuario)
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+      `PromoverACoordenadorUseCase` (restrito, pode criar Usuario) `f039f70`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 7: Validação final e fechamento da track
 - [ ] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
