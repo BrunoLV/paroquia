@@ -6,7 +6,7 @@
 - [x] Task: Confirmar que a Track 1 está implementada na base atual (agregado `Fiel`, `UsuarioEntity.fielId`
       nullable, campos de auditoria) — se não estiver, HALT e avisar o usuário — confirmado: PR #5 mergeado
       em master antes desta branch ser criada
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `df92e64`
 
 ## Phase 1: `fielId` obrigatório
 - [ ] Task: Escrever teste (Red) confirmando que persistir `UsuarioEntity` sem `fielId` falha por violação
