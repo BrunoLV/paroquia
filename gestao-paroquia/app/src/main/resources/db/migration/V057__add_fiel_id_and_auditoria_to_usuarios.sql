@@ -1,4 +1,5 @@
 ALTER TABLE calendario.usuarios ADD COLUMN IF NOT EXISTS fiel_id UUID;
+ALTER TABLE calendario.usuarios ADD CONSTRAINT fk_usuarios_fiel FOREIGN KEY (fiel_id) REFERENCES calendario.fieis(id);
 ALTER TABLE calendario.usuarios ADD COLUMN IF NOT EXISTS criado_em_utc TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE calendario.usuarios ADD COLUMN IF NOT EXISTS atualizado_em_utc TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE calendario.usuarios ADD COLUMN IF NOT EXISTS criado_por VARCHAR(255);
