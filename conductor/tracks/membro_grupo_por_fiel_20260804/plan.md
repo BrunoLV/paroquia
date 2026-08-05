@@ -5,7 +5,7 @@
       feat/membro-grupo-por-fiel-<data>`) — branch `feat/membro-grupo-por-fiel-20260805`
 - [x] Task: Confirmar que as Tracks 1 e 2 estão implementadas na base atual — se não estiverem, HALT e
       avisar o usuário — confirmado: PR #5 e PR #6 mergeados em master antes desta branch ser criada
-- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `d1625e3`
 
   **Decisões de design confirmadas com o usuário antes da Phase 1 (afetam FR4/FR6 diretamente):**
   1. `MembroGrupo.papel` é tipado como `PapelOrganizacional` (reuso do enum existente, sem valor genérico
