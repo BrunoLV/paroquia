@@ -6,12 +6,17 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -108,5 +113,65 @@ class RegistrarUsuarioUseCaseTest {
         assertEquals("João Silva", saved.getNome());
         assertEquals("joao@example.com", saved.getUsername());
         assertEquals(igrejaId, saved.getIgrejaId());
+    }
+
+    @Test
+    void deveUsarOProprioUsernameComoAuditoriaQuandoAutocadastroPublicoSemAutenticacao() {
+        UUID igrejaId = UUID.randomUUID();
+        OrganizacaoEntity igrejaEntity = new OrganizacaoEntity();
+        igrejaEntity.setId(igrejaId);
+        igrejaEntity.setNome("Matriz Nossa Senhora de Fátima");
+        igrejaEntity.setTipo(TipoOrganizacao.MATRIZ);
+
+        when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.of(igrejaEntity));
+        when(usuarioRepository.findByUsernameIgnoreCase("joao@example.com")).thenReturn(Optional.empty());
+
+        RegistrarUsuarioRequest request = new RegistrarUsuarioRequest(
+                "João Silva", "joao@example.com", "password123", "11999999999",
+                LocalDate.of(1990, 1, 1), igrejaId);
+
+        useCase.execute(request);
+
+        ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
+        verify(usuarioRepository).save(captor.capture());
+
+        UsuarioEntity saved = captor.getValue();
+        assertEquals("joao@example.com", saved.getCriadoPor());
+        assertEquals("joao@example.com", saved.getAtualizadoPor());
+    }
+
+    @Test
+    void deveUsarOActorAutenticadoComoAuditoriaQuandoAdminCadastraPorTerceiro() {
+        UUID igrejaId = UUID.randomUUID();
+        OrganizacaoEntity igrejaEntity = new OrganizacaoEntity();
+        igrejaEntity.setId(igrejaId);
+        igrejaEntity.setNome("Matriz Nossa Senhora de Fátima");
+        igrejaEntity.setTipo(TipoOrganizacao.MATRIZ);
+
+        when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.of(igrejaEntity));
+        when(usuarioRepository.findByUsernameIgnoreCase("joao@example.com")).thenReturn(Optional.empty());
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        "admin.paroquia", "senha",
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+
+        RegistrarUsuarioRequest request = new RegistrarUsuarioRequest(
+                "João Silva", "joao@example.com", "password123", "11999999999",
+                LocalDate.of(1990, 1, 1), igrejaId);
+
+        useCase.execute(request);
+
+        ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
+        verify(usuarioRepository).save(captor.capture());
+
+        UsuarioEntity saved = captor.getValue();
+        assertEquals("admin.paroquia", saved.getCriadoPor());
+        assertEquals("admin.paroquia", saved.getAtualizadoPor());
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 }

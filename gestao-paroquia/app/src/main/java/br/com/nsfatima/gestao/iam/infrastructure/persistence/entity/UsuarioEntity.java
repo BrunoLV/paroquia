@@ -7,8 +7,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -66,6 +69,26 @@ public class UsuarioEntity extends BaseVersionedEntity {
 
     @Column(name = "casado_igreja_catolica", nullable = false)
     private boolean casadoIgrejaCatolica;
+
+    /**
+     * Referência ao {@code Fiel} (pessoa física) correspondente no Contexto Paroquial. Nullable até que a
+     * decoupling completa dos dados pessoais (ver track {@code usuario_fiel_decoupling}) torne este campo
+     * obrigatório — o {@code username} deste Usuario é imutável e independente do e-mail de contato do Fiel.
+     */
+    @Column(name = "fiel_id")
+    private UUID fielId;
+
+    @Column(name = "criado_em_utc", nullable = false)
+    private Instant criadoEmUtc;
+
+    @Column(name = "atualizado_em_utc", nullable = false)
+    private Instant atualizadoEmUtc;
+
+    @Column(name = "criado_por")
+    private String criadoPor;
+
+    @Column(name = "atualizado_por")
+    private String atualizadoPor;
 
     public UUID getId() {
         return id;
@@ -169,6 +192,68 @@ public class UsuarioEntity extends BaseVersionedEntity {
 
     public void setCasadoIgrejaCatolica(boolean casadoIgrejaCatolica) {
         this.casadoIgrejaCatolica = casadoIgrejaCatolica;
+    }
+
+    public UUID getFielId() {
+        return fielId;
+    }
+
+    public void setFielId(UUID fielId) {
+        this.fielId = fielId;
+    }
+
+    public Instant getCriadoEmUtc() {
+        return criadoEmUtc;
+    }
+
+    public void setCriadoEmUtc(Instant criadoEmUtc) {
+        this.criadoEmUtc = criadoEmUtc;
+    }
+
+    public Instant getAtualizadoEmUtc() {
+        return atualizadoEmUtc;
+    }
+
+    public void setAtualizadoEmUtc(Instant atualizadoEmUtc) {
+        this.atualizadoEmUtc = atualizadoEmUtc;
+    }
+
+    public String getCriadoPor() {
+        return criadoPor;
+    }
+
+    public void setCriadoPor(String criadoPor) {
+        this.criadoPor = criadoPor;
+    }
+
+    public String getAtualizadoPor() {
+        return atualizadoPor;
+    }
+
+    public void setAtualizadoPor(String atualizadoPor) {
+        this.atualizadoPor = atualizadoPor;
+    }
+
+    /**
+     * Garante {@code criadoEmUtc}/{@code atualizadoEmUtc} preenchidos mesmo quando o chamador não os define
+     * explicitamente — essas colunas são {@code NOT NULL}, e nem todo ponto que cria um {@code Usuario} (ex.:
+     * fixtures de teste, seeds) passa pelos casos de uso que populam auditoria de forma consciente
+     * (ver {@code CreateUsuarioUseCase}, {@code UpdateUsuarioUseCase}).
+     */
+    @PrePersist
+    void preencherAuditoriaNaCriacao() {
+        Instant agora = Instant.now();
+        if (criadoEmUtc == null) {
+            criadoEmUtc = agora;
+        }
+        if (atualizadoEmUtc == null) {
+            atualizadoEmUtc = agora;
+        }
+    }
+
+    @PreUpdate
+    void atualizarTimestampNaModificacao() {
+        atualizadoEmUtc = Instant.now();
     }
 }
 

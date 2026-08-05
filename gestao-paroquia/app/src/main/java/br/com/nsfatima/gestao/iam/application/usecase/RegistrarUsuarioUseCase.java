@@ -89,6 +89,12 @@ public class RegistrarUsuarioUseCase {
 
         usuario.setRoles("ROLE_USER"); // Papel padrão não administrativo
 
+        // Autocadastro público não tem actor autenticado no caso comum (a própria pessoa se registrando);
+        // quando um admin/pároco cadastra em nome de terceiro, usamos o actor autenticado como auditoria.
+        String actor = (isAdminOrParoco && auth != null) ? auth.getName() : request.username();
+        usuario.setCriadoPor(actor);
+        usuario.setAtualizadoPor(actor);
+
         usuarioRepository.save(usuario);
 
         return usuarioId;

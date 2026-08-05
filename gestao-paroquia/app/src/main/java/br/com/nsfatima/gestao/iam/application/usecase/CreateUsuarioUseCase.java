@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,15 @@ public class CreateUsuarioUseCase {
         entity.setPasswordHash(passwordEncoder.encode(rawPassword));
         entity.setEnabled(true);
 
+        String actor = resolveActor();
+        entity.setCriadoPor(actor);
+        entity.setAtualizadoPor(actor);
+
         return usuarioRepository.save(entity).getId();
+    }
+
+    private String resolveActor() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null ? authentication.getName() : null;
     }
 }

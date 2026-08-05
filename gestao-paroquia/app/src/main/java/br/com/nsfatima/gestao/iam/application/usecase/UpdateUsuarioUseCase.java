@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,9 @@ public class UpdateUsuarioUseCase {
         if (enabled != null) {
             entity.setEnabled(enabled);
         }
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        entity.setAtualizadoPor(authentication != null ? authentication.getName() : null);
+
         usuarioRepository.save(entity);
     }
 }
