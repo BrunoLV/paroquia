@@ -51,9 +51,8 @@ class OrganizacaoDynamicResolverIntegrationTest {
         coord.setId(UUID.randomUUID());
         coord.setUsername("coord." + UUID.randomUUID() + "@example.com");
         coord.setPasswordHash("hash");
-        coord.setNome("João da Silva Coordenador");
         coord.setEnabled(true);
-        coord.setFielId(FielTestFixtures.criarFiel(fielRepository));
+        coord.setFielId(FielTestFixtures.criarFiel(fielRepository, "João da Silva Coordenador"));
         usuarioRepository.save(coord);
 
         // Create vice coordinator user
@@ -61,9 +60,8 @@ class OrganizacaoDynamicResolverIntegrationTest {
         vice.setId(UUID.randomUUID());
         vice.setUsername("vice." + UUID.randomUUID() + "@example.com");
         vice.setPasswordHash("hash");
-        vice.setNome("Maria de Souza Vice");
         vice.setEnabled(true);
-        vice.setFielId(FielTestFixtures.criarFiel(fielRepository));
+        vice.setFielId(FielTestFixtures.criarFiel(fielRepository, "Maria de Souza Vice"));
         usuarioRepository.save(vice);
 
         // Create organization

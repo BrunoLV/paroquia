@@ -16,7 +16,8 @@ class FielTest {
 
         Fiel fiel = new Fiel(
                 id, "Ana Costa", "12345678900", dataNascimento,
-                "ana@example.com", "11977776666", "Rua Nova, 10", Vocacao.LEIGO, true);
+                "ana@example.com", "11977776666", "Rua Nova, 10", Vocacao.LEIGO, true,
+                true, true, false, false);
 
         assertThat(fiel.id()).isEqualTo(id);
         assertThat(fiel.nome()).isEqualTo("Ana Costa");
@@ -27,6 +28,10 @@ class FielTest {
         assertThat(fiel.endereco()).isEqualTo("Rua Nova, 10");
         assertThat(fiel.vocacao()).isEqualTo(Vocacao.LEIGO);
         assertThat(fiel.ativo()).isTrue();
+        assertThat(fiel.batizado()).isTrue();
+        assertThat(fiel.primeiraComunhao()).isTrue();
+        assertThat(fiel.crismado()).isFalse();
+        assertThat(fiel.casadoIgrejaCatolica()).isFalse();
     }
 
     @Test
@@ -35,9 +40,11 @@ class FielTest {
         LocalDate dataNascimento = LocalDate.of(1978, 7, 22);
 
         Fiel a = new Fiel(id, "Ana Costa", "12345678900", dataNascimento,
-                "ana@example.com", "11977776666", "Rua Nova, 10", Vocacao.LEIGO, true);
+                "ana@example.com", "11977776666", "Rua Nova, 10", Vocacao.LEIGO, true,
+                true, true, false, false);
         Fiel b = new Fiel(id, "Ana Costa", "12345678900", dataNascimento,
-                "ana@example.com", "11977776666", "Rua Nova, 10", Vocacao.LEIGO, true);
+                "ana@example.com", "11977776666", "Rua Nova, 10", Vocacao.LEIGO, true,
+                true, true, false, false);
 
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());

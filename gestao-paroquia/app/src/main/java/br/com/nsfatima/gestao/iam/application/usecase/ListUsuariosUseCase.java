@@ -1,6 +1,9 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
@@ -9,26 +12,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * Lista todos os usuários cadastrados no sistema para fins de auditoria e gestão administrativa global
  * (endpoint restrito a admin/clero pároco/coordenador de conselho). Resolve o nome de exibição da
- * igreja/comunidade de cada usuário, mas não carrega seus vínculos organizacionais individuais — para não
- * pagar o custo de N+1 consultas ao listar todos os usuários.
+ * igreja/comunidade e os dados cadastrais pastorais (via {@code Fiel} vinculado) de cada usuário, mas não
+ * carrega seus vínculos organizacionais individuais — para não pagar o custo de N+1 consultas ao listar
+ * todos os usuários.
  */
 @Service
 public class ListUsuariosUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
+    private final FielJpaRepository fielRepository;
 
     public ListUsuariosUseCase(
             UsuarioJpaRepository usuarioRepository,
-            OrganizacaoJpaRepository organizacaoRepository) {
+            OrganizacaoJpaRepository organizacaoRepository,
+            FielJpaRepository fielRepository) {
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
+        this.fielRepository = fielRepository;
     }
 
     /**
@@ -39,8 +47,19 @@ public class ListUsuariosUseCase {
      */
     @Transactional(readOnly = true)
     public List<UsuarioResponse> execute() {
-        return usuarioRepository.findAll().stream()
+        var usuarios = usuarioRepository.findAll();
+        var fieisPorId = fielRepository.findAllById(
+                        usuarios.stream()
+                                .map(UsuarioEntity::getFielId)
+                                .filter(Objects::nonNull)
+                                .toList())
+                .stream()
+                .collect(Collectors.toMap(FielEntity::getId, f -> f));
+
+        return usuarios.stream()
                 .map(u -> {
+                    FielEntity fiel = fieisPorId.get(u.getFielId());
+
                     UUID igrejaId = u.getIgrejaId();
                     String igrejaNome = null;
                     if (igrejaId != null) {
@@ -57,15 +76,15 @@ public class ListUsuariosUseCase {
                                     : Arrays.stream(u.getRoles().split(","))
                                     .map(String::trim).collect(Collectors.toList()),
                             List.of(),
-                            u.getNome(),
-                            u.getTelefone(),
-                            u.getDataNascimento(),
+                            fiel == null ? null : fiel.getNome(),
+                            fiel == null ? null : fiel.getTelefone(),
+                            fiel == null ? null : fiel.getDataNascimento(),
                             igrejaId,
                             igrejaNome,
-                            u.isBatizado(),
-                            u.isPrimeiraComunhao(),
-                            u.isCrismado(),
-                            u.isCasadoIgrejaCatolica());
+                            fiel != null && fiel.isBatizado(),
+                            fiel != null && fiel.isPrimeiraComunhao(),
+                            fiel != null && fiel.isCrismado(),
+                            fiel != null && fiel.isCasadoIgrejaCatolica());
 
                 })
                 .toList();

@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
@@ -15,26 +17,31 @@ import java.util.stream.Collectors;
 
 /**
  * Recupera os detalhes completos de um usuário para exibição/edição administrativa, incluindo o nome da
- * igreja/comunidade vinculada resolvido a partir do {@code igrejaId} bruto persistido na entidade.
+ * igreja/comunidade vinculada resolvido a partir do {@code igrejaId} bruto persistido na entidade, e os
+ * dados cadastrais pastorais resolvidos a partir do {@code Fiel} vinculado (Contexto Paroquial — o
+ * {@code Usuario} não carrega mais esses dados diretamente).
  */
 @Service
 public class GetUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
-    private final OrganizacaoJpaRepository
-            organizacaoRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final FielJpaRepository fielRepository;
 
     public GetUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
-            OrganizacaoJpaRepository organizacaoRepository) {
+            OrganizacaoJpaRepository organizacaoRepository,
+            FielJpaRepository fielRepository) {
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
+        this.fielRepository = fielRepository;
     }
 
     /**
      * Monta a resposta completa do usuário, convertendo a string de papéis persistida (separada por vírgulas)
-     * em uma coleção e resolvendo o nome de exibição da igreja/comunidade vinculada, quando houver.
-     * Não inclui vínculos organizacionais (membros) — essa lista é obtida separadamente.
+     * em uma coleção, resolvendo o nome de exibição da igreja/comunidade vinculada, quando houver, e os
+     * dados cadastrais pastorais a partir do {@code Fiel} vinculado. Não inclui vínculos organizacionais
+     * (membros) — essa lista é obtida separadamente.
      *
      * @param id identificador do usuário
      * @return dados completos do usuário
@@ -44,12 +51,9 @@ public class GetUsuarioUseCase {
     public UsuarioResponse execute(UUID id) {
         return usuarioRepository.findById(id)
                 .map(u -> {
-                    String nome = u.getNome();
-                    String telefone = u.getTelefone();
-                    java.time.LocalDate dataNascimento = u.getDataNascimento();
+                    FielEntity fiel = fielRepository.findById(u.getFielId()).orElse(null);
 
-
-                    java.util.UUID igrejaId = u.getIgrejaId();
+                    UUID igrejaId = u.getIgrejaId();
                     String igrejaNome = null;
                     if (igrejaId != null) {
                         igrejaNome = organizacaoRepository.findById(igrejaId)
@@ -65,15 +69,15 @@ public class GetUsuarioUseCase {
                                     : Arrays.stream(u.getRoles().split(",")).map(String::trim)
                                     .collect(Collectors.toList()),
                             List.of(),
-                            nome,
-                            telefone,
-                            dataNascimento,
+                            fiel == null ? null : fiel.getNome(),
+                            fiel == null ? null : fiel.getTelefone(),
+                            fiel == null ? null : fiel.getDataNascimento(),
                             igrejaId,
                             igrejaNome,
-                            u.isBatizado(),
-                            u.isPrimeiraComunhao(),
-                            u.isCrismado(),
-                            u.isCasadoIgrejaCatolica());
+                            fiel != null && fiel.isBatizado(),
+                            fiel != null && fiel.isPrimeiraComunhao(),
+                            fiel != null && fiel.isCrismado(),
+                            fiel != null && fiel.isCasadoIgrejaCatolica());
 
                 })
                 .orElseThrow(() -> new UsuarioNotFoundException(id));

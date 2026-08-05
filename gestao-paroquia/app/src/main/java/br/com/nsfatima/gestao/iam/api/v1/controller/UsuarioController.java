@@ -1,13 +1,11 @@
 package br.com.nsfatima.gestao.iam.api.v1.controller;
 
 import br.com.nsfatima.gestao.iam.api.v1.dto.CreateUsuarioRequest;
-import br.com.nsfatima.gestao.iam.api.v1.dto.RegistrarUsuarioRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.application.usecase.ApproveUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.GetUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.RegistrarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.AdicionarVinculoRequest;
@@ -35,11 +33,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * CRUD de usuários e gestão dos seus vínculos organizacionais (membros). Cobre tanto o cadastro administrativo
- * (por admin, já habilitado) quanto o autocadastro público via {@code /registrar} (fica pendente de aprovação
- * até {@link ApproveUsuarioUseCase} ser executado). A autorização por endpoint combina
- * {@code @PreAuthorize} de papel global com checagens finas de escopo organizacional feitas por
- * {@link UsuarioAuthorizationService} (admin ou coordenador da organização do usuário-alvo).
+ * CRUD de usuários e gestão dos seus vínculos organizacionais (membros). Todo cadastro é administrativo
+ * (via {@link CreateUsuarioUseCase}, exige um {@code Fiel} já existente) — não há mais autocadastro público;
+ * {@link ApproveUsuarioUseCase} segue existindo para o fluxo de aprovação de usuários pendentes criados
+ * administrativamente. A autorização por endpoint combina {@code @PreAuthorize} de papel global com
+ * checagens finas de escopo organizacional feitas por {@link UsuarioAuthorizationService} (admin ou
+ * coordenador da organização do usuário-alvo).
  */
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -54,7 +53,6 @@ public class UsuarioController {
     private final RemoverVinculoUseCase removerVinculoUseCase;
     private final ListarVinculosUseCase listarVinculosUseCase;
     private final UsuarioAuthorizationService authorizationService;
-    private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
     private final ApproveUsuarioUseCase approveUsuarioUseCase;
 
     public UsuarioController(
@@ -66,7 +64,6 @@ public class UsuarioController {
             RemoverVinculoUseCase removerVinculoUseCase,
             ListarVinculosUseCase listarVinculosUseCase,
             UsuarioAuthorizationService authorizationService,
-            RegistrarUsuarioUseCase registrarUsuarioUseCase,
             ApproveUsuarioUseCase approveUsuarioUseCase) {
         this.listUsuariosUseCase = listUsuariosUseCase;
         this.getUsuarioUseCase = getUsuarioUseCase;
@@ -76,7 +73,6 @@ public class UsuarioController {
         this.removerVinculoUseCase = removerVinculoUseCase;
         this.listarVinculosUseCase = listarVinculosUseCase;
         this.authorizationService = authorizationService;
-        this.registrarUsuarioUseCase = registrarUsuarioUseCase;
         this.approveUsuarioUseCase = approveUsuarioUseCase;
     }
 
@@ -104,13 +100,6 @@ public class UsuarioController {
      */
     public UUID create(@RequestBody @Valid CreateUsuarioRequest request) {
         return createUsuarioUseCase.execute(request.username(), request.password());
-    }
-
-    @PostMapping("/registrar")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Registra um novo usuário com campos adicionais de cadastro (Público)")
-    public UUID registrar(@RequestBody @Valid RegistrarUsuarioRequest request) {
-        return registrarUsuarioUseCase.execute(request);
     }
 
     @GetMapping("/{id}")

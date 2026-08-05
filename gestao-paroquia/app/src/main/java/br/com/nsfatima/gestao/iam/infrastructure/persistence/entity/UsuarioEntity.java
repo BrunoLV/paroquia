@@ -1,10 +1,7 @@
 package br.com.nsfatima.gestao.iam.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
-import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
@@ -12,15 +9,14 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Registro persistente de uma conta de usuário: credenciais de autenticação, papéis globais (roles) e dados
- * cadastrais pastorais. Campos com dado pessoal sensível ({@code nome}, {@code telefone},
- * {@code dataNascimento}) são armazenados criptografados em coluna via
- * {@link EncryptedStringConverter}/{@link EncryptedLocalDateConverter} (LGPD) — o valor em memória do objeto
- * é sempre o texto puro decifrado, a criptografia acontece de forma transparente na persistência.
+ * Registro persistente de uma conta de usuário: credenciais de autenticação e papéis globais ({@code roles}).
+ * Não carrega mais dados pessoais/pastorais (nome, telefone, data de nascimento, sacramentos) — esses vivem
+ * exclusivamente no {@code Fiel} referenciado por {@link #fielId}, obrigatório desde a track
+ * {@code usuario_fiel_decoupling}. O {@code username} (login) é independente e imutável frente ao e-mail de
+ * contato do Fiel.
  */
 @Entity
 @Table(name = "usuarios", schema = "calendario")
@@ -42,40 +38,15 @@ public class UsuarioEntity extends BaseVersionedEntity {
     @Column
     private String roles;
 
-    @Column(name = "nome")
-    @Convert(converter = EncryptedStringConverter.class)
-    private String nome;
-
-    @Column(name = "telefone")
-    @Convert(converter = EncryptedStringConverter.class)
-    private String telefone;
-
-    @Column(name = "data_nascimento")
-    @Convert(converter = EncryptedLocalDateConverter.class)
-    private LocalDate dataNascimento;
-
     /** Igreja/comunidade (MATRIZ ou COMUNIDADE) informada no cadastro; distinta dos vínculos organizacionais. */
     @Column(name = "igreja_id")
     private UUID igrejaId;
 
-    @Column(name = "batizado", nullable = false)
-    private boolean batizado;
-
-    @Column(name = "primeira_comunhao", nullable = false)
-    private boolean primeiraComunhao;
-
-    @Column(name = "crismado", nullable = false)
-    private boolean crismado;
-
-    @Column(name = "casado_igreja_catolica", nullable = false)
-    private boolean casadoIgrejaCatolica;
-
     /**
-     * Referência ao {@code Fiel} (pessoa física) correspondente no Contexto Paroquial. Nullable até que a
-     * decoupling completa dos dados pessoais (ver track {@code usuario_fiel_decoupling}) torne este campo
-     * obrigatório — o {@code username} deste Usuario é imutável e independente do e-mail de contato do Fiel.
+     * Referência ao {@code Fiel} (pessoa física) correspondente no Contexto Paroquial — obrigatória: todo
+     * {@code Usuario} deve estar vinculado a um {@code Fiel} já existente.
      */
-    @Column(name = "fiel_id")
+    @Column(name = "fiel_id", nullable = false)
     private UUID fielId;
 
     @Column(name = "criado_em_utc", nullable = false)
@@ -130,68 +101,12 @@ public class UsuarioEntity extends BaseVersionedEntity {
         this.roles = roles;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
     public UUID getIgrejaId() {
         return igrejaId;
     }
 
     public void setIgrejaId(UUID igrejaId) {
         this.igrejaId = igrejaId;
-    }
-
-    public boolean isBatizado() {
-        return batizado;
-    }
-
-    public void setBatizado(boolean batizado) {
-        this.batizado = batizado;
-    }
-
-    public boolean isPrimeiraComunhao() {
-        return primeiraComunhao;
-    }
-
-    public void setPrimeiraComunhao(boolean primeiraComunhao) {
-        this.primeiraComunhao = primeiraComunhao;
-    }
-
-    public boolean isCrismado() {
-        return crismado;
-    }
-
-    public void setCrismado(boolean crismado) {
-        this.crismado = crismado;
-    }
-
-    public boolean isCasadoIgrejaCatolica() {
-        return casadoIgrejaCatolica;
-    }
-
-    public void setCasadoIgrejaCatolica(boolean casadoIgrejaCatolica) {
-        this.casadoIgrejaCatolica = casadoIgrejaCatolica;
     }
 
     public UUID getFielId() {
@@ -256,4 +171,3 @@ public class UsuarioEntity extends BaseVersionedEntity {
         atualizadoEmUtc = Instant.now();
     }
 }
-

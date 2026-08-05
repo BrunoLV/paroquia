@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
@@ -43,6 +44,9 @@ class MembroUseCaseTest {
 
     @Mock
     private OrganizacaoJpaRepository organizacaoRepository;
+
+    @Mock
+    private FielJpaRepository fielRepository;
 
     @Mock
     private MembroMapper mapper;
@@ -105,7 +109,6 @@ class MembroUseCaseTest {
     void deveCriarMembro() {
         UsuarioEntity user = new UsuarioEntity();
         user.setId(usuarioId);
-        user.setNome("João da Silva");
 
         OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(organizacaoId);
@@ -132,7 +135,6 @@ class MembroUseCaseTest {
         UUID id = entity.getId();
         UsuarioEntity user = new UsuarioEntity();
         user.setId(usuarioId);
-        user.setNome("João da Silva");
 
         OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(organizacaoId);

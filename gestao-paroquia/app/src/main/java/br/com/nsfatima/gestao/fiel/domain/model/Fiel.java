@@ -18,6 +18,10 @@ import java.util.UUID;
  * @param endereco       endereço de contato
  * @param vocacao        estado de vida / vocação (LEIGO, SACERDOTE, DIACONO, RELIGIOSO)
  * @param ativo          se o cadastro está ativo
+ * @param batizado       se o Fiel é batizado
+ * @param primeiraComunhao se o Fiel já fez a primeira comunhão
+ * @param crismado       se o Fiel é crismado
+ * @param casadoIgrejaCatolica se o Fiel é casado pela Igreja Católica
  */
 public record Fiel(
         UUID id,
@@ -28,6 +32,10 @@ public record Fiel(
         String telefone,
         String endereco,
         Vocacao vocacao,
-        boolean ativo
+        boolean ativo,
+        boolean batizado,
+        boolean primeiraComunhao,
+        boolean crismado,
+        boolean casadoIgrejaCatolica
 ) {
 }

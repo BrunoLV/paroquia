@@ -70,10 +70,9 @@ class MembroControllerIntegrationTest {
                     u.setId(UUID.randomUUID());
                     u.setUsername("admin.test@paroquia.local");
                     u.setPasswordHash("pass");
-                    u.setNome("Admin Teste");
                     u.setRoles("ROLE_ADMIN");
                     u.setEnabled(true);
-                    u.setFielId(FielTestFixtures.criarFiel(fielRepository));
+                    u.setFielId(FielTestFixtures.criarFiel(fielRepository, "Admin Teste"));
                     return usuarioRepository.saveAndFlush(u);
                 });
 
@@ -91,10 +90,9 @@ class MembroControllerIntegrationTest {
         usuario.setId(UUID.randomUUID());
         usuario.setUsername("joao.silva@test.com");
         usuario.setPasswordHash("pass");
-        usuario.setNome("João da Silva");
         usuario.setRoles("ROLE_USER");
         usuario.setEnabled(true);
-        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository));
+        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository, "João da Silva"));
         usuarioRepository.saveAndFlush(usuario);
 
         MembroRequest request = new MembroRequest(
@@ -176,10 +174,9 @@ class MembroControllerIntegrationTest {
         usuario.setId(UUID.randomUUID());
         usuario.setUsername(nome.toLowerCase().replace(" ", ".") + "@test.com");
         usuario.setPasswordHash("pass");
-        usuario.setNome(nome);
         usuario.setRoles("ROLE_USER");
         usuario.setEnabled(true);
-        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository));
+        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository, nome));
         return usuarioRepository.saveAndFlush(usuario);
     }
 

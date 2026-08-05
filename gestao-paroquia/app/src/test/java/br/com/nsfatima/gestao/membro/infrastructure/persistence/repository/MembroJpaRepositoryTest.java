@@ -87,7 +87,6 @@ class MembroJpaRepositoryTest {
         usuario.setId(UUID.randomUUID());
         usuario.setUsername("user_" + UUID.randomUUID() + "@test.com");
         usuario.setPasswordHash("hash");
-        usuario.setNome("Usuario Teste");
         usuario.setFielId(FielTestFixtures.criarFiel(fielRepository));
         return usuarioRepository.save(usuario);
     }

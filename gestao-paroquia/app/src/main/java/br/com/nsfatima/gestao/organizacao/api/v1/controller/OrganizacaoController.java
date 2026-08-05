@@ -137,10 +137,7 @@ public class OrganizacaoController {
         try {
             userId = UUID.fromString(input);
         } catch (IllegalArgumentException e) {
-            var userOpt = usuarioRepository.findByNomeIgnoreCase(input);
-            if (userOpt.isEmpty()) {
-                userOpt = usuarioRepository.findByUsernameIgnoreCase(input);
-            }
+            var userOpt = usuarioRepository.findByUsernameIgnoreCase(input);
             if (userOpt.isPresent()) {
                 userId = userOpt.get().getId();
             }

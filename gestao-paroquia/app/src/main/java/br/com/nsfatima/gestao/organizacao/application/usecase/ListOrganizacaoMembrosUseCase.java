@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
@@ -24,16 +26,25 @@ public class ListOrganizacaoMembrosUseCase {
 
     private final MembroOrganizacaoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
+    private final FielJpaRepository fielRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListOrganizacaoMembrosUseCase(
             MembroOrganizacaoJpaRepository vinculoRepository,
             UsuarioJpaRepository usuarioRepository,
+            FielJpaRepository fielRepository,
             MembroJpaRepository membroRepository,
             OrganizacaoJpaRepository organizacaoRepository) {
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.fielRepository = fielRepository;
         this.organizacaoRepository = organizacaoRepository;
+    }
+
+    private String resolveNome(UsuarioEntity usuario) {
+        return fielRepository.findById(usuario.getFielId())
+                .map(FielEntity::getNome)
+                .orElse("Usuário Desconhecido");
     }
 
     /**
@@ -59,7 +70,7 @@ public class ListOrganizacaoMembrosUseCase {
         List<OrganizacaoMembroResponse> membrosBanco = vinculosBrutos.stream()
                 .map(m -> {
                     String nomeUsuario = usuarioRepository.findById(m.getUsuarioId())
-                            .map(UsuarioEntity::getNome)
+                            .map(this::resolveNome)
                             .orElse("Usuário Desconhecido");
                     return new OrganizacaoMembroResponse(
                             m.getId(),
@@ -93,7 +104,7 @@ public class ListOrganizacaoMembrosUseCase {
         }
 
         usuarioRepository.findAll().stream()
-                .filter(u -> name.equalsIgnoreCase(u.getNome()))
+                .filter(u -> name.equalsIgnoreCase(resolveNome(u)))
                 .map(UsuarioEntity::getId)
                 .findFirst().ifPresent(userId -> list.add(new OrganizacaoMembroResponse(
                         UUID.randomUUID(), // dummy vinculo ID

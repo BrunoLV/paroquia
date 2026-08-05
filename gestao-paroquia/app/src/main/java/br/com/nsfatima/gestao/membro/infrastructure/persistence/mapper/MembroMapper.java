@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
@@ -13,18 +15,24 @@ import org.springframework.stereotype.Component;
 /**
  * Converte entidades do contexto {@code membro} em DTOs de resposta, enriquecendo o vínculo usuário-organização
  * com dados de exibição (nome/e-mail/telefone do usuário, nome da organização) obtidos por consulta direta aos
- * contextos {@code iam} e {@code organizacao} — necessário porque {@code MembroEntity} guarda apenas os IDs, sem
- * duplicar dados de outros agregados.
+ * contextos {@code iam}, {@code fiel} e {@code organizacao} — necessário porque {@code MembroEntity} guarda
+ * apenas os IDs, sem duplicar dados de outros agregados. Nome/telefone vêm do {@code Fiel} vinculado ao
+ * {@code Usuario} (o {@code Usuario} não carrega mais esses dados diretamente).
  */
 @Component
 public class MembroMapper {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
+    private final FielJpaRepository fielRepository;
 
-    public MembroMapper(UsuarioJpaRepository usuarioRepository, OrganizacaoJpaRepository organizacaoRepository) {
+    public MembroMapper(
+            UsuarioJpaRepository usuarioRepository,
+            OrganizacaoJpaRepository organizacaoRepository,
+            FielJpaRepository fielRepository) {
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
+        this.fielRepository = fielRepository;
     }
 
     /**
@@ -48,9 +56,12 @@ public class MembroMapper {
             var usuarioOpt = usuarioRepository.findById(entity.getUsuarioId());
             if (usuarioOpt.isPresent()) {
                 UsuarioEntity u = usuarioOpt.get();
-                usuarioNome = u.getNome();
                 usuarioEmail = u.getUsername();
-                usuarioTelefone = u.getTelefone();
+                FielEntity fiel = fielRepository.findById(u.getFielId()).orElse(null);
+                if (fiel != null) {
+                    usuarioNome = fiel.getNome();
+                    usuarioTelefone = fiel.getTelefone();
+                }
             }
         }
 

@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 /**
- * Cria uma conta de usuário pela via administrativa ({@code ROLE_ADMIN}, distinta do autocadastro público de
- * {@code RegistrarUsuarioUseCase}). O usuário criado por este caminho já nasce habilitado
- * ({@code enabled=true}) e sem papel/vínculo organizacional atribuído — quem cria decide depois os papéis e
- * vínculos, se necessário.
+ * Cria uma conta de usuário pela via administrativa ({@code ROLE_ADMIN}) — único caminho de criação de
+ * {@code Usuario} no sistema, já que o autocadastro público foi removido. O usuário criado por este caminho
+ * já nasce habilitado ({@code enabled=true}) e sem papel/vínculo organizacional atribuído — quem cria decide
+ * depois os papéis e vínculos, se necessário.
  */
 @Service
 public class CreateUsuarioUseCase {
