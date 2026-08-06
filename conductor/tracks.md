@@ -339,14 +339,14 @@
 
 
 - [x] **Track: Alinhar Linguagem Ubíqua — separar UnidadeTerritorial de GrupoParoquial, renomear Organizacao/TipoOrganizacao — Track 5/7 da iniciativa SDD**
-*Link: [./tracks/linguagem_ubiqua_dominio_20260804/index.md](./tracks/linguagem_ubiqua_dominio_20260804/index.md)*
+*Link: [./archive/linguagem_ubiqua_dominio_20260804/index.md](./archive/linguagem_ubiqua_dominio_20260804/index.md)*
 
 ---
 
 - [x] **Track: Adaptar o frontend (gestao-paroquia-ui) aos novos contratos de Fiel/GrupoParoquial/IAM — Track 6/7 da iniciativa SDD**
-*Link: [./tracks/fiel_ui_iam_frontend_20260804/index.md](./tracks/fiel_ui_iam_frontend_20260804/index.md)*
+*Link: [./archive/fiel_ui_iam_frontend_20260804/index.md](./archive/fiel_ui_iam_frontend_20260804/index.md)*
 
 ---
 
-- [~] **Track: Regressão final, cenários BDD da spec original e fechamento da iniciativa SDD — Track 7/7 (última) da iniciativa SDD**
-*Link: [./tracks/sdd_regressao_final_20260804/index.md](./tracks/sdd_regressao_final_20260804/index.md)*
+- [x] **Track: Regressão final, cenários BDD da spec original e fechamento da iniciativa SDD — Track 7/7 (última) da iniciativa SDD**
+*Link: [./archive/sdd_regressao_final_20260804/index.md](./archive/sdd_regressao_final_20260804/index.md)*

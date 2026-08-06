@@ -16,6 +16,7 @@ projeto @gestao-paroquia-ui será um app web para permitir que os usuários inte
 - **Management Modules:** CRUD interfaces for managing events, members, and resources.
 - **Patrimônio (Asset Management):** Registration of parish assets, allocation/reservation per event, transfer between organizations, and maintenance tracking with ociosidade (idleness) metrics.
 - **Conselho (CPC Governance):** Registration and homologation of Conselho Paroquial para Assuntos Econômicos (CPC) decisions, with historical tracking of opinions and approvals.
+- **Domain Architecture (Fiel, GrupoParoquial, IAM):** Strict separation between Parochial Context (`Fiel`, `GrupoParoquial`, `UnidadeTerritorial`, `MembroGrupo`) and IAM Context (`Usuario`, `papel_global`). Parishioners (`Fiel`) can be registered and added to groups without login credentials (`Usuario`). Clergy roles (`PAROCO`, `VIGARIO`, `ADMIN`) are managed as global roles (`papel_global`), providing overarching governance across all councils and units.
 
 ## Goals & Objectives
 - **Process Automation:** Streamline administrative tasks and reduce manual paperwork.
