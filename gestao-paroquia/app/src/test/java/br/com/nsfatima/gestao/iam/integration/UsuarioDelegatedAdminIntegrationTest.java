@@ -6,9 +6,9 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     private FielJpaRepository fielRepository;
 
     @Autowired
-    private MembroOrganizacaoJpaRepository vinculoRepository;
+    private MembroGrupoJpaRepository vinculoRepository;
 
     @Autowired
     private OrganizacaoJpaRepository organizacaoRepository;
@@ -99,9 +99,10 @@ class UsuarioDelegatedAdminIntegrationTest {
     }
 
     private void createVinculo(UUID userId, UUID organizationId, String papel) {
-        MembroOrganizacaoEntity m = new MembroOrganizacaoEntity();
+        UUID fielId = usuarioRepository.findById(userId).orElseThrow().getFielId();
+        MembroGrupoEntity m = new MembroGrupoEntity();
         m.setId(UUID.randomUUID());
-        m.setUsuarioId(userId);
+        m.setFielId(fielId);
         m.setOrganizacaoId(organizationId);
         m.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m.setPapel(papel);

@@ -7,10 +7,11 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
-import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroEntity;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,24 +44,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class MembroControllerIntegrationTest {
 
-    private static final UUID ORG_ID = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private MembroJpaRepository membroRepository;
+    private MembroGrupoJpaRepository membroRepository;
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
     @Autowired
     private FielJpaRepository fielRepository;
     @Autowired
+    private OrganizacaoJpaRepository organizacaoRepository;
+    @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
     @Autowired
     private ObjectMapper objectMapper;
+
+    private UUID orgId;
 
     @BeforeEach
     void setUp() {
         membroRepository.deleteAll();
         auditoriaRepository.deleteAll();
+
+        OrganizacaoEntity org = new OrganizacaoEntity();
+        org.setId(UUID.randomUUID());
+        org.setNome("Pastoral de Teste " + UUID.randomUUID());
+        org.setTipo(TipoOrganizacao.PASTORAL);
+        org.setAtivo(true);
+        organizacaoRepository.saveAndFlush(org);
+        orgId = org.getId();
     }
 
     private Authentication getAdminAuth() {
@@ -78,7 +90,7 @@ class MembroControllerIntegrationTest {
 
         UsuarioDetails details = new UsuarioDetails(
                 adminUser.getId(), "admin", "pass", true, "ROLE_ADMIN",
-                List.of(new LeitorVinculoExterno.Vinculo(ORG_ID, "PASTORAL", "coordenador")));
+                List.of(new LeitorVinculoExterno.Vinculo(orgId, "PASTORAL", "coordenador")));
 
         return UsernamePasswordAuthenticationToken.authenticated(details, null, details.getAuthorities());
     }
@@ -86,19 +98,12 @@ class MembroControllerIntegrationTest {
     @Test
     @DisplayName("Deve criar um membro e registrar auditoria")
     void deveCriarMembroERegistrarAuditoria() throws Exception {
-        var usuario = new UsuarioEntity();
-        usuario.setId(UUID.randomUUID());
-        usuario.setUsername("joao.silva@test.com");
-        usuario.setPasswordHash("pass");
-        usuario.setRoles("ROLE_USER");
-        usuario.setEnabled(true);
-        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository, "João da Silva"));
-        usuarioRepository.saveAndFlush(usuario);
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "João da Silva");
 
         MembroRequest request = new MembroRequest(
-                usuario.getId(),
-                ORG_ID,
-                "MEMBRO",
+                fielId,
+                orgId,
+                "MEMBRO_PASTORAL",
                 LocalDate.now(),
                 null,
                 true
@@ -110,54 +115,26 @@ class MembroControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.usuarioNome").value("João da Silva"));
+                .andExpect(jsonPath("$.fielNome").value("João da Silva"));
 
         assertThat(membroRepository.findAll()).hasSize(1);
         assertThat(auditoriaRepository.findAll()).hasSize(1);
         assertThat(auditoriaRepository.findAll().getFirst().getRecursoTipo()).isEqualTo("MEMBRO");
-        assertThat(auditoriaRepository.findAll().getFirst().getOrganizacaoId()).isEqualTo(ORG_ID);
+        assertThat(auditoriaRepository.findAll().getFirst().getOrganizacaoId()).isEqualTo(orgId);
     }
 
     @Test
     @DisplayName("Deve listar membros com filtros")
     void deveListarMembrosComFiltros() throws Exception {
-        var userAlice = createUsuario("Alice");
-        var userBob = createUsuario("Bob");
-
-        createMembro(userAlice.getId());
-        createMembro(userBob.getId());
+        createMembro(FielTestFixtures.criarFiel(fielRepository, "Alice"));
+        createMembro(FielTestFixtures.criarFiel(fielRepository, "Bob"));
 
         mockMvc.perform(get("/api/v1/membros")
                         .with(authentication(getAdminAuth()))
-                        .param("organizacaoId", ORG_ID.toString()))
+                        .param("organizacaoId", orgId.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2));
-    }
-
-    @Test
-    @DisplayName("Deve adicionar participação em organização")
-    void deveAdicionarParticipacao() throws Exception {
-        var usuario = createUsuario("Membro Teste");
-
-        var membroId = UUID.randomUUID();
-        var entity = new MembroEntity();
-        entity.setId(membroId);
-        entity.setUsuarioId(usuario.getId());
-        entity.setOrganizacaoId(ORG_ID);
-        entity.setPapel("MEMBRO");
-        entity.setAtivo(true);
-        membroRepository.saveAndFlush(entity);
-
-        ParticipacaoRequest request = new ParticipacaoRequest(ORG_ID, LocalDate.now());
-
-        mockMvc.perform(post("/api/v1/membros/" + membroId + "/organizacoes")
-                        .with(authentication(getAdminAuth()))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.organizacaoId").value(ORG_ID.toString()));
     }
 
     @Test
@@ -169,23 +146,32 @@ class MembroControllerIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
-    private UsuarioEntity createUsuario(String nome) {
-        var usuario = new UsuarioEntity();
-        usuario.setId(UUID.randomUUID());
-        usuario.setUsername(nome.toLowerCase().replace(" ", ".") + "@test.com");
-        usuario.setPasswordHash("pass");
-        usuario.setRoles("ROLE_USER");
-        usuario.setEnabled(true);
-        usuario.setFielId(FielTestFixtures.criarFiel(fielRepository, nome));
-        return usuarioRepository.saveAndFlush(usuario);
+    @Test
+    @DisplayName("Deve promover um Fiel membro a coordenador criando um novo Usuario")
+    void devePromoverFielACoordenadorCriandoUsuario() throws Exception {
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Carlos Promovido");
+        createMembro(fielId);
+
+        var request = new br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest(
+                fielId, orgId, "coord-pastoral-local", "carlos.promovido", "senhaForte123");
+
+        mockMvc.perform(post("/api/v1/membros/promover-coordenador")
+                        .with(authentication(getAdminAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usuarioCriado").value(true))
+                .andExpect(jsonPath("$.fielId").value(fielId.toString()));
     }
 
-    private void createMembro(UUID usuarioId) {
-        var entity = new MembroEntity();
+    private void createMembro(UUID fielId) {
+        var entity = new br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setUsuarioId(usuarioId);
-        entity.setOrganizacaoId(MembroControllerIntegrationTest.ORG_ID);
-        entity.setPapel("MEMBRO");
+        entity.setFielId(fielId);
+        entity.setOrganizacaoId(orgId);
+        entity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        entity.setPapel("MEMBRO_PASTORAL");
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);
     }

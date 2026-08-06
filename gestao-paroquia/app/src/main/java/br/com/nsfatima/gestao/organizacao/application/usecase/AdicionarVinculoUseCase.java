@@ -1,10 +1,10 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.MembroOrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -15,29 +15,33 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 /**
- * Vincula um usuário a uma organização com um determinado {@link PapelOrganizacional}, aplicando as regras de
- * negócio que protegem a integridade da hierarquia organizacional:
+ * Vincula o {@code Fiel} de um usuário a uma organização com um determinado {@link PapelOrganizacional},
+ * aplicando as regras de negócio que protegem a integridade da hierarquia organizacional:
  * <ul>
- *   <li>o usuário não pode ser vinculado a uma organização de outra igreja/comunidade que não seja a sua;</li>
  *   <li>pastorais e movimentos exigem uma igreja de vínculo (Matriz/Comunidade) explícita;</li>
  *   <li>definir a liderança de um conselho (CONSELHO_PASTORAL/CONSELHO_ECONOMICO/CPP/CPC) exige que quem
  *       executa a ação seja ADMIN ou PAROCO;</li>
  *   <li>definir o PAROCO do CLERO exige que quem executa a ação seja ADMIN;</li>
- *   <li>vínculos duplicados (mesma combinação usuário/organização/papel/igreja) são reativados em vez de
+ *   <li>vínculos duplicados (mesma combinação fiel/organização/papel/igreja) são reativados em vez de
  *       duplicados;</li>
  *   <li>papéis de coordenação (únicos por organização/contexto de igreja) rebaixam automaticamente o
  *       coordenador anterior para um papel de membro comum ao assumir um novo coordenador.</li>
  * </ul>
+ * Recebe {@code usuarioId} (mantendo o contrato externo usado por {@code /usuarios/{id}/membros}) e resolve
+ * o {@code fielId} correspondente internamente, já que o vínculo em si é sempre por {@code Fiel} (ver track
+ * {@code membro_grupo_por_fiel}). A checagem de escopo territorial que existia aqui ("usuário pertence a
+ * outra igreja/comunidade") foi removida: dependia de {@code Usuario.igrejaId}, um dado de escopo de login
+ * que não existe no Fiel — e um Fiel pode nem ter {@code Usuario}. As demais regras foram preservadas 100%.
  */
 @Service
 public class AdicionarVinculoUseCase {
 
-    private final MembroOrganizacaoJpaRepository vinculoRepository;
+    private final MembroGrupoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
 
     public AdicionarVinculoUseCase(
-            MembroOrganizacaoJpaRepository vinculoRepository,
+            MembroGrupoJpaRepository vinculoRepository,
             UsuarioJpaRepository usuarioRepository,
             OrganizacaoJpaRepository organizacaoRepository) {
         this.vinculoRepository = vinculoRepository;
@@ -46,20 +50,20 @@ public class AdicionarVinculoUseCase {
     }
 
     /**
-     * Cria (ou reativa, se já existir um vínculo idêntico desativado) o vínculo do usuário com a organização
-     * informada, validando escopo territorial, obrigatoriedade de igreja de vínculo para pastorais/movimentos,
-     * hierarquia de quem pode atribuir papéis de liderança, e rebaixando automaticamente o coordenador
-     * anterior quando o papel atribuído for de coordenação exclusiva.
+     * Cria (ou reativa, se já existir um vínculo idêntico desativado) o vínculo do Fiel do usuário informado
+     * com a organização, validando obrigatoriedade de igreja de vínculo para pastorais/movimentos, hierarquia
+     * de quem pode atribuir papéis de liderança, e rebaixando automaticamente o coordenador anterior quando
+     * o papel atribuído for de coordenação exclusiva.
      *
-     * @param usuarioId identificador do usuário a vincular
+     * @param usuarioId identificador do usuário cujo Fiel será vinculado
      * @param organizacaoId identificador da organização de destino
      * @param tipo tipo da organização de destino
-     * @param papel papel organizacional a atribuir ao usuário
+     * @param papel papel organizacional a atribuir
      * @param igrejaVinculoId identificador da igreja/comunidade de contexto; obrigatório para pastorais e
      *     movimentos
      * @return identificador do vínculo criado ou reativado
-     * @throws IllegalArgumentException se o usuário não existir, pertencer a outra igreja/comunidade, ou a
-     *     igreja de vínculo informada for inválida/ausente quando exigida
+     * @throws IllegalArgumentException se o usuário não existir, ou a igreja de vínculo informada for
+     *     inválida/ausente quando exigida
      * @throws org.springframework.security.access.AccessDeniedException se não houver usuário autenticado ou
      *     o usuário autenticado não tiver permissão hierárquica para atribuir o papel solicitado
      */
@@ -67,19 +71,9 @@ public class AdicionarVinculoUseCase {
     public UUID execute(UUID usuarioId,
                         UUID organizacaoId, TipoOrganizacao tipo, PapelOrganizacional papel, UUID igrejaVinculoId) {
 
-        if (!usuarioRepository.existsById(usuarioId)) {
-            throw new IllegalArgumentException("Usuario nao encontrado: " + usuarioId);
-        }
-        var usuarioOpt = usuarioRepository.findById(usuarioId);
-        if (usuarioOpt.isPresent() && usuarioOpt.get().getIgrejaId() != null) {
-            UUID igrejaUsuarioId = usuarioOpt.get().getIgrejaId();
-            UUID igrejaAlvoId = resolveTargetChurchId(organizacaoId, igrejaVinculoId);
-            if (igrejaAlvoId != null && !igrejaUsuarioId.equals(igrejaAlvoId)) {
-                throw new IllegalArgumentException(
-                        "O usuário pertence a outra igreja/comunidade"
-                                + " e não pode ser vinculado a esta organização");
-            }
-        }
+        var usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario nao encontrado: " + usuarioId));
+        UUID fielId = usuario.getFielId();
 
         if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
             if (igrejaVinculoId == null) {
@@ -127,10 +121,10 @@ public class AdicionarVinculoUseCase {
             }
         }
 
-        // Verificação de duplicidade: evitar vínculos duplicados para exatamente a mesma combinação de {usuarioId,
+        // Verificação de duplicidade: evitar vínculos duplicados para exatamente a mesma combinação de {fielId,
         // organizacaoId, papel, igrejaVinculoId}
-        var existingVinculo = vinculoRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
-                usuarioId, organizacaoId, papel.name(), igrejaVinculoId);
+        var existingVinculo = vinculoRepository.findByFielIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+                fielId, organizacaoId, papel.name(), igrejaVinculoId);
 
         if (existingVinculo.isPresent()) {
             var vinculo = existingVinculo.get();
@@ -150,7 +144,7 @@ public class AdicionarVinculoUseCase {
                 || papel == PapelOrganizacional.PRESIDENTE_CPC;
 
         if (isPapelCoordenador) {
-            java.util.Optional<MembroOrganizacaoEntity> existing;
+            java.util.Optional<MembroGrupoEntity> existing;
             if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
                 existing = vinculoRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(organizacaoId,
                         papel.name(), igrejaVinculoId);
@@ -167,16 +161,16 @@ public class AdicionarVinculoUseCase {
                 // Transição: rebaixar coordenador anterior para papel de membro
                 String papelRebaixado =
                         tipo == TipoOrganizacao.MOVIMENTO ? "MEMBRO_MOVIMENTO" : "VOLUNTARIO_PASTORAL_LOCAL";
-                var membroAnteriorOpt = vinculoRepository.findByUsuarioIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
-                        old.getUsuarioId(), organizacaoId, papelRebaixado, igrejaVinculoId);
+                var membroAnteriorOpt = vinculoRepository.findByFielIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+                        old.getFielId(), organizacaoId, papelRebaixado, igrejaVinculoId);
                 if (membroAnteriorOpt.isPresent()) {
                     var m = membroAnteriorOpt.get();
                     m.setAtivo(true);
                     vinculoRepository.save(m);
                 } else {
-                    MembroOrganizacaoEntity demoted = new MembroOrganizacaoEntity();
+                    MembroGrupoEntity demoted = new MembroGrupoEntity();
                     demoted.setId(UUID.randomUUID());
-                    demoted.setUsuarioId(old.getUsuarioId());
+                    demoted.setFielId(old.getFielId());
                     demoted.setOrganizacaoId(organizacaoId);
                     demoted.setTipoOrganizacao(tipo);
                     demoted.setPapel(papelRebaixado);
@@ -187,9 +181,9 @@ public class AdicionarVinculoUseCase {
             });
         }
 
-        MembroOrganizacaoEntity entity = new MembroOrganizacaoEntity();
+        MembroGrupoEntity entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setUsuarioId(usuarioId);
+        entity.setFielId(fielId);
         entity.setOrganizacaoId(organizacaoId);
         entity.setTipoOrganizacao(tipo);
         entity.setPapel(papel.name());
@@ -197,20 +191,5 @@ public class AdicionarVinculoUseCase {
         entity.setAtivo(true);
 
         return vinculoRepository.save(entity).getId();
-    }
-
-    private UUID resolveTargetChurchId(UUID organizacaoId, UUID igrejaVinculoId) {
-        if (igrejaVinculoId != null) {
-            return igrejaVinculoId;
-        }
-        var orgOpt = organizacaoRepository.findById(organizacaoId);
-        if (orgOpt.isEmpty()) {
-            return null;
-        }
-        var org = orgOpt.get();
-        if (org.getTipo() == TipoOrganizacao.MATRIZ || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
-            return org.getId();
-        }
-        return org.getParentId();
     }
 }

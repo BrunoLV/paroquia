@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,13 +22,13 @@ import static org.mockito.Mockito.when;
 class ApproveUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
-    private MembroOrganizacaoJpaRepository vinculoRepository;
+    private MembroGrupoJpaRepository vinculoRepository;
     private ApproveUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        vinculoRepository = mock(MembroOrganizacaoJpaRepository.class);
+        vinculoRepository = mock(MembroGrupoJpaRepository.class);
         useCase = new ApproveUsuarioUseCase(usuarioRepository, vinculoRepository);
     }
 
@@ -45,8 +45,10 @@ class ApproveUsuarioUseCaseTest {
         existing.setUsername("pendente.usuario");
         existing.setPasswordHash("hash");
         existing.setEnabled(false);
+        UUID fielId = UUID.randomUUID();
+        existing.setFielId(fielId);
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(vinculoRepository.findByUsuarioId(id)).thenReturn(Collections.emptyList());
+        when(vinculoRepository.findByFielId(fielId)).thenReturn(Collections.emptyList());
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken("paroco.local", "senha"));

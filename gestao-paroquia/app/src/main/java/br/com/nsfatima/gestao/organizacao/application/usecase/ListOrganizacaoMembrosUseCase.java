@@ -2,11 +2,8 @@ package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.MembroOrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Lista os membros efetivos de uma organização, combinando os vínculos formais ({@code MembroOrganizacaoEntity})
+ * Lista os membros efetivos de uma organização, combinando os vínculos formais ({@code MembroGrupoEntity})
  * diretos da organização com os vínculos de pastorais/movimentos que a têm como igreja de contexto, e
  * completando a lista com o coordenador/vice-coordenador definidos como texto livre na organização quando
  * ainda não existir um vínculo formal correspondente — garantindo que o organograma sempre exiba a liderança
@@ -24,27 +21,17 @@ import java.util.UUID;
 @Service
 public class ListOrganizacaoMembrosUseCase {
 
-    private final MembroOrganizacaoJpaRepository vinculoRepository;
-    private final UsuarioJpaRepository usuarioRepository;
+    private final MembroGrupoJpaRepository vinculoRepository;
     private final FielJpaRepository fielRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListOrganizacaoMembrosUseCase(
-            MembroOrganizacaoJpaRepository vinculoRepository,
-            UsuarioJpaRepository usuarioRepository,
+            MembroGrupoJpaRepository vinculoRepository,
             FielJpaRepository fielRepository,
-            MembroJpaRepository membroRepository,
             OrganizacaoJpaRepository organizacaoRepository) {
         this.vinculoRepository = vinculoRepository;
-        this.usuarioRepository = usuarioRepository;
         this.fielRepository = fielRepository;
         this.organizacaoRepository = organizacaoRepository;
-    }
-
-    private String resolveNome(UsuarioEntity usuario) {
-        return fielRepository.findById(usuario.getFielId())
-                .map(FielEntity::getNome)
-                .orElse("Usuário Desconhecido");
     }
 
     /**
@@ -62,24 +49,18 @@ public class ListOrganizacaoMembrosUseCase {
                 new java.util.ArrayList<>(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
         var membrosIgreja = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
         for (var cm : membrosIgreja) {
-            if (vinculosBrutos.stream().noneMatch(m -> m.getUsuarioId().equals(cm.getUsuarioId()))) {
+            if (vinculosBrutos.stream().noneMatch(m -> m.getFielId().equals(cm.getFielId()))) {
                 vinculosBrutos.add(cm);
             }
         }
 
         List<OrganizacaoMembroResponse> membrosBanco = vinculosBrutos.stream()
-                .map(m -> {
-                    String nomeUsuario = usuarioRepository.findById(m.getUsuarioId())
-                            .map(this::resolveNome)
-                            .orElse("Usuário Desconhecido");
-                    return new OrganizacaoMembroResponse(
-                            m.getId(),
-                            m.getUsuarioId(),
-                            nomeUsuario,
-                            m.getPapel(),
-                            m.isAtivo()
-                    );
-                })
+                .map(m -> new OrganizacaoMembroResponse(
+                        m.getId(),
+                        m.getFielId(),
+                        resolveNome(m.getFielId()),
+                        m.getPapel(),
+                        m.isAtivo()))
                 .toList();
 
         List<OrganizacaoMembroResponse> membros = new java.util.ArrayList<>(membrosBanco);
@@ -94,26 +75,30 @@ public class ListOrganizacaoMembrosUseCase {
         return membros;
     }
 
+    private String resolveNome(UUID fielId) {
+        return fielRepository.findById(fielId)
+                .map(FielEntity::getNome)
+                .orElse("Fiel Desconhecido");
+    }
+
     private void addDynamicMemberIfMissing(List<OrganizacaoMembroResponse> list, String name, String papel) {
         if (name == null || name.trim().isEmpty()) {
             return;
         }
-        boolean exists = list.stream().anyMatch(m -> name.equalsIgnoreCase(m.usuarioNome()));
+        boolean exists = list.stream().anyMatch(m -> name.equalsIgnoreCase(m.fielNome()));
         if (exists) {
             return;
         }
 
-        usuarioRepository.findAll().stream()
-                .filter(u -> name.equalsIgnoreCase(resolveNome(u)))
-                .map(UsuarioEntity::getId)
-                .findFirst().ifPresent(userId -> list.add(new OrganizacaoMembroResponse(
+        fielRepository.findAll().stream()
+                .filter(f -> name.equalsIgnoreCase(f.getNome()))
+                .map(FielEntity::getId)
+                .findFirst().ifPresent(fielId -> list.add(new OrganizacaoMembroResponse(
                         UUID.randomUUID(), // dummy vinculo ID
-                        userId,
+                        fielId,
                         name,
                         papel,
                         true
                 )));
-
     }
-
 }

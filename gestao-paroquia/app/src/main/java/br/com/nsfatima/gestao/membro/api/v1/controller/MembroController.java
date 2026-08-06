@@ -3,13 +3,12 @@ package br.com.nsfatima.gestao.membro.api.v1.controller;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
-import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoRequest;
-import br.com.nsfatima.gestao.membro.api.v1.dto.ParticipacaoResponse;
-import br.com.nsfatima.gestao.membro.application.usecase.AddParticipanteUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
+import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
+import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.GetMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.ListParticipacoesUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.PromoverACoordenadorUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.UpdateMembroUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,52 +28,51 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
- * Expõe os endpoints REST de gestão de vínculos usuário-organização (membros) e de suas participações
- * adicionais em outras organizações. Todas as operações exigem papel {@code ADMIN} e as mutações resolvem o
- * ator autenticado via {@link EventoActorContextResolver} para fins de auditoria.
+ * Expõe os endpoints REST de gestão de vínculos Fiel-organização (membros). Todas as operações exigem papel
+ * {@code ADMIN} (exceto a promoção a coordenador, restrita a Pároco/Vigário/Mesa do CPP/Admin — ver
+ * {@link PromoverACoordenadorUseCase}) e as mutações resolvem o ator autenticado via
+ * {@link EventoActorContextResolver} para fins de auditoria. Participação em múltiplas organizações é
+ * simplesmente múltiplas chamadas a {@code POST /}, uma por organização — não há mais um recurso separado de
+ * "participações".
  */
 @RestController
 @RequestMapping("/api/v1/membros")
 @Tag(name = "Membros", description = "Endpoints para gestão de fiéis e paroquianos")
 public class MembroController {
 
-    private final CreateMembroUseCase createMembroUseCase;
+    private final AdicionarMembroUseCase adicionarMembroUseCase;
     private final UpdateMembroUseCase updateMembroUseCase;
     private final GetMembroUseCase getMembroUseCase;
     private final ListMembrosUseCase listMembrosUseCase;
-    private final AddParticipanteUseCase addParticipanteUseCase;
-    private final ListParticipacoesUseCase listParticipacoesUseCase;
+    private final PromoverACoordenadorUseCase promoverACoordenadorUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public MembroController(
-            CreateMembroUseCase createMembroUseCase,
+            AdicionarMembroUseCase adicionarMembroUseCase,
             UpdateMembroUseCase updateMembroUseCase,
             GetMembroUseCase getMembroUseCase,
             ListMembrosUseCase listMembrosUseCase,
-            AddParticipanteUseCase addParticipanteUseCase,
-            ListParticipacoesUseCase listParticipacoesUseCase,
+            PromoverACoordenadorUseCase promoverACoordenadorUseCase,
             EventoActorContextResolver actorContextResolver) {
-        this.createMembroUseCase = createMembroUseCase;
+        this.adicionarMembroUseCase = adicionarMembroUseCase;
         this.updateMembroUseCase = updateMembroUseCase;
         this.getMembroUseCase = getMembroUseCase;
         this.listMembrosUseCase = listMembrosUseCase;
-        this.addParticipanteUseCase = addParticipanteUseCase;
-        this.listParticipacoesUseCase = listParticipacoesUseCase;
+        this.promoverACoordenadorUseCase = promoverACoordenadorUseCase;
         this.actorContextResolver = actorContextResolver;
     }
 
     /**
-     * Cria o vínculo de um usuário a uma organização com o papel informado. Se o papel for
-     * {@code COORDENADOR} ou {@code VICE_COORDENADOR}, sincroniza automaticamente o campo de liderança
-     * correspondente na organização.
+     * Cria o vínculo de um Fiel a uma organização com o papel informado. Nunca exige, lê ou cria um
+     * {@code Usuario} — cadastro de membro comum não requer login.
      *
      * @param request dados do vínculo a ser criado
-     * @return o vínculo criado, já com os dados de exibição do usuário/organização resolvidos
-     * @throws IllegalArgumentException se usuário/organização não existirem ou já houver vínculo ativo entre eles
+     * @return o vínculo criado, já com os dados de exibição do Fiel/organização resolvidos
+     * @throws IllegalArgumentException se fiel/organização não existirem, o papel for inválido, ou já houver
+     *                                   vínculo ativo entre eles
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -82,15 +80,15 @@ public class MembroController {
     @Operation(summary = "Cadastra um novo membro")
     public MembroResponse create(@RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
-        return createMembroUseCase.execute(request, context.actor());
+        return adicionarMembroUseCase.execute(request, context.actor());
     }
 
     /**
-     * Lista vínculos usuário-organização, aplicando filtros opcionais por organização, usuário e situação
+     * Lista vínculos Fiel-organização, aplicando filtros opcionais por organização, Fiel e situação
      * (ativo/inativo).
      *
      * @param organizacaoId filtro por organização, ou {@code null} para não filtrar
-     * @param usuarioId     filtro por usuário, ou {@code null} para não filtrar
+     * @param fielId        filtro por Fiel, ou {@code null} para não filtrar
      * @param ativo         filtro por situação do vínculo, ou {@code null} para não filtrar
      * @param pageable      paginação/ordenação solicitada
      * @return página de vínculos que atendem aos filtros informados
@@ -100,15 +98,14 @@ public class MembroController {
     @Operation(summary = "Lista membros com filtros e paginação")
     public Page<MembroResponse> list(
             @RequestParam(required = false) UUID organizacaoId,
-            @RequestParam(required = false) UUID usuarioId,
+            @RequestParam(required = false) UUID fielId,
             @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 20) Pageable pageable) {
-        return listMembrosUseCase.execute(organizacaoId, usuarioId, ativo, pageable);
+        return listMembrosUseCase.execute(organizacaoId, fielId, ativo, pageable);
     }
 
-
     /**
-     * Busca um vínculo usuário-organização pelo identificador.
+     * Busca um vínculo Fiel-organização pelo identificador.
      *
      * @param id identificador do vínculo
      * @return o vínculo encontrado, com dados de exibição resolvidos
@@ -122,15 +119,14 @@ public class MembroController {
     }
 
     /**
-     * Atualiza os dados de um vínculo usuário-organização existente. Repete a validação de unicidade de vínculo
-     * ativo (impede associar o novo usuário/organização a outro vínculo já ativo diferente do que está sendo
-     * editado) e ressincroniza o campo de liderança da organização quando o papel for de coordenação.
+     * Atualiza os dados de um vínculo Fiel-organização existente. Repete a validação de unicidade de vínculo
+     * ativo e ressincroniza o campo de liderança da organização quando o papel for de coordenação.
      *
      * @param id      identificador do vínculo a atualizar
      * @param request novos dados do vínculo
      * @return o vínculo atualizado
-     * @throws IllegalArgumentException se o vínculo, usuário ou organização não existirem, ou se o
-     *                                   usuário/organização já tiver outro vínculo ativo
+     * @throws IllegalArgumentException se o vínculo, fiel ou organização não existirem, ou se o fiel/
+     *                                   organização já tiver outro vínculo ativo
      */
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -143,7 +139,7 @@ public class MembroController {
     }
 
     /**
-     * Ativa ou desativa um vínculo usuário-organização, sem alterar os demais dados cadastrais.
+     * Ativa ou desativa um vínculo Fiel-organização, sem alterar os demais dados cadastrais.
      *
      * @param id    identificador do vínculo
      * @param ativo novo estado desejado ({@code true} para ativar, {@code false} para desativar)
@@ -161,37 +157,16 @@ public class MembroController {
     }
 
     /**
-     * Lista as participações ativas do membro (identificado pelo vínculo usuário-organização) em organizações
-     * adicionais, para entender seu engajamento em pastorais/movimentos além do vínculo principal.
+     * Promove um Fiel já membro ativo de uma organização a um papel de liderança, criando um login para ele
+     * se ainda não possuir um.
      *
-     * @param id identificador do vínculo (membro)
-     * @return participações ativas encontradas; lista vazia se não houver nenhuma
+     * @param request dados da promoção
+     * @return o vínculo atualizado e o {@code usuarioId} (existente ou recém-criado)
      */
-    @GetMapping("/{id}/organizacoes")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Lista organizações que o membro participa")
-    public List<ParticipacaoResponse> listOrganizacoes(@PathVariable UUID id) {
-        return listParticipacoesUseCase.execute(id);
-    }
-
-    /**
-     * Inscreve o membro (vínculo usuário-organização) em uma organização adicional, desde que ele possua
-     * usuário cadastrado e ainda não participe ativamente daquela organização.
-     *
-     * @param id      identificador do vínculo (membro) a inscrever
-     * @param request organização de destino e data de início da participação
-     * @return a participação criada
-     * @throws IllegalArgumentException se o membro não existir, não possuir usuário associado, ou já
-     *                                   participar ativamente da organização informada
-     */
-    @PostMapping("/{id}/organizacoes")
-    @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Inscreve um membro em uma organização")
-    public ParticipacaoResponse addOrganizacao(
-            @PathVariable UUID id,
-            @RequestBody @Valid ParticipacaoRequest request) {
-        var context = actorContextResolver.resolveRequired();
-        return addParticipanteUseCase.execute(id, request, context.actor());
+    @PostMapping("/promover-coordenador")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CLERO_VIGARIO') or hasRole('CPP_MESA_CPP')")
+    @Operation(summary = "Promove um Fiel membro a coordenador, criando login se necessário")
+    public PromoverACoordenadorResponse promoverACoordenador(@RequestBody @Valid PromoverACoordenadorRequest request) {
+        return promoverACoordenadorUseCase.execute(request);
     }
 }

@@ -3,9 +3,7 @@ package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -31,22 +29,18 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     private static final String PAPEL_VICE = "vice";
 
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
-    private final MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository;
+    private final MembroGrupoJpaRepository membroGrupoJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
-    private final UsuarioJpaRepository usuarioRepository;
     private final FielJpaRepository fielRepository;
 
     public OrganizacaoRepositoryImpl(
             OrganizacaoJpaRepository organizacaoJpaRepository,
-            MembroOrganizacaoJpaRepository membroOrganizacaoJpaRepository,
+            MembroGrupoJpaRepository membroGrupoJpaRepository,
             EventoJpaRepository eventoJpaRepository,
-            UsuarioJpaRepository usuarioRepository,
-            FielJpaRepository fielRepository,
-            MembroJpaRepository membroRepository) {
+            FielJpaRepository fielRepository) {
         this.organizacaoJpaRepository = organizacaoJpaRepository;
-        this.membroOrganizacaoJpaRepository = membroOrganizacaoJpaRepository;
+        this.membroGrupoJpaRepository = membroGrupoJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.usuarioRepository = usuarioRepository;
         this.fielRepository = fielRepository;
     }
 
@@ -79,7 +73,7 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 
     @Override
     public boolean hasDependencies(UUID id) {
-        boolean hasMembers = membroOrganizacaoJpaRepository.existsByOrganizacaoId(id);
+        boolean hasMembers = membroGrupoJpaRepository.existsByOrganizacaoId(id);
         if (hasMembers) {
             return true;
         }
@@ -111,7 +105,7 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     }
 
     private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {
-        return membroOrganizacaoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
+        return membroGrupoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
                 .filter(m -> {
                     if (m.getPapel() == null) {
                         return false;
@@ -129,9 +123,7 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 })
                 .findFirst()
                 .map(m -> {
-                    String name = usuarioRepository.findById(m.getUsuarioId())
-                            .map(UsuarioEntity::getFielId)
-                            .flatMap(fielRepository::findById)
+                    String name = fielRepository.findById(m.getFielId())
                             .map(FielEntity::getNome)
                             .orElse(fallback);
                     return (name != null && !name.trim().isEmpty()) ? name : fallback;

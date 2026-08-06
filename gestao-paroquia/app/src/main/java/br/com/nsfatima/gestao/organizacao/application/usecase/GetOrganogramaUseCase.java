@@ -103,8 +103,8 @@ public class GetOrganogramaUseCase {
 
         List<OrganogramaNodeResponse> nosMembros = membros.stream()
                 .map(m -> new OrganogramaNodeResponse(
-                        m.usuarioId().toString(),
-                        m.usuarioNome(),
+                        m.fielId().toString(),
+                        m.fielNome(),
                         "MEMBRO",
                         m.papel(),
                         null,
@@ -123,7 +123,7 @@ public class GetOrganogramaUseCase {
         if (responsavelNome == null || responsavelNome.isBlank()) {
             responsavelNome = membros.stream()
                     .filter(m -> "COORDENADOR".equalsIgnoreCase(m.papel()) || "PAROCO".equalsIgnoreCase(m.papel()))
-                    .map(OrganizacaoMembroResponse::usuarioNome)
+                    .map(OrganizacaoMembroResponse::fielNome)
                     .findFirst()
                     .orElse(null);
         }
@@ -131,7 +131,7 @@ public class GetOrganogramaUseCase {
             viceResponsavelNome = membros.stream()
                     .filter(m -> "VICE_COORDENADOR".equalsIgnoreCase(m.papel())
                             || "VIGARIO".equalsIgnoreCase(m.papel()))
-                    .map(OrganizacaoMembroResponse::usuarioNome)
+                    .map(OrganizacaoMembroResponse::fielNome)
                     .findFirst()
                     .orElse(null);
         }

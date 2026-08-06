@@ -10,8 +10,7 @@ import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoItemResultadoDTO;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
 import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
-import br.com.nsfatima.gestao.membro.application.usecase.CreateMembroUseCase;
-import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroJpaRepository;
+import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
@@ -57,7 +56,7 @@ public class ImportacaoService {
     private static final String ERR_NOME_REQUIRED = "O campo 'nome' é obrigatório.";
     private static final String KEY_IGREJA_ID = "igrejaId";
 
-    private final CreateMembroUseCase createMembroUseCase;
+    private final AdicionarMembroUseCase adicionarMembroUseCase;
     private final UsuarioJpaRepository usuarioJpaRepository;
     private final OrganizacaoService organizacaoService;
     private final EventoJpaRepository eventoJpaRepository;
@@ -69,8 +68,7 @@ public class ImportacaoService {
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
 
-    public ImportacaoService(CreateMembroUseCase createMembroUseCase,
-                              MembroJpaRepository membroJpaRepository,
+    public ImportacaoService(AdicionarMembroUseCase adicionarMembroUseCase,
                               UsuarioJpaRepository usuarioJpaRepository,
                               OrganizacaoService organizacaoService,
                               EventoJpaRepository eventoJpaRepository,
@@ -81,7 +79,7 @@ public class ImportacaoService {
                               MotorLiturgico liturgicalEngine,
                               CicloLiturgicoRepository cicloLiturgicoRepository,
                               ProvisionamentoLiturgicoService liturgicalProvisioningService) {
-        this.createMembroUseCase = createMembroUseCase;
+        this.adicionarMembroUseCase = adicionarMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.organizacaoService = organizacaoService;
         this.eventoJpaRepository = eventoJpaRepository;
@@ -266,9 +264,9 @@ public class ImportacaoService {
     }
 
     /**
-     * Cria o vínculo (membro) de um usuário existente a uma organização existente, com papel
-     * organizacional informado ou, na ausência, o papel genérico {@code MEMBRO}. Reaproveita
-     * {@link CreateMembroUseCase} para que o vínculo criado por importação passe pelas mesmas
+     * Cria o vínculo (membro) do Fiel de um usuário existente a uma organização existente, com papel
+     * organizacional informado ou, na ausência, o papel comum {@code MEMBRO_PASTORAL}. Reaproveita
+     * {@link AdicionarMembroUseCase} para que o vínculo criado por importação passe pelas mesmas
      * regras de negócio de um vínculo criado manualmente pela UI.
      *
      * @throws IllegalArgumentException se o usuário ou a organização referenciados não existirem
@@ -277,7 +275,7 @@ public class ImportacaoService {
         String username = data.get("usuarioUsername").trim();
         String orgNome = data.get("organizacaoNome").trim();
         String papel = Optional.ofNullable(data.get("papel"))
-                .filter(p -> !p.isBlank()).orElse(TipoEntidadeImportacao.MEMBRO.name());
+                .filter(p -> !p.isBlank()).orElse("MEMBRO_PASTORAL");
         UUID igrejaId = parseUuid(data.get(KEY_IGREJA_ID));
 
         var user = usuarioJpaRepository.findByUsernameIgnoreCase(username)
@@ -287,9 +285,9 @@ public class ImportacaoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Organização não encontrada: " + orgNome));
 
-        createMembroUseCase.execute(
+        adicionarMembroUseCase.execute(
                 new MembroRequest(
-                        user.getId(), org.getId(), papel,
+                        user.getFielId(), org.getId(), papel,
                         LocalDate.now(), igrejaId, true),
                 actor);
     }
