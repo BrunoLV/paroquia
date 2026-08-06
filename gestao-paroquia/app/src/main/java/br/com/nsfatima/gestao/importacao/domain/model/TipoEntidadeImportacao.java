@@ -11,7 +11,7 @@ public enum TipoEntidadeImportacao {
     /** Vínculo de um usuário já existente a uma organização, com papel organizacional. */
     MEMBRO,
     /** Cadastro de uma organização na hierarquia paroquial (comunidade, pastoral, conselho etc.). */
-    ORGANIZACAO,
+    GRUPO_PAROQUIAL,
     /** Cadastro de um evento de agenda. */
     EVENTO;
 

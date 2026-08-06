@@ -42,7 +42,7 @@ class CancelEventoObservacaoIntegrationTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Observacao apos aprovacao");
-        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-12-11T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-12-11T11:00:00Z"));
         evento.setStatus("CONFIRMADO");

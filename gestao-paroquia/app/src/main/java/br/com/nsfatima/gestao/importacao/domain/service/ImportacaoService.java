@@ -12,11 +12,14 @@ import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.service.GrupoParoquialService;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import br.com.nsfatima.gestao.calendario.domain.service.MotorLiturgico;
 import br.com.nsfatima.gestao.calendario.domain.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
@@ -58,9 +61,10 @@ public class ImportacaoService {
 
     private final AdicionarMembroUseCase adicionarMembroUseCase;
     private final UsuarioJpaRepository usuarioJpaRepository;
-    private final OrganizacaoService organizacaoService;
+    private final GrupoParoquialService grupoParoquialService;
     private final EventoJpaRepository eventoJpaRepository;
-    private final OrganizacaoJpaRepository organizacaoJpaRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final ImportacaoFileParser importacaoFileParser;
     private final AnoParoquialJpaRepository anoParoquialJpaRepository;
@@ -70,9 +74,10 @@ public class ImportacaoService {
 
     public ImportacaoService(AdicionarMembroUseCase adicionarMembroUseCase,
                               UsuarioJpaRepository usuarioJpaRepository,
-                              OrganizacaoService organizacaoService,
+                              GrupoParoquialService grupoParoquialService,
                               EventoJpaRepository eventoJpaRepository,
-                              OrganizacaoJpaRepository organizacaoJpaRepository,
+                              GrupoParoquialJpaRepository grupoParoquialJpaRepository,
+                              UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
                               ImportacaoFileParser importacaoFileParser,
                               AnoParoquialJpaRepository anoParoquialJpaRepository,
@@ -81,9 +86,10 @@ public class ImportacaoService {
                               ProvisionamentoLiturgicoService liturgicalProvisioningService) {
         this.adicionarMembroUseCase = adicionarMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
-        this.organizacaoService = organizacaoService;
+        this.grupoParoquialService = grupoParoquialService;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.organizacaoJpaRepository = organizacaoJpaRepository;
+        this.grupoParoquialJpaRepository = grupoParoquialJpaRepository;
+        this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
         this.pastoralOficialRepository = pastoralOficialRepository;
         this.importacaoFileParser = importacaoFileParser;
         this.anoParoquialJpaRepository = anoParoquialJpaRepository;
@@ -158,14 +164,14 @@ public class ImportacaoService {
         }
         return switch (tipoEntidade) {
             case MEMBRO -> validarMembro(data);
-            case ORGANIZACAO -> validarOrganizacao(data);
+            case GRUPO_PAROQUIAL -> validarGrupoParoquial(data);
             case EVENTO -> validarEvento(data);
         };
     }
 
     /**
      * Valida uma linha de importação de MEMBRO: exige que o usuário ("usuarioUsername") e a
-     * organização ("organizacaoNome") já existam previamente no sistema — importação de membro
+     * organização ("grupoParoquialNome") já existam previamente no sistema — importação de membro
      * apenas cria o vínculo, nunca as entidades relacionadas — e que um "papel" tenha sido
      * informado.
      */
@@ -179,11 +185,11 @@ public class ImportacaoService {
             return "Usuário não encontrado: " + username;
         }
 
-        String orgNome = data.getOrDefault("organizacaoNome", "").trim();
+        String orgNome = data.getOrDefault("grupoParoquialNome", "").trim();
         if (orgNome.isBlank()) {
-            return "O campo 'organizacaoNome' é obrigatório.";
+            return "O campo 'grupoParoquialNome' é obrigatório.";
         }
-        var orgOpt = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome);
+        var orgOpt = grupoParoquialJpaRepository.findByNomeIgnoreCase(orgNome);
         if (orgOpt.isEmpty()) {
             return "Organização não encontrada: " + orgNome;
         }
@@ -195,11 +201,11 @@ public class ImportacaoService {
     }
 
     /**
-     * Valida uma linha de importação de ORGANIZACAO: exige nome e tipo; o "tipo" precisa ser um
-     * valor de {@code TipoOrganizacao} válido (checado apenas na importação, via
-     * {@link #parseTipoOrganizacao}, que aplica um fallback silencioso se o valor for inválido).
+     * Valida uma linha de importação de GRUPO_PAROQUIAL: exige nome e tipo; o "tipo" precisa ser um
+     * valor de {@code TipoGrupo} válido (checado apenas na importação, via
+     * {@link #parseTipoGrupo}, que aplica um fallback silencioso se o valor for inválido).
      */
-    private String validarOrganizacao(Map<String, String> data) {
+    private String validarGrupoParoquial(Map<String, String> data) {
         if (data.getOrDefault(KEY_NOME, "").isBlank()) {
             return ERR_NOME_REQUIRED;
         }
@@ -251,7 +257,7 @@ public class ImportacaoService {
             try {
                 switch (tipoEntidade) {
                     case MEMBRO -> importMembro(data, actor);
-                    case ORGANIZACAO -> importOrganizacao(data);
+                    case GRUPO_PAROQUIAL -> importGrupoParoquial(data);
                     case EVENTO -> importEvento(data);
                     default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipo);
                 }
@@ -273,7 +279,7 @@ public class ImportacaoService {
      */
     private void importMembro(Map<String, String> data, String actor) {
         String username = data.get("usuarioUsername").trim();
-        String orgNome = data.get("organizacaoNome").trim();
+        String orgNome = data.get("grupoParoquialNome").trim();
         String papel = Optional.ofNullable(data.get("papel"))
                 .filter(p -> !p.isBlank()).orElse("MEMBRO_PASTORAL");
         UUID igrejaId = parseUuid(data.get(KEY_IGREJA_ID));
@@ -281,7 +287,7 @@ public class ImportacaoService {
         var user = usuarioJpaRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Usuário não encontrado: " + username));
-        var org = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome)
+        var org = grupoParoquialJpaRepository.findByNomeIgnoreCase(orgNome)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Organização não encontrada: " + orgNome));
 
@@ -300,15 +306,15 @@ public class ImportacaoService {
      * cadastro oficial da pastoral/movimento é resolvido de forma best-effort via
      * {@link #resolvePastoralOficialId}, podendo ficar {@code null} se não houver correspondência.
      */
-    private void importOrganizacao(Map<String, String> data) {
-        TipoOrganizacao tipoOrg = parseTipoOrganizacao(data.get("tipo"));
+    private void importGrupoParoquial(Map<String, String> data) {
+        TipoGrupo tipoOrg = parseTipoGrupo(data.get("tipo"));
         UUID parentId = resolveParentId(tipoOrg, data.get("parentId"));
         UUID pastoralOficialId =
-                (tipoOrg == TipoOrganizacao.PASTORAL || tipoOrg == TipoOrganizacao.MOVIMENTO)
+                (tipoOrg == TipoGrupo.PASTORAL || tipoOrg == TipoGrupo.MOVIMENTO)
                         ? resolvePastoralOficialId(
                         tipoOrg, data.get("pastoralOficialId"), data.get(KEY_NOME))
                         : null;
-        organizacaoService.createOrganization(
+        grupoParoquialService.createOrganization(
                 data.get(KEY_NOME),
                 tipoOrg,
                 data.get("contato"),
@@ -330,7 +336,7 @@ public class ImportacaoService {
      * dar rollback) só porque uma linha cai num ano já fechado. Também resolve o ano/ciclo
      * litúrgico do evento (via {@code liturgicalProvisioningService} ou, na ausência deste, o
      * motor legado {@code liturgicalEngine}) e local/organização responsável com fallback
-     * best-effort, análogo ao que ocorre em {@link #importOrganizacao}.
+     * best-effort, análogo ao que ocorre em {@link #importGrupoParoquial}.
      */
     private void importEvento(Map<String, String> data) {
         EventoEntity entity = new EventoEntity();
@@ -373,7 +379,7 @@ public class ImportacaoService {
                         .orElse(CategoriaEvento.ADMINISTRATIVO));
         entity.setLocalId(parseUuid(data.get("localId")));
         entity.setIgrejaVinculoId(parseUuid(data.get(KEY_IGREJA_ID)));
-        entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));
+        entity.setGrupoParoquialResponsavelId(resolveGrupoParoquialResponsavelId(data.get("grupoParoquialId")));
 
         // Resolução Litúrgica
         if (liturgicalProvisioningService != null) {
@@ -393,58 +399,52 @@ public class ImportacaoService {
     }
 
     /**
-     * Resolve o organizacao-pai de uma organização importada: usa o ID informado se ele existir;
+     * Resolve o grupoParoquial-pai de uma organização importada: usa o ID informado se ele existir;
      * caso contrário, infere um pai plausível conforme a posição do tipo na hierarquia paroquial
      * (Matriz/Comunidade sob Clero ou Matriz, Conselhos sob Matriz/Comunidade/Clero, Pastoral ou
      * Movimento sob Conselho Pastoral). Clero nunca tem pai. Esse fallback existe para que
      * planilhas sem "parentId" preenchido ainda produzam uma árvore organizacional coerente.
      */
-    private UUID resolveParentId(TipoOrganizacao tipo, String inputParentId) {
+    private UUID resolveParentId(TipoGrupo tipo, String inputParentId) {
         UUID id = parseUuid(inputParentId);
         if (id != null) {
-            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) {
+            if (grupoParoquialJpaRepository == null || grupoParoquialJpaRepository.existsById(id)) {
                 return id;
             }
         }
 
-        if (organizacaoJpaRepository == null) {
+        if (grupoParoquialJpaRepository == null) {
             return null;
         }
-        List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
+        List<GrupoParoquialEntity> all = grupoParoquialJpaRepository.findAll();
         if (all == null || all.isEmpty()) {
             return null;
         }
-        if (tipo == TipoOrganizacao.CLERO) {
-            return null;
+        // CONSELHO tem organização-mãe do tipo UnidadeTerritorial MATRIZ/COMUNIDADE (track
+        // linguagem_ubiqua_dominio: CLERO/MATRIZ/COMUNIDADE viraram UnidadeTerritorial, fora do
+        // GrupoParoquialJpaRepository usado neste fallback)
+        if (tipo == TipoGrupo.CONSELHO) {
+            if (unidadeTerritorialJpaRepository == null) {
+                return null;
+            }
+            List<UnidadeTerritorialEntity> unidades = unidadeTerritorialJpaRepository.findAll();
+            return unidades.stream()
+                    .filter(u -> u.getTipo() == TipoUnidadeTerritorial.MATRIZ
+                            || u.getTipo() == TipoUnidadeTerritorial.COMUNIDADE)
+                    .map(UnidadeTerritorialEntity::getId)
+                    .findFirst()
+                    .orElse(null);
         }
 
-        if (tipo == TipoOrganizacao.MATRIZ || tipo == TipoOrganizacao.COMUNIDADE) {
+        if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
             return all.stream()
-                    .filter(o -> o.getTipo() == TipoOrganizacao.CLERO || o.getTipo() == TipoOrganizacao.MATRIZ)
-                    .map(OrganizacaoEntity::getId)
+                    .filter(o -> o.getTipo() == TipoGrupo.CONSELHO)
+                    .map(GrupoParoquialEntity::getId)
                     .findFirst()
                     .orElse(all.getFirst().getId());
         }
 
-        if (tipo == TipoOrganizacao.CONSELHO_PASTORAL || tipo == TipoOrganizacao.CONSELHO_ECONOMICO) {
-            return all.stream()
-                    .filter(o -> o.getTipo() == TipoOrganizacao.MATRIZ
-                            || o.getTipo() == TipoOrganizacao.COMUNIDADE
-                            || o.getTipo() == TipoOrganizacao.CLERO)
-                    .map(OrganizacaoEntity::getId)
-                    .findFirst()
-                    .orElse(all.getFirst().getId());
-        }
-
-        if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
-            return all.stream()
-                    .filter(o -> o.getTipo() == TipoOrganizacao.CONSELHO_PASTORAL)
-                    .map(OrganizacaoEntity::getId)
-                    .findFirst()
-                    .orElse(all.getFirst().getId());
-        }
-
-        return all.getFirst().getId();
+        return null;
     }
 
     /**
@@ -453,7 +453,7 @@ public class ImportacaoService {
      * {@code null} quando nada corresponde — o vínculo oficial é opcional, então a linha ainda
      * assim é importada.
      */
-    private UUID resolvePastoralOficialId(TipoOrganizacao tipo, String inputId, String orgNome) {
+    private UUID resolvePastoralOficialId(TipoGrupo tipo, String inputId, String orgNome) {
         UUID id = parseUuid(inputId);
         if (id != null) {
             if (pastoralOficialRepository == null || pastoralOficialRepository.findById(id).isPresent()) {
@@ -480,16 +480,16 @@ public class ImportacaoService {
      * na ausência/inválido, cai para a primeira organização cadastrada como fallback best-effort,
      * para que a linha ainda seja importada mesmo sem essa referência.
      */
-    private UUID resolveOrganizacaoResponsavelId(String inputId) {
+    private UUID resolveGrupoParoquialResponsavelId(String inputId) {
         UUID id = parseUuid(inputId);
         if (id != null) {
-            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) {
+            if (grupoParoquialJpaRepository == null || grupoParoquialJpaRepository.existsById(id)) {
                 return id;
             }
         }
 
-        if (organizacaoJpaRepository != null) {
-            List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
+        if (grupoParoquialJpaRepository != null) {
+            List<GrupoParoquialEntity> all = grupoParoquialJpaRepository.findAll();
             if (all != null && !all.isEmpty()) {
                 return all.getFirst().getId();
             }
@@ -523,16 +523,16 @@ public class ImportacaoService {
     }
 
     /**
-     * Converte o texto do campo "tipo" em {@link TipoOrganizacao}; se o valor for inválido ou
+     * Converte o texto do campo "tipo" em {@link TipoGrupo}; se o valor for inválido ou
      * ausente, cai silenciosamente para {@code PASTORAL} em vez de rejeitar a linha — a
-     * validação prévia ({@link #validarOrganizacao}) não checa esse valor, então esse fallback é
+     * validação prévia ({@link #validarGrupoParoquial}) não checa esse valor, então esse fallback é
      * a única rede de segurança contra um "tipo" mal escrito.
      */
-    private TipoOrganizacao parseTipoOrganizacao(String input) {
+    private TipoGrupo parseTipoGrupo(String input) {
         try {
-            return TipoOrganizacao.valueOf(input.trim().toUpperCase());
+            return TipoGrupo.valueOf(input.trim().toUpperCase());
         } catch (Exception e) {
-            return TipoOrganizacao.PASTORAL;
+            return TipoGrupo.PASTORAL;
         }
     }
 }

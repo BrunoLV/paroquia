@@ -30,13 +30,13 @@ class IndicadorRetrabalhoZeroIntegrationTest {
 
     @Test
     void deveRetornarZeroQuandoNenhumEligibleOccurrencesExiste() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
-                        .param("organizacaoId", organizacaoId.toString())
+                        .param("grupoParoquialId", grupoParoquialId.toString())
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-10T00:00:00Z")
-                        .header("X-Actor-Org-Id", organizacaoId.toString()))
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.taxaRetrabalho").value(0.0))
                 .andExpect(jsonPath("$.numeradorOcorrenciasElegiveis").value(0))

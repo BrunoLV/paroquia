@@ -43,7 +43,7 @@ class ProjetoIntegrationTest {
                 {
                   "nome": "Projeto Lifecycle",
                   "descricao": "Teste de ciclo de vida",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-10-01T00:00:00Z",
                   "fim": "2026-10-31T23:59:59Z"
                 }
@@ -97,7 +97,7 @@ class ProjetoIntegrationTest {
         String payload = """
                 {
                   "nome": "%s",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-01-01T00:00:00Z",
                   "fim": "2026-01-02T00:00:00Z"
                 }

@@ -14,8 +14,8 @@ import java.util.UUID;
 
 /**
  * Lê, via SQL nativo (deliberadamente fora do JPA para evitar acoplar o contexto {@code iam} às entidades
- * do contexto {@code organizacao}), os vínculos organizacionais ativos de um usuário e os traduz em
- * authorities Spring Security no formato {@code ROLE_<TIPO_ORGANIZACAO>_<PAPEL>}. É a fonte de papéis
+ * do contexto {@code grupoParoquial}), os vínculos organizacionais ativos de um usuário e os traduz em
+ * authorities Spring Security no formato {@code ROLE_<TIPO_GRUPO_PAROQUIAL>_<PAPEL>}. É a fonte de papéis
  * por-organização usada tanto no login ({@link UsuarioDetailsService}) quanto no perfil exposto pelo
  * {@code AuthController}.
  */
@@ -40,18 +40,18 @@ public class LeitorVinculoExterno {
     public List<Vinculo> findVinculosAtivos(UUID userId) {
         return jdbcTemplate.query(
                 """
-                        SELECT m.organizacao_id,
-                                m.tipo_organizacao, m.papel, m.igreja_vinculo_id, o.nome as organizacao_nome,
-                                o.contato as organizacao_contato, o.coordenador as organizacao_coordenador,
-                                o.vice_coordenador as organizacao_vice_coordenador, o.ativo as organizacao_ativo
+                        SELECT m.grupoParoquial_id,
+                                m.tipo_grupoParoquial, m.papel, m.igreja_vinculo_id, o.nome as grupoParoquial_nome,
+                                o.contato as grupoParoquial_contato, o.coordenador as grupoParoquial_coordenador,
+                                o.vice_coordenador as grupoParoquial_vice_coordenador, o.ativo as grupoParoquial_ativo
 
                         FROM calendario.membro_grupo m
-                        JOIN calendario.organizacoes o ON o.id = m.organizacao_id
+                        JOIN calendario.organizacoes o ON o.id = m.grupoParoquial_id
                         JOIN calendario.usuarios u ON u.fiel_id = m.fiel_id
                         WHERE u.id = ?
                           AND m.ativo = TRUE
                           AND o.ativo = TRUE
-                        ORDER BY m.tipo_organizacao, m.papel, m.organizacao_id
+                        ORDER BY m.tipo_grupoParoquial, m.papel, m.grupoParoquial_id
                         """,
                 this::mapVinculo,
                 userId);
@@ -103,13 +103,13 @@ public class LeitorVinculoExterno {
         String igrejaVinculoStr = rs.getString("igreja_vinculo_id");
         UUID igrejaVinculoId = igrejaVinculoStr == null ? null : UUID.fromString(igrejaVinculoStr);
         return new Vinculo(
-                UUID.fromString(rs.getString("organizacao_id")),
-                rs.getString("organizacao_nome"),
-                rs.getString("tipo_organizacao"),
-                rs.getString("organizacao_contato"),
-                rs.getString("organizacao_coordenador"),
-                rs.getString("organizacao_vice_coordenador"),
-                rs.getBoolean("organizacao_ativo"),
+                UUID.fromString(rs.getString("grupoParoquial_id")),
+                rs.getString("grupoParoquial_nome"),
+                rs.getString("tipo_grupoParoquial"),
+                rs.getString("grupoParoquial_contato"),
+                rs.getString("grupoParoquial_coordenador"),
+                rs.getString("grupoParoquial_vice_coordenador"),
+                rs.getBoolean("grupoParoquial_ativo"),
                 rs.getString("papel"),
                 igrejaVinculoId);
     }
@@ -130,7 +130,7 @@ public class LeitorVinculoExterno {
             UUID igrejaVinculoId) {
 
         public Vinculo(UUID organizationId, String organizationType, String role) {
-            this(organizationId, "Organizacao", organizationType, null, null, null, true, role, null);
+            this(organizationId, "GrupoParoquial", organizationType, null, null, null, true, role, null);
         }
 
         private static String normalize(String value) {
@@ -141,7 +141,7 @@ public class LeitorVinculoExterno {
 
         /**
          * Constrói a authority Spring Security correspondente a este vínculo, no formato
-         * {@code ROLE_<TIPO_ORGANIZACAO>_<PAPEL>} (ex.: {@code ROLE_COMUNIDADE_COORDENADOR}), normalizando
+         * {@code ROLE_<TIPO_GRUPO_PAROQUIAL>_<PAPEL>} (ex.: {@code ROLE_COMUNIDADE_COORDENADOR}), normalizando
          * espaços e hífens para underscore em maiúsculas — é assim que papéis por-organização se tornam
          * comparáveis a {@code hasRole(...)}/{@code hasAuthority(...)} do Spring Security.
          *

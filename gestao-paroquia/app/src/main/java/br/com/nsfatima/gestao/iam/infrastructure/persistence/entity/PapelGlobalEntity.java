@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /**
  * Atribuição de um papel de acesso irrestrito ({@code PapelGlobal}) a um {@code Fiel}, sem vínculo a
- * nenhuma organização — diferente de {@code MembroGrupoEntity}, que sempre exige {@code organizacaoId}.
+ * nenhuma organização — diferente de {@code MembroGrupoEntity}, que sempre exige {@code grupoParoquialId}.
  */
 @Entity
 @Table(name = "papel_global", schema = "calendario")

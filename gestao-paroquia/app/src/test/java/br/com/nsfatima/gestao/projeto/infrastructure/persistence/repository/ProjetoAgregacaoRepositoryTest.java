@@ -116,19 +116,19 @@ class ProjetoAgregacaoRepositoryTest {
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(projetoId);
         projeto.setNome("Projeto Teste");
-        projeto.setOrganizacaoResponsavelId(orgProjeto);
+        projeto.setGrupoParoquialResponsavelId(orgProjeto);
         projetoRepository.save(projeto);
 
         // Event 1 with involved
         EventoEntity evento1 = saveEvento(projetoId,
                 EventoStatusInput.CONFIRMADO, Instant.now().plus(1, ChronoUnit.DAYS));
 
-        evento1.setOrganizacaoResponsavelId(orgEvento1);
+        evento1.setGrupoParoquialResponsavelId(orgEvento1);
         eventoRepository.save(evento1);
 
         EventoEnvolvidoEntity envolvido = new EventoEnvolvidoEntity();
         envolvido.setEventoId(evento1.getId());
-        envolvido.setOrganizacaoId(orgEnvolvido1);
+        envolvido.setGrupoParoquialId(orgEnvolvido1);
         envolvidoRepository.save(envolvido);
 
         // Query distinct org names
@@ -150,7 +150,7 @@ class ProjetoAgregacaoRepositoryTest {
         evento.setInicioUtc(inicio);
         evento.setFimUtc(inicio.plus(1, ChronoUnit.HOURS));
         evento.setTitulo("Evento");
-        evento.setOrganizacaoResponsavelId(orgId);
+        evento.setGrupoParoquialResponsavelId(orgId);
         return eventoRepository.save(evento);
     }
 }

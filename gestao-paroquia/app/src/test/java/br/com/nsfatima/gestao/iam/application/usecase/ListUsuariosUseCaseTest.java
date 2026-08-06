@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,16 +21,16 @@ import static org.mockito.Mockito.when;
 class ListUsuariosUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
     private FielJpaRepository fielRepository;
     private ListUsuariosUseCase useCase;
 
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        organizacaoRepository = mock(OrganizacaoJpaRepository.class);
+        grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
-        useCase = new ListUsuariosUseCase(usuarioRepository, organizacaoRepository, fielRepository);
+        useCase = new ListUsuariosUseCase(usuarioRepository, grupoParoquialRepository, fielRepository);
     }
 
     @Test

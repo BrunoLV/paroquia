@@ -11,7 +11,7 @@ import java.util.UUID;
  * exige justificativa por escrito para preservar rastreabilidade do porquê o ativo mudou de dono.
  */
 public record TransferirAtivoRequest(
-        @NotNull UUID novaOrganizacaoId,
+        @NotNull UUID novaGrupoParoquialId,
         @NotBlank @Size(min = 10, max = 2000) String justificativa
 ) {
 }

@@ -100,9 +100,9 @@ public class CancelarAlocacaoAtivoUseCase {
         }
 
         if (ocupacao.getTipo() == AtivoAlocacaoTipo.MANUTENCAO) {
-            authorizationService.assertCanIniciarManutencao(actorContext, ocupacao.getOrganizacaoOrigemId());
+            authorizationService.assertCanIniciarManutencao(actorContext, ocupacao.getGrupoParoquialOrigemId());
         } else {
-            authorizationService.assertCanAlocar(actorContext, ocupacao.getOrganizacaoOrigemId());
+            authorizationService.assertCanAlocar(actorContext, ocupacao.getGrupoParoquialOrigemId());
         }
     }
 }

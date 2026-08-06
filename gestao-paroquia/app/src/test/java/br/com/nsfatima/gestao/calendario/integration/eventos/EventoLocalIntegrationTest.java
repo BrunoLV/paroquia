@@ -37,7 +37,7 @@ class EventoLocalIntegrationTest {
         String payload = """
                 {
                   "titulo": "Evento com Local",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "localId": "%s",
                   "inicio": "2026-12-01T10:00:00Z",
                   "fim": "2026-12-01T12:00:00Z"
@@ -66,7 +66,7 @@ class EventoLocalIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Event to Update Local");
-        entity.setOrganizacaoResponsavelId(UUID.fromString(orgId));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString(orgId));
         entity.setInicioUtc(Instant.parse("2026-12-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-01T11:00:00Z"));
         entity.setStatus("CONFIRMADO");

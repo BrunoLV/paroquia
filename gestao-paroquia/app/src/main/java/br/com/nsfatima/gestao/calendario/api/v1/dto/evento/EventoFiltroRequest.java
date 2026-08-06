@@ -25,7 +25,7 @@ public record EventoFiltroRequest(
         Instant dataFim,
 
         @Parameter(description = "Filtrar por organizações responsáveis")
-        List<UUID> organizacaoIds,
+        List<UUID> grupoParoquialIds,
 
         @Parameter(description = "Filtrar por projeto")
         UUID projetoId,

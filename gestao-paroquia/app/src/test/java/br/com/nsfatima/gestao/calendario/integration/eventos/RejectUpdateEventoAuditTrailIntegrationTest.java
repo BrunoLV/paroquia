@@ -42,7 +42,7 @@ class RejectUpdateEventoAuditTrailIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento audit trail",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                                   "inicio": "2027-12-20T10:00:00Z",
                                   "fim": "2027-12-20T11:00:00Z"
                                 }

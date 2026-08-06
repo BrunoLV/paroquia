@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.membro.infrastructure.persistence.repository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +30,14 @@ class MembroGrupoJpaRepositoryTest {
     @DisplayName("Deve salvar e buscar um vínculo MembroGrupo por ID")
     void deveSalvarEBuscarMembroGrupo() {
         UUID fielId = FielTestFixtures.criarFiel(fielRepository);
-        UUID organizacaoId = UUID.randomUUID();
+        UUID grupoParoquialId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
 
         MembroGrupoEntity membro = new MembroGrupoEntity();
         membro.setId(id);
         membro.setFielId(fielId);
-        membro.setOrganizacaoId(organizacaoId);
-        membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        membro.setGrupoParoquialId(grupoParoquialId);
+        membro.setTipoGrupo(TipoGrupo.PASTORAL);
         membro.setPapel("MEMBRO_PASTORAL");
         membro.setAtivo(true);
 
@@ -45,7 +45,7 @@ class MembroGrupoJpaRepositoryTest {
 
         MembroGrupoEntity found = repository.findById(id).orElseThrow();
         assertThat(found.getFielId()).isEqualTo(fielId);
-        assertThat(found.getOrganizacaoId()).isEqualTo(organizacaoId);
+        assertThat(found.getGrupoParoquialId()).isEqualTo(grupoParoquialId);
         assertThat(found.getPapel()).isEqualTo("MEMBRO_PASTORAL");
         assertThat(found.getCriadoEmUtc()).isNotNull();
         assertThat(found.getAtualizadoEmUtc()).isNotNull();
@@ -56,8 +56,8 @@ class MembroGrupoJpaRepositoryTest {
     void deveFalharAoPersistirSemFielIdPoisAgoraEhObrigatorio() {
         MembroGrupoEntity membro = new MembroGrupoEntity();
         membro.setId(UUID.randomUUID());
-        membro.setOrganizacaoId(UUID.randomUUID());
-        membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        membro.setGrupoParoquialId(UUID.randomUUID());
+        membro.setTipoGrupo(TipoGrupo.PASTORAL);
         membro.setPapel("MEMBRO_PASTORAL");
         membro.setAtivo(true);
 
@@ -66,8 +66,8 @@ class MembroGrupoJpaRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve filtrar por organizacaoId e por fielId")
-    void deveFiltrarPorOrganizacaoIdEFielId() {
+    @DisplayName("Deve filtrar por grupoParoquialId e por fielId")
+    void deveFiltrarPorGrupoParoquialIdEFielId() {
         UUID fiel1 = FielTestFixtures.criarFiel(fielRepository, "Fiel Um");
         UUID fiel2 = FielTestFixtures.criarFiel(fielRepository, "Fiel Dois");
         UUID org1 = UUID.randomUUID();
@@ -93,8 +93,8 @@ class MembroGrupoJpaRepositoryTest {
         MembroGrupoEntity ativo = new MembroGrupoEntity();
         ativo.setId(UUID.randomUUID());
         ativo.setFielId(fielId);
-        ativo.setOrganizacaoId(orgId);
-        ativo.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        ativo.setGrupoParoquialId(orgId);
+        ativo.setTipoGrupo(TipoGrupo.PASTORAL);
         ativo.setPapel("COORD_PASTORAL_LOCAL");
         ativo.setAtivo(true);
         repository.save(ativo);
@@ -102,23 +102,23 @@ class MembroGrupoJpaRepositoryTest {
         MembroGrupoEntity inativo = new MembroGrupoEntity();
         inativo.setId(UUID.randomUUID());
         inativo.setFielId(fielId);
-        inativo.setOrganizacaoId(orgId);
-        inativo.setTipoOrganizacao(TipoOrganizacao.MOVIMENTO);
+        inativo.setGrupoParoquialId(orgId);
+        inativo.setTipoGrupo(TipoGrupo.MOVIMENTO);
         inativo.setPapel("MEMBRO_MOVIMENTO");
         inativo.setAtivo(false);
         repository.save(inativo);
 
         var results = repository.findByFielIdAndAtivoTrue(fielId);
         assertThat(results).hasSize(1);
-        assertThat(results.getFirst().getTipoOrganizacao()).isEqualTo(TipoOrganizacao.PASTORAL);
+        assertThat(results.getFirst().getTipoGrupo()).isEqualTo(TipoGrupo.PASTORAL);
     }
 
-    private void salvar(UUID fielId, UUID organizacaoId) {
+    private void salvar(UUID fielId, UUID grupoParoquialId) {
         MembroGrupoEntity membro = new MembroGrupoEntity();
         membro.setId(UUID.randomUUID());
         membro.setFielId(fielId);
-        membro.setOrganizacaoId(organizacaoId);
-        membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        membro.setGrupoParoquialId(grupoParoquialId);
+        membro.setTipoGrupo(TipoGrupo.PASTORAL);
         membro.setPapel("MEMBRO_PASTORAL");
         membro.setAtivo(true);
         repository.save(membro);

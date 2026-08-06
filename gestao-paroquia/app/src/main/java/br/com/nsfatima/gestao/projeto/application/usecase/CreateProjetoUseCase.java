@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
@@ -65,7 +65,7 @@ public class CreateProjetoUseCase {
     @Transactional
     public ProjetoCreationResult create(ProjetoCreateRequest request) {
         var actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanCreate(actorContext, request.organizacaoResponsavelId());
+        authorizationService.assertCanCreate(actorContext, request.grupoParoquialResponsavelId());
 
         if (request.fim().isBefore(request.inicio())) {
             throw new IllegalArgumentException("Data de fim do projeto não pode ser anterior à data de início");
@@ -90,7 +90,7 @@ public class CreateProjetoUseCase {
             aprovacao.setStatus(AprovacaoStatus.PENDENTE);
             aprovacao.setSolicitanteId(actorContext.actor());
             aprovacao.setSolicitantePapel(actorContext.role());
-            aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
+            aprovacao.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
             try {
                 aprovacao.setActionPayloadJson(objectMapper.writeValueAsString(request));
             } catch (Exception e) {
@@ -111,7 +111,7 @@ public class CreateProjetoUseCase {
         entity.setId(UUID.randomUUID());
         entity.setNome(request.nome());
         entity.setDescricao(request.descricao());
-        entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
+        entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
         entity.setInicioUtc(request.inicio());
         entity.setFimUtc(request.fim());
         entity.setStatus(ProjetoStatus.ABERTO);

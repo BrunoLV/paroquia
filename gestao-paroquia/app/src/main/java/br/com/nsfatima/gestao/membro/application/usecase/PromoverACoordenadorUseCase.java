@@ -11,8 +11,8 @@ import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +33,7 @@ public class PromoverACoordenadorUseCase {
 
     private final MembroGrupoJpaRepository membroRepository;
     private final FielJpaRepository fielRepository;
-    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final CreateUsuarioUseCase createUsuarioUseCase;
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
@@ -41,13 +41,13 @@ public class PromoverACoordenadorUseCase {
     public PromoverACoordenadorUseCase(
             MembroGrupoJpaRepository membroRepository,
             FielJpaRepository fielRepository,
-            OrganizacaoJpaRepository organizacaoRepository,
+            GrupoParoquialJpaRepository grupoParoquialRepository,
             UsuarioJpaRepository usuarioRepository,
             CreateUsuarioUseCase createUsuarioUseCase,
             PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
         this.membroRepository = membroRepository;
         this.fielRepository = fielRepository;
-        this.organizacaoRepository = organizacaoRepository;
+        this.grupoParoquialRepository = grupoParoquialRepository;
         this.usuarioRepository = usuarioRepository;
         this.createUsuarioUseCase = createUsuarioUseCase;
         this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
@@ -71,9 +71,9 @@ public class PromoverACoordenadorUseCase {
         FielEntity fiel = fielRepository.findById(request.fielId())
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + request.fielId()));
 
-        OrganizacaoEntity organizacao = organizacaoRepository.findById(request.organizacaoId())
+        GrupoParoquialEntity grupoParoquial = grupoParoquialRepository.findById(request.grupoParoquialId())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Organização não encontrada: " + request.organizacaoId()));
+                        "Organização não encontrada: " + request.grupoParoquialId()));
 
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(request.papel());
         if (papel == null) {
@@ -82,14 +82,14 @@ public class PromoverACoordenadorUseCase {
         PapelGlobalValidation.rejectIfGlobal(papel);
 
         MembroGrupoEntity membro = membroRepository
-                .findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
+                .findByFielIdAndGrupoParoquialIdAndAtivoTrue(request.fielId(), request.grupoParoquialId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Fiel não é membro ativo desta organização: " + request.fielId()));
 
         membro.setPapel(papel.storedValue());
         membroRepository.save(membro);
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
+        LiderancaSyncSupport.sync(grupoParoquialRepository, papel, fiel.getNome(), grupoParoquial);
 
         var usuarioExistente = usuarioRepository.findByFielId(request.fielId());
         boolean usuarioCriado = usuarioExistente.isEmpty();

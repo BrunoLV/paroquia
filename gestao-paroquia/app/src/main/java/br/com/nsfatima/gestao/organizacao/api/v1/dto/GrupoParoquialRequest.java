@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,12 +10,12 @@ import java.util.UUID;
 
 /**
  * Payload de criação/atualização de uma organização. A combinação de {@code tipo}, {@code parentId} e
- * {@code pastoralOficialId} é validada por {@code OrganizacaoService.validateHierarchy} contra as regras da
+ * {@code pastoralOficialId} é validada por {@code GrupoParoquialService.validateHierarchy} contra as regras da
  * hierarquia organizacional (ex.: Pastoral/Movimento exige {@code pastoralOficialId} e organização-mãe do
  * tipo {@code CONSELHO_PASTORAL}).
  */
 @Schema(description = "Request to create or update an Organization")
-public record OrganizacaoRequest(
+public record GrupoParoquialRequest(
         @Schema(description = "Organization name", example = "Pastoral da Juventude")
         @NotBlank(message = "Name is required")
         @Size(max = 255, message = "Name must not exceed 255 characters")
@@ -23,7 +23,7 @@ public record OrganizacaoRequest(
 
         @Schema(description = "Organization type")
         @NotNull(message = "Type is required")
-        TipoOrganizacao tipo,
+        TipoGrupo tipo,
 
         @Schema(description = "Contact information", example = "pj@nsfatima.com")
         @Size(max = 255, message = "Contact must not exceed 255 characters")

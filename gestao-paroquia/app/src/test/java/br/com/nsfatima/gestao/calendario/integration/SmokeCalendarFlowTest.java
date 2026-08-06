@@ -27,7 +27,7 @@ class SmokeCalendarFlowTest {
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000dd")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
-                                "{\"titulo\":\"Evento Smoke\",\"organizacaoResponsavelId\":\"00000000-0000-0000-0000" +
+                                "{\"titulo\":\"Evento Smoke\",\"grupoParoquialResponsavelId\":\"00000000-0000-0000-0000" +
                                         "-0000000000dd\",\"inicio\":\"2026-03-16T10:00:00Z\"," +
                                         "\"fim\":\"2026-03-16T11:00:00Z\"}"))
                 .andExpect(status().isCreated());

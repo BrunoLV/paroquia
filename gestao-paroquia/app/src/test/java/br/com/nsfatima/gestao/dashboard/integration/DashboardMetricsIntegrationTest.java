@@ -38,7 +38,7 @@ class DashboardMetricsIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral").exists())
-                .andExpect(jsonPath("$.eventosPorOrganizacao").isArray())
+                .andExpect(jsonPath("$.eventosPorGrupoParoquial").isArray())
                 .andExpect(jsonPath("$.projetosAtivosDetalhes").isArray())
                 .andExpect(jsonPath("$.eventosSemana").isArray());
     }
@@ -52,6 +52,6 @@ class DashboardMetricsIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral").exists())
-                .andExpect(jsonPath("$.eventosPorOrganizacao").isArray());
+                .andExpect(jsonPath("$.eventosPorGrupoParoquial").isArray());
     }
 }

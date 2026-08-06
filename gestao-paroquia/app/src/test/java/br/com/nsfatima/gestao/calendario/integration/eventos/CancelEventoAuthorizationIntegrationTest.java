@@ -44,7 +44,7 @@ class CancelEventoAuthorizationIntegrationTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Evento protegido");
-        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-10-10T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-10T11:00:00Z"));
         evento.setStatus("CONFIRMADO");

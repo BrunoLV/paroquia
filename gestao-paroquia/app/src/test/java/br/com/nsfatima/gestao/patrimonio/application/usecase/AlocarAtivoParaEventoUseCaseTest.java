@@ -87,7 +87,7 @@ class AlocarAtivoParaEventoUseCaseTest {
     private UUID ativoId;
     private UUID eventoId;
     private UUID localId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
     private final LocalDate dataInicio = LocalDate.now().plusDays(1);
     private final LocalDate dataFim = LocalDate.now().plusDays(3);
 
@@ -102,7 +102,7 @@ class AlocarAtivoParaEventoUseCaseTest {
         ativoId = UUID.randomUUID();
         eventoId = UUID.randomUUID();
         localId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
 
         lenient().when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("admin", "admin", "CLERO", null, UUID.randomUUID(), null));
@@ -113,10 +113,10 @@ class AlocarAtivoParaEventoUseCaseTest {
 
     @Test
     void deveConfirmarImediatamenteQuandoOrganizacoesCoincidem() {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativo));
         when(eventoRepository.findById(eventoId)).thenReturn(Optional.of(criarEvento()));
-        when(localRepository.findById(localId)).thenReturn(Optional.of(criarLocal(organizacaoId)));
+        when(localRepository.findById(localId)).thenReturn(Optional.of(criarLocal(grupoParoquialId)));
 
         AtivoOperationResult result = useCase.execute(ativoId,
                 new AlocarAtivoRequest(eventoId, "Utilização para exibição de slides", dataInicio, dataFim));
@@ -136,7 +136,7 @@ class AlocarAtivoParaEventoUseCaseTest {
 
     @Test
     void deveConfirmarReservaSemAtrelarEventoQuandoEventoIdENulo() {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativo));
 
         AtivoOperationResult result = useCase.execute(ativoId,
@@ -158,11 +158,11 @@ class AlocarAtivoParaEventoUseCaseTest {
 
     @Test
     void deveCriarPendenciaDeAprovacaoQuandoOrganizacoesDivergem() {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
-        UUID outraOrganizacaoId = UUID.randomUUID();
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
+        UUID outraGrupoParoquialId = UUID.randomUUID();
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativo));
         when(eventoRepository.findById(eventoId)).thenReturn(Optional.of(criarEvento()));
-        when(localRepository.findById(localId)).thenReturn(Optional.of(criarLocal(outraOrganizacaoId)));
+        when(localRepository.findById(localId)).thenReturn(Optional.of(criarLocal(outraGrupoParoquialId)));
 
         AtivoOperationResult result = useCase.execute(ativoId,
                 new AlocarAtivoRequest(eventoId, "Utilização para exibição de slides", dataInicio, dataFim));
@@ -186,7 +186,7 @@ class AlocarAtivoParaEventoUseCaseTest {
 
     @Test
     void deveConfirmarAlocacaoAoAprovarSolicitacaoPendente() {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
         UUID aprovacaoId = UUID.randomUUID();
         AtivoAlocacaoEntity ocupacaoPendente = new AtivoAlocacaoEntity();
         ocupacaoPendente.setId(UUID.randomUUID());
@@ -210,7 +210,7 @@ class AlocarAtivoParaEventoUseCaseTest {
 
     @Test
     void deveRejeitarAlocacaoDeAtivoBaixado() {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.BAIXADO, organizacaoId);
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.BAIXADO, grupoParoquialId);
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativo));
 
         assertThatThrownBy(() -> useCase.execute(ativoId,
@@ -218,13 +218,13 @@ class AlocarAtivoParaEventoUseCaseTest {
                 .isInstanceOf(AtivoAlocacaoInvalidaException.class);
     }
 
-    private AtivoPatrimonialEntity criarAtivo(AtivoStatus status, UUID organizacaoId) {
+    private AtivoPatrimonialEntity criarAtivo(AtivoStatus status, UUID grupoParoquialId) {
         AtivoPatrimonialEntity ativo = new AtivoPatrimonialEntity();
         ativo.setId(ativoId);
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(status);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         return ativo;
     }
 
@@ -235,10 +235,10 @@ class AlocarAtivoParaEventoUseCaseTest {
         return evento;
     }
 
-    private LocalEntity criarLocal(UUID organizacaoId) {
+    private LocalEntity criarLocal(UUID grupoParoquialId) {
         LocalEntity local = new LocalEntity();
         local.setId(localId);
-        local.setOrganizacaoId(organizacaoId);
+        local.setGrupoParoquialId(grupoParoquialId);
         return local;
     }
 }

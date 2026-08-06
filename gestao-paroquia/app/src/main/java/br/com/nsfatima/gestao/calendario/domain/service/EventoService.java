@@ -8,7 +8,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class EventoService {
         EventoEntity evento = eventoJpaRepository.findById(id)
                 .orElseThrow(() -> new EventoNotFoundException(id));
 
-        assertCanView(actorContext, evento.getOrganizacaoResponsavelId());
+        assertCanView(actorContext, evento.getGrupoParoquialResponsavelId());
 
         return evento;
     }
@@ -71,8 +71,8 @@ public class EventoService {
                 filters.dataInicio() != null,
                 filters.dataFim(),
                 filters.dataFim() != null,
-                filters.organizacaoIds(),
-                filters.organizacaoIds() != null && !filters.organizacaoIds().isEmpty(),
+                filters.grupoParoquialIds(),
+                filters.grupoParoquialIds() != null && !filters.grupoParoquialIds().isEmpty(),
                 filters.projetoId(),
                 filters.projetoId() != null,
                 filters.envolvidoId(),
@@ -84,22 +84,24 @@ public class EventoService {
                 pageable);
     }
 
-    private void assertCanView(EventoActorContext actorContext, UUID organizacaoResponsavelId) {
+    private void assertCanView(EventoActorContext actorContext, UUID grupoParoquialResponsavelId) {
         PapelOrganizacional role = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao orgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        TipoGrupo orgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
-        // Clero pode ver tudo
-        if (orgType == TipoOrganizacao.CLERO) {
+        // Clero (Paroco/Vigario) pode ver tudo — não tem mais TipoGrupo (virou UnidadeTerritorial /
+        // papel global, track linguagem_ubiqua_dominio), o papel já garante o acesso irrestrito
+        if (role == PapelOrganizacional.PAROCO || role == PapelOrganizacional.VIGARIO
+                || role == PapelOrganizacional.ADMIN) {
             return;
         }
 
         // Conselho pode ver tudo
-        if (orgType == TipoOrganizacao.CONSELHO_PASTORAL) {
+        if (orgType == TipoGrupo.CONSELHO) {
             return;
         }
 
         // Outros podem ver eventos da sua própria organização
-        if (actorContext.organizationId() != null && actorContext.organizationId().equals(organizacaoResponsavelId)) {
+        if (actorContext.organizationId() != null && actorContext.organizationId().equals(grupoParoquialResponsavelId)) {
             return;
         }
 

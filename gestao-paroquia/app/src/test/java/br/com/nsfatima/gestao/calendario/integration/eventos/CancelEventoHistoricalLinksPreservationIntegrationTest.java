@@ -40,12 +40,12 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
     @SuppressWarnings("null")
     void devePreservarHistoricoVinculaDepoisCancelamento() throws Exception {
         UUID eventoId = UUID.randomUUID();
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Preservar vinculos");
-        evento.setOrganizacaoResponsavelId(organizacaoId);
+        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
         evento.setInicioUtc(Instant.parse("2026-12-14T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-12-14T11:00:00Z"));
         evento.setStatus("CONFIRMADO");
@@ -62,7 +62,7 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
 
         EventoEnvolvidoEntity envolvido = new EventoEnvolvidoEntity();
         envolvido.setEventoId(eventoId);
-        envolvido.setOrganizacaoId(UUID.fromString("00000000-0000-0000-0000-0000000000bb"));
+        envolvido.setGrupoParoquialId(UUID.fromString("00000000-0000-0000-0000-0000000000bb"));
         envolvido.setPapelParticipacao(PapelEnvolvido.APOIO);
         eventoEnvolvidoJpaRepository.save(envolvido);
 
@@ -79,7 +79,7 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
 
         EventoEntity atualizado = eventoJpaRepository.findById(eventoId).orElseThrow();
         assertThat(atualizado.getStatus()).isEqualTo("CANCELADO");
-        assertThat(atualizado.getOrganizacaoResponsavelId()).isEqualTo(organizacaoId);
+        assertThat(atualizado.getGrupoParoquialResponsavelId()).isEqualTo(grupoParoquialId);
         assertThat(eventoEnvolvidoJpaRepository.findByEventoId(eventoId)).hasSize(1);
         assertThat(observacaoEventoJpaRepository.findByEventoId(eventoId))
                 .extracting(ObservacaoEventoEntity::getConteudo)

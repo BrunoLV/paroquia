@@ -45,7 +45,7 @@ class ExportacaoCalendarioIntegrationTest {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Missa de Domingo Teste");
-        event.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
+        event.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
         event.setStatus("CONFIRMADO");
         event.setInicioUtc(Instant.parse("2026-05-10T10:00:00Z"));
         event.setFimUtc(Instant.parse("2026-05-10T11:00:00Z"));
@@ -71,7 +71,7 @@ class ExportacaoCalendarioIntegrationTest {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Reunião de Conselho");
-        event.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
+        event.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
         event.setStatus("CONFIRMADO");
         event.setInicioUtc(Instant.parse("2026-06-01T15:00:00Z"));
         event.setFimUtc(Instant.parse("2026-06-01T17:00:00Z"));
@@ -96,7 +96,7 @@ class ExportacaoCalendarioIntegrationTest {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Festa da Padroeira");
-        event.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
+        event.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
         event.setStatus("CONFIRMADO");
         event.setInicioUtc(Instant.parse("2026-05-31T09:00:00Z"));
         event.setFimUtc(Instant.parse("2026-05-31T22:00:00Z"));
@@ -120,7 +120,7 @@ class ExportacaoCalendarioIntegrationTest {
         EventoEntity event1 = new EventoEntity();
         event1.setId(UUID.randomUUID());
         event1.setTitulo("Festa Liturgica");
-        event1.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
+        event1.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
         event1.setCategoria(CategoriaEvento.LITURGICO);
         event1.setStatus("CONFIRMADO");
         event1.setInicioUtc(Instant.parse("2026-05-15T18:00:00Z"));
@@ -130,7 +130,7 @@ class ExportacaoCalendarioIntegrationTest {
         EventoEntity event2 = new EventoEntity();
         event2.setId(UUID.randomUUID());
         event2.setTitulo("Reuniao Administrativa");
-        event2.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000bb"));
+        event2.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000bb"));
         event2.setCategoria(CategoriaEvento.ADMINISTRATIVO);
         event2.setStatus("CONFIRMADO");
         event2.setInicioUtc(Instant.parse("2026-05-16T18:00:00Z"));
@@ -143,7 +143,7 @@ class ExportacaoCalendarioIntegrationTest {
                         .param("ano", "2026")
                         .param("mes", "5")
                         .param("categorias", "LITURGICO")
-                        .param("organizacaoIds", ORG_ID))
+                        .param("grupoParoquialIds", ORG_ID))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8"))
                 .andExpect(content().string(containsString("Festa Liturgica")))

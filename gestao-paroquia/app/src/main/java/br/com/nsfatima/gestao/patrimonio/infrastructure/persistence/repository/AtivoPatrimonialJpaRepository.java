@@ -15,7 +15,7 @@ import java.util.UUID;
 @Repository
 public interface AtivoPatrimonialJpaRepository extends JpaRepository<AtivoPatrimonialEntity, UUID> {
 
-    List<AtivoPatrimonialEntity> findByOrganizacaoIdOrderByNomeAsc(UUID organizacaoId);
+    List<AtivoPatrimonialEntity> findByGrupoParoquialIdOrderByNomeAsc(UUID grupoParoquialId);
 
     List<AtivoPatrimonialEntity> findByStatus(AtivoStatus status);
 

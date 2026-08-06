@@ -5,11 +5,14 @@ import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +47,10 @@ class UsuarioDelegatedAdminIntegrationTest {
     private MembroGrupoJpaRepository vinculoRepository;
 
     @Autowired
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
+
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
 
     private UUID coordinatorId;
     private UUID memberId;
@@ -56,28 +62,28 @@ class UsuarioDelegatedAdminIntegrationTest {
     @BeforeEach
     void setUp() {
         churchId = UUID.randomUUID();
-        var church = new OrganizacaoEntity();
+        var church = new UnidadeTerritorialEntity();
         church.setId(churchId);
         church.setNome("Igreja Matriz Teste");
-        church.setTipo(TipoOrganizacao.MATRIZ);
+        church.setTipo(TipoUnidadeTerritorial.MATRIZ);
         church.setAtivo(true);
-        organizacaoRepository.save(church);
+        unidadeTerritorialRepository.save(church);
 
         orgId = UUID.randomUUID();
-        var org = new OrganizacaoEntity();
+        var org = new GrupoParoquialEntity();
         org.setId(orgId);
         org.setNome("Pastoral Teste");
-        org.setTipo(TipoOrganizacao.PASTORAL);
+        org.setTipo(TipoGrupo.PASTORAL);
         org.setAtivo(true);
-        organizacaoRepository.save(org);
+        grupoParoquialRepository.save(org);
 
         otherOrgId = UUID.randomUUID();
-        var otherOrg = new OrganizacaoEntity();
+        var otherOrg = new GrupoParoquialEntity();
         otherOrg.setId(otherOrgId);
         otherOrg.setNome("Outra Pastoral");
-        otherOrg.setTipo(TipoOrganizacao.PASTORAL);
+        otherOrg.setTipo(TipoGrupo.PASTORAL);
         otherOrg.setAtivo(true);
-        organizacaoRepository.save(otherOrg);
+        grupoParoquialRepository.save(otherOrg);
 
         coordinatorId = createUser("coordinator");
         memberId = createUser("member");
@@ -103,8 +109,8 @@ class UsuarioDelegatedAdminIntegrationTest {
         MembroGrupoEntity m = new MembroGrupoEntity();
         m.setId(UUID.randomUUID());
         m.setFielId(fielId);
-        m.setOrganizacaoId(organizationId);
-        m.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        m.setGrupoParoquialId(organizationId);
+        m.setTipoGrupo(TipoGrupo.PASTORAL);
         m.setPapel(papel);
         m.setAtivo(true);
         vinculoRepository.save(m);
@@ -159,7 +165,7 @@ class UsuarioDelegatedAdminIntegrationTest {
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"organizacaoId\": \"" + orgId
+                        .content("{\"grupoParoquialId\": \"" + orgId
                                 + "\", \"tipo\": \"PASTORAL\", \"papel\": \"VOLUNTARIO_PASTORAL_LOCAL\""
                                 + ", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isCreated());
@@ -173,7 +179,7 @@ class UsuarioDelegatedAdminIntegrationTest {
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"organizacaoId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
+                        .content("{\"grupoParoquialId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
                                 "\"VOLUNTARIO_PASTORAL_LOCAL\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isForbidden());
     }

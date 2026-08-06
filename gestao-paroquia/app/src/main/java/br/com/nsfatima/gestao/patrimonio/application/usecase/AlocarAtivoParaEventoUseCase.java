@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.application.usecase;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
@@ -113,7 +113,7 @@ public class AlocarAtivoParaEventoUseCase {
                 request.justificativaAlocacao());
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanAlocar(actorContext, ativo.getOrganizacaoId());
+        authorizationService.assertCanAlocar(actorContext, ativo.getGrupoParoquialId());
 
         EventoEntity evento = null;
         LocalEntity local = null;
@@ -126,7 +126,7 @@ public class AlocarAtivoParaEventoUseCase {
             evento = foundEvento;
         }
 
-        boolean isEmprestimo = local != null && !ativo.getOrganizacaoId().equals(local.getOrganizacaoId());
+        boolean isEmprestimo = local != null && !ativo.getGrupoParoquialId().equals(local.getGrupoParoquialId());
 
         if (!isEmprestimo) {
             AtivoAlocacaoEntity ocupacao = criarOcupacao(ativo, evento, local, request, AtivoAlocacaoStatus.CONFIRMADA);
@@ -183,7 +183,7 @@ public class AlocarAtivoParaEventoUseCase {
 
         createNotaUseCase.execute(saved.getId(), usuarioId, TipoNotaAtivoPatrimonial.ALOCACAO,
                 ocupacao.getJustificativa());
-        auditPublisher.publishAlocacao(actor, saved.getId(), saved.getOrganizacaoId(), ocupacao.getEventoId());
+        auditPublisher.publishAlocacao(actor, saved.getId(), saved.getGrupoParoquialId(), ocupacao.getEventoId());
 
         return CreateAtivoPatrimonialUseCase.toResponse(saved);
     }
@@ -195,9 +195,9 @@ public class AlocarAtivoParaEventoUseCase {
         ocupacao.setAtivoId(ativo.getId());
         ocupacao.setTipo(AtivoAlocacaoTipo.ALOCACAO_EVENTO);
         ocupacao.setEventoId(evento != null ? evento.getId() : null);
-        ocupacao.setOrganizacaoOrigemId(ativo.getOrganizacaoId());
-        ocupacao.setOrganizacaoDestinoId(local != null ? local.getOrganizacaoId() : null);
-        ocupacao.setEmprestimo(local != null && !ativo.getOrganizacaoId().equals(local.getOrganizacaoId()));
+        ocupacao.setGrupoParoquialOrigemId(ativo.getGrupoParoquialId());
+        ocupacao.setGrupoParoquialDestinoId(local != null ? local.getGrupoParoquialId() : null);
+        ocupacao.setEmprestimo(local != null && !ativo.getGrupoParoquialId().equals(local.getGrupoParoquialId()));
         ocupacao.setDataInicio(request.dataInicio());
         ocupacao.setDataFim(request.dataFim());
         ocupacao.setStatus(status);
@@ -224,9 +224,9 @@ public class AlocarAtivoParaEventoUseCase {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId() != null ? actorContext.usuarioId().toString() : null);
         aprovacao.setSolicitantePapel(actorContext.role());
-        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
+        aprovacao.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
         aprovacao.setActionPayloadJson(payloadMapper.toJson(new AprovacaoAcaoPayload(
-                null, evento.getId(), null, null, null, ativo.getOrganizacaoId(), null, null, null, null,
+                null, evento.getId(), null, null, null, ativo.getGrupoParoquialId(), null, null, null, null,
                 null, null, request.justificativaAlocacao(), null, local.getId(), null, ativo.getId(),
                 ativo.getNome())));
         aprovacao.setCorrelationId(ocupacao.getId().toString());

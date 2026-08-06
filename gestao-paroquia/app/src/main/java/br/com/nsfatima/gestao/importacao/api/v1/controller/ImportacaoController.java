@@ -45,7 +45,7 @@ public class ImportacaoController {
      * esperados para o tipo de entidade informado, servindo de guia para preenchimento do
      * arquivo de importação.
      *
-     * @param tipo código de {@code TipoEntidadeImportacao} (ex.: MEMBRO, ORGANIZACAO)
+     * @param tipo código de {@code TipoEntidadeImportacao} (ex.: MEMBRO, GRUPO_PAROQUIAL)
      * @param formato "CSV" ou "XLSX"; qualquer outro valor recai em CSV
      * @return arquivo binário para download, com nome e content-type apropriados ao formato
      */

@@ -36,8 +36,8 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
     @Column(nullable = false, length = 32)
     private ProjetoStatus status = ProjetoStatus.ABERTO;
 
-    @Column(name = "organizacao_responsavel_id")
-    private UUID organizacaoResponsavelId;
+    @Column(name = "grupoParoquial_responsavel_id")
+    private UUID grupoParoquialResponsavelId;
 
     @Column(name = "inicio_utc")
     private Instant inicioUtc;
@@ -77,12 +77,12 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
         this.status = status;
     }
 
-    public UUID getOrganizacaoResponsavelId() {
-        return organizacaoResponsavelId;
+    public UUID getGrupoParoquialResponsavelId() {
+        return grupoParoquialResponsavelId;
     }
 
-    public void setOrganizacaoResponsavelId(UUID organizacaoResponsavelId) {
-        this.organizacaoResponsavelId = organizacaoResponsavelId;
+    public void setGrupoParoquialResponsavelId(UUID grupoParoquialResponsavelId) {
+        this.grupoParoquialResponsavelId = grupoParoquialResponsavelId;
     }
 
     public Instant getInicioUtc() {

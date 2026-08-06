@@ -12,7 +12,7 @@ import java.util.UUID;
  * Mapeamento JPA do agregado de domínio {@code Local} na tabela {@code calendario.locais}.
  *
  * <p>Invariantes de persistência: {@code nome} é obrigatório e único (impede cadastro de dois locais
- * com o mesmo nome); {@code tipo} é obrigatório; {@code organizacaoId} é opcional e vincula o local a
+ * com o mesmo nome); {@code tipo} é obrigatório; {@code grupoParoquialId} é opcional e vincula o local a
  * uma organização (Matriz/Comunidade) para fins de escopo/autorização — um local sem organização fica
  * disponível de forma geral. O campo {@code ativo} controla a desativação lógica usada pelo fluxo de
  * exclusão do serviço de domínio.
@@ -41,8 +41,8 @@ public class LocalEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean ativo = true;
 
-    @Column(name = "organizacao_id")
-    private UUID organizacaoId;
+    @Column(name = "grupoParoquial_id")
+    private UUID grupoParoquialId;
 
     public UUID getId() {
         return id;
@@ -100,11 +100,11 @@ public class LocalEntity extends BaseVersionedEntity {
         this.ativo = ativo;
     }
 
-    public UUID getOrganizacaoId() {
-        return organizacaoId;
+    public UUID getGrupoParoquialId() {
+        return grupoParoquialId;
     }
 
-    public void setOrganizacaoId(UUID organizacaoId) {
-        this.organizacaoId = organizacaoId;
+    public void setGrupoParoquialId(UUID grupoParoquialId) {
+        this.grupoParoquialId = grupoParoquialId;
     }
 }

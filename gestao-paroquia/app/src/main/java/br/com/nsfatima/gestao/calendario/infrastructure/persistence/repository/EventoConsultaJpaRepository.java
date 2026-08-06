@@ -36,8 +36,8 @@ public interface EventoConsultaJpaRepository {
      * @param hasInicioUtc indica se o filtro de início deve ser aplicado
      * @param fimUtc limite superior do fim do evento (inclusive), quando o filtro estiver ativo
      * @param hasFimUtc indica se o filtro de fim deve ser aplicado
-     * @param organizacaoIds identificadores de organizações responsáveis aceitos, quando o filtro estiver ativo
-     * @param hasOrganizacaoIds indica se o filtro de organizações deve ser aplicado
+     * @param grupoParoquialIds identificadores de organizações responsáveis aceitos, quando o filtro estiver ativo
+     * @param hasGrupoParoquialIds indica se o filtro de organizações deve ser aplicado
      * @param projetoId identificador do projeto ao qual o evento pertence, quando o filtro estiver ativo
      * @param hasProjetoId indica se o filtro de projeto deve ser aplicado
      * @param envolvidoId identificador de organização envolvida (responsável ou participante), quando o filtro estiver
@@ -55,10 +55,10 @@ public interface EventoConsultaJpaRepository {
             left join e.envolvidos ee
             where (:hasInicioUtc = false or e.inicioUtc >= :inicioUtc)
               and (:hasFimUtc = false or e.fimUtc <= :fimUtc)
-              and (:hasOrganizacaoIds = false or e.organizacaoResponsavelId in :organizacaoIds)
+              and (:hasGrupoParoquialIds = false or e.grupoParoquialResponsavelId in :grupoParoquialIds)
               and (:hasProjetoId = false or e.projetoId = :projetoId)
               and (:hasEnvolvidoId = false\s
-                          or (e.organizacaoResponsavelId = :envolvidoId or ee.organizacaoId = :envolvidoId))
+                          or (e.grupoParoquialResponsavelId = :envolvidoId or ee.grupoParoquialId = :envolvidoId))
               and (:hasCategorias = false or e.categoria in :categorias)
               and (:hasStatuses = false or e.status in :statuses)
             \s""")
@@ -67,8 +67,8 @@ public interface EventoConsultaJpaRepository {
             @Param("hasInicioUtc") boolean hasInicioUtc,
             @Param("fimUtc") Instant fimUtc,
             @Param("hasFimUtc") boolean hasFimUtc,
-            @Param("organizacaoIds") List<UUID> organizacaoIds,
-            @Param("hasOrganizacaoIds") boolean hasOrganizacaoIds,
+            @Param("grupoParoquialIds") List<UUID> grupoParoquialIds,
+            @Param("hasGrupoParoquialIds") boolean hasGrupoParoquialIds,
             @Param("projetoId") UUID projetoId,
             @Param("hasProjetoId") boolean hasProjetoId,
             @Param("envolvidoId") UUID envolvidoId,
@@ -114,11 +114,11 @@ public interface EventoConsultaJpaRepository {
     @Query(value = """
             SELECT DISTINCT o.nome
             FROM (
-                SELECT organizacao_responsavel_id as org_id FROM calendario.projetos_eventos WHERE id = :projetoId
+                SELECT grupoParoquial_responsavel_id as org_id FROM calendario.projetos_eventos WHERE id = :projetoId
                 UNION
-                SELECT organizacao_responsavel_id FROM calendario.eventos WHERE projeto_id = :projetoId
+                SELECT grupoParoquial_responsavel_id FROM calendario.eventos WHERE projeto_id = :projetoId
                 UNION
-                SELECT ee.organizacao_id FROM calendario.eventos_envolvidos ee
+                SELECT ee.grupoParoquial_id FROM calendario.eventos_envolvidos ee
                 JOIN calendario.eventos e ON ee.evento_id = e.id
                 WHERE e.projeto_id = :projetoId
             ) involved

@@ -23,7 +23,7 @@ class ContractValidationErrorIntegrationTest {
     void deveRetornarEstruturadoValidacaoPayloadParaFaltandoObrigatorioCampo() throws Exception {
         String payload = """
                 {
-                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000cc",
+                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000cc",
                   "inicio": "2026-03-15T10:00:00Z",
                   "fim": "2026-03-15T11:00:00Z"
                 }
@@ -46,7 +46,7 @@ class ContractValidationErrorIntegrationTest {
         String payload = """
                 {
                   "titulo": "Missa",
-                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000cc",
+                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000cc",
                   "inicio": "2026-03-15T10:00:00Z",
                   "fim": "2026-03-15T11:00:00Z",
                   "campoExtra": true

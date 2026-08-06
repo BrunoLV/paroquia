@@ -37,7 +37,7 @@ class EventoControllerGetTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventId);
         entity.setTitulo("Evento Teste Get");
-        entity.setOrganizacaoResponsavelId(orgId);
+        entity.setGrupoParoquialResponsavelId(orgId);
         entity.setInicioUtc(Instant.parse("2026-05-15T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-05-15T11:00:00Z"));
         entity.setStatus("AGENDADO");

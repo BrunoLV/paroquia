@@ -20,7 +20,7 @@ import java.util.UUID;
  * <p>{@code recursoTipo} é derivado da ação (ex.: "EVENTO", "OBSERVACAO", "APROVACAO",
  * "GENERIC"); {@code contextId} (coluna {@code evento_id}) referencia opcionalmente o evento de
  * calendário associado, quando aplicável; {@code detalhesAuditaveisJson} guarda o metadata bruto
- * (chaves como "usuarioId"/"organizacaoId") serializado como JSON, cujo esquema não é validado
+ * (chaves como "usuarioId"/"grupoParoquialId") serializado como JSON, cujo esquema não é validado
  * pelo schema do banco — cabe aos publicadores respeitar as convenções de chave documentadas em
  * {@code AuditoriaPersistenceService}.
  */
@@ -31,8 +31,8 @@ public class AuditoriaOperacaoEntity {
     @Id
     private UUID id;
 
-    @Column(name = "organizacao_id", nullable = false)
-    private UUID organizacaoId;
+    @Column(name = "grupoParoquial_id", nullable = false)
+    private UUID grupoParoquialId;
 
     @Column(name = "evento_id")
     private UUID contextId;
@@ -72,12 +72,12 @@ public class AuditoriaOperacaoEntity {
         this.id = id;
     }
 
-    public UUID getOrganizacaoId() {
-        return organizacaoId;
+    public UUID getGrupoParoquialId() {
+        return grupoParoquialId;
     }
 
-    public void setOrganizacaoId(UUID organizacaoId) {
-        this.organizacaoId = organizacaoId;
+    public void setGrupoParoquialId(UUID grupoParoquialId) {
+        this.grupoParoquialId = grupoParoquialId;
     }
 
     public UUID getEventoId() {

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,7 +25,7 @@ public class AuthorizationPolicy {
      *     reconhecido ou não for compatível
      */
     public boolean isRoleAllowed(String organizationType, String role) {
-        TipoOrganizacao normalizedOrg = TipoOrganizacao.fromStoredValue(organizationType);
+        TipoGrupo normalizedOrg = TipoGrupo.fromStoredValue(organizationType);
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
 
         if (normalizedOrg == null || normalizedRole == null) {
@@ -40,21 +40,18 @@ public class AuthorizationPolicy {
                     || normalizedRole == PapelOrganizacional.MEMBRO_PASTORAL;
             case MOVIMENTO -> normalizedRole == PapelOrganizacional.COORD_MOVIMENTO
                     || normalizedRole == PapelOrganizacional.MEMBRO_MOVIMENTO;
-            case MATRIZ, COMUNIDADE -> normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                    || normalizedRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
-                    || normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                    || normalizedRole == PapelOrganizacional.MEMBRO_CPC;
-            case CLERO -> normalizedRole == PapelOrganizacional.PAROCO
-                    || normalizedRole == PapelOrganizacional.VIGARIO
-                    || normalizedRole == PapelOrganizacional.PADRE
-                    || normalizedRole == PapelOrganizacional.DIACONO;
-            case CPP, CPC, CONSELHO_PASTORAL, CONSELHO_ECONOMICO -> normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
+            // CONSELHO colapsa os antigos CPP/CPC/CONSELHO_PASTORAL/CONSELHO_ECONOMICO (track
+            // linguagem_ubiqua_dominio) — PAROCO/VIGARIO não aparecem mais aqui: viraram papéis globais
+            // (track roles_globais_vs_escopo), não vínculos de MembroGrupo.
+            case CONSELHO -> normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                     || normalizedRole == PapelOrganizacional.MEMBRO_CPC
                     || normalizedRole == PapelOrganizacional.MEMBRO_CPP
                     || normalizedRole == PapelOrganizacional.MESA_CPP
                     || normalizedRole == PapelOrganizacional.MEMBRO_CAE
-                    || normalizedRole == PapelOrganizacional.SECRETARIO;
-            case OUTRO -> false;
+                    || normalizedRole == PapelOrganizacional.SECRETARIO
+                    || normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
+                    || normalizedRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL;
+            case MINISTERIO -> false;
         };
     }
 }

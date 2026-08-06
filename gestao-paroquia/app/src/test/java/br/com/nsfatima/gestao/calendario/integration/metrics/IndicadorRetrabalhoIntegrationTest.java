@@ -32,30 +32,30 @@ class IndicadorRetrabalhoIntegrationTest {
 
     @Test
     void deveCalcularAdministrativoRetrabalhoTaxa() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoA = UUID.randomUUID();
         UUID eventoB = UUID.randomUUID();
 
-        auditoriaOperacaoJpaRepository.save(record(organizacaoId, eventoA, "atualizar", "{\"agendaAlterada\":true}"));
-        auditoriaOperacaoJpaRepository.save(record(organizacaoId, eventoA, "cancelar", "{}"));
+        auditoriaOperacaoJpaRepository.save(record(grupoParoquialId, eventoA, "atualizar", "{\"agendaAlterada\":true}"));
+        auditoriaOperacaoJpaRepository.save(record(grupoParoquialId, eventoA, "cancelar", "{}"));
         auditoriaOperacaoJpaRepository
-                .save(record(organizacaoId, eventoB, "atualizar", "{\"organizacaoResponsavelAlterada\":true}"));
+                .save(record(grupoParoquialId, eventoB, "atualizar", "{\"grupoParoquialResponsavelAlterada\":true}"));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
-                        .param("organizacaoId", organizacaoId.toString())
+                        .param("grupoParoquialId", grupoParoquialId.toString())
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-10T00:00:00Z")
-                        .header("X-Actor-Org-Id", organizacaoId.toString()))
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.numeradorOcorrenciasElegiveis").value(3))
                 .andExpect(jsonPath("$.denominadorEventosAfetados").value(2))
                 .andExpect(jsonPath("$.taxaRetrabalho").value(1.5));
     }
 
-    private AuditoriaOperacaoEntity record(UUID organizacaoId, UUID eventoId, String acao, String detalhes) {
+    private AuditoriaOperacaoEntity record(UUID grupoParoquialId, UUID eventoId, String acao, String detalhes) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setOrganizacaoId(organizacaoId);
+        entity.setGrupoParoquialId(grupoParoquialId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());

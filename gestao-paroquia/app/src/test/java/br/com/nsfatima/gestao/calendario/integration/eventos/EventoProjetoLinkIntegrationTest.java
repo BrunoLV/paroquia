@@ -41,7 +41,7 @@ class EventoProjetoLinkIntegrationTest {
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(UUID.randomUUID());
         projeto.setNome("Projeto Teste");
-        projeto.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
+        projeto.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
         projeto.setInicioUtc(Instant.parse("2026-01-01T00:00:00Z"));
         projeto.setFimUtc(Instant.parse("2026-01-31T23:59:59Z"));
         projeto.setStatus(ProjetoStatus.EM_ANDAMENTO);
@@ -59,7 +59,7 @@ class EventoProjetoLinkIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento do Projeto",
-                                  "organizacaoResponsavelId": "%s",
+                                  "grupoParoquialResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-01-10T10:00:00Z",
                                   "fim": "2026-01-10T12:00:00Z"
@@ -81,7 +81,7 @@ class EventoProjetoLinkIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento Fora do Prazo",
-                                  "organizacaoResponsavelId": "%s",
+                                  "grupoParoquialResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-02-01T10:00:00Z",
                                   "fim": "2026-02-01T12:00:00Z"
@@ -105,7 +105,7 @@ class EventoProjetoLinkIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento em Projeto Inativo",
-                                  "organizacaoResponsavelId": "%s",
+                                  "grupoParoquialResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-01-10T10:00:00Z",
                                   "fim": "2026-01-10T12:00:00Z"
@@ -126,7 +126,7 @@ class EventoProjetoLinkIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento do Projeto",
-                                  "organizacaoResponsavelId": "%s",
+                                  "grupoParoquialResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-01-10T10:00:00Z",
                                   "fim": "2026-01-10T12:00:00Z"

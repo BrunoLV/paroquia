@@ -136,7 +136,7 @@ public class GeradorRecorrenciaAnualJob {
         instance.setCategoria(baseEvent.getCategoria());
         instance.setLocalId(baseEvent.getLocalId());
         instance.setProjetoId(baseEvent.getProjetoId());
-        instance.setOrganizacaoResponsavelId(baseEvent.getOrganizacaoResponsavelId());
+        instance.setGrupoParoquialResponsavelId(baseEvent.getGrupoParoquialResponsavelId());
         instance.setStatus(baseEvent.getStatus());
         instance.setInicioUtc(startUtc);
         instance.setFimUtc(endUtc);

@@ -1,8 +1,11 @@
 package br.com.nsfatima.gestao.organizacao.integration;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,10 @@ class PastoralMovimentoOficialApiIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
+
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
 
     private UUID conselhoId;
 
@@ -37,32 +43,34 @@ class PastoralMovimentoOficialApiIntegrationTest {
         UUID matrizId = UUID.fromString("00000000-0000-0000-0000-000000000100");
         conselhoId = UUID.fromString("00000000-0000-0000-0000-0000000000cc");
 
-        // Clero
-        OrganizacaoEntity clero = organizacaoRepository.findById(cleroId).orElseGet(OrganizacaoEntity::new);
+        // Clero (UnidadeTerritorial)
+        UnidadeTerritorialEntity clero = unidadeTerritorialRepository.findById(cleroId)
+                .orElseGet(UnidadeTerritorialEntity::new);
         clero.setId(cleroId);
         clero.setNome("Clero Paroquial Teste");
-        clero.setTipo(TipoOrganizacao.CLERO);
+        clero.setTipo(TipoUnidadeTerritorial.CLERO);
         clero.setAtivo(true);
         clero.setParentId(null);
-        organizacaoRepository.save(clero);
+        unidadeTerritorialRepository.save(clero);
 
-        // Matriz
-        OrganizacaoEntity matriz = organizacaoRepository.findById(matrizId).orElseGet(OrganizacaoEntity::new);
+        // Matriz (UnidadeTerritorial)
+        UnidadeTerritorialEntity matriz = unidadeTerritorialRepository.findById(matrizId)
+                .orElseGet(UnidadeTerritorialEntity::new);
         matriz.setId(matrizId);
         matriz.setNome("Igreja Matriz Teste");
-        matriz.setTipo(TipoOrganizacao.MATRIZ);
+        matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
         matriz.setParentId(cleroId);
         matriz.setAtivo(true);
-        organizacaoRepository.save(matriz);
+        unidadeTerritorialRepository.save(matriz);
 
-        // Conselho
-        OrganizacaoEntity conselho = organizacaoRepository.findById(conselhoId).orElseGet(OrganizacaoEntity::new);
+        // Conselho (GrupoParoquial)
+        GrupoParoquialEntity conselho = grupoParoquialRepository.findById(conselhoId).orElseGet(GrupoParoquialEntity::new);
         conselho.setId(conselhoId);
         conselho.setNome("Conselho Pastoral Teste");
-        conselho.setTipo(TipoOrganizacao.CONSELHO_PASTORAL);
+        conselho.setTipo(TipoGrupo.CONSELHO);
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
-        organizacaoRepository.save(conselho);
+        grupoParoquialRepository.save(conselho);
     }
 
     @Test
@@ -110,7 +118,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void deveFalhaParaCriarOrganizacaoTipoPastoralSemOficialVincular() throws Exception {
+    void deveFalhaParaCriarGrupoParoquialTipoPastoralSemOficialVincular() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Pastoral Sem Link",
@@ -132,7 +140,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void deveCriarOrganizacaoTipoPastoralComOficialVincular() throws Exception {
+    void deveCriarGrupoParoquialTipoPastoralComOficialVincular() throws Exception {
         // Create official type
         String officialPayload = """
                 {

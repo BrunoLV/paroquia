@@ -58,13 +58,13 @@ class AuditRollbackConsistencyIntegrationTest {
     @Test
     @SuppressWarnings("null")
     void deveManterOriginalEstadoQuandoAuditarRollbackETriggered() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Rollback auditavel");
         evento.setDescricao("estado-estavel");
-        evento.setOrganizacaoResponsavelId(organizacaoId);
+        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
         evento.setInicioUtc(Instant.parse("2026-10-01T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-01T11:00:00Z"));
         evento.setStatus("RASCUNHO");
@@ -75,7 +75,7 @@ class AuditRollbackConsistencyIntegrationTest {
                 .save(org.mockito.ArgumentMatchers.any());
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
                                 "\"titulo\":\"estado-mutado\"" +
@@ -90,13 +90,13 @@ class AuditRollbackConsistencyIntegrationTest {
     @Test
     @SuppressWarnings("null")
     void deveManterEventoConfirmadoQuandoCancelamentoAuditarPersistenciaFalha() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Cancelamento fail-closed");
         evento.setDescricao("nao cancelar");
-        evento.setOrganizacaoResponsavelId(organizacaoId);
+        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
         evento.setInicioUtc(Instant.parse("2026-10-02T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-02T11:00:00Z"));
         evento.setStatus("CONFIRMADO");
@@ -109,7 +109,7 @@ class AuditRollbackConsistencyIntegrationTest {
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
                                 "\"motivo\":\"cancelamento bloqueado\"" +
@@ -125,19 +125,19 @@ class AuditRollbackConsistencyIntegrationTest {
     @SuppressWarnings("null")
     void deveManterObservacaoVisibleQuandoExcluirAuditarPersistenciaFalha() throws Exception {
         String eventoId = "00000000-0000-0000-0000-0000000000bb";
-        String organizacaoId = "00000000-0000-0000-0000-0000000000aa";
+        String grupoParoquialId = "00000000-0000-0000-0000-0000000000aa";
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.fromString(eventoId));
         evento.setTitulo("Observacao rollback");
         evento.setDescricao("evento materializado");
-        evento.setOrganizacaoResponsavelId(UUID.fromString(organizacaoId));
+        evento.setGrupoParoquialResponsavelId(UUID.fromString(grupoParoquialId));
         evento.setInicioUtc(Instant.parse("2026-10-03T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-03T11:00:00Z"));
         evento.setStatus("RASCUNHO");
         eventoJpaRepository.save(evento);
 
         var createResult = mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                        .header("X-Actor-Org-Id", organizacaoId)
+                        .header("X-Actor-Org-Id", grupoParoquialId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"tipo\":\"NOTA\",\"conteudo\":\"Para rollback\"}"))
                 .andExpect(status().isCreated())
@@ -151,7 +151,7 @@ class AuditRollbackConsistencyIntegrationTest {
                 .save(org.mockito.ArgumentMatchers.any());
 
         mockMvc.perform(delete("/api/v1/eventos/{eventoId}/observacoes/{observacaoId}", eventoId, observacaoId)
-                        .header("X-Actor-Org-Id", organizacaoId))
+                        .header("X-Actor-Org-Id", grupoParoquialId))
                 .andExpect(status().isConflict());
 
         assertThat(observacaoEventoJpaRepository.findById(Objects.requireNonNull(observacaoId)))
@@ -166,7 +166,7 @@ class AuditRollbackConsistencyIntegrationTest {
         reset(auditoriaOperacaoJpaRepository);
 
         mockMvc.perform(get("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                        .header("X-Actor-Org-Id", organizacaoId))
+                        .header("X-Actor-Org-Id", grupoParoquialId))
                 .andExpect(status().isOk());
     }
 }

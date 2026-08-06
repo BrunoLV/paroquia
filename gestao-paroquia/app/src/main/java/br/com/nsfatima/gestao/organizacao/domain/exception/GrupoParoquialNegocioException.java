@@ -3,13 +3,13 @@ package br.com.nsfatima.gestao.organizacao.domain.exception;
 import java.util.UUID;
 
 /**
- * Sinaliza violações de regra de negócio do contexto {@code organizacao} (organização inexistente, hierarquia
+ * Sinaliza violações de regra de negócio do contexto {@code grupoParoquial} (organização inexistente, hierarquia
  * inválida entre tipo e organização-mãe, exclusão de organização com dependências ativas etc.). Lançada por
- * {@code OrganizacaoService} e tratada pelo handler de exceções da API para produzir uma resposta de erro
+ * {@code GrupoParoquialService} e tratada pelo handler de exceções da API para produzir uma resposta de erro
  * apropriada ao cliente.
  */
-public class OrganizacaoNegocioException extends RuntimeException {
-    public OrganizacaoNegocioException(String message) {
+public class GrupoParoquialNegocioException extends RuntimeException {
+    public GrupoParoquialNegocioException(String message) {
         super(message);
     }
 
@@ -19,8 +19,8 @@ public class OrganizacaoNegocioException extends RuntimeException {
      * @param id identificador da organização não encontrada
      * @return exceção pronta para ser lançada
      */
-    public static OrganizacaoNegocioException notFound(UUID id) {
-        return new OrganizacaoNegocioException("Organization not found with ID: " + id);
+    public static GrupoParoquialNegocioException notFound(UUID id) {
+        return new GrupoParoquialNegocioException("Organization not found with ID: " + id);
     }
 
     /**
@@ -31,8 +31,8 @@ public class OrganizacaoNegocioException extends RuntimeException {
      * @param id identificador da organização que não pode ser excluída
      * @return exceção pronta para ser lançada
      */
-    public static OrganizacaoNegocioException inUse(UUID id) {
-        return new OrganizacaoNegocioException(
+    public static GrupoParoquialNegocioException inUse(UUID id) {
+        return new GrupoParoquialNegocioException(
                 "Cannot delete organization " + id + " because it has associated members or events.");
     }
 }

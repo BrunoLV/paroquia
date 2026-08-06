@@ -36,7 +36,7 @@ import java.util.UUID;
 public class DecideSolicitacaoAprovacaoUseCase {
 
     private static final String KEY_DECISION_STATUS = "statusDecisao";
-    private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
+    private static final String KEY_GRUPO_PAROQUIAL_ID = "grupoParoquialId";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
     private final EventoActorContextResolver actorContextResolver;
     private final ValidateAprovacaoUseCase validateAprovacaoUseCase;
@@ -124,7 +124,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.REPROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
+            metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
@@ -185,7 +185,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
         metadata.put("eventoId", execution.eventoId() == null ? "N/A" : execution.eventoId().toString());
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
+            metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
@@ -212,7 +212,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
         metadata.put("error", ex.getClass().getSimpleName());
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
+            metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {

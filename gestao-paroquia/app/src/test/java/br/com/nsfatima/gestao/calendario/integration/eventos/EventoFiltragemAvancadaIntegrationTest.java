@@ -52,7 +52,7 @@ class EventoFiltragemAvancadaIntegrationTest {
         repository.save(e2);
         EventoEnvolvidoEntity ee = new EventoEnvolvidoEntity();
         ee.setEventoId(e2.getId());
-        ee.setOrganizacaoId(orgA);
+        ee.setGrupoParoquialId(orgA);
         ee.setPapelParticipacao(PapelEnvolvido.APOIO);
         envolvidoRepository.save(ee);
 
@@ -95,7 +95,7 @@ class EventoFiltragemAvancadaIntegrationTest {
         EventoEntity e = new EventoEntity();
         e.setId(UUID.randomUUID());
         e.setTitulo(titulo);
-        e.setOrganizacaoResponsavelId(orgId);
+        e.setGrupoParoquialResponsavelId(orgId);
         e.setCategoria(cat);
         e.setStatus(status.name());
         e.setInicioUtc(Instant.now());

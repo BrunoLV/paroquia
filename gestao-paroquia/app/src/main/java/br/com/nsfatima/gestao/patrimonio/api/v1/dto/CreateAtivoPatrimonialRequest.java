@@ -18,7 +18,7 @@ import java.util.UUID;
 public record CreateAtivoPatrimonialRequest(
         @NotBlank @Size(max = 200) String nome,
         @NotNull AtivoCategoria categoria,
-        @NotNull UUID organizacaoId,
+        @NotNull UUID grupoParoquialId,
         boolean reservavel,
         LocalDate dataAquisicao,
         BigDecimal valorEstimado

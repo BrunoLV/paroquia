@@ -65,7 +65,7 @@ public class UpdateProjetoUseCase {
                 .orElseThrow(() -> new ProjetoNotFoundException(id));
 
         var actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanEdit(actorContext, entity.getOrganizacaoResponsavelId());
+        authorizationService.assertCanEdit(actorContext, entity.getGrupoParoquialResponsavelId());
 
         if (request.nome() != null) {
             entity.setNome(request.nome());
@@ -73,8 +73,8 @@ public class UpdateProjetoUseCase {
         if (request.descricao() != null) {
             entity.setDescricao(request.descricao());
         }
-        if (request.organizacaoResponsavelId() != null) {
-            entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
+        if (request.grupoParoquialResponsavelId() != null) {
+            entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
         }
         if (request.inicio() != null) {
             entity.setInicioUtc(request.inicio());

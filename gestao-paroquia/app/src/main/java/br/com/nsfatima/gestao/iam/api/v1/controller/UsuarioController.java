@@ -160,12 +160,12 @@ public class UsuarioController {
     /*
       Vincula um usuário a uma organização com um papel e tipo específicos para delegar autoridade e funções.
       <p>
-      Exemplo: POST /api/v1/usuarios/{id}/membros { "organizacaoId": "...", "tipo": "VOLUNTARIO", "papel": "AUXILIAR" }
+      Exemplo: POST /api/v1/usuarios/{id}/membros { "grupoParoquialId": "...", "tipo": "VOLUNTARIO", "papel": "AUXILIAR" }
      */
     public UUID adicionarVinculo(@PathVariable UUID id, @RequestBody @Valid AdicionarVinculoRequest request) {
-        authorizationService.requireAdminOrCoordinatorOfOrganization(request.organizacaoId());
+        authorizationService.requireAdminOrCoordinatorOfOrganization(request.grupoParoquialId());
         return adicionarVinculoUseCase.execute(id,
-                request.organizacaoId(), request.tipo(), request.papel(), request.igrejaVinculoId());
+                request.grupoParoquialId(), request.tipo(), request.papel(), request.igrejaVinculoId());
 
     }
 

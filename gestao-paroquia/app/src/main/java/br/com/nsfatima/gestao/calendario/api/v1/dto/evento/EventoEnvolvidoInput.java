@@ -11,6 +11,6 @@ import java.util.UUID;
  * evento.
  */
 public record EventoEnvolvidoInput(
-        @NotNull UUID organizacaoId,
+        @NotNull UUID grupoParoquialId,
         @NotNull PapelEnvolvido papel) {
 }

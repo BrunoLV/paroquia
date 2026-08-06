@@ -75,7 +75,7 @@ public class IniciarManutencaoAtivoUseCase {
         }
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanIniciarManutencao(actorContext, ativo.getOrganizacaoId());
+        authorizationService.assertCanIniciarManutencao(actorContext, ativo.getGrupoParoquialId());
 
         conflitoPolicy.assertPeriodoDisponivel(ativoId, request.dataInicio(), request.dataFim());
 
@@ -83,7 +83,7 @@ public class IniciarManutencaoAtivoUseCase {
         ocupacao.setId(UUID.randomUUID());
         ocupacao.setAtivoId(ativoId);
         ocupacao.setTipo(AtivoAlocacaoTipo.MANUTENCAO);
-        ocupacao.setOrganizacaoOrigemId(ativo.getOrganizacaoId());
+        ocupacao.setGrupoParoquialOrigemId(ativo.getGrupoParoquialId());
         ocupacao.setDataInicio(request.dataInicio());
         ocupacao.setDataFim(request.dataFim());
         ocupacao.setStatus(AtivoAlocacaoStatus.CONFIRMADA);

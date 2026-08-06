@@ -5,9 +5,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ class EventoControllerListTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Autowired
-    private OrganizacaoJpaRepository organizacaoJpaRepository;
+    private GrupoParoquialJpaRepository grupoParoquialJpaRepository;
 
     @Autowired
     private ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
@@ -50,13 +50,13 @@ class EventoControllerListTest {
         eventoEnvolvidoJpaRepository.deleteAll();
         eventoJpaRepository.deleteAll();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-000000000001");
-        if (!organizacaoJpaRepository.existsById(orgId)) {
-            var org = new OrganizacaoEntity();
+        if (!grupoParoquialJpaRepository.existsById(orgId)) {
+            var org = new GrupoParoquialEntity();
             org.setId(orgId);
-            org.setNome("Organizacao Default");
-            org.setTipo(TipoOrganizacao.PASTORAL);
+            org.setNome("GrupoParoquial Default");
+            org.setTipo(TipoGrupo.PASTORAL);
             org.setAtivo(true);
-            organizacaoJpaRepository.save(org);
+            grupoParoquialJpaRepository.save(org);
         }
     }
 
@@ -97,7 +97,7 @@ class EventoControllerListTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo(titulo);
-        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         entity.setInicioUtc(inicio);
         entity.setFimUtc(inicio.plusSeconds(3600));
         entity.setStatus("AGENDADO");

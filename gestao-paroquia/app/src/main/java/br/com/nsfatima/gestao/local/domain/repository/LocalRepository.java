@@ -38,10 +38,10 @@ public interface LocalRepository {
      * Retorna os Locais vinculados a uma organização (Matriz ou Comunidade) específica — usado para
      * escopar a seleção de locais ao contexto organizacional de quem está agendando um Evento.
      *
-     * @param organizacaoId ID da organização de subordinação
+     * @param grupoParoquialId ID da organização de subordinação
      * @return lista de Locais vinculados à organização informada
      */
-    List<Local> findByOrganizacaoId(UUID organizacaoId);
+    List<Local> findByGrupoParoquialId(UUID grupoParoquialId);
 
     /**
      * Verifica se o Local possui algum Evento associado, para dar suporte à decisão de bloquear uma

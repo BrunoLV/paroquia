@@ -65,7 +65,7 @@ class LocalJpaRepositoryTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());
         evento.setTitulo("Missa");
-        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         evento.setInicioUtc(Instant.now());
         evento.setFimUtc(Instant.now().plusSeconds(3600));
         evento.setStatus("CONFIRMADO");

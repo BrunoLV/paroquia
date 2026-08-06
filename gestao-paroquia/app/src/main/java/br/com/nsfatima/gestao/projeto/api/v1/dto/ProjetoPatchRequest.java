@@ -22,7 +22,7 @@ public record ProjetoPatchRequest(
         @Size(max = 2000) String descricao,
 
         @Schema(description = "Nova organização responsável")
-        UUID organizacaoResponsavelId,
+        UUID grupoParoquialResponsavelId,
 
         @Schema(description = "Nova data de início")
         Instant inicio,

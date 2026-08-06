@@ -13,12 +13,12 @@ public final class AprovacaoFlowTestFixtures {
     private AprovacaoFlowTestFixtures() {
     }
 
-    public static EventoEntity confirmedEvento(UUID eventoId, String titulo, UUID organizacaoId, Instant inicio,
+    public static EventoEntity confirmedEvento(UUID eventoId, String titulo, UUID grupoParoquialId, Instant inicio,
                                                Instant fim) {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo(titulo);
-        evento.setOrganizacaoResponsavelId(organizacaoId);
+        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
         evento.setInicioUtc(inicio);
         evento.setFimUtc(fim);
         evento.setStatus("CONFIRMADO");

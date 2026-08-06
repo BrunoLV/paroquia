@@ -16,7 +16,7 @@ import java.util.UUID;
 
 /**
  * Representa uma ocupação de um ativo patrimonial num período: alocação a um evento (podendo ser
- * empréstimo entre organizações, quando {@code organizacaoOrigemId} e {@code organizacaoDestinoId}
+ * empréstimo entre organizações, quando {@code grupoParoquialOrigemId} e {@code grupoParoquialDestinoId}
  * divergem) ou período de manutenção. Empréstimos nascem {@code PENDENTE_APROVACAO} e só viram
  * {@code CONFIRMADA} após decisão do fluxo de aprovação vinculado por {@code aprovacaoId}.
  */
@@ -37,11 +37,11 @@ public class AtivoAlocacaoEntity extends BaseVersionedEntity {
     @Column(name = "evento_id")
     private UUID eventoId;
 
-    @Column(name = "organizacao_origem_id", nullable = false)
-    private UUID organizacaoOrigemId;
+    @Column(name = "grupoParoquial_origem_id", nullable = false)
+    private UUID grupoParoquialOrigemId;
 
-    @Column(name = "organizacao_destino_id")
-    private UUID organizacaoDestinoId;
+    @Column(name = "grupoParoquial_destino_id")
+    private UUID grupoParoquialDestinoId;
 
     @Column(nullable = false)
     private boolean emprestimo;
@@ -112,20 +112,20 @@ public class AtivoAlocacaoEntity extends BaseVersionedEntity {
         this.eventoId = eventoId;
     }
 
-    public UUID getOrganizacaoOrigemId() {
-        return organizacaoOrigemId;
+    public UUID getGrupoParoquialOrigemId() {
+        return grupoParoquialOrigemId;
     }
 
-    public void setOrganizacaoOrigemId(UUID organizacaoOrigemId) {
-        this.organizacaoOrigemId = organizacaoOrigemId;
+    public void setGrupoParoquialOrigemId(UUID grupoParoquialOrigemId) {
+        this.grupoParoquialOrigemId = grupoParoquialOrigemId;
     }
 
-    public UUID getOrganizacaoDestinoId() {
-        return organizacaoDestinoId;
+    public UUID getGrupoParoquialDestinoId() {
+        return grupoParoquialDestinoId;
     }
 
-    public void setOrganizacaoDestinoId(UUID organizacaoDestinoId) {
-        this.organizacaoDestinoId = organizacaoDestinoId;
+    public void setGrupoParoquialDestinoId(UUID grupoParoquialDestinoId) {
+        this.grupoParoquialDestinoId = grupoParoquialDestinoId;
     }
 
     public boolean isEmprestimo() {

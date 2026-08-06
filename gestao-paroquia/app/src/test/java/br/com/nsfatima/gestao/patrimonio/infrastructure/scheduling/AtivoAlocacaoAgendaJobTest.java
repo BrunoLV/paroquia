@@ -64,7 +64,7 @@ class AtivoAlocacaoAgendaJobTest {
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.DISPONIVEL);
-        ativo.setOrganizacaoId(UUID.randomUUID());
+        ativo.setGrupoParoquialId(UUID.randomUUID());
         return ativo;
     }
 
@@ -77,7 +77,7 @@ class AtivoAlocacaoAgendaJobTest {
         ocupacao.setDataInicio(inicio);
         ocupacao.setDataFim(fim);
         ocupacao.setStatus(status);
-        ocupacao.setOrganizacaoOrigemId(UUID.randomUUID());
+        ocupacao.setGrupoParoquialOrigemId(UUID.randomUUID());
         ocupacao.setCriadoEmUtc(Instant.now());
         return ocupacao;
     }

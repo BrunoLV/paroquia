@@ -62,7 +62,7 @@ public class LocalController {
                 request.endereco(),
                 request.capacidade(),
                 request.caracteristicas(),
-                request.organizacaoId()
+                request.grupoParoquialId()
         );
         return toResponse(local);
     }
@@ -89,7 +89,7 @@ public class LocalController {
                 request.capacidade(),
                 request.caracteristicas(),
                 request.ativo(),
-                request.organizacaoId()
+                request.grupoParoquialId()
         );
         return toResponse(local);
     }
@@ -140,8 +140,8 @@ public class LocalController {
      */
     @GetMapping
     @Operation(summary = "List all locations")
-    public List<LocalResponse> list(@RequestParam(required = false) UUID organizacaoId) {
-        return localService.listLocais(organizacaoId).stream()
+    public List<LocalResponse> list(@RequestParam(required = false) UUID grupoParoquialId) {
+        return localService.listLocais(grupoParoquialId).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -155,8 +155,8 @@ public class LocalController {
                 domain.getCapacidade(),
                 domain.getCaracteristicas(),
                 domain.isAtivo(),
-                domain.getOrganizacaoId(),
-                domain.getOrganizacaoNome()
+                domain.getGrupoParoquialId(),
+                domain.getGrupoParoquialNome()
         );
     }
 }

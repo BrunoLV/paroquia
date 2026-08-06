@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.projeto.domain.service;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Serviço de domínio que centraliza as regras de autorização para operações sobre
  * {@code Projeto}: quem pode criar, editar, iniciar/concluir e cancelar. As verificações são
  * baseadas em papel do ator (`PapelOrganizacional`) e no escopo de organização
- * (`organizacaoResponsavelId` do projeto vs. organização do ator), não em posse/ownership
+ * (`grupoParoquialResponsavelId` do projeto vs. organização do ator), não em posse/ownership
  * simples.
  *
  * <p>Regras de autorização aplicadas:
@@ -64,13 +64,13 @@ public class ProjetoAuthorizationService {
      * só podem criar projetos cuja organização responsável seja a própria organização do ator.
      *
      * @param actorContext              contexto do ator autenticado.
-     * @param organizacaoResponsavelId  organização para a qual o projeto será criado.
+     * @param grupoParoquialResponsavelId  organização para a qual o projeto será criado.
      * @throws AccessDeniedException se o papel não permitir criar projetos ou se o ator tentar
      *                                criar para outra organização sem ser de alto nível.
      */
-    public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoResponsavelId) {
+    public void assertCanCreate(EventoActorContext actorContext, UUID grupoParoquialResponsavelId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
         if (!PROJECT_EDITOR_ROLES.contains(normalizedRole)) {
             throw new AccessDeniedException("Usuário não tem permissão para criar projetos");
@@ -81,7 +81,7 @@ public class ProjetoAuthorizationService {
         boolean isHighLevelActor = isHighLevelActor(actorContext);
 
         if (!isHighLevelActor && actorContext.organizationId() != null
-                && !actorContext.organizationId().equals(organizacaoResponsavelId)) {
+                && !actorContext.organizationId().equals(grupoParoquialResponsavelId)) {
             throw new AccessDeniedException("Usuário não pode criar projetos para outra organização");
         }
     }
@@ -92,12 +92,12 @@ public class ProjetoAuthorizationService {
      * nível só podem editar projetos da própria organização.
      *
      * @param actorContext                      contexto do ator autenticado.
-     * @param projectOrganizacaoResponsavelId   organização responsável pelo projeto a editar.
+     * @param projectGrupoParoquialResponsavelId   organização responsável pelo projeto a editar.
      * @throws ForbiddenOperationException se o papel não permitir editar projetos ou se o ator
      *                                      tentar editar projeto de outra organização sem ser
      *                                      de alto nível.
      */
-    public void assertCanEdit(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
+    public void assertCanEdit(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
 
         if (!PROJECT_EDITOR_ROLES.contains(normalizedRole)) {
@@ -107,7 +107,7 @@ public class ProjetoAuthorizationService {
         boolean isHighLevelActor = isHighLevelActor(actorContext);
 
         if (!isHighLevelActor && actorContext.organizationId() != null
-                && !actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
+                && !actorContext.organizationId().equals(projectGrupoParoquialResponsavelId)) {
             throw new ForbiddenOperationException("Usuário não pode editar projetos de outra organização");
         }
     }
@@ -125,12 +125,10 @@ public class ProjetoAuthorizationService {
      */
     public boolean isHighLevelActor(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
         return normalizedRole == PapelOrganizacional.PAROCO
                 || normalizedRole == PapelOrganizacional.ADMIN
-                || ((normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                        || normalizedOrgType == TipoOrganizacao.CPP
-                        || normalizedOrgType == TipoOrganizacao.CPC)
+                || (normalizedOrgType == TipoGrupo.CONSELHO
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                 || normalizedRole == PapelOrganizacional.MESA_CPP
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL));
@@ -145,10 +143,10 @@ public class ProjetoAuthorizationService {
      * organização do ator.
      *
      * @param actorContext                      contexto do ator autenticado.
-     * @param projectOrganizacaoResponsavelId   organização responsável pelo projeto.
+     * @param projectGrupoParoquialResponsavelId   organização responsável pelo projeto.
      * @throws ForbiddenOperationException se nenhuma das condições de autorização for satisfeita.
      */
-    public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
+    public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
         if (isHighLevelActor(actorContext)) {
             return;
         }
@@ -159,7 +157,7 @@ public class ProjetoAuthorizationService {
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL
                 || normalizedRole == PapelOrganizacional.PRESIDENTE_CPC);
         if (isOrgLeader && actorContext.organizationId() != null
-                && actorContext.organizationId().equals(projectOrganizacaoResponsavelId)) {
+                && actorContext.organizationId().equals(projectGrupoParoquialResponsavelId)) {
             return;
         }
         throw new ForbiddenOperationException("Usuário não tem permissão para executar esta transição de projeto");
@@ -173,12 +171,12 @@ public class ProjetoAuthorizationService {
      * diretamente ou desviá-lo para uma solicitação de aprovação pendente.
      *
      * @param actorContext                      contexto do ator autenticado.
-     * @param projectOrganizacaoResponsavelId   organização responsável pelo projeto.
+     * @param projectGrupoParoquialResponsavelId   organização responsável pelo projeto.
      * @throws ForbiddenOperationException se o ator não tiver permissão para agir sobre o
      *                                      projeto (mesma condição de {@link #assertCanStartOrConclude}).
      */
-    public void assertCanCancel(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
-        assertCanStartOrConclude(actorContext, projectOrganizacaoResponsavelId);
+    public void assertCanCancel(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
+        assertCanStartOrConclude(actorContext, projectGrupoParoquialResponsavelId);
     }
 }
 

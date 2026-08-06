@@ -25,9 +25,9 @@ public record LocalResponse(
         @Schema(description = "Indica se o local está ativo")
         boolean ativo,
         @Schema(description = "ID da organização (Matriz/Comunidade) de subordinação")
-        UUID organizacaoId,
+        UUID grupoParoquialId,
         @Schema(description = "Nome da organização (Matriz/Comunidade) de subordinação")
-        String organizacaoNome
+        String grupoParoquialNome
 ) {
     public LocalResponse(UUID id, String nome, String tipo, String endereco,
                          Integer capacidade, String caracteristicas, boolean ativo) {

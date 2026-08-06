@@ -34,7 +34,7 @@ class UpdateEventoPersistenciaIntegrationTest {
         entity.setId(eventoId);
         entity.setTitulo("Persistencia PATCH");
         entity.setDescricao("descricao antiga");
-        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-05-01T09:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-05-01T10:00:00Z"));
         entity.setStatus("RASCUNHO");

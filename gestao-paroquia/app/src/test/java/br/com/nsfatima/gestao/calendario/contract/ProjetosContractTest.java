@@ -34,7 +34,7 @@ class ProjetosContractTest {
         entity.setId(UUID.randomUUID());
         entity.setNome("Projeto Pastoral");
         entity.setDescricao("Planejamento");
-        entity.setOrganizacaoResponsavelId(UUID.randomUUID());
+        entity.setGrupoParoquialResponsavelId(UUID.randomUUID());
         entity.setInicioUtc(Instant.parse("2026-01-01T00:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-31T23:59:59Z"));
         repository.save(entity);
@@ -49,7 +49,7 @@ class ProjetosContractTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").isString())
                 .andExpect(jsonPath("$[0].nome").value("Projeto Pastoral"))
-                .andExpect(jsonPath("$[0].organizacaoResponsavelId").isString())
+                .andExpect(jsonPath("$[0].grupoParoquialResponsavelId").isString())
                 .andExpect(jsonPath("$[0].inicio").isString())
                 .andExpect(jsonPath("$[0].fim").isString())
                 .andExpect(jsonPath("$[0].status").value("ABERTO"))
@@ -68,14 +68,14 @@ class ProjetosContractTest {
                                 {
                                   "nome": "Semana Santa",
                                   "descricao": "Mutirao liturgico",
-                                  "organizacaoResponsavelId": "%s",
+                                  "grupoParoquialResponsavelId": "%s",
                                   "inicio": "2026-03-20T10:00:00Z",
                                   "fim": "2026-03-27T22:00:00Z"
                                 }
                                 """.formatted(orgId)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Semana Santa"))
-                .andExpect(jsonPath("$.organizacaoResponsavelId").value(orgId))
+                .andExpect(jsonPath("$.grupoParoquialResponsavelId").value(orgId))
                 .andExpect(jsonPath("$.status").value("ABERTO"));
     }
 }

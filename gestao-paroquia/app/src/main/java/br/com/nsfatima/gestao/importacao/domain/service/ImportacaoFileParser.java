@@ -102,13 +102,13 @@ public class ImportacaoFileParser {
     /**
      * Cabeçalho de colunas esperado por tipo de entidade — precisa ficar em sincronia com os
      * nomes de campo lidos em {@code ImportacaoService} (ex.: "usuarioUsername",
-     * "organizacaoNome") e com os que a validação por linha exige.
+     * "grupoParoquialNome") e com os que a validação por linha exige.
      */
     private String getHeadersParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
-            case MEMBRO -> "usuarioUsername,organizacaoNome,papel,igrejaId";
-            case ORGANIZACAO -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
-            case EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
+            case MEMBRO -> "usuarioUsername,grupoParoquialNome,papel,igrejaId";
+            case GRUPO_PAROQUIAL -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
+            case EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,grupoParoquialId";
         };
     }
 
@@ -119,7 +119,7 @@ public class ImportacaoFileParser {
                     "joao.silva@email.com,Pastoral da Comunicação,COORDENADOR,",
                     "maria.souza@email.com,Pastoral da Catequese,MEMBRO,"
             );
-            case ORGANIZACAO -> List.of(
+            case GRUPO_PAROQUIAL -> List.of(
                     "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,,",
                     "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,Lucas Mendes,Patricia Rocha,,"
             );

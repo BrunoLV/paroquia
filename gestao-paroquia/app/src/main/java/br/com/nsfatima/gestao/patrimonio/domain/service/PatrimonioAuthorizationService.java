@@ -31,12 +31,12 @@ public class PatrimonioAuthorizationService {
      * Verifica se o ator pode cadastrar um ativo para a organização informada.
      *
      * @param actorContext  contexto do ator autenticado
-     * @param organizacaoId organização dona do ativo a criar
+     * @param grupoParoquialId organização dona do ativo a criar
      * @throws ForbiddenOperationException se o papel do ator não for elegível ou o ator não tiver
      *     escopo sobre a organização
      */
-    public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoId) {
-        assertScoped(actorContext, organizacaoId, "Usuário não tem permissão para criar ativos",
+    public void assertCanCreate(EventoActorContext actorContext, UUID grupoParoquialId) {
+        assertScoped(actorContext, grupoParoquialId, "Usuário não tem permissão para criar ativos",
                 "Usuário não pode criar ativos para outra organização");
     }
 
@@ -44,12 +44,12 @@ public class PatrimonioAuthorizationService {
      * Verifica se o ator pode transferir a posse de um ativo pertencente à organização informada.
      *
      * @param actorContext        contexto do ator autenticado
-     * @param ativoOrganizacaoId organização dona do ativo a transferir
+     * @param ativoGrupoParoquialId organização dona do ativo a transferir
      * @throws ForbiddenOperationException se o papel do ator não for elegível ou o ator não tiver
      *     escopo sobre a organização
      */
-    public void assertCanTransfer(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "Usuário não tem permissão para transferir ativos",
+    public void assertCanTransfer(EventoActorContext actorContext, UUID ativoGrupoParoquialId) {
+        assertScoped(actorContext, ativoGrupoParoquialId, "Usuário não tem permissão para transferir ativos",
                 "Usuário não pode transferir ativos de outra organização");
     }
 
@@ -57,12 +57,12 @@ public class PatrimonioAuthorizationService {
      * Verifica se o ator pode alocar um ativo pertencente à organização informada.
      *
      * @param actorContext        contexto do ator autenticado
-     * @param ativoOrganizacaoId organização dona do ativo a alocar
+     * @param ativoGrupoParoquialId organização dona do ativo a alocar
      * @throws ForbiddenOperationException se o papel do ator não for elegível ou o ator não tiver
      *     escopo sobre a organização
      */
-    public void assertCanAlocar(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "Usuário não tem permissão para alocar ativos",
+    public void assertCanAlocar(EventoActorContext actorContext, UUID ativoGrupoParoquialId) {
+        assertScoped(actorContext, ativoGrupoParoquialId, "Usuário não tem permissão para alocar ativos",
                 "Usuário não pode alocar ativos de outra organização");
     }
 
@@ -70,12 +70,12 @@ public class PatrimonioAuthorizationService {
      * Verifica se o ator pode desalocar um ativo pertencente à organização informada.
      *
      * @param actorContext        contexto do ator autenticado
-     * @param ativoOrganizacaoId organização dona do ativo a desalocar
+     * @param ativoGrupoParoquialId organização dona do ativo a desalocar
      * @throws ForbiddenOperationException se o papel do ator não for elegível ou o ator não tiver
      *     escopo sobre a organização
      */
-    public void assertCanDesalocar(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId, "Usuário não tem permissão para desalocar ativos",
+    public void assertCanDesalocar(EventoActorContext actorContext, UUID ativoGrupoParoquialId) {
+        assertScoped(actorContext, ativoGrupoParoquialId, "Usuário não tem permissão para desalocar ativos",
                 "Usuário não pode desalocar ativos de outra organização");
     }
 
@@ -83,17 +83,17 @@ public class PatrimonioAuthorizationService {
      * Verifica se o ator pode colocar em manutenção um ativo pertencente à organização informada.
      *
      * @param actorContext        contexto do ator autenticado
-     * @param ativoOrganizacaoId organização dona do ativo
+     * @param ativoGrupoParoquialId organização dona do ativo
      * @throws ForbiddenOperationException se o papel do ator não for elegível ou o ator não tiver
      *     escopo sobre a organização
      */
-    public void assertCanIniciarManutencao(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
-        assertScoped(actorContext, ativoOrganizacaoId,
+    public void assertCanIniciarManutencao(EventoActorContext actorContext, UUID ativoGrupoParoquialId) {
+        assertScoped(actorContext, ativoGrupoParoquialId,
                 "Usuário não tem permissão para colocar ativos em manutenção",
                 "Usuário não pode colocar ativos de outra organização em manutenção");
     }
 
-    private void assertScoped(EventoActorContext actorContext, UUID organizacaoId, String roleMessage,
+    private void assertScoped(EventoActorContext actorContext, UUID grupoParoquialId, String roleMessage,
                                String scopeMessage) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
 
@@ -102,7 +102,7 @@ public class PatrimonioAuthorizationService {
         }
 
         if (!isHighLevelActor(actorContext) && actorContext.organizationId() != null
-                && !actorContext.organizationId().equals(organizacaoId)) {
+                && !actorContext.organizationId().equals(grupoParoquialId)) {
             throw new ForbiddenOperationException(scopeMessage);
         }
     }

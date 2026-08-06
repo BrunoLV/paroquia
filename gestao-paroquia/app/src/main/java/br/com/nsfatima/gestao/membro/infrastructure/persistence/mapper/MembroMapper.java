@@ -4,23 +4,23 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.stereotype.Component;
 
 /**
  * Converte {@link MembroGrupoEntity} em DTO de resposta, enriquecendo o vínculo com dados de exibição
  * (nome/e-mail de contato/telefone do {@code Fiel}, nome da organização) obtidos por consulta direta aos
- * contextos {@code fiel} e {@code organizacao} — {@code MembroGrupoEntity} guarda apenas os IDs.
+ * contextos {@code fiel} e {@code grupoParoquial} — {@code MembroGrupoEntity} guarda apenas os IDs.
  */
 @Component
 public class MembroMapper {
 
-    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final FielJpaRepository fielRepository;
 
-    public MembroMapper(OrganizacaoJpaRepository organizacaoRepository, FielJpaRepository fielRepository) {
-        this.organizacaoRepository = organizacaoRepository;
+    public MembroMapper(GrupoParoquialJpaRepository grupoParoquialRepository, FielJpaRepository fielRepository) {
+        this.grupoParoquialRepository = grupoParoquialRepository;
         this.fielRepository = fielRepository;
     }
 
@@ -50,10 +50,10 @@ public class MembroMapper {
             }
         }
 
-        String organizacaoNome = null;
-        if (entity.getOrganizacaoId() != null) {
-            organizacaoNome = organizacaoRepository.findById(entity.getOrganizacaoId())
-                    .map(OrganizacaoEntity::getNome)
+        String grupoParoquialNome = null;
+        if (entity.getGrupoParoquialId() != null) {
+            grupoParoquialNome = grupoParoquialRepository.findById(entity.getGrupoParoquialId())
+                    .map(GrupoParoquialEntity::getNome)
                     .orElse(null);
         }
 
@@ -63,8 +63,8 @@ public class MembroMapper {
                 fielNome,
                 fielEmail,
                 fielTelefone,
-                entity.getOrganizacaoId(),
-                organizacaoNome,
+                entity.getGrupoParoquialId(),
+                grupoParoquialNome,
                 entity.getPapel(),
                 entity.getDataEntrada(),
                 entity.isAtivo(),

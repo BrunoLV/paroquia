@@ -6,13 +6,13 @@ import java.util.UUID;
  * Representa um nó da hierarquia organizacional da paróquia (Matriz, Comunidade, Pastoral, Movimento,
  * Conselho, Clero etc.), incluindo seu vínculo com a organização-mãe ({@code parentId}) e, quando aplicável,
  * com o catálogo oficial de Pastorais/Movimentos ({@code pastoralOficialId}). Esta é a raiz de agregado do
- * contexto {@code organizacao}: as regras de qual tipo pode ter qual pai são aplicadas em
- * {@code OrganizacaoService}, não nesta classe.
+ * contexto {@code grupoParoquial}: as regras de qual tipo pode ter qual pai são aplicadas em
+ * {@code GrupoParoquialService}, não nesta classe.
  */
-public class Organizacao {
+public class GrupoParoquial {
     private final UUID id;
     private String nome;
-    private TipoOrganizacao tipo;
+    private TipoGrupo tipo;
     private String contato;
     private String coordenador;
     private String viceCoordenador;
@@ -22,12 +22,12 @@ public class Organizacao {
 
     /**
      * Cria uma organização já existente (id definido) ou uma nova instância a ser persistida, sem aplicar
-     * nenhuma validação de hierarquia — quem chama este construtor (tipicamente {@code OrganizacaoService} ou
+     * nenhuma validação de hierarquia — quem chama este construtor (tipicamente {@code GrupoParoquialService} ou
      * a camada de persistência ao reidratar a entidade) é responsável por garantir a consistência do vínculo
      * com {@code parentId} e {@code pastoralOficialId}.
      */
-    public Organizacao(UUID id,
-                       String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador,
+    public GrupoParoquial(UUID id,
+                       String nome, TipoGrupo tipo, String contato, String coordenador, String viceCoordenador,
                        boolean ativo, UUID parentId, UUID pastoralOficialId) {
 
         this.id = id;
@@ -49,7 +49,7 @@ public class Organizacao {
         return nome;
     }
 
-    public TipoOrganizacao getTipo() {
+    public TipoGrupo getTipo() {
         return tipo;
     }
 
@@ -88,7 +88,7 @@ public class Organizacao {
     /**
      * Substitui todos os atributos mutáveis desta organização, incluindo reatribuição de organização-mãe e
      * vínculo com Pastoral/Movimento Oficial. Não valida a nova hierarquia — a validação de compatibilidade
-     * entre tipo e organização-mãe é responsabilidade de {@code OrganizacaoService.validateHierarchy}, que
+     * entre tipo e organização-mãe é responsabilidade de {@code GrupoParoquialService.validateHierarchy}, que
      * deve ser chamado antes de invocar este método.
      *
      * @param nome novo nome da organização
@@ -101,7 +101,7 @@ public class Organizacao {
      * @param pastoralOficialId novo vínculo com o catálogo oficial de Pastorais/Movimentos, quando aplicável
      */
     public void update(String nome,
-                       TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
+                       TipoGrupo tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
                        UUID parentId, UUID pastoralOficialId) {
 
         this.nome = nome;

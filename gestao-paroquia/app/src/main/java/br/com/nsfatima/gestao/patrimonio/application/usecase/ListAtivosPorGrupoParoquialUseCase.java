@@ -12,22 +12,22 @@ import java.util.UUID;
  * alfabeticamente pelo nome do ativo.
  */
 @Service
-public class ListAtivosPorOrganizacaoUseCase {
+public class ListAtivosPorGrupoParoquialUseCase {
 
     private final AtivoPatrimonialJpaRepository repository;
 
-    public ListAtivosPorOrganizacaoUseCase(AtivoPatrimonialJpaRepository repository) {
+    public ListAtivosPorGrupoParoquialUseCase(AtivoPatrimonialJpaRepository repository) {
         this.repository = repository;
     }
 
     /**
      * Retorna o inventário de ativos da organização, ordenado pelo nome.
      *
-     * @param organizacaoId organização dona dos ativos
+     * @param grupoParoquialId organização dona dos ativos
      * @return ativos cadastrados para a organização
      */
-    public List<AtivoPatrimonialResponse> execute(UUID organizacaoId) {
-        return repository.findByOrganizacaoIdOrderByNomeAsc(organizacaoId).stream()
+    public List<AtivoPatrimonialResponse> execute(UUID grupoParoquialId) {
+        return repository.findByGrupoParoquialIdOrderByNomeAsc(grupoParoquialId).stream()
                 .map(CreateAtivoPatrimonialUseCase::toResponse)
                 .toList();
     }

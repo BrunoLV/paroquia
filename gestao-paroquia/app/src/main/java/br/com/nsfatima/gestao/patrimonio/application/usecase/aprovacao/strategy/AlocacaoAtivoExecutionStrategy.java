@@ -73,7 +73,7 @@ public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovac
                 .orElseThrow(() -> new AtivoPatrimonialNotFoundException(
                         "Ativo patrimonial não encontrado: " + payload.ativoId()));
 
-        assertPodeDecidir(actorContext, ativo.getOrganizacaoId());
+        assertPodeDecidir(actorContext, ativo.getGrupoParoquialId());
 
         var response = alocarAtivoParaEventoUseCase.executeApprovedAlocacao(
                 aprovacao.getId(), actorContext.actor(), actorContext.usuarioId());
@@ -118,7 +118,7 @@ public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovac
                 });
     }
 
-    private void assertPodeDecidir(EventoActorContext actorContext, UUID ativoOrganizacaoId) {
+    private void assertPodeDecidir(EventoActorContext actorContext, UUID ativoGrupoParoquialId) {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(actorContext.role());
 
         if (papel == PapelOrganizacional.ADMIN || papel == PapelOrganizacional.PAROCO) {
@@ -128,7 +128,7 @@ public class AlocacaoAtivoExecutionStrategy implements EstrategiaExecucaoAprovac
         boolean coordenadorDoConselho = papel == PapelOrganizacional.PRESIDENTE_CPC
                 || papel == PapelOrganizacional.MESA_CPP;
 
-        if (coordenadorDoConselho && ativoOrganizacaoId.equals(actorContext.organizationId())) {
+        if (coordenadorDoConselho && ativoGrupoParoquialId.equals(actorContext.organizationId())) {
             return;
         }
 

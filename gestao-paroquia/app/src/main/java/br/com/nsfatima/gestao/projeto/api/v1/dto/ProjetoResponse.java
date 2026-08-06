@@ -23,7 +23,7 @@ public record ProjetoResponse(
         String descricao,
 
         @Schema(description = "ID da organização responsável")
-        UUID organizacaoResponsavelId,
+        UUID grupoParoquialResponsavelId,
 
         @Schema(description = "Data de início do projeto")
         Instant inicio,

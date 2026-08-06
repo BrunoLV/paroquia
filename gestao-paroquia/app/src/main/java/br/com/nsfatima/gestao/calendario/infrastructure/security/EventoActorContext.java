@@ -15,7 +15,7 @@ import java.util.UUID;
  * @param role papel organizacional do ator no escopo resolvido (ex.: valor de
  *     {@code PapelOrganizacional})
  * @param organizationType tipo da organização em que o papel é exercido (ex.: valor de
- *     {@code TipoOrganizacao})
+ *     {@code TipoGrupo})
  * @param organizationId identificador da organização de escopo, ou {@code null} quando o ator atua
  *     sem vínculo a uma organização específica (ex.: administrador global)
  * @param usuarioId identificador interno do usuário autenticado, quando disponível

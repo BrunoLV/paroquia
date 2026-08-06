@@ -40,7 +40,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Missa Dominical",
                   "categoria": "LITURGICO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-10T10:00:00Z",
                   "fim": "2026-08-10T11:30:00Z"
@@ -61,7 +61,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Reunião de Jovens",
                   "categoria": "MOVIMENTO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-10T10:30:00Z",
                   "fim": "2026-08-10T11:30:00Z"
@@ -86,7 +86,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Missa Solene",
                   "categoria": "LITURGICO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-11T10:00:00Z",
                   "fim": "2026-08-11T11:30:00Z"
@@ -107,7 +107,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Encontro de Casais Especial",
                   "categoria": "MOVIMENTO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-11T10:30:00Z",
                   "fim": "2026-08-11T11:30:00Z",
@@ -131,7 +131,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Tentativa de Bypass sem permissão",
                   "categoria": "PASTORAL",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-12T10:00:00Z",
                   "fim": "2026-08-12T11:00:00Z",
                   "bypassAgendaConflict": true
@@ -155,7 +155,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Reunião Pastoral Catequética",
                   "categoria": "PASTORAL",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-15T10:00:00Z",
                   "fim": "2026-08-15T12:00:00Z"
                 }
@@ -181,7 +181,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Festa da Padroeira (Solenidade)",
                   "categoria": "SOLENIDADE",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-15T09:00:00Z",
                   "fim": "2026-08-15T18:00:00Z"
                 }

@@ -1,7 +1,7 @@
 /**
  * Contexto de patrimônio: gestão de ativos patrimoniais da paróquia ({@code AtivoPatrimonialEntity}),
  * sua alocação/empréstimo a eventos por período ({@code AtivoAlocacaoEntity}), manutenção, e
- * restrição de posse por organização ({@code AtivoOrganizacaoPolicy}).
+ * restrição de posse por organização ({@code AtivoGrupoParoquialPolicy}).
  *
  * <p>Segue o mesmo padrão de desvio para aprovação do contexto {@code aprovacao}: uma alocação
  * solicitada por um ator sem alçada suficiente vira uma solicitação pendente

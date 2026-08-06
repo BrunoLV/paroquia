@@ -24,7 +24,7 @@ public record ProjetoCreateRequest(
         @Size(max = 2000) String descricao,
 
         @Schema(description = "ID da organização responsável pelo projeto")
-        @NotNull UUID organizacaoResponsavelId,
+        @NotNull UUID grupoParoquialResponsavelId,
 
         @Schema(description = "Data e hora de início do projeto (UTC)")
         @NotNull Instant inicio,

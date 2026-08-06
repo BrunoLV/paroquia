@@ -54,7 +54,7 @@ class ConsultaCalendarioPerformanceTest {
 
     private MockHttpSession autenticadoSession;
 
-    private final UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+    private final UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
 
     @BeforeEach
     void setUp() throws Exception {
@@ -90,7 +90,7 @@ class ConsultaCalendarioPerformanceTest {
                         .session(autenticadoSession)
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-31T23:59:59Z")
-                        .header("X-Actor-Org-Id", organizacaoId.toString()))
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                 .andExpect(status().isOk());
     }
 
@@ -101,7 +101,7 @@ class ConsultaCalendarioPerformanceTest {
             entity.setId(UUID.randomUUID());
             entity.setTitulo("Evento perf " + i);
             entity.setDescricao("Semente para teste de performance consulta calendário");
-            entity.setOrganizacaoResponsavelId(organizacaoId);
+            entity.setGrupoParoquialResponsavelId(grupoParoquialId);
             entity.setInicioUtc(base.plusSeconds((long) i * 3600));
             entity.setFimUtc(base.plusSeconds((long) i * 3600 + 1800));
             entity.setStatus("CONFIRMADO");

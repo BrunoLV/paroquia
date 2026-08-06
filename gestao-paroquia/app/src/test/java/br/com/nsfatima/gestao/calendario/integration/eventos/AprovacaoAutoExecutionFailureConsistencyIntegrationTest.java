@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
@@ -52,7 +52,7 @@ class AprovacaoAutoExecutionFailureConsistencyIntegrationTest {
         AprovacaoAcaoPayload invalidPayload = new AprovacaoAcaoPayload(
                 UUID.randomUUID().toString(),
                 null,
-                "Evento invalido sem organizacao",
+                "Evento invalido sem grupoParoquial",
                 null,
                 null,
                 null,
@@ -74,7 +74,7 @@ class AprovacaoAutoExecutionFailureConsistencyIntegrationTest {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
         aprovacao.setSolicitantePapel("secretario");
-        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.CONSELHO_PASTORAL);
+        aprovacao.setSolicitanteTipoGrupo(TipoGrupo.CONSELHO);
         aprovacao.setCorrelationId(aprovacaoId.toString());
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(invalidPayload));
         aprovacaoJpaRepository.save(aprovacao);
@@ -110,7 +110,7 @@ class AprovacaoAutoExecutionFailureConsistencyIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento base para falha update",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000cc",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000cc",
                                   "inicio": "2027-06-01T10:00:00Z",
                                   "fim": "2027-06-01T11:00:00Z"
                                 }
@@ -152,7 +152,7 @@ class AprovacaoAutoExecutionFailureConsistencyIntegrationTest {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
         aprovacao.setSolicitantePapel("coordenador-pastoral-local");
-        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        aprovacao.setSolicitanteTipoGrupo(TipoGrupo.PASTORAL);
         aprovacao.setCorrelationId(aprovacaoId.toString());
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(invalidPayload));
         aprovacaoJpaRepository.save(aprovacao);

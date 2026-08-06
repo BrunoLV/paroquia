@@ -5,6 +5,6 @@
  *
  * <p>Distinto do contexto {@code membro}: aqui o foco é a conta/credencial de acesso ao sistema;
  * o vínculo do usuário com uma organização e um papel institucional é modelado no contexto
- * {@code organizacao} ({@code MembroOrganizacaoEntity}), não aqui.
+ * {@code grupoParoquial} ({@code MembroGrupoParoquialEntityLEGACY}), não aqui.
  */
 package br.com.nsfatima.gestao.iam;

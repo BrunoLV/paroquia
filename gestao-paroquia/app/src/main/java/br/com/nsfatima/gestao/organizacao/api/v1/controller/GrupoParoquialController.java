@@ -1,17 +1,17 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialRequest;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.GetOrganogramaUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.ListOrganizacaoMembrosUseCase;
-import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListGrupoParoquialMembrosUseCase;
+import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.domain.service.OrganizacaoService;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.service.GrupoParoquialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,24 +39,24 @@ import java.util.stream.Collectors;
  * com base no nome/username informado em texto livre, via {@link AdicionarVinculoUseCase}.
  */
 @RestController
-@RequestMapping("/api/v1/organizacoes")
+@RequestMapping("/api/v1/grupo_paroquial")
 @Tag(name = "Organizations", description = "Management of parish organizations (Pastorals, Movements, etc.)")
-public class OrganizacaoController {
+public class GrupoParoquialController {
 
-    private final OrganizacaoService organizacaoService;
-    private final ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase;
+    private final GrupoParoquialService grupoParoquialService;
+    private final ListGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase;
     private final GetOrganogramaUseCase getOrganogramaUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final UsuarioJpaRepository usuarioRepository;
 
-    public OrganizacaoController(
-            OrganizacaoService organizacaoService,
-            ListOrganizacaoMembrosUseCase listOrganizacaoMembrosUseCase,
+    public GrupoParoquialController(
+            GrupoParoquialService grupoParoquialService,
+            ListGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase,
             GetOrganogramaUseCase getOrganogramaUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             UsuarioJpaRepository usuarioRepository) {
-        this.organizacaoService = organizacaoService;
-        this.listOrganizacaoMembrosUseCase = listOrganizacaoMembrosUseCase;
+        this.grupoParoquialService = grupoParoquialService;
+        this.listGrupoParoquialMembrosUseCase = listGrupoParoquialMembrosUseCase;
         this.getOrganogramaUseCase = getOrganogramaUseCase;
         this.adicionarVinculoUseCase = adicionarVinculoUseCase;
         this.usuarioRepository = usuarioRepository;
@@ -73,8 +73,8 @@ public class OrganizacaoController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new organization", description = "Only administrators can create organizations.")
-    public OrganizacaoResponse create(@RequestBody @Valid OrganizacaoRequest request) {
-        Organizacao org = organizacaoService.createOrganization(
+    public GrupoParoquialResponse create(@RequestBody @Valid GrupoParoquialRequest request) {
+        GrupoParoquial org = grupoParoquialService.createOrganization(
                 request.nome(),
                 request.tipo(),
                 request.contato(),
@@ -99,8 +99,8 @@ public class OrganizacaoController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing organization", description = "Only administrators can update " +
             "organizations.")
-    public OrganizacaoResponse update(@PathVariable UUID id, @RequestBody @Valid OrganizacaoRequest request) {
-        Organizacao org = organizacaoService.updateOrganization(
+    public GrupoParoquialResponse update(@PathVariable UUID id, @RequestBody @Valid GrupoParoquialRequest request) {
+        GrupoParoquial org = grupoParoquialService.updateOrganization(
                 id,
                 request.nome(),
                 request.tipo(),
@@ -115,9 +115,9 @@ public class OrganizacaoController {
         return toResponse(org);
     }
 
-    private void syncCoordinatorVinculos(Organizacao org, String coordName, String viceCoordName) {
+    private void syncCoordinatorVinculos(GrupoParoquial org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
-        PapelOrganizacional papel = org.getTipo() == TipoOrganizacao.MOVIMENTO
+        PapelOrganizacional papel = org.getTipo() == TipoGrupo.MOVIMENTO
                 ? PapelOrganizacional.COORD_MOVIMENTO
                 : PapelOrganizacional.COORD_PASTORAL_LOCAL;
 
@@ -125,7 +125,7 @@ public class OrganizacaoController {
         syncSingleRole(org, viceCoordName, papel, igrejaId);
     }
 
-    private void syncSingleRole(Organizacao org,
+    private void syncSingleRole(GrupoParoquial org,
                                 String nameInput, PapelOrganizacional papel,
                                 UUID igrejaVinculoId) {
 
@@ -151,28 +151,23 @@ public class OrganizacaoController {
         }
     }
 
-    private UUID resolveIgrejaVinculoId(Organizacao org) {
-        if (org.getTipo() == TipoOrganizacao.MATRIZ || org.getTipo() == TipoOrganizacao.COMUNIDADE) {
-            return org.getId();
+    private UUID resolveIgrejaVinculoId(GrupoParoquial org) {
+        // CONSELHO tem organização-mãe diretamente na UnidadeTerritorial (Matriz/Comunidade, track
+        // linguagem_ubiqua_dominio); PASTORAL/MOVIMENTO têm organização-mãe um CONSELHO, cuja
+        // organização-mãe é que é a UnidadeTerritorial; MINISTERIO não tem igreja de vínculo.
+        if (org.getTipo() == TipoGrupo.CONSELHO) {
+            return org.getParentId();
         }
         if (org.getParentId() == null) {
             return null;
         }
-        var parentOpt = organizacaoService.getOrganization(org.getParentId());
+        var parentOpt = grupoParoquialService.getOrganization(org.getParentId());
         if (parentOpt.isEmpty()) {
             return null;
         }
         var parent = parentOpt.get();
-        if (parent.getTipo() == TipoOrganizacao.MATRIZ || parent.getTipo() == TipoOrganizacao.COMUNIDADE) {
-            return parent.getId();
-        }
-        if (parent.getParentId() == null) {
-            return null;
-        }
-        var grandParentOpt = organizacaoService.getOrganization(parent.getParentId());
-        if (grandParentOpt.isPresent() && (grandParentOpt.get().getTipo() == TipoOrganizacao.MATRIZ
-                || grandParentOpt.get().getTipo() == TipoOrganizacao.COMUNIDADE)) {
-            return grandParentOpt.get().getId();
+        if (parent.getTipo() == TipoGrupo.CONSELHO) {
+            return parent.getParentId();
         }
         return null;
     }
@@ -189,7 +184,7 @@ public class OrganizacaoController {
     @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. " +
             "Cannot delete organizations with active dependencies.")
     public void delete(@PathVariable UUID id) {
-        organizacaoService.deleteOrganization(id);
+        grupoParoquialService.deleteOrganization(id);
     }
 
     /**
@@ -201,8 +196,8 @@ public class OrganizacaoController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Get organization details")
-    public ResponseEntity<OrganizacaoResponse> get(@PathVariable UUID id) {
-        return organizacaoService.getOrganization(id)
+    public ResponseEntity<GrupoParoquialResponse> get(@PathVariable UUID id) {
+        return grupoParoquialService.getOrganization(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -216,8 +211,8 @@ public class OrganizacaoController {
      */
     @GetMapping
     @Operation(summary = "List all organizations")
-    public List<OrganizacaoResponse> list() {
-        return organizacaoService.listOrganizations().stream()
+    public List<GrupoParoquialResponse> list() {
+        return grupoParoquialService.listOrganizations().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -231,8 +226,8 @@ public class OrganizacaoController {
      */
     @GetMapping("/{id}/membros")
     @Operation(summary = "Lista os membros de uma organização")
-    public List<OrganizacaoMembroResponse> listMembros(@PathVariable UUID id) {
-        return listOrganizacaoMembrosUseCase.execute(id);
+    public List<GrupoParoquialMembroResponse> listMembros(@PathVariable UUID id) {
+        return listGrupoParoquialMembrosUseCase.execute(id);
     }
 
     /**
@@ -246,8 +241,8 @@ public class OrganizacaoController {
         return getOrganogramaUseCase.execute();
     }
 
-    private OrganizacaoResponse toResponse(Organizacao domain) {
-        return new OrganizacaoResponse(
+    private GrupoParoquialResponse toResponse(GrupoParoquial domain) {
+        return new GrupoParoquialResponse(
                 domain.getId(),
                 domain.getNome(),
                 domain.getTipo(),

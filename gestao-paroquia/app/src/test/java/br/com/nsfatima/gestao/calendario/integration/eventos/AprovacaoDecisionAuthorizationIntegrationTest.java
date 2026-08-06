@@ -41,7 +41,7 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento auth test",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-12-20T10:00:00Z",
                                   "fim": "2027-12-20T11:00:00Z"
                                 }
@@ -92,7 +92,7 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento auth test 2",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                                   "inicio": "2027-12-20T10:00:00Z",
                                   "fim": "2027-12-20T11:00:00Z"
                                 }

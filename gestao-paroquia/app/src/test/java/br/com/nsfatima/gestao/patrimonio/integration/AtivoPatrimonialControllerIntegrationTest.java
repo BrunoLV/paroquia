@@ -4,9 +4,12 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.AtivoPatrimonialJpaRepository;
@@ -45,13 +48,16 @@ class AtivoPatrimonialControllerIntegrationTest {
     private EventoJpaRepository eventoRepository;
 
     @Autowired
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
+
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
 
     @Autowired
     private br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.AtivoAlocacaoJpaRepository
             alocacaoRepository;
 
-    private final UUID organizacaoId = UUID.randomUUID();
+    private final UUID grupoParoquialId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -61,23 +67,23 @@ class AtivoPatrimonialControllerIntegrationTest {
 
     @Test
     void deveCriarAtivoComTombamentoAutogeradoEStatusDisponivel() throws Exception {
-        garantirOrganizacaoExiste(organizacaoId);
+        garantirGrupoParoquialExiste(grupoParoquialId);
 
         mockMvc.perform(post("/api/v1/ativos")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "nome": "TV 55 polegadas",
                                   "categoria": "ELETRONICO",
-                                  "organizacaoId": "%s",
+                                  "grupoParoquialId": "%s",
                                   "reservavel": true,
                                   "dataAquisicao": "2024-01-10",
                                   "valorEstimado": 3500.00
                                 }
-                                """.formatted(organizacaoId)))
+                                """.formatted(grupoParoquialId)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("DISPONIVEL"))
                 .andExpect(jsonPath("$.numeroTombamento")
@@ -85,82 +91,82 @@ class AtivoPatrimonialControllerIntegrationTest {
     }
 
     @Test
-    void deveRejeitarCriacaoParaOrganizacaoDoTipoPastoral() throws Exception {
-        OrganizacaoEntity pastoral = new OrganizacaoEntity();
-        pastoral.setId(organizacaoId);
-        pastoral.setNome("Pastoral Teste " + organizacaoId);
-        pastoral.setTipo(TipoOrganizacao.PASTORAL);
+    void deveRejeitarCriacaoParaGrupoParoquialDoTipoPastoral() throws Exception {
+        GrupoParoquialEntity pastoral = new GrupoParoquialEntity();
+        pastoral.setId(grupoParoquialId);
+        pastoral.setNome("Pastoral Teste " + grupoParoquialId);
+        pastoral.setTipo(TipoGrupo.PASTORAL);
         pastoral.setAtivo(true);
-        organizacaoRepository.save(pastoral);
+        grupoParoquialRepository.save(pastoral);
 
         mockMvc.perform(post("/api/v1/ativos")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "nome": "TV 55 polegadas",
                                   "categoria": "ELETRONICO",
-                                  "organizacaoId": "%s",
+                                  "grupoParoquialId": "%s",
                                   "reservavel": true,
                                   "dataAquisicao": "2024-01-10",
                                   "valorEstimado": 3500.00
                                 }
-                                """.formatted(organizacaoId)))
+                                """.formatted(grupoParoquialId)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void deveNegarCriacaoParaCoordenadorDeOutraOrganizacao() throws Exception {
-        UUID outraOrganizacaoId = UUID.randomUUID();
+    void deveNegarCriacaoParaCoordenadorDeOutraGrupoParoquial() throws Exception {
+        UUID outraGrupoParoquialId = UUID.randomUUID();
         mockMvc.perform(post("/api/v1/ativos")
                         .header("X-Actor-Role", "coordenador-pastoral-local")
                         .header("X-Actor-Org-Type", "PASTORAL")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "nome": "TV 55 polegadas",
                                   "categoria": "ELETRONICO",
-                                  "organizacaoId": "%s",
+                                  "grupoParoquialId": "%s",
                                   "reservavel": true,
                                   "dataAquisicao": "2024-01-10",
                                   "valorEstimado": 3500.00
                                 }
-                                """.formatted(outraOrganizacaoId)))
+                                """.formatted(outraGrupoParoquialId)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void deveBloquearTransferenciaDeAtivoAlocado() throws Exception {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.ALOCADO, organizacaoId);
-        UUID novaOrganizacaoId = UUID.randomUUID();
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.ALOCADO, grupoParoquialId);
+        UUID novaGrupoParoquialId = UUID.randomUUID();
 
         mockMvc.perform(patch("/api/v1/ativos/" + ativo.getId() + "/transferir")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "novaOrganizacaoId": "%s",
+                                  "novaGrupoParoquialId": "%s",
                                   "justificativa": "Necessidade de reorganização do inventário"
                                 }
-                                """.formatted(novaOrganizacaoId)))
+                                """.formatted(novaGrupoParoquialId)))
                 .andExpect(status().isConflict());
     }
 
     @Test
-    void deveAlocarAtivoDisponivelParaEventoDaMesmaOrganizacao() throws Exception {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
-        LocalEntity local = criarLocal(organizacaoId);
+    void deveAlocarAtivoDisponivelParaEventoDaMesmaGrupoParoquial() throws Exception {
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
+        LocalEntity local = criarLocal(grupoParoquialId);
         EventoEntity evento = criarEvento(local.getId());
 
         mockMvc.perform(post("/api/v1/ativos/" + ativo.getId() + "/alocar")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -176,12 +182,12 @@ class AtivoPatrimonialControllerIntegrationTest {
 
     @Test
     void deveReservarAtivoSemEventoInformandoApenasJustificativa() throws Exception {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
 
         mockMvc.perform(post("/api/v1/ativos/" + ativo.getId() + "/alocar")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -195,15 +201,15 @@ class AtivoPatrimonialControllerIntegrationTest {
     }
 
     @Test
-    void deveCriarPendenciaDeAprovacaoParaEventoDeOutraOrganizacao() throws Exception {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+    void deveCriarPendenciaDeAprovacaoParaEventoDeOutraGrupoParoquial() throws Exception {
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
         LocalEntity local = criarLocal(UUID.randomUUID());
         EventoEntity evento = criarEvento(local.getId());
 
         mockMvc.perform(post("/api/v1/ativos/" + ativo.getId() + "/alocar")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -219,13 +225,13 @@ class AtivoPatrimonialControllerIntegrationTest {
 
     @Test
     void deveDesalocarAtivoAlocado() throws Exception {
-        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.ALOCADO, organizacaoId);
-        criarOcupacaoConfirmada(ativo.getId(), organizacaoId);
+        AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.ALOCADO, grupoParoquialId);
+        criarOcupacaoConfirmada(ativo.getId(), grupoParoquialId);
 
         mockMvc.perform(patch("/api/v1/ativos/" + ativo.getId() + "/desalocar")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isOk())
@@ -233,36 +239,36 @@ class AtivoPatrimonialControllerIntegrationTest {
     }
 
     @Test
-    void deveListarAtivosPorOrganizacao() throws Exception {
-        criarAtivo(AtivoStatus.DISPONIVEL, organizacaoId);
+    void deveListarAtivosPorGrupoParoquial() throws Exception {
+        criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
         criarAtivo(AtivoStatus.DISPONIVEL, UUID.randomUUID());
 
-        mockMvc.perform(get("/api/v1/ativos/organizacao/" + organizacaoId)
+        mockMvc.perform(get("/api/v1/ativos/grupoParoquial/" + grupoParoquialId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
 
-    private AtivoPatrimonialEntity criarAtivo(AtivoStatus status, UUID organizacaoId) {
+    private AtivoPatrimonialEntity criarAtivo(AtivoStatus status, UUID grupoParoquialId) {
         AtivoPatrimonialEntity ativo = new AtivoPatrimonialEntity();
         ativo.setId(UUID.randomUUID());
         ativo.setNome("Projetor");
         ativo.setCategoria(br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria.ELETRONICO);
         ativo.setStatus(status);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         ativo.setNumeroTombamento("PAT-" + Year.now().getValue() + "-" + UUID.randomUUID().toString().substring(0, 8));
         ativo.setCriadoEmUtc(Instant.now());
         return ativoRepository.save(ativo);
     }
 
-    private void criarOcupacaoConfirmada(UUID ativoId, UUID organizacaoId) {
+    private void criarOcupacaoConfirmada(UUID ativoId, UUID grupoParoquialId) {
         br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoAlocacaoEntity ocupacao =
                 new br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoAlocacaoEntity();
         ocupacao.setId(UUID.randomUUID());
         ocupacao.setAtivoId(ativoId);
         ocupacao.setTipo(br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoTipo.ALOCACAO_EVENTO);
-        ocupacao.setOrganizacaoOrigemId(organizacaoId);
+        ocupacao.setGrupoParoquialOrigemId(grupoParoquialId);
         ocupacao.setDataInicio(java.time.LocalDate.now().minusDays(1));
         ocupacao.setDataFim(java.time.LocalDate.now());
         ocupacao.setStatus(br.com.nsfatima.gestao.patrimonio.domain.model.AtivoAlocacaoStatus.CONFIRMADA);
@@ -270,34 +276,36 @@ class AtivoPatrimonialControllerIntegrationTest {
         alocacaoRepository.save(ocupacao);
     }
 
-    private LocalEntity criarLocal(UUID organizacaoId) {
-        garantirOrganizacaoExiste(organizacaoId);
+    private LocalEntity criarLocal(UUID grupoParoquialId) {
+        garantirGrupoParoquialExiste(grupoParoquialId);
         LocalEntity local = new LocalEntity();
         local.setId(UUID.randomUUID());
         local.setNome("Salão " + UUID.randomUUID());
         local.setTipo("SALAO");
-        local.setOrganizacaoId(organizacaoId);
+        local.setGrupoParoquialId(grupoParoquialId);
         return localRepository.save(local);
     }
 
-    private void garantirOrganizacaoExiste(UUID organizacaoId) {
-        if (organizacaoRepository.existsById(organizacaoId)) {
+    private void garantirGrupoParoquialExiste(UUID grupoParoquialId) {
+        // Ativos patrimoniais só podem pertencer a uma UnidadeTerritorial MATRIZ/COMUNIDADE, track
+        // linguagem_ubiqua_dominio (ver AtivoGrupoParoquialPolicy)
+        if (unidadeTerritorialRepository.existsById(grupoParoquialId)) {
             return;
         }
-        OrganizacaoEntity organizacao = new OrganizacaoEntity();
-        organizacao.setId(organizacaoId);
-        organizacao.setNome("Organização " + organizacaoId);
-        organizacao.setTipo(TipoOrganizacao.COMUNIDADE);
-        organizacao.setAtivo(true);
-        organizacaoRepository.save(organizacao);
+        UnidadeTerritorialEntity unidade = new UnidadeTerritorialEntity();
+        unidade.setId(grupoParoquialId);
+        unidade.setNome("Unidade " + grupoParoquialId);
+        unidade.setTipo(TipoUnidadeTerritorial.COMUNIDADE);
+        unidade.setAtivo(true);
+        unidadeTerritorialRepository.save(unidade);
     }
 
     private EventoEntity criarEvento(UUID localId) {
-        garantirOrganizacaoExiste(organizacaoId);
+        garantirGrupoParoquialExiste(grupoParoquialId);
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());
         evento.setTitulo("Encontro de Catequistas");
-        evento.setOrganizacaoResponsavelId(organizacaoId);
+        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
         evento.setInicioUtc(Instant.now());
         evento.setFimUtc(Instant.now().plusSeconds(3600));
         evento.setStatus("CONFIRMADO");

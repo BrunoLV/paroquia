@@ -46,14 +46,14 @@ class FinalizarManutencaoAtivoUseCaseTest {
 
     private FinalizarManutencaoAtivoUseCase useCase;
     private UUID ativoId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
 
     @BeforeEach
     void setUp() {
         useCase = new FinalizarManutencaoAtivoUseCase(ativoRepository, alocacaoRepository, actorContextResolver,
                 new PatrimonioAuthorizationService());
         ativoId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
 
         lenient().when(ativoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         lenient().when(alocacaoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -65,7 +65,7 @@ class FinalizarManutencaoAtivoUseCaseTest {
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.EM_MANUTENCAO);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         return ativo;
     }
 
@@ -107,7 +107,7 @@ class FinalizarManutencaoAtivoUseCaseTest {
     }
 
     @Test
-    void deveRejeitarQuandoOrganizacaoDoAtorDivergeDaOrganizacaoDona() {
+    void deveRejeitarQuandoGrupoParoquialDoAtorDivergeDaGrupoParoquialDona() {
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoEmManutencao()));
         when(alocacaoRepository.findByAtivoIdAndStatusIn(any(), any()))
                 .thenReturn(List.of(manutencao(AtivoAlocacaoStatus.CONFIRMADA)));

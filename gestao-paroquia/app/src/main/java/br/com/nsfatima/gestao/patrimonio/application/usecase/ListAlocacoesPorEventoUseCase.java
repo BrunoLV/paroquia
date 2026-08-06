@@ -53,7 +53,7 @@ public class ListAlocacoesPorEventoUseCase {
         String numeroTombamento = ativo != null ? ativo.getNumeroTombamento() : null;
         return new AtivoAlocacaoResponse(
                 ocupacao.getId(), ocupacao.getAtivoId(), ativoNome, numeroTombamento, ocupacao.getTipo(),
-                ocupacao.getEventoId(), ocupacao.getOrganizacaoOrigemId(), ocupacao.getOrganizacaoDestinoId(),
+                ocupacao.getEventoId(), ocupacao.getGrupoParoquialOrigemId(), ocupacao.getGrupoParoquialDestinoId(),
                 ocupacao.isEmprestimo(), ocupacao.getDataInicio(), ocupacao.getDataFim(), ocupacao.getStatus(),
                 ocupacao.isImpactadaPorAtraso(), ocupacao.getCriadoEmUtc(), ocupacao.getDevolvidoEmUtc());
     }

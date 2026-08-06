@@ -11,14 +11,14 @@ import java.util.UUID;
  * paróquia). Nunca exige/cria um {@code Usuario} — participação pastoral comum não requer login.
  *
  * @param papel      Papel exercido na organização (ver {@code PapelOrganizacional}); quando corresponder a um
- *                   papel de coordenação, sincroniza automaticamente o campo de liderança na {@code Organizacao}.
+ *                   papel de coordenação, sincroniza automaticamente o campo de liderança na {@code GrupoParoquial}.
  * @param dataEntrada Data de início do vínculo; se omitida na criação, assume a data corrente.
  * @param igrejaId   Igreja/paróquia específica associada ao vínculo, quando aplicável (opcional).
  * @param ativo      Situação do vínculo; se omitido na criação, assume {@code true}.
  */
 public record MembroRequest(
         @NotNull(message = "Fiel é obrigatório") UUID fielId,
-        @NotNull(message = "Organização é obrigatória") UUID organizacaoId,
+        @NotNull(message = "Organização é obrigatória") UUID grupoParoquialId,
         @NotBlank(message = "Papel é obrigatório") String papel,
         LocalDate dataEntrada,
         UUID igrejaId,

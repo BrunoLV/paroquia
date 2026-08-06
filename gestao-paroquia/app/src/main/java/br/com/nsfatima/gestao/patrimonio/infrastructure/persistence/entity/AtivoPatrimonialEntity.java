@@ -18,7 +18,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
 
 /**
  * Um bem patrimonial móvel da paróquia, pertencente a uma organização (sempre MATRIZ ou
- * COMUNIDADE, ver {@code AtivoOrganizacaoPolicy}), identificado por um número de tombamento único
+ * COMUNIDADE, ver {@code AtivoGrupoParoquialPolicy}), identificado por um número de tombamento único
  * e anual, e cujo {@code status} reflete o efeito agregado de suas ocupações correntes
  * ({@code AtivoAlocacaoEntity}).
  */
@@ -46,8 +46,8 @@ public class AtivoPatrimonialEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean reservavel;
 
-    @Column(name = "organizacao_id", nullable = false)
-    private UUID organizacaoId;
+    @Column(name = "grupoParoquial_id", nullable = false)
+    private UUID grupoParoquialId;
 
     @Column(name = "data_aquisicao")
     private LocalDate dataAquisicao;
@@ -106,12 +106,12 @@ public class AtivoPatrimonialEntity extends BaseVersionedEntity {
         this.reservavel = reservavel;
     }
 
-    public UUID getOrganizacaoId() {
-        return organizacaoId;
+    public UUID getGrupoParoquialId() {
+        return grupoParoquialId;
     }
 
-    public void setOrganizacaoId(UUID organizacaoId) {
-        this.organizacaoId = organizacaoId;
+    public void setGrupoParoquialId(UUID grupoParoquialId) {
+        this.grupoParoquialId = grupoParoquialId;
     }
 
     public LocalDate getDataAquisicao() {

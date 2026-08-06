@@ -17,7 +17,7 @@ import java.util.UUID;
 @Schema(description = "Resposta contendo indicadores de retrabalho")
 public record IndicadorRetrabalhoResponse(
         @Schema(description = "ID da organização analisada")
-        UUID organizacaoId,
+        UUID grupoParoquialId,
 
         @Schema(description = "Período de análise")
         PeriodoOperacionalResponse periodo,

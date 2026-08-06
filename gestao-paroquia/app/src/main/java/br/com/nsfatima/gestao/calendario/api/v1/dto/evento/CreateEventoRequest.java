@@ -31,7 +31,7 @@ public record CreateEventoRequest(
         CategoriaEvento categoria,
 
         @Schema(description = "ID da organização responsável pelo evento")
-        @NotNull UUID organizacaoResponsavelId,
+        @NotNull UUID grupoParoquialResponsavelId,
 
         @Schema(description = "ID do projeto ao qual o evento pertence")
         UUID projetoId,
@@ -69,7 +69,7 @@ public record CreateEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID organizacaoResponsavelId,
+            UUID grupoParoquialResponsavelId,
             UUID projetoId,
             UUID localId,
             Instant inicio,
@@ -78,7 +78,7 @@ public record CreateEventoRequest(
             String adicionadoExtraJustificativa,
             List<UUID> participantes) {
         this(titulo,
-                descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status,
+                descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, null, inicio, fim, status,
                 adicionadoExtraJustificativa, participantes, false);
 
     }
@@ -91,7 +91,7 @@ public record CreateEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID organizacaoResponsavelId,
+            UUID grupoParoquialResponsavelId,
             UUID projetoId,
             UUID localId,
             UUID igrejaVinculoId,
@@ -101,7 +101,7 @@ public record CreateEventoRequest(
             String adicionadoExtraJustificativa,
             List<UUID> participantes) {
         this(titulo,
-                descricao, categoria, organizacaoResponsavelId, projetoId, localId,
+                descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
                 igrejaVinculoId, inicio, fim, status, adicionadoExtraJustificativa, participantes, false);
 
     }

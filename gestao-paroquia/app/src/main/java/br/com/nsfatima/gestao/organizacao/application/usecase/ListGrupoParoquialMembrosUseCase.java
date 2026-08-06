@@ -3,8 +3,8 @@ package br.com.nsfatima.gestao.organizacao.application.usecase;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,19 +19,19 @@ import java.util.UUID;
  * mesmo antes de ela ser formalmente vinculada.
  */
 @Service
-public class ListOrganizacaoMembrosUseCase {
+public class ListGrupoParoquialMembrosUseCase {
 
     private final MembroGrupoJpaRepository vinculoRepository;
     private final FielJpaRepository fielRepository;
-    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
 
-    public ListOrganizacaoMembrosUseCase(
+    public ListGrupoParoquialMembrosUseCase(
             MembroGrupoJpaRepository vinculoRepository,
             FielJpaRepository fielRepository,
-            OrganizacaoJpaRepository organizacaoRepository) {
+            GrupoParoquialJpaRepository grupoParoquialRepository) {
         this.vinculoRepository = vinculoRepository;
         this.fielRepository = fielRepository;
-        this.organizacaoRepository = organizacaoRepository;
+        this.grupoParoquialRepository = grupoParoquialRepository;
     }
 
     /**
@@ -40,22 +40,22 @@ public class ListOrganizacaoMembrosUseCase {
      * coordenador/vice-coordenador registrados como texto livre quando ainda não houver vínculo formal com o
      * mesmo nome.
      *
-     * @param organizacaoId identificador da organização
+     * @param grupoParoquialId identificador da organização
      * @return lista de membros efetivos da organização
      */
     @Transactional(readOnly = true)
-    public List<OrganizacaoMembroResponse> execute(UUID organizacaoId) {
+    public List<GrupoParoquialMembroResponse> execute(UUID grupoParoquialId) {
         var vinculosBrutos =
-                new java.util.ArrayList<>(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId));
-        var membrosIgreja = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(organizacaoId);
+                new java.util.ArrayList<>(vinculoRepository.findByGrupoParoquialIdAndAtivoTrue(grupoParoquialId));
+        var membrosIgreja = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(grupoParoquialId);
         for (var cm : membrosIgreja) {
             if (vinculosBrutos.stream().noneMatch(m -> m.getFielId().equals(cm.getFielId()))) {
                 vinculosBrutos.add(cm);
             }
         }
 
-        List<OrganizacaoMembroResponse> membrosBanco = vinculosBrutos.stream()
-                .map(m -> new OrganizacaoMembroResponse(
+        List<GrupoParoquialMembroResponse> membrosBanco = vinculosBrutos.stream()
+                .map(m -> new GrupoParoquialMembroResponse(
                         m.getId(),
                         m.getFielId(),
                         resolveNome(m.getFielId()),
@@ -63,9 +63,9 @@ public class ListOrganizacaoMembrosUseCase {
                         m.isAtivo()))
                 .toList();
 
-        List<OrganizacaoMembroResponse> membros = new java.util.ArrayList<>(membrosBanco);
+        List<GrupoParoquialMembroResponse> membros = new java.util.ArrayList<>(membrosBanco);
 
-        var orgOpt = organizacaoRepository.findById(organizacaoId);
+        var orgOpt = grupoParoquialRepository.findById(grupoParoquialId);
         if (orgOpt.isPresent()) {
             var org = orgOpt.get();
             addDynamicMemberIfMissing(membros, org.getCoordenador(), "COORDENADOR");
@@ -81,7 +81,7 @@ public class ListOrganizacaoMembrosUseCase {
                 .orElse("Fiel Desconhecido");
     }
 
-    private void addDynamicMemberIfMissing(List<OrganizacaoMembroResponse> list, String name, String papel) {
+    private void addDynamicMemberIfMissing(List<GrupoParoquialMembroResponse> list, String name, String papel) {
         if (name == null || name.trim().isEmpty()) {
             return;
         }
@@ -93,7 +93,7 @@ public class ListOrganizacaoMembrosUseCase {
         fielRepository.findAll().stream()
                 .filter(f -> name.equalsIgnoreCase(f.getNome()))
                 .map(FielEntity::getId)
-                .findFirst().ifPresent(fielId -> list.add(new OrganizacaoMembroResponse(
+                .findFirst().ifPresent(fielId -> list.add(new GrupoParoquialMembroResponse(
                         UUID.randomUUID(), // dummy vinculo ID
                         fielId,
                         name,

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.domain.service;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,13 +32,13 @@ class UserScopeAuthorizationServiceTest {
         @DisplayName("ADMIN has full global access for any action and target scope")
         void adminHasFullAccess() {
             assertThat(service.canManageOrganizationData(PapelOrganizacional.ADMIN,
-                    TipoOrganizacao.PASTORAL, matrizId, matrizId, matrizId)).isTrue();
+                    TipoGrupo.PASTORAL, matrizId, matrizId, matrizId)).isTrue();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.ADMIN,
-                    TipoOrganizacao.MATRIZ, matrizId, comunidadeBId, comunidadeBId)).isTrue();
+                    TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
 
             assertThat(service.canApproveEvents(PapelOrganizacional.ADMIN,
-                    TipoOrganizacao.PASTORAL, matrizId, comunidadeBId)).isTrue();
+                    TipoGrupo.PASTORAL, matrizId, comunidadeBId)).isTrue();
 
         }
 
@@ -46,16 +46,16 @@ class UserScopeAuthorizationServiceTest {
         @DisplayName("PAROCO and VIGARIO have full general management access")
         void parocoAndVigarioHaveFullGeneralAccess() {
             assertThat(service.canManageOrganizationData(PapelOrganizacional.PAROCO,
-                    TipoOrganizacao.CLERO, null, comunidadeBId, comunidadeBId)).isTrue();
+                    TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.VIGARIO,
-                    TipoOrganizacao.CLERO, null, comunidadeBId, comunidadeBId)).isTrue();
+                    TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
             assertThat(service.canApproveEvents(PapelOrganizacional.PAROCO,
-                    TipoOrganizacao.CLERO, null, matrizId)).isTrue();
+                    TipoGrupo.CONSELHO, null, matrizId)).isTrue();
 
             assertThat(service.canApproveEvents(PapelOrganizacional.VIGARIO,
-                    TipoOrganizacao.CLERO, null, comunidadeBId)).isTrue();
+                    TipoGrupo.CONSELHO, null, comunidadeBId)).isTrue();
 
         }
     }
@@ -69,18 +69,18 @@ class UserScopeAuthorizationServiceTest {
         void conselhoCoordinatorCommunityScope() {
             // Coordinator of Conselho Pastoral at Matriz can manage Matriz items and Pastoral at Matriz
             assertThat(service.canManageOrganizationData(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, matrizId, matrizId)).isTrue();
+                    TipoGrupo.CONSELHO, matrizId, matrizId, matrizId)).isTrue();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.MESA_CPP,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, pastoralMatrizId, matrizId)).isTrue();
+                    TipoGrupo.CONSELHO, matrizId, pastoralMatrizId, matrizId)).isTrue();
 
 
             // But cannot manage items at Comunidade B
             assertThat(service.canManageOrganizationData(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, comunidadeBId, comunidadeBId)).isFalse();
+                    TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isFalse();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, pastoralComunidadeBId, comunidadeBId)).isFalse();
+                    TipoGrupo.CONSELHO, matrizId, pastoralComunidadeBId, comunidadeBId)).isFalse();
 
         }
 
@@ -88,10 +88,10 @@ class UserScopeAuthorizationServiceTest {
         @DisplayName("Conselho Pastoral Coordinator can approve events in their community")
         void conselhoCoordinatorCanApproveEventsInCommunity() {
             assertThat(service.canApproveEvents(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, matrizId)).isTrue();
+                    TipoGrupo.CONSELHO, matrizId, matrizId)).isTrue();
 
             assertThat(service.canApproveEvents(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, comunidadeBId)).isFalse();
+                    TipoGrupo.CONSELHO, matrizId, comunidadeBId)).isFalse();
 
         }
     }
@@ -105,18 +105,18 @@ class UserScopeAuthorizationServiceTest {
         void pastoralCoordinatorExactPastoralScope() {
             // Coordinator of pastoralMatriz can only edit pastoralMatriz
             assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isTrue();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isTrue();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_MOVIMENTO,
-                    TipoOrganizacao.MOVIMENTO, pastoralMatrizId, pastoralMatrizId, matrizId)).isTrue();
+                    TipoGrupo.MOVIMENTO, pastoralMatrizId, pastoralMatrizId, matrizId)).isTrue();
 
 
             // Cannot edit other pastorals or parent community
             assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralComunidadeBId, comunidadeBId)).isFalse();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, pastoralComunidadeBId, comunidadeBId)).isFalse();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, matrizId, matrizId)).isFalse();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, matrizId, matrizId)).isFalse();
 
         }
 
@@ -124,7 +124,7 @@ class UserScopeAuthorizationServiceTest {
         @DisplayName("Pastoral Coordinator cannot directly approve events (requires Conselho/Paroco aprovacao)")
         void pastoralCoordinatorCannotApproveEvents() {
             assertThat(service.canApproveEvents(PapelOrganizacional.COORD_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralMatrizId)).isFalse();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId)).isFalse();
 
         }
     }
@@ -137,17 +137,17 @@ class UserScopeAuthorizationServiceTest {
         @DisplayName("PADRE and SECRETARIO cannot perform general mutations, but can view and add observations")
         void padreAndSecretarioPermissions() {
             assertThat(service.canManageOrganizationData(PapelOrganizacional.PADRE,
-                    TipoOrganizacao.CLERO, null, matrizId, matrizId)).isFalse();
+                    TipoGrupo.CONSELHO, null, matrizId, matrizId)).isFalse();
 
             assertThat(service.canManageOrganizationData(PapelOrganizacional.SECRETARIO,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, matrizId, matrizId)).isFalse();
+                    TipoGrupo.CONSELHO, matrizId, matrizId, matrizId)).isFalse();
 
 
             assertThat(service.canAddObservation(PapelOrganizacional.PADRE,
-                    TipoOrganizacao.CLERO, null, matrizId, false)).isTrue();
+                    TipoGrupo.CONSELHO, null, matrizId, false)).isTrue();
 
             assertThat(service.canAddObservation(PapelOrganizacional.SECRETARIO,
-                    TipoOrganizacao.CONSELHO_PASTORAL, matrizId, comunidadeBId, false)).isTrue();
+                    TipoGrupo.CONSELHO, matrizId, comunidadeBId, false)).isTrue();
 
         }
 
@@ -156,20 +156,20 @@ class UserScopeAuthorizationServiceTest {
                 + " to their pastoral or pastoral is participant")
         void membroAddObservationPermissions() {
             assertThat(service.canManageOrganizationData(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isFalse();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isFalse();
 
 
             // Can add observation if target org is their pastoral or they are participant
             assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralMatrizId, false)).isTrue();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId, false)).isTrue();
 
             assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, comunidadeBId, true)).isTrue();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, comunidadeBId, true)).isTrue();
 
 
             // Cannot add observation to unrelated organization
             assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
-                    TipoOrganizacao.PASTORAL, pastoralMatrizId, pastoralComunidadeBId, false)).isFalse();
+                    TipoGrupo.PASTORAL, pastoralMatrizId, pastoralComunidadeBId, false)).isFalse();
 
         }
 

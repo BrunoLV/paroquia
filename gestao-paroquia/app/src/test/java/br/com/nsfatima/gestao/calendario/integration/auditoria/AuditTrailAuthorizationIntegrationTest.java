@@ -30,13 +30,13 @@ class AuditTrailAuthorizationIntegrationTest {
     }
 
     @Test
-    void deveNegarAuditarTrilhaForaOrganizacaoEscopo() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+    void deveNegarAuditarTrilhaForaGrupoParoquialEscopo() throws Exception {
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setOrganizacaoId(organizacaoId);
+        entity.setGrupoParoquialId(grupoParoquialId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());
@@ -49,7 +49,7 @@ class AuditTrailAuthorizationIntegrationTest {
         auditoriaOperacaoJpaRepository.save(entity);
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("organizacaoId", organizacaoId.toString())
+                        .param("grupoParoquialId", grupoParoquialId.toString())
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-10T00:00:00Z")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb"))

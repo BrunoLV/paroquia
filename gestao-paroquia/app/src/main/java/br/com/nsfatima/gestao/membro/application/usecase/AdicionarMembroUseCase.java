@@ -9,8 +9,8 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGru
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,19 +30,19 @@ public class AdicionarMembroUseCase {
 
     private final MembroGrupoJpaRepository repository;
     private final FielJpaRepository fielRepository;
-    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final MembroMapper mapper;
     private final MembroAuditPublisher auditPublisher;
 
     public AdicionarMembroUseCase(
             MembroGrupoJpaRepository repository,
             FielJpaRepository fielRepository,
-            OrganizacaoJpaRepository organizacaoRepository,
+            GrupoParoquialJpaRepository grupoParoquialRepository,
             MembroMapper mapper,
             MembroAuditPublisher auditPublisher) {
         this.repository = repository;
         this.fielRepository = fielRepository;
-        this.organizacaoRepository = organizacaoRepository;
+        this.grupoParoquialRepository = grupoParoquialRepository;
         this.mapper = mapper;
         this.auditPublisher = auditPublisher;
     }
@@ -63,9 +63,9 @@ public class AdicionarMembroUseCase {
         FielEntity fiel = fielRepository.findById(request.fielId())
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + request.fielId()));
 
-        OrganizacaoEntity organizacao = organizacaoRepository.findById(request.organizacaoId())
+        GrupoParoquialEntity grupoParoquial = grupoParoquialRepository.findById(request.grupoParoquialId())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Organização não encontrada: " + request.organizacaoId()));
+                        "Organização não encontrada: " + request.grupoParoquialId()));
 
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(request.papel());
         if (papel == null) {
@@ -73,7 +73,7 @@ public class AdicionarMembroUseCase {
         }
         PapelGlobalValidation.rejectIfGlobal(papel);
 
-        repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
+        repository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(request.fielId(), request.grupoParoquialId())
                 .ifPresent(m -> {
                     throw new IllegalArgumentException("Fiel já possui vínculo ativo com esta organização.");
                 });
@@ -81,8 +81,8 @@ public class AdicionarMembroUseCase {
         MembroGrupoEntity entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(request.fielId());
-        entity.setOrganizacaoId(request.organizacaoId());
-        entity.setTipoOrganizacao(organizacao.getTipo());
+        entity.setGrupoParoquialId(request.grupoParoquialId());
+        entity.setTipoGrupo(grupoParoquial.getTipo());
         entity.setPapel(papel.storedValue());
         entity.setIgrejaVinculoId(request.igrejaId());
         entity.setDataEntrada(request.dataEntrada() != null ? request.dataEntrada() : LocalDate.now());
@@ -90,7 +90,7 @@ public class AdicionarMembroUseCase {
 
         MembroGrupoEntity saved = repository.save(entity);
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
+        LiderancaSyncSupport.sync(grupoParoquialRepository, papel, fiel.getNome(), grupoParoquial);
 
         auditPublisher.publish(actor, "criar", saved.getId().toString(), "sucesso");
 

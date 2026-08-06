@@ -49,7 +49,7 @@ class ListAlocacoesPorAtivoUseCaseTest {
         ativo.setNumeroTombamento("PAT-2026-0001");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.DISPONIVEL);
-        ativo.setOrganizacaoId(UUID.randomUUID());
+        ativo.setGrupoParoquialId(UUID.randomUUID());
         return ativo;
     }
 

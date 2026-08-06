@@ -13,18 +13,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
-class EventoOrganizacaoParticipantesIntegrityIntegrationTest {
+class EventoGrupoParoquialParticipantesIntegrityIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     @WithMockUser
-    void deveRejeitarQuandoResponsavelOrganizacaoERepetidoEmParticipantes() throws Exception {
+    void deveRejeitarQuandoResponsavelGrupoParoquialERepetidoEmParticipantes() throws Exception {
         String payload = """
                 {
                   "titulo": "Planejamento",
-                  "organizacaoResponsavelId": "00000000-0000-0000-0000-000000000001",
+                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-000000000001",
                   "inicio": "2026-06-01T10:00:00Z",
                   "fim": "2026-06-01T11:00:00Z",
                   "participantes": [

@@ -38,7 +38,7 @@ class UpdateEventoTier1PerformanceTest {
         entity.setId(eventoId);
         entity.setTitulo("Evento base performance patch");
         entity.setDescricao("medicao tier 1 patch");
-        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-12-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-01T11:00:00Z"));
         entity.setStatus("CONFIRMADO");

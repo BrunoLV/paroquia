@@ -52,24 +52,24 @@ public class CalculadoraTaxaRetrabalho {
      * afetados por operações auditadas no período; retorna {@code 0.0} quando não há
      * eventos afetados, para evitar divisão por zero.
      *
-     * @param organizacaoId organização cujas operações auditadas serão consideradas
+     * @param grupoParoquialId organização cujas operações auditadas serão consideradas
      * @param periodo período operacional já resolvido (início/fim) para o cálculo
      * @return indicador com a taxa calculada e os valores de numerador/denominador
      */
     public IndicadorRetrabalhoResponse calculateForOrganization(
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
         long numerador = auditoriaOperacaoJpaRepository.countEligibleAdministrativeReworkOccurrences(
-                organizacaoId,
+                grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim());
         long denominador = auditoriaOperacaoJpaRepository.countDistinctAffectedEvents(
-                organizacaoId,
+                grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim());
         double taxa = denominador == 0L ? 0.0 : numerador / (double) denominador;
         return new IndicadorRetrabalhoResponse(
-                organizacaoId,
+                grupoParoquialId,
                 periodo.toResponse(),
                 taxa,
                 numerador,
@@ -128,7 +128,7 @@ public class CalculadoraTaxaRetrabalho {
 
         Map<String, Object> details = deserializeDetails(auditRecord.getDetalhesAuditaveisJson());
         return isTrue(details.get("agendaAlterada"))
-                || isTrue(details.get("organizacaoResponsavelAlterada"))
+                || isTrue(details.get("grupoParoquialResponsavelAlterada"))
                 || isTrue(details.get("cancelamento"));
     }
 

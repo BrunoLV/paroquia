@@ -41,7 +41,7 @@ class CreateEventoImmediateCompatibilityIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Missa do paroco - imediato",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-09-01T08:00:00Z",
                                   "fim": "2027-09-01T09:00:00Z"
                                 }
@@ -66,7 +66,7 @@ class CreateEventoImmediateCompatibilityIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento conselho - imediato",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-09-02T10:00:00Z",
                                   "fim": "2027-09-02T11:00:00Z"
                                 }
@@ -91,7 +91,7 @@ class CreateEventoImmediateCompatibilityIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento vice-coordenador - imediato",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-09-03T14:00:00Z",
                                   "fim": "2027-09-03T15:00:00Z"
                                 }

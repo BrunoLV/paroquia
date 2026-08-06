@@ -4,10 +4,10 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationExce
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.CreateAtivoPatrimonialRequest;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
-import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoGrupoParoquialPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
@@ -47,29 +47,29 @@ class CreateAtivoPatrimonialUseCaseTest {
     private PatrimonioAuditPublisher auditPublisher;
 
     @Mock
-    private AtivoOrganizacaoPolicy organizacaoPolicy;
+    private AtivoGrupoParoquialPolicy grupoParoquialPolicy;
 
     private CreateAtivoPatrimonialUseCase useCase;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
 
     @BeforeEach
     void setUp() {
         useCase = new CreateAtivoPatrimonialUseCase(repository, actorContextResolver,
-                new PatrimonioAuthorizationService(), organizacaoPolicy, numeroTombamentoGenerator, auditPublisher);
-        organizacaoId = UUID.randomUUID();
+                new PatrimonioAuthorizationService(), grupoParoquialPolicy, numeroTombamentoGenerator, auditPublisher);
+        grupoParoquialId = UUID.randomUUID();
         lenient().when(numeroTombamentoGenerator.generate(anyInt()))
                 .thenReturn("PAT-" + Year.now().getValue() + "-0001");
         lenient().when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
-    void deveCriarAtivoComStatusDisponivelParaCoordenadorDaPropriaOrganizacao() {
+    void deveCriarAtivoComStatusDisponivelParaCoordenadorDaPropriaGrupoParoquial() {
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
-                        organizacaoId, UUID.randomUUID(), null));
+                        grupoParoquialId, UUID.randomUUID(), null));
 
         var response = useCase.execute(new CreateAtivoPatrimonialRequest(
-                "Projetor Epson", AtivoCategoria.ELETRONICO, organizacaoId, true,
+                "Projetor Epson", AtivoCategoria.ELETRONICO, grupoParoquialId, true,
                 LocalDate.now(), BigDecimal.valueOf(2500)));
 
         assertThat(response.status()).isEqualTo(AtivoStatus.DISPONIVEL);
@@ -77,28 +77,28 @@ class CreateAtivoPatrimonialUseCaseTest {
     }
 
     @Test
-    void deveRejeitarCoordenadorCriandoParaOutraOrganizacao() {
+    void deveRejeitarCoordenadorCriandoParaOutraGrupoParoquial() {
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
                         UUID.randomUUID(), UUID.randomUUID(), null));
 
         assertThatThrownBy(() -> useCase.execute(new CreateAtivoPatrimonialRequest(
-                "Projetor Epson", AtivoCategoria.ELETRONICO, organizacaoId, true,
+                "Projetor Epson", AtivoCategoria.ELETRONICO, grupoParoquialId, true,
                 LocalDate.now(), BigDecimal.valueOf(2500))))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 
     @Test
-    void deveRejeitarCriacaoParaOrganizacaoDeTipoInvalido() {
+    void deveRejeitarCriacaoParaGrupoParoquialDeTipoInvalido() {
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
-                        organizacaoId, UUID.randomUUID(), null));
-        doThrow(new AtivoOrganizacaoInvalidaException("tipo inválido"))
-                .when(organizacaoPolicy).assertOrganizacaoProprietariaPermitida(organizacaoId);
+                        grupoParoquialId, UUID.randomUUID(), null));
+        doThrow(new AtivoGrupoParoquialInvalidaException("tipo inválido"))
+                .when(grupoParoquialPolicy).assertGrupoParoquialProprietariaPermitida(grupoParoquialId);
 
         assertThatThrownBy(() -> useCase.execute(new CreateAtivoPatrimonialRequest(
-                "Projetor Epson", AtivoCategoria.ELETRONICO, organizacaoId, true,
+                "Projetor Epson", AtivoCategoria.ELETRONICO, grupoParoquialId, true,
                 LocalDate.now(), BigDecimal.valueOf(2500))))
-                .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
+                .isInstanceOf(AtivoGrupoParoquialInvalidaException.class);
     }
 }

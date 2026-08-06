@@ -12,37 +12,37 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PatrimonioAuthorizationServiceTest {
 
     private final PatrimonioAuthorizationService service = new PatrimonioAuthorizationService();
-    private final UUID organizacaoId = UUID.randomUUID();
+    private final UUID grupoParoquialId = UUID.randomUUID();
 
     @Test
     void deveRejeitarPapelNaoAutorizado() {
         EventoActorContext actor = new EventoActorContext("joao", "membro-pastoral", "PASTORAL",
-                organizacaoId, UUID.randomUUID(), null);
+                grupoParoquialId, UUID.randomUUID(), null);
 
-        assertThatThrownBy(() -> service.assertCanCreate(actor, organizacaoId))
+        assertThatThrownBy(() -> service.assertCanCreate(actor, grupoParoquialId))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 
     @Test
-    void deveRejeitarCoordenadorParaOrganizacaoDiferente() {
+    void deveRejeitarCoordenadorParaGrupoParoquialDiferente() {
         EventoActorContext actor = new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
-                organizacaoId, UUID.randomUUID(), null);
-        UUID outraOrganizacaoId = UUID.randomUUID();
+                grupoParoquialId, UUID.randomUUID(), null);
+        UUID outraGrupoParoquialId = UUID.randomUUID();
 
-        assertThatThrownBy(() -> service.assertCanCreate(actor, outraOrganizacaoId))
+        assertThatThrownBy(() -> service.assertCanCreate(actor, outraGrupoParoquialId))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 
     @Test
-    void devePermitirCoordenadorParaSuaPropriaOrganizacao() {
+    void devePermitirCoordenadorParaSuaPropriaGrupoParoquial() {
         EventoActorContext actor = new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
-                organizacaoId, UUID.randomUUID(), null);
+                grupoParoquialId, UUID.randomUUID(), null);
 
-        assertThatCode(() -> service.assertCanCreate(actor, organizacaoId)).doesNotThrowAnyException();
+        assertThatCode(() -> service.assertCanCreate(actor, grupoParoquialId)).doesNotThrowAnyException();
     }
 
     @Test
-    void devePermitirAdminParaQualquerOrganizacao() {
+    void devePermitirAdminParaQualquerGrupoParoquial() {
         EventoActorContext actor = new EventoActorContext("admin", "admin", "CLERO",
                 null, UUID.randomUUID(), null);
 
@@ -50,7 +50,7 @@ class PatrimonioAuthorizationServiceTest {
     }
 
     @Test
-    void devePermitirParocoParaQualquerOrganizacao() {
+    void devePermitirParocoParaQualquerGrupoParoquial() {
         EventoActorContext actor = new EventoActorContext("paroco", "paroco", "CLERO",
                 UUID.randomUUID(), UUID.randomUUID(), null);
 

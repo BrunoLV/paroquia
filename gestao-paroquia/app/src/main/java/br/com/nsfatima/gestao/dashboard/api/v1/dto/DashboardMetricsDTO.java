@@ -15,7 +15,7 @@ public record DashboardMetricsDTO(
         ResumoGeralDTO resumoGeral,
 
         @Schema(description = "Distribuição de eventos por organização no mês")
-        List<DistribuicaoEventosDTO> eventosPorOrganizacao,
+        List<DistribuicaoEventosDTO> eventosPorGrupoParoquial,
 
         @Schema(description = "Detalhes de execução e progresso dos projetos ativos")
         List<DetalheProjetoDTO> projetosAtivosDetalhes,

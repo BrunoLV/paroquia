@@ -5,9 +5,9 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.VinculoResponse;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,22 +24,22 @@ class ListarVinculosUseCaseTest {
 
     private MembroGrupoJpaRepository vinculoRepository;
     private UsuarioJpaRepository usuarioRepository;
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
     private ListarVinculosUseCase useCase;
 
     @BeforeEach
     void setUp() {
         vinculoRepository = mock(MembroGrupoJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        organizacaoRepository = mock(OrganizacaoJpaRepository.class);
-        useCase = new ListarVinculosUseCase(vinculoRepository, usuarioRepository, organizacaoRepository);
+        grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
+        useCase = new ListarVinculosUseCase(vinculoRepository, usuarioRepository, grupoParoquialRepository);
     }
 
     @Test
     void deveListarVinculosAtivosDoFielDoUsuario() {
         UUID usuarioId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
-        UUID organizacaoId = UUID.randomUUID();
+        UUID grupoParoquialId = UUID.randomUUID();
         UUID igrejaId = UUID.randomUUID();
 
         UsuarioEntity usuario = new UsuarioEntity();
@@ -50,27 +50,27 @@ class ListarVinculosUseCaseTest {
         MembroGrupoEntity vinculo = new MembroGrupoEntity();
         vinculo.setId(UUID.randomUUID());
         vinculo.setFielId(fielId);
-        vinculo.setOrganizacaoId(organizacaoId);
-        vinculo.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        vinculo.setGrupoParoquialId(grupoParoquialId);
+        vinculo.setTipoGrupo(TipoGrupo.PASTORAL);
         vinculo.setPapel("COORD_PASTORAL_LOCAL");
         vinculo.setIgrejaVinculoId(igrejaId);
         vinculo.setAtivo(true);
         when(vinculoRepository.findByFielIdAndAtivoTrue(fielId)).thenReturn(List.of(vinculo));
 
-        OrganizacaoEntity org = new OrganizacaoEntity();
-        org.setId(organizacaoId);
+        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        org.setId(grupoParoquialId);
         org.setNome("Pastoral X");
-        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
+        when(grupoParoquialRepository.findById(grupoParoquialId)).thenReturn(Optional.of(org));
 
-        OrganizacaoEntity igreja = new OrganizacaoEntity();
+        GrupoParoquialEntity igreja = new GrupoParoquialEntity();
         igreja.setId(igrejaId);
         igreja.setNome("Matriz");
-        when(organizacaoRepository.findById(igrejaId)).thenReturn(Optional.of(igreja));
+        when(grupoParoquialRepository.findById(igrejaId)).thenReturn(Optional.of(igreja));
 
         List<VinculoResponse> result = useCase.execute(usuarioId);
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().organizacaoNome()).isEqualTo("Pastoral X");
+        assertThat(result.getFirst().grupoParoquialNome()).isEqualTo("Pastoral X");
         assertThat(result.getFirst().igrejaVinculoNome()).isEqualTo("Matriz");
         assertThat(result.getFirst().papel()).isEqualTo("COORD_PASTORAL_LOCAL");
     }
