@@ -24,11 +24,14 @@ public class UsuarioAuthorizationService {
 
     private final MembroGrupoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
+    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
 
     public UsuarioAuthorizationService(MembroGrupoJpaRepository vinculoRepository,
-                                        UsuarioJpaRepository usuarioRepository) {
+                                        UsuarioJpaRepository usuarioRepository,
+                                        PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
     }
 
     /**
@@ -118,35 +121,6 @@ public class UsuarioAuthorizationService {
         }
     }
 
-    /**
-     * Garante que o ator autenticado tem uma das authorities restritas a quem pode promover um Fiel membro a
-     * uma posição de liderança com criação de login (Pároco, Vigário, Mesa do CPP ou Admin) — usado por
-     * {@code PromoverACoordenadorUseCase}. Diferente de {@link #isAdmin(Authentication)}, também aceita
-     * Vigário e Mesa do CPP.
-     *
-     * @throws AccessDeniedException se não houver autenticação, ou se o ator não tiver nenhuma dessas
-     *                               authorities
-     */
-    public void requireParocoVigarioMesaCppOuAdmin() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Não autenticado");
-        }
-
-        boolean autorizado = auth.getAuthorities().stream().anyMatch(a -> {
-            String authority = a.getAuthority();
-            return "ROLE_ADMIN".equals(authority)
-                    || "ROLE_CLERO_PAROCO".equals(authority)
-                    || "ROLE_CLERO_VIGARIO".equals(authority)
-                    || "ROLE_CPP_MESA_CPP".equals(authority);
-        });
-
-        if (!autorizado) {
-            throw new AccessDeniedException(
-                    "Apenas Pároco, Vigário, Mesa do CPP ou Admin podem promover um Fiel a coordenador");
-        }
-    }
-
     private boolean isCoordinatorRole(String role) {
         if (role == null) {
             return false;
@@ -158,8 +132,13 @@ public class UsuarioAuthorizationService {
     }
 
     private boolean isAdmin(Authentication auth) {
-        return auth.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
+        boolean adminPorAuthority = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (adminPorAuthority) {
+            return true;
+        }
+        UUID actorId = getActorId(auth);
+        return actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId);
     }
 
     private UUID resolveFielId(UUID usuarioId) {

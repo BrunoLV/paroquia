@@ -3,7 +3,8 @@ package br.com.nsfatima.gestao.membro.application.usecase;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
+import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
@@ -12,14 +13,20 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.Membr
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 /**
  * Promove um {@code Fiel} já membro ativo de uma organização a um papel de liderança e, se ele ainda não
  * possuir {@code Usuario}, cria um novo login vinculado a ele — o único ponto do sistema em que a
- * participação pastoral comum "vira" acesso administrativo. Restrito a Pároco, Vigário, Mesa do CPP ou Admin
- * (ver {@link UsuarioAuthorizationService#requireParocoVigarioMesaCppOuAdmin()}).
+ * participação pastoral comum "vira" acesso administrativo. Restrito a quem tem papel global (Pároco,
+ * Vigário, Admin ou Secretaria Paroquial — ver {@link PapelGlobalAuthorizationService}) ou é Mesa do CPP
+ * (papel escopado, fora do domínio de papéis globais).
  */
 @Service
 public class PromoverACoordenadorUseCase {
@@ -29,7 +36,7 @@ public class PromoverACoordenadorUseCase {
     private final OrganizacaoJpaRepository organizacaoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final CreateUsuarioUseCase createUsuarioUseCase;
-    private final UsuarioAuthorizationService authorizationService;
+    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
 
     public PromoverACoordenadorUseCase(
             MembroGrupoJpaRepository membroRepository,
@@ -37,13 +44,13 @@ public class PromoverACoordenadorUseCase {
             OrganizacaoJpaRepository organizacaoRepository,
             UsuarioJpaRepository usuarioRepository,
             CreateUsuarioUseCase createUsuarioUseCase,
-            UsuarioAuthorizationService authorizationService) {
+            PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
         this.membroRepository = membroRepository;
         this.fielRepository = fielRepository;
         this.organizacaoRepository = organizacaoRepository;
         this.usuarioRepository = usuarioRepository;
         this.createUsuarioUseCase = createUsuarioUseCase;
-        this.authorizationService = authorizationService;
+        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
     }
 
     /**
@@ -59,7 +66,7 @@ public class PromoverACoordenadorUseCase {
      */
     @Transactional
     public PromoverACoordenadorResponse execute(PromoverACoordenadorRequest request) {
-        authorizationService.requireParocoVigarioMesaCppOuAdmin();
+        requireGlobalOuMesaCpp();
 
         FielEntity fiel = fielRepository.findById(request.fielId())
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + request.fielId()));
@@ -72,6 +79,7 @@ public class PromoverACoordenadorUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
+        PapelGlobalValidation.rejectIfGlobal(papel);
 
         MembroGrupoEntity membro = membroRepository
                 .findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
@@ -91,5 +99,28 @@ public class PromoverACoordenadorUseCase {
                         request.fielId()));
 
         return new PromoverACoordenadorResponse(membro.getId(), fiel.getId(), usuarioId, usuarioCriado);
+    }
+
+    /**
+     * Restringe a promoção a quem tem papel global (via {@link PapelGlobalAuthorizationService}) ou é Mesa
+     * do CPP — papel escopado, deliberadamente fora do domínio de papéis globais desta track.
+     */
+    private void requireGlobalOuMesaCpp() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AccessDeniedException("Não autenticado");
+        }
+
+        boolean mesaCppOuAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_CPP_MESA_CPP".equals(a.getAuthority()) || "ROLE_ADMIN".equals(a.getAuthority()));
+        if (mesaCppOuAdmin) {
+            return;
+        }
+
+        UUID actorId = auth.getPrincipal() instanceof UsuarioDetails details ? details.getUsuarioId() : null;
+        if (actorId == null || !papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)) {
+            throw new AccessDeniedException(
+                    "Apenas Pároco, Vigário, Mesa do CPP, Admin ou Secretaria Paroquial podem promover um Fiel");
+        }
     }
 }

@@ -77,6 +77,28 @@ public class LeitorVinculoExterno {
         return roles;
     }
 
+    /**
+     * Consulta os papéis globais ativos do Fiel do usuário informado (ver track
+     * {@code roles_globais_vs_escopo}), retornando os códigos armazenados em {@code papel_global.papel}
+     * (ex.: {@code "paroco"}, {@code "vigario"}) — o chamador normaliza para o formato de authority.
+     *
+     * @param userId identificador do usuário
+     * @return lista de códigos de papel global ativos; vazia se o usuário não tiver nenhum
+     */
+    @Transactional(readOnly = true)
+    public List<String> findPapeisGlobaisAtivos(UUID userId) {
+        return jdbcTemplate.query(
+                """
+                        SELECT pg.papel
+                        FROM calendario.papel_global pg
+                        JOIN calendario.usuarios u ON u.fiel_id = pg.fiel_id
+                        WHERE u.id = ?
+                          AND pg.ativo = TRUE
+                        """,
+                (rs, rowNum) -> rs.getString("papel"),
+                userId);
+    }
+
     private Vinculo mapVinculo(ResultSet rs, int rowNum) throws SQLException {
         String igrejaVinculoStr = rs.getString("igreja_vinculo_id");
         UUID igrejaVinculoId = igrejaVinculoStr == null ? null : UUID.fromString(igrejaVinculoStr);

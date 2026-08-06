@@ -10,7 +10,7 @@ public class FakeEventoActorContextResolver extends EventoActorContextResolver {
     private EventoActorContext context;
 
     public FakeEventoActorContextResolver() {
-        super(null);
+        super(null, null);
         this.context = new EventoActorContext(
                 "fake-actor",
                 "tester",

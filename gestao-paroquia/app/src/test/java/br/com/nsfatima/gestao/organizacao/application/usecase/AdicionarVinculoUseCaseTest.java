@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -41,6 +42,7 @@ class AdicionarVinculoUseCaseTest {
 
     private MembroGrupoJpaRepository vinculoRepository;
     private UsuarioJpaRepository usuarioRepository;
+    private PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private AdicionarVinculoUseCase useCase;
     private SecurityContext originalContext;
 
@@ -50,8 +52,10 @@ class AdicionarVinculoUseCaseTest {
     void setUp() {
         vinculoRepository = mock(MembroGrupoJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
+        papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
         organizacaoRepository = mock(OrganizacaoJpaRepository.class);
-        useCase = new AdicionarVinculoUseCase(vinculoRepository, usuarioRepository, organizacaoRepository);
+        useCase = new AdicionarVinculoUseCase(vinculoRepository, usuarioRepository, organizacaoRepository,
+                papelGlobalAuthorizationService);
         originalContext = SecurityContextHolder.getContext();
 
         var defaultIgreja = new OrganizacaoEntity();
@@ -139,6 +143,7 @@ class AdicionarVinculoUseCaseTest {
         UUID usuarioId = UUID.randomUUID();
         UUID organizacaoId = UUID.randomUUID();
         mockUsuarioComFiel(usuarioId);
+        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(any())).thenReturn(true);
         when(vinculoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() ->

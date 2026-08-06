@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
+import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -39,11 +41,14 @@ public class AdicionarVinculoUseCase {
     private final MembroGrupoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
+    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
 
     public AdicionarVinculoUseCase(
             MembroGrupoJpaRepository vinculoRepository,
             UsuarioJpaRepository usuarioRepository,
-            OrganizacaoJpaRepository organizacaoRepository) {
+            OrganizacaoJpaRepository organizacaoRepository,
+            PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
+        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.organizacaoRepository = organizacaoRepository;
@@ -95,7 +100,9 @@ public class AdicionarVinculoUseCase {
         }
 
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
-        boolean isParoco = auth.getAuthorities().stream().anyMatch(a -> "ROLE_CLERO_PAROCO".equals(a.getAuthority()));
+        UUID actorId = auth.getPrincipal() instanceof UsuarioDetails details ? details.getUsuarioId() : null;
+        boolean isGlobal = isAdmin
+                || (actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId));
 
         // Regra de hierarquia: liderança de CONSELHO / CPP / CPC / CONSELHO_ECONOMICO
         // só pode ser definida por PAROCO ou ADMIN
@@ -108,7 +115,7 @@ public class AdicionarVinculoUseCase {
                 || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
                 || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
                 || papel == PapelOrganizacional.COORD_PASTORAL)) {
-            if (!isAdmin && !isParoco) {
+            if (!isGlobal) {
                 throw new AccessDeniedException(
                         "Apenas o Pároco ou Admin podem definir coordenador e vice do Conselho");
             }

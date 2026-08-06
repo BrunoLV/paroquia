@@ -70,6 +70,7 @@ public class UpdateMembroUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
+        PapelGlobalValidation.rejectIfGlobal(papel);
 
         repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
                 .ifPresent(existing -> {

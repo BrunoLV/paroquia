@@ -31,6 +31,15 @@ class UsuarioControllerSecurityIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "GLOBAL_VIGARIO")
+    void devePermitirVigarioComPapelGlobalParaAcessoUsuarios() throws Exception {
+        // Regressão do gap identificado na track roles_globais_vs_escopo: antes da correção do FR5, este
+        // @PreAuthorize só reconhecia ROLE_ADMIN/ROLE_CLERO_PAROCO, barrando um Vigário com papel_global.
+        mockMvc.perform(get("/api/v1/usuarios"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void deveExigirAuthParaAcessoUsuarios() throws Exception {
         mockMvc.perform(get("/api/v1/usuarios").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
