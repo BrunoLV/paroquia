@@ -40,7 +40,7 @@ public class EventoEntity extends BaseVersionedEntity {
     @Column(length = 4000)
     private String descricao;
 
-    @Column(name = "grupoParoquial_responsavel_id", nullable = false)
+    @Column(name = "grupo_paroquial_responsavel_id", nullable = false)
     private UUID grupoParoquialResponsavelId;
 
     @Column(name = "inicio_utc", nullable = false)

@@ -36,7 +36,7 @@ public class ProjetoEventoEntity extends BaseVersionedEntity {
     @Column(nullable = false, length = 32)
     private ProjetoStatus status = ProjetoStatus.ABERTO;
 
-    @Column(name = "grupoParoquial_responsavel_id")
+    @Column(name = "grupo_paroquial_responsavel_id")
     private UUID grupoParoquialResponsavelId;
 
     @Column(name = "inicio_utc")

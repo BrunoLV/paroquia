@@ -37,10 +37,10 @@ public class AtivoAlocacaoEntity extends BaseVersionedEntity {
     @Column(name = "evento_id")
     private UUID eventoId;
 
-    @Column(name = "grupoParoquial_origem_id", nullable = false)
+    @Column(name = "grupo_paroquial_origem_id", nullable = false)
     private UUID grupoParoquialOrigemId;
 
-    @Column(name = "grupoParoquial_destino_id")
+    @Column(name = "grupo_paroquial_destino_id")
     private UUID grupoParoquialDestinoId;
 
     @Column(nullable = false)

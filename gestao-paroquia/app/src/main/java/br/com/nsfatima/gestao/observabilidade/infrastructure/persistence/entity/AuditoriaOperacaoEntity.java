@@ -31,7 +31,7 @@ public class AuditoriaOperacaoEntity {
     @Id
     private UUID id;
 
-    @Column(name = "grupoParoquial_id", nullable = false)
+    @Column(name = "grupo_paroquial_id", nullable = false)
     private UUID grupoParoquialId;
 
     @Column(name = "evento_id")

@@ -29,7 +29,7 @@ public class EventoEnvolvidoEntity {
     private UUID eventoId;
 
     @Id
-    @Column(name = "grupoParoquial_id")
+    @Column(name = "grupo_paroquial_id")
     private UUID grupoParoquialId;
 
     /** Papel desta organização na realização do evento: responsável principal ou apenas apoio. */

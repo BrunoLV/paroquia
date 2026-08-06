@@ -41,7 +41,7 @@ public class LocalEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean ativo = true;
 
-    @Column(name = "grupoParoquial_id")
+    @Column(name = "grupo_paroquial_id")
     private UUID grupoParoquialId;
 
     public UUID getId() {

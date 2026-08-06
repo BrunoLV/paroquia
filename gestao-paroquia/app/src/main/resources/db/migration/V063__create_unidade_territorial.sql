@@ -14,5 +14,4 @@ CREATE TABLE IF NOT EXISTS calendario.unidade_territorial (
 INSERT INTO calendario.unidade_territorial (id, nome, tipo, contato, ativo, parent_id, version)
 SELECT id, nome, tipo, contato, ativo, parent_id, version
 FROM calendario.organizacoes
-WHERE tipo IN ('CLERO', 'MATRIZ', 'COMUNIDADE')
-ON CONFLICT (id) DO NOTHING;
+WHERE tipo IN ('CLERO', 'MATRIZ', 'COMUNIDADE');

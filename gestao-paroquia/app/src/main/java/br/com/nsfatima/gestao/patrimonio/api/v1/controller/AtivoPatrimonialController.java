@@ -108,7 +108,7 @@ public class AtivoPatrimonialController {
      * @param grupoParoquialId organização dona dos ativos
      * @return ativos cadastrados para a organização
      */
-    @GetMapping("/grupoParoquial/{grupoParoquialId}")
+    @GetMapping("/organizacao/{grupoParoquialId}")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o inventário de ativos patrimoniais de uma organização")
     public List<AtivoPatrimonialResponse> listByGrupoParoquial(@PathVariable UUID grupoParoquialId) {

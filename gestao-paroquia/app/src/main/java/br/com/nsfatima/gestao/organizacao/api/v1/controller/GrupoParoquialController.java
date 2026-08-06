@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * com base no nome/username informado em texto livre, via {@link AdicionarVinculoUseCase}.
  */
 @RestController
-@RequestMapping("/api/v1/grupo_paroquial")
+@RequestMapping("/api/v1/organizacoes")
 @Tag(name = "Organizations", description = "Management of parish organizations (Pastorals, Movements, etc.)")
 public class GrupoParoquialController {
 

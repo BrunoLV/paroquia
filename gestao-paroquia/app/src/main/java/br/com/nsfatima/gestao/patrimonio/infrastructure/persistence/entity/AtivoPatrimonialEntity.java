@@ -46,7 +46,7 @@ public class AtivoPatrimonialEntity extends BaseVersionedEntity {
     @Column(nullable = false)
     private boolean reservavel;
 
-    @Column(name = "grupoParoquial_id", nullable = false)
+    @Column(name = "grupo_paroquial_id", nullable = false)
     private UUID grupoParoquialId;
 
     @Column(name = "data_aquisicao")
