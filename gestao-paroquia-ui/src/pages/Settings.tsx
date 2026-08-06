@@ -60,13 +60,14 @@ import {
     adicionarVinculo,
     AdicionarVinculoRequest,
     approveUsuario,
+    createUsuario,
+    CreateUsuarioRequest,
     getVinculos,
     getUsuarios,
-    registrarUsuario,
-    RegistrarUsuarioRequest,
     removerVinculo,
     Usuario
 } from '../api/usuarios';
+import {getFieis} from '../api/fieis';
 import {
     createPastoralOficial,
     deletePastoralOficial,
@@ -149,16 +150,9 @@ const Settings = () => {
   // Admin user registration states
   const [isAdminRegisterModalOpen, setIsAdminRegisterModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [adminRegisterNome, setAdminRegisterNome] = useState('');
+  const [adminRegisterFielId, setAdminRegisterFielId] = useState('');
   const [adminRegisterUsername, setAdminRegisterUsername] = useState('');
   const [adminRegisterPassword, setAdminRegisterPassword] = useState('');
-  const [adminRegisterTelefone, setAdminRegisterTelefone] = useState('');
-  const [adminRegisterDataNascimento, setAdminRegisterDataNascimento] = useState('');
-  const [adminRegisterChurchId, setAdminRegisterChurchId] = useState('');
-  const [adminRegisterBatizado, setAdminRegisterBatizado] = useState(false);
-  const [adminRegisterPrimeiraComunhao, setAdminRegisterPrimeiraComunhao] = useState(false);
-  const [adminRegisterCrismado, setAdminRegisterCrismado] = useState(false);
-  const [adminRegisterCasadoIgrejaCatolica, setAdminRegisterCasadoIgrejaCatolica] = useState(false);
 
 
   // Catalog states
@@ -344,28 +338,24 @@ const Settings = () => {
     },
   });
 
+  const { data: fieisList = [] } = useQuery({
+    queryKey: ['fieis'],
+    queryFn: getFieis,
+    enabled: isAdminRegisterModalOpen,
+  });
+
   const registerUserMutation = useMutation({
-    mutationFn: (request: RegistrarUsuarioRequest) => registrarUsuario(request),
+    mutationFn: (request: CreateUsuarioRequest) => createUsuario(request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      showSuccess('Membro cadastrado com sucesso!');
+      showSuccess('Usuário cadastrado com sucesso!');
       setIsAdminRegisterModalOpen(false);
-      // Reset fields
-      setAdminRegisterNome('');
+      setAdminRegisterFielId('');
       setAdminRegisterUsername('');
       setAdminRegisterPassword('');
-      setAdminRegisterTelefone('');
-      setAdminRegisterDataNascimento('');
-      setAdminRegisterChurchId('');
-      setAdminRegisterBatizado(false);
-      setAdminRegisterPrimeiraComunhao(false);
-      setAdminRegisterCrismado(false);
-      setAdminRegisterCasadoIgrejaCatolica(false);
     },
-
     onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao cadastrar membro.';
+      const errMsg = error.response?.data?.message || 'Erro ao cadastrar usuário.';
       showError(errMsg);
     },
   });
@@ -1518,7 +1508,7 @@ const Settings = () => {
                             color="error"
                             size="small"
                             startIcon={<DeleteIcon />}
-                            onClick={() => removeMembroOrgMutation.mutate({ userId: m.usuarioId, vinculoId: m.vinculoId })}
+                            onClick={() => removeMembroOrgMutation.mutate({ userId: m.usuarioId || m.fielId || '', vinculoId: m.vinculoId })}
                             disabled={removeMembroOrgMutation.isPending}
                             sx={{ textTransform: 'none' }}
                           >
@@ -1670,37 +1660,40 @@ const Settings = () => {
         open={isAdminRegisterModalOpen}
         onClose={() => {
           setIsAdminRegisterModalOpen(false);
-          setAdminRegisterNome('');
+          setAdminRegisterFielId('');
           setAdminRegisterUsername('');
           setAdminRegisterPassword('');
-          setAdminRegisterTelefone('');
-          setAdminRegisterDataNascimento('');
-          setAdminRegisterChurchId('');
         }}
         maxWidth="sm"
         fullWidth
       >
         <DialogTitle>
-          Cadastrar Novo Usuário / Membro
+          Cadastrar Novo Usuário (IAM)
         </DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-            <TextField
-              required
-              fullWidth
-              size="small"
-              id="adminRegisterNome"
-              label="Nome Completo"
-              name="adminRegisterNome"
-              value={adminRegisterNome}
-              onChange={(e) => setAdminRegisterNome(e.target.value)}
-            />
+            <FormControl fullWidth required size="small">
+              <InputLabel id="admin-reg-fiel-label">Selecionar Fiel</InputLabel>
+              <Select
+                labelId="admin-reg-fiel-label"
+                id="admin-reg-fiel"
+                value={adminRegisterFielId}
+                label="Selecionar Fiel"
+                onChange={(e) => setAdminRegisterFielId(e.target.value)}
+              >
+                {fieisList.map((fiel) => (
+                  <MenuItem key={fiel.id} value={fiel.id}>
+                    {fiel.nome} — CPF: {fiel.cpf}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               required
               fullWidth
               size="small"
               id="adminRegisterUsername"
-              label="E-mail"
+              label="Nome de Usuário / E-mail de Login"
               name="adminRegisterUsername"
               type="email"
               value={adminRegisterUsername}
@@ -1717,103 +1710,15 @@ const Settings = () => {
               value={adminRegisterPassword}
               onChange={(e) => setAdminRegisterPassword(e.target.value)}
             />
-            <TextField
-              required
-              fullWidth
-              size="small"
-              id="adminRegisterTelefone"
-              label="Telefone"
-              name="adminRegisterTelefone"
-              value={adminRegisterTelefone}
-              onChange={(e) => setAdminRegisterTelefone(e.target.value)}
-            />
-            <TextField
-              required
-              fullWidth
-              size="small"
-              id="adminRegisterDataNascimento"
-              label="Data de Nascimento"
-              name="adminRegisterDataNascimento"
-              type="date"
-              slotProps={{ inputLabel: { shrink: true } }}
-              value={adminRegisterDataNascimento}
-              onChange={(e) => setAdminRegisterDataNascimento(e.target.value)}
-            />
-            <FormControl fullWidth required size="small">
-              <InputLabel id="admin-reg-church-label">Igreja / Comunidade</InputLabel>
-              <Select
-                labelId="admin-reg-church-label"
-                id="admin-reg-church"
-                value={adminRegisterChurchId}
-                label="Igreja / Comunidade"
-                onChange={(e) => setAdminRegisterChurchId(e.target.value)}
-              >
-                {orgs
-                  .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
-                  .map((o) => (
-                    <MenuItem key={o.id} value={o.id}>
-                      {o.nome} ({o.tipo === 'MATRIZ' ? 'Matriz' : 'Comunidade'})
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-            <Typography variant="subtitle2" sx={{ mt: 1, fontWeight: 600 }}>
-              Indicadores Sacramentais
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={adminRegisterBatizado}
-                    onChange={(e) => setAdminRegisterBatizado(e.target.checked)}
-                  />
-                }
-                label="Batizado"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={adminRegisterPrimeiraComunhao}
-                    onChange={(e) => setAdminRegisterPrimeiraComunhao(e.target.checked)}
-                  />
-                }
-                label="1ª Comunhão"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={adminRegisterCrismado}
-                    onChange={(e) => setAdminRegisterCrismado(e.target.checked)}
-                  />
-                }
-                label="Crismado"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={adminRegisterCasadoIgrejaCatolica}
-                    onChange={(e) => setAdminRegisterCasadoIgrejaCatolica(e.target.checked)}
-                  />
-                }
-                label="Casado na Igreja"
-              />
-            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button
             onClick={() => {
               setIsAdminRegisterModalOpen(false);
-              setAdminRegisterNome('');
+              setAdminRegisterFielId('');
               setAdminRegisterUsername('');
               setAdminRegisterPassword('');
-              setAdminRegisterTelefone('');
-              setAdminRegisterDataNascimento('');
-              setAdminRegisterChurchId('');
-              setAdminRegisterBatizado(false);
-              setAdminRegisterPrimeiraComunhao(false);
-              setAdminRegisterCrismado(false);
-              setAdminRegisterCasadoIgrejaCatolica(false);
             }}
             color="secondary"
             startIcon={<CloseIcon />}
@@ -1825,32 +1730,21 @@ const Settings = () => {
             color="primary"
             startIcon={registerUserMutation.isPending ? undefined : <SaveIcon />}
             disabled={
-              !adminRegisterNome.trim() ||
+              !adminRegisterFielId ||
               !adminRegisterUsername.trim() ||
               !adminRegisterPassword ||
-              !adminRegisterTelefone.trim() ||
-              !adminRegisterDataNascimento ||
-              !adminRegisterChurchId ||
               registerUserMutation.isPending
             }
             onClick={() => {
               registerUserMutation.mutate({
-                nome: adminRegisterNome,
+                fielId: adminRegisterFielId,
                 username: adminRegisterUsername,
                 password: adminRegisterPassword,
-                telefone: adminRegisterTelefone,
-                dataNascimento: adminRegisterDataNascimento,
-                igrejaId: adminRegisterChurchId,
-                batizado: adminRegisterBatizado,
-                primeiraComunhao: adminRegisterPrimeiraComunhao,
-                crismado: adminRegisterCrismado,
-                casadoIgrejaCatolica: adminRegisterCasadoIgrejaCatolica,
               });
             }}
             sx={{ fontWeight: 600 }}
           >
-
-            {registerUserMutation.isPending ? 'Cadastrando...' : 'Cadastrar'}
+            {registerUserMutation.isPending ? 'Cadastrando...' : 'Cadastrar Usuário'}
           </Button>
         </DialogActions>
       </Dialog>

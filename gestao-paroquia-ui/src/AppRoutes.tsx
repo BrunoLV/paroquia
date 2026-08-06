@@ -11,6 +11,7 @@ import Settings from './pages/Settings';
 import Organograma from './pages/Organograma';
 import Reports from './pages/Reports';
 import ConselhosAtas from './pages/ConselhosAtas';
+import Fieis from './pages/Fieis';
 import Layout from './components/Layout';
 import {useAuth} from './auth/AuthContext';
 import {canApprove, canManageAnoParoquial, canManageLocais} from './auth/permissions';
@@ -43,6 +44,7 @@ const AppRoutes = () => {
               <Routes>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="calendar" element={<Calendar />} />
+                <Route path="fieis" element={<Fieis />} />
                 <Route path="organograma" element={<Organograma />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="conselhos" element={<ConselhosAtas />} />

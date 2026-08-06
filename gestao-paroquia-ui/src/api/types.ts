@@ -8,6 +8,60 @@ export type TipoOrganismoParoquial =
   | 'MOVIMENTO'
   | 'OUTRO';
 
+export type Vocacao = 'LEIGO' | 'SACERDOTE' | 'DIACONO' | 'RELIGIOSO';
+
+export const VOCACAO_LABELS: Record<Vocacao, string> = {
+  LEIGO: 'Leigo(a)',
+  SACERDOTE: 'Sacerdote',
+  DIACONO: 'Diácono',
+  RELIGIOSO: 'Religioso(a)',
+};
+
+export interface Fiel {
+  id: string;
+  nome: string;
+  cpf: string;
+  dataNascimento: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  vocacao: Vocacao;
+  ativo: boolean;
+  batizado: boolean;
+  primeiraComunhao: boolean;
+  crismado: boolean;
+  casadoIgrejaCatolica: boolean;
+}
+
+export interface CreateFielPayload {
+  nome: string;
+  cpf: string;
+  dataNascimento: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  vocacao: Vocacao;
+  batizado?: boolean;
+  primeiraComunhao?: boolean;
+  crismado?: boolean;
+  casadoIgrejaCatolica?: boolean;
+}
+
+export interface UpdateFielPayload {
+  nome?: string;
+  cpf?: string;
+  dataNascimento?: string;
+  email?: string;
+  telefone?: string;
+  endereco?: string;
+  vocacao?: Vocacao;
+  ativo?: boolean;
+  batizado?: boolean;
+  primeiraComunhao?: boolean;
+  crismado?: boolean;
+  casadoIgrejaCatolica?: boolean;
+}
+
 export type SetorPastoral =
   | 'SANTIFICACAO_LITURGIA'
   | 'FORMACAO_ENSINAR'

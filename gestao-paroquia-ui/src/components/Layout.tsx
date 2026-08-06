@@ -29,6 +29,7 @@ import {
     Inventory as InventoryIcon,
     Logout as LogoutIcon,
     Menu as MenuIcon,
+    People as PeopleIcon,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -64,6 +65,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const menuItems = [
     { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
     { label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
+    { label: 'Fiéis', path: '/fieis', icon: <PeopleIcon /> },
     { label: 'Projetos', path: '/projects', icon: <WorkIcon /> },
     { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon /> },
     { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
