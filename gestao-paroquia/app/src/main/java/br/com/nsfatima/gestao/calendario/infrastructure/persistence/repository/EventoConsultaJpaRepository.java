@@ -112,17 +112,18 @@ public interface EventoConsultaJpaRepository {
      * @return nomes distintos das organizações envolvidas no projeto informado
      */
     @Query(value = """
-            SELECT DISTINCT o.nome
+            SELECT DISTINCT COALESCE(gp.nome, ut.nome) as nome
             FROM (
-                SELECT grupoParoquial_responsavel_id as org_id FROM calendario.projetos_eventos WHERE id = :projetoId
+                SELECT grupo_paroquial_responsavel_id as org_id FROM calendario.projetos_eventos WHERE id = :projetoId
                 UNION
-                SELECT grupoParoquial_responsavel_id FROM calendario.eventos WHERE projeto_id = :projetoId
+                SELECT grupo_paroquial_responsavel_id FROM calendario.eventos WHERE projeto_id = :projetoId
                 UNION
-                SELECT ee.grupoParoquial_id FROM calendario.eventos_envolvidos ee
+                SELECT ee.grupo_paroquial_id FROM calendario.eventos_envolvidos ee
                 JOIN calendario.eventos e ON ee.evento_id = e.id
                 WHERE e.projeto_id = :projetoId
             ) involved
-            JOIN calendario.organizacoes o ON involved.org_id = o.id
+            LEFT JOIN calendario.grupo_paroquial gp ON involved.org_id = gp.id
+            LEFT JOIN calendario.unidade_territorial ut ON involved.org_id = ut.id
             """, nativeQuery = true)
     List<String> findInvolvedOrganizationNames(@Param("projetoId") UUID projetoId);
 

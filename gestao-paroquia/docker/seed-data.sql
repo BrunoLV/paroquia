@@ -66,25 +66,30 @@ VALUES
     ('50000000-0000-0000-0000-000000000110', 'Oficinas de Oração e Vida', 'MOVIMENTO', 0)
 ON CONFLICT (id) DO NOTHING;
 
--- Organizations (Organizacoes)
-INSERT INTO calendario.organizacoes (id, nome, tipo, contato, coordenador, vice_coordenador, ativo, parent_id, pastoral_oficial_id, version)
-VALUES 
-    -- Raízes (parent = NULL)
-    ('00000000-0000-0000-0000-000000000001', 'Paróquia Nossa Senhora de Fátima', 'CLERO', 'contato@nsfatima.com', 'Pedro da Silva (Padre)', 'João Batista (Vigário)', TRUE, NULL, NULL, 0),
-    ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', 'Pedro da Silva (Padre)', 'João Batista (Vigário)', TRUE, NULL, NULL, 0),
-    -- Filhos do Clero Paroquial
-    ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000dd', NULL, 0),
-    ('00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000dd', NULL, 0),
-    ('00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000dd', NULL, 0),
-    -- Conselhos Paroquiais (filhos da Igreja Matriz)
-    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO_PASTORAL', 'cpp@nsfatima.com', 'Maria do Conselho', 'José do Conselho', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
-    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO_ECONOMICO', 'economico@nsfatima.com', 'Pedro Finanças', 'Ana Administração', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
-    -- Conselhos Comunitários (filhos das Comunidades)
-    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO_PASTORAL', 'cpc.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO_ECONOMICO', 'cec.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO_PASTORAL', 'cpc.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
-    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO_ECONOMICO', 'cec.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
-    -- Pastorais Paroquiais (filhas do CPP)
+-- Hierarquia territorial (UnidadeTerritorial): Clero -> Matriz/Comunidades. Desde a track
+-- linguagem_ubiqua_dominio, CLERO/MATRIZ/COMUNIDADE não são mais GrupoParoquial.
+INSERT INTO calendario.unidade_territorial (id, nome, tipo, contato, ativo, parent_id, version)
+VALUES
+    ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', TRUE, NULL, 0),
+    ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
+    ('00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
+    ('00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0)
+ON CONFLICT (id) DO NOTHING;
+
+-- Grupos Paroquiais (Conselhos/Pastorais/Movimentos). Conselhos têm organização-mãe diretamente na
+-- UnidadeTerritorial (Matriz/Comunidade); Pastorais têm organização-mãe um Conselho. Os antigos 4 tipos de
+-- conselho (CONSELHO_PASTORAL/CONSELHO_ECONOMICO/CPP/CPC) colapsaram em um único tipo CONSELHO.
+INSERT INTO calendario.grupo_paroquial (id, nome, tipo, contato, coordenador, vice_coordenador, ativo, parent_id, pastoral_oficial_id, version)
+VALUES
+    -- Conselhos Paroquiais (organização-mãe: Igreja Matriz)
+    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', 'Maria do Conselho', 'José do Conselho', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
+    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO', 'economico@nsfatima.com', 'Pedro Finanças', 'Ana Administração', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
+    -- Conselhos Comunitários (organização-mãe: cada Comunidade)
+    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO', 'cpc.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
+    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO', 'cec.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
+    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO', 'cpc.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO', 'cec.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    -- Pastorais Paroquiais (organização-mãe: CPP)
     ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
     ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', 'Pedro Junior', 'Lucas dos Santos', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000012', 0),
     ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', 'Maria Oliveira', 'Lúcia de Oliveira', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000021', 0),
@@ -96,9 +101,9 @@ VALUES
     ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
 ON CONFLICT (id) DO NOTHING;
 
--- Locations (Locais)
-INSERT INTO calendario.locais (id, nome, tipo, capacidade, ativo, organizacao_id, version)
-VALUES 
+-- Locations (Locais) — sempre vinculadas a uma UnidadeTerritorial (Matriz/Comunidade)
+INSERT INTO calendario.locais (id, nome, tipo, capacidade, ativo, grupo_paroquial_id, version)
+VALUES
     ('00000000-0000-0000-0000-000000000001', 'Igreja Principal', 'IGREJA', 500, TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-000000000002', 'Salão Paroquial', 'SALAO', 300, TRUE, '00000000-0000-0000-0000-000000000100', 0),
     ('00000000-0000-0000-0000-000000000003', 'Sala de Catequese 1', 'SALA', 30, TRUE, '00000000-0000-0000-0000-000000000100', 0),
@@ -151,27 +156,35 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 
--- Vínculos Fiel-Organização (membro_grupo): chaveados por fiel_id, nunca por usuario_id — um Fiel pode ter
--- vínculo sem nunca ter tido Usuario. Os fiel_id abaixo correspondem ao fiel_id de cada usuario inserido acima.
-INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, igreja_vinculo_id, ativo, criado_em_utc, atualizado_em_utc)
+-- Papéis Globais (Pároco/Vigário): desde a track roles_globais_vs_escopo, acesso irrestrito não é mais
+-- modelado como vínculo em membro_grupo com organização CLERO (que nem existe mais como GrupoParoquial) — é
+-- um papel_global por Fiel, independente de organização.
+INSERT INTO calendario.papel_global (id, fiel_id, papel, ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por)
 VALUES
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000dd', 'CLERO', 'paroco', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-0000000000dd', 'CLERO', 'vigario', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO_PASTORAL', 'mesa-diretora-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO_PASTORAL', 'membro-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO_PASTORAL', 'membro-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000001', 'paroco', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000006', 'vigario', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
+ON CONFLICT DO NOTHING;
+
+-- Vínculos Fiel-GrupoParoquial (membro_grupo): chaveados por fiel_id, nunca por usuario_id — um Fiel pode ter
+-- vínculo sem nunca ter tido Usuario. Os fiel_id abaixo correspondem ao fiel_id de cada usuario inserido acima.
+-- Os antigos 4 tipos de conselho colapsaram em CONSELHO (track linguagem_ubiqua_dominio).
+INSERT INTO calendario.membro_grupo (id, fiel_id, grupo_paroquial_id, tipo_grupo, papel, igreja_vinculo_id, ativo, criado_em_utc, atualizado_em_utc)
+VALUES
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'mesa-diretora-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'membro-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'membro-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'coordenador-pastoral-global', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000003a1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000099', 'CONSELHO_ECONOMICO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    -- Escopo direto na Comunidade (organizacao_id = Santo Agostinho), não no conselho — necessário para
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000099', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000099', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    -- Escopo direto na Comunidade (grupo_paroquial_id = Santo Agostinho), não no conselho — necessário para
     -- a checagem de autorização de empréstimo de ativos, que compara o contexto do ator diretamente
     -- contra a organização dona do ativo.
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000300', 'CONSELHO_PASTORAL', 'presidente-cpc', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000300', 'CONSELHO', 'presidente-cpc', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 
 ON CONFLICT DO NOTHING;
 
@@ -184,14 +197,14 @@ VALUES
 ON CONFLICT (ano) DO UPDATE SET status = EXCLUDED.status, data_fechamento_utc = EXCLUDED.data_fechamento_utc;
 
 -- Projects (Projetos)
-INSERT INTO calendario.projetos_eventos (id, nome, descricao, status, organizacao_responsavel_id, inicio_utc, fim_utc, version)
+INSERT INTO calendario.projetos_eventos (id, nome, descricao, status, grupo_paroquial_responsavel_id, inicio_utc, fim_utc, version)
 VALUES 
     ('30000000-0000-0000-0000-000000000001', 'Catequese 2026', 'Ano letivo da catequese infantil', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000ee', '2026-02-01T00:00:00Z', '2026-12-15T23:59:59Z', 0),
     ('30000000-0000-0000-0000-000000000002', 'Festividades de Maio', 'Mês de Nossa Senhora', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000dd', '2026-05-01T00:00:00Z', '2026-05-31T23:59:59Z', 0),
     ('30000000-0000-0000-0000-000000000003', 'Reforma da Matriz', 'Reforma e pintura da Igreja Principal', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000dd', '2026-01-01T00:00:00Z', '2026-06-20T23:59:59Z', 0);
 
 -- Events (Eventos)
-INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version)
 VALUES 
     ('40000000-0000-0000-0000-000000000001', 'Missa de Abertura da Catequese', 'Missa com pais e alunos', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-09-07T18:00:00Z', '2026-09-07T19:30:00Z', '30000000-0000-0000-0000-000000000001', 0),
     ('40000000-0000-0000-0000-000000000003', 'Encontro de Formação - Catequistas', 'Formação litúrgica', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'CONFIRMADO', '2026-06-10T19:30:00Z', '2026-06-10T21:00:00Z', '30000000-0000-0000-0000-000000000001', 0),
@@ -215,12 +228,12 @@ VALUES
     ('40000000-0000-0000-0000-000000000204', 'Encontro Comunitário de Agosto - São José', 'Encontro mensal da comunidade', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-08-25T18:00:00Z', '2026-08-26T22:00:00Z', NULL, 0);
 
 -- Event with Extra Status
-INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version)
 VALUES 
     ('40000000-0000-0000-0000-000000000002', 'Reunião Extraordinária Pascom', 'Urgência na cobertura do evento x', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000003', 'ADMINISTRATIVO', 'ADICIONADO_EXTRA', '2026-09-10T20:00:00Z', '2026-09-10T21:00:00Z', 'Necessidade de planejar live de última hora', 0);
 
 -- Recurring Events instances (Insert base event instance first with NULL recorrencia_id to satisfy FK)
-INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
 VALUES 
     ('40000000-0000-0000-0000-000000000101', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-12T09:00:00Z', '2026-09-12T10:30:00Z', '30000000-0000-0000-0000-000000000001', NULL, 0);
 
@@ -235,7 +248,7 @@ SET recorrencia_id = '50000000-0000-0000-0000-000000000001'
 WHERE id = '40000000-0000-0000-0000-000000000101';
 
 -- Insert remaining recurring instances referencing recorrencia_id
-INSERT INTO calendario.eventos (id, titulo, descricao, organizacao_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
 VALUES 
     ('40000000-0000-0000-0000-000000000102', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-19T09:00:00Z', '2026-09-19T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0);
 
@@ -248,12 +261,12 @@ INSERT INTO calendario.aprovacoes (
     (
         '60000000-0000-0000-0000-000000000001', NULL, 'CRIACAO_EVENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T12:00:00Z', 
         NULL, 'maria.catequese', NULL, NULL, 
-        '{"idempotencyKey": "idemp-0000-000000000001", "titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-09-15T08:00:00Z", "fim": "2026-09-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade.", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', NULL, 0
+        '{"idempotencyKey": "idemp-0000-000000000001", "titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-09-15T08:00:00Z", "fim": "2026-09-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade.", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001', 'EDICAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-05-25T13:00:00Z', 
         NULL, 'joao.liturgia', NULL, NULL, 
-        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-09-07T17:00:00Z", "fim": "2026-09-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
+        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-09-07T17:00:00Z", "fim": "2026-09-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000101', 'CANCELAMENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T14:00:00Z', 
@@ -263,17 +276,17 @@ INSERT INTO calendario.aprovacoes (
     (
         '60000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000001', 'CRIACAO_EVENTO', 'PAROCO', 'APROVADA', '2026-01-15T08:00:00Z', 
         '2026-01-16T09:00:00Z', 'padre.pedro', '10000000-0000-0000-0000-000000000001', 'Missa importante, autorizada.', 
-        '{"idempotencyKey": "idemp-0000-000000000004", "titulo": "Missa de Abertura da Catequese", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', NULL, 0
+        '{"idempotencyKey": "idemp-0000-000000000004", "titulo": "Missa de Abertura da Catequese", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000005', NULL, 'EDICAO_EVENTO', 'PAROCO', 'REPROVADA', '2026-02-09T10:00:00Z', 
         '2026-02-10T11:00:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Horário conflita com casamento agendado.', 
-        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-09-07T19:00:00Z", "fim": "2026-09-07T20:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
+        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-09-07T19:00:00Z", "fim": "2026-09-07T20:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000006', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'FALHA_EXECUCAO', '2026-02-07T10:00:00Z', 
         '2026-02-07T10:05:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Tentativa de aprovação automática falhou.', 
-        '{"idempotencyKey": "idemp-0000-000000000006", "titulo": "Missa Festiva Pascom", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', 'Conflito de horário detectado no local Igreja Principal.', 0
+        '{"idempotencyKey": "idemp-0000-000000000006", "titulo": "Missa Festiva Pascom", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', 'Conflito de horário detectado no local Igreja Principal.', 0
     );
 
 -- Observations
@@ -284,13 +297,13 @@ VALUES
 -- Project Approvals (Solicitações de Aprovação de Projetos)
 INSERT INTO calendario.projeto_solicitacoes_aprovacao (
     id, projeto_id, tipo_solicitacao, status, solicitante_id, 
-    solicitante_papel, solicitante_tipo_organizacao, action_payload_json, 
+    solicitante_papel, solicitante_tipo_grupo_paroquial, action_payload_json, 
     cancelar_eventos_vinculados, criado_em_utc, decidido_em_utc, aprovador_id, 
     decision_observacao, version
 ) VALUES 
     (
         '70000000-0000-0000-0000-000000000001', NULL, 'CRIACAO', 'PENDENTE', 'maria.catequese', 
-        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Novo Projeto Catequese 2027", "descricao": "Planejamento para o ano de 2027", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2027-02-01T00:00:00Z", "fim": "2027-12-15T23:59:59Z"}', 
+        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Novo Projeto Catequese 2027", "descricao": "Planejamento para o ano de 2027", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2027-02-01T00:00:00Z", "fim": "2027-12-15T23:59:59Z"}', 
         FALSE, '2026-06-01T12:00:00Z', NULL, NULL, 
         NULL, 0
     ),
@@ -302,13 +315,13 @@ INSERT INTO calendario.projeto_solicitacoes_aprovacao (
     ),
     (
         '70000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000001', 'CRIACAO', 'APROVADA', 'maria.catequese', 
-        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Catequese 2026", "descricao": "Ano letivo da catequese infantil", "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2026-02-01T00:00:00Z", "fim": "2026-12-15T23:59:59Z"}', 
+        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Catequese 2026", "descricao": "Ano letivo da catequese infantil", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2026-02-01T00:00:00Z", "fim": "2026-12-15T23:59:59Z"}', 
         FALSE, '2026-01-10T10:00:00Z', '2026-01-11T09:00:00Z', 'padre.pedro', 
         'Aprovado para início em ano aberto', 0
     );
 
 -- Audit Trail
-INSERT INTO calendario.auditoria_operacoes (id, organizacao_id, evento_id, recurso_tipo, recurso_id, acao, resultado, ator, ator_usuario_id, correlation_id, detalhes_auditaveis_json, ocorrido_em_utc)
+INSERT INTO calendario.auditoria_operacoes (id, grupo_paroquial_id, evento_id, recurso_tipo, recurso_id, acao, resultado, ator, ator_usuario_id, correlation_id, detalhes_auditaveis_json, ocorrido_em_utc)
 VALUES 
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000000ee', '40000000-0000-0000-0000-000000000001', 'EVENTO', '40000000-0000-0000-0000-000000000001', 'CRIACAO', 'SUCCESS', 'maria.catequese', '10000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000004', '{"titulo": "Missa de Abertura da Catequese"}', '2026-01-15T08:00:00Z'),
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000000ee', '40000000-0000-0000-0000-000000000001', 'EVENTO', '40000000-0000-0000-0000-000000000001', 'APROVACAO', 'SUCCESS', 'padre.pedro', '10000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000004', '{"status": "CONFIRMADO"}', '2026-01-16T09:00:00Z');
@@ -323,7 +336,7 @@ VALUES
 -- únicas elegíveis a possuir ativos.
 
 INSERT INTO calendario.ativos_patrimoniais (
-    id, nome, numero_tombamento, categoria, status, reservavel, organizacao_id,
+    id, nome, numero_tombamento, categoria, status, reservavel, grupo_paroquial_id,
     data_aquisicao, valor_estimado, criado_em_utc, version
 ) VALUES
     ('80000000-0000-0000-0000-000000000001', 'Projetor Multimídia Epson', 'PAT-2026-0001', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000100', '2024-03-10', 3500.00, '2026-01-01T00:00:00Z', 0),
@@ -345,18 +358,18 @@ ON CONFLICT (ano) DO NOTHING;
 -- Solicitação de aprovação para o empréstimo pendente (ativo 0005 → evento 0203, Retiro Paroquial)
 INSERT INTO calendario.aprovacoes (
     id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc,
-    decidido_em_utc, solicitante_id, solicitante_papel, solicitante_tipo_organizacao,
+    decidido_em_utc, solicitante_id, solicitante_papel, solicitante_tipo_grupo_paroquial,
     aprovador_id, decision_observacao, action_payload_json, correlation_id,
     mensagem_erro_execucao, version
 ) VALUES (
     '60000000-0000-0000-0000-000000000007', '40000000-0000-0000-0000-000000000203', 'ALOCACAO_ATIVO_EMPRESTIMO', 'conselho-coordenador', 'PENDENTE', '2026-08-01T09:00:00Z',
     NULL, '10000000-0000-0000-0000-000000000003', 'voluntario-pastoral-local', 'PASTORAL',
-    NULL, NULL, '{"eventoId": "40000000-0000-0000-0000-000000000203", "organizacaoResponsavelId": "00000000-0000-0000-0000-000000000300", "motivo": "Empréstimo do kit de som para uso no retiro paroquial de agosto", "localId": "00000000-0000-0000-0000-000000000001", "ativoId": "80000000-0000-0000-0000-000000000005", "ativoNome": "Kit Som Portátil Comunitário"}', '81000000-0000-0000-0000-000000000002',
+    NULL, NULL, '{"eventoId": "40000000-0000-0000-0000-000000000203", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-000000000300", "motivo": "Empréstimo do kit de som para uso no retiro paroquial de agosto", "localId": "00000000-0000-0000-0000-000000000001", "ativoId": "80000000-0000-0000-0000-000000000005", "ativoNome": "Kit Som Portátil Comunitário"}', '81000000-0000-0000-0000-000000000002',
     NULL, 0
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO calendario.alocacoes_ativos (
-    id, ativo_id, tipo, evento_id, organizacao_origem_id, organizacao_destino_id,
+    id, ativo_id, tipo, evento_id, grupo_paroquial_origem_id, grupo_paroquial_destino_id,
     emprestimo, data_inicio, data_fim, status, solicitante_id, justificativa,
     aprovacao_id, impactada_por_atraso, alerta_atraso_emitido_em, motivo_cancelamento,
     criado_em_utc, devolvido_em_utc, version

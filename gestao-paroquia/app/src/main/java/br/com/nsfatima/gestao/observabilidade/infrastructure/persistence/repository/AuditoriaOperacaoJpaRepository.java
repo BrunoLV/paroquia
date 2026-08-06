@@ -98,7 +98,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
     @Query(value = """
             select count(*)
             from calendario.auditoria_operacoes a
-            where a.grupoParoquial_id = :grupoParoquialId
+            where a.grupo_paroquial_id = :grupoParoquialId
               and a.ocorrido_em_utc >= :inicioUtc
               and a.ocorrido_em_utc < :fimUtc
               and lower(a.resultado) in ('sucesso', 'executado')
@@ -133,7 +133,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
     @Query(value = """
             select count(distinct a.evento_id)
             from calendario.auditoria_operacoes a
-            where a.grupoParoquial_id = :grupoParoquialId
+            where a.grupo_paroquial_id = :grupoParoquialId
               and a.ocorrido_em_utc >= :inicioUtc
               and a.ocorrido_em_utc < :fimUtc
               and a.evento_id is not null

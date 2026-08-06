@@ -49,3 +49,8 @@ ALTER TABLE calendario.auditoria_operacoes RENAME COLUMN organizacao_id TO grupo
 
 -- 9. projetos_eventos: sem FK, apenas renomear.
 ALTER TABLE calendario.projetos_eventos RENAME COLUMN organizacao_responsavel_id TO grupo_paroquial_responsavel_id;
+
+-- 10. aprovacoes / projeto_solicitacoes_aprovacao: sem FK, apenas renomear.
+ALTER TABLE calendario.aprovacoes RENAME COLUMN solicitante_tipo_organizacao TO solicitante_tipo_grupo_paroquial;
+ALTER TABLE calendario.projeto_solicitacoes_aprovacao
+    RENAME COLUMN solicitante_tipo_organizacao TO solicitante_tipo_grupo_paroquial;

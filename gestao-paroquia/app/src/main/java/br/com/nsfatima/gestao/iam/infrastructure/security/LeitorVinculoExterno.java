@@ -40,18 +40,19 @@ public class LeitorVinculoExterno {
     public List<Vinculo> findVinculosAtivos(UUID userId) {
         return jdbcTemplate.query(
                 """
-                        SELECT m.grupoParoquial_id,
-                                m.tipo_grupoParoquial, m.papel, m.igreja_vinculo_id, o.nome as grupoParoquial_nome,
+                        SELECT m.grupo_paroquial_id as grupoParoquial_id,
+                                m.tipo_grupo as tipo_grupoParoquial, m.papel, m.igreja_vinculo_id,
+                                o.nome as grupoParoquial_nome,
                                 o.contato as grupoParoquial_contato, o.coordenador as grupoParoquial_coordenador,
                                 o.vice_coordenador as grupoParoquial_vice_coordenador, o.ativo as grupoParoquial_ativo
 
                         FROM calendario.membro_grupo m
-                        JOIN calendario.organizacoes o ON o.id = m.grupoParoquial_id
+                        JOIN calendario.grupo_paroquial o ON o.id = m.grupo_paroquial_id
                         JOIN calendario.usuarios u ON u.fiel_id = m.fiel_id
                         WHERE u.id = ?
                           AND m.ativo = TRUE
                           AND o.ativo = TRUE
-                        ORDER BY m.tipo_grupoParoquial, m.papel, m.grupoParoquial_id
+                        ORDER BY m.tipo_grupo, m.papel, m.grupo_paroquial_id
                         """,
                 this::mapVinculo,
                 userId);

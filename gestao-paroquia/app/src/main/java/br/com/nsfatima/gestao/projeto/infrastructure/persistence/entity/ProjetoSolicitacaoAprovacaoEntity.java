@@ -48,7 +48,7 @@ public class ProjetoSolicitacaoAprovacaoEntity {
     private String solicitantePapel;
 
     @Convert(converter = TipoGrupoAttributeConverter.class)
-    @Column(name = "solicitante_tipo_grupoParoquial", nullable = false, length = 64)
+    @Column(name = "solicitante_tipo_grupo_paroquial", nullable = false, length = 64)
     private TipoGrupo solicitanteTipoGrupo;
 
     @Column(name = "action_payload_json", length = 4000)

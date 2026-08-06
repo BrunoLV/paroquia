@@ -59,7 +59,7 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     private String solicitantePapel;
 
     @Convert(converter = TipoGrupoAttributeConverter.class)
-    @Column(name = "solicitante_tipo_grupoParoquial", length = 64)
+    @Column(name = "solicitante_tipo_grupo_paroquial", length = 64)
     private TipoGrupo solicitanteTipoGrupo;
 
     @Column(name = "aprovador_id")
