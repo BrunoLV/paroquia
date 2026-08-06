@@ -5,7 +5,7 @@
  *
  * <p>Define um vocabulário fechado de "ação"/"resultado" (em português, ex.: {@code criar},
  * {@code atualizar}, {@code cancelar}, {@code aprovacao-decisao}) e convenções de chave de
- * metadata ({@code usuarioId}, {@code organizacaoId}) que todo publisher deve respeitar — um
+ * metadata ({@code usuarioId}, {@code grupoParoquialId}) que todo publisher deve respeitar — um
  * publisher que usa uma ação fora da whitelist é silenciosamente descartado, não persistido (ver
  * Javadoc de {@code AuditoriaPersistenceService}). Também expõe o filtro de correlation-id
  * ({@code CorrelationIdFilter}) e o mecanismo de lock distribuído para jobs agendados

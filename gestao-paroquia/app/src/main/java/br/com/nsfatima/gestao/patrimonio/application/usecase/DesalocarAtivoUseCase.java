@@ -79,7 +79,7 @@ public class DesalocarAtivoUseCase {
                         "O ativo não possui uma alocação de evento corrente para desalocar"));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanDesalocar(actorContext, ativo.getOrganizacaoId());
+        authorizationService.assertCanDesalocar(actorContext, ativo.getGrupoParoquialId());
 
         ocupacao.setStatus(AtivoAlocacaoStatus.DEVOLVIDA);
         ocupacao.setDevolvidoEmUtc(Instant.now());
@@ -92,7 +92,7 @@ public class DesalocarAtivoUseCase {
                 ? request.observacao() : "Ativo devolvido";
         createNotaUseCase.execute(saved.getId(), actorContext.usuarioId(), TipoNotaAtivoPatrimonial.DEVOLUCAO,
                 observacao);
-        auditPublisher.publishDesalocacao(actorContext.actor(), saved.getId(), saved.getOrganizacaoId());
+        auditPublisher.publishDesalocacao(actorContext.actor(), saved.getId(), saved.getGrupoParoquialId());
 
         return CreateAtivoPatrimonialUseCase.toResponse(saved);
     }

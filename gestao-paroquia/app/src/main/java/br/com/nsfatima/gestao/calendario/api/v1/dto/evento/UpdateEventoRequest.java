@@ -45,7 +45,7 @@ public record UpdateEventoRequest(
         @Size(max = 2000) String canceladoMotivo,
 
         @Schema(description = "Novo ID da organização responsável")
-        UUID organizacaoResponsavelId,
+        UUID grupoParoquialResponsavelId,
 
         @Schema(description = "Lista de IDs das organizações participantes")
         List<UUID> participantes,
@@ -79,14 +79,14 @@ public record UpdateEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID organizacaoResponsavelId,
+            UUID grupoParoquialResponsavelId,
             List<UUID> participantes,
             EventoEditScope editScope,
             UUID projetoId,
             UUID localId) {
         this(titulo,
                 descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                organizacaoResponsavelId, participantes, editScope, projetoId, localId, null, false);
+                grupoParoquialResponsavelId, participantes, editScope, projetoId, localId, null, false);
 
     }
 
@@ -104,7 +104,7 @@ public record UpdateEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID organizacaoResponsavelId,
+            UUID grupoParoquialResponsavelId,
             List<UUID> participantes,
             EventoEditScope editScope,
             UUID projetoId,
@@ -112,7 +112,7 @@ public record UpdateEventoRequest(
             UUID igrejaVinculoId) {
         this(titulo,
                 descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                organizacaoResponsavelId, participantes, editScope, projetoId, localId, igrejaVinculoId, false);
+                grupoParoquialResponsavelId, participantes, editScope, projetoId, localId, igrejaVinculoId, false);
 
     }
 
@@ -133,7 +133,7 @@ public record UpdateEventoRequest(
                 && status == null
                 && adicionadoExtraJustificativa == null
                 && canceladoMotivo == null
-                && organizacaoResponsavelId == null
+                && grupoParoquialResponsavelId == null
                 && participantes == null
                 && projetoId == null
                 && localId == null

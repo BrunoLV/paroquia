@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
-class UpdateEventoOrganizacaoRulesIntegrationTest {
+class UpdateEventoGrupoParoquialRulesIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -27,12 +27,12 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void deveNegarDonoMudancaParaResponsavelOrganizacaoCoordenador() throws Exception {
+    void deveNegarDonoMudancaParaResponsavelGrupoParoquialCoordenador() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Owner change");
-        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-06-10T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-06-10T11:00:00Z"));
         entity.setStatus("RASCUNHO");
@@ -40,7 +40,7 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
 
         String payload = """
                 {
-                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb"
+                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb"
                 }
                 """;
 
@@ -61,7 +61,7 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Owner change allowed");
-        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-06-11T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-06-11T11:00:00Z"));
         entity.setStatus("RASCUNHO");
@@ -69,7 +69,7 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
 
         String payload = """
                 {
-                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb"
+                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb"
                 }
                 """;
 
@@ -80,6 +80,6 @@ class UpdateEventoOrganizacaoRulesIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(payload))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.organizacaoResponsavelId").value("00000000-0000-0000-0000-0000000000bb"));
+                .andExpect(jsonPath("$.grupoParoquialResponsavelId").value("00000000-0000-0000-0000-0000000000bb"));
     }
 }

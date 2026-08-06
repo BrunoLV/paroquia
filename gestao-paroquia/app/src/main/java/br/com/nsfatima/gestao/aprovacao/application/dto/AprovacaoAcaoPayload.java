@@ -20,7 +20,7 @@ public record AprovacaoAcaoPayload(
         String titulo,
         String descricao,
         CategoriaEvento categoria,
-        UUID organizacaoResponsavelId,
+        UUID grupoParoquialResponsavelId,
         UUID projetoId,
         Instant inicio,
         Instant fim,
@@ -40,7 +40,7 @@ public record AprovacaoAcaoPayload(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID organizacaoResponsavelId,
+            UUID grupoParoquialResponsavelId,
             UUID projetoId,
             Instant inicio,
             Instant fim,
@@ -52,7 +52,7 @@ public record AprovacaoAcaoPayload(
             UUID localId) {
         // Construtor de compatibilidade para chamadores que não lidam com alocação de ativo patrimonial.
         this(idempotencyKey,
-                eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, inicio, fim, status,
+                eventoId, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, inicio, fim, status,
                 adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes, localId, null, null, null);
 
     }

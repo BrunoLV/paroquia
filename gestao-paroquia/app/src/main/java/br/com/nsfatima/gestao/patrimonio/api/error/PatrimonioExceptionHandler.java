@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoAlocacaoCancelame
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoAlocacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoDesalocacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoInvalidaException;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPeriodoConflitanteException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoTransferenciaBloqueadaException;
@@ -92,14 +92,14 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
      * @param ex exceção de domínio capturada
      * @return resposta de erro 400 padronizada
      */
-    @ExceptionHandler(AtivoOrganizacaoInvalidaException.class)
-    public ResponseEntity<ValidationErrorResponse> handleOrganizacaoInvalida(AtivoOrganizacaoInvalidaException ex) {
+    @ExceptionHandler(AtivoGrupoParoquialInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleGrupoParoquialInvalida(AtivoGrupoParoquialInvalidaException ex) {
         return buildValidation(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.DOMAIN_RULE_VIOLATION,
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
-                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "organizacaoId", ex.getMessage(), null)));
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "grupoParoquialId", ex.getMessage(), null)));
     }
 
     /**

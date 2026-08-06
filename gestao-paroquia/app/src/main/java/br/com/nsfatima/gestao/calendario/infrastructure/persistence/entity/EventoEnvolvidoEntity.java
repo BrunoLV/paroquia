@@ -16,7 +16,7 @@ import java.util.UUID;
 /**
  * Associação (tabela de junção) entre um {@link EventoEntity} e uma organização envolvida
  * na sua realização, registrando o papel de participação dessa organização (responsável
- * ou apoio). A chave primária composta ({@code evento_id}, {@code organizacao_id}) impede
+ * ou apoio). A chave primária composta ({@code evento_id}, {@code grupoParoquial_id}) impede
  * que a mesma organização seja registrada mais de uma vez para o mesmo evento.
  */
 @Entity
@@ -29,8 +29,8 @@ public class EventoEnvolvidoEntity {
     private UUID eventoId;
 
     @Id
-    @Column(name = "organizacao_id")
-    private UUID organizacaoId;
+    @Column(name = "grupo_paroquial_id")
+    private UUID grupoParoquialId;
 
     /** Papel desta organização na realização do evento: responsável principal ou apenas apoio. */
     @Enumerated(EnumType.STRING)
@@ -45,12 +45,12 @@ public class EventoEnvolvidoEntity {
         this.eventoId = eventoId;
     }
 
-    public UUID getOrganizacaoId() {
-        return organizacaoId;
+    public UUID getGrupoParoquialId() {
+        return grupoParoquialId;
     }
 
-    public void setOrganizacaoId(UUID organizacaoId) {
-        this.organizacaoId = organizacaoId;
+    public void setGrupoParoquialId(UUID grupoParoquialId) {
+        this.grupoParoquialId = grupoParoquialId;
     }
 
     public PapelEnvolvido getPapelParticipacao() {
@@ -67,14 +67,14 @@ public class EventoEnvolvidoEntity {
      */
     public static class Key implements Serializable {
         private UUID eventoId;
-        private UUID organizacaoId;
+        private UUID grupoParoquialId;
 
         public Key() {
         }
 
-        public Key(UUID eventoId, UUID organizacaoId) {
+        public Key(UUID eventoId, UUID grupoParoquialId) {
             this.eventoId = eventoId;
-            this.organizacaoId = organizacaoId;
+            this.grupoParoquialId = grupoParoquialId;
         }
 
         @Override
@@ -85,12 +85,12 @@ public class EventoEnvolvidoEntity {
             if (!(o instanceof Key key)) {
                 return false;
             }
-            return Objects.equals(eventoId, key.eventoId) && Objects.equals(organizacaoId, key.organizacaoId);
+            return Objects.equals(eventoId, key.eventoId) && Objects.equals(grupoParoquialId, key.grupoParoquialId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(eventoId, organizacaoId);
+            return Objects.hash(eventoId, grupoParoquialId);
         }
     }
 }

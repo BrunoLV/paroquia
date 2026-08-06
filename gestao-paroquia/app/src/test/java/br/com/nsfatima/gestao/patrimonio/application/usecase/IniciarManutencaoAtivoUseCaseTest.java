@@ -51,14 +51,14 @@ class IniciarManutencaoAtivoUseCaseTest {
 
     private IniciarManutencaoAtivoUseCase useCase;
     private UUID ativoId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
 
     @BeforeEach
     void setUp() {
         useCase = new IniciarManutencaoAtivoUseCase(ativoRepository, alocacaoRepository, conflitoPolicy,
                 actorContextResolver, new PatrimonioAuthorizationService());
         ativoId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
 
         lenient().when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("admin", "admin", "CLERO", null, UUID.randomUUID(), null));
@@ -72,7 +72,7 @@ class IniciarManutencaoAtivoUseCaseTest {
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.DISPONIVEL);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         return ativo;
     }
 
@@ -125,7 +125,7 @@ class IniciarManutencaoAtivoUseCaseTest {
     }
 
     @Test
-    void deveRejeitarQuandoOrganizacaoDoAtorDivergeDaOrganizacaoDona() {
+    void deveRejeitarQuandoGrupoParoquialDoAtorDivergeDaGrupoParoquialDona() {
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDisponivel()));
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("coordenador", "coord-pastoral-local", "PASTORAL",

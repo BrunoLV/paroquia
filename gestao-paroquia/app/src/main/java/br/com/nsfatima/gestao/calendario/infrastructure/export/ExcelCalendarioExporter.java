@@ -140,7 +140,7 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
                 row.createCell(3).setCellValue(formatInstant(e.getInicioUtc()));
                 row.createCell(4).setCellValue(formatInstant(e.getFimUtc()));
                 row.createCell(5).setCellValue(localMap.getOrDefault(e.getLocalId(), "N/A"));
-                row.createCell(6).setCellValue(orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), "N/A"));
+                row.createCell(6).setCellValue(orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), "N/A"));
                 row.createCell(7).setCellValue(e.getStatus());
             }
 

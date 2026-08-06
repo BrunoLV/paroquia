@@ -28,7 +28,7 @@ public record EventoResponse(
         String titulo,
         String descricao,
         CategoriaEvento categoria,
-        UUID organizacaoResponsavelId,
+        UUID grupoParoquialResponsavelId,
         UUID projetoId,
         String nomeProjeto,
         Instant inicio,

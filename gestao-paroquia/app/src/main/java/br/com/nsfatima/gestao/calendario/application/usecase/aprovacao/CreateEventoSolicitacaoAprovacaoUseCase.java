@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
@@ -57,7 +57,7 @@ public class CreateEventoSolicitacaoAprovacaoUseCase {
         entity.setStatus(AprovacaoStatus.PENDENTE);
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
-        entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
+        entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
         entity.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
 
@@ -81,7 +81,7 @@ public class CreateEventoSolicitacaoAprovacaoUseCase {
                 request.titulo(),
                 request.descricao(),
                 request.categoria(),
-                request.organizacaoResponsavelId(),
+                request.grupoParoquialResponsavelId(),
                 request.projetoId(),
                 request.inicio(),
                 request.fim(),

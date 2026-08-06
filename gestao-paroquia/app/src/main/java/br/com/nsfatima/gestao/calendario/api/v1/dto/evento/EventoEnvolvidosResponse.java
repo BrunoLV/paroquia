@@ -17,7 +17,7 @@ public record EventoEnvolvidosResponse(
      * Representa uma organização envolvida e o papel que ela desempenha no evento.
      */
     public record EventoEnvolvidoOutput(
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             PapelEnvolvido papel) {
     }
 }

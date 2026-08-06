@@ -67,7 +67,7 @@ public class UsuarioAuthorizationService {
                 ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(actorFielId);
         List<UUID> coordinatorOrgIds = actorVinculos.stream()
                 .filter(m -> isCoordinatorRole(m.getPapel()))
-                .map(MembroGrupoEntity::getOrganizacaoId)
+                .map(MembroGrupoEntity::getGrupoParoquialId)
                 .toList();
 
         if (coordinatorOrgIds.isEmpty()) {
@@ -77,7 +77,7 @@ public class UsuarioAuthorizationService {
         List<MembroGrupoEntity> targetVinculos = targetFielId == null
                 ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(targetFielId);
         boolean sharesOrg = targetVinculos.stream()
-                .anyMatch(m -> coordinatorOrgIds.contains(m.getOrganizacaoId()));
+                .anyMatch(m -> coordinatorOrgIds.contains(m.getGrupoParoquialId()));
 
         if (!sharesOrg) {
             throw new AccessDeniedException("Coordenador só pode gerenciar membros da própria organização");
@@ -113,7 +113,7 @@ public class UsuarioAuthorizationService {
         UUID actorFielId = resolveFielId(actorId);
         boolean isCoordinator = actorFielId != null && vinculoRepository.findByFielIdAndAtivoTrue(actorFielId)
                 .stream()
-                .filter(m -> organizationId.equals(m.getOrganizacaoId()))
+                .filter(m -> organizationId.equals(m.getGrupoParoquialId()))
                 .anyMatch(m -> isCoordinatorRole(m.getPapel()));
 
         if (!isCoordinator) {

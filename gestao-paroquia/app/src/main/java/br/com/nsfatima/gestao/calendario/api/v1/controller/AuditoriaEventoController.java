@@ -44,21 +44,21 @@ public class AuditoriaEventoController {
      * <p>
      * Usage Example:
      * {@code
-     * TaxaEventosExtraResponse response = controller.getTaxaExtras(organizacaoId, "anual", null, null);
+     * TaxaEventosExtraResponse response = controller.getTaxaExtras(grupoParoquialId, "anual", null, null);
      * }
      */
     @GetMapping("/extras")
     @Operation(summary = "Obtém taxa de eventos extras", description = "Calcula o percentual de eventos adicionados " +
             "extra-ordinariamente no período informado.")
     public TaxaEventosExtraResponse getTaxaExtras(
-            @Parameter(description = "ID da organização") @RequestParam UUID organizacaoId,
+            @Parameter(description = "ID da organização") @RequestParam UUID grupoParoquialId,
             @Parameter(description = "Período de análise (ex: anual, mensal)") @RequestParam(required = false)
             String periodo,
             @Parameter(description = "Data de início (ISO 8601)") @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant inicio,
             @Parameter(description = "Data de término (ISO 8601)") @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant fim) {
-        return getTaxaEventosExtraUseCase.execute(organizacaoId, periodo, inicio, fim);
+        return getTaxaEventosExtraUseCase.execute(grupoParoquialId, periodo, inicio, fim);
     }
 
     /**
@@ -75,7 +75,7 @@ public class AuditoriaEventoController {
             "nos filtros informados.")
     public AuditoriaOperacaoResponse getTrilha(AuditoriaFiltroRequest filters) {
         return listAuditTrailUseCase.execute(
-                filters.organizacaoId(),
+                filters.grupoParoquialId(),
                 filters.granularidade(),
                 filters.inicio(),
                 filters.fim(),
@@ -91,19 +91,19 @@ public class AuditoriaEventoController {
      * <p>
      * Usage Example:
      * {@code
-     * IndicadorRetrabalhoResponse response = controller.getRetrabalho(organizacaoId, "mensal", null, null);
+     * IndicadorRetrabalhoResponse response = controller.getRetrabalho(grupoParoquialId, "mensal", null, null);
      * }
      */
     @GetMapping("/retrabalho")
     @Operation(summary = "Calcula indicador de retrabalho", description = "Retorna o percentual de retrabalho baseado" +
             " em modificações e cancelamentos no período.")
     public IndicadorRetrabalhoResponse getRetrabalho(
-            @Parameter(description = "ID da organização") @RequestParam UUID organizacaoId,
+            @Parameter(description = "ID da organização") @RequestParam UUID grupoParoquialId,
             @Parameter(description = "Granularidade temporal") @RequestParam(required = false) String granularidade,
             @Parameter(description = "Data de início (ISO 8601)") @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant inicio,
             @Parameter(description = "Data de término (ISO 8601)") @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant fim) {
-        return getIndicadorRetrabalhoUseCase.execute(organizacaoId, granularidade, inicio, fim);
+        return getIndicadorRetrabalhoUseCase.execute(grupoParoquialId, granularidade, inicio, fim);
     }
 }

@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.governanca.domain.service;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +24,10 @@ public class AnoParoquialAuthorizationService {
      */
     public void assertCanManage(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
         boolean isParoco = normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN;
-        boolean isConselhoCoordinator = (normalizedOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                || normalizedOrgType == TipoOrganizacao.CPP
-                || normalizedOrgType == TipoOrganizacao.CPC)
+        boolean isConselhoCoordinator = normalizedOrgType == TipoGrupo.CONSELHO
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
                 || normalizedRole == PapelOrganizacional.MESA_CPP
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL);

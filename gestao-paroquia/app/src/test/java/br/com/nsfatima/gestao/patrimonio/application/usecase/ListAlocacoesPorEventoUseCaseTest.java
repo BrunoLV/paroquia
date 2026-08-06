@@ -64,7 +64,7 @@ class ListAlocacoesPorEventoUseCaseTest {
         ativo.setNumeroTombamento("PAT-2026-0002");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.ALOCADO);
-        ativo.setOrganizacaoId(UUID.randomUUID());
+        ativo.setGrupoParoquialId(UUID.randomUUID());
 
         when(alocacaoRepository.findByEventoIdOrderByDataInicioDesc(eventoId)).thenReturn(List.of(ocupacao));
         when(ativoRepository.findAllById(List.of(ativoId))).thenReturn(List.of(ativo));

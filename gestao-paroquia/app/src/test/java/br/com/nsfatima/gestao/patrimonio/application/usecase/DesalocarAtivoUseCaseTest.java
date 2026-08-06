@@ -54,14 +54,14 @@ class DesalocarAtivoUseCaseTest {
 
     private DesalocarAtivoUseCase useCase;
     private UUID ativoId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
 
     @BeforeEach
     void setUp() {
         useCase = new DesalocarAtivoUseCase(ativoRepository, alocacaoRepository, actorContextResolver,
                 new PatrimonioAuthorizationService(), createNotaUseCase, auditPublisher);
         ativoId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
 
         lenientMocks();
     }
@@ -79,7 +79,7 @@ class DesalocarAtivoUseCaseTest {
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.ALOCADO);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         return ativo;
     }
 
@@ -121,7 +121,7 @@ class DesalocarAtivoUseCaseTest {
     }
 
     @Test
-    void deveRejeitarQuandoOrganizacaoDoAtorDivergeDaOrganizacaoDona() {
+    void deveRejeitarQuandoGrupoParoquialDoAtorDivergeDaGrupoParoquialDona() {
         when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoAlocado()));
         when(alocacaoRepository.findByAtivoIdAndStatusIn(any(), any()))
                 .thenReturn(List.of(ocupacaoAtiva(AtivoAlocacaoStatus.CONFIRMADA)));

@@ -15,9 +15,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.A
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +39,7 @@ public class ProvisionamentoLiturgicoService {
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final MotorLiturgico liturgicalEngine;
     private final EventoJpaRepository eventoJpaRepository;
-    private final OrganizacaoJpaRepository organizacaoJpaRepository;
+    private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
     private final SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository;
 
     public ProvisionamentoLiturgicoService(AnoLiturgicoRepository anoLiturgicoRepository,
@@ -53,14 +53,15 @@ public class ProvisionamentoLiturgicoService {
                                         CicloLiturgicoRepository cicloLiturgicoRepository,
                                         MotorLiturgico liturgicalEngine,
                                         @Autowired(required = false) EventoJpaRepository eventoJpaRepository,
-                                        @Autowired(required = false) OrganizacaoJpaRepository organizacaoJpaRepository,
+                                        @Autowired(required = false)
+            UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                                         @Autowired(required = false)
             SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
         this.anoLiturgicoRepository = anoLiturgicoRepository;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.liturgicalEngine = liturgicalEngine;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.organizacaoJpaRepository = organizacaoJpaRepository;
+        this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
         this.solenidadeLiturgicaJpaRepository = solenidadeLiturgicaJpaRepository;
     }
 
@@ -162,23 +163,24 @@ public class ProvisionamentoLiturgicoService {
             return;
         }
 
-        List<OrganizacaoEntity> igrejasAlvo = new ArrayList<>();
-        if (organizacaoJpaRepository != null) {
-            igrejasAlvo = organizacaoJpaRepository.findAll().stream()
-                    .filter(OrganizacaoEntity::isAtivo)
-                    .filter(o -> o.getTipo() == TipoOrganizacao.MATRIZ || o.getTipo() == TipoOrganizacao.COMUNIDADE)
+        List<UnidadeTerritorialEntity> igrejasAlvo = new ArrayList<>();
+        if (unidadeTerritorialJpaRepository != null) {
+            igrejasAlvo = unidadeTerritorialJpaRepository.findAll().stream()
+                    .filter(UnidadeTerritorialEntity::isAtivo)
+                    .filter(o -> o.getTipo() == TipoUnidadeTerritorial.MATRIZ
+                            || o.getTipo() == TipoUnidadeTerritorial.COMUNIDADE)
                     .toList();
         }
 
         if (igrejasAlvo.isEmpty()) {
-            OrganizacaoEntity matrizPadrao = new OrganizacaoEntity();
+            UnidadeTerritorialEntity matrizPadrao = new UnidadeTerritorialEntity();
             matrizPadrao.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
             igrejasAlvo = List.of(matrizPadrao);
         }
 
         List<EventoEntity> eventosParaSalvar = new ArrayList<>();
 
-        for (OrganizacaoEntity igreja : igrejasAlvo) {
+        for (UnidadeTerritorialEntity igreja : igrejasAlvo) {
             for (MarcoLiturgico marco : marcos.values()) {
                 EventoEntity evento = new EventoEntity();
                 evento.setId(UUID.randomUUID());
@@ -186,7 +188,7 @@ public class ProvisionamentoLiturgicoService {
                 evento.setDescricao(
                 "Solenidade / Marco Litúrgico provisionado automaticamente"
                         + " a partir do banco de dados (" + marco.chave() + ")");
-                evento.setOrganizacaoResponsavelId(igreja.getId());
+                evento.setGrupoParoquialResponsavelId(igreja.getId());
                 evento.setCategoria(CategoriaEvento.LITURGICO);
                 evento.setStatus(EventoStatusInput.CONFIRMADO.name());
 

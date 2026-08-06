@@ -2,8 +2,8 @@ package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoOrganizacaoAttributeConverter;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoGrupoAttributeConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -58,9 +58,9 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     @Column(name = "solicitante_papel", length = 64)
     private String solicitantePapel;
 
-    @Convert(converter = TipoOrganizacaoAttributeConverter.class)
-    @Column(name = "solicitante_tipo_organizacao", length = 64)
-    private TipoOrganizacao solicitanteTipoOrganizacao;
+    @Convert(converter = TipoGrupoAttributeConverter.class)
+    @Column(name = "solicitante_tipo_grupo_paroquial", length = 64)
+    private TipoGrupo solicitanteTipoGrupo;
 
     @Column(name = "aprovador_id")
     private String aprovadorId;
@@ -168,12 +168,12 @@ public class AprovacaoEntity extends BaseVersionedEntity {
         this.solicitantePapel = solicitantePapel;
     }
 
-    public TipoOrganizacao getSolicitanteTipoOrganizacao() {
-        return solicitanteTipoOrganizacao;
+    public TipoGrupo getSolicitanteTipoGrupo() {
+        return solicitanteTipoGrupo;
     }
 
-    public void setSolicitanteTipoOrganizacao(TipoOrganizacao solicitanteTipoOrganizacao) {
-        this.solicitanteTipoOrganizacao = solicitanteTipoOrganizacao;
+    public void setSolicitanteTipoGrupo(TipoGrupo solicitanteTipoGrupo) {
+        this.solicitanteTipoGrupo = solicitanteTipoGrupo;
     }
 
     public String getAprovadorId() {

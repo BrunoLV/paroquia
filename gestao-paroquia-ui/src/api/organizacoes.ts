@@ -49,8 +49,10 @@ export const deleteOrganizacao = async (id: string): Promise<void> => {
 
 export interface OrganizacaoMembro {
   vinculoId: string;
-  usuarioId: string;
-  usuarioNome: string;
+  fielId?: string;
+  fielNome?: string;
+  usuarioId?: string;
+  usuarioNome?: string;
   nomeCompleto?: string;
   papel: string;
   ativo: boolean;

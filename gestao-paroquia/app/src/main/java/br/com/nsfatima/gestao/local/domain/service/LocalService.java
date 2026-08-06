@@ -58,14 +58,14 @@ public class LocalService {
      * @param endereco        endereço físico do local
      * @param capacidade      capacidade máxima de pessoas
      * @param caracteristicas características adicionais (ex.: recursos disponíveis)
-     * @param organizacaoId   ID da organização de subordinação, ou {@code null} para local sem vínculo
+     * @param grupoParoquialId   ID da organização de subordinação, ou {@code null} para local sem vínculo
      * @return o Local criado, sempre com {@code ativo=true}
      */
     @Transactional
     public Local createLocal(String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
-                             UUID organizacaoId) {
+                             UUID grupoParoquialId) {
         Local local = new Local(UUID.randomUUID(), nome, tipo, endereco, capacidade, caracteristicas, true,
-                organizacaoId);
+                grupoParoquialId);
         localRepository.save(local);
         return local;
     }
@@ -102,19 +102,19 @@ public class LocalService {
      * @param capacidade      nova capacidade máxima de pessoas
      * @param caracteristicas novas características adicionais
      * @param ativo           novo status de ativação do local
-     * @param organizacaoId   novo ID da organização de subordinação, ou {@code null} para desvincular
+     * @param grupoParoquialId   novo ID da organização de subordinação, ou {@code null} para desvincular
      * @return o Local atualizado
      * @throws LocalBusinessException se não existir Local com o ID informado
      */
     @Transactional
     public Local updateLocal(UUID id,
                              String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
-                             boolean ativo, UUID organizacaoId) {
+                             boolean ativo, UUID grupoParoquialId) {
 
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
 
-        local.update(nome, tipo, endereco, capacidade, caracteristicas, ativo, organizacaoId);
+        local.update(nome, tipo, endereco, capacidade, caracteristicas, ativo, grupoParoquialId);
         localRepository.save(local);
         return local;
     }
@@ -131,7 +131,7 @@ public class LocalService {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
         local.update(local.getNome(), local.getTipo(), local.getEndereco(),
-                local.getCapacidade(), local.getCaracteristicas(), false, local.getOrganizacaoId());
+                local.getCapacidade(), local.getCaracteristicas(), false, local.getGrupoParoquialId());
 
         localRepository.save(local);
     }
@@ -161,13 +161,13 @@ public class LocalService {
      * Lista os Locais cadastrados, opcionalmente restritos a uma organização (Matriz/Comunidade) —
      * usado para escopar a seleção de locais ao planejar Eventos de uma organização específica.
      *
-     * @param organizacaoId ID da organização para filtrar, ou {@code null} para listar todos os Locais
-     * @return lista de Locais, filtrada por organização quando {@code organizacaoId} não for {@code null}
+     * @param grupoParoquialId ID da organização para filtrar, ou {@code null} para listar todos os Locais
+     * @return lista de Locais, filtrada por organização quando {@code grupoParoquialId} não for {@code null}
      */
     @Transactional(readOnly = true)
-    public List<Local> listLocais(UUID organizacaoId) {
-        if (organizacaoId != null) {
-            return localRepository.findByOrganizacaoId(organizacaoId);
+    public List<Local> listLocais(UUID grupoParoquialId) {
+        if (grupoParoquialId != null) {
+            return localRepository.findByGrupoParoquialId(grupoParoquialId);
         }
         return localRepository.findAll();
     }

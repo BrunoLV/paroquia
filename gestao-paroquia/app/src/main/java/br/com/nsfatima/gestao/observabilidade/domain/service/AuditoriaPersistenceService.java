@@ -33,7 +33,7 @@ import java.util.UUID;
  * novos) para que o registro seja efetivamente auditado.
  *
  * <p>Convenções de chaves no {@code metadata}/JSON de detalhes que este serviço reconhece:
- * "usuarioId" (ator autenticado), "organizacaoId" (escopo organizacional obrigatório para
+ * "usuarioId" (ator autenticado), "grupoParoquialId" (escopo organizacional obrigatório para
  * persistir), "resourceType"/"resourceId"/"id", "contextId"/"eventoId" e "correlationId"
  * (propagado via MDC, ver {@link CorrelationIdFilter}). Um registro só é persistido quando o
  * identificador do recurso e a organização puderem ser resolvidos; caso contrário, o evento
@@ -80,7 +80,7 @@ public class AuditoriaPersistenceService {
      * @param target identificador do recurso afetado, usado como fallback de resourceId
      * @param result resultado da operação (ex.: "sucesso", "falha", "denied")
      * @param metadata contexto adicional; chaves reconhecidas incluem "usuarioId",
-     *     "organizacaoId", "resourceType", "resourceId"/"id", "contextId"/"eventoId"
+     *     "grupoParoquialId", "resourceType", "resourceId"/"id", "contextId"/"eventoId"
      */
     public void log(String actor, String action, String target, String result, Map<String, Object> metadata) {
         Map<String, Object> enriched = enrichMetadata(result, metadata);
@@ -126,7 +126,7 @@ public class AuditoriaPersistenceService {
                              String resType, String resId, UUID contextId, UUID orgId) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setOrganizacaoId(orgId);
+        entity.setGrupoParoquialId(orgId);
         entity.setEventoId(contextId);
         entity.setRecursoTipo(resType);
         entity.setRecursoId(resId);
@@ -175,7 +175,7 @@ public class AuditoriaPersistenceService {
     private String resolveResourceId(String target, Map<String, Object> metadata, String resourceType) {
         Object explicit = firstNonNull(
                 metadata.get("resourceId"), metadata.get("id"),
-                metadata.get("usuarioId"), metadata.get("organizacaoId"));
+                metadata.get("usuarioId"), metadata.get("grupoParoquialId"));
         if (explicit != null && !String.valueOf(explicit).isBlank()) {
             return String.valueOf(explicit);
         }
@@ -194,7 +194,7 @@ public class AuditoriaPersistenceService {
     }
 
     private UUID resolveOrganizationId(Map<String, Object> metadata) {
-        UUID orgId = parseUuid(metadata.get("organizacaoId"));
+        UUID orgId = parseUuid(metadata.get("grupoParoquialId"));
         if (orgId != null) {
             return orgId;
         }

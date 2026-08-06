@@ -9,9 +9,9 @@ import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,29 +36,29 @@ class PromoverACoordenadorUseCaseTest {
 
     private MembroGrupoJpaRepository membroRepository;
     private FielJpaRepository fielRepository;
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
     private UsuarioJpaRepository usuarioRepository;
     private CreateUsuarioUseCase createUsuarioUseCase;
     private PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private PromoverACoordenadorUseCase useCase;
 
     private UUID fielId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
     private UUID actorId;
 
     @BeforeEach
     void setUp() {
         membroRepository = mock(MembroGrupoJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
-        organizacaoRepository = mock(OrganizacaoJpaRepository.class);
+        grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
         createUsuarioUseCase = mock(CreateUsuarioUseCase.class);
         papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
-        useCase = new PromoverACoordenadorUseCase(membroRepository, fielRepository, organizacaoRepository,
+        useCase = new PromoverACoordenadorUseCase(membroRepository, fielRepository, grupoParoquialRepository,
                 usuarioRepository, createUsuarioUseCase, papelGlobalAuthorizationService);
 
         fielId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
         actorId = UUID.randomUUID();
 
         FielEntity fiel = new FielEntity();
@@ -66,18 +66,18 @@ class PromoverACoordenadorUseCaseTest {
         fiel.setNome("Maria Coordenadora");
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
 
-        OrganizacaoEntity org = new OrganizacaoEntity();
-        org.setId(organizacaoId);
-        org.setTipo(TipoOrganizacao.PASTORAL);
-        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
+        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        org.setId(grupoParoquialId);
+        org.setTipo(TipoGrupo.PASTORAL);
+        when(grupoParoquialRepository.findById(grupoParoquialId)).thenReturn(Optional.of(org));
 
         MembroGrupoEntity membro = new MembroGrupoEntity();
         membro.setId(UUID.randomUUID());
         membro.setFielId(fielId);
-        membro.setOrganizacaoId(organizacaoId);
+        membro.setGrupoParoquialId(grupoParoquialId);
         membro.setPapel("VOLUNTARIO_PASTORAL_LOCAL");
         membro.setAtivo(true);
-        when(membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
+        when(membroRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(fielId, grupoParoquialId))
                 .thenReturn(Optional.of(membro));
     }
 
@@ -101,7 +101,7 @@ class PromoverACoordenadorUseCaseTest {
     }
 
     private PromoverACoordenadorRequest request() {
-        return new PromoverACoordenadorRequest(fielId, organizacaoId, "COORD_PASTORAL_LOCAL", "maria.coord",
+        return new PromoverACoordenadorRequest(fielId, grupoParoquialId, "COORD_PASTORAL_LOCAL", "maria.coord",
                 "senhaForte123");
     }
 
@@ -156,13 +156,13 @@ class PromoverACoordenadorUseCaseTest {
         var captor = org.mockito.ArgumentCaptor.forClass(MembroGrupoEntity.class);
         verify(membroRepository).save(captor.capture());
         assertThat(captor.getValue().getPapel()).isEqualTo("coord-pastoral-local");
-        verify(organizacaoRepository).save(any(OrganizacaoEntity.class));
+        verify(grupoParoquialRepository).save(any(GrupoParoquialEntity.class));
     }
 
     @Test
     void deveLancarExcecaoQuandoFielNaoEhMembroAtivo() {
         authenticateAsGlobal(true);
-        when(membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
+        when(membroRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(fielId, grupoParoquialId))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(request()))
@@ -181,9 +181,9 @@ class PromoverACoordenadorUseCaseTest {
     }
 
     @Test
-    void deveLancarExcecaoQuandoOrganizacaoNaoEncontrada() {
+    void deveLancarExcecaoQuandoGrupoParoquialNaoEncontrada() {
         authenticateAsGlobal(true);
-        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.empty());
+        when(grupoParoquialRepository.findById(grupoParoquialId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(request()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -193,7 +193,7 @@ class PromoverACoordenadorUseCaseTest {
     @Test
     void deveLancarExcecaoQuandoPapelInvalido() {
         authenticateAsGlobal(true);
-        var request = new PromoverACoordenadorRequest(fielId, organizacaoId, "PAPEL_INEXISTENTE", "x", "y");
+        var request = new PromoverACoordenadorRequest(fielId, grupoParoquialId, "PAPEL_INEXISTENTE", "x", "y");
 
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -203,7 +203,7 @@ class PromoverACoordenadorUseCaseTest {
     @Test
     void deveRejeitarPapelGlobalViaMembroGrupo() {
         authenticateAsGlobal(true);
-        var request = new PromoverACoordenadorRequest(fielId, organizacaoId, "PAROCO", "x", "y");
+        var request = new PromoverACoordenadorRequest(fielId, grupoParoquialId, "PAROCO", "x", "y");
 
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(IllegalArgumentException.class)

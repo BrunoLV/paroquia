@@ -32,20 +32,20 @@ class AuditTrailOrderingIntegrationTest {
 
     @Test
     void deveOrderAuditarTrilhaDeterministicamenteQuandoTimestampsCorresponder() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         Instant sameInstant = Instant.parse("2026-10-03T10:15:00Z");
         UUID firstId = UUID.fromString("00000000-0000-0000-0000-000000000111");
         UUID secondId = UUID.fromString("00000000-0000-0000-0000-000000000222");
         UUID eventoId = UUID.randomUUID();
 
-        auditoriaOperacaoJpaRepository.save(auditRecord(secondId, organizacaoId, eventoId, sameInstant, "patch"));
-        auditoriaOperacaoJpaRepository.save(auditRecord(firstId, organizacaoId, eventoId, sameInstant, "cancel"));
+        auditoriaOperacaoJpaRepository.save(auditRecord(secondId, grupoParoquialId, eventoId, sameInstant, "patch"));
+        auditoriaOperacaoJpaRepository.save(auditRecord(firstId, grupoParoquialId, eventoId, sameInstant, "cancel"));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("organizacaoId", organizacaoId.toString())
+                        .param("grupoParoquialId", grupoParoquialId.toString())
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-10T00:00:00Z")
-                        .header("X-Actor-Org-Id", organizacaoId.toString()))
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items[0].id").value(firstId.toString()))
                 .andExpect(jsonPath("$.items[1].id").value(secondId.toString()));
@@ -53,13 +53,13 @@ class AuditTrailOrderingIntegrationTest {
 
     private AuditoriaOperacaoEntity auditRecord(
             UUID id,
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             UUID eventoId,
             Instant occurredAt,
             String acao) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(id);
-        entity.setOrganizacaoId(organizacaoId);
+        entity.setGrupoParoquialId(grupoParoquialId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());

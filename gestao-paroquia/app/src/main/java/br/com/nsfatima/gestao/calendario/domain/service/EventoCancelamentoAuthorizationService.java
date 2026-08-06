@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -28,8 +28,8 @@ public class EventoCancelamentoAuthorizationService {
             PapelOrganizacional.PRESIDENTE_CPC,
             PapelOrganizacional.MESA_CPP,
             PapelOrganizacional.COORD_PASTORAL);
-    private static final Set<TipoOrganizacao> LOCAL_SCOPED_ORG_TYPES = Set.of(
-            TipoOrganizacao.PASTORAL);
+    private static final Set<TipoGrupo> LOCAL_SCOPED_ORG_TYPES = Set.of(
+            TipoGrupo.PASTORAL);
 
     /**
      * Determina o modo de cancelamento aplicável ao ator para o evento informado:
@@ -38,16 +38,16 @@ public class EventoCancelamentoAuthorizationService {
      * responsável pelo evento.
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento a ser cancelado
+     * @param eventoGrupoParoquialResponsavelId identificador da organização responsável pelo evento a ser cancelado
      * @return modo de cancelamento aplicável (imediato ou sujeito a aprovação)
      * @throws ForbiddenOperationException se o ator não tiver escopo de organização, estiver fora do escopo do
      *     evento, ou não tiver papel autorizado a cancelar eventos
      */
     public CancelamentoRequestMode resolveRequestMode(
             EventoActorContext actorContext,
-            UUID eventoOrganizacaoResponsavelId) {
+            UUID eventoGrupoParoquialResponsavelId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
         if (isConselhoLeadership(normalizedRole, normalizedOrgType) || normalizedRole == PapelOrganizacional.PAROCO) {
             return CancelamentoRequestMode.IMMEDIATE;
@@ -62,7 +62,7 @@ public class EventoCancelamentoAuthorizationService {
             if (actorOrganizationId == null) {
                 throw new ForbiddenOperationException("Usuário não pode cancelar eventos sem um escopo de organização");
             }
-            if (eventoOrganizacaoResponsavelId == null || !eventoOrganizacaoResponsavelId.equals(actorOrganizationId)) {
+            if (eventoGrupoParoquialResponsavelId == null || !eventoGrupoParoquialResponsavelId.equals(actorOrganizationId)) {
                 throw new ForbiddenOperationException(
                         "User cannot cancel events outside the responsible organization scope");
             }
@@ -82,19 +82,20 @@ public class EventoCancelamentoAuthorizationService {
      */
     public void assertCanDecideAprovacao(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
+        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
         if (normalizedRole == PapelOrganizacional.PAROCO || isConselhoLeadership(normalizedRole, normalizedOrgType)) {
             return;
         }
         throw new ForbiddenOperationException("Usuário não tem permissão para decidir aprovações de evento");
     }
 
-    private boolean isConselhoLeadership(PapelOrganizacional role, TipoOrganizacao organizationType) {
-        return organizationType == TipoOrganizacao.CONSELHO_PASTORAL && LEADERSHIP_ROLES.contains(role);
+    private boolean isConselhoLeadership(PapelOrganizacional role, TipoGrupo organizationType) {
+        return organizationType == TipoGrupo.CONSELHO && LEADERSHIP_ROLES.contains(role);
     }
 
-    private boolean isLocalLeadership(PapelOrganizacional role, TipoOrganizacao organizationType) {
-        return LOCAL_SCOPED_ORG_TYPES.contains(organizationType) && LEADERSHIP_ROLES.contains(role);
+    private boolean isLocalLeadership(PapelOrganizacional role, TipoGrupo organizationType) {
+        return organizationType != null && LOCAL_SCOPED_ORG_TYPES.contains(organizationType)
+                && LEADERSHIP_ROLES.contains(role);
     }
 
     /**

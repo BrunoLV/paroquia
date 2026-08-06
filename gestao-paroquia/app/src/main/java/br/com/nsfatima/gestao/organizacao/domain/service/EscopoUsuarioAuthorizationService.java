@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.domain.service;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -38,7 +38,7 @@ public class EscopoUsuarioAuthorizationService {
      */
     public boolean canManageOrganizationData(
             PapelOrganizacional userRole,
-            TipoOrganizacao userOrgType,
+            TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             UUID targetCommunityId
@@ -98,7 +98,7 @@ public class EscopoUsuarioAuthorizationService {
      */
     public boolean canApproveEvents(
             PapelOrganizacional userRole,
-            TipoOrganizacao userOrgType,
+            TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId
     ) {
@@ -116,9 +116,10 @@ public class EscopoUsuarioAuthorizationService {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
-        if (userRole == PapelOrganizacional.PRESIDENTE_CPC
-                && (userOrgType == TipoOrganizacao.CONSELHO_PASTORAL
-                || userOrgType == TipoOrganizacao.CPC)) {
+        // CONSELHO_PASTORAL e CPC colapsaram em TipoGrupo.CONSELHO (track linguagem_ubiqua_dominio); a
+        // distinção fina entre eles não é mais feita por tipo — o papel PRESIDENTE_CPC já é o discriminador
+        // suficiente (só existe nesse contexto), preservando o comportamento observável anterior.
+        if (userRole == PapelOrganizacional.PRESIDENTE_CPC && userOrgType == TipoGrupo.CONSELHO) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
@@ -140,7 +141,7 @@ public class EscopoUsuarioAuthorizationService {
      */
     public boolean canAddObservation(
             PapelOrganizacional userRole,
-            TipoOrganizacao userOrgType,
+            TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             boolean isParticipant

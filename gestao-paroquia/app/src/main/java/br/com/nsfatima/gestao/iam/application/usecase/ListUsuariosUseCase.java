@@ -5,8 +5,8 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +27,15 @@ import java.util.stream.Collectors;
 public class ListUsuariosUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
-    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final FielJpaRepository fielRepository;
 
     public ListUsuariosUseCase(
             UsuarioJpaRepository usuarioRepository,
-            OrganizacaoJpaRepository organizacaoRepository,
+            GrupoParoquialJpaRepository grupoParoquialRepository,
             FielJpaRepository fielRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.organizacaoRepository = organizacaoRepository;
+        this.grupoParoquialRepository = grupoParoquialRepository;
         this.fielRepository = fielRepository;
     }
 
@@ -63,8 +63,8 @@ public class ListUsuariosUseCase {
                     UUID igrejaId = u.getIgrejaId();
                     String igrejaNome = null;
                     if (igrejaId != null) {
-                        igrejaNome = organizacaoRepository.findById(igrejaId)
-                                .map(OrganizacaoEntity::getNome)
+                        igrejaNome = grupoParoquialRepository.findById(igrejaId)
+                                .map(GrupoParoquialEntity::getNome)
                                 .orElse(null);
                     }
 

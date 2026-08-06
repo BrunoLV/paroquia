@@ -8,8 +8,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,14 +39,14 @@ public class ExportacaoCalendarioUseCase {
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private final EventoJpaRepository eventRepository;
     private final LocalJpaRepository localRepository;
-    private final OrganizacaoJpaRepository organizationRepository;
+    private final GrupoParoquialJpaRepository organizationRepository;
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
     private final List<CalendarioExporter> exporters;
 
     public ExportacaoCalendarioUseCase(
             EventoJpaRepository eventRepository,
             LocalJpaRepository localRepository,
-            OrganizacaoJpaRepository organizationRepository,
+            GrupoParoquialJpaRepository organizationRepository,
             ParoquiaConfiguracaoRepository paroquiaConfigRepository,
             List<CalendarioExporter> exporters) {
         this.eventRepository = eventRepository;
@@ -70,14 +70,14 @@ public class ExportacaoCalendarioUseCase {
      * @param dataInicio início do intervalo quando {@code opcao} é "PERIODO"
      * @param dataFim fim do intervalo quando {@code opcao} é "PERIODO"
      * @param categorias categorias de evento usadas para filtrar o conjunto exportado
-     * @param organizacaoIds organizações usadas para filtrar o conjunto exportado
+     * @param grupoParoquialIds organizações usadas para filtrar o conjunto exportado
      * @return conteúdo binário do calendário exportado no formato solicitado
      * @throws IllegalArgumentException se {@code opcao} for inválida ou se nenhum
      *                                    exportador suportar o {@code formato} informado
      */
     @Transactional(readOnly = true)
     public byte[] execute(String formato, String opcao, Integer ano, Integer mes, Instant dataInicio, Instant dataFim,
-                          List<String> categorias, List<UUID> organizacaoIds) {
+                          List<String> categorias, List<UUID> grupoParoquialIds) {
         // 1. Determina o período de tempo (UTC)
         Instant start;
         Instant end;
@@ -113,8 +113,8 @@ public class ExportacaoCalendarioUseCase {
                 true,
                 end,
                 true,
-                organizacaoIds,
-                organizacaoIds != null && !organizacaoIds.isEmpty(),
+                grupoParoquialIds,
+                grupoParoquialIds != null && !grupoParoquialIds.isEmpty(),
                 null,
                 false,
                 null,
@@ -131,7 +131,7 @@ public class ExportacaoCalendarioUseCase {
                 .collect(Collectors.toMap(LocalEntity::getId, LocalEntity::getNome));
 
         Map<UUID, String> orgMap = organizationRepository.findAll().stream()
-                .collect(Collectors.toMap(OrganizacaoEntity::getId, OrganizacaoEntity::getNome));
+                .collect(Collectors.toMap(GrupoParoquialEntity::getId, GrupoParoquialEntity::getNome));
 
         // 4. Carrega a configuração da paróquia
         ParoquiaConfiguracaoEntity config = paroquiaConfigRepository.findAll().stream()

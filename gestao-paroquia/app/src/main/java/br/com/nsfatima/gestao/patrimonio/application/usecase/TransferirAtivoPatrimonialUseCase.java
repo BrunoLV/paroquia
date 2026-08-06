@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.patrimonio.api.v1.dto.TransferirAtivoRequest;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoTransferenciaBloqueadaException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
-import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoGrupoParoquialPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
@@ -22,7 +22,7 @@ import java.util.UUID;
  * Transfere a posse de um ativo patrimonial para outra organização. A transferência é bloqueada
  * enquanto o ativo estiver {@code EM_MANUTENCAO} ou {@code ALOCADO}, pois trocar a organização
  * dona nessas condições invalidaria a alocação/manutenção corrente; a organização de destino
- * também deve ser de um tipo elegível a possuir patrimônio ({@code AtivoOrganizacaoPolicy}).
+ * também deve ser de um tipo elegível a possuir patrimônio ({@code AtivoGrupoParoquialPolicy}).
  */
 @Service
 public class TransferirAtivoPatrimonialUseCase {
@@ -33,18 +33,18 @@ public class TransferirAtivoPatrimonialUseCase {
     private final AtivoPatrimonialJpaRepository repository;
     private final EventoActorContextResolver actorContextResolver;
     private final PatrimonioAuthorizationService authorizationService;
-    private final AtivoOrganizacaoPolicy organizacaoPolicy;
+    private final AtivoGrupoParoquialPolicy grupoParoquialPolicy;
     private final PatrimonioAuditPublisher auditPublisher;
 
     public TransferirAtivoPatrimonialUseCase(AtivoPatrimonialJpaRepository repository,
                                               EventoActorContextResolver actorContextResolver,
                                               PatrimonioAuthorizationService authorizationService,
-                                              AtivoOrganizacaoPolicy organizacaoPolicy,
+                                              AtivoGrupoParoquialPolicy grupoParoquialPolicy,
                                               PatrimonioAuditPublisher auditPublisher) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
-        this.organizacaoPolicy = organizacaoPolicy;
+        this.grupoParoquialPolicy = grupoParoquialPolicy;
         this.auditPublisher = auditPublisher;
     }
 
@@ -70,15 +70,15 @@ public class TransferirAtivoPatrimonialUseCase {
         }
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanTransfer(actorContext, ativo.getOrganizacaoId());
-        organizacaoPolicy.assertOrganizacaoProprietariaPermitida(request.novaOrganizacaoId());
+        authorizationService.assertCanTransfer(actorContext, ativo.getGrupoParoquialId());
+        grupoParoquialPolicy.assertGrupoParoquialProprietariaPermitida(request.novaGrupoParoquialId());
 
-        UUID organizacaoOrigemId = ativo.getOrganizacaoId();
-        ativo.setOrganizacaoId(request.novaOrganizacaoId());
+        UUID grupoParoquialOrigemId = ativo.getGrupoParoquialId();
+        ativo.setGrupoParoquialId(request.novaGrupoParoquialId());
         AtivoPatrimonialEntity saved = repository.save(ativo);
 
-        auditPublisher.publishTransfer(actorContext.actor(), saved.getId(), organizacaoOrigemId,
-                request.novaOrganizacaoId());
+        auditPublisher.publishTransfer(actorContext.actor(), saved.getId(), grupoParoquialOrigemId,
+                request.novaGrupoParoquialId());
         return CreateAtivoPatrimonialUseCase.toResponse(saved);
     }
 }

@@ -56,8 +56,8 @@ public class VerificarConcorrenciaInterpastoralUseCase {
     }
 
     private boolean isConcorrencia(EventoEntity a, EventoEntity b) {
-if (a.getOrganizacaoResponsavelId() != null
-                && a.getOrganizacaoResponsavelId().equals(b.getOrganizacaoResponsavelId())) {
+if (a.getGrupoParoquialResponsavelId() != null
+                && a.getGrupoParoquialResponsavelId().equals(b.getGrupoParoquialResponsavelId())) {
             return false;
         }
 

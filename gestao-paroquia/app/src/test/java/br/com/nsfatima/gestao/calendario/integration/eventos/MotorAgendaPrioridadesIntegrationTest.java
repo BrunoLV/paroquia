@@ -2,7 +2,11 @@ package br.com.nsfatima.gestao.calendario.integration.eventos;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +14,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,6 +33,21 @@ class MotorAgendaPrioridadesIntegrationTest {
     @Autowired
     private EventoJpaRepository eventoJpaRepository;
 
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
+
+    @BeforeEach
+    void setUp() {
+        UUID igrejaId = UUID.fromString(IGREJA_ID);
+        if (!unidadeTerritorialJpaRepository.existsById(igrejaId)) {
+            UnidadeTerritorialEntity igreja = new UnidadeTerritorialEntity();
+            igreja.setId(igrejaId);
+            igreja.setNome("Igreja Teste " + igrejaId);
+            igreja.setTipo(TipoUnidadeTerritorial.MATRIZ);
+            unidadeTerritorialJpaRepository.save(igreja);
+        }
+    }
+
     @AfterEach
     void tearDown() {
         eventoJpaRepository.deleteAll();
@@ -40,7 +60,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Missa Dominical",
                   "categoria": "LITURGICO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-10T10:00:00Z",
                   "fim": "2026-08-10T11:30:00Z"
@@ -61,7 +81,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Reunião de Jovens",
                   "categoria": "MOVIMENTO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-10T10:30:00Z",
                   "fim": "2026-08-10T11:30:00Z"
@@ -86,7 +106,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Missa Solene",
                   "categoria": "LITURGICO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-11T10:00:00Z",
                   "fim": "2026-08-11T11:30:00Z"
@@ -107,7 +127,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Encontro de Casais Especial",
                   "categoria": "MOVIMENTO",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-11T10:30:00Z",
                   "fim": "2026-08-11T11:30:00Z",
@@ -131,7 +151,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Tentativa de Bypass sem permissão",
                   "categoria": "PASTORAL",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-12T10:00:00Z",
                   "fim": "2026-08-12T11:00:00Z",
                   "bypassAgendaConflict": true
@@ -155,7 +175,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Reunião Pastoral Catequética",
                   "categoria": "PASTORAL",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-15T10:00:00Z",
                   "fim": "2026-08-15T12:00:00Z"
                 }
@@ -181,7 +201,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                 {
                   "titulo": "Festa da Padroeira (Solenidade)",
                   "categoria": "SOLENIDADE",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-15T09:00:00Z",
                   "fim": "2026-08-15T18:00:00Z"
                 }

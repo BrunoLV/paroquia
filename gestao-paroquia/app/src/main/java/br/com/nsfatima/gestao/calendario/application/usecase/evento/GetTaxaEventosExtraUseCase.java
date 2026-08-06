@@ -37,20 +37,20 @@ public class GetTaxaEventosExtraUseCase {
      */
     @Transactional(readOnly = true)
     public TaxaEventosExtraResponse execute(
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             String granularidade,
             Instant inicio,
             Instant fim) {
-        assertAccessToOrganization(organizacaoId);
+        assertAccessToOrganization(grupoParoquialId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
 
-        long extras = eventoJpaRepository.countByOrganizacaoAndStatusAndPeriod(
-                organizacaoId,
+        long extras = eventoJpaRepository.countByGrupoParoquialAndStatusAndPeriod(
+                grupoParoquialId,
                 "ADICIONADO_EXTRA",
                 periodo.inicio(),
                 periodo.fim());
-        long total = eventoJpaRepository.countByOrganizacaoAndPeriod(
-                organizacaoId,
+        long total = eventoJpaRepository.countByGrupoParoquialAndPeriod(
+                grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim());
 
@@ -61,12 +61,12 @@ public class GetTaxaEventosExtraUseCase {
                 taxa);
     }
 
-    private void assertAccessToOrganization(UUID organizacaoId) {
+    private void assertAccessToOrganization(UUID grupoParoquialId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
-        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorGrupoParoquial(grupoParoquialId).isEmpty()) {
             throw new AccessDeniedException(
                     "Usuário não pode consultar métricas fora do escopo da organização responsável");
         }

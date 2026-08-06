@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
@@ -64,7 +64,7 @@ public class CreateSolicitacaoAprovacaoUseCase {
 
         entity.setSolicitanteId(actorContext.usuarioId().toString());
         entity.setSolicitantePapel(actorContext.role());
-        entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
+        entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
 
         aprovacaoJpaRepository.save(entity);
 

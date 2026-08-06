@@ -8,9 +8,9 @@ import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPub
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class MembroUseCaseTest {
     private MembroGrupoJpaRepository repository;
 
     @Mock
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
 
     @Mock
     private FielJpaRepository fielRepository;
@@ -64,16 +64,16 @@ class MembroUseCaseTest {
     private MembroGrupoEntity entity;
     private MembroResponse response;
     private UUID fielId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
 
     @BeforeEach
     void setUp() {
         fielId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
 
         request = new MembroRequest(
                 fielId,
-                organizacaoId,
+                grupoParoquialId,
                 "MEMBRO_PASTORAL",
                 LocalDate.now(),
                 null,
@@ -83,8 +83,8 @@ class MembroUseCaseTest {
         entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(fielId);
-        entity.setOrganizacaoId(organizacaoId);
-        entity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        entity.setGrupoParoquialId(grupoParoquialId);
+        entity.setTipoGrupo(TipoGrupo.PASTORAL);
         entity.setPapel("MEMBRO_PASTORAL");
 
         response = new MembroResponse(
@@ -93,7 +93,7 @@ class MembroUseCaseTest {
                 "João da Silva",
                 "joao@example.com",
                 "11999999999",
-                organizacaoId,
+                grupoParoquialId,
                 "Pastoral da Música",
                 "MEMBRO_PASTORAL",
                 LocalDate.now(),
@@ -109,14 +109,14 @@ class MembroUseCaseTest {
         fiel.setId(fielId);
         fiel.setNome("João da Silva");
 
-        OrganizacaoEntity org = new OrganizacaoEntity();
-        org.setId(organizacaoId);
-        org.setTipo(TipoOrganizacao.PASTORAL);
+        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        org.setId(grupoParoquialId);
+        org.setTipo(TipoGrupo.PASTORAL);
 
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
-        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
-        when(repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId,
-                organizacaoId)).thenReturn(Optional.empty());
+        when(grupoParoquialRepository.findById(grupoParoquialId)).thenReturn(Optional.of(org));
+        when(repository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(fielId,
+                grupoParoquialId)).thenReturn(Optional.empty());
 
         when(repository.save(any(MembroGrupoEntity.class))).thenReturn(entity);
         when(mapper.toResponse(any(MembroGrupoEntity.class))).thenReturn(response);
@@ -137,15 +137,15 @@ class MembroUseCaseTest {
         fiel.setId(fielId);
         fiel.setNome("João da Silva");
 
-        OrganizacaoEntity org = new OrganizacaoEntity();
-        org.setId(organizacaoId);
-        org.setTipo(TipoOrganizacao.PASTORAL);
+        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        org.setId(grupoParoquialId);
+        org.setTipo(TipoGrupo.PASTORAL);
 
         when(repository.findById(id)).thenReturn(Optional.of(entity));
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
-        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
-        when(repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId,
-                organizacaoId)).thenReturn(Optional.empty());
+        when(grupoParoquialRepository.findById(grupoParoquialId)).thenReturn(Optional.of(org));
+        when(repository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(fielId,
+                grupoParoquialId)).thenReturn(Optional.empty());
 
         when(repository.save(any(MembroGrupoEntity.class))).thenReturn(entity);
         when(mapper.toResponse(any(MembroGrupoEntity.class))).thenReturn(response);
@@ -186,7 +186,7 @@ class MembroUseCaseTest {
     @Test
     @DisplayName("Deve rejeitar papel global (PAROCO/VIGARIO/ADMIN) via MembroGrupo")
     void deveRejeitarPapelGlobalViaAdicionarMembro() {
-        var requestGlobal = new MembroRequest(fielId, organizacaoId, "PAROCO", LocalDate.now(), null, true);
+        var requestGlobal = new MembroRequest(fielId, grupoParoquialId, "PAROCO", LocalDate.now(), null, true);
 
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
                 () -> adicionarUseCase.execute(requestGlobal, "admin"));

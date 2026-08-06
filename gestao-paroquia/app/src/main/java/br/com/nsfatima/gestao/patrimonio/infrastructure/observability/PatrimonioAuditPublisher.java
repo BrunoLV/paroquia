@@ -29,11 +29,11 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor         ator responsável pela ação
      * @param ativoId       ativo criado
-     * @param organizacaoId organização dona do ativo
+     * @param grupoParoquialId organização dona do ativo
      */
-    public void publishCreateSuccess(String actor, UUID ativoId, UUID organizacaoId) {
+    public void publishCreateSuccess(String actor, UUID ativoId, UUID grupoParoquialId) {
         auditLogPersistenceService.log(actor, "criar", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, organizacaoId, Map.of()));
+                withDefaults(ativoId, grupoParoquialId, Map.of()));
     }
 
     /**
@@ -41,14 +41,14 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor                ator responsável pela ação
      * @param ativoId              ativo transferido
-     * @param organizacaoOrigemId organização dona antes da transferência
-     * @param organizacaoDestinoId organização dona depois da transferência
+     * @param grupoParoquialOrigemId organização dona antes da transferência
+     * @param grupoParoquialDestinoId organização dona depois da transferência
      */
-    public void publishTransfer(String actor, UUID ativoId, UUID organizacaoOrigemId, UUID organizacaoDestinoId) {
+    public void publishTransfer(String actor, UUID ativoId, UUID grupoParoquialOrigemId, UUID grupoParoquialDestinoId) {
         auditLogPersistenceService.log(actor, "transferir", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, organizacaoDestinoId, Map.of(
-                        "organizacaoOrigemId", organizacaoOrigemId.toString(),
-                        "organizacaoDestinoId", organizacaoDestinoId.toString())));
+                withDefaults(ativoId, grupoParoquialDestinoId, Map.of(
+                        "grupoParoquialOrigemId", grupoParoquialOrigemId.toString(),
+                        "grupoParoquialDestinoId", grupoParoquialDestinoId.toString())));
     }
 
     /**
@@ -57,13 +57,13 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor         ator responsável pela ação
      * @param ativoId       ativo alocado
-     * @param organizacaoId organização dona do ativo
+     * @param grupoParoquialId organização dona do ativo
      * @param eventoId      evento de destino da alocação, ou {@code null}
      */
-    public void publishAlocacao(String actor, UUID ativoId, UUID organizacaoId, UUID eventoId) {
+    public void publishAlocacao(String actor, UUID ativoId, UUID grupoParoquialId, UUID eventoId) {
         Map<String, Object> metadata = eventoId == null ? Map.of() : Map.of("eventoId", eventoId.toString());
         auditLogPersistenceService.log(actor, "alocar", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, organizacaoId, metadata));
+                withDefaults(ativoId, grupoParoquialId, metadata));
     }
 
     /**
@@ -71,11 +71,11 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor         ator responsável pela ação
      * @param ativoId       ativo desalocado
-     * @param organizacaoId organização dona do ativo
+     * @param grupoParoquialId organização dona do ativo
      */
-    public void publishDesalocacao(String actor, UUID ativoId, UUID organizacaoId) {
+    public void publishDesalocacao(String actor, UUID ativoId, UUID grupoParoquialId) {
         auditLogPersistenceService.log(actor, "desalocar", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, organizacaoId, Map.of()));
+                withDefaults(ativoId, grupoParoquialId, Map.of()));
     }
 
     /**
@@ -89,12 +89,12 @@ public class PatrimonioAuditPublisher {
                 "ACCESS_DENIED", Map.of("resourceType", TYPE_ATIVO, "errorCategory", "AUTHZ"));
     }
 
-    private Map<String, Object> withDefaults(UUID ativoId, UUID organizacaoId, Map<String, Object> metadata) {
+    private Map<String, Object> withDefaults(UUID ativoId, UUID grupoParoquialId, Map<String, Object> metadata) {
         Map<String, Object> resolved = new LinkedHashMap<>();
         resolved.put("resourceType", TYPE_ATIVO);
         resolved.put("resourceId", ativoId.toString());
-        if (organizacaoId != null) {
-            resolved.put("organizacaoId", organizacaoId.toString());
+        if (grupoParoquialId != null) {
+            resolved.put("grupoParoquialId", grupoParoquialId.toString());
         }
         resolved.putAll(metadata);
         return resolved;

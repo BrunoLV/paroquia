@@ -13,8 +13,8 @@ public class Local {
     private Integer capacidade;
     private String caracteristicas;
     private boolean ativo;
-    private UUID organizacaoId;
-    private String organizacaoNome;
+    private UUID grupoParoquialId;
+    private String grupoParoquialNome;
 
     public Local(UUID id,
                  String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
@@ -25,14 +25,14 @@ public class Local {
 
     public Local(UUID id,
                  String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
-                 boolean ativo, UUID organizacaoId) {
+                 boolean ativo, UUID grupoParoquialId) {
 
-        this(id, nome, tipo, endereco, capacidade, caracteristicas, ativo, organizacaoId, null);
+        this(id, nome, tipo, endereco, capacidade, caracteristicas, ativo, grupoParoquialId, null);
     }
 
     public Local(UUID id,
                  String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
-                 boolean ativo, UUID organizacaoId, String organizacaoNome) {
+                 boolean ativo, UUID grupoParoquialId, String grupoParoquialNome) {
 
         this.id = id;
         this.nome = nome;
@@ -41,8 +41,8 @@ public class Local {
         this.capacidade = capacidade;
         this.caracteristicas = caracteristicas;
         this.ativo = ativo;
-        this.organizacaoId = organizacaoId;
-        this.organizacaoNome = organizacaoNome;
+        this.grupoParoquialId = grupoParoquialId;
+        this.grupoParoquialNome = grupoParoquialNome;
     }
 
     public UUID getId() {
@@ -73,23 +73,23 @@ public class Local {
         return ativo;
     }
 
-    public UUID getOrganizacaoId() {
-        return organizacaoId;
+    public UUID getGrupoParoquialId() {
+        return grupoParoquialId;
     }
 
-    public String getOrganizacaoNome() {
-        return organizacaoNome;
+    public String getGrupoParoquialNome() {
+        return grupoParoquialNome;
     }
 
     public void update(String nome,
                        String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo) {
 
-        update(nome, tipo, endereco, capacidade, caracteristicas, ativo, this.organizacaoId);
+        update(nome, tipo, endereco, capacidade, caracteristicas, ativo, this.grupoParoquialId);
     }
 
     public void update(String nome,
                        String tipo, String endereco, Integer capacidade, String caracteristicas, boolean ativo,
-                       UUID organizacaoId) {
+                       UUID grupoParoquialId) {
 
         this.nome = nome;
         this.tipo = tipo;
@@ -97,6 +97,6 @@ public class Local {
         this.capacidade = capacidade;
         this.caracteristicas = caracteristicas;
         this.ativo = ativo;
-        this.organizacaoId = organizacaoId;
+        this.grupoParoquialId = grupoParoquialId;
     }
 }

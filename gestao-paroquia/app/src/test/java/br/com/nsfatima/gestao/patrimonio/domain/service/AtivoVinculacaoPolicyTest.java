@@ -28,7 +28,7 @@ class AtivoVinculacaoPolicyTest {
     private AtivoAlocacaoConflitoPolicy conflitoPolicy;
 
     private AtivoVinculacaoPolicy policy;
-    private final UUID organizacaoId = UUID.randomUUID();
+    private final UUID grupoParoquialId = UUID.randomUUID();
     private AtivoPatrimonialEntity ativo;
     private final LocalDate dataInicio = LocalDate.now().plusDays(1);
     private final LocalDate dataFim = LocalDate.now().plusDays(3);
@@ -40,7 +40,7 @@ class AtivoVinculacaoPolicyTest {
         ativo.setId(UUID.randomUUID());
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.DISPONIVEL);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         lenient().doNothing().when(conflitoPolicy).assertPeriodoDisponivel(any(), any(), any());
     }
 
@@ -99,7 +99,7 @@ class AtivoVinculacaoPolicyTest {
     }
 
     @Test
-    void devePermitirAlocacaoParaOrganizacaoDiferenteDoAtivoPoisEmprestimoEDecididoPeloUseCase() {
+    void devePermitirAlocacaoParaGrupoParoquialDiferenteDoAtivoPoisEmprestimoEDecididoPeloUseCase() {
         assertThatCode(() -> policy.assertCanAlocar(ativo, dataInicio, dataFim, "Justificativa válida com 10+"))
                 .doesNotThrowAnyException();
     }

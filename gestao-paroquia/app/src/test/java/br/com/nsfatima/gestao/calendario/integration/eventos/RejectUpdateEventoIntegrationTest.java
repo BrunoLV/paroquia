@@ -48,7 +48,7 @@ class RejectUpdateEventoIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento nao alterado",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-10-01T10:00:00Z",
                                   "fim": "2027-10-01T11:00:00Z"
                                 }

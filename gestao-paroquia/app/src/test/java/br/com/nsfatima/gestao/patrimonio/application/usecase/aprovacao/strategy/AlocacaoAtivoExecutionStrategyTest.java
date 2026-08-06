@@ -42,23 +42,23 @@ class AlocacaoAtivoExecutionStrategyTest {
 
     private AlocacaoAtivoExecutionStrategy strategy;
     private UUID ativoId;
-    private UUID organizacaoDonaId;
+    private UUID grupoParoquialDonaId;
 
     @BeforeEach
     void setUp() {
         strategy = new AlocacaoAtivoExecutionStrategy(alocarAtivoParaEventoUseCase, ativoRepository,
                 alocacaoRepository, new AprovacaoAcaoPayloadMapper(new ObjectMapper()));
         ativoId = UUID.randomUUID();
-        organizacaoDonaId = UUID.randomUUID();
+        grupoParoquialDonaId = UUID.randomUUID();
     }
 
-    private AtivoPatrimonialEntity ativoDaOrganizacao(UUID organizacaoId) {
+    private AtivoPatrimonialEntity ativoDaGrupoParoquial(UUID grupoParoquialId) {
         AtivoPatrimonialEntity ativo = new AtivoPatrimonialEntity();
         ativo.setId(ativoId);
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(AtivoStatus.DISPONIVEL);
-        ativo.setOrganizacaoId(organizacaoId);
+        ativo.setGrupoParoquialId(grupoParoquialId);
         return ativo;
     }
 
@@ -72,8 +72,8 @@ class AlocacaoAtivoExecutionStrategyTest {
     }
 
     @Test
-    void deveRejeitarCoordenadorDeConselhoDeOrganizacaoErrada() {
-        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaOrganizacao(organizacaoDonaId)));
+    void deveRejeitarCoordenadorDeConselhoDeGrupoParoquialErrada() {
+        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaGrupoParoquial(grupoParoquialDonaId)));
         EventoActorContext actorContext = new EventoActorContext("coordenador", "presidente-cpc", "CPC",
                 UUID.randomUUID(), UUID.randomUUID(), null);
 
@@ -82,12 +82,12 @@ class AlocacaoAtivoExecutionStrategyTest {
     }
 
     @Test
-    void devePermitirCoordenadorDeConselhoDaOrganizacaoCorreta() {
-        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaOrganizacao(organizacaoDonaId)));
+    void devePermitirCoordenadorDeConselhoDaGrupoParoquialCorreta() {
+        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaGrupoParoquial(grupoParoquialDonaId)));
         when(alocarAtivoParaEventoUseCase.executeApprovedAlocacao(any(), any(), any()))
                 .thenReturn(respostaAlocado());
         EventoActorContext actorContext = new EventoActorContext("coordenador", "presidente-cpc", "CPC",
-                organizacaoDonaId, UUID.randomUUID(), null);
+                grupoParoquialDonaId, UUID.randomUUID(), null);
 
         var execution = strategy.execute(aprovacaoComAtivo(), actorContext);
 
@@ -95,8 +95,8 @@ class AlocacaoAtivoExecutionStrategyTest {
     }
 
     @Test
-    void devePermitirParocoDeQualquerOrganizacao() {
-        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaOrganizacao(organizacaoDonaId)));
+    void devePermitirParocoDeQualquerGrupoParoquial() {
+        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaGrupoParoquial(grupoParoquialDonaId)));
         when(alocarAtivoParaEventoUseCase.executeApprovedAlocacao(any(), any(), any()))
                 .thenReturn(respostaAlocado());
         EventoActorContext actorContext = new EventoActorContext("paroco", "paroco", "CLERO",
@@ -108,8 +108,8 @@ class AlocacaoAtivoExecutionStrategyTest {
     }
 
     @Test
-    void devePermitirAdminDeQualquerOrganizacao() {
-        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaOrganizacao(organizacaoDonaId)));
+    void devePermitirAdminDeQualquerGrupoParoquial() {
+        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaGrupoParoquial(grupoParoquialDonaId)));
         when(alocarAtivoParaEventoUseCase.executeApprovedAlocacao(any(), any(), any()))
                 .thenReturn(respostaAlocado());
         EventoActorContext actorContext = new EventoActorContext("admin", "admin", "CLERO",
@@ -122,9 +122,9 @@ class AlocacaoAtivoExecutionStrategyTest {
 
     @Test
     void deveRejeitarPapelSemPermissaoAlguma() {
-        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaOrganizacao(organizacaoDonaId)));
+        when(ativoRepository.findById(ativoId)).thenReturn(Optional.of(ativoDaGrupoParoquial(grupoParoquialDonaId)));
         EventoActorContext actorContext = new EventoActorContext("voluntario", "voluntario-pastoral-local", "PASTORAL",
-                organizacaoDonaId, UUID.randomUUID(), null);
+                grupoParoquialDonaId, UUID.randomUUID(), null);
 
         assertThatThrownBy(() -> strategy.execute(aprovacaoComAtivo(), actorContext))
                 .isInstanceOf(ForbiddenOperationException.class);
@@ -154,6 +154,6 @@ class AlocacaoAtivoExecutionStrategyTest {
 
     private AtivoPatrimonialResponse respostaAlocado() {
         return new AtivoPatrimonialResponse(ativoId, "Projetor", "PAT-2026-0001", AtivoCategoria.ELETRONICO,
-                AtivoStatus.ALOCADO, true, organizacaoDonaId, null, null, Instant.now());
+                AtivoStatus.ALOCADO, true, grupoParoquialDonaId, null, null, Instant.now());
     }
 }

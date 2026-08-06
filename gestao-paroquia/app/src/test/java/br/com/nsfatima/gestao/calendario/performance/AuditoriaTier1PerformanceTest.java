@@ -31,14 +31,14 @@ class AuditoriaTier1PerformanceTest {
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
 
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
 
     @BeforeEach
     void setUp() {
         auditoriaOperacaoJpaRepository.deleteAll();
-        organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         for (int index = 0; index < 25; index++) {
-            auditoriaOperacaoJpaRepository.save(record(organizacaoId, UUID.randomUUID(), index));
+            auditoriaOperacaoJpaRepository.save(record(grupoParoquialId, UUID.randomUUID(), index));
         }
     }
 
@@ -50,19 +50,19 @@ class AuditoriaTier1PerformanceTest {
         for (int sample = 0; sample < SAMPLE_SIZE; sample++) {
             long trilhaStart = System.nanoTime();
             mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                            .param("organizacaoId", organizacaoId.toString())
+                            .param("grupoParoquialId", grupoParoquialId.toString())
                             .param("inicio", "2026-10-01T00:00:00Z")
                             .param("fim", "2026-10-10T00:00:00Z")
-                            .header("X-Actor-Org-Id", organizacaoId.toString()))
+                            .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                     .andExpect(status().isOk());
             trilhaLatencies.add(toMillis(System.nanoTime() - trilhaStart));
 
             long retrabalhoStart = System.nanoTime();
             mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
-                            .param("organizacaoId", organizacaoId.toString())
+                            .param("grupoParoquialId", grupoParoquialId.toString())
                             .param("inicio", "2026-10-01T00:00:00Z")
                             .param("fim", "2026-10-10T00:00:00Z")
-                            .header("X-Actor-Org-Id", organizacaoId.toString()))
+                            .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                     .andExpect(status().isOk());
             retrabalhoLatencies.add(toMillis(System.nanoTime() - retrabalhoStart));
         }
@@ -74,7 +74,7 @@ class AuditoriaTier1PerformanceTest {
     private AuditoriaOperacaoEntity record(UUID orgId, UUID eventoId, int index) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setOrganizacaoId(orgId);
+        entity.setGrupoParoquialId(orgId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());

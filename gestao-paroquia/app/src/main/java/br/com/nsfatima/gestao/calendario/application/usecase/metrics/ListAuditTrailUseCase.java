@@ -37,7 +37,7 @@ public class ListAuditTrailUseCase {
      * }
      */
     public AuditoriaOperacaoResponse execute(
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             String granularidade,
             Instant inicio,
             Instant fim,
@@ -45,11 +45,11 @@ public class ListAuditTrailUseCase {
             String acao,
             String resultado,
             String correlationId) {
-        assertAccessToOrganization(organizacaoId);
+        assertAccessToOrganization(grupoParoquialId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
 
         List<AuditoriaOperacaoResponse.RegistroAuditavelItem> items = auditLogQueryService.findAuditTrail(
-                organizacaoId,
+                grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim(),
                 ator,
@@ -57,15 +57,15 @@ public class ListAuditTrailUseCase {
                 resultado,
                 correlationId);
 
-        return new AuditoriaOperacaoResponse(organizacaoId, periodo.toResponse(), items);
+        return new AuditoriaOperacaoResponse(grupoParoquialId, periodo.toResponse(), items);
     }
 
-    private void assertAccessToOrganization(UUID organizacaoId) {
+    private void assertAccessToOrganization(UUID grupoParoquialId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
-        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorGrupoParoquial(grupoParoquialId).isEmpty()) {
             throw new AccessDeniedException(
                     "Usuário não pode consultar dados de auditoria fora do escopo da organização responsável");
         }

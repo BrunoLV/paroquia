@@ -87,7 +87,7 @@ public class MembroController {
      * Lista vínculos Fiel-organização, aplicando filtros opcionais por organização, Fiel e situação
      * (ativo/inativo).
      *
-     * @param organizacaoId filtro por organização, ou {@code null} para não filtrar
+     * @param grupoParoquialId filtro por organização, ou {@code null} para não filtrar
      * @param fielId        filtro por Fiel, ou {@code null} para não filtrar
      * @param ativo         filtro por situação do vínculo, ou {@code null} para não filtrar
      * @param pageable      paginação/ordenação solicitada
@@ -97,11 +97,11 @@ public class MembroController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista membros com filtros e paginação")
     public Page<MembroResponse> list(
-            @RequestParam(required = false) UUID organizacaoId,
+            @RequestParam(required = false) UUID grupoParoquialId,
             @RequestParam(required = false) UUID fielId,
             @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 20) Pageable pageable) {
-        return listMembrosUseCase.execute(organizacaoId, fielId, ativo, pageable);
+        return listMembrosUseCase.execute(grupoParoquialId, fielId, ativo, pageable);
     }
 
     /**

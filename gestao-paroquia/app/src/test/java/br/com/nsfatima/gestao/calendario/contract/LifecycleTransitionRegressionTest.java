@@ -33,7 +33,7 @@ class LifecycleTransitionRegressionTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Lifecycle regression");
-        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-10-12T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-12T11:00:00Z"));
         evento.setStatus("RASCUNHO");
@@ -59,7 +59,7 @@ class LifecycleTransitionRegressionTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Lifecycle regression");
-        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-10-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-10-01T11:00:00Z"));
         entity.setStatus("RASCUNHO");

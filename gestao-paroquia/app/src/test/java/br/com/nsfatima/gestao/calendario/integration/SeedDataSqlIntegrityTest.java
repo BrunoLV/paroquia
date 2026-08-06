@@ -37,7 +37,9 @@ public class SeedDataSqlIntegrityTest {
         jdbcTemplate.execute("TRUNCATE TABLE calendario.membro_grupo;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.usuarios;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.locais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.organizacoes;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.grupo_paroquial;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.unidade_territorial;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.papel_global;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_ciclo_liturgico;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_liturgicos;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.pastorais_movimentos_oficiais;");
@@ -69,13 +71,16 @@ public class SeedDataSqlIntegrityTest {
         }, "Executing seed-data.sql statements should not throw any foreign key or SQL execution errors");
 
         Integer organizacoesCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM calendario.organizacoes", Integer.class);
+                "SELECT COUNT(*) FROM calendario.grupo_paroquial", Integer.class);
+        Integer unidadesCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.unidade_territorial", Integer.class);
         Integer locaisCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.locais", Integer.class);
         Integer eventosCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.eventos", Integer.class);
 
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
+        assertTrue(unidadesCount != null && unidadesCount > 0, "UnidadeTerritorial should be populated");
         assertTrue(locaisCount != null && locaisCount > 0, "Locais should be populated");
         assertTrue(eventosCount != null && eventosCount > 0, "Eventos should be populated");
     }

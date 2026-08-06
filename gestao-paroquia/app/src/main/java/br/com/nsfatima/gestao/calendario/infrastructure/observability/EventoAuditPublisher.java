@@ -159,7 +159,7 @@ public class EventoAuditPublisher implements AprovacaoAuditPublisher {
     /**
      * Records a pendente event creation request.
      */
-    public void publishCreatePendente(String actor, String aprovacaoId, String organizacaoId) {
+    public void publishCreatePendente(String actor, String aprovacaoId, String grupoParoquialId) {
         auditLogPersistenceService.log(
                 actor,
                 ACTION_CREATE,
@@ -170,7 +170,7 @@ public class EventoAuditPublisher implements AprovacaoAuditPublisher {
                                 KEY_SOLICITACAO_APROVACAO_ID, aprovacaoId,
                                 KEY_APROVACAO_ID, aprovacaoId,
                                 KEY_TIPO_SOLICITACAO, VAL_CRIACAO_EVENTO,
-                                "organizacaoId", organizacaoId)));
+                                "grupoParoquialId", grupoParoquialId)));
     }
 
     /**

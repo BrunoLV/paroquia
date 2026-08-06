@@ -9,9 +9,9 @@ import java.util.UUID;
  */
 public record VinculoResponse(
         UUID id,
-        UUID organizacaoId,
-        String organizacaoNome,
-        String tipoOrganizacao,
+        UUID grupoParoquialId,
+        String grupoParoquialNome,
+        String tipoGrupoParoquial,
         String papel,
         boolean ativo,
         UUID igrejaVinculoId,

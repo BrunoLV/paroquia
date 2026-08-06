@@ -8,9 +8,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.A
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class LiturgicalProvisioningServiceTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Mock
-    private OrganizacaoJpaRepository organizacaoJpaRepository;
+    private UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
 
     @Mock
     private SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository;
@@ -58,7 +58,7 @@ class LiturgicalProvisioningServiceTest {
                 cicloLiturgicoRepository,
                 liturgicalEngine,
                 eventoJpaRepository,
-                organizacaoJpaRepository,
+                unidadeTerritorialJpaRepository,
                 solenidadeLiturgicaJpaRepository
         );
     }
@@ -83,17 +83,17 @@ class LiturgicalProvisioningServiceTest {
         when(anoLiturgicoRepository.findById(2036)).thenReturn(Optional.empty());
         when(anoLiturgicoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        OrganizacaoEntity matriz = new OrganizacaoEntity();
+        UnidadeTerritorialEntity matriz = new UnidadeTerritorialEntity();
         matriz.setId(UUID.randomUUID());
         matriz.setNome("Paróquia Matriz");
-        matriz.setTipo(TipoOrganizacao.MATRIZ);
+        matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
 
-        OrganizacaoEntity comunidade = new OrganizacaoEntity();
+        UnidadeTerritorialEntity comunidade = new UnidadeTerritorialEntity();
         comunidade.setId(UUID.randomUUID());
         comunidade.setNome("Comunidade São José");
-        comunidade.setTipo(TipoOrganizacao.COMUNIDADE);
+        comunidade.setTipo(TipoUnidadeTerritorial.COMUNIDADE);
 
-        when(organizacaoJpaRepository.findAll()).thenReturn(List.of(matriz, comunidade));
+        when(unidadeTerritorialJpaRepository.findAll()).thenReturn(List.of(matriz, comunidade));
 
         AnoLiturgicoEntity result = service.ensureAnoLiturgicoEExiste(2036);
 

@@ -43,7 +43,7 @@ class CancelarAlocacaoAtivoUseCaseTest {
 
     private CancelarAlocacaoAtivoUseCase useCase;
     private UUID alocacaoId;
-    private UUID organizacaoId;
+    private UUID grupoParoquialId;
     private UUID solicitanteId;
 
     @BeforeEach
@@ -51,7 +51,7 @@ class CancelarAlocacaoAtivoUseCaseTest {
         useCase = new CancelarAlocacaoAtivoUseCase(alocacaoRepository, aprovacaoRepository, actorContextResolver,
                 new PatrimonioAuthorizationService());
         alocacaoId = UUID.randomUUID();
-        organizacaoId = UUID.randomUUID();
+        grupoParoquialId = UUID.randomUUID();
         solicitanteId = UUID.randomUUID();
 
         lenient().when(alocacaoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -62,7 +62,7 @@ class CancelarAlocacaoAtivoUseCaseTest {
         AtivoAlocacaoEntity ocupacao = new AtivoAlocacaoEntity();
         ocupacao.setId(alocacaoId);
         ocupacao.setTipo(AtivoAlocacaoTipo.ALOCACAO_EVENTO);
-        ocupacao.setOrganizacaoOrigemId(organizacaoId);
+        ocupacao.setGrupoParoquialOrigemId(grupoParoquialId);
         ocupacao.setDataInicio(LocalDate.now().plusDays(5));
         ocupacao.setDataFim(LocalDate.now().plusDays(7));
         ocupacao.setStatus(status);
@@ -93,7 +93,7 @@ class CancelarAlocacaoAtivoUseCaseTest {
     }
 
     @Test
-    void deveCancelarReservaConfirmadaFuturaPeloResponsavelDaOrganizacao() {
+    void deveCancelarReservaConfirmadaFuturaPeloResponsavelDaGrupoParoquial() {
         AtivoAlocacaoEntity ocupacao = reservaFutura(AtivoAlocacaoStatus.CONFIRMADA);
         ocupacao.setSolicitanteId(UUID.randomUUID());
 

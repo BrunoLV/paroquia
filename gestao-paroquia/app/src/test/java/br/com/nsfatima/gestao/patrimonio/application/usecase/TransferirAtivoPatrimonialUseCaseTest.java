@@ -3,12 +3,12 @@ package br.com.nsfatima.gestao.patrimonio.application.usecase;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.TransferirAtivoRequest;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoTransferenciaBloqueadaException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
-import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoGrupoParoquialPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
@@ -44,18 +44,18 @@ class TransferirAtivoPatrimonialUseCaseTest {
     private PatrimonioAuditPublisher auditPublisher;
 
     @Mock
-    private AtivoOrganizacaoPolicy organizacaoPolicy;
+    private AtivoGrupoParoquialPolicy grupoParoquialPolicy;
 
     private TransferirAtivoPatrimonialUseCase useCase;
     private UUID ativoId;
-    private UUID organizacaoOrigemId;
+    private UUID grupoParoquialOrigemId;
 
     @BeforeEach
     void setUp() {
         useCase = new TransferirAtivoPatrimonialUseCase(repository, actorContextResolver,
-                new PatrimonioAuthorizationService(), organizacaoPolicy, auditPublisher);
+                new PatrimonioAuthorizationService(), grupoParoquialPolicy, auditPublisher);
         ativoId = UUID.randomUUID();
-        organizacaoOrigemId = UUID.randomUUID();
+        grupoParoquialOrigemId = UUID.randomUUID();
 
         lenient().when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("admin", "admin", "CLERO", null, UUID.randomUUID(), null));
@@ -84,26 +84,26 @@ class TransferirAtivoPatrimonialUseCaseTest {
     @Test
     void deveTransferirAtivoDisponivelComSucesso() {
         AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL);
-        UUID novaOrganizacaoId = UUID.randomUUID();
+        UUID novaGrupoParoquialId = UUID.randomUUID();
         when(repository.findById(ativoId)).thenReturn(Optional.of(ativo));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        var response = useCase.execute(ativoId, new TransferirAtivoRequest(novaOrganizacaoId, "Justificativa válida"));
+        var response = useCase.execute(ativoId, new TransferirAtivoRequest(novaGrupoParoquialId, "Justificativa válida"));
 
-        assertThat(response.organizacaoId()).isEqualTo(novaOrganizacaoId);
+        assertThat(response.grupoParoquialId()).isEqualTo(novaGrupoParoquialId);
     }
 
     @Test
-    void deveRejeitarTransferenciaParaOrganizacaoDeTipoInvalido() {
+    void deveRejeitarTransferenciaParaGrupoParoquialDeTipoInvalido() {
         AtivoPatrimonialEntity ativo = criarAtivo(AtivoStatus.DISPONIVEL);
-        UUID novaOrganizacaoId = UUID.randomUUID();
+        UUID novaGrupoParoquialId = UUID.randomUUID();
         when(repository.findById(ativoId)).thenReturn(Optional.of(ativo));
-        doThrow(new AtivoOrganizacaoInvalidaException("tipo inválido"))
-                .when(organizacaoPolicy).assertOrganizacaoProprietariaPermitida(novaOrganizacaoId);
+        doThrow(new AtivoGrupoParoquialInvalidaException("tipo inválido"))
+                .when(grupoParoquialPolicy).assertGrupoParoquialProprietariaPermitida(novaGrupoParoquialId);
 
         assertThatThrownBy(() -> useCase.execute(ativoId,
-                new TransferirAtivoRequest(novaOrganizacaoId, "Justificativa válida")))
-                .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
+                new TransferirAtivoRequest(novaGrupoParoquialId, "Justificativa válida")))
+                .isInstanceOf(AtivoGrupoParoquialInvalidaException.class);
     }
 
     private AtivoPatrimonialEntity criarAtivo(AtivoStatus status) {
@@ -112,7 +112,7 @@ class TransferirAtivoPatrimonialUseCaseTest {
         ativo.setNome("Projetor");
         ativo.setCategoria(AtivoCategoria.ELETRONICO);
         ativo.setStatus(status);
-        ativo.setOrganizacaoId(organizacaoOrigemId);
+        ativo.setGrupoParoquialId(grupoParoquialOrigemId);
         return ativo;
     }
 }

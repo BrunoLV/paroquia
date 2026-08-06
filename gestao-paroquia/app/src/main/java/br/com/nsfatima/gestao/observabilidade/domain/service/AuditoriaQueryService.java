@@ -42,7 +42,7 @@ public class AuditoriaQueryService {
      * a query em {@link AuditoriaOperacaoJpaRepository#findForTrail}). Ordenado cronologicamente
      * para permitir reconstrução sequencial dos eventos de negócio.
      *
-     * @param organizacaoId organização cujo histórico será consultado
+     * @param grupoParoquialId organização cujo histórico será consultado
      * @param inicio limite inferior (inclusivo) do intervalo, em UTC
      * @param fim limite superior (exclusivo) do intervalo, em UTC
      * @param ator filtro opcional por ator; {@code null} não filtra
@@ -53,7 +53,7 @@ public class AuditoriaQueryService {
      */
     @Transactional(readOnly = true)
     public List<AuditoriaOperacaoResponse.RegistroAuditavelItem> findAuditTrail(
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             Instant inicio,
             Instant fim,
             String ator,
@@ -61,7 +61,7 @@ public class AuditoriaQueryService {
             String resultado,
             String correlationId) {
         return auditoriaOperacaoJpaRepository.findForTrail(
-                        organizacaoId,
+                        grupoParoquialId,
                         inicio,
                         fim,
                         ator,
@@ -76,7 +76,7 @@ public class AuditoriaQueryService {
     private AuditoriaOperacaoResponse.RegistroAuditavelItem toItem(AuditoriaOperacaoEntity entity) {
         return new AuditoriaOperacaoResponse.RegistroAuditavelItem(
                 entity.getId(),
-                entity.getOrganizacaoId(),
+                entity.getGrupoParoquialId(),
                 entity.getRecursoTipo(),
                 entity.getRecursoId(),
                 entity.getAcao(),

@@ -26,13 +26,13 @@ class LocalServiceTest {
     }
 
     @Test
-    void deveCriarLocalComOrganizacao() {
+    void deveCriarLocalComGrupoParoquial() {
         UUID orgId = UUID.randomUUID();
         Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi", orgId);
 
         assertNotNull(created.getId());
         assertEquals("Salão", created.getNome());
-        assertEquals(orgId, created.getOrganizacaoId());
+        assertEquals(orgId, created.getGrupoParoquialId());
         assertTrue(created.isAtivo());
         assertTrue(localRepository.findById(created.getId()).isPresent());
     }
@@ -58,7 +58,7 @@ class LocalServiceTest {
 
         assertEquals("Novo Nome", updated.getNome());
         assertEquals(20, updated.getCapacidade());
-        assertEquals(orgId, updated.getOrganizacaoId());
+        assertEquals(orgId, updated.getGrupoParoquialId());
         assertFalse(updated.isAtivo());
     }
 
@@ -111,9 +111,9 @@ class LocalServiceTest {
         }
 
         @Override
-        public List<Local> findByOrganizacaoId(UUID organizacaoId) {
+        public List<Local> findByGrupoParoquialId(UUID grupoParoquialId) {
             return storage.stream()
-                    .filter(l -> organizacaoId != null && organizacaoId.equals(l.getOrganizacaoId()))
+                    .filter(l -> grupoParoquialId != null && grupoParoquialId.equals(l.getGrupoParoquialId()))
                     .toList();
         }
 

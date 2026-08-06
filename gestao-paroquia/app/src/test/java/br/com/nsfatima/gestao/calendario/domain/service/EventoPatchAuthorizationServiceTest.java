@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno.Vinculo;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,13 +53,13 @@ class EventoPatchAuthorizationServiceTest {
         UUID churchId = UUID.randomUUID();
 
         var vinculo = new Vinculo(orgId,
-                "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
+                "Pastoral familiar", TipoGrupo.PASTORAL.name(), null, null, null, true,
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchId);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId,
+                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
                         usuarioId,
                 churchId);
 
@@ -75,13 +75,13 @@ class EventoPatchAuthorizationServiceTest {
         UUID churchB = UUID.randomUUID();
 
         var vinculo = new Vinculo(orgId,
-                "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
+                "Pastoral familiar", TipoGrupo.PASTORAL.name(), null, null, null, true,
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchA);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId,
+                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
                         usuarioId,
                 churchA);
 
@@ -96,13 +96,13 @@ class EventoPatchAuthorizationServiceTest {
         UUID churchId = UUID.randomUUID();
 
         var vinculo = new Vinculo(orgId,
-                "Clero", TipoOrganizacao.CLERO.name(), null, null, null, true, PapelOrganizacional.PAROCO.name(),
+                "Clero", "CLERO", null, null, null, true, PapelOrganizacional.PAROCO.name(),
                 null);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), orgId, usuarioId, null);
+                PapelOrganizacional.PAROCO.storedValue(), "CLERO", orgId, usuarioId, null);
 
 
         assertDoesNotThrow(() -> service.assertCanCreate(actorContext, orgId, churchId));
@@ -112,7 +112,7 @@ class EventoPatchAuthorizationServiceTest {
     void devePermitirIgnorarQuandoUsuarioEParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.PAROCO.storedValue(), TipoOrganizacao.CLERO.name(), UUID.randomUUID(), usuarioId,
+                PapelOrganizacional.PAROCO.storedValue(), "CLERO", UUID.randomUUID(), usuarioId,
                         null);
 
         assertDoesNotThrow(() -> service.assertCanBypassAgendaConflict(actorContext));
@@ -122,7 +122,7 @@ class EventoPatchAuthorizationServiceTest {
     void deveNegarIgnorarQuandoUsuarioENaoParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoOrganizacao.PASTORAL.name(),
+                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(),
                         UUID.randomUUID(), usuarioId, null);
 
         assertThrows(AccessDeniedException.class, () -> service.assertCanBypassAgendaConflict(actorContext));
@@ -134,13 +134,13 @@ class EventoPatchAuthorizationServiceTest {
         UUID orgId = UUID.randomUUID();
 
         var vinculo = new Vinculo(orgId,
-                "Pastoral familiar", TipoOrganizacao.PASTORAL.name(), null, null, null, true,
+                "Pastoral familiar", TipoGrupo.PASTORAL.name(), null, null, null, true,
                 PapelOrganizacional.COORD_PASTORAL_GLOBAL.name(), null);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_GLOBAL.storedValue(), TipoOrganizacao.PASTORAL.name(), orgId,
+                PapelOrganizacional.COORD_PASTORAL_GLOBAL.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
                         usuarioId,
                 null);
 

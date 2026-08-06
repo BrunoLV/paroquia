@@ -36,7 +36,7 @@ class EventoIntegrationTest {
         String payload = """
                 {
                   "titulo": "Evento Teste",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-12-01T10:00:00Z",
                   "fim": "2026-12-01T12:00:00Z"
                 }
@@ -61,7 +61,7 @@ class EventoIntegrationTest {
         String payload = """
                 {
                   "titulo": "Evento Invalido",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-12-01T12:00:00Z",
                   "fim": "2026-12-01T10:00:00Z"
                 }
@@ -87,7 +87,7 @@ class EventoIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("A ser cancelado");
-        entity.setOrganizacaoResponsavelId(UUID.fromString(orgId));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString(orgId));
         entity.setInicioUtc(Instant.parse("2026-12-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-01T11:00:00Z"));
         entity.setStatus("CONFIRMADO");
@@ -117,7 +117,7 @@ class EventoIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Draft Event");
-        entity.setOrganizacaoResponsavelId(UUID.fromString(orgId));
+        entity.setGrupoParoquialResponsavelId(UUID.fromString(orgId));
         entity.setInicioUtc(Instant.parse("2026-12-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-01T11:00:00Z"));
         entity.setStatus("RASCUNHO");

@@ -4,9 +4,9 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,37 +22,37 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
-class ListOrganizacaoMembrosUseCaseTest {
+class ListGrupoParoquialMembrosUseCaseTest {
 
     @Mock
     private MembroGrupoJpaRepository vinculoRepository;
     @Mock
     private FielJpaRepository fielRepository;
     @Mock
-    private OrganizacaoJpaRepository organizacaoRepository;
+    private GrupoParoquialJpaRepository grupoParoquialRepository;
 
-    private ListOrganizacaoMembrosUseCase useCase;
+    private ListGrupoParoquialMembrosUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new ListOrganizacaoMembrosUseCase(
+        useCase = new ListGrupoParoquialMembrosUseCase(
                 vinculoRepository,
                 fielRepository,
-                organizacaoRepository
+                grupoParoquialRepository
         );
     }
 
     @Test
     @DisplayName("Deve listar membros de uma organização resolvendo nomes a partir do Fiel")
-    void deveListarOrganizacaoMembrosResolvendoNomeDoFiel() {
+    void deveListarGrupoParoquialMembrosResolvendoNomeDoFiel() {
         UUID orgId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 
         MembroGrupoEntity memberEntity = new MembroGrupoEntity();
         memberEntity.setId(UUID.randomUUID());
-        memberEntity.setOrganizacaoId(orgId);
+        memberEntity.setGrupoParoquialId(orgId);
         memberEntity.setFielId(fielId);
-        memberEntity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        memberEntity.setTipoGrupo(TipoGrupo.PASTORAL);
         memberEntity.setPapel("COORD_PASTORAL_LOCAL");
         memberEntity.setAtivo(true);
 
@@ -60,12 +60,12 @@ class ListOrganizacaoMembrosUseCaseTest {
         fielEntity.setId(fielId);
         fielEntity.setNome("João da Silva");
 
-        when(vinculoRepository.findByOrganizacaoIdAndAtivoTrue(orgId)).thenReturn(List.of(memberEntity));
+        when(vinculoRepository.findByGrupoParoquialIdAndAtivoTrue(orgId)).thenReturn(List.of(memberEntity));
         when(vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(orgId)).thenReturn(Collections.emptyList());
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fielEntity));
-        when(organizacaoRepository.findById(orgId)).thenReturn(Optional.empty());
+        when(grupoParoquialRepository.findById(orgId)).thenReturn(Optional.empty());
 
-        List<OrganizacaoMembroResponse> response = useCase.execute(orgId);
+        List<GrupoParoquialMembroResponse> response = useCase.execute(orgId);
 
         assertThat(response).hasSize(1);
         assertThat(response.getFirst().fielNome()).isEqualTo("João da Silva");

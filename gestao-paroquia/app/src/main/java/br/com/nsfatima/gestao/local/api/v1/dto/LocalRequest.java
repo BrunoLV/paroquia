@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Payload de entrada para criação/atualização de um Local. {@code nome} e {@code tipo} são obrigatórios
  * (o nome também deve ser único entre os locais cadastrados, restrição aplicada na persistência);
- * {@code organizacaoId} é opcional e vincula o local a uma organização (Matriz/Comunidade) para escopo
+ * {@code grupoParoquialId} é opcional e vincula o local a uma organização (Matriz/Comunidade) para escopo
  * de autorização e listagem.
  */
 @Schema(description = "Dados para criação ou atualização de um Local")
@@ -38,7 +38,7 @@ public record LocalRequest(
         boolean ativo,
 
         @Schema(description = "ID da organização (Matriz ou Comunidade) de subordinação")
-        UUID organizacaoId
+        UUID grupoParoquialId
 ) {
     public LocalRequest(String nome, String tipo, String endereco, Integer capacidade,
                         String caracteristicas, boolean ativo) {

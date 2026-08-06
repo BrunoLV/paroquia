@@ -69,7 +69,7 @@ public class FinalizarManutencaoAtivoUseCase {
                         "O ativo não possui uma manutenção corrente para finalizar"));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanIniciarManutencao(actorContext, ativo.getOrganizacaoId());
+        authorizationService.assertCanIniciarManutencao(actorContext, ativo.getGrupoParoquialId());
 
         manutencao.setStatus(AtivoAlocacaoStatus.DEVOLVIDA);
         manutencao.setDevolvidoEmUtc(Instant.now());

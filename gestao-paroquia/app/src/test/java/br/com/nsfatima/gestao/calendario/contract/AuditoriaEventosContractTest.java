@@ -32,23 +32,23 @@ class AuditoriaEventosContractTest {
 
     @Test
     void deveRetornarAuditarTrilhaContratoPayload() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 
         auditoriaOperacaoJpaRepository.save(auditRecord(
                 UUID.fromString("00000000-0000-0000-0000-000000000101"),
-                organizacaoId,
+                grupoParoquialId,
                 eventoId,
                 Instant.parse("2026-10-03T10:15:00Z")
         ));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("organizacaoId", organizacaoId.toString())
+                        .param("grupoParoquialId", grupoParoquialId.toString())
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-10T00:00:00Z")
-                        .header("X-Actor-Org-Id", organizacaoId.toString()))
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.organizacaoId").value(organizacaoId.toString()))
+                .andExpect(jsonPath("$.grupoParoquialId").value(grupoParoquialId.toString()))
                 .andExpect(jsonPath("$.periodo.inicio").value("2026-10-01T00:00:00Z"))
                 .andExpect(jsonPath("$.items.length()").value(1))
                 .andExpect(jsonPath("$.items[0].recursoTipo").value("EVENTO"))
@@ -58,12 +58,12 @@ class AuditoriaEventosContractTest {
 
     private AuditoriaOperacaoEntity auditRecord(
             UUID id,
-            UUID organizacaoId,
+            UUID grupoParoquialId,
             UUID eventoId,
             Instant ocorridoEmUtc) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(id);
-        entity.setOrganizacaoId(organizacaoId);
+        entity.setGrupoParoquialId(grupoParoquialId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());

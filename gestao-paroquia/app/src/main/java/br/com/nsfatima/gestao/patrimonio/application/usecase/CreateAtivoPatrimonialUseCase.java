@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.CreateAtivoPatrimonialRequest;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
-import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoOrganizacaoPolicy;
+import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoGrupoParoquialPolicy;
 import br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator;
 import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
@@ -29,20 +29,20 @@ public class CreateAtivoPatrimonialUseCase {
     private final AtivoPatrimonialJpaRepository repository;
     private final EventoActorContextResolver actorContextResolver;
     private final PatrimonioAuthorizationService authorizationService;
-    private final AtivoOrganizacaoPolicy organizacaoPolicy;
+    private final AtivoGrupoParoquialPolicy grupoParoquialPolicy;
     private final NumeroTombamentoGenerator numeroTombamentoGenerator;
     private final PatrimonioAuditPublisher auditPublisher;
 
     public CreateAtivoPatrimonialUseCase(AtivoPatrimonialJpaRepository repository,
                                           EventoActorContextResolver actorContextResolver,
                                           PatrimonioAuthorizationService authorizationService,
-                                          AtivoOrganizacaoPolicy organizacaoPolicy,
+                                          AtivoGrupoParoquialPolicy grupoParoquialPolicy,
                                           NumeroTombamentoGenerator numeroTombamentoGenerator,
                                           PatrimonioAuditPublisher auditPublisher) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
-        this.organizacaoPolicy = organizacaoPolicy;
+        this.grupoParoquialPolicy = grupoParoquialPolicy;
         this.numeroTombamentoGenerator = numeroTombamentoGenerator;
         this.auditPublisher = auditPublisher;
     }
@@ -57,8 +57,8 @@ public class CreateAtivoPatrimonialUseCase {
     @Transactional
     public AtivoPatrimonialResponse execute(CreateAtivoPatrimonialRequest request) {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanCreate(actorContext, request.organizacaoId());
-        organizacaoPolicy.assertOrganizacaoProprietariaPermitida(request.organizacaoId());
+        authorizationService.assertCanCreate(actorContext, request.grupoParoquialId());
+        grupoParoquialPolicy.assertGrupoParoquialProprietariaPermitida(request.grupoParoquialId());
 
         AtivoPatrimonialEntity entity = new AtivoPatrimonialEntity();
         entity.setId(UUID.randomUUID());
@@ -66,14 +66,14 @@ public class CreateAtivoPatrimonialUseCase {
         entity.setCategoria(request.categoria());
         entity.setStatus(AtivoStatus.DISPONIVEL);
         entity.setReservavel(request.reservavel());
-        entity.setOrganizacaoId(request.organizacaoId());
+        entity.setGrupoParoquialId(request.grupoParoquialId());
         entity.setDataAquisicao(request.dataAquisicao());
         entity.setValorEstimado(request.valorEstimado());
         entity.setCriadoEmUtc(Instant.now());
         entity.setNumeroTombamento(numeroTombamentoGenerator.generate(Year.now().getValue()));
 
         AtivoPatrimonialEntity saved = repository.save(entity);
-        auditPublisher.publishCreateSuccess(actorContext.actor(), saved.getId(), saved.getOrganizacaoId());
+        auditPublisher.publishCreateSuccess(actorContext.actor(), saved.getId(), saved.getGrupoParoquialId());
         return toResponse(saved);
     }
 
@@ -92,7 +92,7 @@ public class CreateAtivoPatrimonialUseCase {
                 e.getCategoria(),
                 e.getStatus(),
                 e.isReservavel(),
-                e.getOrganizacaoId(),
+                e.getGrupoParoquialId(),
                 e.getDataAquisicao(),
                 e.getValorEstimado(),
                 e.getCriadoEmUtc());

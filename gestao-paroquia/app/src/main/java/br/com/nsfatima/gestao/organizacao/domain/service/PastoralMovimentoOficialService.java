@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.domain.service;
 
 import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialBusinessException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Orquestra o ciclo de vida do catálogo oficial de Pastorais e Movimentos ({@link PastoralMovimentoOficial}),
  * garantindo que cada item tenha nome obrigatório e único e tipo restrito a {@code PASTORAL} ou
- * {@code MOVIMENTO}. Este catálogo é referenciado por {@code Organizacao.pastoralOficialId} para garantir
+ * {@code MOVIMENTO}. Este catálogo é referenciado por {@code GrupoParoquial.pastoralOficialId} para garantir
  * que instâncias locais de uma pastoral/movimento em diferentes comunidades compartilhem o mesmo nome/tipo
  * oficial.
  */
@@ -36,7 +36,7 @@ public class PastoralMovimentoOficialService {
      * @throws PastoralMovimentoOficialBusinessException se o nome for ausente/duplicado ou o tipo inválido
      */
     @Transactional
-    public PastoralMovimentoOficial create(String nome, TipoOrganizacao tipo) {
+    public PastoralMovimentoOficial create(String nome, TipoGrupo tipo) {
         validate(null, nome, tipo);
         PastoralMovimentoOficial oficial = new PastoralMovimentoOficial(UUID.randomUUID(), nome, tipo);
         repository.save(oficial);
@@ -45,7 +45,7 @@ public class PastoralMovimentoOficialService {
 
     /**
      * Atualiza nome e tipo de um item existente do catálogo oficial, revalidando as mesmas regras de
-     * {@link #create(String, TipoOrganizacao)} (exceto que o próprio item, se já tiver este nome, não conta
+     * {@link #create(String, TipoGrupo)} (exceto que o próprio item, se já tiver este nome, não conta
      * como duplicidade).
      *
      * @param id identificador do item a atualizar
@@ -56,7 +56,7 @@ public class PastoralMovimentoOficialService {
      *     por outro item, ou o tipo for inválido
      */
     @Transactional
-    public PastoralMovimentoOficial update(UUID id, String nome, TipoOrganizacao tipo) {
+    public PastoralMovimentoOficial update(UUID id, String nome, TipoGrupo tipo) {
         PastoralMovimentoOficial oficial = repository.findById(id)
                 .orElseThrow(() -> PastoralMovimentoOficialBusinessException.notFound(id));
         validate(id, nome, tipo);
@@ -99,11 +99,11 @@ public class PastoralMovimentoOficialService {
         return repository.findAll();
     }
 
-    private void validate(UUID id, String nome, TipoOrganizacao tipo) {
+    private void validate(UUID id, String nome, TipoGrupo tipo) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new PastoralMovimentoOficialBusinessException("Nome é obrigatório");
         }
-        if (tipo != TipoOrganizacao.PASTORAL && tipo != TipoOrganizacao.MOVIMENTO) {
+        if (tipo != TipoGrupo.PASTORAL && tipo != TipoGrupo.MOVIMENTO) {
             throw new PastoralMovimentoOficialBusinessException("Tipo deve ser PASTORAL ou MOVIMENTO");
         }
 

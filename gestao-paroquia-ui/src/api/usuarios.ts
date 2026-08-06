@@ -3,6 +3,7 @@ import apiClient from './client';
 export interface Usuario {
   id: string;
   username: string;
+  fielId?: string;
   nome: string;
   telefone?: string;
   dataNascimento?: string;
@@ -13,6 +14,12 @@ export interface Usuario {
   primeiraComunhao?: boolean;
   crismado?: boolean;
   casadoIgrejaCatolica?: boolean;
+}
+
+export interface CreateUsuarioRequest {
+  fielId: string;
+  username: string;
+  password?: string;
 }
 
 export interface VinculoResponse {
@@ -38,6 +45,14 @@ export interface AdicionarVinculoRequest {
  */
 export const getUsuarios = async (): Promise<Usuario[]> => {
   const response = await apiClient.get<Usuario[]>('/usuarios');
+  return response.data;
+};
+
+/**
+ * Cria um novo usuário vinculado a um Fiel existente.
+ */
+export const createUsuario = async (request: CreateUsuarioRequest): Promise<string> => {
+  const response = await apiClient.post<string>('/usuarios', request);
   return response.data;
 };
 
@@ -69,27 +84,6 @@ export const adicionarVinculo = async (userId: string, request: AdicionarVinculo
  */
 export const removerVinculo = async (userId: string, vinculoId: string): Promise<void> => {
   await apiClient.delete(`/usuarios/${userId}/membros/${vinculoId}`);
-};
-
-export interface RegistrarUsuarioRequest {
-  nome: string;
-  username: string;
-  password?: string;
-  telefone: string;
-  dataNascimento: string;
-  igrejaId: string;
-  batizado?: boolean;
-  primeiraComunhao?: boolean;
-  crismado?: boolean;
-  casadoIgrejaCatolica?: boolean;
-}
-
-/**
- * Registra um novo usuário no sistema.
- */
-export const registrarUsuario = async (request: RegistrarUsuarioRequest): Promise<string> => {
-  const response = await apiClient.post<string>('/usuarios/registrar', request);
-  return response.data;
 };
 
 export default apiClient;

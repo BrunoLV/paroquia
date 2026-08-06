@@ -71,7 +71,7 @@ public class CsvCalendarioExporter implements CalendarioExporter {
                     .append(formatInstant(e.getInicioUtc())).append(";")
                     .append(formatInstant(e.getFimUtc())).append(";")
                     .append(escapeCsv(localMap.getOrDefault(e.getLocalId(), "N/A"))).append(";")
-                    .append(escapeCsv(orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), "N/A"))).append(";")
+                    .append(escapeCsv(orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), "N/A"))).append(";")
                     .append(escapeCsv(e.getStatus())).append("\n");
         }
 

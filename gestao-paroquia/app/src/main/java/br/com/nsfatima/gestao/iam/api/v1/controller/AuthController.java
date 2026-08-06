@@ -3,8 +3,8 @@ package br.com.nsfatima.gestao.iam.api.v1.controller;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,15 +50,15 @@ public class AuthController {
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()),
                 userDetails.getVinculos().stream()
-                        .map(this::mapToOrganizacaoResponse)
+                        .map(this::mapToGrupoParoquialResponse)
                         .collect(Collectors.toList()));
     }
 
-    private OrganizacaoResponse mapToOrganizacaoResponse(LeitorVinculoExterno.Vinculo vinculo) {
-        return new OrganizacaoResponse(
+    private GrupoParoquialResponse mapToGrupoParoquialResponse(LeitorVinculoExterno.Vinculo vinculo) {
+        return new GrupoParoquialResponse(
                 vinculo.organizationId(),
                 vinculo.organizationName(),
-                TipoOrganizacao.valueOf(vinculo.organizationType()),
+                TipoGrupo.valueOf(vinculo.organizationType()),
                 vinculo.organizationContact(),
                 vinculo.organizationCoordinator(),
                 vinculo.organizationViceCoordinator(),

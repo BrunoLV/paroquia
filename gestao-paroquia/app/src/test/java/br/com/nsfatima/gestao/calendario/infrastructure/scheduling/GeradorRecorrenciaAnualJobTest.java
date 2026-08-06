@@ -42,7 +42,7 @@ class YearlyRecurrenceGeneratorJobTest {
         EventoEntity baseEvent = new EventoEntity();
         baseEvent.setId(baseId);
         baseEvent.setTitulo("Missa Dominical");
-        baseEvent.setOrganizacaoResponsavelId(UUID.randomUUID());
+        baseEvent.setGrupoParoquialResponsavelId(UUID.randomUUID());
         baseEvent.setInicioUtc(Instant.parse("2026-01-04T08:00:00Z"));
         baseEvent.setFimUtc(Instant.parse("2026-01-04T09:00:00Z"));
         baseEvent.setStatus("CONFIRMADO");

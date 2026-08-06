@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
@@ -12,8 +12,8 @@ import java.util.UUID;
  * movimentos por não terem hierarquia territorial própria.
  */
 public record AdicionarVinculoRequest(
-        @NotNull UUID organizacaoId,
-        @NotNull TipoOrganizacao tipo,
+        @NotNull UUID grupoParoquialId,
+        @NotNull TipoGrupo tipo,
         @NotNull PapelOrganizacional papel,
         UUID igrejaVinculoId
 ) {

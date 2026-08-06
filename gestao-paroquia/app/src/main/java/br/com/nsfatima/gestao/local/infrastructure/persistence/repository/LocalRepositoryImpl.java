@@ -4,8 +4,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     private final LocalJpaRepository localJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
-    private final OrganizacaoJpaRepository organizacaoJpaRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
 
     /**
      * Inicializa o adaptador com os repositórios JPA necessários para persistir Locais e resolver
@@ -32,15 +32,15 @@ public class LocalRepositoryImpl implements LocalRepository {
      *
      * @param localJpaRepository        repositório JPA de Locais
      * @param eventoJpaRepository       repositório JPA de Eventos, usado para checar uso de um local
-     * @param organizacaoJpaRepository  repositório JPA de Organizações, usado para resolver o nome
+     * @param grupoParoquialJpaRepository  repositório JPA de Organizações, usado para resolver o nome
      *                                  da organização vinculada a um local
      */
     public LocalRepositoryImpl(LocalJpaRepository localJpaRepository,
                                 EventoJpaRepository eventoJpaRepository,
-                                OrganizacaoJpaRepository organizacaoJpaRepository) {
+                                GrupoParoquialJpaRepository grupoParoquialJpaRepository) {
         this.localJpaRepository = localJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.organizacaoJpaRepository = organizacaoJpaRepository;
+        this.grupoParoquialJpaRepository = grupoParoquialJpaRepository;
     }
 
     @Override
@@ -62,8 +62,8 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public List<Local> findByOrganizacaoId(UUID organizacaoId) {
-        return localJpaRepository.findByOrganizacaoId(organizacaoId).stream()
+    public List<Local> findByGrupoParoquialId(UUID grupoParoquialId) {
+        return localJpaRepository.findByGrupoParoquialId(grupoParoquialId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
@@ -87,15 +87,15 @@ public class LocalRepositoryImpl implements LocalRepository {
         entity.setCapacidade(domain.getCapacidade());
         entity.setCaracteristicas(domain.getCaracteristicas());
         entity.setAtivo(domain.isAtivo());
-        entity.setOrganizacaoId(domain.getOrganizacaoId());
+        entity.setGrupoParoquialId(domain.getGrupoParoquialId());
         return entity;
     }
 
     private Local toDomain(LocalEntity entity) {
-        String organizacaoNome = null;
-        if (entity.getOrganizacaoId() != null) {
-            organizacaoNome = organizacaoJpaRepository.findById(entity.getOrganizacaoId())
-                    .map(OrganizacaoEntity::getNome)
+        String grupoParoquialNome = null;
+        if (entity.getGrupoParoquialId() != null) {
+            grupoParoquialNome = grupoParoquialJpaRepository.findById(entity.getGrupoParoquialId())
+                    .map(GrupoParoquialEntity::getNome)
                     .orElse(null);
         }
 
@@ -107,8 +107,8 @@ public class LocalRepositoryImpl implements LocalRepository {
                 entity.getCapacidade(),
                 entity.getCaracteristicas(),
                 entity.isAtivo(),
-                entity.getOrganizacaoId(),
-                organizacaoNome
+                entity.getGrupoParoquialId(),
+                grupoParoquialNome
         );
     }
 }

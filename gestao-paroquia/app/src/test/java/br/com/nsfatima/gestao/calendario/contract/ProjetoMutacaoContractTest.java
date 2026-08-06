@@ -33,7 +33,7 @@ class ProjetoMutacaoContractTest {
         entity.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         entity.setNome("Projeto Original");
         entity.setDescricao("Descricao original");
-        entity.setOrganizacaoResponsavelId(UUID.randomUUID());
+        entity.setGrupoParoquialResponsavelId(UUID.randomUUID());
         entity.setInicioUtc(Instant.parse("2026-01-01T00:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-31T23:59:59Z"));
         repository.save(entity);

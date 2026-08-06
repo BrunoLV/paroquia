@@ -6,7 +6,7 @@ import java.util.Locale;
  * Papéis de acesso irrestrito ("Roles Globais"), independentes de vínculo com qualquer organização
  * específica — diferente de {@link br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional},
  * que sempre pressupõe um escopo (organização/comunidade). Persistidos em {@code calendario.papel_global}
- * (par {@code fielId}+{@code papel}, sem {@code organizacaoId}), consultados via
+ * (par {@code fielId}+{@code papel}, sem {@code grupoParoquialId}), consultados via
  * {@link br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService}.
  */
 public enum PapelGlobal {

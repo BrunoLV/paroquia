@@ -6,18 +6,23 @@ DELETE FROM calendario.eventos;
 DELETE FROM calendario.eventos_recorrencia;
 DELETE FROM calendario.projetos_eventos;
 DELETE FROM calendario.membro_grupo;
+DELETE FROM calendario.papel_global;
 DELETE FROM calendario.usuarios;
 DELETE FROM calendario.fieis;
 DELETE FROM calendario.locais;
-DELETE FROM calendario.organizacoes;
+DELETE FROM calendario.grupo_paroquial;
+DELETE FROM calendario.unidade_territorial;
 DELETE FROM calendario.pastorais_movimentos_oficiais;
 
-INSERT INTO calendario.organizacoes (id, nome)
-VALUES ('00000000-0000-0000-0000-000000000001', 'Organizacao Default'),
-       ('00000000-0000-0000-0000-0000000000aa', 'Pastoral A'),
-       ('00000000-0000-0000-0000-0000000000bb', 'Pastoral B'),
-       ('00000000-0000-0000-0000-0000000000cc', 'Conselho C'),
-       ('00000000-0000-0000-0000-0000000000dd', 'Clero D');
+-- Clero D (dd) é uma UnidadeTerritorial, não um GrupoParoquial (track linguagem_ubiqua_dominio)
+INSERT INTO calendario.unidade_territorial (id, nome, tipo)
+VALUES ('00000000-0000-0000-0000-0000000000dd', 'Clero D', 'CLERO');
+
+INSERT INTO calendario.grupo_paroquial (id, nome, tipo)
+VALUES ('00000000-0000-0000-0000-000000000001', 'Organizacao Default', 'MINISTERIO'),
+       ('00000000-0000-0000-0000-0000000000aa', 'Pastoral A', 'PASTORAL'),
+       ('00000000-0000-0000-0000-0000000000bb', 'Pastoral B', 'PASTORAL'),
+       ('00000000-0000-0000-0000-0000000000cc', 'Conselho C', 'CONSELHO');
 
 INSERT INTO calendario.fieis (id, nome, cpf, cpf_hash, data_nascimento, email, telefone, endereco, vocacao,
                               ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por)
@@ -67,25 +72,27 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'joao.silva', '{noop}senha123', 
        ('00000000-0000-0000-0000-000000000007', 'sem.vinculo', '{noop}senha123', TRUE,
         'f0000000-0000-0000-0000-000000000007', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, ativo,
+INSERT INTO calendario.membro_grupo (id, fiel_id, grupo_paroquial_id, tipo_grupo, papel, ativo,
                                       criado_em_utc, atualizado_em_utc)
 VALUES ('10000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001',
         '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'coordenador-pastoral-local', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('10000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000002',
-        '00000000-0000-0000-0000-0000000000cc', 'CONSELHO_PASTORAL', 'secretario', TRUE,
+        '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'secretario', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('10000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000003',
         '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'voluntario-pastoral-local', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('10000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000004',
-        '00000000-0000-0000-0000-0000000000cc', 'CONSELHO_PASTORAL', 'presidente-cpc', TRUE,
+        '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'presidente-cpc', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('10000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000004',
         '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       -- Clara Invalida: combinação papel/tipo deliberadamente incompatível (presidente-cpc só é válido
+       -- para CONSELHO, não para PASTORAL) — usada para testar o erro ROLE_SCOPE_INVALID.
        ('10000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000006',
-        '00000000-0000-0000-0000-0000000000dd', 'CLERO', 'secretario', TRUE,
+        '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'presidente-cpc', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('10000000-0000-0000-0000-000000000007', 'f0000000-0000-0000-0000-000000000007',
         '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'voluntario-pastoral-local', TRUE,

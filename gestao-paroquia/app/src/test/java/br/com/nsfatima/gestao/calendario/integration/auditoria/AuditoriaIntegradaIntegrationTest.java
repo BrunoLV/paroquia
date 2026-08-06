@@ -72,7 +72,7 @@ class AuditoriaIntegradaIntegrationTest {
                         .content("{" +
                                 "\"nome\":\"Projeto Auditado\"," +
                                 "\"descricao\":\"Teste\"," +
-                                "\"organizacaoResponsavelId\":\"" + ORG_ID + "\"," +
+                                "\"grupoParoquialResponsavelId\":\"" + ORG_ID + "\"," +
                                 "\"inicio\":\"" + Instant.now() + "\"," +
                                 "\"fim\":\"" + Instant.now().plusSeconds(3600) + "\"" +
                                 "}"))
@@ -92,7 +92,7 @@ class AuditoriaIntegradaIntegrationTest {
 
         // 3. Verify Audit Trail
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("organizacaoId", ORG_ID)
+                        .param("grupoParoquialId", ORG_ID)
                         .param("granularidade", "MENSAL")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
@@ -109,7 +109,7 @@ class AuditoriaIntegradaIntegrationTest {
         evento.setTitulo("Evento para Auditoria");
         evento.setInicioUtc(Instant.now());
         evento.setFimUtc(Instant.now().plusSeconds(3600));
-        evento.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
+        evento.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
         evento.setStatus("RASCUNHO");
         eventoRepository.save(evento);
 
@@ -133,7 +133,7 @@ class AuditoriaIntegradaIntegrationTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("organizacaoId", ORG_ID)
+                        .param("grupoParoquialId", ORG_ID)
                         .param("granularidade", "MENSAL")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())

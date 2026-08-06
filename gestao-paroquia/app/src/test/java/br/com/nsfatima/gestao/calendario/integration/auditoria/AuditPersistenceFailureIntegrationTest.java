@@ -45,13 +45,13 @@ class AuditPersistenceFailureIntegrationTest {
     @Test
     @SuppressWarnings("null")
     void deveRetornarConflitoQuandoObrigatorioAuditarPersistenciaFalha() throws Exception {
-        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Falha auditavel");
         evento.setDescricao("descricao-original");
-        evento.setOrganizacaoResponsavelId(organizacaoId);
+        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
         evento.setInicioUtc(Instant.parse("2026-10-01T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-01T11:00:00Z"));
         evento.setStatus("RASCUNHO");
@@ -62,7 +62,7 @@ class AuditPersistenceFailureIntegrationTest {
                 .save(any(AuditoriaOperacaoEntity.class));
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Org-Id", organizacaoId.toString())
+                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
                                 "\"descricao\":\"descricao-atualizada\"" +

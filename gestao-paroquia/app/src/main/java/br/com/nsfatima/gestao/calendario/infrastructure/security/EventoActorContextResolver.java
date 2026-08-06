@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,10 +69,13 @@ public class EventoActorContextResolver {
                     || papelGlobalAuthorizationService.isGlobalByUsuarioId(usuarioDetails.getUsuarioId());
 
             if (isAdmin) {
+                // Contexto sintético de escopo global — "CLERO" aqui é só um sentinel informativo (não é
+                // mais um TipoGrupo válido desde a track linguagem_ubiqua_dominio); o papel PAROCO já basta
+                // para todo bypass de autorização baseado em papel em EventoPatchAuthorizationService etc.
                 return new EventoActorContext(
                         authentication.getName(),
                         PapelOrganizacional.PAROCO.storedValue(),
-                        TipoOrganizacao.CLERO.name(),
+                        "CLERO",
                         null,
                         usuarioDetails.getUsuarioId(),
                         null);
@@ -114,7 +117,7 @@ public class EventoActorContextResolver {
         return new EventoActorContext(
                 authentication.getName(),
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(),
-                TipoOrganizacao.PASTORAL.name(),
+                TipoGrupo.PASTORAL.name(),
                 null,
                 java.util.UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 null);

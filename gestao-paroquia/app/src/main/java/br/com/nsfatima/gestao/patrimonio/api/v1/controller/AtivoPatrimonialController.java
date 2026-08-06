@@ -19,7 +19,7 @@ import br.com.nsfatima.gestao.patrimonio.application.usecase.GetMetricasOciosida
 import br.com.nsfatima.gestao.patrimonio.application.usecase.IniciarManutencaoAtivoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ListAlocacoesPorAtivoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ListAlocacoesPorEventoUseCase;
-import br.com.nsfatima.gestao.patrimonio.application.usecase.ListAtivosPorOrganizacaoUseCase;
+import br.com.nsfatima.gestao.patrimonio.application.usecase.ListAtivosPorGrupoParoquialUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.TransferirAtivoPatrimonialUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,7 +52,7 @@ public class AtivoPatrimonialController {
     private static final String AUTHENTICATED = "isAuthenticated()";
 
     private final CreateAtivoPatrimonialUseCase createUseCase;
-    private final ListAtivosPorOrganizacaoUseCase listUseCase;
+    private final ListAtivosPorGrupoParoquialUseCase listUseCase;
     private final TransferirAtivoPatrimonialUseCase transferirUseCase;
     private final AlocarAtivoParaEventoUseCase alocarUseCase;
     private final DesalocarAtivoUseCase desalocarUseCase;
@@ -64,7 +64,7 @@ public class AtivoPatrimonialController {
     private final GetMetricasOciosidadeUseCase metricasOciosidadeUseCase;
 
     public AtivoPatrimonialController(CreateAtivoPatrimonialUseCase createUseCase,
-                                       ListAtivosPorOrganizacaoUseCase listUseCase,
+                                       ListAtivosPorGrupoParoquialUseCase listUseCase,
                                        TransferirAtivoPatrimonialUseCase transferirUseCase,
                                        AlocarAtivoParaEventoUseCase alocarUseCase,
                                        DesalocarAtivoUseCase desalocarUseCase,
@@ -105,19 +105,19 @@ public class AtivoPatrimonialController {
     /**
      * Lista o inventário completo de ativos patrimoniais pertencentes a uma organização.
      *
-     * @param organizacaoId organização dona dos ativos
+     * @param grupoParoquialId organização dona dos ativos
      * @return ativos cadastrados para a organização
      */
-    @GetMapping("/organizacao/{organizacaoId}")
+    @GetMapping("/organizacao/{grupoParoquialId}")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o inventário de ativos patrimoniais de uma organização")
-    public List<AtivoPatrimonialResponse> listByOrganizacao(@PathVariable UUID organizacaoId) {
-        return listUseCase.execute(organizacaoId);
+    public List<AtivoPatrimonialResponse> listByGrupoParoquial(@PathVariable UUID grupoParoquialId) {
+        return listUseCase.execute(grupoParoquialId);
     }
 
     /**
      * Transfere a posse de um ativo patrimonial para outra organização, sujeito às regras de
-     * {@code AtivoOrganizacaoPolicy} (ex.: bloqueio de transferência com alocação ativa).
+     * {@code AtivoGrupoParoquialPolicy} (ex.: bloqueio de transferência com alocação ativa).
      *
      * @param id      ativo a transferir
      * @param request organização de destino

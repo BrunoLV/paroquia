@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.type;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
 import java.util.Locale;
 
@@ -70,7 +70,7 @@ if ("conselho-vice-coordenador".equals(normalized)
      */
     public static AprovadorPapel resolveForAprovacao(String role, String organizationType) {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(role);
-        TipoOrganizacao tipoOrganizacao = TipoOrganizacao.fromStoredValue(organizationType);
+        TipoGrupo tipoGrupoParoquial = TipoGrupo.fromStoredValue(organizationType);
 
         if (papel == PapelOrganizacional.PAROCO || papel == PapelOrganizacional.BISPO_DIOCESANO) {
             return PAROCO;
@@ -78,10 +78,7 @@ if ("conselho-vice-coordenador".equals(normalized)
         boolean isViceOrMembroCpp = papel == PapelOrganizacional.MEMBRO_CPP
                 || papel == PapelOrganizacional.MEMBRO_CPC
                 || papel == PapelOrganizacional.MESA_CPP;
-if ((tipoOrganizacao == TipoOrganizacao.CONSELHO_PASTORAL
-                || tipoOrganizacao == TipoOrganizacao.CPP
-                || tipoOrganizacao == TipoOrganizacao.CPC)
-                && isViceOrMembroCpp) {
+if (tipoGrupoParoquial == TipoGrupo.CONSELHO && isViceOrMembroCpp) {
             return VICE_COORD_CONSELHO;
         }
 

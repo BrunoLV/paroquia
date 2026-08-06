@@ -37,7 +37,7 @@ class RbacOrganizationIntegrationTest {
     }
 
     @Test
-    void deveRetornarPapelEscopoInvalidoParaIncompativelPapelEOrganizacaoTipo() throws Exception {
+    void deveRetornarPapelEscopoInvalidoParaIncompativelPapelEGrupoParoquialTipo() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "clara.invalida", "senha123");
 
         mockMvc.perform(post("/api/v1/eventos")
@@ -72,17 +72,17 @@ class RbacOrganizationIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    private String validCreatePayload(String organizacaoResponsavelId) {
+    private String validCreatePayload(String grupoParoquialResponsavelId) {
         return """
                 {
                   "titulo": "Evento RBAC",
                   "descricao": "Teste de seguranca",
-                  "organizacaoResponsavelId": "%s",
+                  "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-20T10:00:00Z",
                   "fim": "2026-08-20T11:00:00Z",
                   "status": "rascunho",
                   "participantes": []
                 }
-                """.formatted(organizacaoResponsavelId);
+                """.formatted(grupoParoquialResponsavelId);
     }
 }

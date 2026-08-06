@@ -122,7 +122,7 @@ public class CreateEventoUseCase {
             authorizationService.assertCanBypassAgendaConflict(actorContext);
         }
         CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext,
-                request.organizacaoResponsavelId(), request.igrejaVinculoId());
+                request.grupoParoquialResponsavelId(), request.igrejaVinculoId());
 
 
         if (mode == CreateRequestMode.REQUIRES_APROVACAO) {
@@ -154,7 +154,7 @@ public class CreateEventoUseCase {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
         calendarLockPolicy.checkLock(request.inicio(), status);
-        domainService.validateOrganizacaoParticipantes(request.organizacaoResponsavelId(), request.participantes());
+        domainService.validateGrupoParoquialParticipantes(request.grupoParoquialResponsavelId(), request.participantes());
         projetoVincularPolicy.validateLink(request.projetoId(), request.inicio(), request.fim());
 
         List<EventoEntity> autoCancel = agendaPriorityValidatorService.validatePriorityAndConflicts(
@@ -258,12 +258,12 @@ public class CreateEventoUseCase {
      * }
      */
     public CreateEventoRequest restoreFromAprovacaoPayload(AprovacaoAcaoPayload payload) {
-        Objects.requireNonNull(payload.organizacaoResponsavelId(), "organizacaoResponsavelId is required");
+        Objects.requireNonNull(payload.grupoParoquialResponsavelId(), "grupoParoquialResponsavelId is required");
         Objects.requireNonNull(payload.inicio(), "inicio is required");
         Objects.requireNonNull(payload.fim(), "fim is required");
 
         return new CreateEventoRequest(payload.titulo(),
-                payload.descricao(), payload.categoria(), payload.organizacaoResponsavelId(),
+                payload.descricao(), payload.categoria(), payload.grupoParoquialResponsavelId(),
 
                 payload.projetoId(),
                 payload.localId(), payload.igrejaVinculoId(), payload.inicio(), payload.fim(),

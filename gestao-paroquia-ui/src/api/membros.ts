@@ -2,28 +2,50 @@ import apiClient from './client';
 
 export interface Membro {
   id: string;
-  usuarioId: string;
-  usuarioNome?: string;
-  usuarioEmail?: string;
-  usuarioTelefone?: string;
-  organizacaoId: string;
+  fielId: string;
+  fielNome?: string;
+  fielEmail?: string;
+  fielTelefone?: string;
+  grupoParoquialId: string;
+  grupoParoquialNome?: string;
+  /** Aliases para compatibilidade */
+  organizacaoId?: string;
   organizacaoNome?: string;
   papel: string;
   dataEntrada?: string;
   ativo: boolean;
+  igrejaVinculoId?: string | null;
   igrejaId?: string;
 }
 
 export interface MembroRequest {
-  usuarioId: string;
-  organizacaoId: string;
+  fielId: string;
+  grupoParoquialId: string;
   papel: string;
   dataEntrada?: string;
-  igrejaId?: string;
+  igrejaVinculoId?: string;
   ativo?: boolean;
 }
 
-export const getMembros = async (params?: { organizacaoId?: string; usuarioId?: string; ativo?: boolean }): Promise<{ content: Membro[] }> => {
+export interface PromoverACoordenadorPayload {
+  fielId: string;
+  grupoParoquialId: string;
+  papel: string;
+  username?: string;
+  password?: string;
+}
+
+export interface PromoverACoordenadorResponse {
+  membroId: string;
+  usuarioId: string;
+  novoUsuarioCriado: boolean;
+}
+
+export const getMembros = async (params?: {
+  grupoParoquialId?: string;
+  fielId?: string;
+  ativo?: boolean;
+}): Promise<{ content: Membro[] }> => {
   const response = await apiClient.get<{ content: Membro[] }>('/membros', { params });
   return response.data;
 };
@@ -40,4 +62,14 @@ export const updateMembro = async (id: string, request: MembroRequest): Promise<
 
 export const toggleMembroStatus = async (id: string, ativo: boolean): Promise<void> => {
   await apiClient.patch(`/membros/${id}/status`, null, { params: { ativo } });
+};
+
+export const promoverACoordenador = async (
+  payload: PromoverACoordenadorPayload
+): Promise<PromoverACoordenadorResponse> => {
+  const response = await apiClient.post<PromoverACoordenadorResponse>(
+    '/membros/promover-coordenador',
+    payload
+  );
+  return response.data;
 };

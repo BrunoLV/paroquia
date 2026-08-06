@@ -12,7 +12,7 @@ import br.com.nsfatima.gestao.dashboard.api.v1.dto.DistribuicaoEventosDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventoSemanalDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.ResumoGeralDTO;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -53,7 +53,7 @@ public class GetDashboardMetricsUseCase {
     private final ProjetoEventoJpaRepository projetoRepository;
     private final AprovacaoJpaRepository aprovacaoRepository;
     private final ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository;
-    private final OrganizacaoJpaRepository organizacaoRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final LocalJpaRepository localRepository;
     private final ProjetoAgregacaoDomainService projetoAgregacaoDomainService;
 
@@ -62,14 +62,14 @@ public class GetDashboardMetricsUseCase {
             ProjetoEventoJpaRepository projetoRepository,
             AprovacaoJpaRepository aprovacaoRepository,
             ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository,
-            OrganizacaoJpaRepository organizacaoRepository,
+            GrupoParoquialJpaRepository grupoParoquialRepository,
             LocalJpaRepository localRepository,
             ProjetoAgregacaoDomainService projetoAgregacaoDomainService) {
         this.eventoRepository = eventoRepository;
         this.projetoRepository = projetoRepository;
         this.aprovacaoRepository = aprovacaoRepository;
         this.projetoAprovacaoRepository = projetoAprovacaoRepository;
-        this.organizacaoRepository = organizacaoRepository;
+        this.grupoParoquialRepository = grupoParoquialRepository;
         this.localRepository = localRepository;
         this.projetoAgregacaoDomainService = projetoAgregacaoDomainService;
     }
@@ -129,7 +129,7 @@ public class GetDashboardMetricsUseCase {
         List<EventoEntity> eventosMes = eventoRepository.findAllInPeriod(inicioMes, fimMes);
         if (isFilterNeeded) {
             eventosMes = eventosMes.stream()
-                    .filter(e -> orgId.equals(e.getOrganizacaoResponsavelId()))
+                    .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId()))
                     .toList();
         }
 
@@ -137,7 +137,7 @@ public class GetDashboardMetricsUseCase {
         List<ProjetoEventoEntity> projetos = projetoRepository.findAll();
         List<ProjetoEventoEntity> projetosAtivosEntities = projetos.stream()
                 .filter(p -> p.getStatus() == ProjetoStatus.ABERTO || p.getStatus() == ProjetoStatus.EM_ANDAMENTO)
-                .filter(p -> !isFilterNeeded || orgId.equals(p.getOrganizacaoResponsavelId()))
+                .filter(p -> !isFilterNeeded || orgId.equals(p.getGrupoParoquialResponsavelId()))
                 .toList();
 
         // 4. Contar aprovações pendentes
@@ -153,7 +153,7 @@ public class GetDashboardMetricsUseCase {
                         return false;
                     }
                     Optional<EventoEntity> ev = eventoRepository.findById(a.getEventoId());
-                    return ev.isPresent() && orgId.equals(ev.get().getOrganizacaoResponsavelId());
+                    return ev.isPresent() && orgId.equals(ev.get().getGrupoParoquialResponsavelId());
                 })
                 .count();
 
@@ -169,7 +169,7 @@ public class GetDashboardMetricsUseCase {
                         return false;
                     }
                     Optional<ProjetoEventoEntity> pr = projetoRepository.findById(a.getProjetoId());
-                    return pr.isPresent() && orgId.equals(pr.get().getOrganizacaoResponsavelId());
+                    return pr.isPresent() && orgId.equals(pr.get().getGrupoParoquialResponsavelId());
                 })
                 .count();
 
@@ -183,12 +183,12 @@ public class GetDashboardMetricsUseCase {
 
         // 5. Calcular distribuição de eventos por organização
         Map<UUID, String> nomesOrganizacoes = new HashMap<>();
-        organizacaoRepository.findAll().forEach(o -> nomesOrganizacoes.put(o.getId(), o.getNome()));
+        grupoParoquialRepository.findAll().forEach(o -> nomesOrganizacoes.put(o.getId(), o.getNome()));
 
-        Map<UUID, Long> contagemPorOrganizacao = eventosMes.stream()
-                .collect(Collectors.groupingBy(EventoEntity::getOrganizacaoResponsavelId, Collectors.counting()));
+        Map<UUID, Long> contagemPorGrupoParoquial = eventosMes.stream()
+                .collect(Collectors.groupingBy(EventoEntity::getGrupoParoquialResponsavelId, Collectors.counting()));
 
-        List<DistribuicaoEventosDTO> eventosPorOrganizacao = contagemPorOrganizacao.entrySet().stream()
+        List<DistribuicaoEventosDTO> eventosPorGrupoParoquial = contagemPorGrupoParoquial.entrySet().stream()
                 .map(entry -> new DistribuicaoEventosDTO(
                         nomesOrganizacoes.getOrDefault(entry.getKey(), "Organização Desconhecida"),
                         entry.getValue()
@@ -236,7 +236,7 @@ public class GetDashboardMetricsUseCase {
         List<EventoEntity> eventosSemanaEntities = eventoRepository.findAllInPeriod(inicioSemana, fimSemana);
         if (isFilterNeeded) {
             eventosSemanaEntities = eventosSemanaEntities.stream()
-                    .filter(e -> orgId.equals(e.getOrganizacaoResponsavelId()))
+                    .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId()))
                     .toList();
         }
 
@@ -248,13 +248,13 @@ public class GetDashboardMetricsUseCase {
                         e.getTitulo(),
                         LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
                         nomesLocais.getOrDefault(e.getLocalId(), "Sem Local"),
-                        nomesOrganizacoes.getOrDefault(e.getOrganizacaoResponsavelId(), "Organização Desconhecida")
+                        nomesOrganizacoes.getOrDefault(e.getGrupoParoquialResponsavelId(), "Organização Desconhecida")
                 ))
                 .toList();
 
         return new DashboardMetricsDTO(
                 resumoGeral,
-                eventosPorOrganizacao,
+                eventosPorGrupoParoquial,
                 projetosAtivosDetalhes,
                 eventosSemana
         );

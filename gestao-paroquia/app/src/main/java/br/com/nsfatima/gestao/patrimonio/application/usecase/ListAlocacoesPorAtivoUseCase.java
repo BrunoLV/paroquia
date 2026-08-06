@@ -49,7 +49,7 @@ public class ListAlocacoesPorAtivoUseCase {
     private AtivoAlocacaoResponse toResponse(AtivoAlocacaoEntity ocupacao, AtivoPatrimonialEntity ativo) {
         return new AtivoAlocacaoResponse(
                 ocupacao.getId(), ativo.getId(), ativo.getNome(), ativo.getNumeroTombamento(), ocupacao.getTipo(),
-                ocupacao.getEventoId(), ocupacao.getOrganizacaoOrigemId(), ocupacao.getOrganizacaoDestinoId(),
+                ocupacao.getEventoId(), ocupacao.getGrupoParoquialOrigemId(), ocupacao.getGrupoParoquialDestinoId(),
                 ocupacao.isEmprestimo(), ocupacao.getDataInicio(), ocupacao.getDataFim(), ocupacao.getStatus(),
                 ocupacao.isImpactadaPorAtraso(), ocupacao.getCriadoEmUtc(), ocupacao.getDevolvidoEmUtc());
     }

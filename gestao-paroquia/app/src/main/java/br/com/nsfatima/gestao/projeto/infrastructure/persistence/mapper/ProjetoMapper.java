@@ -44,7 +44,7 @@ public class ProjetoMapper {
                 entity.getId(),
                 entity.getNome(),
                 entity.getDescricao(),
-                entity.getOrganizacaoResponsavelId(),
+                entity.getGrupoParoquialResponsavelId(),
                 entity.getInicioUtc(),
                 entity.getFimUtc(),
                 entity.getStatus(),

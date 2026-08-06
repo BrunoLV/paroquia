@@ -43,7 +43,7 @@ public class ExportacaoCalendarioController {
      * @param dataInicio início do intervalo customizado, usado quando {@code opcao} é PERIODO
      * @param dataFim fim do intervalo customizado, usado quando {@code opcao} é PERIODO
      * @param categorias categorias de evento para restringir a exportação; se omitido, inclui todas
-     * @param organizacaoIds organizações responsáveis para restringir a exportação; se omitido, inclui todas
+     * @param grupoParoquialIds organizações responsáveis para restringir a exportação; se omitido, inclui todas
      * @return o arquivo exportado com os cabeçalhos de content-type e content-disposition apropriados,
      *     ou {@code 400 Bad Request} caso o formato informado não seja reconhecido
      */
@@ -62,10 +62,10 @@ public class ExportacaoCalendarioController {
             @Parameter(description = "Filtrar por múltiplas categorias") @RequestParam(required = false)
             java.util.List<String> categorias,
             @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false)
-            java.util.List<UUID> organizacaoIds) {
+            java.util.List<UUID> grupoParoquialIds) {
 
         byte[] content = exportUseCase.execute(formato,
-                opcao, ano, mes, dataInicio, dataFim, categorias, organizacaoIds);
+                opcao, ano, mes, dataInicio, dataFim, categorias, grupoParoquialIds);
 
 
         String filename = "calendario_" + opcao.toLowerCase();

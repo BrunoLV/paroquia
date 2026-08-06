@@ -56,7 +56,7 @@ public abstract class BaseExceptionHandler {
 
         String organizationId = resolveOrganizationId();
         if (organizationId != null) {
-            metadata.put("organizacaoId", organizationId);
+            metadata.put("grupoParoquialId", organizationId);
         }
 
         auditLogPersistenceService.log(

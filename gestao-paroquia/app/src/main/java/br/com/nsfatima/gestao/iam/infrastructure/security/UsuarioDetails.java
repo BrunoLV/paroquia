@@ -118,7 +118,7 @@ public class UsuarioDetails implements UserDetails {
      * @param organizationId organização de interesse
      * @return o vínculo do usuário com essa organização, se existir
      */
-    public Optional<LeitorVinculoExterno.Vinculo> findVinculoPorOrganizacao(UUID organizationId) {
+    public Optional<LeitorVinculoExterno.Vinculo> findVinculoPorGrupoParoquial(UUID organizationId) {
         return vinculos.stream()
                 .filter(vinculo -> organizationId != null && organizationId.equals(vinculo.organizationId()))
                 .findFirst();

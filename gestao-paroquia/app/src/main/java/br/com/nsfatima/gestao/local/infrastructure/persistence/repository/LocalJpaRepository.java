@@ -25,8 +25,8 @@ public interface LocalJpaRepository extends JpaRepository<LocalEntity, UUID> {
     /**
      * Busca os Locais vinculados a uma organização (Matriz ou Comunidade) específica.
      *
-     * @param organizacaoId ID da organização de subordinação
+     * @param grupoParoquialId ID da organização de subordinação
      * @return lista de Locais vinculados à organização informada
      */
-    List<LocalEntity> findByOrganizacaoId(UUID organizacaoId);
+    List<LocalEntity> findByGrupoParoquialId(UUID grupoParoquialId);
 }

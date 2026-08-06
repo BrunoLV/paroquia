@@ -58,7 +58,7 @@ class ApproveCreateEventoIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento auto-criado pos-aprovacao",
-                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000cc",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000cc",
                                   "inicio": "2027-04-01T10:00:00Z",
                                   "fim": "2027-04-01T11:00:00Z"
                                 }

@@ -20,7 +20,7 @@ public record AtivoPatrimonialResponse(
         AtivoCategoria categoria,
         AtivoStatus status,
         boolean reservavel,
-        UUID organizacaoId,
+        UUID grupoParoquialId,
         LocalDate dataAquisicao,
         BigDecimal valorEstimado,
         Instant criadoEmUtc

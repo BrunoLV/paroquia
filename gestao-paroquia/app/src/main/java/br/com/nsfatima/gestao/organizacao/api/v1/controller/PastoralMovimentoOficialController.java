@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * Expõe a API REST de gestão do catálogo oficial de Pastorais e Movimentos da paróquia. Restrita a ADMIN,
- * diferente da API de {@code Organizacao} que também aceita coordenadores locais, pois este catálogo define
+ * diferente da API de {@code GrupoParoquial} que também aceita coordenadores locais, pois este catálogo define
  * o registro-mestre compartilhado por todas as instâncias locais de uma pastoral/movimento.
  */
 @RestController
