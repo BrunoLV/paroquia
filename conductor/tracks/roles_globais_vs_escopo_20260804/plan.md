@@ -84,3 +84,13 @@
 - [x] Task: Rodar a suíte completa (`./gradlew test`) e confirmar 100% de sucesso, sem regressões
 - [x] Task: Verificar cobertura de código dos trechos novos/alterados (target >80%)
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md) `22d1dcf`
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions `6d9f469`
+
+  Revisão formal (conductor-review) encontrou 1 achado Medium: o `@PreAuthorize` de
+  `MembroController.promoverACoordenador` (FR5) substituiu `CLERO_PAROCO`/`CLERO_VIGARIO` pelos novos papéis
+  `GLOBAL_*` em vez de adicioná-los — diferente dos dois endpoints de `UsuarioController`, que corretamente
+  preservaram os papéis existentes. Como não há migração de dados populando `papel_global` a partir de
+  `MembroGrupo` (V062 só cria a tabela), isso quebraria silenciosamente qualquer Fiel que ainda dependesse do
+  vínculo CLERO antigo. Corrigido para ser aditivo, igual aos outros dois endpoints.
