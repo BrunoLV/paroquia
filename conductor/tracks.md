@@ -338,7 +338,7 @@
 
 
 
-- [ ] **Track: Alinhar Linguagem Ubíqua — separar UnidadeTerritorial de GrupoParoquial, renomear Organizacao/TipoOrganizacao — Track 5/7 da iniciativa SDD**
+- [~] **Track: Alinhar Linguagem Ubíqua — separar UnidadeTerritorial de GrupoParoquial, renomear Organizacao/TipoOrganizacao — Track 5/7 da iniciativa SDD**
 *Link: [./tracks/linguagem_ubiqua_dominio_20260804/index.md](./tracks/linguagem_ubiqua_dominio_20260804/index.md)*
 
 ---
