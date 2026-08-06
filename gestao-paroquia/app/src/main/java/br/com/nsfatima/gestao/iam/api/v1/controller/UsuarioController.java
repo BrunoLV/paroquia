@@ -77,7 +77,8 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO',"
+            + " 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Lista todos os usuários")
     /*
       Fornece uma visão geral de todos os usuários cadastrados no sistema para fins de auditoria e gestão
@@ -129,7 +130,9 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CONSELHO_COORDENADOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CONSELHO_COORDENADOR')"
+            + " or hasRole('GLOBAL_ADMIN') or hasRole('GLOBAL_PAROCO') or hasRole('GLOBAL_VIGARIO')"
+            + " or hasRole('GLOBAL_SECRETARIA_PAROQUIAL')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Aprova um novo usuário e ativa suas solicitações de pastorais")
     public void approve(@PathVariable UUID id) {

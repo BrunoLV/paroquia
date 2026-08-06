@@ -48,6 +48,24 @@ public class UsuarioDetails implements UserDetails {
             boolean enabled,
             String roles,
             List<LeitorVinculoExterno.Vinculo> vinculos) {
+        this(usuarioId, username, password, enabled, roles, vinculos, List.of());
+    }
+
+    /**
+     * Variante completa do construtor, incluindo os códigos de papel global ativos do Fiel do usuário (ver
+     * track {@code roles_globais_vs_escopo}), traduzidos para authorities no formato
+     * {@code ROLE_GLOBAL_<PAPEL>}.
+     *
+     * @param papeisGlobais códigos de papel global ativos (ex.: {@code "paroco"}), ou {@code null}/vazio
+     */
+    public UsuarioDetails(
+            UUID usuarioId,
+            String username,
+            String password,
+            boolean enabled,
+            String roles,
+            List<LeitorVinculoExterno.Vinculo> vinculos,
+            List<String> papeisGlobais) {
         this.usuarioId = usuarioId;
         this.username = username;
         this.password = password;
@@ -64,7 +82,11 @@ public class UsuarioDetails implements UserDetails {
         Stream<String> vinculoRoles = this.vinculos.stream()
                 .map(LeitorVinculoExterno.Vinculo::authority);
 
-        this.authorities = Stream.concat(globalRoles, vinculoRoles)
+        Stream<String> papelGlobalRoles = (papeisGlobais == null ? List.<String>of() : papeisGlobais).stream()
+                .filter(p -> p != null && !p.isBlank())
+                .map(p -> "ROLE_GLOBAL_" + p.trim().toUpperCase(java.util.Locale.ROOT).replace('-', '_'));
+
+        this.authorities = Stream.concat(Stream.concat(globalRoles, vinculoRoles), papelGlobalRoles)
                 .distinct()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toUnmodifiableList());

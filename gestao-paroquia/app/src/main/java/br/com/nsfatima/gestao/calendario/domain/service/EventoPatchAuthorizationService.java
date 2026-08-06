@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
+import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -51,6 +52,12 @@ public class EventoPatchAuthorizationService {
             PapelOrganizacional.VIGARIO,
             PapelOrganizacional.PADRE);
 
+    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
+
+    public EventoPatchAuthorizationService(PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
+        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
+    }
+
     /**
      * Garante que o ator tem permissão para criar um evento no escopo informado,
      * sem retornar o modo de criação resultante.
@@ -82,12 +89,9 @@ public class EventoPatchAuthorizationService {
 
         if (!isParoco) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.getAuthorities() != null) {
-                isParoco = auth.getAuthorities().stream().anyMatch(a ->
-                        "ROLE_CLERO_PAROCO".equalsIgnoreCase(a.getAuthority()) ||
-                        "ROLE_PAROCO".equalsIgnoreCase(a.getAuthority()) ||
-                        "ROLE_ADMIN".equalsIgnoreCase(a.getAuthority()));
-            }
+            UUID actorId = auth != null && auth.getPrincipal() instanceof UsuarioDetails details
+                    ? details.getUsuarioId() : null;
+            isParoco = actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId);
         }
 
         if (!isParoco) {

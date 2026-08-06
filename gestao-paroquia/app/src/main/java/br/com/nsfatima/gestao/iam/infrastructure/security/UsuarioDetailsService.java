@@ -67,7 +67,8 @@ public class UsuarioDetailsService implements UserDetailsService {
                     usuario.passwordHash(),
                     usuario.enabled(),
                     usuario.roles(),
-                    externalVinculoReader.findVinculosAtivos(usuario.id()));
+                    externalVinculoReader.findVinculosAtivos(usuario.id()),
+                    externalVinculoReader.findPapeisGlobaisAtivos(usuario.id()));
         } catch (DataAccessException ex) {
             throw new AuthenticationServiceException("Fonte de autorizacao indisponivel", ex);
         }

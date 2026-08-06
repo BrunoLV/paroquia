@@ -184,6 +184,15 @@ class MembroUseCaseTest {
     }
 
     @Test
+    @DisplayName("Deve rejeitar papel global (PAROCO/VIGARIO/ADMIN) via MembroGrupo")
+    void deveRejeitarPapelGlobalViaAdicionarMembro() {
+        var requestGlobal = new MembroRequest(fielId, organizacaoId, "PAROCO", LocalDate.now(), null, true);
+
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+                () -> adicionarUseCase.execute(requestGlobal, "admin"));
+    }
+
+    @Test
     @DisplayName("Nunca depende de nada do pacote iam/usuario (AC2)")
     void nuncaDependeDeUsuario() {
         // AdicionarMembroUseCase deve permanecer capaz de operar sem nunca ler/criar/alterar UsuarioEntity —

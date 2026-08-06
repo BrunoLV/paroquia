@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
 import br.com.nsfatima.gestao.calendario.domain.policy.AuthorizationPolicy;
+import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -26,9 +27,12 @@ import java.util.Objects;
 public class EventoActorContextResolver {
 
     private final AuthorizationPolicy authorizationPolicy;
+    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
 
-    public EventoActorContextResolver(AuthorizationPolicy authorizationPolicy) {
+    public EventoActorContextResolver(AuthorizationPolicy authorizationPolicy,
+                                       PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
         this.authorizationPolicy = authorizationPolicy;
+        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
     }
 
     /**
@@ -61,7 +65,8 @@ public class EventoActorContextResolver {
         if (principal instanceof UsuarioDetails usuarioDetails) {
             boolean isAdmin = usuarioDetails.getAuthorities().stream()
                     .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ADMIN") ||
-                            a.getAuthority().equals("ROLE_ADMIN"));
+                            a.getAuthority().equals("ROLE_ADMIN"))
+                    || papelGlobalAuthorizationService.isGlobalByUsuarioId(usuarioDetails.getUsuarioId());
 
             if (isAdmin) {
                 return new EventoActorContext(

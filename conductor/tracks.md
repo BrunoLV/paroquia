@@ -337,10 +337,6 @@
 ---
 
 
-- [ ] **Track: Formalizar Roles Globais (`papel_global`: PAROCO/VIGARIO/ADMIN/SECRETARIA_PAROQUIAL, sem organizacaoId) e centralizar o bypass de acesso irrestrito — Track 4/7 da iniciativa SDD**
-*Link: [./tracks/roles_globais_vs_escopo_20260804/index.md](./tracks/roles_globais_vs_escopo_20260804/index.md)*
-
----
 
 - [ ] **Track: Alinhar Linguagem Ubíqua — separar UnidadeTerritorial de GrupoParoquial, renomear Organizacao/TipoOrganizacao — Track 5/7 da iniciativa SDD**
 *Link: [./tracks/linguagem_ubiqua_dominio_20260804/index.md](./tracks/linguagem_ubiqua_dominio_20260804/index.md)*

@@ -164,7 +164,9 @@ public class MembroController {
      * @return o vínculo atualizado e o {@code usuarioId} (existente ou recém-criado)
      */
     @PostMapping("/promover-coordenador")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CLERO_VIGARIO') or hasRole('CPP_MESA_CPP')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CLERO_VIGARIO')"
+            + " or hasRole('GLOBAL_ADMIN') or hasRole('GLOBAL_PAROCO')"
+            + " or hasRole('GLOBAL_VIGARIO') or hasRole('GLOBAL_SECRETARIA_PAROQUIAL') or hasRole('CPP_MESA_CPP')")
     @Operation(summary = "Promove um Fiel membro a coordenador, criando login se necessário")
     public PromoverACoordenadorResponse promoverACoordenador(@RequestBody @Valid PromoverACoordenadorRequest request) {
         return promoverACoordenadorUseCase.execute(request);
