@@ -6,7 +6,6 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +36,6 @@ class ProjetoAgregacaoRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    void setupSchema() {
-        // Ensure organizacoes table exists for the native query
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS calendario.organizacoes (id UUID PRIMARY KEY, nome VARCHAR(255))");
-        jdbcTemplate.execute("DELETE FROM calendario.organizacoes");
-    }
 
     @Test
     @DisplayName("Deve contar eventos por projeto e status corretamente")
@@ -104,12 +96,12 @@ class ProjetoAgregacaoRepositoryTest {
         UUID orgEvento1 = UUID.randomUUID();
         UUID orgEnvolvido1 = UUID.randomUUID();
 
-        // Setup organizations in external table
+        // Setup organizations in grupo_paroquial
         jdbcTemplate.execute(
-                "INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgProjeto + "', 'Pastoral do Projeto')");
+                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgProjeto + "', 'Pastoral do Projeto')");
         jdbcTemplate.execute(
-                "INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgEvento1 + "', 'Pastoral do Evento')");
-        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgEnvolvido1 +
+                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEvento1 + "', 'Pastoral do Evento')");
+        jdbcTemplate.execute("INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEnvolvido1 +
                 "', 'Pastoral Envolvida')");
 
         // Setup project
@@ -141,7 +133,7 @@ class ProjetoAgregacaoRepositoryTest {
         UUID orgId = UUID.randomUUID();
         String uniqueNome = "Org Teste " + orgId;
         jdbcTemplate.execute(
-                "INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgId + "', '" + uniqueNome + "')");
+                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgId + "', '" + uniqueNome + "')");
 
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());

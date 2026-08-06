@@ -94,7 +94,8 @@ public class EventoCancelamentoAuthorizationService {
     }
 
     private boolean isLocalLeadership(PapelOrganizacional role, TipoGrupo organizationType) {
-        return LOCAL_SCOPED_ORG_TYPES.contains(organizationType) && LEADERSHIP_ROLES.contains(role);
+        return organizationType != null && LOCAL_SCOPED_ORG_TYPES.contains(organizationType)
+                && LEADERSHIP_ROLES.contains(role);
     }
 
     /**

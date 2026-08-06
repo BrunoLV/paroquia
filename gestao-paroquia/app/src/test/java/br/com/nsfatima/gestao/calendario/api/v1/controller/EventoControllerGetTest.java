@@ -31,7 +31,7 @@ class EventoControllerGetTest {
     @Test
     void deveRetornarEventoDetalhesQuandoEncontrado() throws Exception {
         UUID orgId = UUID.randomUUID();
-        jdbcTemplate.execute("INSERT INTO calendario.organizacoes (id, nome) VALUES ('" + orgId + "', 'Org Teste')");
+        jdbcTemplate.execute("INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgId + "', 'Org Teste')");
 
         UUID eventId = UUID.randomUUID();
         EventoEntity entity = new EventoEntity();

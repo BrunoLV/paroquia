@@ -6,6 +6,7 @@ DELETE FROM calendario.eventos;
 DELETE FROM calendario.eventos_recorrencia;
 DELETE FROM calendario.projetos_eventos;
 DELETE FROM calendario.membro_grupo;
+DELETE FROM calendario.papel_global;
 DELETE FROM calendario.usuarios;
 DELETE FROM calendario.fieis;
 DELETE FROM calendario.locais;
@@ -88,8 +89,10 @@ VALUES ('10000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-0000000
        ('10000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000004',
         '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       -- Clara Invalida: combinação papel/tipo deliberadamente incompatível (presidente-cpc só é válido
+       -- para CONSELHO, não para PASTORAL) — usada para testar o erro ROLE_SCOPE_INVALID.
        ('10000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000006',
-        '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'secretario', TRUE,
+        '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'presidente-cpc', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('10000000-0000-0000-0000-000000000007', 'f0000000-0000-0000-0000-000000000007',
         '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'voluntario-pastoral-local', TRUE,

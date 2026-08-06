@@ -25,8 +25,20 @@ public class AuthorizationPolicy {
      *     reconhecido ou não for compatível
      */
     public boolean isRoleAllowed(String organizationType, String role) {
-        TipoGrupo normalizedOrg = TipoGrupo.fromStoredValue(organizationType);
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
+
+        // "CLERO" é apenas um sentinel informativo de escopo global desde a track
+        // linguagem_ubiqua_dominio (não é mais um TipoGrupo válido — Clero virou UnidadeTerritorial).
+        // PAROCO/VIGARIO são papéis globais (track roles_globais_vs_escopo), mas continuam sendo
+        // representados sob esse sentinel em contextos legados/sintéticos (ex.: EventoActorContextResolver).
+        if ("CLERO".equalsIgnoreCase(organizationType)) {
+            return normalizedRole == PapelOrganizacional.PAROCO
+                    || normalizedRole == PapelOrganizacional.VIGARIO
+                    || normalizedRole == PapelOrganizacional.PADRE
+                    || normalizedRole == PapelOrganizacional.DIACONO;
+        }
+
+        TipoGrupo normalizedOrg = TipoGrupo.fromStoredValue(organizationType);
 
         if (normalizedOrg == null || normalizedRole == null) {
             return false;

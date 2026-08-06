@@ -243,7 +243,7 @@ class AtivoPatrimonialControllerIntegrationTest {
         criarAtivo(AtivoStatus.DISPONIVEL, grupoParoquialId);
         criarAtivo(AtivoStatus.DISPONIVEL, UUID.randomUUID());
 
-        mockMvc.perform(get("/api/v1/ativos/grupoParoquial/" + grupoParoquialId)
+        mockMvc.perform(get("/api/v1/ativos/organizacao/" + grupoParoquialId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO"))
                 .andExpect(status().isOk())

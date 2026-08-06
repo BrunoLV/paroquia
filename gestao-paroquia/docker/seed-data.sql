@@ -77,7 +77,7 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Grupos Paroquiais (Conselhos/Pastorais/Movimentos). Conselhos têm organização-mãe diretamente na
--- UnidadeTerritorial (Matriz/Comunidade); Pastorais têm organização-mãe um Conselho. Os antigos 4 tipos de
+-- UnidadeTerritorial (Matriz/Comunidade). Pastorais têm organização-mãe um Conselho. Os antigos 4 tipos de
 -- conselho (CONSELHO_PASTORAL/CONSELHO_ECONOMICO/CPP/CPC) colapsaram em um único tipo CONSELHO.
 INSERT INTO calendario.grupo_paroquial (id, nome, tipo, contato, coordenador, vice_coordenador, ativo, parent_id, pastoral_oficial_id, version)
 VALUES

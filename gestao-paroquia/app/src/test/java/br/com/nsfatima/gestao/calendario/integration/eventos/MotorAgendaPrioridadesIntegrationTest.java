@@ -2,7 +2,11 @@ package br.com.nsfatima.gestao.calendario.integration.eventos;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +14,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +32,21 @@ class MotorAgendaPrioridadesIntegrationTest {
 
     @Autowired
     private EventoJpaRepository eventoJpaRepository;
+
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
+
+    @BeforeEach
+    void setUp() {
+        UUID igrejaId = UUID.fromString(IGREJA_ID);
+        if (!unidadeTerritorialJpaRepository.existsById(igrejaId)) {
+            UnidadeTerritorialEntity igreja = new UnidadeTerritorialEntity();
+            igreja.setId(igrejaId);
+            igreja.setNome("Igreja Teste " + igrejaId);
+            igreja.setTipo(TipoUnidadeTerritorial.MATRIZ);
+            unidadeTerritorialJpaRepository.save(igreja);
+        }
+    }
 
     @AfterEach
     void tearDown() {
