@@ -2925,9 +2925,9 @@
     "semantic_hash": "b684161ffa664b061459adc4b26d3f76"
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1786036367.308968,
-    "ast_hash": "dbc22a3fde7df0a630805168a5f8fef5",
-    "semantic_hash": "dbc22a3fde7df0a630805168a5f8fef5"
+    "mtime": 1786155842.730414,
+    "ast_hash": "071962b4d4416fdc0f31dcbcb0afa88c",
+    "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
     "mtime": 1786036367.3098764,
