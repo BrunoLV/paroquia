@@ -3925,1717 +3925,1717 @@
     "semantic_hash": "253f6c8649adf23aa3847e220fdb9043"
   },
   ".agents/rules/graphify-routing.md": {
-    "mtime": 1785456561.611,
+    "mtime": 1786036367.258744,
     "ast_hash": "8ff74c64abef6f8aab2ff53ae3590ade",
     "semantic_hash": "8ff74c64abef6f8aab2ff53ae3590ade"
   },
   ".agents/skills/ddd.md": {
-    "mtime": 1785155214.717,
+    "mtime": 1786036367.258744,
     "ast_hash": "fac1dd8f73257daf7e717d427e02cdc3",
     "semantic_hash": "fac1dd8f73257daf7e717d427e02cdc3"
   },
   ".agents/skills/flyway.md": {
-    "mtime": 1785156670.112,
+    "mtime": 1786036367.258868,
     "ast_hash": "59b108ff78d87a359a613fbe55c9445e",
     "semantic_hash": "59b108ff78d87a359a613fbe55c9445e"
   },
   ".agents/skills/gradle.md": {
-    "mtime": 1785156113.66,
+    "mtime": 1786036367.258868,
     "ast_hash": "c6d60a023402439432b53588b8c9d3c8",
     "semantic_hash": "c6d60a023402439432b53588b8c9d3c8"
   },
   ".agents/skills/java.md": {
-    "mtime": 1785157291.244,
+    "mtime": 1786036367.258868,
     "ast_hash": "0f5c2b9a57909183ac5aca9414761795",
     "semantic_hash": "0f5c2b9a57909183ac5aca9414761795"
   },
   ".agents/skills/react-frontend.md": {
-    "mtime": 1785855653.3688595,
+    "mtime": 1786036367.258868,
     "ast_hash": "2e77fb12273581023dada09ff3fdd79f",
     "semantic_hash": ""
   },
   ".agents/skills/solid.md": {
-    "mtime": 1785155745.522,
+    "mtime": 1786036367.258868,
     "ast_hash": "db7f9312c83c5a1e3e76c17445eefac9",
     "semantic_hash": "db7f9312c83c5a1e3e76c17445eefac9"
   },
   ".agents/skills/sql.md": {
-    "mtime": 1785156875.624,
+    "mtime": 1786036367.258868,
     "ast_hash": "c9aa321f9f6ca2d3d91dd755ea040ec1",
     "semantic_hash": "c9aa321f9f6ca2d3d91dd755ea040ec1"
   },
   ".agents/skills/tdd.md": {
-    "mtime": 1785155613.313,
+    "mtime": 1786036367.258868,
     "ast_hash": "970fbb42264ef07470a6c03eefcf1ea9",
     "semantic_hash": "970fbb42264ef07470a6c03eefcf1ea9"
   },
   ".agents/skills/tdd_2.md": {
-    "mtime": 1785157047.785,
+    "mtime": 1786036367.258868,
     "ast_hash": "0e97b49df3053a64107745be2ad9e448",
     "semantic_hash": "0e97b49df3053a64107745be2ad9e448"
   },
   "AGENTS.md": {
-    "mtime": 1785812353.5157034,
-    "ast_hash": "1761adec67865ba4ccaf01f100d11d2f",
+    "mtime": 1786036481.442518,
+    "ast_hash": "6c135b5482693266aa795d0e05927121",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1785812353.5157034,
-    "ast_hash": "1761adec67865ba4ccaf01f100d11d2f",
+    "mtime": 1786036484.2835133,
+    "ast_hash": "03c04f9fadf1acfa05105d6c1c82f941",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785815945.5904922,
+    "mtime": 1786036367.2593863,
     "ast_hash": "239d71aa119f358ac3af2c8a79714326",
     "semantic_hash": ""
   },
   "conductor.yml": {
-    "mtime": 1785815945.5904922,
+    "mtime": 1786036367.2593863,
     "ast_hash": "7150f7d3427a37b937c80ac6c3a20d93",
     "semantic_hash": ""
   },
   "conductor/archive/align_architecture_packages_20260603/index.md": {
-    "mtime": 1780505594.1118593,
+    "mtime": 1786036367.259626,
     "ast_hash": "54450b329c3db62bd7c56c1b2f1f2e74",
     "semantic_hash": "54450b329c3db62bd7c56c1b2f1f2e74"
   },
   "conductor/archive/align_architecture_packages_20260603/plan.md": {
-    "mtime": 1780511624.195286,
+    "mtime": 1786036367.2596586,
     "ast_hash": "f5c0610383be3215db56177920b1d1bb",
     "semantic_hash": "f5c0610383be3215db56177920b1d1bb"
   },
   "conductor/archive/align_architecture_packages_20260603/spec.md": {
-    "mtime": 1780505580.015404,
+    "mtime": 1786036367.2596586,
     "ast_hash": "a037c6e8fb095724bce5c49c2dd48b9b",
     "semantic_hash": "a037c6e8fb095724bce5c49c2dd48b9b"
   },
   "conductor/archive/alinhamento_eventos_projetos_recorrencia_20260730/index.md": {
-    "mtime": 1785389929.5891213,
+    "mtime": 1786036367.2596586,
     "ast_hash": "31fbc156a2215b1e829864f53727b48e",
     "semantic_hash": "31fbc156a2215b1e829864f53727b48e"
   },
   "conductor/archive/alinhamento_eventos_projetos_recorrencia_20260730/plan.md": {
-    "mtime": 1785390367.7159243,
+    "mtime": 1786036367.2597563,
     "ast_hash": "c29a5ff0cbe3a40153c9e58cee927471",
     "semantic_hash": "c29a5ff0cbe3a40153c9e58cee927471"
   },
   "conductor/archive/alinhamento_eventos_projetos_recorrencia_20260730/spec.md": {
-    "mtime": 1785389922.867122,
+    "mtime": 1786036367.2597563,
     "ast_hash": "5009cefa32cadf9fa70656399313933f",
     "semantic_hash": "5009cefa32cadf9fa70656399313933f"
   },
   "conductor/archive/ano_paroquial_gestao_20260531/index.md": {
-    "mtime": 1780279757.4747798,
+    "mtime": 1786036367.2597563,
     "ast_hash": "f06127f04f3ced2eddec92383b90e774",
     "semantic_hash": "f06127f04f3ced2eddec92383b90e774"
   },
   "conductor/archive/ano_paroquial_gestao_20260531/plan.md": {
-    "mtime": 1780319598.1970787,
+    "mtime": 1786036367.259849,
     "ast_hash": "047cb96ff339a7b0b2443063ec623fc4",
     "semantic_hash": "047cb96ff339a7b0b2443063ec623fc4"
   },
   "conductor/archive/ano_paroquial_gestao_20260531/spec.md": {
-    "mtime": 1780279748.4118483,
+    "mtime": 1786036367.259849,
     "ast_hash": "8699d7ff6b5933cb480e607169e0a489",
     "semantic_hash": "8699d7ff6b5933cb480e607169e0a489"
   },
   "conductor/archive/approval_workflow_ui_20260525/index.md": {
-    "mtime": 1779758916.9655788,
+    "mtime": 1786036367.259849,
     "ast_hash": "43f5bd41ae41ed472c66741b80d374f6",
     "semantic_hash": "43f5bd41ae41ed472c66741b80d374f6"
   },
   "conductor/archive/approval_workflow_ui_20260525/plan.md": {
-    "mtime": 1779762531.9550881,
+    "mtime": 1786036367.2599382,
     "ast_hash": "c9de75a78574135a717cde6f068914aa",
     "semantic_hash": "c9de75a78574135a717cde6f068914aa"
   },
   "conductor/archive/approval_workflow_ui_20260525/spec.md": {
-    "mtime": 1779758910.8005884,
+    "mtime": 1786036367.2599382,
     "ast_hash": "3da54349b71c6848f18f5d98ba84dc43",
     "semantic_hash": "3da54349b71c6848f18f5d98ba84dc43"
   },
   "conductor/archive/cadastro_rolagem_layout_20260629/index.md": {
-    "mtime": 1782773356.8491821,
+    "mtime": 1786036367.2599382,
     "ast_hash": "21158b651fc5eb400e03677de910a35c",
     "semantic_hash": "21158b651fc5eb400e03677de910a35c"
   },
   "conductor/archive/cadastro_rolagem_layout_20260629/plan.md": {
-    "mtime": 1782779567.285309,
+    "mtime": 1786036367.2600265,
     "ast_hash": "5ae892e33b5102143900e1a0d02167d7",
     "semantic_hash": "5ae892e33b5102143900e1a0d02167d7"
   },
   "conductor/archive/cadastro_rolagem_layout_20260629/spec.md": {
-    "mtime": 1782773349.7071931,
+    "mtime": 1786036367.2600265,
     "ast_hash": "36d8aab6d72a2f496dcfefd4db73a98d",
     "semantic_hash": "36d8aab6d72a2f496dcfefd4db73a98d"
   },
   "conductor/archive/cadastro_usuarios_20260627/index.md": {
-    "mtime": 1782575417.3150117,
+    "mtime": 1786036367.2600265,
     "ast_hash": "177ac2dec3790ce4aaddec2ba1dae77d",
     "semantic_hash": "177ac2dec3790ce4aaddec2ba1dae77d"
   },
   "conductor/archive/cadastro_usuarios_20260627/plan.md": {
-    "mtime": 1782597583.276322,
+    "mtime": 1786036367.2600975,
     "ast_hash": "9ae2dec2e8e9cd8fbc9f5b70000b88d6",
     "semantic_hash": "9ae2dec2e8e9cd8fbc9f5b70000b88d6"
   },
   "conductor/archive/cadastro_usuarios_20260627/spec.md": {
-    "mtime": 1782575407.3950236,
+    "mtime": 1786036367.2600975,
     "ast_hash": "336c035f02a9c6fa6fc7f82f548f6e98",
     "semantic_hash": "336c035f02a9c6fa6fc7f82f548f6e98"
   },
   "conductor/archive/clean_fqn_imports_20260602/fqn_locations.md": {
-    "mtime": 1780452896.7170842,
+    "mtime": 1786036367.2600975,
     "ast_hash": "adcb0a3ec3fabbd3a380a645e06b3fc4",
     "semantic_hash": "adcb0a3ec3fabbd3a380a645e06b3fc4"
   },
   "conductor/archive/clean_fqn_imports_20260602/index.md": {
-    "mtime": 1780452717.476464,
+    "mtime": 1786036367.2602267,
     "ast_hash": "1edc3ab0454df09330d66b89e694540f",
     "semantic_hash": "1edc3ab0454df09330d66b89e694540f"
   },
   "conductor/archive/clean_fqn_imports_20260602/plan.md": {
-    "mtime": 1780453424.5625143,
+    "mtime": 1786036367.2602267,
     "ast_hash": "01190817009ed6814367ca18e6333062",
     "semantic_hash": "01190817009ed6814367ca18e6333062"
   },
   "conductor/archive/clean_fqn_imports_20260602/spec.md": {
-    "mtime": 1780452709.1334753,
+    "mtime": 1786036367.2602267,
     "ast_hash": "40ba5ae61cb39b12cd675a8ee9e3e3e1",
     "semantic_hash": "40ba5ae61cb39b12cd675a8ee9e3e3e1"
   },
   "conductor/archive/dashboard_calendar_ui_20260721/index.md": {
-    "mtime": 1784688120.902158,
+    "mtime": 1786036367.2603202,
     "ast_hash": "d166bdde94a257fd3a3afb0eafda5ceb",
     "semantic_hash": "d166bdde94a257fd3a3afb0eafda5ceb"
   },
   "conductor/archive/dashboard_calendar_ui_20260721/plan.md": {
-    "mtime": 1784748789.9119675,
+    "mtime": 1786036367.260407,
     "ast_hash": "13c38297f71acbdc282061801be72381",
     "semantic_hash": "13c38297f71acbdc282061801be72381"
   },
   "conductor/archive/dashboard_calendar_ui_20260721/spec.md": {
-    "mtime": 1784688111.873156,
+    "mtime": 1786036367.260407,
     "ast_hash": "27e182024aaba63b1f350d47864d1ac5",
     "semantic_hash": "27e182024aaba63b1f350d47864d1ac5"
   },
   "conductor/archive/dashboard_screen_20260521/index.md": {
-    "mtime": 1779384099.9452598,
+    "mtime": 1786036367.260407,
     "ast_hash": "7a2239667874447d62e9a485c932df01",
     "semantic_hash": "7a2239667874447d62e9a485c932df01"
   },
   "conductor/archive/dashboard_screen_20260521/plan.md": {
-    "mtime": 1779404478.5352874,
+    "mtime": 1786036367.2604923,
     "ast_hash": "d848b483d2b81b1b74b4d80635f102df",
     "semantic_hash": "d848b483d2b81b1b74b4d80635f102df"
   },
   "conductor/archive/dashboard_screen_20260521/spec.md": {
-    "mtime": 1779384099.9452598,
+    "mtime": 1786036367.2604923,
     "ast_hash": "d2d3942d1a629e89604f6797ba8fbdb5",
     "semantic_hash": "d2d3942d1a629e89604f6797ba8fbdb5"
   },
   "conductor/archive/docker_seed_vinculo_igreja_20260721/index.md": {
-    "mtime": 1784673302.560561,
+    "mtime": 1786036367.2604923,
     "ast_hash": "daedd1a4612b12f7b03fc64e235570cf",
     "semantic_hash": "daedd1a4612b12f7b03fc64e235570cf"
   },
   "conductor/archive/docker_seed_vinculo_igreja_20260721/plan.md": {
-    "mtime": 1784673841.2730105,
+    "mtime": 1786036367.2605717,
     "ast_hash": "61f26d4d91774785a53bbdbb225f74b7",
     "semantic_hash": "61f26d4d91774785a53bbdbb225f74b7"
   },
   "conductor/archive/docker_seed_vinculo_igreja_20260721/spec.md": {
-    "mtime": 1784673297.4295666,
+    "mtime": 1786036367.2605717,
     "ast_hash": "a48ad6af80b11a2e0447f869e5f8f330",
     "semantic_hash": "a48ad6af80b11a2e0447f869e5f8f330"
   },
   "conductor/archive/error_handling_refinement_20260531/index.md": {
-    "mtime": 1780188800.6596668,
+    "mtime": 1786036367.2605717,
     "ast_hash": "c7773d8b4a34895d12ddd53fa57cac5e",
     "semantic_hash": "c7773d8b4a34895d12ddd53fa57cac5e"
   },
   "conductor/archive/error_handling_refinement_20260531/plan.md": {
-    "mtime": 1780190287.1122146,
+    "mtime": 1786036367.2606525,
     "ast_hash": "8995d6caeb606d175eeb7c03bedc4f84",
     "semantic_hash": "8995d6caeb606d175eeb7c03bedc4f84"
   },
   "conductor/archive/error_handling_refinement_20260531/spec.md": {
-    "mtime": 1780188792.8576643,
+    "mtime": 1786036367.2606525,
     "ast_hash": "113c6506dc7dda7f14bc7d6a8f22a24c",
     "semantic_hash": "113c6506dc7dda7f14bc7d6a8f22a24c"
   },
   "conductor/archive/escopo_territorial_community_id_20260728/index.md": {
-    "mtime": 1785291926.0258615,
+    "mtime": 1786036367.2606525,
     "ast_hash": "fa929ae65c505d7d232bbc5040535574",
     "semantic_hash": "fa929ae65c505d7d232bbc5040535574"
   },
   "conductor/archive/escopo_territorial_community_id_20260728/plan.md": {
-    "mtime": 1785296319.754253,
+    "mtime": 1786036367.260737,
     "ast_hash": "432f3548f647199f3a319b15922e1db0",
     "semantic_hash": "432f3548f647199f3a319b15922e1db0"
   },
   "conductor/archive/escopo_territorial_community_id_20260728/spec.md": {
-    "mtime": 1785295845.4261672,
+    "mtime": 1786036367.260737,
     "ast_hash": "6910d28e13d57b6c791abd78249558c6",
     "semantic_hash": "6910d28e13d57b6c791abd78249558c6"
   },
   "conductor/archive/event_editing_cancellation_20260520/index.md": {
-    "mtime": 1779334360.7494614,
+    "mtime": 1786036367.2608216,
     "ast_hash": "0228b76cc0dc57a67230491182693e28",
     "semantic_hash": "0228b76cc0dc57a67230491182693e28"
   },
   "conductor/archive/event_editing_cancellation_20260520/plan.md": {
-    "mtime": 1779383709.6752036,
+    "mtime": 1786036367.2609246,
     "ast_hash": "56a21e1351bc58d6448794777b33f035",
     "semantic_hash": "56a21e1351bc58d6448794777b33f035"
   },
   "conductor/archive/event_editing_cancellation_20260520/spec.md": {
-    "mtime": 1779334360.7491663,
+    "mtime": 1786036367.2609246,
     "ast_hash": "74a410c8fda1fc5a9fdbe13d74b373ec",
     "semantic_hash": "74a410c8fda1fc5a9fdbe13d74b373ec"
   },
   "conductor/archive/event_observations_management_20260613/index.md": {
-    "mtime": 1781361004.3131318,
+    "mtime": 1786036367.2609246,
     "ast_hash": "42e02be6c2ac7b6efda01fb72ef22531",
     "semantic_hash": "42e02be6c2ac7b6efda01fb72ef22531"
   },
   "conductor/archive/event_observations_management_20260613/plan.md": {
-    "mtime": 1781363136.9259467,
+    "mtime": 1786036367.2610056,
     "ast_hash": "09cc6a5b0de9e136bfd8ce8674a8cedf",
     "semantic_hash": "09cc6a5b0de9e136bfd8ce8674a8cedf"
   },
   "conductor/archive/event_observations_management_20260613/spec.md": {
-    "mtime": 1781360993.5481343,
+    "mtime": 1786036367.2610056,
     "ast_hash": "748a0178747c0b1a521e7db01087b4ca",
     "semantic_hash": "748a0178747c0b1a521e7db01087b4ca"
   },
   "conductor/archive/event_project_date_validation_20260531/index.md": {
-    "mtime": 1780240898.0529015,
+    "mtime": 1786036367.2610056,
     "ast_hash": "09bfe690e2bab7fedb26a04c2a39ac7d",
     "semantic_hash": "09bfe690e2bab7fedb26a04c2a39ac7d"
   },
   "conductor/archive/event_project_date_validation_20260531/plan.md": {
-    "mtime": 1780242491.245192,
+    "mtime": 1786036367.2610962,
     "ast_hash": "ad7c989e6c12b3f1efb9d42794bd08e4",
     "semantic_hash": "ad7c989e6c12b3f1efb9d42794bd08e4"
   },
   "conductor/archive/event_project_date_validation_20260531/spec.md": {
-    "mtime": 1780240888.6329057,
+    "mtime": 1786036367.2610962,
     "ast_hash": "8a094226408db781cd642e597fea75ab",
     "semantic_hash": "8a094226408db781cd642e597fea75ab"
   },
   "conductor/archive/event_recurrence_20260524/index.md": {
-    "mtime": 1779696774.0665936,
+    "mtime": 1786036367.2610962,
     "ast_hash": "fe79a2478b28fbcfc52432d1980913f7",
     "semantic_hash": "fe79a2478b28fbcfc52432d1980913f7"
   },
   "conductor/archive/event_recurrence_20260524/plan.md": {
-    "mtime": 1779757681.7265112,
+    "mtime": 1786036367.2611973,
     "ast_hash": "4425494633491e3726ded57f9272570a",
     "semantic_hash": "4425494633491e3726ded57f9272570a"
   },
   "conductor/archive/event_recurrence_20260524/spec.md": {
-    "mtime": 1779696880.009242,
+    "mtime": 1786036367.2611973,
     "ast_hash": "de4403284f6726ca7cdac92cedd06bab",
     "semantic_hash": "de4403284f6726ca7cdac92cedd06bab"
   },
   "conductor/archive/event_registration_20260520/index.md": {
-    "mtime": 1779331085.307304,
+    "mtime": 1786036367.2611973,
     "ast_hash": "454bde14462128b87c722e3f6b77da4f",
     "semantic_hash": "454bde14462128b87c722e3f6b77da4f"
   },
   "conductor/archive/event_registration_20260520/plan.md": {
-    "mtime": 1779333379.7966733,
+    "mtime": 1786036367.2613199,
     "ast_hash": "a851d925384115872449ae9b12100132",
     "semantic_hash": "a851d925384115872449ae9b12100132"
   },
   "conductor/archive/event_registration_20260520/spec.md": {
-    "mtime": 1779331085.307304,
+    "mtime": 1786036367.2613199,
     "ast_hash": "711ce35d93de82a2be25289e4b403f02",
     "semantic_hash": "711ce35d93de82a2be25289e4b403f02"
   },
   "conductor/archive/expand_event_model_20260523/index.md": {
-    "mtime": 1779669397.806018,
+    "mtime": 1786036367.2613199,
     "ast_hash": "0409f55d370fc5b5ed7426f3986b918f",
     "semantic_hash": "0409f55d370fc5b5ed7426f3986b918f"
   },
   "conductor/archive/expand_event_model_20260523/plan.md": {
-    "mtime": 1779671349.847081,
+    "mtime": 1786036367.2614164,
     "ast_hash": "20811b6d65a685810d83d0a7e9a11b21",
     "semantic_hash": "20811b6d65a685810d83d0a7e9a11b21"
   },
   "conductor/archive/expand_event_model_20260523/spec.md": {
-    "mtime": 1779669397.806018,
+    "mtime": 1786036367.2614164,
     "ast_hash": "d0bf590b746e20eb05fe817bdceaa1e0",
     "semantic_hash": "d0bf590b746e20eb05fe817bdceaa1e0"
   },
   "conductor/archive/fix_event_modals_20260524/index.md": {
-    "mtime": 1779672974.565482,
+    "mtime": 1786036367.2616496,
     "ast_hash": "c46dd06c35bfc24e35c03bae04c15110",
     "semantic_hash": "c46dd06c35bfc24e35c03bae04c15110"
   },
   "conductor/archive/fix_event_modals_20260524/plan.md": {
-    "mtime": 1779674577.0633576,
+    "mtime": 1786036367.2617996,
     "ast_hash": "b01e6392cfdf29bcb1b5d5c708ca9b27",
     "semantic_hash": "b01e6392cfdf29bcb1b5d5c708ca9b27"
   },
   "conductor/archive/fix_event_modals_20260524/spec.md": {
-    "mtime": 1779672974.565482,
+    "mtime": 1786036367.2617996,
     "ast_hash": "5356173bdf801848a20598dd1b721db2",
     "semantic_hash": "5356173bdf801848a20598dd1b721db2"
   },
   "conductor/archive/governanca_conselhos_cpp_cpc_20260728/index.md": {
-    "mtime": 1785291939.5578651,
+    "mtime": 1786036367.2617996,
     "ast_hash": "384bff5f346652c26ef1f1422647bc62",
     "semantic_hash": "384bff5f346652c26ef1f1422647bc62"
   },
   "conductor/archive/governanca_conselhos_cpp_cpc_20260728/plan.md": {
-    "mtime": 1785296799.4527936,
+    "mtime": 1786036367.2619047,
     "ast_hash": "9cfacb2ef1ce6d1554fd9c7e4d6d7a8f",
     "semantic_hash": "9cfacb2ef1ce6d1554fd9c7e4d6d7a8f"
   },
   "conductor/archive/governanca_conselhos_cpp_cpc_20260728/spec.md": {
-    "mtime": 1785296422.5665832,
+    "mtime": 1786036367.2619047,
     "ast_hash": "aa4ad08072c691b07f6d5d0006f74891",
     "semantic_hash": "aa4ad08072c691b07f6d5d0006f74891"
   },
   "conductor/archive/importacao_arquivos_20260721/index.md": {
-    "mtime": 1784688571.371241,
+    "mtime": 1786036367.262023,
     "ast_hash": "0e1389ba4d87d5c69af40b4419e9f8a5",
     "semantic_hash": "0e1389ba4d87d5c69af40b4419e9f8a5"
   },
   "conductor/archive/importacao_arquivos_20260721/plan.md": {
-    "mtime": 1784756271.670177,
+    "mtime": 1786036367.2621157,
     "ast_hash": "dd4fe1cef2ad631e61a014ded2f6a189",
     "semantic_hash": "dd4fe1cef2ad631e61a014ded2f6a189"
   },
   "conductor/archive/importacao_arquivos_20260721/spec.md": {
-    "mtime": 1784752719.4533877,
+    "mtime": 1786036367.2621157,
     "ast_hash": "44200e8f7bbf529aaa931c396797a653",
     "semantic_hash": "44200e8f7bbf529aaa931c396797a653"
   },
   "conductor/archive/java_modernization_20260601/index.md": {
-    "mtime": 1780364946.5251136,
+    "mtime": 1786036367.2621157,
     "ast_hash": "4566b80fd75097e43e8319fcaabc2e72",
     "semantic_hash": "4566b80fd75097e43e8319fcaabc2e72"
   },
   "conductor/archive/java_modernization_20260601/plan.md": {
-    "mtime": 1780452205.5541518,
+    "mtime": 1786036367.262247,
     "ast_hash": "c6156ac15e08c327f14367e02090102f",
     "semantic_hash": "c6156ac15e08c327f14367e02090102f"
   },
   "conductor/archive/java_modernization_20260601/spec.md": {
-    "mtime": 1780364941.5651145,
+    "mtime": 1786036367.262247,
     "ast_hash": "df732e5e3a96cbfabeb22949fd8ac7da",
     "semantic_hash": "df732e5e3a96cbfabeb22949fd8ac7da"
   },
   "conductor/archive/liturgical_calendar_visual_20260731/index.md": {
-    "mtime": 1785502742.1408155,
+    "mtime": 1786036367.2623768,
     "ast_hash": "ef67e3b1cffbd8abde581eba721ad2b9",
     "semantic_hash": "ef67e3b1cffbd8abde581eba721ad2b9"
   },
   "conductor/archive/liturgical_calendar_visual_20260731/plan.md": {
-    "mtime": 1785503051.0995097,
+    "mtime": 1786036367.2625337,
     "ast_hash": "94a340cdc4ab5d8f57bdacb32a577929",
     "semantic_hash": "94a340cdc4ab5d8f57bdacb32a577929"
   },
   "conductor/archive/liturgical_calendar_visual_20260731/spec.md": {
-    "mtime": 1785502737.0658205,
+    "mtime": 1786036367.2625337,
     "ast_hash": "592d6c8bad4a89bd199f629852dbddc3",
     "semantic_hash": "592d6c8bad4a89bd199f629852dbddc3"
   },
   "conductor/archive/locais_crud_20260616/index.md": {
-    "mtime": 1781575011.5148556,
+    "mtime": 1786036367.2625337,
     "ast_hash": "86ca4bc1ac7f183b636512cff8b9180e",
     "semantic_hash": "86ca4bc1ac7f183b636512cff8b9180e"
   },
   "conductor/archive/locais_crud_20260616/plan.md": {
-    "mtime": 1781576553.1211176,
+    "mtime": 1786036367.2626493,
     "ast_hash": "6973749fb984b4e48b72d5c545ef4773",
     "semantic_hash": "6973749fb984b4e48b72d5c545ef4773"
   },
   "conductor/archive/locais_crud_20260616/spec.md": {
-    "mtime": 1781575001.2948492,
+    "mtime": 1786036367.2626493,
     "ast_hash": "6a5b7cd3f4371594b5bb12f1a1c28cf9",
     "semantic_hash": "6a5b7cd3f4371594b5bb12f1a1c28cf9"
   },
   "conductor/archive/matriz_comunidades_20260629/index.md": {
-    "mtime": 1782732721.4079368,
+    "mtime": 1786036367.2626493,
     "ast_hash": "a45c919550c48344047f154629523119",
     "semantic_hash": "a45c919550c48344047f154629523119"
   },
   "conductor/archive/matriz_comunidades_20260629/plan.md": {
-    "mtime": 1782735304.2700198,
+    "mtime": 1786036367.2627897,
     "ast_hash": "20225248674f3e5430e0bd4e8f01bfdd",
     "semantic_hash": "20225248674f3e5430e0bd4e8f01bfdd"
   },
   "conductor/archive/matriz_comunidades_20260629/spec.md": {
-    "mtime": 1782732710.9720716,
+    "mtime": 1786036367.2627897,
     "ast_hash": "81fa490b6ddfeb3fe49c7a2aa54df216",
     "semantic_hash": "81fa490b6ddfeb3fe49c7a2aa54df216"
   },
   "conductor/archive/metricas_estrategicas_paroquiais_20260730/index.md": {
-    "mtime": 1785424472.0787382,
+    "mtime": 1786036367.2629051,
     "ast_hash": "7a1c95dab8b573a6208e776b9dab03b4",
     "semantic_hash": "7a1c95dab8b573a6208e776b9dab03b4"
   },
   "conductor/archive/metricas_estrategicas_paroquiais_20260730/plan.md": {
-    "mtime": 1785427586.0751057,
+    "mtime": 1786036367.2630882,
     "ast_hash": "349d494276b515d1be9dadcc911b26de",
     "semantic_hash": "349d494276b515d1be9dadcc911b26de"
   },
   "conductor/archive/metricas_estrategicas_paroquiais_20260730/spec.md": {
-    "mtime": 1785424465.8087375,
+    "mtime": 1786036367.2630882,
     "ast_hash": "99e2f6a9f8ff63911a29f796fc549757",
     "semantic_hash": "99e2f6a9f8ff63911a29f796fc549757"
   },
   "conductor/archive/modernizacao_graficos_visualizacoes_20260731/index.md": {
-    "mtime": 1785527399.4263687,
+    "mtime": 1786036367.2630882,
     "ast_hash": "75d2bdf2e076bcc90c50f186d9063fcb",
     "semantic_hash": "75d2bdf2e076bcc90c50f186d9063fcb"
   },
   "conductor/archive/modernizacao_graficos_visualizacoes_20260731/plan.md": {
-    "mtime": 1785529627.5266237,
+    "mtime": 1786036367.2632222,
     "ast_hash": "2086e5b7832e468cc39b34d0b83cf7cc",
     "semantic_hash": "2086e5b7832e468cc39b34d0b83cf7cc"
   },
   "conductor/archive/modernizacao_graficos_visualizacoes_20260731/spec.md": {
-    "mtime": 1785527392.86363,
+    "mtime": 1786036367.2632222,
     "ast_hash": "b302af5fe023e48058bad2a434f589c4",
     "semantic_hash": "b302af5fe023e48058bad2a434f589c4"
   },
   "conductor/archive/motor_agenda_comunitaria_prioridades_20260728/index.md": {
-    "mtime": 1785291950.9368591,
+    "mtime": 1786036367.2632222,
     "ast_hash": "e30a30c09eb038e656acac37f3efb472",
     "semantic_hash": "e30a30c09eb038e656acac37f3efb472"
   },
   "conductor/archive/motor_agenda_comunitaria_prioridades_20260728/plan.md": {
-    "mtime": 1785333927.7067842,
+    "mtime": 1786036367.2633793,
     "ast_hash": "8dab9977deea533b44b2cfaad01c21c9",
     "semantic_hash": "8dab9977deea533b44b2cfaad01c21c9"
   },
   "conductor/archive/motor_agenda_comunitaria_prioridades_20260728/spec.md": {
-    "mtime": 1785291945.244862,
+    "mtime": 1786036367.2633793,
     "ast_hash": "6b83c83b4465cab75614a78c3c9a017d",
     "semantic_hash": "6b83c83b4465cab75614a78c3c9a017d"
   },
   "conductor/archive/motor_governanca_temporal_liturgica_20260730/index.md": {
-    "mtime": 1785454635.2589242,
+    "mtime": 1786036367.2633793,
     "ast_hash": "a4a10a85393e6b229670d8fd8652d222",
     "semantic_hash": "a4a10a85393e6b229670d8fd8652d222"
   },
   "conductor/archive/motor_governanca_temporal_liturgica_20260730/plan.md": {
-    "mtime": 1785454635.2591102,
+    "mtime": 1786036367.26349,
     "ast_hash": "c9a25a7326eb47d353a9e2354c3eb3e5",
     "semantic_hash": "c9a25a7326eb47d353a9e2354c3eb3e5"
   },
   "conductor/archive/motor_governanca_temporal_liturgica_20260730/spec.md": {
-    "mtime": 1785454635.2592545,
+    "mtime": 1786036367.26349,
     "ast_hash": "7bf3591b8d9a84cf28e07c5e5ef934e3",
     "semantic_hash": "7bf3591b8d9a84cf28e07c5e5ef934e3"
   },
   "conductor/archive/motor_liturgico_universal_eclesial_20260731/index.md": {
-    "mtime": 1785505617.0970507,
+    "mtime": 1786036367.26349,
     "ast_hash": "2e47f600607f4208fba0e3def3fc5602",
     "semantic_hash": "2e47f600607f4208fba0e3def3fc5602"
   },
   "conductor/archive/motor_liturgico_universal_eclesial_20260731/plan.md": {
-    "mtime": 1785507711.352537,
+    "mtime": 1786036367.2636416,
     "ast_hash": "257852dc15571cb99b95098bef85198a",
     "semantic_hash": "257852dc15571cb99b95098bef85198a"
   },
   "conductor/archive/motor_liturgico_universal_eclesial_20260731/spec.md": {
-    "mtime": 1785505608.0230637,
+    "mtime": 1786036367.2636416,
     "ast_hash": "9fe77ef6f09ae20529d6983bf96c2a41",
     "semantic_hash": "9fe77ef6f09ae20529d6983bf96c2a41"
   },
   "conductor/archive/organizational_hierarchy_alignment_20260704/index.md": {
-    "mtime": 1783179912.4924927,
+    "mtime": 1786036367.2636416,
     "ast_hash": "0d634f83572beca69c4b2f8492f87f1b",
     "semantic_hash": "0d634f83572beca69c4b2f8492f87f1b"
   },
   "conductor/archive/organizational_hierarchy_alignment_20260704/plan.md": {
-    "mtime": 1784595606.553306,
+    "mtime": 1786036367.2637746,
     "ast_hash": "c08aced1f37a0ad24f1ea736c63a653d",
     "semantic_hash": "c08aced1f37a0ad24f1ea736c63a653d"
   },
   "conductor/archive/organizational_hierarchy_alignment_20260704/spec.md": {
-    "mtime": 1783179896.6375065,
+    "mtime": 1786036367.2637746,
     "ast_hash": "8680edce20ff4c6b13636f2c9e2142de",
     "semantic_hash": "8680edce20ff4c6b13636f2c9e2142de"
   },
   "conductor/archive/organograma_estrutura_20260627/index.md": {
-    "mtime": 1782599064.6116734,
+    "mtime": 1786036367.2637746,
     "ast_hash": "2628b48b78accdcfc5f7d5d0cfa4e363",
     "semantic_hash": "2628b48b78accdcfc5f7d5d0cfa4e363"
   },
   "conductor/archive/organograma_estrutura_20260627/plan.md": {
-    "mtime": 1782599060.2586718,
+    "mtime": 1786036367.2639058,
     "ast_hash": "173f52653491f7fb8080105d35172daa",
     "semantic_hash": "173f52653491f7fb8080105d35172daa"
   },
   "conductor/archive/organograma_estrutura_20260627/spec.md": {
-    "mtime": 1782599055.31167,
+    "mtime": 1786036367.2639058,
     "ast_hash": "c6259f42681de675cf18803e197b59e7",
     "semantic_hash": "c6259f42681de675cf18803e197b59e7"
   },
   "conductor/archive/organograma_export_imagem_20260725/index.md": {
-    "mtime": 1785034711.0158381,
+    "mtime": 1786036367.2639058,
     "ast_hash": "b2bae541a94ae137a2a8763b18038c54",
     "semantic_hash": "b2bae541a94ae137a2a8763b18038c54"
   },
   "conductor/archive/organograma_export_imagem_20260725/plan.md": {
-    "mtime": 1785036717.8179202,
+    "mtime": 1786036367.26403,
     "ast_hash": "a57a19f98aba8c5179bfb2a607a201d4",
     "semantic_hash": "a57a19f98aba8c5179bfb2a607a201d4"
   },
   "conductor/archive/organograma_export_imagem_20260725/spec.md": {
-    "mtime": 1785034677.6327817,
+    "mtime": 1786036367.26403,
     "ast_hash": "465fdf18fc8f606063838b51482f99b7",
     "semantic_hash": "465fdf18fc8f606063838b51482f99b7"
   },
   "conductor/archive/organograma_hierarquia_clero_20260628/index.md": {
-    "mtime": 1782694381.0144353,
+    "mtime": 1786036367.26403,
     "ast_hash": "9d5ee1c572fdac636753abd1e935cc76",
     "semantic_hash": "9d5ee1c572fdac636753abd1e935cc76"
   },
   "conductor/archive/organograma_hierarquia_clero_20260628/plan.md": {
-    "mtime": 1782695047.4524736,
+    "mtime": 1786036367.2641475,
     "ast_hash": "48c6e03e005b0bae00b4ea5063d7cef5",
     "semantic_hash": "48c6e03e005b0bae00b4ea5063d7cef5"
   },
   "conductor/archive/organograma_hierarquia_clero_20260628/spec.md": {
-    "mtime": 1782694372.211443,
+    "mtime": 1786036367.2641475,
     "ast_hash": "525f83401225fbb5b49bb4e6d97c2072",
     "semantic_hash": "525f83401225fbb5b49bb4e6d97c2072"
   },
   "conductor/archive/padronizacao_agents_20260721/index.md": {
-    "mtime": 1784684374.203149,
+    "mtime": 1786036367.2641475,
     "ast_hash": "7c8c86226ea7f622aa2de65e0dc1adba",
     "semantic_hash": "7c8c86226ea7f622aa2de65e0dc1adba"
   },
   "conductor/archive/padronizacao_agents_20260721/plan.md": {
-    "mtime": 1784685256.1563523,
+    "mtime": 1786036367.26427,
     "ast_hash": "22296b74cfb7cde10e2c2abf15dd8159",
     "semantic_hash": "22296b74cfb7cde10e2c2abf15dd8159"
   },
   "conductor/archive/padronizacao_agents_20260721/spec.md": {
-    "mtime": 1784684365.084147,
+    "mtime": 1786036367.26427,
     "ast_hash": "ebf796e989fc2672c6acf5b4e419a68e",
     "semantic_hash": "ebf796e989fc2672c6acf5b4e419a68e"
   },
   "conductor/archive/padronizacao_ui_modernizacao_20260722/index.md": {
-    "mtime": 1784749907.3678782,
+    "mtime": 1786036367.26427,
     "ast_hash": "a0c32c46ea2a5079717723be5ba14999",
     "semantic_hash": "a0c32c46ea2a5079717723be5ba14999"
   },
   "conductor/archive/padronizacao_ui_modernizacao_20260722/plan.md": {
-    "mtime": 1784755170.3597114,
+    "mtime": 1786036367.2644045,
     "ast_hash": "68db4459d695bb101ebf7422cff50563",
     "semantic_hash": "68db4459d695bb101ebf7422cff50563"
   },
   "conductor/archive/padronizacao_ui_modernizacao_20260722/spec.md": {
-    "mtime": 1784749896.875882,
+    "mtime": 1786036367.2644045,
     "ast_hash": "47ea9ecd587f082aaeebee97c3a7b133",
     "semantic_hash": "47ea9ecd587f082aaeebee97c3a7b133"
   },
   "conductor/archive/pastorais_movimentos_20260627/index.md": {
-    "mtime": 1782571739.5152946,
+    "mtime": 1786036367.2644045,
     "ast_hash": "ddfd84ca7bd37bcb82af05afeb364d3c",
     "semantic_hash": "ddfd84ca7bd37bcb82af05afeb364d3c"
   },
   "conductor/archive/pastorais_movimentos_20260627/plan.md": {
-    "mtime": 1782574034.4880857,
+    "mtime": 1786036367.2646306,
     "ast_hash": "6ca4275cef7c94d22d63402c5c90d704",
     "semantic_hash": "6ca4275cef7c94d22d63402c5c90d704"
   },
   "conductor/archive/pastorais_movimentos_20260627/spec.md": {
-    "mtime": 1782571732.31429,
+    "mtime": 1786036367.2646306,
     "ast_hash": "4f13b1e236c40b37addbd164232eb846",
     "semantic_hash": "4f13b1e236c40b37addbd164232eb846"
   },
   "conductor/archive/pastorais_movimentos_oficiais_20260720/index.md": {
-    "mtime": 1784596031.2016602,
+    "mtime": 1786036367.2646306,
     "ast_hash": "9899eba70004855f22297dafc4068c9c",
     "semantic_hash": "9899eba70004855f22297dafc4068c9c"
   },
   "conductor/archive/pastorais_movimentos_oficiais_20260720/plan.md": {
-    "mtime": 1784651166.5704656,
+    "mtime": 1786036367.2647338,
     "ast_hash": "7a853d6f69d0abf1beb8fbbe9bd4c125",
     "semantic_hash": "7a853d6f69d0abf1beb8fbbe9bd4c125"
   },
   "conductor/archive/pastorais_movimentos_oficiais_20260720/spec.md": {
-    "mtime": 1784596022.2216525,
+    "mtime": 1786036367.2647338,
     "ast_hash": "ee58e71f84791ed6acefaccd9094cb32",
     "semantic_hash": "ee58e71f84791ed6acefaccd9094cb32"
   },
   "conductor/archive/pastoral_comunidades_concept_20260701/index.md": {
-    "mtime": 1782957050.665378,
+    "mtime": 1786036367.2647338,
     "ast_hash": "ac39f8d223d1e55d20c6c1a523e1620f",
     "semantic_hash": "ac39f8d223d1e55d20c6c1a523e1620f"
   },
   "conductor/archive/pastoral_comunidades_concept_20260701/plan.md": {
-    "mtime": 1782960861.7032568,
+    "mtime": 1786036367.2648382,
     "ast_hash": "71a713a233b2611a5ba409e370fe703f",
     "semantic_hash": "71a713a233b2611a5ba409e370fe703f"
   },
   "conductor/archive/pastoral_comunidades_concept_20260701/spec.md": {
-    "mtime": 1782957043.4413896,
+    "mtime": 1786036367.2648382,
     "ast_hash": "5bd3ff6b3690864c1e3d29938a69b2cf",
     "semantic_hash": "5bd3ff6b3690864c1e3d29938a69b2cf"
   },
   "conductor/archive/project_management_ui_20260530/index.md": {
-    "mtime": 1780186436.3285031,
+    "mtime": 1786036367.2648382,
     "ast_hash": "cf60cdb442cd6a7c09c0387b2b0f64ad",
     "semantic_hash": "cf60cdb442cd6a7c09c0387b2b0f64ad"
   },
   "conductor/archive/project_management_ui_20260530/plan.md": {
-    "mtime": 1780187861.208579,
+    "mtime": 1786036367.2649264,
     "ast_hash": "d2d2bb05380b9308b285cca2e925e81e",
     "semantic_hash": "d2d2bb05380b9308b285cca2e925e81e"
   },
   "conductor/archive/project_management_ui_20260530/spec.md": {
-    "mtime": 1780186421.3814938,
+    "mtime": 1786036367.2649264,
     "ast_hash": "4f50679701824d0abac278328149f49d",
     "semantic_hash": "4f50679701824d0abac278328149f49d"
   },
   "conductor/archive/projeto_governanca_status_20260601/index.md": {
-    "mtime": 1780341668.5388343,
+    "mtime": 1786036367.2649264,
     "ast_hash": "767db0853d72062c1204eeeee935e243",
     "semantic_hash": "767db0853d72062c1204eeeee935e243"
   },
   "conductor/archive/projeto_governanca_status_20260601/plan.md": {
-    "mtime": 1780353544.8760283,
+    "mtime": 1786036367.265014,
     "ast_hash": "176c424be39e8d36737ae0433c7d7980",
     "semantic_hash": "176c424be39e8d36737ae0433c7d7980"
   },
   "conductor/archive/projeto_governanca_status_20260601/spec.md": {
-    "mtime": 1780341659.666843,
+    "mtime": 1786036367.265014,
     "ast_hash": "c68e12c6b0dfb76d8cbbb3ae19a12e5f",
     "semantic_hash": "c68e12c6b0dfb76d8cbbb3ae19a12e5f"
   },
   "conductor/archive/rbac_eclesial_governanca_20260727/index.md": {
-    "mtime": 1785164173.777815,
+    "mtime": 1786036367.265014,
     "ast_hash": "05d6c9152ae97739f47e7171fc57bf54",
     "semantic_hash": "05d6c9152ae97739f47e7171fc57bf54"
   },
   "conductor/archive/rbac_eclesial_governanca_20260727/plan.md": {
-    "mtime": 1785168540.3460479,
+    "mtime": 1786036367.2651181,
     "ast_hash": "c4667307e0575c87a329d145d5ae5478",
     "semantic_hash": "c4667307e0575c87a329d145d5ae5478"
   },
   "conductor/archive/rbac_eclesial_governanca_20260727/spec.md": {
-    "mtime": 1785164465.074809,
+    "mtime": 1786036367.2651181,
     "ast_hash": "b37b60dda49764861a9a175eb97b55f0",
     "semantic_hash": "b37b60dda49764861a9a175eb97b55f0"
   },
   "conductor/archive/rbac_especifico_eclesial_20260728/index.md": {
-    "mtime": 1785291913.1808498,
+    "mtime": 1786036367.2651181,
     "ast_hash": "2dcf2cae99b3714361425082f865f0dd",
     "semantic_hash": "2dcf2cae99b3714361425082f865f0dd"
   },
   "conductor/archive/rbac_especifico_eclesial_20260728/plan.md": {
-    "mtime": 1785294105.427444,
+    "mtime": 1786036367.2652228,
     "ast_hash": "2c4d9a35d423b6c9e71fc86781434218",
     "semantic_hash": "2c4d9a35d423b6c9e71fc86781434218"
   },
   "conductor/archive/rbac_especifico_eclesial_20260728/spec.md": {
-    "mtime": 1785291907.8228447,
+    "mtime": 1786036367.2652228,
     "ast_hash": "26378f03d6bab5916ce02c281f4e52fc",
     "semantic_hash": "26378f03d6bab5916ce02c281f4e52fc"
   },
   "conductor/archive/react_orgchart_integration_20260727/index.md": {
-    "mtime": 1785161263.918988,
+    "mtime": 1786036367.2652228,
     "ast_hash": "f6a99f09c9681b1fd396a2ec464ace8e",
     "semantic_hash": "f6a99f09c9681b1fd396a2ec464ace8e"
   },
   "conductor/archive/react_orgchart_integration_20260727/plan.md": {
-    "mtime": 1785161644.4872062,
+    "mtime": 1786036367.2653096,
     "ast_hash": "5de3b0056a430c007ce789d68aa40a37",
     "semantic_hash": "5de3b0056a430c007ce789d68aa40a37"
   },
   "conductor/archive/react_orgchart_integration_20260727/spec.md": {
-    "mtime": 1785161255.8439834,
+    "mtime": 1786036367.2653096,
     "ast_hash": "0e0375e26fd38dc118dd312d44a18a91",
     "semantic_hash": "0e0375e26fd38dc118dd312d44a18a91"
   },
   "conductor/archive/refactor_export_usecase_20260602/index.md": {
-    "mtime": 1780454280.4653618,
+    "mtime": 1786036367.2653096,
     "ast_hash": "9d04f33235d95c5b83c9f18a112ce7d3",
     "semantic_hash": "9d04f33235d95c5b83c9f18a112ce7d3"
   },
   "conductor/archive/refactor_export_usecase_20260602/plan.md": {
-    "mtime": 1780457937.1965086,
+    "mtime": 1786036367.2653873,
     "ast_hash": "00d9e1043e98747f461eefcbd1845f54",
     "semantic_hash": "00d9e1043e98747f461eefcbd1845f54"
   },
   "conductor/archive/refactor_export_usecase_20260602/spec.md": {
-    "mtime": 1780454270.1193757,
+    "mtime": 1786036367.2653873,
     "ast_hash": "84dfcbe7c20932d2593e30568a836caf",
     "semantic_hash": "84dfcbe7c20932d2593e30568a836caf"
   },
   "conductor/archive/refatoracao_usuario_vinculos_seed_20260721/index.md": {
-    "mtime": 1784671907.5977726,
+    "mtime": 1786036367.2653873,
     "ast_hash": "fd7966c254f4b70234f0fa1017f82c54",
     "semantic_hash": "fd7966c254f4b70234f0fa1017f82c54"
   },
   "conductor/archive/refatoracao_usuario_vinculos_seed_20260721/plan.md": {
-    "mtime": 1784672371.6976566,
+    "mtime": 1786036367.2654912,
     "ast_hash": "19282f71cf1fe1fc2604be26cece2d61",
     "semantic_hash": "19282f71cf1fe1fc2604be26cece2d61"
   },
   "conductor/archive/refatoracao_usuario_vinculos_seed_20260721/spec.md": {
-    "mtime": 1784671897.7567961,
+    "mtime": 1786036367.2654912,
     "ast_hash": "9922dc5eeee729ed9ba2c3ddfa0ef101",
     "semantic_hash": "9922dc5eeee729ed9ba2c3ddfa0ef101"
   },
   "conductor/archive/relatorios_gerenciais_20260726/plan.md": {
-    "mtime": 1785066569.8151855,
+    "mtime": 1786036367.2654912,
     "ast_hash": "dd104ccccdbc18886832ddf6bf07542b",
     "semantic_hash": "dd104ccccdbc18886832ddf6bf07542b"
   },
   "conductor/archive/relatorios_gerenciais_20260726/spec.md": {
-    "mtime": 1785038458.4180305,
+    "mtime": 1786036367.2655864,
     "ast_hash": "0f44342a7be1400ab9239cc57c9f84c1",
     "semantic_hash": "0f44342a7be1400ab9239cc57c9f84c1"
   },
   "conductor/archive/relocate_exporters_20260603/index.md": {
-    "mtime": 1780504062.5930648,
+    "mtime": 1786036367.2655864,
     "ast_hash": "7083b09c1cfcc42efd19b1ce96b140d5",
     "semantic_hash": "7083b09c1cfcc42efd19b1ce96b140d5"
   },
   "conductor/archive/relocate_exporters_20260603/package_audit_report.md": {
-    "mtime": 1780504759.5254607,
+    "mtime": 1786036367.2656324,
     "ast_hash": "9963f3300fea76cdbf0a100577f0a3eb",
     "semantic_hash": "9963f3300fea76cdbf0a100577f0a3eb"
   },
   "conductor/archive/relocate_exporters_20260603/plan.md": {
-    "mtime": 1780504877.8471885,
+    "mtime": 1786036367.2656324,
     "ast_hash": "39a0941c7b6469324bb3282dca0deb6e",
     "semantic_hash": "39a0941c7b6469324bb3282dca0deb6e"
   },
   "conductor/archive/relocate_exporters_20260603/spec.md": {
-    "mtime": 1780504055.8310804,
+    "mtime": 1786036367.2656324,
     "ast_hash": "48bca80d2a0a807a46220e0c2b766554",
     "semantic_hash": "48bca80d2a0a807a46220e0c2b766554"
   },
   "conductor/archive/rich_dashboard_metrics_20260613/index.md": {
-    "mtime": 1781354358.465842,
+    "mtime": 1786036367.2656324,
     "ast_hash": "8c3d5f91b149c6ef2cf42827e29c7180",
     "semantic_hash": "8c3d5f91b149c6ef2cf42827e29c7180"
   },
   "conductor/archive/rich_dashboard_metrics_20260613/plan.md": {
-    "mtime": 1781357419.970572,
+    "mtime": 1786036367.2657497,
     "ast_hash": "be34e1b9069e58f9d0d97d7d6bfe2db2",
     "semantic_hash": "be34e1b9069e58f9d0d97d7d6bfe2db2"
   },
   "conductor/archive/rich_dashboard_metrics_20260613/spec.md": {
-    "mtime": 1781354352.131855,
+    "mtime": 1786036367.2657497,
     "ast_hash": "5f5f723960c523ebbfe349c3116d9b58",
     "semantic_hash": "5f5f723960c523ebbfe349c3116d9b58"
   },
   "conductor/archive/segregacao_repositorios_god_nodes_20260730/index.md": {
-    "mtime": 1785393085.0777016,
+    "mtime": 1786036367.2659729,
     "ast_hash": "20e06e791c1f63b62caf9676a70643c2",
     "semantic_hash": "20e06e791c1f63b62caf9676a70643c2"
   },
   "conductor/archive/segregacao_repositorios_god_nodes_20260730/plan.md": {
-    "mtime": 1785393964.2172716,
+    "mtime": 1786036367.2660701,
     "ast_hash": "5efda172d6672558468d3de8729ef803",
     "semantic_hash": "5efda172d6672558468d3de8729ef803"
   },
   "conductor/archive/segregacao_repositorios_god_nodes_20260730/spec.md": {
-    "mtime": 1785393077.3927026,
+    "mtime": 1786036367.2660701,
     "ast_hash": "a7d3839a88ed6714381282ece3ee1970",
     "semantic_hash": "a7d3839a88ed6714381282ece3ee1970"
   },
   "conductor/archive/sistema_autorizacao_papeis_20260721/index.md": {
-    "mtime": 1784666674.222813,
+    "mtime": 1786036367.2660701,
     "ast_hash": "5a2427645c9e7650c9b9d2a2c3e81175",
     "semantic_hash": "5a2427645c9e7650c9b9d2a2c3e81175"
   },
   "conductor/archive/sistema_autorizacao_papeis_20260721/plan.md": {
-    "mtime": 1784667696.9959726,
+    "mtime": 1786036367.2661555,
     "ast_hash": "e99c21a0fbc11b13248f055dbac98620",
     "semantic_hash": "e99c21a0fbc11b13248f055dbac98620"
   },
   "conductor/archive/sistema_autorizacao_papeis_20260721/spec.md": {
-    "mtime": 1784666668.4938426,
+    "mtime": 1786036367.2661555,
     "ast_hash": "2dc7fc3e4737aab34b1a59c4ffbccb2c",
     "semantic_hash": "2dc7fc3e4737aab34b1a59c4ffbccb2c"
   },
   "conductor/archive/square_ui_layout_20260531/index.md": {
-    "mtime": 1780238209.645598,
+    "mtime": 1786036367.2661555,
     "ast_hash": "9bb8312d73edf48a0f5cd4e496ec6250",
     "semantic_hash": "9bb8312d73edf48a0f5cd4e496ec6250"
   },
   "conductor/archive/square_ui_layout_20260531/plan.md": {
-    "mtime": 1780238936.2053978,
+    "mtime": 1786036367.2662466,
     "ast_hash": "b95cfe56d19bc2da574a6d40de68602b",
     "semantic_hash": "b95cfe56d19bc2da574a6d40de68602b"
   },
   "conductor/archive/square_ui_layout_20260531/spec.md": {
-    "mtime": 1780238203.4366424,
+    "mtime": 1786036367.2662466,
     "ast_hash": "3ba44cd15ecd5e1d3c5ff38178950665",
     "semantic_hash": "3ba44cd15ecd5e1d3c5ff38178950665"
   },
   "conductor/archive/ui_error_presentation_standardization_20260531/index.md": {
-    "mtime": 1780261291.640177,
+    "mtime": 1786036367.266325,
     "ast_hash": "8404bb8c90ff7c7cceada39228765fc0",
     "semantic_hash": "8404bb8c90ff7c7cceada39228765fc0"
   },
   "conductor/archive/ui_error_presentation_standardization_20260531/plan.md": {
-    "mtime": 1780263900.4452276,
+    "mtime": 1786036367.2664392,
     "ast_hash": "afa00dc7e8966c36bf57ec0fe5aebe4d",
     "semantic_hash": "afa00dc7e8966c36bf57ec0fe5aebe4d"
   },
   "conductor/archive/ui_error_presentation_standardization_20260531/spec.md": {
-    "mtime": 1780261285.8550906,
+    "mtime": 1786036367.2664392,
     "ast_hash": "e471af712fae8318f025733ecc85fbc7",
     "semantic_hash": "e471af712fae8318f025733ecc85fbc7"
   },
   "conductor/archive/ui_standardization_20260530/index.md": {
-    "mtime": 1780190817.6474442,
+    "mtime": 1786036367.2664392,
     "ast_hash": "c7b062341a0aa98a2382c15fddd662c6",
     "semantic_hash": "c7b062341a0aa98a2382c15fddd662c6"
   },
   "conductor/archive/ui_standardization_20260530/plan.md": {
-    "mtime": 1780237791.3985915,
+    "mtime": 1786036367.2665408,
     "ast_hash": "af9e00e75a2a9795899bc408f059f506",
     "semantic_hash": "af9e00e75a2a9795899bc408f059f506"
   },
   "conductor/archive/ui_standardization_20260530/spec.md": {
-    "mtime": 1780190812.0354419,
+    "mtime": 1786036367.2665408,
     "ast_hash": "e4a819c6e10bdfc7680ec33a9c28bf95",
     "semantic_hash": "e4a819c6e10bdfc7680ec33a9c28bf95"
   },
   "conductor/archive/unificacao_membro_usuario_20260722/plan.md": {
-    "mtime": 1784989622.3644502,
+    "mtime": 1786036367.2666323,
     "ast_hash": "81a482667ab0cf8776101acef5062f9c",
     "semantic_hash": "81a482667ab0cf8776101acef5062f9c"
   },
   "conductor/archive/unificacao_membro_usuario_20260722/spec.md": {
-    "mtime": 1784986272.277111,
+    "mtime": 1786036367.2666323,
     "ast_hash": "70e3f5baa7f2f8cfd0d1bdb815869739",
     "semantic_hash": "70e3f5baa7f2f8cfd0d1bdb815869739"
   },
   "conductor/archive/user_org_context_20260521/index.md": {
-    "mtime": 1779426426.2540925,
+    "mtime": 1786036367.2666323,
     "ast_hash": "bbb93e3936981c8bec2a0daaf2eab292",
     "semantic_hash": "bbb93e3936981c8bec2a0daaf2eab292"
   },
   "conductor/archive/user_org_context_20260521/plan.md": {
-    "mtime": 1779426426.2553008,
+    "mtime": 1786036367.266719,
     "ast_hash": "3fb0a1d923c3dbadb8820234eeb449b0",
     "semantic_hash": "3fb0a1d923c3dbadb8820234eeb449b0"
   },
   "conductor/archive/user_org_context_20260521/spec.md": {
-    "mtime": 1779426426.2553008,
+    "mtime": 1786036367.266719,
     "ast_hash": "b659d5214bf5a76e3ee977c945a23301",
     "semantic_hash": "b659d5214bf5a76e3ee977c945a23301"
   },
   "conductor/archive/vinculo_locais_matriz_comunidades_20260730/index.md": {
-    "mtime": 1785391591.7511575,
+    "mtime": 1786036367.2668009,
     "ast_hash": "ae5024b17755823d611359213a3a72cb",
     "semantic_hash": "ae5024b17755823d611359213a3a72cb"
   },
   "conductor/archive/vinculo_locais_matriz_comunidades_20260730/plan.md": {
-    "mtime": 1785392588.367764,
+    "mtime": 1786036367.2669244,
     "ast_hash": "aa4fb26d041732b882bfa62a621f899b",
     "semantic_hash": "aa4fb26d041732b882bfa62a621f899b"
   },
   "conductor/archive/vinculo_locais_matriz_comunidades_20260730/spec.md": {
-    "mtime": 1785391585.4621603,
+    "mtime": 1786036367.2669244,
     "ast_hash": "e69fd5d651560f5785ba7ee3756c3152",
     "semantic_hash": "e69fd5d651560f5785ba7ee3756c3152"
   },
   "conductor/archive/vinculo_membros_organizacoes_20260721/index.md": {
-    "mtime": 1784686583.9197733,
+    "mtime": 1786036367.2669244,
     "ast_hash": "7c5ac55355e704b60c7b23211bb65fb5",
     "semantic_hash": "7c5ac55355e704b60c7b23211bb65fb5"
   },
   "conductor/archive/vinculo_membros_organizacoes_20260721/plan.md": {
-    "mtime": 1784687306.6149774,
+    "mtime": 1786036367.2670286,
     "ast_hash": "1ece5fff48417bb2b7d9ae06be8faa44",
     "semantic_hash": "1ece5fff48417bb2b7d9ae06be8faa44"
   },
   "conductor/archive/vinculo_membros_organizacoes_20260721/spec.md": {
-    "mtime": 1784686574.7247708,
+    "mtime": 1786036367.2670286,
     "ast_hash": "cf7fe99c18dc0152e0e6f91b7d644f45",
     "semantic_hash": "cf7fe99c18dc0152e0e6f91b7d644f45"
   },
   "conductor/archive/vinculo_usuarios_igreja_papeis_20260721/index.md": {
-    "mtime": 1784668130.9630952,
+    "mtime": 1786036367.2670286,
     "ast_hash": "2c95b9d307eb807e33529bbd321f60ef",
     "semantic_hash": "2c95b9d307eb807e33529bbd321f60ef"
   },
   "conductor/archive/vinculo_usuarios_igreja_papeis_20260721/plan.md": {
-    "mtime": 1784669773.553218,
+    "mtime": 1786036367.2671137,
     "ast_hash": "e861c4630322205cc7e95848ed2175f1",
     "semantic_hash": "e861c4630322205cc7e95848ed2175f1"
   },
   "conductor/archive/vinculo_usuarios_igreja_papeis_20260721/spec.md": {
-    "mtime": 1784668121.592056,
+    "mtime": 1786036367.2671137,
     "ast_hash": "e288372850a9c83c34d6cb6214d712a4",
     "semantic_hash": "e288372850a9c83c34d6cb6214d712a4"
   },
   "conductor/archive/visual_theme_fatima_colors_20260531/index.md": {
-    "mtime": 1780239266.2650356,
+    "mtime": 1786036367.2671137,
     "ast_hash": "94ec9294ca5ae59e5ac4367956f81b38",
     "semantic_hash": "94ec9294ca5ae59e5ac4367956f81b38"
   },
   "conductor/archive/visual_theme_fatima_colors_20260531/plan.md": {
-    "mtime": 1780239896.5775242,
+    "mtime": 1786036367.2671988,
     "ast_hash": "9bfc72aa55a807b3b19d8e7ceceb1f84",
     "semantic_hash": "9bfc72aa55a807b3b19d8e7ceceb1f84"
   },
   "conductor/archive/visual_theme_fatima_colors_20260531/spec.md": {
-    "mtime": 1780239261.45307,
+    "mtime": 1786036367.2671988,
     "ast_hash": "49217a3e0f5287ea406ab751924e8308",
     "semantic_hash": "49217a3e0f5287ea406ab751924e8308"
   },
   "conductor/archive/visual_theme_ns_fatima_20260521/index.md": {
-    "mtime": 1779335175.5465174,
+    "mtime": 1786036367.2671988,
     "ast_hash": "2d53d9070dc6a060c18f7ec21abca87b",
     "semantic_hash": "2d53d9070dc6a060c18f7ec21abca87b"
   },
   "conductor/archive/visual_theme_ns_fatima_20260521/plan.md": {
-    "mtime": 1779336566.6995993,
+    "mtime": 1786036367.2672791,
     "ast_hash": "52af23099fbb9ce7c874ba2fc420708f",
     "semantic_hash": "52af23099fbb9ce7c874ba2fc420708f"
   },
   "conductor/archive/visual_theme_ns_fatima_20260521/spec.md": {
-    "mtime": 1779335175.5465174,
+    "mtime": 1786036367.2672791,
     "ast_hash": "ee961c49785bc910c70edd04abcedd96",
     "semantic_hash": "ee961c49785bc910c70edd04abcedd96"
   },
   "conductor/archive/vite_migration_20260726/index.md": {
-    "mtime": 1785080835.118153,
+    "mtime": 1786036367.2672791,
     "ast_hash": "7c41254c210d69d10e147e6aca2b7a38",
     "semantic_hash": "7c41254c210d69d10e147e6aca2b7a38"
   },
   "conductor/archive/vite_migration_20260726/plan.md": {
-    "mtime": 1785116262.427295,
+    "mtime": 1786036367.267366,
     "ast_hash": "c0624ce732222ea66db26394c2aa435c",
     "semantic_hash": "c0624ce732222ea66db26394c2aa435c"
   },
   "conductor/archive/vite_migration_20260726/spec.md": {
-    "mtime": 1785080829.5351667,
+    "mtime": 1786036367.267366,
     "ast_hash": "e08d712e771e978b01a026e28dd2f0b2",
     "semantic_hash": "e08d712e771e978b01a026e28dd2f0b2"
   },
   "conductor/index.md": {
-    "mtime": 1784747728.9005055,
+    "mtime": 1786036367.267366,
     "ast_hash": "b284df4bcaed67032586d9560f624034",
     "semantic_hash": "b284df4bcaed67032586d9560f624034"
   },
   "conductor/product-guidelines.md": {
-    "mtime": 1784747723.4625232,
+    "mtime": 1786036367.267366,
     "ast_hash": "0e21773257dbc1dce60f676fb091742b",
     "semantic_hash": "0e21773257dbc1dce60f676fb091742b"
   },
   "conductor/product.md": {
-    "mtime": 1785855653.3703222,
-    "ast_hash": "1a2b337dddb51c7a3c950aca0f1a33af",
+    "mtime": 1786036367.267366,
+    "ast_hash": "7133ce7ad3556aa0bf89f42ca4af19fa",
     "semantic_hash": ""
   },
   "conductor/tech-stack.md": {
-    "mtime": 1785815945.5915158,
+    "mtime": 1786036367.267366,
     "ast_hash": "434714e3edd9fa408b02dbbe43b608d5",
     "semantic_hash": ""
   },
   "conductor/tracks.md": {
-    "mtime": 1785983795.8594882,
-    "ast_hash": "afae15b8a7f4bd95616cb8cb236577e6",
+    "mtime": 1786036367.267366,
+    "ast_hash": "d54854d86cff636775e239a59311ba31",
     "semantic_hash": ""
   },
   "conductor/workflow.md": {
-    "mtime": 1784747726.8085124,
+    "mtime": 1786036367.267366,
     "ast_hash": "d1dec7942f788ccb210a900df282d742",
     "semantic_hash": "d1dec7942f788ccb210a900df282d742"
   },
   "docker-compose.yml": {
-    "mtime": 1785625536.810605,
+    "mtime": 1786036367.267366,
     "ast_hash": "d30b4f8c0ed9cd0b2f0451d27427c839",
     "semantic_hash": "d30b4f8c0ed9cd0b2f0451d27427c839"
   },
   "gestao-paroquia-ui/.agents/rules/graphify-routing.md": {
-    "mtime": 1785456561.611,
+    "mtime": 1786036367.2677445,
     "ast_hash": "8ff74c64abef6f8aab2ff53ae3590ade",
     "semantic_hash": "8ff74c64abef6f8aab2ff53ae3590ade"
   },
   "gestao-paroquia-ui/.agents/skills/react-frontend.md": {
-    "mtime": 1785588120.2672246,
+    "mtime": 1786036367.2677445,
     "ast_hash": "d9a214ff5bf62a410de87095e97b0b4a",
     "semantic_hash": "d9a214ff5bf62a410de87095e97b0b4a"
   },
   "gestao-paroquia-ui/AGENTS.md": {
-    "mtime": 1785812353.5170865,
-    "ast_hash": "08dc4c96a5d5a83de682a19fcbfba017",
+    "mtime": 1786036491.6785011,
+    "ast_hash": "aa933dd29f949c066f97fb7be2a954cf",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/CLAUDE.md": {
-    "mtime": 1785812353.5170865,
-    "ast_hash": "0fa0b5ba9ef5b4bb350b903b8390c7bf",
+    "mtime": 1786036493.2034984,
+    "ast_hash": "dd334959fa22a7742c486c499b167769",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/README.md": {
-    "mtime": 1785815945.5915158,
+    "mtime": 1786036367.2677445,
     "ast_hash": "a033743039d9bb34d293cfa9ddbad36f",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/conductor/code_styleguides/general.md": {
-    "mtime": 1778946172.3748715,
+    "mtime": 1786036367.2681124,
     "ast_hash": "74ccd7d0f45f844703751bcd21c663e5",
     "semantic_hash": "74ccd7d0f45f844703751bcd21c663e5"
   },
   "gestao-paroquia-ui/conductor/code_styleguides/html-css.md": {
-    "mtime": 1778946172.37461,
+    "mtime": 1786036367.2681367,
     "ast_hash": "99b12a8a9064f42c289a5ab1c042c093",
     "semantic_hash": "99b12a8a9064f42c289a5ab1c042c093"
   },
   "gestao-paroquia-ui/conductor/code_styleguides/typescript.md": {
-    "mtime": 1778946172.3744242,
+    "mtime": 1786036367.2681367,
     "ast_hash": "56649bacd65f197f39680a283a08ef79",
     "semantic_hash": "56649bacd65f197f39680a283a08ef79"
   },
   "gestao-paroquia-ui/conductor/index.md": {
-    "mtime": 1778946189.739846,
+    "mtime": 1786036367.2681367,
     "ast_hash": "cee875e4800b11a0d2900aad00568e18",
     "semantic_hash": "cee875e4800b11a0d2900aad00568e18"
   },
   "gestao-paroquia-ui/conductor/login_username_adjustment_plan.md": {
-    "mtime": 1779152807.9196253,
+    "mtime": 1786036367.2681367,
     "ast_hash": "0767a7ef48b797dcfae3195360d0b5b9",
     "semantic_hash": "0767a7ef48b797dcfae3195360d0b5b9"
   },
   "gestao-paroquia-ui/conductor/product-guidelines.md": {
-    "mtime": 1780239946.1271696,
+    "mtime": 1786036367.2681367,
     "ast_hash": "2b629b02bbedc32d156835a518d1ff01",
     "semantic_hash": "2b629b02bbedc32d156835a518d1ff01"
   },
   "gestao-paroquia-ui/conductor/product.md": {
-    "mtime": 1778945789.8161693,
+    "mtime": 1786036367.2681367,
     "ast_hash": "e332096e07e952aa516aa47df7889f1c",
     "semantic_hash": "e332096e07e952aa516aa47df7889f1c"
   },
   "gestao-paroquia-ui/conductor/tech-stack.md": {
-    "mtime": 1778993842.028862,
+    "mtime": 1786036367.2681367,
     "ast_hash": "b80aec1805da76ef451d4ac2405225c3",
     "semantic_hash": "b80aec1805da76ef451d4ac2405225c3"
   },
   "gestao-paroquia-ui/conductor/tracks.md": {
-    "mtime": 1779044819.7926567,
+    "mtime": 1786036367.2681367,
     "ast_hash": "be8d553a9246c89421da4dd0fe073e60",
     "semantic_hash": "be8d553a9246c89421da4dd0fe073e60"
   },
   "gestao-paroquia-ui/conductor/tracks/auth_spring_session_20260516/index.md": {
-    "mtime": 1778992319.7886288,
+    "mtime": 1786036367.268323,
     "ast_hash": "9db775fd5e6e92b0de463b380be75fe6",
     "semantic_hash": "9db775fd5e6e92b0de463b380be75fe6"
   },
   "gestao-paroquia-ui/conductor/tracks/auth_spring_session_20260516/plan.md": {
-    "mtime": 1778993777.0529935,
+    "mtime": 1786036367.2683423,
     "ast_hash": "038f067a9ead0bbf31f14c915df327fa",
     "semantic_hash": "038f067a9ead0bbf31f14c915df327fa"
   },
   "gestao-paroquia-ui/conductor/tracks/auth_spring_session_20260516/spec.md": {
-    "mtime": 1778992319.7886288,
+    "mtime": 1786036367.2683423,
     "ast_hash": "4478f7a9240268c70623722aa62509c4",
     "semantic_hash": "4478f7a9240268c70623722aa62509c4"
   },
   "gestao-paroquia-ui/conductor/tracks/core_infra_auth_20260516/index.md": {
-    "mtime": 1778946449.1946058,
+    "mtime": 1786036367.2683423,
     "ast_hash": "dac171b04ae339d0a9e046f33f7ff457",
     "semantic_hash": "dac171b04ae339d0a9e046f33f7ff457"
   },
   "gestao-paroquia-ui/conductor/tracks/core_infra_auth_20260516/plan.md": {
-    "mtime": 1778991961.9776146,
+    "mtime": 1786036367.2684145,
     "ast_hash": "30f0d8e380c07691e20bb5ef4d30f734",
     "semantic_hash": "30f0d8e380c07691e20bb5ef4d30f734"
   },
   "gestao-paroquia-ui/conductor/tracks/core_infra_auth_20260516/spec.md": {
-    "mtime": 1778946436.8086174,
+    "mtime": 1786036367.2684145,
     "ast_hash": "9e5b912de6ff736f0f1bfdcfbfc3fea0",
     "semantic_hash": "9e5b912de6ff736f0f1bfdcfbfc3fea0"
   },
   "gestao-paroquia-ui/conductor/tracks/docker_compose_integration_20260517/index.md": {
-    "mtime": 1779044384.566869,
+    "mtime": 1786036367.2684145,
     "ast_hash": "86b3b7ffbbe8df92a98a1dab2dab173f",
     "semantic_hash": "86b3b7ffbbe8df92a98a1dab2dab173f"
   },
   "gestao-paroquia-ui/conductor/tracks/docker_compose_integration_20260517/plan.md": {
-    "mtime": 1779044804.7616234,
+    "mtime": 1786036367.2684877,
     "ast_hash": "cf72acc4df0f6068da2cf5c699b57f1c",
     "semantic_hash": "cf72acc4df0f6068da2cf5c699b57f1c"
   },
   "gestao-paroquia-ui/conductor/tracks/docker_compose_integration_20260517/spec.md": {
-    "mtime": 1779044371.5698788,
+    "mtime": 1786036367.2684877,
     "ast_hash": "3462a68c0087b340c3cd4662efb86d4e",
     "semantic_hash": "3462a68c0087b340c3cd4662efb86d4e"
   },
   "gestao-paroquia-ui/conductor/workflow.md": {
-    "mtime": 1778946172.3781877,
+    "mtime": 1786036367.2684877,
     "ast_hash": "f348a34f9e798ccfba7c01771541109f",
     "semantic_hash": "f348a34f9e798ccfba7c01771541109f"
   },
   "gestao-paroquia-ui/docs/ia/regra_dura_lgpd.md": {
-    "mtime": 1785929578.759476,
-    "ast_hash": "ee3a9f85bceae944a691147ee29a9efb",
+    "mtime": 1786036367.268573,
+    "ast_hash": "e6d77ccf7a6ef496e5254560d735ef3a",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/index.html": {
-    "mtime": 1785116009.866762,
+    "mtime": 1786036367.268573,
     "ast_hash": "896fbd728a2001cefb843cd45d2daeda",
     "semantic_hash": "896fbd728a2001cefb843cd45d2daeda"
   },
   "gestao-paroquia-ui/public/robots.txt": {
-    "mtime": 1778946817.0081546,
+    "mtime": 1786036367.2717025,
     "ast_hash": "fa1ded1ed7c11438a9b0385b1e112850",
     "semantic_hash": "fa1ded1ed7c11438a9b0385b1e112850"
   },
   "gestao-paroquia/.agents/rules/graphify-routing.md": {
-    "mtime": 1785456561.611,
+    "mtime": 1786036367.2788565,
     "ast_hash": "8ff74c64abef6f8aab2ff53ae3590ade",
     "semantic_hash": "8ff74c64abef6f8aab2ff53ae3590ade"
   },
   "gestao-paroquia/.agents/skills/ddd.md": {
-    "mtime": 1785155214.717,
+    "mtime": 1786036367.2788565,
     "ast_hash": "fac1dd8f73257daf7e717d427e02cdc3",
     "semantic_hash": "fac1dd8f73257daf7e717d427e02cdc3"
   },
   "gestao-paroquia/.agents/skills/flyway.md": {
-    "mtime": 1785156670.112,
+    "mtime": 1786036367.2789655,
     "ast_hash": "59b108ff78d87a359a613fbe55c9445e",
     "semantic_hash": "59b108ff78d87a359a613fbe55c9445e"
   },
   "gestao-paroquia/.agents/skills/gradle.md": {
-    "mtime": 1785156113.66,
+    "mtime": 1786036367.2789655,
     "ast_hash": "c6d60a023402439432b53588b8c9d3c8",
     "semantic_hash": "c6d60a023402439432b53588b8c9d3c8"
   },
   "gestao-paroquia/.agents/skills/java.md": {
-    "mtime": 1785157291.244,
+    "mtime": 1786036367.2789655,
     "ast_hash": "0f5c2b9a57909183ac5aca9414761795",
     "semantic_hash": "0f5c2b9a57909183ac5aca9414761795"
   },
   "gestao-paroquia/.agents/skills/solid.md": {
-    "mtime": 1785155745.522,
+    "mtime": 1786036367.2789655,
     "ast_hash": "db7f9312c83c5a1e3e76c17445eefac9",
     "semantic_hash": "db7f9312c83c5a1e3e76c17445eefac9"
   },
   "gestao-paroquia/.agents/skills/sql.md": {
-    "mtime": 1785156875.624,
+    "mtime": 1786036367.2789655,
     "ast_hash": "c9aa321f9f6ca2d3d91dd755ea040ec1",
     "semantic_hash": "c9aa321f9f6ca2d3d91dd755ea040ec1"
   },
   "gestao-paroquia/.agents/skills/tdd.md": {
-    "mtime": 1785155613.313,
+    "mtime": 1786036367.2789655,
     "ast_hash": "970fbb42264ef07470a6c03eefcf1ea9",
     "semantic_hash": "970fbb42264ef07470a6c03eefcf1ea9"
   },
   "gestao-paroquia/.agents/skills/tdd_2.md": {
-    "mtime": 1785157047.785,
+    "mtime": 1786036367.2789655,
     "ast_hash": "0e97b49df3053a64107745be2ad9e448",
     "semantic_hash": "0e97b49df3053a64107745be2ad9e448"
   },
   "gestao-paroquia/AGENTS.md": {
-    "mtime": 1786024324.0034583,
-    "ast_hash": "69a9b2d24cb1d0c7f0e4bbfff3cdfb61",
+    "mtime": 1786036487.2125084,
+    "ast_hash": "6145ca77ebca5cecb167f18d899371fb",
     "semantic_hash": ""
   },
   "gestao-paroquia/CLAUDE.md": {
-    "mtime": 1785812353.5220866,
-    "ast_hash": "420f2108ca29aae1577c7be2fc544475",
+    "mtime": 1786036488.7745059,
+    "ast_hash": "a1c8dc215c2347f3e7238281331c3764",
     "semantic_hash": ""
   },
   "gestao-paroquia/README.md": {
-    "mtime": 1785815945.5915158,
+    "mtime": 1786036367.2789655,
     "ast_hash": "34a6abeed63128db6ac96aa98106f6bc",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/application.yml": {
-    "mtime": 1784989916.351,
+    "mtime": 1786036367.295184,
     "ast_hash": "02925a47ab8401fb9d79e15d53bdc238",
     "semantic_hash": "02925a47ab8401fb9d79e15d53bdc238"
   },
   "gestao-paroquia/app/src/test/resources/application.yml": {
-    "mtime": 1780455072.0402923,
+    "mtime": 1786036367.3067427,
     "ast_hash": "2ed9e0f43532723c4eb30914aee470ec",
     "semantic_hash": "2ed9e0f43532723c4eb30914aee470ec"
   },
   "gestao-paroquia/conductor/archive/advanced_event_filtering_20260507/plan.md": {
-    "mtime": 1784994957.429965,
+    "mtime": 1786036367.3069308,
     "ast_hash": "5d64d06ea46577763de92f0059d815f5",
     "semantic_hash": "5d64d06ea46577763de92f0059d815f5"
   },
   "gestao-paroquia/conductor/archive/advanced_event_filtering_20260507/spec.md": {
-    "mtime": 1784994957.429965,
+    "mtime": 1786036367.3069308,
     "ast_hash": "c4e0a8ccc320b8006db9ef4c40c04cc9",
     "semantic_hash": "c4e0a8ccc320b8006db9ef4c40c04cc9"
   },
   "gestao-paroquia/conductor/archive/api_versioning_standardization_20260511/index.md": {
-    "mtime": 1778641607.6500847,
+    "mtime": 1786036367.3069308,
     "ast_hash": "352c512bfe1ddf48803cb239855cfc51",
     "semantic_hash": "352c512bfe1ddf48803cb239855cfc51"
   },
   "gestao-paroquia/conductor/archive/api_versioning_standardization_20260511/plan.md": {
-    "mtime": 1784994957.429965,
+    "mtime": 1786036367.3069825,
     "ast_hash": "8cde06160caefa9fe4d57fc71386922c",
     "semantic_hash": "8cde06160caefa9fe4d57fc71386922c"
   },
   "gestao-paroquia/conductor/archive/api_versioning_standardization_20260511/spec.md": {
-    "mtime": 1784994957.429965,
+    "mtime": 1786036367.3069825,
     "ast_hash": "90c0b150bde095cbd824e98f74031661",
     "semantic_hash": "90c0b150bde095cbd824e98f74031661"
   },
   "gestao-paroquia/conductor/archive/approval_flow_refinement_20260503/index.md": {
-    "mtime": 1778176294.3072917,
+    "mtime": 1786036367.3069825,
     "ast_hash": "5619ac204a194c0471c3cea8e08e11f1",
     "semantic_hash": "5619ac204a194c0471c3cea8e08e11f1"
   },
   "gestao-paroquia/conductor/archive/approval_flow_refinement_20260503/plan.md": {
-    "mtime": 1784994957.430965,
+    "mtime": 1786036367.307052,
     "ast_hash": "e480f9605cae7c0bc9206d193867dabe",
     "semantic_hash": "e480f9605cae7c0bc9206d193867dabe"
   },
   "gestao-paroquia/conductor/archive/approval_flow_refinement_20260503/spec.md": {
-    "mtime": 1784994957.430965,
+    "mtime": 1786036367.307052,
     "ast_hash": "4f78e5ebc9545803121930d9ffc67926",
     "semantic_hash": "4f78e5ebc9545803121930d9ffc67926"
   },
   "gestao-paroquia/conductor/archive/calendar_lock_governance_20260506/index.md": {
-    "mtime": 1784994957.430965,
+    "mtime": 1786036367.307052,
     "ast_hash": "24cbd31ff1084c63bdb609364a4c525b",
     "semantic_hash": "24cbd31ff1084c63bdb609364a4c525b"
   },
   "gestao-paroquia/conductor/archive/calendar_lock_governance_20260506/plan.md": {
-    "mtime": 1784994957.430965,
+    "mtime": 1786036367.3071225,
     "ast_hash": "9cb79de228393186e5331655056efb9e",
     "semantic_hash": "9cb79de228393186e5331655056efb9e"
   },
   "gestao-paroquia/conductor/archive/calendar_lock_governance_20260506/spec.md": {
-    "mtime": 1784994957.430965,
+    "mtime": 1786036367.3071225,
     "ast_hash": "5435a45724b273001e26dca3320140c7",
     "semantic_hash": "5435a45724b273001e26dca3320140c7"
   },
   "gestao-paroquia/conductor/archive/calendario_modularization_20260509/index.md": {
-    "mtime": 1778338934.8240142,
+    "mtime": 1786036367.3071225,
     "ast_hash": "5e06638fa889adc633a3ff3845e911ae",
     "semantic_hash": "5e06638fa889adc633a3ff3845e911ae"
   },
   "gestao-paroquia/conductor/archive/calendario_modularization_20260509/plan.md": {
-    "mtime": 1784994957.431965,
+    "mtime": 1786036367.3071997,
     "ast_hash": "0262a1772785949deb0f11cf1ed4a308",
     "semantic_hash": "0262a1772785949deb0f11cf1ed4a308"
   },
   "gestao-paroquia/conductor/archive/calendario_modularization_20260509/spec.md": {
-    "mtime": 1784994957.431965,
+    "mtime": 1786036367.3071997,
     "ast_hash": "fa6e6fd731b391ffec960c3419ffbbd8",
     "semantic_hash": "fa6e6fd731b391ffec960c3419ffbbd8"
   },
   "gestao-paroquia/conductor/archive/enforce_envolvido_roles_20260504/index.md": {
-    "mtime": 1778176294.3074162,
+    "mtime": 1786036367.3071997,
     "ast_hash": "56412d58068c65d66c7043efb50eccbe",
     "semantic_hash": "56412d58068c65d66c7043efb50eccbe"
   },
   "gestao-paroquia/conductor/archive/enforce_envolvido_roles_20260504/plan.md": {
-    "mtime": 1784994957.431965,
+    "mtime": 1786036367.3072789,
     "ast_hash": "0f8cb578c97764def18100a74b1d9be6",
     "semantic_hash": "0f8cb578c97764def18100a74b1d9be6"
   },
   "gestao-paroquia/conductor/archive/enforce_envolvido_roles_20260504/spec.md": {
-    "mtime": 1784994957.431965,
+    "mtime": 1786036367.3072789,
     "ast_hash": "bfd4764b7be5dbbb589a6ca1262e5d1b",
     "semantic_hash": "bfd4764b7be5dbbb589a6ca1262e5d1b"
   },
   "gestao-paroquia/conductor/archive/event_api_refinement_20260502/index.md": {
-    "mtime": 1778176294.307495,
+    "mtime": 1786036367.3072789,
     "ast_hash": "e50139a09885d218b4e97327938e1469",
     "semantic_hash": "e50139a09885d218b4e97327938e1469"
   },
   "gestao-paroquia/conductor/archive/event_api_refinement_20260502/plan.md": {
-    "mtime": 1784994957.431965,
+    "mtime": 1786036367.3073351,
     "ast_hash": "33fc62eab7a3dffd520b42050a764def",
     "semantic_hash": "33fc62eab7a3dffd520b42050a764def"
   },
   "gestao-paroquia/conductor/archive/event_api_refinement_20260502/spec.md": {
-    "mtime": 1784994957.432965,
+    "mtime": 1786036367.3073351,
     "ast_hash": "0248910cca2014f3a244f0b494d0d868",
     "semantic_hash": "0248910cca2014f3a244f0b494d0d868"
   },
   "gestao-paroquia/conductor/archive/event_approval_refinement_20260503/index.md": {
-    "mtime": 1778176294.3075535,
+    "mtime": 1786036367.3073351,
     "ast_hash": "06e48708fbac72e2c5d42f4ad2e122a6",
     "semantic_hash": "06e48708fbac72e2c5d42f4ad2e122a6"
   },
   "gestao-paroquia/conductor/archive/event_approval_refinement_20260503/plan.md": {
-    "mtime": 1784994957.432965,
+    "mtime": 1786036367.307404,
     "ast_hash": "fa92bdfb6d59bb74a52f98ec9f7be0cf",
     "semantic_hash": "fa92bdfb6d59bb74a52f98ec9f7be0cf"
   },
   "gestao-paroquia/conductor/archive/event_approval_refinement_20260503/spec.md": {
-    "mtime": 1784994957.432965,
+    "mtime": 1786036367.307404,
     "ast_hash": "886efffaa165192435dbf4f61a9fb47f",
     "semantic_hash": "886efffaa165192435dbf4f61a9fb47f"
   },
   "gestao-paroquia/conductor/archive/event_categories_enum_20260505/index.md": {
-    "mtime": 1778176294.3076277,
+    "mtime": 1786036367.307404,
     "ast_hash": "6a731cf9a4cf275f16d70d3b239eddb5",
     "semantic_hash": "6a731cf9a4cf275f16d70d3b239eddb5"
   },
   "gestao-paroquia/conductor/archive/event_categories_enum_20260505/plan.md": {
-    "mtime": 1784994957.433965,
+    "mtime": 1786036367.3074715,
     "ast_hash": "515e67b3430a0825923330a1acb1ea09",
     "semantic_hash": "515e67b3430a0825923330a1acb1ea09"
   },
   "gestao-paroquia/conductor/archive/event_categories_enum_20260505/spec.md": {
-    "mtime": 1784994957.433965,
+    "mtime": 1786036367.3074715,
     "ast_hash": "e6f299944785cf042c2bc503b4dd1f19",
     "semantic_hash": "e6f299944785cf042c2bc503b4dd1f19"
   },
   "gestao-paroquia/conductor/archive/event_envolvidos_refactoring_20260504/index.md": {
-    "mtime": 1778176294.3076959,
+    "mtime": 1786036367.3074715,
     "ast_hash": "916fbadf49ce8f6d6bbd109bbb06bec9",
     "semantic_hash": "916fbadf49ce8f6d6bbd109bbb06bec9"
   },
   "gestao-paroquia/conductor/archive/event_envolvidos_refactoring_20260504/plan.md": {
-    "mtime": 1784994957.4349651,
+    "mtime": 1786036367.3075535,
     "ast_hash": "3b146897556d9a3bfc8aa469200c8680",
     "semantic_hash": "3b146897556d9a3bfc8aa469200c8680"
   },
   "gestao-paroquia/conductor/archive/event_envolvidos_refactoring_20260504/spec.md": {
-    "mtime": 1784994957.4349651,
+    "mtime": 1786036367.3075535,
     "ast_hash": "3fcefd989bf4dbb6e6f69a13afbf3507",
     "semantic_hash": "3fcefd989bf4dbb6e6f69a13afbf3507"
   },
   "gestao-paroquia/conductor/archive/evento_recorrencia_20260503/index.md": {
-    "mtime": 1778176294.3077784,
+    "mtime": 1786036367.3075535,
     "ast_hash": "ff14fbb809a3fae1a173fe8e15112fd3",
     "semantic_hash": "ff14fbb809a3fae1a173fe8e15112fd3"
   },
   "gestao-paroquia/conductor/archive/evento_recorrencia_20260503/plan.md": {
-    "mtime": 1784994957.4349651,
+    "mtime": 1786036367.3076262,
     "ast_hash": "8253ab0f418b0badcd2d75e4cbf951d5",
     "semantic_hash": "8253ab0f418b0badcd2d75e4cbf951d5"
   },
   "gestao-paroquia/conductor/archive/evento_recorrencia_20260503/spec.md": {
-    "mtime": 1784994957.4349651,
+    "mtime": 1786036367.3076262,
     "ast_hash": "8ed71c64de7a0952d8b1d88addb9e83f",
     "semantic_hash": "8ed71c64de7a0952d8b1d88addb9e83f"
   },
   "gestao-paroquia/conductor/archive/gestao_membros_20260511/index.md": {
-    "mtime": 1778643593.4238694,
+    "mtime": 1786036367.3076262,
     "ast_hash": "6015ce3e887ac752ac52cd6ea68783ac",
     "semantic_hash": "6015ce3e887ac752ac52cd6ea68783ac"
   },
   "gestao-paroquia/conductor/archive/gestao_membros_20260511/plan.md": {
-    "mtime": 1784994957.4349651,
+    "mtime": 1786036367.3076959,
     "ast_hash": "051e3260acd1cf744975cd4cb77f8041",
     "semantic_hash": "051e3260acd1cf744975cd4cb77f8041"
   },
   "gestao-paroquia/conductor/archive/gestao_membros_20260511/spec.md": {
-    "mtime": 1784994957.435965,
+    "mtime": 1786036367.3076959,
     "ast_hash": "37a4269fd28dad419276098ab28377c6",
     "semantic_hash": "37a4269fd28dad419276098ab28377c6"
   },
   "gestao-paroquia/conductor/archive/iam_org_admin_20260507/index.md": {
-    "mtime": 1778206575.1095026,
+    "mtime": 1786036367.3076959,
     "ast_hash": "cc2e3d25b644fb3a615ab453b6742365",
     "semantic_hash": "cc2e3d25b644fb3a615ab453b6742365"
   },
   "gestao-paroquia/conductor/archive/iam_org_admin_20260507/plan.md": {
-    "mtime": 1784994957.435965,
+    "mtime": 1786036367.3077762,
     "ast_hash": "ca63765d1de74746bfd9bbec951a5dbf",
     "semantic_hash": "ca63765d1de74746bfd9bbec951a5dbf"
   },
   "gestao-paroquia/conductor/archive/iam_org_admin_20260507/spec.md": {
-    "mtime": 1784994957.435965,
+    "mtime": 1786036367.3077762,
     "ast_hash": "5299e179bddd912ce7c2ca2f4b5b86ef",
     "semantic_hash": "5299e179bddd912ce7c2ca2f4b5b86ef"
   },
   "gestao-paroquia/conductor/archive/identity_and_access_management_20260507/plan.md": {
-    "mtime": 1784994957.435965,
+    "mtime": 1786036367.3078592,
     "ast_hash": "7edd1f85f7ee1554797ba7d540c7dee9",
     "semantic_hash": "7edd1f85f7ee1554797ba7d540c7dee9"
   },
   "gestao-paroquia/conductor/archive/identity_and_access_management_20260507/spec.md": {
-    "mtime": 1784994957.435965,
+    "mtime": 1786036367.3078592,
     "ast_hash": "0a8b29e8c40f3bd23ebb9fdc923134fd",
     "semantic_hash": "0a8b29e8c40f3bd23ebb9fdc923134fd"
   },
   "gestao-paroquia/conductor/archive/local_docker_environment_20260505/index.md": {
-    "mtime": 1778176294.3079352,
+    "mtime": 1786036367.3078592,
     "ast_hash": "8b0dcb13db677cd3ffcc9843db7acad5",
     "semantic_hash": "8b0dcb13db677cd3ffcc9843db7acad5"
   },
   "gestao-paroquia/conductor/archive/local_docker_environment_20260505/plan.md": {
-    "mtime": 1784994957.436965,
+    "mtime": 1786036367.3079114,
     "ast_hash": "fefde81bd2834b64834f3c0d9a982821",
     "semantic_hash": "fefde81bd2834b64834f3c0d9a982821"
   },
   "gestao-paroquia/conductor/archive/local_docker_environment_20260505/spec.md": {
-    "mtime": 1784994957.436965,
+    "mtime": 1786036367.3079114,
     "ast_hash": "1a31913811a0716fb3f70536af68b6a2",
     "semantic_hash": "1a31913811a0716fb3f70536af68b6a2"
   },
   "gestao-paroquia/conductor/archive/local_management_20260507/index.md": {
-    "mtime": 1778179538.5995991,
+    "mtime": 1786036367.3079114,
     "ast_hash": "ab1bc7d1d308e3e212fd3ff19e3030d7",
     "semantic_hash": "ab1bc7d1d308e3e212fd3ff19e3030d7"
   },
   "gestao-paroquia/conductor/archive/local_management_20260507/plan.md": {
-    "mtime": 1784994957.436965,
+    "mtime": 1786036367.3079786,
     "ast_hash": "98476ae46494ee7411ed473f3b1455bb",
     "semantic_hash": "98476ae46494ee7411ed473f3b1455bb"
   },
   "gestao-paroquia/conductor/archive/local_management_20260507/spec.md": {
-    "mtime": 1784994957.436965,
+    "mtime": 1786036367.3079786,
     "ast_hash": "abdc7736bb6350f797510eec2648f2e6",
     "semantic_hash": "abdc7736bb6350f797510eec2648f2e6"
   },
   "gestao-paroquia/conductor/archive/mvp_seeding_and_demo_20260505/index.md": {
-    "mtime": 1778176294.3079922,
+    "mtime": 1786036367.3079786,
     "ast_hash": "0f343550a7528fa91ed679555528105f",
     "semantic_hash": "0f343550a7528fa91ed679555528105f"
   },
   "gestao-paroquia/conductor/archive/mvp_seeding_and_demo_20260505/plan.md": {
-    "mtime": 1784994957.436965,
+    "mtime": 1786036367.3080544,
     "ast_hash": "01240ad08d08d6a8a752228706178c62",
     "semantic_hash": "01240ad08d08d6a8a752228706178c62"
   },
   "gestao-paroquia/conductor/archive/mvp_seeding_and_demo_20260505/spec.md": {
-    "mtime": 1784994957.436965,
+    "mtime": 1786036367.3080544,
     "ast_hash": "e6d8c5f82bc7d642ba90301deea0cd48",
     "semantic_hash": "e6d8c5f82bc7d642ba90301deea0cd48"
   },
   "gestao-paroquia/conductor/archive/observability_enhancement_20260503/index.md": {
-    "mtime": 1778176294.3080611,
+    "mtime": 1786036367.3080544,
     "ast_hash": "f4075679acecd8ef00ef5991e5719340",
     "semantic_hash": "f4075679acecd8ef00ef5991e5719340"
   },
   "gestao-paroquia/conductor/archive/observability_enhancement_20260503/plan.md": {
-    "mtime": 1784994957.4379652,
+    "mtime": 1786036367.308123,
     "ast_hash": "a026290a44d9f37140d4d5bf8db5e0b2",
     "semantic_hash": "a026290a44d9f37140d4d5bf8db5e0b2"
   },
   "gestao-paroquia/conductor/archive/observability_enhancement_20260503/spec.md": {
-    "mtime": 1784994957.4379652,
+    "mtime": 1786036367.308123,
     "ast_hash": "951549d771b21e930b8085448307d348",
     "semantic_hash": "951549d771b21e930b8085448307d348"
   },
   "gestao-paroquia/conductor/archive/performance_and_caching_20260507/plan.md": {
-    "mtime": 1784994957.4379652,
+    "mtime": 1786036367.3081982,
     "ast_hash": "6adf4325acf17ae7c4266d8b0f23b99a",
     "semantic_hash": "6adf4325acf17ae7c4266d8b0f23b99a"
   },
   "gestao-paroquia/conductor/archive/performance_and_caching_20260507/spec.md": {
-    "mtime": 1784994957.4379652,
+    "mtime": 1786036367.3081982,
     "ast_hash": "fe67cf515194d281551ef9fd2cfd6d19",
     "semantic_hash": "fe67cf515194d281551ef9fd2cfd6d19"
   },
   "gestao-paroquia/conductor/archive/project_aggregation_service_20260505/index.md": {
-    "mtime": 1778176294.308215,
+    "mtime": 1786036367.3081982,
     "ast_hash": "62d35c354e281a2ccaf1c0b407614ed8",
     "semantic_hash": "62d35c354e281a2ccaf1c0b407614ed8"
   },
   "gestao-paroquia/conductor/archive/project_aggregation_service_20260505/plan.md": {
-    "mtime": 1784994957.4379652,
+    "mtime": 1786036367.3082478,
     "ast_hash": "cab1b40a9692809acf59ab68bdf77609",
     "semantic_hash": "cab1b40a9692809acf59ab68bdf77609"
   },
   "gestao-paroquia/conductor/archive/project_aggregation_service_20260505/spec.md": {
-    "mtime": 1784994957.4379652,
+    "mtime": 1786036367.3082478,
     "ast_hash": "5a8374e7fa5c70268da5bcebb31d43c3",
     "semantic_hash": "5a8374e7fa5c70268da5bcebb31d43c3"
   },
   "gestao-paroquia/conductor/archive/project_api_refinement_20260502/index.md": {
-    "mtime": 1778176294.3082645,
+    "mtime": 1786036367.3082478,
     "ast_hash": "7a546e0e92e6d0b884884dc8a639483a",
     "semantic_hash": "7a546e0e92e6d0b884884dc8a639483a"
   },
   "gestao-paroquia/conductor/archive/project_api_refinement_20260502/plan.md": {
-    "mtime": 1784994957.438965,
+    "mtime": 1786036367.3083277,
     "ast_hash": "6e8ed90656ee7c9648b925f32d349b95",
     "semantic_hash": "6e8ed90656ee7c9648b925f32d349b95"
   },
   "gestao-paroquia/conductor/archive/project_api_refinement_20260502/spec.md": {
-    "mtime": 1784994957.438965,
+    "mtime": 1786036367.3083277,
     "ast_hash": "474cc5fed9ab5c31c954d125bc16d980",
     "semantic_hash": "474cc5fed9ab5c31c954d125bc16d980"
   },
   "gestao-paroquia/conductor/archive/project_full_implementation_20260504/index.md": {
-    "mtime": 1778176294.3083422,
+    "mtime": 1786036367.3083277,
     "ast_hash": "5736041fdde18e11ef4162378d5b0618",
     "semantic_hash": "5736041fdde18e11ef4162378d5b0618"
   },
   "gestao-paroquia/conductor/archive/project_full_implementation_20260504/plan.md": {
-    "mtime": 1784994957.438965,
+    "mtime": 1786036367.3083944,
     "ast_hash": "99ca135beeccbb554e71490e94007f4e",
     "semantic_hash": "99ca135beeccbb554e71490e94007f4e"
   },
   "gestao-paroquia/conductor/archive/project_full_implementation_20260504/spec.md": {
-    "mtime": 1784994957.438965,
+    "mtime": 1786036367.3083944,
     "ast_hash": "9a64e00386b2008151fbd2fc7d5fa2fe",
     "semantic_hash": "9a64e00386b2008151fbd2fc7d5fa2fe"
   },
   "gestao-paroquia/conductor/archive/sonar_configuration_20260504/index.md": {
-    "mtime": 1778176294.3084168,
+    "mtime": 1786036367.3083944,
     "ast_hash": "32b708b38d707ee666d8e44eb6116ba2",
     "semantic_hash": "32b708b38d707ee666d8e44eb6116ba2"
   },
   "gestao-paroquia/conductor/archive/sonar_configuration_20260504/plan.md": {
-    "mtime": 1784994957.438965,
+    "mtime": 1786036367.3084614,
     "ast_hash": "78bceefe137967c36d54ad5c61588726",
     "semantic_hash": "78bceefe137967c36d54ad5c61588726"
   },
   "gestao-paroquia/conductor/archive/sonar_configuration_20260504/spec.md": {
-    "mtime": 1784994957.438965,
+    "mtime": 1786036367.3084614,
     "ast_hash": "f079c55c6d75b92f7305ec29beefed0c",
     "semantic_hash": "f079c55c6d75b92f7305ec29beefed0c"
   },
   "gestao-paroquia/conductor/archive/tech_debt_refactoring_20260507/plan.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "d26f4aa99d307c9af9102e3e7426ef9d",
     "semantic_hash": "d26f4aa99d307c9af9102e3e7426ef9d"
   },
   "gestao-paroquia/conductor/archive/tech_debt_refactoring_20260507/spec.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "a1f7f1d598b82add8c5f4086953ef20f",
     "semantic_hash": "a1f7f1d598b82add8c5f4086953ef20f"
   },
   "gestao-paroquia/conductor/code_styleguides/general.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "74ccd7d0f45f844703751bcd21c663e5",
     "semantic_hash": "74ccd7d0f45f844703751bcd21c663e5"
   },
   "gestao-paroquia/conductor/docs_update_plan.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "54d273e6f4d4615bc013da3b6b1caf5f",
     "semantic_hash": "54d273e6f4d4615bc013da3b6b1caf5f"
   },
   "gestao-paroquia/conductor/index.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "7b9d0518e9d3b59ae7a3705a2e897ecc",
     "semantic_hash": "7b9d0518e9d3b59ae7a3705a2e897ecc"
   },
   "gestao-paroquia/conductor/openapi_plan.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "a17da622dd0aec7b900e50273eba8a56",
     "semantic_hash": "a17da622dd0aec7b900e50273eba8a56"
   },
   "gestao-paroquia/conductor/product-guidelines.md": {
-    "mtime": 1784994957.439965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "58667c61a52ae162fcc6072e5a6513e0",
     "semantic_hash": "58667c61a52ae162fcc6072e5a6513e0"
   },
   "gestao-paroquia/conductor/product.md": {
-    "mtime": 1784994957.440965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "cb516b861c08f82e09d2fae6c3bbc6b7",
     "semantic_hash": "cb516b861c08f82e09d2fae6c3bbc6b7"
   },
   "gestao-paroquia/conductor/tech-stack.md": {
-    "mtime": 1784994957.440965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "7c864a41addad3b1c743359dcaaea639",
     "semantic_hash": "7c864a41addad3b1c743359dcaaea639"
   },
   "gestao-paroquia/conductor/tracks.md": {
-    "mtime": 1778645349.006222,
+    "mtime": 1786036367.3085265,
     "ast_hash": "e33c177c2e884b999d74d9d577514ce9",
     "semantic_hash": "e33c177c2e884b999d74d9d577514ce9"
   },
   "gestao-paroquia/conductor/workflow.md": {
-    "mtime": 1784994957.440965,
+    "mtime": 1786036367.3085265,
     "ast_hash": "f348a34f9e798ccfba7c01771541109f",
     "semantic_hash": "f348a34f9e798ccfba7c01771541109f"
   },
   "gestao-paroquia/docs/README.md": {
-    "mtime": 1785159652.968062,
+    "mtime": 1786036367.3092132,
     "ast_hash": "d294462a83ea89863291893f5451ff11",
     "semantic_hash": "d294462a83ea89863291893f5451ff11"
   },
   "gestao-paroquia/docs/_sidebar.md": {
-    "mtime": 1784994737.0,
+    "mtime": 1786036367.3092132,
     "ast_hash": "0559cf358e3dc7ab331628dd3f2165b6",
     "semantic_hash": "0559cf358e3dc7ab331628dd3f2165b6"
   },
   "gestao-paroquia/docs/architecture.md": {
-    "mtime": 1784994735.24,
+    "mtime": 1786036367.3092132,
     "ast_hash": "1745df7bc6b82b3f5bb00659555ac4ad",
     "semantic_hash": "1745df7bc6b82b3f5bb00659555ac4ad"
   },
   "gestao-paroquia/docs/domains/aprovacao.md": {
-    "mtime": 1784994739.559,
+    "mtime": 1786036367.3092132,
     "ast_hash": "c7324a793cef3de7211a85723003ddbb",
     "semantic_hash": "c7324a793cef3de7211a85723003ddbb"
   },
   "gestao-paroquia/docs/domains/calendario.md": {
-    "mtime": 1784994733.184,
+    "mtime": 1786036367.3093293,
     "ast_hash": "46aaa93413306b22b4deae4212737f67",
     "semantic_hash": "46aaa93413306b22b4deae4212737f67"
   },
   "gestao-paroquia/docs/domains/governanca.md": {
-    "mtime": 1784994746.41,
+    "mtime": 1786036367.3093293,
     "ast_hash": "414743841a21985329926d912d14ca00",
     "semantic_hash": "414743841a21985329926d912d14ca00"
   },
   "gestao-paroquia/docs/domains/iam.md": {
-    "mtime": 1784994740.422,
+    "mtime": 1786036367.3093293,
     "ast_hash": "10e25956aca2d97729b613d23f5d4879",
     "semantic_hash": "10e25956aca2d97729b613d23f5d4879"
   },
   "gestao-paroquia/docs/domains/local.md": {
-    "mtime": 1784994739.057,
+    "mtime": 1786036367.3093293,
     "ast_hash": "b57eacb3dbd85375686910e60ff4a90a",
     "semantic_hash": "b57eacb3dbd85375686910e60ff4a90a"
   },
   "gestao-paroquia/docs/domains/membro.md": {
-    "mtime": 1784994746.633,
+    "mtime": 1786036367.3093293,
     "ast_hash": "4578e5d4cc0bb4392d6e746e4f14cc7c",
     "semantic_hash": "4578e5d4cc0bb4392d6e746e4f14cc7c"
   },
   "gestao-paroquia/docs/domains/observabilidade.md": {
-    "mtime": 1784994739.432,
+    "mtime": 1786036367.3093293,
     "ast_hash": "4632aefe5d16cda9b1a4e80ec06fd707",
     "semantic_hash": "4632aefe5d16cda9b1a4e80ec06fd707"
   },
   "gestao-paroquia/docs/domains/organizacao.md": {
-    "mtime": 1784994736.755,
+    "mtime": 1786036367.3093293,
     "ast_hash": "b9625c157e8c898c98b4dabfc6fcb0f4",
     "semantic_hash": "b9625c157e8c898c98b4dabfc6fcb0f4"
   },
   "gestao-paroquia/docs/domains/projeto.md": {
-    "mtime": 1784994742.352,
+    "mtime": 1786036367.3093293,
     "ast_hash": "a535385ae42a26245653f7913f7e819b",
     "semantic_hash": "a535385ae42a26245653f7913f7e819b"
   },
   "gestao-paroquia/docs/domains/support.md": {
-    "mtime": 1784994739.844,
+    "mtime": 1786036367.3093293,
     "ast_hash": "b72291be23ceff80d640517e7c41047e",
     "semantic_hash": "b72291be23ceff80d640517e7c41047e"
   },
   "gestao-paroquia/docs/getting-started.md": {
-    "mtime": 1784994744.44,
+    "mtime": 1786036367.3093293,
     "ast_hash": "347f4bf2ad55b6930c9f8a9164e59a88",
     "semantic_hash": "347f4bf2ad55b6930c9f8a9164e59a88"
   },
   "gestao-paroquia/docs/ia/regra_dura_lgpd.md": {
-    "mtime": 1785929548.7022402,
+    "mtime": 1786036367.3093293,
     "ast_hash": "ee3a9f85bceae944a691147ee29a9efb",
     "semantic_hash": ""
   },
   "gestao-paroquia/docs/index.html": {
-    "mtime": 1784994744.243,
+    "mtime": 1786036367.3093293,
     "ast_hash": "2116632e2f88607e7475c67b178590d5",
     "semantic_hash": "2116632e2f88607e7475c67b178590d5"
   },
   "gestao-paroquia-ui/src/logo.svg": {
-    "mtime": 1779336537.4312346,
+    "mtime": 1786036367.2762308,
     "ast_hash": "2ef66f2ac14270426bc2bd8f75750fa2",
     "semantic_hash": "2ef66f2ac14270426bc2bd8f75750fa2"
   },
   "gestao-paroquia/app/src/main/resources/logo-paroquia.png": {
-    "mtime": 1780184222.7437744,
+    "mtime": 1786036367.2967024,
     "ast_hash": "c725c2be0189353fd3290ff5262ff4cc",
     "semantic_hash": "c725c2be0189353fd3290ff5262ff4cc"
   },
@@ -6365,52 +6365,52 @@
     "semantic_hash": "873364013b94daeacbf3d2335aefeba9"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1785812353.5157034,
+    "mtime": 1786036367.2593863,
     "ast_hash": "ce9268dbcb2abf4973152d374cb87562",
     "semantic_hash": "ce9268dbcb2abf4973152d374cb87562"
   },
   "conductor/archive/harness_quality_enforcement_20260803/index.md": {
-    "mtime": 1785812353.5160866,
+    "mtime": 1786036367.2619047,
     "ast_hash": "37ef78a79619369d320a9864767ba22d",
     "semantic_hash": "37ef78a79619369d320a9864767ba22d"
   },
   "conductor/archive/harness_quality_enforcement_20260803/plan.md": {
-    "mtime": 1785812353.5164773,
+    "mtime": 1786036367.262023,
     "ast_hash": "aec3885209e4db82f27455f6e7af9698",
     "semantic_hash": "aec3885209e4db82f27455f6e7af9698"
   },
   "conductor/archive/harness_quality_enforcement_20260803/spec.md": {
-    "mtime": 1785812353.5164773,
+    "mtime": 1786036367.262023,
     "ast_hash": "8bec4eb9dc5b77b163af39ee8f056807",
     "semantic_hash": "8bec4eb9dc5b77b163af39ee8f056807"
   },
   ".gemini.md": {
-    "mtime": 1785812353.5150867,
+    "mtime": 1786036367.258868,
     "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
     "semantic_hash": ""
   },
   ".github/copilot-instructions.md": {
-    "mtime": 1785812353.5150867,
+    "mtime": 1786036367.258868,
     "ast_hash": "c199f62f3359a42c42ee0da4cec2a25c",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/.gemini.md": {
-    "mtime": 1785812353.5164773,
+    "mtime": 1786036367.2677445,
     "ast_hash": "1fdb00e91ba01d78f953e27a3aef77b1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/.github/copilot-instructions.md": {
-    "mtime": 1785812353.5170865,
+    "mtime": 1786036367.2677445,
     "ast_hash": "1fdb00e91ba01d78f953e27a3aef77b1",
     "semantic_hash": ""
   },
   "gestao-paroquia/.gemini.md": {
-    "mtime": 1785812353.5200865,
+    "mtime": 1786036367.2789655,
     "ast_hash": "abc984170fadab4f920811ae572018a2",
     "semantic_hash": ""
   },
   "gestao-paroquia/.github/copilot-instructions.md": {
-    "mtime": 1785812353.5200865,
+    "mtime": 1786036367.2789655,
     "ast_hash": "abc984170fadab4f920811ae572018a2",
     "semantic_hash": ""
   },
@@ -6420,17 +6420,17 @@
     "semantic_hash": "1ed48a31ff1946f6e1c0d456ae461fe6"
   },
   "conductor/archive/conductor_config_fixes_20260804/index.md": {
-    "mtime": 1785815945.5904922,
+    "mtime": 1786036367.2602267,
     "ast_hash": "fde3f0010a93795ec17c2f7b27451528",
     "semantic_hash": ""
   },
   "conductor/archive/conductor_config_fixes_20260804/plan.md": {
-    "mtime": 1785815945.5915158,
+    "mtime": 1786036367.2603202,
     "ast_hash": "9b8b2d9c4afba02b0f697bad5ff5dcc4",
     "semantic_hash": ""
   },
   "conductor/archive/conductor_config_fixes_20260804/spec.md": {
-    "mtime": 1785815945.5915158,
+    "mtime": 1786036367.2603202,
     "ast_hash": "96ddf882491fcc273227d0c1df58d0d8",
     "semantic_hash": ""
   },
@@ -6450,17 +6450,17 @@
     "semantic_hash": "5221602947955bcfaf59d451b0ba6646"
   },
   "conductor/archive/ui_densidade_visual_20260804/index.md": {
-    "mtime": 1785818444.9827223,
+    "mtime": 1786036367.2662466,
     "ast_hash": "4736a6d67722e48b00a0594102e39499",
     "semantic_hash": ""
   },
   "conductor/archive/ui_densidade_visual_20260804/plan.md": {
-    "mtime": 1785818444.984138,
+    "mtime": 1786036367.266325,
     "ast_hash": "87d62fc3fab5c1749b4ebdf166cdc64d",
     "semantic_hash": ""
   },
   "conductor/archive/ui_densidade_visual_20260804/spec.md": {
-    "mtime": 1785818444.984138,
+    "mtime": 1786036367.266325,
     "ast_hash": "2cac7fa37da494d489911e62a70120ee",
     "semantic_hash": ""
   },
@@ -6870,77 +6870,77 @@
     "semantic_hash": "1efcafac9f8df2105190955f6c0d7763"
   },
   "conductor/archive/estilizacao_botoes_acao_20260804/index.md": {
-    "mtime": 1785855653.3688595,
+    "mtime": 1786036367.260737,
     "ast_hash": "a29aa08e35e263e30ca1cefee5ce2149",
     "semantic_hash": ""
   },
   "conductor/archive/estilizacao_botoes_acao_20260804/plan.md": {
-    "mtime": 1785855653.370253,
+    "mtime": 1786036367.2608216,
     "ast_hash": "f5dd1f405fc4931f912bfd83f2337ee1",
     "semantic_hash": ""
   },
   "conductor/archive/estilizacao_botoes_acao_20260804/spec.md": {
-    "mtime": 1785855653.3703222,
+    "mtime": 1786036367.2608216,
     "ast_hash": "c1d5f921eb631569555e6c84eb8856d2",
     "semantic_hash": ""
   },
   "conductor/archive/fiel_vocacao_aggregate_20260804/index.md": {
-    "mtime": 1785928750.403576,
+    "mtime": 1786036367.2615256,
     "ast_hash": "7c6125b51b3bf977641cf971be292d4b",
     "semantic_hash": ""
   },
   "conductor/archive/fiel_vocacao_aggregate_20260804/plan.md": {
-    "mtime": 1785928750.4049747,
+    "mtime": 1786036367.2616496,
     "ast_hash": "efaca97fa1704feeae1afc410aac01e3",
     "semantic_hash": ""
   },
   "conductor/archive/fiel_vocacao_aggregate_20260804/spec.md": {
-    "mtime": 1785928750.4049747,
+    "mtime": 1786036367.2616496,
     "ast_hash": "98d292dc7c42bbbb8793860519f291a5",
     "semantic_hash": ""
   },
   "conductor/archive/membro_grupo_por_fiel_20260804/index.md": {
-    "mtime": 1785979145.0098715,
+    "mtime": 1786036367.2627897,
     "ast_hash": "a6378cdc4ff0ed2ad8c75aa31cfc65cc",
     "semantic_hash": ""
   },
   "conductor/archive/membro_grupo_por_fiel_20260804/plan.md": {
-    "mtime": 1785979145.0105731,
+    "mtime": 1786036367.2629051,
     "ast_hash": "e6deb785b1dcbfc591a74973f37920ef",
     "semantic_hash": ""
   },
   "conductor/archive/membro_grupo_por_fiel_20260804/spec.md": {
-    "mtime": 1785979145.0105731,
+    "mtime": 1786036367.2629051,
     "ast_hash": "ca404b7afaa75968ecf1fd8c32e0f50f",
     "semantic_hash": ""
   },
   "conductor/archive/roles_globais_vs_escopo_20260804/index.md": {
-    "mtime": 1785983416.0910628,
+    "mtime": 1786036367.2657497,
     "ast_hash": "79534f8ff1e141dfde793b109df9e21a",
     "semantic_hash": ""
   },
   "conductor/archive/roles_globais_vs_escopo_20260804/plan.md": {
-    "mtime": 1785983416.0921433,
+    "mtime": 1786036367.2658408,
     "ast_hash": "0f687e080f03ff0d2cbdb6206ffe09e8",
     "semantic_hash": ""
   },
   "conductor/archive/roles_globais_vs_escopo_20260804/spec.md": {
-    "mtime": 1785983416.0921433,
+    "mtime": 1786036367.2658408,
     "ast_hash": "689b89b8255f7e4124728827683270e7",
     "semantic_hash": ""
   },
   "conductor/archive/usuario_fiel_decoupling_20260804/index.md": {
-    "mtime": 1785947093.0921354,
+    "mtime": 1786036367.266719,
     "ast_hash": "644afdc99ffdca2d257ea7e9cf8078aa",
     "semantic_hash": ""
   },
   "conductor/archive/usuario_fiel_decoupling_20260804/plan.md": {
-    "mtime": 1785947093.093243,
+    "mtime": 1786036367.2668009,
     "ast_hash": "9ffefb5b34a1774ffe55e55e7669595a",
     "semantic_hash": ""
   },
   "conductor/archive/usuario_fiel_decoupling_20260804/spec.md": {
-    "mtime": 1785947093.093243,
+    "mtime": 1786036367.2668009,
     "ast_hash": "2134e217dac76254646adf7b788b87a8",
     "semantic_hash": ""
   },
@@ -7038,5 +7038,60 @@
     "mtime": 1786036367.3066773,
     "ast_hash": "9b73f093545dfbb938fa7bb0e9ecb065",
     "semantic_hash": "9b73f093545dfbb938fa7bb0e9ecb065"
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1786036668.025669,
+    "ast_hash": "f1e53ecc9194573d3c28fc116c743a2e",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1786036668.0257728,
+    "ast_hash": "6d73634a678cf1e1c71930adf80bd1f0",
+    "semantic_hash": ""
+  },
+  "conductor/archive/fiel_ui_iam_frontend_20260804/index.md": {
+    "mtime": 1786036367.2614164,
+    "ast_hash": "cc8a6dee517a5bc0e14f2412603ddc20",
+    "semantic_hash": ""
+  },
+  "conductor/archive/fiel_ui_iam_frontend_20260804/plan.md": {
+    "mtime": 1786036367.2615256,
+    "ast_hash": "a9ac1ccf1dcb18465236f2b7f6af1f8d",
+    "semantic_hash": ""
+  },
+  "conductor/archive/fiel_ui_iam_frontend_20260804/spec.md": {
+    "mtime": 1786036367.2615256,
+    "ast_hash": "20635aaa8fef218ddb28ae72b643cea4",
+    "semantic_hash": ""
+  },
+  "conductor/archive/linguagem_ubiqua_dominio_20260804/index.md": {
+    "mtime": 1786036367.262247,
+    "ast_hash": "0cdcb656ce800566a5876d421c23de87",
+    "semantic_hash": ""
+  },
+  "conductor/archive/linguagem_ubiqua_dominio_20260804/plan.md": {
+    "mtime": 1786036367.2623768,
+    "ast_hash": "ec62c43726ef5bf7c3bf0f73a0dda940",
+    "semantic_hash": ""
+  },
+  "conductor/archive/linguagem_ubiqua_dominio_20260804/spec.md": {
+    "mtime": 1786036367.2623768,
+    "ast_hash": "1dddb74bde56fab2f74b8a2561c8aff9",
+    "semantic_hash": ""
+  },
+  "conductor/archive/sdd_regressao_final_20260804/index.md": {
+    "mtime": 1786036367.2658408,
+    "ast_hash": "5cff6b67fb4710921f76ff5722268fbb",
+    "semantic_hash": ""
+  },
+  "conductor/archive/sdd_regressao_final_20260804/plan.md": {
+    "mtime": 1786036367.2659729,
+    "ast_hash": "3e6c6b46a3f0659799f0f1ef1a5ac79b",
+    "semantic_hash": ""
+  },
+  "conductor/archive/sdd_regressao_final_20260804/spec.md": {
+    "mtime": 1786036367.2659729,
+    "ast_hash": "afcfb42d70308850c5c2151557f11348",
+    "semantic_hash": ""
   }
 }
