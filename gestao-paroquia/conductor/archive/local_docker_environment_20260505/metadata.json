@@ -1,8 +1,0 @@
-{
-  "track_id": "local_docker_environment_20260505",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-05-05T00:00:00Z",
-  "updated_at": "2026-05-05T00:00:00Z",
-  "description": "Set up Local Docker Environment with SonarQube Builder"
-}

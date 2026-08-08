@@ -13,9 +13,8 @@ gestao-paroquia/app/bin/
 # Saídas e caches do próprio Graphify
 graphify-out/
 
-# Metadados de IA / Conductor / Arquivos arquivados
-conductor/archive/
-gestao-paroquia/conductor/archive/
+# Metadados de IA / Arquivos arquivados
+
 
 # Outros arquivos binários / temporários
 *.jar

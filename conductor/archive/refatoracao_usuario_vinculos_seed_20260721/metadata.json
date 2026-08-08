@@ -1,8 +1,0 @@
-{
-  "track_id": "refatoracao_usuario_vinculos_seed_20260721",
-  "type": "refactor",
-  "status": "new",
-  "created_at": "2026-07-21T19:11:30Z",
-  "updated_at": "2026-07-21T19:11:30Z",
-  "description": "Refatoração do Modelo de Usuário, Vínculos com Organizações e Seed Docker"
-}

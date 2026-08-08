@@ -1,8 +1,0 @@
-{
-  "track_id": "square_ui_layout_20260531",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-31T14:36:00Z",
-  "updated_at": "2026-05-31T14:36:00Z",
-  "description": "a ui do sistema usa bordas arredondadas no seu layout. Nao gosto desse estilo, gosto de padroes mais quadrados e angulados. ajuste o layout da aplicação e os componentes para usando componetes sem angulas arredondados."
-}

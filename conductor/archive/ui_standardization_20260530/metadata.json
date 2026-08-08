@@ -1,8 +1,0 @@
-{
-  "track_id": "ui_standardization_20260530",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-30T22:27:00Z",
-  "updated_at": "2026-05-30T22:27:00Z",
-  "description": "padronizar a apresentacao dos erros e validacao em todas as telas do sistema. Padronzar tambem os formularios, fontes e icones, assim como botões e links."
-}

@@ -20,8 +20,8 @@ O repositório é organizado em módulos independentes, cada um com suas própri
 - **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 3**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 14 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
 - **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
 - **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4 e seeder automático de dados. Variáveis de ambiente em [`.env.example`](./.env.example).
-- **[Conductor (`conductor/`)](./conductor):** Especificações funcionais, diretrizes de produto, stack tecnológica, workflow de desenvolvimento e trilhas (tracks) de tarefas em execução.
 - **[Documentação (`gestao-paroquia/docs/`)](./gestao-paroquia/docs):** Portal de documentação técnica — arquitetura, guia de início rápido, documentação por domínio e regras de conformidade com a LGPD.
+
 - **Scripts utilitários (`run.sh`, `restart-docker.sh`):** Atalhos para o ciclo de vida completo do ambiente (subir, testar, checar qualidade, buildar e reiniciar os contêineres).
 
 ---
@@ -133,10 +133,7 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 - [Visão Geral da Arquitetura do Backend](./gestao-paroquia/docs/architecture.md)
 - [Guia de Início Rápido do Backend](./gestao-paroquia/docs/getting-started.md)
 - [Documentação por Domínio](./gestao-paroquia/docs/domains/)
-- [Guia do Produto (Conductor)](./conductor/product.md)
-- [Diretrizes de Produto (Conductor)](./conductor/product-guidelines.md)
-- [Stack Tecnológica (Conductor)](./conductor/tech-stack.md)
-- [Workflow de Desenvolvimento (Conductor)](./conductor/workflow.md)
+
 
 ---
 *Sistema desenvolvido para apoiar a gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima, com foco em eficiência, alta confiabilidade e conformidade com a LGPD.* ⛪

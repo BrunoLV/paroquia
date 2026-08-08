@@ -1,8 +1,0 @@
-{
-  "track_id": "ui_error_presentation_standardization_20260531",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-31T21:01:30Z",
-  "updated_at": "2026-05-31T21:01:30Z",
-  "description": "os erros de validação de regras, campos e informações são mostrados de uma maneira na tela de cadastro de eventos e de outra forma nas demais telas do sistmea. Padronização a apresentação de mensagens informativas e de erro no sistema para ser seguido o mesmo padrão em TODAS as telas e fluxos do sistema."
-}

@@ -1,8 +1,0 @@
-{
-  "track_id": "event_observations_management_20260613",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-06-13T14:30:00Z",
-  "updated_at": "2026-06-13T14:30:00Z",
-  "description": "Implementar a funcionalidade de adicionar, editar e remover observações dos eventos conforme já implementado na api."
-}

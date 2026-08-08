@@ -1,8 +1,0 @@
-{
-  "track_id": "docker_compose_integration_20260517",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-05-17T10:00:00Z",
-  "updated_at": "2026-05-17T10:00:00Z",
-  "description": "Create Docker Compose for integrated system"
-}

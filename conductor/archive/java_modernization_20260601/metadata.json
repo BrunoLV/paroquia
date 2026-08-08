@@ -1,8 +1,0 @@
-{
-  "track_id": "java_modernization_20260601",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-06-01T22:34:42-03:00",
-  "updated_at": "2026-06-01T22:34:42-03:00",
-  "description": "modernização de ambiente Java, frameworks e dependencias utilizadas em gestao-paroquia. Necessario atualizar o projeto para Java 25 e atualizar dependencias e frameworks para a versão mais atualizada."
-}

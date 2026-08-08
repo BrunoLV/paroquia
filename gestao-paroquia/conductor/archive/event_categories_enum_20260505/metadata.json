@@ -1,8 +1,0 @@
-{
-  "track_id": "event_categories_enum_20260505",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-05T00:00:00Z",
-  "updated_at": "2026-05-05T00:00:00Z",
-  "description": "Refactor Event Categories to use an Enum instead of a database table."
-}

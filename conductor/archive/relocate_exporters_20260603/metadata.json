@@ -1,8 +1,0 @@
-{
-  "track_id": "relocate_exporters_20260603",
-  "type": "refactor",
-  "status": "new",
-  "created_at": "2026-06-03T13:28:00Z",
-  "updated_at": "2026-06-03T13:28:00Z",
-  "description": "classes Exporter em usecase/evento não casos de uso, sao utilitarios que servem apenas para gerar arquivos, dentro da arquitetura da app isso soa como bad smell. revise isso e ajuste os pacotes. necessário fazer essa analise no projeto como um todo"
-}

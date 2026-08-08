@@ -1,8 +1,0 @@
-{
-  "track_id": "auth_spring_session_20260516",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-05-16T15:00:00Z",
-  "updated_at": "2026-05-16T15:00:00Z",
-  "description": "Migrate Authentication to Spring Session"
-}

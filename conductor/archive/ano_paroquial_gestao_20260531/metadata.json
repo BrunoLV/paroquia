@@ -1,8 +1,0 @@
-{
-  "track_id": "ano_paroquial_gestao_20260531",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-06-01T02:09:00Z",
-  "updated_at": "2026-06-01T02:09:00Z",
-  "description": "Implementar a funcionalidade relacionada ao ano paroquial. Como regra geral um ano paroquial só pode iniciar quando o anterior for terminado. Um ano inicia-se no dia 01 de janeiro e se encerra no dia 31 de dezembro."
-}
