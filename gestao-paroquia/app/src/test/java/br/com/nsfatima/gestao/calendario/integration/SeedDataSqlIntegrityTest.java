@@ -43,6 +43,11 @@ public class SeedDataSqlIntegrityTest {
         jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_ciclo_liturgico;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_liturgicos;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.pastorais_movimentos_oficiais;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.paroquia_configuracao;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_solenidade_liturgica;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.cpc_decisoes;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_envolvidos;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_ativo_patrimonial;");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
 
         // Remove PL/pgSQL DO block for H2 execution in tests

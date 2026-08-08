@@ -16,6 +16,8 @@ spring:
           time_zone: UTC
   flyway:
     enabled: true
+    schemas: calendario
+    default-schema: calendario
     baseline-on-migrate: true
     baseline-version: 0
     out-of-order: true

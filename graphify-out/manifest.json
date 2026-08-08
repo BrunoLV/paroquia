@@ -2925,8 +2925,8 @@
     "semantic_hash": "b684161ffa664b061459adc4b26d3f76"
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1786155842.730414,
-    "ast_hash": "071962b4d4416fdc0f31dcbcb0afa88c",
+    "mtime": 1786156657.2599149,
+    "ast_hash": "abaaef26bd86f0da172a840f41390f1a",
     "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
@@ -3450,9 +3450,9 @@
     "semantic_hash": "d0070319ae85cce4681a63a1a4772c5f"
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/SeedDataSqlIntegrityTest.java": {
-    "mtime": 1786036367.3002536,
-    "ast_hash": "7ce8393d6e4b61f5ee82766e609e4867",
-    "semantic_hash": "7ce8393d6e4b61f5ee82766e609e4867"
+    "mtime": 1786156556.627964,
+    "ast_hash": "e00e41c73412a32b2460f2180148314d",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/AlocarAtivoParaEventoUseCaseTest.java": {
     "mtime": 1786036367.3058321,
@@ -3660,9 +3660,9 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/application.yml": {
-    "mtime": 1786036367.295184,
-    "ast_hash": "02925a47ab8401fb9d79e15d53bdc238",
-    "semantic_hash": "02925a47ab8401fb9d79e15d53bdc238"
+    "mtime": 1786156409.3470435,
+    "ast_hash": "8dda9964ebe1c700448db672da897c68",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/resources/application.yml": {
     "mtime": 1786036367.3067427,
@@ -4740,9 +4740,9 @@
     "semantic_hash": "2af1476ddc8a7a43ba8d2b5a75286002"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V058__make_fiel_id_mandatory_on_usuarios.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "6a39acbcbbbead6a5286b7561940bad0",
-    "semantic_hash": "6a39acbcbbbead6a5286b7561940bad0"
+    "mtime": 1786156453.4690146,
+    "ast_hash": "0c3042f5e0d22452411801881aaa2016",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V059__add_sacramentos_to_fieis.sql": {
     "mtime": 1786036367.295301,
