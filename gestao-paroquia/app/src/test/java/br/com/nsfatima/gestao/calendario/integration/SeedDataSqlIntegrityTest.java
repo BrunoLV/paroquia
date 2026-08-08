@@ -1,9 +1,12 @@
 package br.com.nsfatima.gestao.calendario.integration;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,19 +15,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SeedDataSqlIntegrityTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Test
-    void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        Path seedFilePath = Path.of("../docker/seed-data.sql");
-        assertTrue(Files.exists(seedFilePath), "seed-data.sql file must exist in docker directory");
-
-        String sqlContent = Files.readString(seedFilePath);
-
-        // Clean tables before running seed in H2
+    @BeforeEach
+    @AfterEach
+    void cleanTables() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.auditoria_operacoes;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.projeto_solicitacoes_aprovacao;");
@@ -49,6 +48,14 @@ public class SeedDataSqlIntegrityTest {
         jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_envolvidos;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_ativo_patrimonial;");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
+    }
+
+    @Test
+    void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
+        Path seedFilePath = Path.of("../docker/seed-data.sql");
+        assertTrue(Files.exists(seedFilePath), "seed-data.sql file must exist in docker directory");
+
+        String sqlContent = Files.readString(seedFilePath);
 
         // Remove PL/pgSQL DO block for H2 execution in tests
         int doIndex = sqlContent.indexOf("DO $$");
@@ -90,3 +97,4 @@ public class SeedDataSqlIntegrityTest {
         assertTrue(eventosCount != null && eventosCount > 0, "Eventos should be populated");
     }
 }
+

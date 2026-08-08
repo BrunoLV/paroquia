@@ -2925,8 +2925,8 @@
     "semantic_hash": "b684161ffa664b061459adc4b26d3f76"
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1786157133.492683,
-    "ast_hash": "d72b45bf11c3f90e90f4f9109b963b5d",
+    "mtime": 1786157799.7394886,
+    "ast_hash": "058ab0bcea9e52aa0fda96f8564acc62",
     "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
@@ -3450,8 +3450,8 @@
     "semantic_hash": "d0070319ae85cce4681a63a1a4772c5f"
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/SeedDataSqlIntegrityTest.java": {
-    "mtime": 1786156556.627964,
-    "ast_hash": "e00e41c73412a32b2460f2180148314d",
+    "mtime": 1786157976.5014768,
+    "ast_hash": "de592199d76616ed97b16cd312450a09",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/AlocarAtivoParaEventoUseCaseTest.java": {
@@ -4987,6 +4987,11 @@
   ".agents/workflows/graphify.md": {
     "mtime": 1786036668.0257728,
     "ast_hash": "6d73634a678cf1e1c71930adf80bd1f0",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V067__alter_fieis_cpf_hash_to_varchar.sql": {
+    "mtime": 1786157609.0685012,
+    "ast_hash": "06477a8313f30164dc7d25c7cf714bf5",
     "semantic_hash": ""
   }
 }

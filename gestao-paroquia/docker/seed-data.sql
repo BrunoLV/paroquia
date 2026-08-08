@@ -476,18 +476,7 @@ VALUES
 ('75000000-0000-0000-0000-000000002035', 'Tempo Comum 2035', 'TEMPO_COMUM', 'VERDE', 1, 14, 12, 1, 1.0, 'Tempo Comum 2035', 2035)
 ON CONFLICT (id) DO NOTHING;
 
--- Configuração Geral da Paróquia
-INSERT INTO calendario.paroquia_configuracao (id, nome, diocese, endereco, logo_bytes, cor_primaria_hex, cor_secundaria_hex, version)
-VALUES (
-    '90000000-0000-0000-0000-000000000001',
-    'Paróquia Nossa Senhora de Fátima',
-    'Diocese de São Miguel Paulista',
-    'Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP',
-    NULL,
-    '#1A237E',
-    '#808080',
-    0
-) ON CONFLICT (id) DO NOTHING;
+
 
 -- Solenidades Litúrgicas
 INSERT INTO calendario.tb_solenidade_liturgica (id, chave, nome, tipo_solenidade, mes_fixo, dia_fixo, offset_dias_pascoa, cor_liturgica, fator_demanda, nivel_prioridade, descricao, ativo)
