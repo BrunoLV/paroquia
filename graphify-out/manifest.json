@@ -1775,7 +1775,7 @@
     "semantic_hash": "b3e22ae0579d185e258444afbb238887"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V001__calendar_baseline.sql": {
-    "mtime": 1786036367.295262,
+    "mtime": 1786157038.4387293,
     "ast_hash": "87fca4f6455f64c3097c5f6c0dd44b75",
     "semantic_hash": "87fca4f6455f64c3097c5f6c0dd44b75"
   },
@@ -2925,8 +2925,8 @@
     "semantic_hash": "b684161ffa664b061459adc4b26d3f76"
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1786156657.2599149,
-    "ast_hash": "abaaef26bd86f0da172a840f41390f1a",
+    "mtime": 1786157133.492683,
+    "ast_hash": "d72b45bf11c3f90e90f4f9109b963b5d",
     "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
@@ -3370,22 +3370,22 @@
     "semantic_hash": "ff41017d4ca8473fc9e22d4199ed65c6"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V049__create_tabela_ciclo_liturgico.sql": {
-    "mtime": 1786036367.295301,
+    "mtime": 1786157038.4399912,
     "ast_hash": "9920eaccb69ddd3e9d3ec488d365ad3e",
     "semantic_hash": "9920eaccb69ddd3e9d3ec488d365ad3e"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V050__create_tabela_anos_liturgicos.sql": {
-    "mtime": 1786036367.295301,
+    "mtime": 1786157038.4406338,
     "ast_hash": "a8358f07a9ad5bac207af300259fd4df",
     "semantic_hash": "a8358f07a9ad5bac207af300259fd4df"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V051__seed_dez_anos_ciclos_liturgicos.sql": {
-    "mtime": 1786036367.295301,
+    "mtime": 1786157038.4410384,
     "ast_hash": "af8fa1330ff1404b26e1ab4c60eccf6f",
     "semantic_hash": "af8fa1330ff1404b26e1ab4c60eccf6f"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V052__create_tabela_solenidade_liturgica.sql": {
-    "mtime": 1786036367.295301,
+    "mtime": 1786157038.441454,
     "ast_hash": "c53285a96dffd1c00f6f0010d4ca5ced",
     "semantic_hash": "c53285a96dffd1c00f6f0010d4ca5ced"
   },
@@ -3540,8 +3540,8 @@
     "semantic_hash": "0e97b49df3053a64107745be2ad9e448"
   },
   "AGENTS.md": {
-    "mtime": 1786036481.442518,
-    "ast_hash": "6c135b5482693266aa795d0e05927121",
+    "mtime": 1786157401.825132,
+    "ast_hash": "768ddadf6f9ec57dbd481bc5d9bc0a42",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -3570,8 +3570,8 @@
     "semantic_hash": "d9a214ff5bf62a410de87095e97b0b4a"
   },
   "gestao-paroquia-ui/AGENTS.md": {
-    "mtime": 1786036491.6785011,
-    "ast_hash": "aa933dd29f949c066f97fb7be2a954cf",
+    "mtime": 1786157409.8895483,
+    "ast_hash": "8fc2fd67559f5c96da148cae32b1fdd3",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/CLAUDE.md": {
@@ -3645,8 +3645,8 @@
     "semantic_hash": "0e97b49df3053a64107745be2ad9e448"
   },
   "gestao-paroquia/AGENTS.md": {
-    "mtime": 1786036487.2125084,
-    "ast_hash": "6145ca77ebca5cecb167f18d899371fb",
+    "mtime": 1786157405.7005503,
+    "ast_hash": "e246332336008de2641b434b44edefef",
     "semantic_hash": ""
   },
   "gestao-paroquia/CLAUDE.md": {
@@ -4765,7 +4765,7 @@
     "semantic_hash": "89a28783d66895c81fb3b17c8d2e616c"
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V063__create_unidade_territorial.sql": {
-    "mtime": 1786036367.295301,
+    "mtime": 1786157038.441834,
     "ast_hash": "7cbb40dd5319d06a6ad4c2ed5deab897",
     "semantic_hash": "7cbb40dd5319d06a6ad4c2ed5deab897"
   },
