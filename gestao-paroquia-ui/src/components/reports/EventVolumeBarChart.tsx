@@ -1,9 +1,8 @@
 import React from 'react';
-import {Box, Paper, Typography, useTheme} from '@mui/material';
-import {BarChart as BarIcon} from '@mui/icons-material';
-import ReactApexChart from 'react-apexcharts';
-import {ApexOptions} from 'apexcharts';
-import {EventDistribution} from '../../api/types';
+import { Box, Paper, Typography, useTheme } from '@mui/material';
+import { BarChart as BarIcon } from '@mui/icons-material';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { EventDistribution } from '../../api/types';
 
 interface EventVolumeBarChartProps {
   data: EventDistribution[];
@@ -14,7 +13,6 @@ const ChartCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     elevation={0}
     sx={{
       p: 3,
-      
       border: '1px solid',
       borderColor: 'divider',
       height: '100%',
@@ -43,9 +41,6 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
     );
   }
 
-  const categories = data.map((item) => item.organizacaoNome);
-  const seriesData = data.map((item) => item.quantidadeEventos);
-
   const palette = [
     theme.palette.primary.main,
     theme.palette.secondary.main,
@@ -54,68 +49,35 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
     theme.palette.success.main,
   ];
 
-  const options: ApexOptions = {
-    chart: {
-      type: 'bar',
-      toolbar: {
-        show: true,
-        tools: {
-          download: true,
-          zoom: true,
-          zoomin: true,
-          zoomout: true,
-          pan: true,
-        },
-        export: {
-          csv: { filename: 'volume-eventos-por-organizacao' },
-          png: { filename: 'volume-eventos-por-organizacao' },
-          svg: { filename: 'volume-eventos-por-organizacao' },
-        },
-      },
-      zoom: { enabled: true, type: 'x' },
-      animations: { enabled: true },
-      background: 'transparent',
-    },
-    theme: { mode: theme.palette.mode },
-    colors: palette,
-    plotOptions: {
-      bar: {
-        
-        columnWidth: categories.length > 8 ? '40%' : '55%',
-        distributed: true,
-      },
-    },
-    dataLabels: { enabled: false },
-    xaxis: {
-      categories,
-      labels: { style: { colors: theme.palette.text.secondary } },
-    },
-    yaxis: {
-      labels: { style: { colors: theme.palette.text.secondary } },
-    },
-    grid: { borderColor: theme.palette.divider },
-    legend: { show: false },
-    tooltip: { theme: theme.palette.mode },
-  };
-
-  const series = [
-    {
-      name: 'Quantidade de Eventos',
-      data: seriesData,
-    },
-  ];
-
   return (
     <ChartCard>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="bar"
-        height={310}
-        width="100%"
-      />
+      <Box sx={{ minHeight: 310, width: '100%' }}>
+        <ResponsiveContainer width="100%" height={310}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 25 }}>
+            <XAxis
+              dataKey="organizacaoNome"
+              tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
+              interval={0}
+            />
+            <YAxis tick={{ fill: theme.palette.text.secondary, fontSize: 12 }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.92)',
+                border: `1px solid ${theme.palette.divider}`,
+                color: theme.palette.text.secondary,
+              }}
+            />
+            <Bar dataKey="quantidadeEventos" radius={[4, 4, 0, 0]}>
+              {data.map((_, index) => (
+                <Cell key={`cell-${index}`} fill={palette[index % palette.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
     </ChartCard>
   );
 };
 
 export default EventVolumeBarChart;
+

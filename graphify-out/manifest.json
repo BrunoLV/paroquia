@@ -265,9 +265,9 @@
     "semantic_hash": "f7c6050f5830a03327adb63a4f9aa912"
   },
   "gestao-paroquia-ui/package.json": {
-    "mtime": 1786036367.2697024,
-    "ast_hash": "db4d63ae4df4cf13ffd75a7fce08107d",
-    "semantic_hash": "db4d63ae4df4cf13ffd75a7fce08107d"
+    "mtime": 1786154420.0943441,
+    "ast_hash": "ed99399c73746292ae54d85e34708406",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/public/manifest.json": {
     "mtime": 1786036367.2717025,
@@ -670,9 +670,9 @@
     "semantic_hash": "e4b9d30d8977477f6f984c7aca4d13a3"
   },
   "gestao-paroquia-ui/src/setupTests.ts": {
-    "mtime": 1786036367.2777023,
-    "ast_hash": "d70fc6b8901a8717d63529b63aebac84",
-    "semantic_hash": "d70fc6b8901a8717d63529b63aebac84"
+    "mtime": 1786154467.6463132,
+    "ast_hash": "d0cbe44f8b05a8950ee1428318a49b1a",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/theme.test.tsx": {
     "mtime": 1786036367.2777023,
@@ -3435,14 +3435,14 @@
     "semantic_hash": "0d8d9f5dc10f5f25e487b0c81c8949e8"
   },
   "gestao-paroquia-ui/src/components/reports/EventVolumeBarChart.test.tsx": {
-    "mtime": 1786036367.275921,
-    "ast_hash": "1d2c221b81c9218b52c022b1e6515a66",
-    "semantic_hash": "1d2c221b81c9218b52c022b1e6515a66"
+    "mtime": 1786154407.1133528,
+    "ast_hash": "7568794651b9c06d10f780d0c8f1dc07",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/EventVolumeBarChart.tsx": {
-    "mtime": 1786036367.2760015,
-    "ast_hash": "c1925e61ab05d55c279a7009e766d5eb",
-    "semantic_hash": "c1925e61ab05d55c279a7009e766d5eb"
+    "mtime": 1786154401.8393562,
+    "ast_hash": "eefcd3b778a22b6056853c2ed0a04d7a",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/MetricasEstrategicasTab.tsx": {
     "mtime": 1786036367.2760015,
@@ -5655,9 +5655,9 @@
     "semantic_hash": "66a88ec9ea0c715e90d3403ce5a1aeac"
   },
   "gestao-paroquia-ui/src/utils/currencyUtils.ts": {
-    "mtime": 1786036367.2785087,
-    "ast_hash": "e2cfddf8295d4e2cbc2c62ab46fa1914",
-    "semantic_hash": "e2cfddf8295d4e2cbc2c62ab46fa1914"
+    "mtime": 1786154424.7113411,
+    "ast_hash": "556ea23480e565843a90ab8a06365200",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/patrimonio/api/v1/dto/AtivoAlocacaoResponse.java": {
     "mtime": 1786036367.292408,

@@ -11,6 +11,10 @@ vi.mock('recharts', () => {
   return {
     ResponsiveContainer: Passthrough,
     PieChart: Passthrough,
+    BarChart: Passthrough,
+    Bar: Passthrough,
+    XAxis: Passthrough,
+    YAxis: Passthrough,
     Pie: ({ data, children }: any) => {
       const slices = data?.map((d: any) =>
         React.createElement('span', { key: d.label }, `${d.label}: ${d.value}`)
@@ -23,19 +27,4 @@ vi.mock('recharts', () => {
   };
 });
 
-// Global mock for react-apexcharts to avoid jsdom rendering issues in tests
-vi.mock('react-apexcharts', () => {
-  return {
-    default: ({ options, series }: any) => {
-      const categories = options?.xaxis?.categories || [];
-      const children = series?.[0]?.data?.map((value: number, index: number) =>
-        React.createElement('span', { key: categories[index] }, `${categories[index]}: ${value}`)
-      ) || [];
-      return React.createElement(
-        'div',
-        { 'data-testid': 'mock-apex-bar-chart', 'data-theme-mode': options?.theme?.mode },
-        ...children
-      );
-    },
-  };
-});
+
