@@ -482,10 +482,10 @@ VALUES (
     '90000000-0000-0000-0000-000000000001',
     'Paróquia Nossa Senhora de Fátima',
     'Diocese de São Miguel Paulista',
-    'Av. Dr. Arnaldo, 1200 - Sumaré, São Paulo - SP',
+    'Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP',
     NULL,
     '#1A237E',
-    '#D32F2F',
+    '#808080',
     0
 ) ON CONFLICT (id) DO NOTHING;
 
