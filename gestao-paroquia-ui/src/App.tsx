@@ -7,7 +7,6 @@ import {QueryProvider} from './api/QueryProvider';
 import {AuthProvider} from './auth/AuthContext';
 import {NotificationProvider} from './context/NotificationContext';
 import AppRoutes from './AppRoutes';
-import './App.css';
 
 function App() {
   return (

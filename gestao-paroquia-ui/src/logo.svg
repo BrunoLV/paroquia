@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#1A237E" rx="20"/>
-  <path d="M20 70 L30 40 L50 60 L70 40 L80 70 Z" fill="#FFB300" stroke="#FFD54F" stroke-width="2"/>
-  <circle cx="50" cy="30" r="8" fill="#FFB300"/>
-  <text x="50" y="90" font-family="Arial" font-size="10" fill="white" text-anchor="middle">NS FATIMA</text>
-</svg>
