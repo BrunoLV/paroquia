@@ -1,16 +1,16 @@
 # Graph Report - paroquia  (2026-08-07)
 
 ## Corpus Check
-- 990 files · ~299,205 words
+- 990 files · ~299,262 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7393 nodes · 20839 edges · 473 communities (381 shown, 92 thin omitted)
+- 7393 nodes · 20839 edges · 475 communities (381 shown, 94 thin omitted)
 - Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 3905 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f3513260`
+- Built from commit: `328fe155`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -30,7 +30,7 @@
 - .getEventoId
 - CpcDecisaoEntity
 - FielResponse
-- UsuarioDetails
+- PapelOrganizacional
 - GrupoParoquial
 - AtivoAlocacaoEntity
 - Ativos.tsx
@@ -40,7 +40,7 @@
 - SolenidadeLiturgicaServiceTest.java
 - Settings.tsx
 - .criarAprovacaoPendente
-- MembroController.java
+- .nivel1_DeveAutoCancelarEventosDeMenorPrioridade
 - EventoConsultaJpaRepository
 - AprovacaoExceptionHandler.java
 - AprovacaoController.java
@@ -56,7 +56,7 @@
 - EventoControllerListTest.java
 - ObservacaoAuditPublisher
 - EventoController.java
-- EventoDomainService
+- EventoStatusInput
 - GetDashboardMetricsUseCase.java
 - CalcularTaxaProjetosUseCaseTest.java
 - EventoAuditPublisher
@@ -71,7 +71,7 @@
 - ObservacaoEventoEntity
 - .execute
 - AuditoriaOperacaoEntity
-- EnumRequestNormalizer
+- AnoParoquialStatus.java
 - ObservacaoAtivoPatrimonialEntity
 - AtivoAlocacaoJpaRepository
 - GrupoParoquialEntity
@@ -99,7 +99,7 @@
 - devDependencies
 - EventoActorContext
 - EventoEntity.java
-- VerificarConcorrenciaInterpastoralUseCase
+- TimezoneConfig
 - JsonAuthenticationOutcomeProcessor.java
 - LocalController.java
 - AccessDeniedException
@@ -124,7 +124,7 @@
 - GrupoParoquialJpaRepository
 - MvcResult
 - ConselhosAtas.tsx
-- ExportacaoCalendarioIntegrationTest.java
+- GlobalDomainExceptionHandler.java
 - PapelGlobal
 - ProjetosContractTest.java
 - GlobalExceptionHandler.java
@@ -135,14 +135,14 @@
 - AttributeConverter
 - CreateEventoConflitoPendenteIntegrationTest.java
 - AtivoAlocacaoAgendaJob.java
-- AnoParoquialStatus
-- EventoMapper
+- UpdateEventoAuditIntegrationTest.java
+- CategoriaEvento
 - InvalidStatusTransitionException
 - AlocarAtivoParaEventoUseCase
 - ExceptionHandlerIntegrationTest.java
 - UnknownFieldRejectionIntegrationTest.java
 - ImportModal.tsx
-- EventoResponse
+- CalendarioBloqueadoException
 - ProjetoGovernancaIntegrationTest.java
 - AnoParoquialRolloverTest.java
 - AuditoriaOperacaoJpaRepository
@@ -155,7 +155,7 @@
 - EventosPatchContractTest.java
 - EventoLifecycleTransitionRegressionIntegrationTest.java
 - GetIndicadorRetrabalhoUseCase
-- AuditPersistenceFailureIntegrationTest.java
+- AuditRollbackConsistencyIntegrationTest.java
 - UsuarioDetailsService
 - ApproveCancelEventoIntegrationTest.java
 - MediaType
@@ -173,7 +173,7 @@
 - ParoquiaConfiguracaoEntity
 - IndicadorRetrabalhoZeroIntegrationTest.java
 - ObservacaoEventoEntity.java
-- AnoParoquialEntity.java
+- AnoParoquialSeeder.java
 - SecurityEndpointAuthIntegrationTest.java
 - demo_mvp.sh
 - MANUAL DE REGRAS DURAS DE COMPLIANCE E PRIVACIDADE
@@ -204,7 +204,7 @@
 - RevogarPapelGlobalUseCase
 - UpdateEventoValidationIntegrationTest.java
 - AtivoAlocacaoNotificationListener.java
-- CategoriaEvento
+- UpdateEventoUseCase
 - EventoControllerCancelTest.java
 - useNotification
 - AuditoriaTier1PerformanceTest
@@ -212,9 +212,11 @@
 - AuditTrailOrderingIntegrationTest.java
 - CancelamentoPendenteResponse
 - AprovacaoFlowTestFixtures
+- IdempotencyConflictException
 - LeitorVinculoExterno
 - CancelEventoAprovacaoExecutionFailureIntegrationTest.java
 - RejectCancelEventoIntegrationTest.java
+- UpdateAnoParoquialRequest
 - EventoRecorrenciaController.java
 - @testing-library/dom
 - VinculoProjetoEventoIntegrationTest.java
@@ -453,31 +455,31 @@
 ## Import Cycles
 - None detected.
 
-## Communities (473 total, 92 thin omitted)
+## Communities (475 total, 94 thin omitted)
 
 ### Community 0 - "UsuarioEntity"
 Cohesion: 0.04
-Nodes (47): Transactional, ChangePasswordUseCase, PasswordEncoder, Service, Transactional, Transactional, Service, Transactional (+39 more)
+Nodes (42): Service, Transactional, ChangePasswordUseCase, PasswordEncoder, Service, Transactional, Transactional, Transactional (+34 more)
 
 ### Community 1 - "EventoEnvolvidoJpaRepository"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (19): EventoEnvolvidoController, DeleteMapping, Operation, PutMapping, RequestMapping, RestController, Tag, EventoEnvolvidosRequest (+11 more)
 
 ### Community 2 - ".setId"
-Cohesion: 0.09
-Nodes (28): SuppressWarnings, SuppressWarnings, SuppressWarnings, SuppressWarnings, Test, SuppressWarnings, SuppressWarnings, Test (+20 more)
+Cohesion: 0.08
+Nodes (29): SuppressWarnings, SuppressWarnings, SuppressWarnings, SuppressWarnings, SuppressWarnings, SuppressWarnings, Test, SuppressWarnings (+21 more)
 
 ### Community 3 - "Vocacao"
-Cohesion: 0.08
-Nodes (33): CreateFielRequest, CreateFielUseCase, Service, Transactional, fromJson(), fromStoredValue(), JsonCreator, Vocacao (+25 more)
+Cohesion: 0.06
+Nodes (53): CreateFielRequest, CreateFielUseCase, Service, Transactional, fromJson(), fromStoredValue(), JsonCreator, Vocacao (+45 more)
 
 ### Community 4 - "CreateEventoUseCase.java"
 Cohesion: 0.10
-Nodes (22): EventoEnvolvidoInput, Service, PapelEnvolvido, APOIO, RESPONSAVEL, EventoEnvolvidoEntity, Entity, Table (+14 more)
+Nodes (23): EventoEnvolvidoInput, CacheManager, Service, PapelEnvolvido, APOIO, RESPONSAVEL, EventoEnvolvidoEntity, Entity (+15 more)
 
 ### Community 5 - "TipoGrupo"
-Cohesion: 0.03
-Nodes (60): CancelamentoRequestMode, IMMEDIATE, REQUIRES_APROVACAO, EventoCancelamentoAuthorizationService, Service, Service, LiderancaSyncSupport, PapelGlobalValidation (+52 more)
+Cohesion: 0.05
+Nodes (32): PastoralMovimentoOficialBusinessException, PastoralMovimentoOficial, TipoGrupo, CONSELHO, MINISTERIO, MOVIMENTO, PASTORAL, PastoralMovimentoOficialRepository (+24 more)
 
 ### Community 6 - "FielEntity"
 Cohesion: 0.10
@@ -485,7 +487,7 @@ Nodes (13): FielEntity, Entity, Table, Transactional, Transactional, FielEntityT
 
 ### Community 7 - "MembroGrupoEntity"
 Cohesion: 0.07
-Nodes (29): MembroResponse, Transactional, Transactional, Transactional, Entity, PrePersist, PreUpdate, Table (+21 more)
+Nodes (26): Transactional, Transactional, Transactional, Entity, PrePersist, PreUpdate, Table, MembroGrupoEntity (+18 more)
 
 ### Community 8 - "DesalocarAtivoUseCaseTest.java"
 Cohesion: 0.18
@@ -515,9 +517,9 @@ Nodes (32): CpcDecisaoController, GetMapping, Operation, PatchMapping, PostMappi
 Cohesion: 0.12
 Nodes (24): FielController, GetMapping, Operation, PatchMapping, PostMapping, PreAuthorize, PutMapping, RequestMapping (+16 more)
 
-### Community 15 - "UsuarioDetails"
-Cohesion: 0.15
-Nodes (13): Component, AuthController, GetMapping, Operation, RequestMapping, RestController, Tag, Override (+5 more)
+### Community 15 - "PapelOrganizacional"
+Cohesion: 0.04
+Nodes (48): CancelamentoRequestMode, IMMEDIATE, REQUIRES_APROVACAO, EventoCancelamentoAuthorizationService, Service, Component, AuthController, GetMapping (+40 more)
 
 ### Community 16 - "GrupoParoquial"
 Cohesion: 0.06
@@ -525,7 +527,7 @@ Nodes (28): GrupoParoquialController, DeleteMapping, GetMapping, Operation, Post
 
 ### Community 17 - "AtivoAlocacaoEntity"
 Cohesion: 0.06
-Nodes (26): CancelarAlocacaoRequest, Transactional, Transactional, AtivoAlocacaoResponse, AtivoAlocacaoResponse, Transactional, AtivoAlocacaoCancelamentoInvalidoException, AtivoManutencaoInvalidaException (+18 more)
+Nodes (26): CancelarAlocacaoRequest, Transactional, Transactional, AtivoAlocacaoResponse, AtivoAlocacaoResponse, Transactional, AtivoAlocacaoAtrasoEvent, AtivoManutencaoInvalidaException (+18 more)
 
 ### Community 18 - "Ativos.tsx"
 Cohesion: 0.06
@@ -555,17 +557,17 @@ Nodes (63): getAnosParoquiais(), updateAnoParoquialStatus(), createLocal(), dele
 Cohesion: 0.14
 Nodes (21): AlocacaoAtivoAprovacaoPendenteResponse, Transactional, Transactional, Transactional, SuppressWarnings, Test, SuppressWarnings, SuppressWarnings (+13 more)
 
-### Community 25 - "MembroController.java"
-Cohesion: 0.12
-Nodes (23): GetMapping, Operation, Page, Pageable, PatchMapping, PostMapping, PreAuthorize, RequestMapping (+15 more)
+### Community 25 - ".nivel1_DeveAutoCancelarEventosDeMenorPrioridade"
+Cohesion: 0.31
+Nodes (5): Transactional, AgendaPriorityValidatorServiceTest, BeforeEach, DisplayName, Test
 
 ### Community 26 - "EventoConsultaJpaRepository"
 Cohesion: 0.24
 Nodes (5): EventoConsultaJpaRepository, NoRepositoryBean, Page, Pageable, Query
 
 ### Community 27 - "AprovacaoExceptionHandler.java"
-Cohesion: 0.14
-Nodes (9): AprovacaoExceptionHandler, ExceptionHandler, Order, ResponseEntity, RestControllerAdvice, AprovacaoExecucaoFalhouException, AprovacaoJaDecididaException, AprovacaoNaoEncontradaException (+1 more)
+Cohesion: 0.13
+Nodes (7): AprovacaoExceptionHandler, Order, RestControllerAdvice, AprovacaoExecucaoFalhouException, AprovacaoJaDecididaException, AprovacaoNaoEncontradaException, AprovacaoObrigatoriaException
 
 ### Community 28 - "AprovacaoController.java"
 Cohesion: 0.07
@@ -576,8 +578,8 @@ Cohesion: 0.06
 Nodes (23): SazonalidadeLiturgicaResponse, SazonalidadeLiturgicaResponse, CicloLiturgico, TipoCicloLiturgico, ADVENTO, FESTA_PADROEIRA, NATAL, PASCOA (+15 more)
 
 ### Community 30 - "EventoEntity"
-Cohesion: 0.08
-Nodes (7): ConflitoItemDto, EstadoConflitoAgenda, PENDENTE, EventoEntity, SuppressWarnings, DisplayName, Test
+Cohesion: 0.07
+Nodes (11): ConflitoItemDto, ConcorrenciaInterpastoralResponse, ConflitoItemDto, Service, Transactional, VerificarConcorrenciaInterpastoralUseCase, EstadoConflitoAgenda, PENDENTE (+3 more)
 
 ### Community 31 - "AppRoutes.tsx"
 Cohesion: 0.12
@@ -616,12 +618,12 @@ Cohesion: 0.11
 Nodes (20): DeleteMapping, GetMapping, Operation, PatchMapping, PostMapping, RequestMapping, ResponseStatus, RestController (+12 more)
 
 ### Community 40 - "EventoController.java"
-Cohesion: 0.09
-Nodes (27): EventoController, ApiResponses, DeleteMapping, Deprecated, GetMapping, Operation, Page, Pageable (+19 more)
+Cohesion: 0.08
+Nodes (30): EventoController, ApiResponses, DeleteMapping, Deprecated, GetMapping, Operation, Page, Pageable (+22 more)
 
-### Community 41 - "EventoDomainService"
-Cohesion: 0.15
-Nodes (10): IntegridadeCalendarioPolicy, Component, EventoDomainService, Service, AddedExtraValidationContractTest, Test, AddedExtraValidationIntegrationTest, Test (+2 more)
+### Community 41 - "EventoStatusInput"
+Cohesion: 0.09
+Nodes (19): IntegridadeCalendarioPolicy, Component, EventoDomainService, Service, Service, PrioridadeAgendaValidatorService, EventoStatusInput, ADICIONADO_EXTRA (+11 more)
 
 ### Community 42 - "GetDashboardMetricsUseCase.java"
 Cohesion: 0.10
@@ -640,12 +642,12 @@ Cohesion: 0.10
 Nodes (23): Schema, MapaColaboracaoDTO, Schema, ProjetoResumoDTO, Schema, SaudeTemporalDTO, Schema, StatusExecucaoDTO (+15 more)
 
 ### Community 46 - "ValidationErrorResponse"
-Cohesion: 0.14
-Nodes (19): DataAccessException, DataIntegrityViolationException, DomainExceptionHandler, ExceptionHandler, Order, ResponseEntity, RestControllerAdvice, CalendarioBloqueadoException (+11 more)
+Cohesion: 0.16
+Nodes (19): DataAccessException, DataIntegrityViolationException, ExceptionHandler, ResponseEntity, DomainExceptionHandler, ExceptionHandler, Order, ResponseEntity (+11 more)
 
 ### Community 47 - "AuditoriaPersistenceService"
-Cohesion: 0.08
-Nodes (13): Bean, Configuration, TimezoneConfig, AuditoriaPersistenceService, Logger, ObjectMapper, Service, GlobalDomainExceptionHandler (+5 more)
+Cohesion: 0.14
+Nodes (4): AuditoriaPersistenceService, Logger, ObjectMapper, Service
 
 ### Community 48 - ".execute"
 Cohesion: 0.25
@@ -665,27 +667,27 @@ Nodes (8): FakeAprovacaoRepository, Deprecated, Example, FetchableFluentQuery, O
 
 ### Community 52 - "AtivoPatrimonialJpaRepository"
 Cohesion: 0.08
-Nodes (30): AtivoPatrimonialController, GetMapping, Operation, PatchMapping, PostMapping, PreAuthorize, RequestMapping, ResponseEntity (+22 more)
+Nodes (31): AtivoPatrimonialController, GetMapping, Operation, PatchMapping, PostMapping, PreAuthorize, RequestMapping, ResponseEntity (+23 more)
 
 ### Community 54 - ".execute"
 Cohesion: 0.09
 Nodes (15): Service, Transactional, UpdateObservacaoUseCase, ObservacaoNaoEncontradaException, Entity, Table, ObservacaoNotaRevisaoEntity, ObservacaoNotaRevisaoJpaRepository (+7 more)
 
-### Community 56 - "EnumRequestNormalizer"
-Cohesion: 0.13
-Nodes (13): EnumRequestNormalizer, fromJson(), JsonCreator, fromJson(), JsonCreator, fromValue(), JsonCreator, JsonValue (+5 more)
+### Community 56 - "AnoParoquialStatus.java"
+Cohesion: 0.12
+Nodes (15): EnumRequestNormalizer, fromJson(), JsonCreator, fromJson(), JsonCreator, fromJson(), JsonCreator, fromValue() (+7 more)
 
 ### Community 57 - "ObservacaoAtivoPatrimonialEntity"
 Cohesion: 0.08
 Nodes (10): Service, Transactional, TipoNotaAtivoPatrimonial, ALOCACAO, DEVOLUCAO, Entity, Table, ObservacaoAtivoPatrimonialEntity (+2 more)
 
 ### Community 58 - "AtivoAlocacaoJpaRepository"
-Cohesion: 0.08
-Nodes (26): IniciarManutencaoRequest, IniciarManutencaoAtivoUseCase, Service, Transactional, AtivoPeriodoConflitanteException, AtivoAlocacaoTipo, ALOCACAO_EVENTO, MANUTENCAO (+18 more)
+Cohesion: 0.09
+Nodes (22): IniciarManutencaoRequest, IniciarManutencaoAtivoUseCase, Service, Transactional, AtivoPeriodoConflitanteException, AtivoAlocacaoConflitoPolicy, Service, Entity (+14 more)
 
 ### Community 59 - "GrupoParoquialEntity"
 Cohesion: 0.03
-Nodes (60): Autowired, Service, ProvisionamentoLiturgicoService, AnoLiturgicoRepository, Query, CicloLiturgicoRepository, Repository, Repository (+52 more)
+Nodes (57): Autowired, Service, ProvisionamentoLiturgicoService, AnoLiturgicoRepository, Query, CicloLiturgicoRepository, Repository, Repository (+49 more)
 
 ### Community 60 - "Calendar.tsx"
 Cohesion: 0.12
@@ -776,12 +778,12 @@ Cohesion: 0.06
 Nodes (34): ForbiddenOperationException, EventoActorContext, CreateAtivoPatrimonialRequest, TransferirAtivoRequest, CreateAtivoPatrimonialUseCase, Service, Transactional, Service (+26 more)
 
 ### Community 83 - "EventoEntity.java"
-Cohesion: 0.07
-Nodes (34): Entity, Table, EventoStatusVisibilityRegressionContractTest, AutoConfigureMockMvc, MockMvc, SpringBootTest, Test, AutoConfigureMockMvc (+26 more)
+Cohesion: 0.08
+Nodes (29): Entity, Table, EventoStatusVisibilityRegressionContractTest, AutoConfigureMockMvc, MockMvc, SpringBootTest, Test, AutoConfigureMockMvc (+21 more)
 
-### Community 84 - "VerificarConcorrenciaInterpastoralUseCase"
-Cohesion: 0.19
-Nodes (9): ConflitoItemDto, ConcorrenciaInterpastoralResponse, Service, Transactional, VerificarConcorrenciaInterpastoralUseCase, DisplayName, ExtendWith, Test (+1 more)
+### Community 84 - "TimezoneConfig"
+Cohesion: 0.29
+Nodes (6): Bean, Configuration, TimezoneConfig, FoundationInfrastructureTest, SpringBootTest, Test
 
 ### Community 85 - "JsonAuthenticationOutcomeProcessor.java"
 Cohesion: 0.20
@@ -792,8 +794,8 @@ Cohesion: 0.18
 Nodes (14): DeleteMapping, GetMapping, Operation, PostMapping, PreAuthorize, PutMapping, RequestMapping, ResponseEntity (+6 more)
 
 ### Community 87 - "AccessDeniedException"
-Cohesion: 0.07
-Nodes (31): AccessDeniedException, DeleteMapping, GetMapping, Operation, PatchMapping, PostMapping, PreAuthorize, PutMapping (+23 more)
+Cohesion: 0.08
+Nodes (28): AccessDeniedException, DeleteMapping, GetMapping, Operation, PatchMapping, PostMapping, PreAuthorize, PutMapping (+20 more)
 
 ### Community 88 - "RegraRecorrencia"
 Cohesion: 0.32
@@ -832,8 +834,8 @@ Cohesion: 0.20
 Nodes (5): Vinculo, EventoPatchAuthorizationServiceTest, AfterEach, SecurityContext, Test
 
 ### Community 97 - "CreateEventoUseCase"
-Cohesion: 0.18
-Nodes (9): Constraint, CreateEventoRequest, Schema, ValidEventoDates, CreateEventoUseCase, CacheManager, Transactional, Retention (+1 more)
+Cohesion: 0.20
+Nodes (8): Constraint, CreateEventoRequest, Schema, ValidEventoDates, CreateEventoUseCase, Transactional, Retention, Target
 
 ### Community 98 - "ImportacaoController.java"
 Cohesion: 0.27
@@ -852,8 +854,8 @@ Cohesion: 0.19
 Nodes (14): CadastroEventoModal(), CATEGORIES, CATEGORY_PRIORITIES, STATUSES, mockedUseAuth, mockShowError, DAYS_OF_WEEK, Frequency (+6 more)
 
 ### Community 102 - "AnoParoquialController.java"
-Cohesion: 0.14
-Nodes (17): CacheEvict, AnoParoquialController, Cacheable, GetMapping, Operation, PatchMapping, RequestMapping, ResponseEntity (+9 more)
+Cohesion: 0.17
+Nodes (15): CacheEvict, AnoParoquialController, Cacheable, GetMapping, Operation, PatchMapping, RequestMapping, ResponseEntity (+7 more)
 
 ### Community 103 - "PdfCalendarioExporter.java"
 Cohesion: 0.19
@@ -868,8 +870,8 @@ Cohesion: 0.17
 Nodes (11): AuditoriaOperacaoResponse, Schema, RegistroAuditavelItem, Service, ListAuditTrailUseCase, PeriodoOperacionalPolicy, AuditoriaQueryService, ObjectMapper (+3 more)
 
 ### Community 106 - "GrupoParoquialJpaRepository"
-Cohesion: 0.05
-Nodes (59): FielJpaRepository, Repository, UsuarioResponse, ApproveUsuarioUseCase, Service, CreateUsuarioUseCase, PasswordEncoder, Service (+51 more)
+Cohesion: 0.06
+Nodes (56): FielJpaRepository, Repository, UsuarioResponse, ApproveUsuarioUseCase, CreateUsuarioUseCase, PasswordEncoder, Service, GetUsuarioUseCase (+48 more)
 
 ### Community 107 - "MvcResult"
 Cohesion: 0.10
@@ -879,9 +881,9 @@ Nodes (23): AutoConfigureMockMvc, MockMvc, SpringBootTest, Sql, Test, SecurityAc
 Cohesion: 0.27
 Nodes (8): createCpcDecisao(), getCpcDecisoes(), homologarCpcDecisao(), CpcDecisao, StatusHomologacao, CpcDecisaoModal(), CpcDecisaoModalProps, ConselhosAtas()
 
-### Community 109 - "ExportacaoCalendarioIntegrationTest.java"
-Cohesion: 0.29
-Nodes (8): ExportacaoCalendarioIntegrationTest, AutoConfigureMockMvc, BeforeEach, DisplayName, MockMvc, SpringBootTest, Sql, Test
+### Community 109 - "GlobalDomainExceptionHandler.java"
+Cohesion: 0.38
+Nodes (5): GlobalDomainExceptionHandler, ExceptionHandler, Order, ResponseEntity, RestControllerAdvice
 
 ### Community 110 - "PapelGlobal"
 Cohesion: 0.29
@@ -892,8 +894,8 @@ Cohesion: 0.36
 Nodes (6): AutoConfigureMockMvc, BeforeEach, MockMvc, SpringBootTest, Test, ProjetosContractTest
 
 ### Community 112 - "GlobalExceptionHandler.java"
-Cohesion: 0.16
-Nodes (9): GlobalExceptionHandler, ExceptionHandler, Order, ResponseEntity, RestControllerAdvice, ConflitoAgendaEclesialException, ConflitoAgendaEclesialExceptionTest, DisplayName (+1 more)
+Cohesion: 0.47
+Nodes (3): GlobalExceptionHandler, Order, RestControllerAdvice
 
 ### Community 113 - "RegraRecorrenciaConverter"
 Cohesion: 0.30
@@ -920,20 +922,20 @@ Cohesion: 0.43
 Nodes (6): CreateEventoConflitoPendenteIntegrationTest, AutoConfigureMockMvc, MockMvc, SpringBootTest, Test, WithMockUser
 
 ### Community 119 - "AtivoAlocacaoAgendaJob.java"
-Cohesion: 0.13
-Nodes (14): AtivoAlocacaoAtrasoEvent, AtivoAlocacaoAgendaJob, ApplicationEventPublisher, Component, Logger, Override, Transactional, AtivoAlocacaoAgendaJobTest (+6 more)
+Cohesion: 0.15
+Nodes (13): AtivoAlocacaoAgendaJob, ApplicationEventPublisher, Component, Logger, Override, Transactional, AtivoAlocacaoAgendaJobTest, ApplicationEventPublisher (+5 more)
 
-### Community 120 - "AnoParoquialStatus"
-Cohesion: 0.32
-Nodes (6): AnoParoquialStatus, CONCLUIDO, EM_PLANEJAMENTO, FECHADO, fromJson(), JsonCreator
+### Community 120 - "UpdateEventoAuditIntegrationTest.java"
+Cohesion: 0.36
+Nodes (7): AutoConfigureMockMvc, MockMvc, SpringBootTest, SuppressWarnings, Test, WithMockUser, UpdateEventoAuditIntegrationTest
 
-### Community 121 - "EventoMapper"
-Cohesion: 0.14
-Nodes (17): EventoFiltroRequest, Schema, Page, Pageable, Service, ListEventosUseCase, EventoService, Page (+9 more)
+### Community 121 - "CategoriaEvento"
+Cohesion: 0.07
+Nodes (35): EventoFiltroRequest, Schema, EventoResponse, Page, Pageable, Service, Page, Pageable (+27 more)
 
 ### Community 123 - "AlocarAtivoParaEventoUseCase"
-Cohesion: 0.18
-Nodes (11): AlocarAtivoParaEventoUseCase, ApplicationEventPublisher, Service, Transactional, AlocacaoAtivoExecutionStrategy, Component, Override, AlocacaoAtivoExecutionStrategyTest (+3 more)
+Cohesion: 0.19
+Nodes (8): AlocarAtivoParaEventoUseCase, ApplicationEventPublisher, Service, Transactional, AlocacaoAtivoExecutionStrategy, Override, AlocacaoAtivoExecutionStrategyTest, Test
 
 ### Community 124 - "ExceptionHandlerIntegrationTest.java"
 Cohesion: 0.20
@@ -947,10 +949,6 @@ Nodes (6): AutoConfigureMockMvc, MockMvc, SpringBootTest, Test, WithMockUser, Un
 Cohesion: 0.20
 Nodes (15): confirmarImportacao(), downloadTemplate(), ImportacaoItemResultado, ImportacaoValidacaoResultado, validarImportacao(), ImportModal(), ImportModalProps, STEPS (+7 more)
 
-### Community 127 - "EventoResponse"
-Cohesion: 0.18
-Nodes (11): EventoResponse, EventoStatusResponse, ADICIONADO_EXTRA, CANCELADO, CONFIRMADO, RASCUNHO, UNKNOWN_LEGACY, fromInput() (+3 more)
-
 ### Community 128 - "ProjetoGovernancaIntegrationTest.java"
 Cohesion: 0.25
 Nodes (9): AutoConfigureMockMvc, BeforeEach, DisplayName, MockMvc, SpringBootTest, Sql, Test, Transactional (+1 more)
@@ -961,11 +959,11 @@ Nodes (5): AnoParoquialRolloverTest, BeforeEach, SpringBootTest, Test, Transacti
 
 ### Community 130 - "AuditoriaOperacaoJpaRepository"
 Cohesion: 0.13
-Nodes (14): AuditoriaOperacaoJpaRepository, Query, AuditRollbackConsistencyIntegrationTest, AfterEach, AutoConfigureMockMvc, MockMvc, ObjectMapper, SpringBootTest (+6 more)
+Nodes (14): AuditoriaOperacaoJpaRepository, Query, AuditTrailAuthorizationIntegrationTest, AutoConfigureMockMvc, BeforeEach, MockMvc, SpringBootTest, Test (+6 more)
 
 ### Community 131 - "MembroControllerIntegrationTest.java"
-Cohesion: 0.22
-Nodes (12): ActiveProfiles, Authentication, AutoConfigureMockMvc, BeforeEach, DisplayName, MockMvc, ObjectMapper, SpringBootTest (+4 more)
+Cohesion: 0.10
+Nodes (25): FielTestFixtures, AutoConfigureMockMvc, MockMvc, SpringBootTest, Test, WithMockUser, UsuarioAdminApiIntegrationTest, AutoConfigureMockMvc (+17 more)
 
 ### Community 132 - "UpdateEventoParticipantesIntegrationTest.java"
 Cohesion: 0.48
@@ -999,8 +997,8 @@ Nodes (5): EventoLifecycleTransitionRegressionIntegrationTest, AutoConfigureMock
 Cohesion: 0.20
 Nodes (8): IndicadorRetrabalhoResponse, Schema, Schema, PeriodoOperacionalResponse, GetIndicadorRetrabalhoUseCase, Service, Transactional, ResolvedPeriod
 
-### Community 140 - "AuditPersistenceFailureIntegrationTest.java"
-Cohesion: 0.15
+### Community 140 - "AuditRollbackConsistencyIntegrationTest.java"
+Cohesion: 0.16
 Nodes (14): Entity, Table, AuditPersistenceFailureIntegrationTest, AfterEach, AutoConfigureMockMvc, MockMvc, SpringBootTest, Test (+6 more)
 
 ### Community 141 - "UsuarioDetailsService"
@@ -1071,9 +1069,9 @@ Nodes (6): IndicadorRetrabalhoZeroIntegrationTest, AutoConfigureMockMvc, BeforeE
 Cohesion: 0.17
 Nodes (13): Entity, Table, AutoConfigureMockMvc, BeforeEach, MockMvc, SpringBootTest, Test, LegacyEnumSentinelContractTest (+5 more)
 
-### Community 158 - "AnoParoquialEntity.java"
-Cohesion: 0.19
-Nodes (11): AnoParoquialSeeder, EventListener, Logger, Service, Transactional, Entity, Table, AnoParoquialSeedingTest (+3 more)
+### Community 158 - "AnoParoquialSeeder.java"
+Cohesion: 0.24
+Nodes (9): AnoParoquialSeeder, EventListener, Logger, Service, Transactional, AnoParoquialSeedingTest, SpringBootTest, Test (+1 more)
 
 ### Community 159 - "SecurityEndpointAuthIntegrationTest.java"
 Cohesion: 0.48
@@ -1191,9 +1189,9 @@ Nodes (5): AutoConfigureMockMvc, MockMvc, SpringBootTest, Test, UpdateEventoVali
 Cohesion: 0.46
 Nodes (5): AtivoAlocacaoNotificationListener, Async, Component, EventListener, Logger
 
-### Community 189 - "CategoriaEvento"
-Cohesion: 0.06
-Nodes (36): EnableCaching, EventoEditScope, EDIT_ALL, ONLY_THIS, THIS_AND_FOLLOWING, Schema, Schema, UpdateEventoRequest (+28 more)
+### Community 189 - "UpdateEventoUseCase"
+Cohesion: 0.10
+Nodes (17): EnableCaching, EventoEditScope, EDIT_ALL, ONLY_THIS, THIS_AND_FOLLOWING, Schema, Schema, UpdateEventoRequest (+9 more)
 
 ### Community 190 - "EventoControllerCancelTest.java"
 Cohesion: 0.48
@@ -1288,8 +1286,8 @@ Cohesion: 0.36
 Nodes (7): AprovacaoDecisionAuthorizationIntegrationTest, AutoConfigureMockMvc, MockMvc, ObjectMapper, SpringBootTest, SuppressWarnings, Test
 
 ### Community 262 - "ErrorCodes.java"
-Cohesion: 0.35
-Nodes (7): EventoErrorHandlingIntegrationTest, AutoConfigureMockMvc, DisplayName, MockMvc, SpringBootTest, Test, WithMockUser
+Cohesion: 0.17
+Nodes (11): ConflitoAgendaEclesialException, ConflitoAgendaEclesialExceptionTest, DisplayName, Test, EventoErrorHandlingIntegrationTest, AutoConfigureMockMvc, DisplayName, MockMvc (+3 more)
 
 ### Community 263 - "ProjetoSecurityIntegrationTest"
 Cohesion: 0.31
@@ -1397,7 +1395,7 @@ Nodes (10): 🏛️ Bounded Contexts (Contextos Delimitados), 🛠️ Comandos d
 
 ### Community 302 - "AGENTS.md - Frontend Engineering Standards & Guidelines"
 Cohesion: 0.14
-Nodes (13): 1. Arquitetura e Contexto do Projeto, 1. Explanation Style (Caveman Mode), 2. Code Generation Style (Ponytail Senior Dev), 2. Integração Técnica com API e Segurança Frontend, 3. Governança de IA e LGPD, 3. Workflow Rule, 4. Padrões de Código e Tipagem, 5. Qualidade, Documentação e Testes (TDD) (+5 more)
+Nodes (13): 1. Arquitetura e Contexto do Projeto, 1. Explanation Style (Caveman Skill), 2. Code Generation Style (Ponytail Skill), 2. Integração Técnica com API e Segurança Frontend, 3. Governança de IA e LGPD, 3. Workflow Rule, 4. Padrões de Código e Tipagem, 5. Qualidade, Documentação e Testes (TDD) (+5 more)
 
 ### Community 303 - "Production Standards & Core Practices"
 Cohesion: 0.20
@@ -1413,7 +1411,7 @@ Nodes (8): Arguments, CancelEventoAuthorizationIntegrationTest, AutoConfigureMoc
 
 ### Community 309 - "AGENTS.md - Backend Engineering Standards & Guidelines"
 Cohesion: 0.15
-Nodes (13): 1. Arquitetura e Contexto do Projeto, 1. Explanation Style (Caveman Mode), 2. Code Generation Style (Ponytail Senior Dev), 2. Padrões de Segurança, Autorização e Infraestrutura, 3. Governança de IA e Otimização de Tokens, 3. Workflow Rule, 4. Padrões de Código e Tipagem Estrita, 5. Qualidade, Testes e Documentação (+5 more)
+Nodes (13): 1. Arquitetura e Contexto do Projeto, 1. Explanation Style (Caveman Skill), 2. Code Generation Style (Ponytail Skill), 2. Padrões de Segurança, Autorização e Infraestrutura, 3. Governança de IA e Otimização de Tokens, 3. Workflow Rule, 4. Padrões de Código e Tipagem Estrita, 5. Qualidade, Testes e Documentação (+5 more)
 
 ### Community 310 - "AprovacaoNotificationListener.java"
 Cohesion: 0.48
@@ -1548,8 +1546,8 @@ Cohesion: 0.43
 Nodes (5): ContractValidationErrorIntegrationTest, AutoConfigureMockMvc, MockMvc, SpringBootTest, Test
 
 ### Community 370 - "CategoriaEvento.java"
-Cohesion: 0.13
-Nodes (13): Transactional, fromValue(), JsonCreator, JsonValue, toValue(), CalcularImpactoSocialUseCaseTest, DisplayName, ExtendWith (+5 more)
+Cohesion: 0.11
+Nodes (18): fromValue(), JsonCreator, JsonValue, toValue(), CalcularImpactoSocialUseCaseTest, DisplayName, ExtendWith, Test (+10 more)
 
 ### Community 373 - "Domain: Aprovação"
 Cohesion: 0.25
@@ -1641,7 +1639,7 @@ Nodes (6): Common Exceptions, Domain: Support, Idempotency, Key Components, Pers
 
 ### Community 409 - "AGENTS.md - Root Architectural & Technical Overview"
 Cohesion: 0.20
-Nodes (9): 1. Explanation Style (Caveman Mode), 1. Visão Geral e Do Que a Aplicação Se Trata, 2. Code Generation Style (Ponytail Senior Dev), 2. Visão Geral da Arquitetura do Monorepo, 3. Governança Tecnológica, Segurança e Privacidade, 3. Workflow Rule, 4. Instruções e Navegação para Agentes, 5. Agent Directives (+1 more)
+Nodes (9): 1. Explanation Style (Caveman Skill), 1. Visão Geral e Do Que a Aplicação Se Trata, 2. Code Generation Style (Ponytail Skill), 2. Visão Geral da Arquitetura do Monorepo, 3. Governança Tecnológica, Segurança e Privacidade, 3. Workflow Rule, 4. Instruções e Navegação para Agentes, 5. Agent Directives & Skills (+1 more)
 
 ### Community 416 - "CalendarioOpenApiConfig.java"
 Cohesion: 0.53
@@ -1703,6 +1701,10 @@ Nodes (3): calendario.ativos_patrimoniais, calendario.observacoes_ativo_patrimon
 Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
 
+### Community 503 - "AnoParoquialEntity"
+Cohesion: 0.19
+Nodes (7): AnoParoquialStatus, CONCLUIDO, EM_PLANEJAMENTO, FECHADO, AnoParoquialEntity, Entity, Table
+
 ### Community 608 - "FakeEventoAuditPublisher"
 Cohesion: 0.33
 Nodes (3): AuditEvent, FakeEventoAuditPublisher, Override
@@ -1721,7 +1723,7 @@ Nodes (7): AutoConfigureMockMvc, MockMvc, ObjectMapper, SpringBootTest, Suppress
 
 ### Community 617 - "AprovacaoJpaRepository"
 Cohesion: 0.03
-Nodes (102): AprovacaoDecisionResponse, Schema, AprovacaoAcaoPayload, AprovacaoAcaoPayloadMapper, Component, ObjectMapper, Autowired, DecideSolicitacaoAprovacaoUseCase (+94 more)
+Nodes (109): AprovacaoDecisionResponse, Schema, AprovacaoAcaoPayload, AprovacaoAcaoPayloadMapper, Component, ObjectMapper, Autowired, DecideSolicitacaoAprovacaoUseCase (+101 more)
 
 ### Community 620 - "package.json"
 Cohesion: 0.40
@@ -1730,16 +1732,16 @@ Nodes (4): name, private, type, version
 ## Knowledge Gaps
 - **710 isolated node(s):** `name`, `version`, `private`, `type`, `dev` (+705 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **92 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **94 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `EventoJpaRepository` connect `EventoJpaRepository` to `CreateEventoUseCase.java`, `MetricaEstrategicaControllerTest.java`, `GrupoParoquial`, `EventoRecorrenciaEntity`, `EventoRecorrenciaJpaRepository`, `EventoConsultaJpaRepository`, `EventoEntity`, `ProjetoEventoEntity`, `FakeEventoRepository`, `AuditoriaEventoController.java`, `EventoControllerListTest.java`, `EventoController.java`, `GetDashboardMetricsUseCase.java`, `AtivoPatrimonialEntity`, `UpdateEventoAprovacaoPendenteIntegrationTest.java`, `GrupoParoquialEntity`, `LocalEntity`, `ProjetoEventoJpaRepository`, `EventoEntity.java`, `VerificarConcorrenciaInterpastoralUseCase`, `AtivoPatrimonialControllerIntegrationTest`, `LocalJpaRepository`, `CreateEventoUseCase`, `AprovacaoFlowRegressionTest.java`, `RejectUpdateEventoIntegrationTest.java`, `AprovacaoJpaRepository`, `GrupoParoquialJpaRepository`, `MvcResult`, `ExportacaoCalendarioIntegrationTest.java`, `EventoMapper`, `AlocarAtivoParaEventoUseCase`, `ProjetoGovernancaIntegrationTest.java`, `AuditoriaOperacaoJpaRepository`, `UpdateEventoParticipantesIntegrationTest.java`, `EventosPatchContractTest.java`, `EventoLifecycleTransitionRegressionIntegrationTest.java`, `AuditPersistenceFailureIntegrationTest.java`, `ApproveCancelEventoIntegrationTest.java`, `MediaType`, `AuditTrailQueryIntegrationTest.java`, `ConsultaCalendarioPerformanceTest.java`, `TaxaEventosExtraIntegrationTest.java`, `CancelEventoAprovacaoRequestIntegrationTest.java`, `CancelEventoObservacaoIntegrationTest.java`, `CreateEventoAprovacaoAuditTrailIntegrationTest.java`, `ParoquiaConfiguracaoEntity`, `ObservacaoEventoEntity.java`, `CancelEventoStatusEligibilityIntegrationTest.java`, `ImportacaoService.java`, `CreateEventoImmediateCompatibilityIntegrationTest`, `UpdateEventoAuthorizationIntegrationTest.java`, `CalendarPayloadCompatibilityContractTest.java`, `UpdateEventoLifecycleTransitionsIntegrationTest.java`, `UpdateEventoPersistenciaIntegrationTest.java`, `AprovacoesContractTest.java`, `MotorAgendaPrioridadesIntegrationTest.java`, `UpdateEventoValidationIntegrationTest.java`, `CategoriaEvento`, `EventoControllerCancelTest.java`, `CancelEventoAprovacaoExecutionFailureIntegrationTest.java`, `RejectCancelEventoIntegrationTest.java`, `VinculoProjetoEventoIntegrationTest.java`, `EventoEstatisticaJpaRepository`, `EventoProjetoLinkIntegrationTest.java`, `CalendarioProjetoEventoProvider`, `EventoIdempotencyEntity`, `.createEvento`, `EventoMutacaoContractTest`, `EventosPatchPendenteContractTest.java`, `AprovacaoIntegrationTest.java`, `AuditoriaIntegradaIntegrationTest.java`, `CreateEventoAprovacaoPendenteIntegrationTest.java`, `EventoIntegrationTest.java`, `UpdateEventoAprovacaoSnapshotImmutabilityIntegrationTest.java`, `UpdateEventoImmediateCompatibilityIntegrationTest.java`, `CancelEventoAuthorizationIntegrationTest.java`, `EventoEnvolvidosContractTest.java`, `EventoRecorrenciaContractTest.java`, `EventoLocalIntegrationTest.java`, `UpdateEventoAprovacaoAuditTrailIntegrationTest.java`, `EventoControllerGetTest.java`, `CategoriaEvento.java`, `EventoValidacaoJpaRepository`?**
+- **Why does `EventoJpaRepository` connect `EventoJpaRepository` to `EventoEnvolvidoJpaRepository`, `CreateEventoUseCase.java`, `MetricaEstrategicaControllerTest.java`, `GrupoParoquial`, `EventoRecorrenciaEntity`, `EventoRecorrenciaJpaRepository`, `.nivel1_DeveAutoCancelarEventosDeMenorPrioridade`, `EventoConsultaJpaRepository`, `EventoEntity`, `ProjetoEventoEntity`, `FakeEventoRepository`, `AuditoriaEventoController.java`, `EventoControllerListTest.java`, `EventoController.java`, `EventoStatusInput`, `GetDashboardMetricsUseCase.java`, `AtivoPatrimonialEntity`, `UpdateEventoAprovacaoPendenteIntegrationTest.java`, `GrupoParoquialEntity`, `LocalEntity`, `ProjetoEventoJpaRepository`, `EventoEntity.java`, `AtivoPatrimonialControllerIntegrationTest`, `LocalJpaRepository`, `CreateEventoUseCase`, `AprovacaoFlowRegressionTest.java`, `RejectUpdateEventoIntegrationTest.java`, `AprovacaoJpaRepository`, `GrupoParoquialJpaRepository`, `MvcResult`, `UpdateEventoAuditIntegrationTest.java`, `CategoriaEvento`, `AlocarAtivoParaEventoUseCase`, `ProjetoGovernancaIntegrationTest.java`, `AuditoriaOperacaoJpaRepository`, `UpdateEventoParticipantesIntegrationTest.java`, `EventosPatchContractTest.java`, `EventoLifecycleTransitionRegressionIntegrationTest.java`, `AuditRollbackConsistencyIntegrationTest.java`, `ApproveCancelEventoIntegrationTest.java`, `MediaType`, `AuditTrailQueryIntegrationTest.java`, `ConsultaCalendarioPerformanceTest.java`, `TaxaEventosExtraIntegrationTest.java`, `CancelEventoAprovacaoRequestIntegrationTest.java`, `CancelEventoObservacaoIntegrationTest.java`, `CreateEventoAprovacaoAuditTrailIntegrationTest.java`, `ParoquiaConfiguracaoEntity`, `ObservacaoEventoEntity.java`, `CancelEventoStatusEligibilityIntegrationTest.java`, `ImportacaoService.java`, `CreateEventoImmediateCompatibilityIntegrationTest`, `UpdateEventoAuthorizationIntegrationTest.java`, `CalendarPayloadCompatibilityContractTest.java`, `UpdateEventoLifecycleTransitionsIntegrationTest.java`, `UpdateEventoPersistenciaIntegrationTest.java`, `AprovacoesContractTest.java`, `MotorAgendaPrioridadesIntegrationTest.java`, `UpdateEventoValidationIntegrationTest.java`, `UpdateEventoUseCase`, `EventoControllerCancelTest.java`, `CancelEventoAprovacaoExecutionFailureIntegrationTest.java`, `RejectCancelEventoIntegrationTest.java`, `VinculoProjetoEventoIntegrationTest.java`, `EventoEstatisticaJpaRepository`, `EventoProjetoLinkIntegrationTest.java`, `CalendarioProjetoEventoProvider`, `EventoIdempotencyEntity`, `.createEvento`, `EventoMutacaoContractTest`, `EventosPatchPendenteContractTest.java`, `AprovacaoIntegrationTest.java`, `AuditoriaIntegradaIntegrationTest.java`, `CreateEventoAprovacaoPendenteIntegrationTest.java`, `EventoIntegrationTest.java`, `UpdateEventoAprovacaoSnapshotImmutabilityIntegrationTest.java`, `UpdateEventoImmediateCompatibilityIntegrationTest.java`, `CancelEventoAuthorizationIntegrationTest.java`, `EventoEnvolvidosContractTest.java`, `EventoRecorrenciaContractTest.java`, `EventoLocalIntegrationTest.java`, `UpdateEventoAprovacaoAuditTrailIntegrationTest.java`, `EventoControllerGetTest.java`, `CategoriaEvento.java`, `EventoValidacaoJpaRepository`?**
   _High betweenness centrality (0.111) - this node is a cross-community bridge._
-- **Why does `EventoEntity` connect `EventoEntity` to `ProjetoGovernancaIntegrationTest.java`, `.setId`, `AuditoriaOperacaoJpaRepository`, `CreateEventoUseCase.java`, `TipoGrupo`, `UpdateEventoParticipantesIntegrationTest.java`, `MetricaEstrategicaControllerTest.java`, `EventosPatchContractTest.java`, `EventoPatchAuthorizationService`, `AuditPersistenceFailureIntegrationTest.java`, `EventoLifecycleTransitionRegressionIntegrationTest.java`, `ApproveCancelEventoIntegrationTest.java`, `MediaType`, `AtivoAlocacaoEntity`, `AuditTrailQueryIntegrationTest.java`, `EventoJpaRepository`, `EventoRecorrenciaEntity`, `EventoRecorrenciaJpaRepository`, `EventoIdempotencyEntity`, `.createEvento`, `.criarAprovacaoPendente`, `CancelEventoAprovacaoRequestIntegrationTest.java`, `EventoConsultaJpaRepository`, `ParoquiaConfiguracaoEntity`, `EventoMutacaoContractTest`, `ObservacaoEventoEntity.java`, `CancelEventoObservacaoIntegrationTest.java`, `AuditoriaIntegradaIntegrationTest.java`, `ProjetoEventoEntity`, `FakeEventoRepository`, `EventoIntegrationTest.java`, `CancelEventoStatusEligibilityIntegrationTest.java`, `ImportacaoService.java`, `EventoControllerListTest.java`, `EventoController.java`, `GetDashboardMetricsUseCase.java`, `CalendarPayloadCompatibilityContractTest.java`, `UpdateEventoAuthorizationIntegrationTest.java`, `UpdateEventoLifecycleTransitionsIntegrationTest.java`, `UpdateEventoPersistenciaIntegrationTest.java`, `AtivoPatrimonialEntity`, `CancelEventoAuthorizationIntegrationTest.java`, `AprovacoesContractTest.java`, `MotorAgendaPrioridadesIntegrationTest.java`, `EnumRequestNormalizer`, `EventoEnvolvidosContractTest.java`, `GrupoParoquialEntity`, `EventoRecorrenciaContractTest.java`, `CategoriaEvento`, `EventoControllerCancelTest.java`, `UpdateEventoValidationIntegrationTest.java`, `LocalEntity`, `EventoLocalIntegrationTest.java`, `ProjetoEventoJpaRepository`, `CancelEventoAprovacaoExecutionFailureIntegrationTest.java`, `RejectCancelEventoIntegrationTest.java`, `EventoEntity.java`, `VerificarConcorrenciaInterpastoralUseCase`, `LocalJpaRepository`, `EventoControllerGetTest.java`, `PdfCalendarioExporter.java`, `AprovacaoJpaRepository`, `ConsultaCalendarioPerformanceTest.java`, `MvcResult`, `ExportacaoCalendarioIntegrationTest.java`, `TaxaEventosExtraIntegrationTest.java`, `CategoriaEvento.java`, `EventoMapper`?**
+- **Why does `EventoEntity` connect `EventoEntity` to `ProjetoGovernancaIntegrationTest.java`, `.setId`, `AuditoriaOperacaoJpaRepository`, `CreateEventoUseCase.java`, `TipoGrupo`, `UpdateEventoParticipantesIntegrationTest.java`, `MetricaEstrategicaControllerTest.java`, `EventosPatchContractTest.java`, `EventoPatchAuthorizationService`, `AuditRollbackConsistencyIntegrationTest.java`, `EventoLifecycleTransitionRegressionIntegrationTest.java`, `ApproveCancelEventoIntegrationTest.java`, `MediaType`, `AtivoAlocacaoEntity`, `AuditTrailQueryIntegrationTest.java`, `EventoJpaRepository`, `EventoRecorrenciaEntity`, `EventoRecorrenciaJpaRepository`, `EventoIdempotencyEntity`, `.createEvento`, `.criarAprovacaoPendente`, `.nivel1_DeveAutoCancelarEventosDeMenorPrioridade`, `EventoConsultaJpaRepository`, `ParoquiaConfiguracaoEntity`, `EventoMutacaoContractTest`, `CancelEventoAprovacaoRequestIntegrationTest.java`, `ObservacaoEventoEntity.java`, `AuditoriaIntegradaIntegrationTest.java`, `CancelEventoObservacaoIntegrationTest.java`, `FakeEventoRepository`, `ProjetoEventoEntity`, `EventoIntegrationTest.java`, `CancelEventoStatusEligibilityIntegrationTest.java`, `ImportacaoService.java`, `EventoControllerListTest.java`, `EventoController.java`, `EventoStatusInput`, `GetDashboardMetricsUseCase.java`, `CalendarPayloadCompatibilityContractTest.java`, `UpdateEventoAuthorizationIntegrationTest.java`, `UpdateEventoLifecycleTransitionsIntegrationTest.java`, `UpdateEventoPersistenciaIntegrationTest.java`, `AtivoPatrimonialEntity`, `CancelEventoAuthorizationIntegrationTest.java`, `AprovacoesContractTest.java`, `MotorAgendaPrioridadesIntegrationTest.java`, `AnoParoquialStatus.java`, `EventoEnvolvidosContractTest.java`, `GrupoParoquialEntity`, `EventoRecorrenciaContractTest.java`, `UpdateEventoUseCase`, `EventoControllerCancelTest.java`, `UpdateEventoValidationIntegrationTest.java`, `LocalEntity`, `EventoLocalIntegrationTest.java`, `ProjetoEventoJpaRepository`, `CancelEventoAprovacaoExecutionFailureIntegrationTest.java`, `RejectCancelEventoIntegrationTest.java`, `EventoEntity.java`, `LocalJpaRepository`, `EventoControllerGetTest.java`, `PdfCalendarioExporter.java`, `AprovacaoJpaRepository`, `ConsultaCalendarioPerformanceTest.java`, `MvcResult`, `TaxaEventosExtraIntegrationTest.java`, `CategoriaEvento.java`, `UpdateEventoAuditIntegrationTest.java`, `CategoriaEvento`?**
   _High betweenness centrality (0.075) - this node is a cross-community bridge._
-- **Why does `TipoGrupo` connect `TipoGrupo` to `ProjetoGovernancaIntegrationTest.java`, `UsuarioEntity`, `Vocacao`, `MembroControllerIntegrationTest.java`, `PastoralMovimentoOficialController.java`, `MembroGrupoEntity`, `EventoPatchAuthorizationService`, `UsuarioDetails`, `GrupoParoquial`, `CancelEventoAprovacaoRequestIntegrationTest.java`, `.criarAprovacaoPendente`, `CreateEventoAprovacaoPendenteIntegrationTest.java`, `ProjetoSolicitacaoAprovacaoEntity`, `ImportacaoService.java`, `EventoControllerListTest.java`, `AuthorizationPolicy`, `UpdateEventoAprovacaoPendenteIntegrationTest.java`, `GrupoParoquialEntity`, `ProjetoEventoJpaRepository`, `AprovacaoEntity`, `EventoActorContext`, `DisplayName`, `AnoParoquialController.java`, `AprovacaoJpaRepository`, `GrupoParoquialJpaRepository`, `AttributeConverter`, `EventoMapper`?**
+- **Why does `TipoGrupo` connect `TipoGrupo` to `ProjetoGovernancaIntegrationTest.java`, `UsuarioEntity`, `Vocacao`, `MembroControllerIntegrationTest.java`, `PastoralMovimentoOficialController.java`, `MembroGrupoEntity`, `EventoPatchAuthorizationService`, `PapelOrganizacional`, `GrupoParoquial`, `CancelEventoAprovacaoRequestIntegrationTest.java`, `.criarAprovacaoPendente`, `CreateEventoAprovacaoPendenteIntegrationTest.java`, `ProjetoSolicitacaoAprovacaoEntity`, `ImportacaoService.java`, `EventoControllerListTest.java`, `AuthorizationPolicy`, `UpdateEventoAprovacaoPendenteIntegrationTest.java`, `GrupoParoquialEntity`, `ProjetoEventoJpaRepository`, `AprovacaoEntity`, `EventoActorContext`, `DisplayName`, `AnoParoquialController.java`, `AprovacaoJpaRepository`, `GrupoParoquialJpaRepository`, `AttributeConverter`, `CategoriaEvento`?**
   _High betweenness centrality (0.063) - this node is a cross-community bridge._
 - **Are the 71 inferred relationships involving `EventoEntity` (e.g. with `.provisionSolemnityEvents()` and `.importEvento()`) actually correct?**
   _`EventoEntity` has 71 INFERRED edges - model-reasoned connections that need verification._
