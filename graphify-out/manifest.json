@@ -15,9 +15,9 @@
     "semantic_hash": "08b03514b8f99e5227229947ec0a7e2b"
   },
   "gestao-paroquia-ui/src/App.tsx": {
-    "mtime": 1786036367.273322,
-    "ast_hash": "2edf83e6473ac10eb3e81e2a759b1630",
-    "semantic_hash": "2edf83e6473ac10eb3e81e2a759b1630"
+    "mtime": 1786155113.0468912,
+    "ast_hash": "a0890dee9a33f6e2b151543421bcd25b",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/AppRoutes.tsx": {
     "mtime": 1786036367.273322,
@@ -3749,11 +3749,6 @@
     "ast_hash": "2116632e2f88607e7475c67b178590d5",
     "semantic_hash": "2116632e2f88607e7475c67b178590d5"
   },
-  "gestao-paroquia-ui/src/logo.svg": {
-    "mtime": 1786036367.2762308,
-    "ast_hash": "2ef66f2ac14270426bc2bd8f75750fa2",
-    "semantic_hash": "2ef66f2ac14270426bc2bd8f75750fa2"
-  },
   "gestao-paroquia/app/src/main/resources/logo-paroquia.png": {
     "mtime": 1786036367.2967024,
     "ast_hash": "c725c2be0189353fd3290ff5262ff4cc",
@@ -4040,9 +4035,9 @@
     "semantic_hash": "ac41d5e488afa6688c7ff56cd4d5f646"
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/application/usecase/AdicionarVinculoUseCase.java": {
-    "mtime": 1786036367.291226,
-    "ast_hash": "24e503a263c82954804addce205340ff",
-    "semantic_hash": "24e503a263c82954804addce205340ff"
+    "mtime": 1786155269.7327888,
+    "ast_hash": "22dc7fc06c816421eb198a9efc30429e",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/application/usecase/ListarVinculosUseCase.java": {
     "mtime": 1786036367.291287,
@@ -4465,9 +4460,9 @@
     "semantic_hash": "84a135881cdf7a4fcee664cc77510162"
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/package-info.java": {
-    "mtime": 1786036367.292139,
-    "ast_hash": "60da38411503c14ead88b93d80c624f4",
-    "semantic_hash": "60da38411503c14ead88b93d80c624f4"
+    "mtime": 1786155286.296778,
+    "ast_hash": "f8c38c6424172dae11de86cf820860f3",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/patrimonio/package-info.java": {
     "mtime": 1786036367.2937388,
@@ -4488,11 +4483,6 @@
     "mtime": 1786036367.2593863,
     "ast_hash": "ce9268dbcb2abf4973152d374cb87562",
     "semantic_hash": "ce9268dbcb2abf4973152d374cb87562"
-  },
-  ".gemini.md": {
-    "mtime": 1786036367.258868,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
-    "semantic_hash": ""
   },
   ".github/copilot-instructions.md": {
     "mtime": 1786036367.258868,
@@ -4965,9 +4955,9 @@
     "semantic_hash": "b86a8ac28c4e7855a1be6e51924469a4"
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/application/usecase/UpdateFielUseCase.java": {
-    "mtime": 1786036367.2871966,
-    "ast_hash": "8effd219a7d6ddb77067170f03455053",
-    "semantic_hash": "8effd219a7d6ddb77067170f03455053"
+    "mtime": 1786155277.7947836,
+    "ast_hash": "542515052e271a120d1bd11294225ece",
+    "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/infrastructure/persistence/mapper/FielMapper.java": {
     "mtime": 1786036367.2873397,

@@ -9,4 +9,5 @@
  * ({@code EscopoUsuarioAuthorizationService}). Também expõe o organograma (árvore de organizações
  * e membros) consumido pelo frontend.
  */
-package br.com.nsfatima.gestao.grupoParoquial;
+package br.com.nsfatima.gestao.organizacao;
+

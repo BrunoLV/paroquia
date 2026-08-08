@@ -27,18 +27,43 @@ public class UpdateFielUseCase {
         FielEntity entity = fielRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + id));
 
-        if (request.nome() != null) entity.setNome(request.nome());
-        if (request.cpf() != null) entity.setCpf(request.cpf());
-        if (request.dataNascimento() != null) entity.setDataNascimento(request.dataNascimento());
-        if (request.email() != null) entity.setEmail(request.email());
-        if (request.telefone() != null) entity.setTelefone(request.telefone());
-        if (request.endereco() != null) entity.setEndereco(request.endereco());
-        if (request.vocacao() != null) entity.setVocacao(request.vocacao());
-        if (request.ativo() != null) entity.setAtivo(request.ativo());
-        if (request.batizado() != null) entity.setBatizado(request.batizado());
-        if (request.primeiraComunhao() != null) entity.setPrimeiraComunhao(request.primeiraComunhao());
-        if (request.crismado() != null) entity.setCrismado(request.crismado());
-        if (request.casadoIgrejaCatolica() != null) entity.setCasadoIgrejaCatolica(request.casadoIgrejaCatolica());
+        if (request.nome() != null) {
+            entity.setNome(request.nome());
+        }
+        if (request.cpf() != null) {
+            entity.setCpf(request.cpf());
+        }
+        if (request.dataNascimento() != null) {
+            entity.setDataNascimento(request.dataNascimento());
+        }
+        if (request.email() != null) {
+            entity.setEmail(request.email());
+        }
+        if (request.telefone() != null) {
+            entity.setTelefone(request.telefone());
+        }
+        if (request.endereco() != null) {
+            entity.setEndereco(request.endereco());
+        }
+        if (request.vocacao() != null) {
+            entity.setVocacao(request.vocacao());
+        }
+        if (request.ativo() != null) {
+            entity.setAtivo(request.ativo());
+        }
+        if (request.batizado() != null) {
+            entity.setBatizado(request.batizado());
+        }
+        if (request.primeiraComunhao() != null) {
+            entity.setPrimeiraComunhao(request.primeiraComunhao());
+        }
+        if (request.crismado() != null) {
+            entity.setCrismado(request.crismado());
+        }
+        if (request.casadoIgrejaCatolica() != null) {
+            entity.setCasadoIgrejaCatolica(request.casadoIgrejaCatolica());
+        }
+
 
         entity.setAtualizadoEmUtc(Instant.now());
         entity.setAtualizadoPor(actor != null ? actor : "system");
