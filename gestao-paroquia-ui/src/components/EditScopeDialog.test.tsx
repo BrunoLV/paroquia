@@ -26,7 +26,7 @@ describe('EditScopeDialog', () => {
 
   it('calls onClose when clicking "Cancelar"', () => {
     render(<EditScopeDialog {...defaultProps} />);
-    fireEvent.click(screen.getByText(/Cancelar/i));
+    fireEvent.click(screen.getByRole('button', { name: /Cancelar/i }));
     expect(mockOnClose).toHaveBeenCalled();
   });
 
@@ -50,7 +50,7 @@ describe('EditScopeDialog', () => {
 
   it('renders the Cancelar button with a CloseIcon', () => {
     render(<EditScopeDialog {...defaultProps} />);
-    const cancelButton = screen.getByText(/Cancelar/i).closest('button');
-    expect(cancelButton?.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+    expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
   });
 });

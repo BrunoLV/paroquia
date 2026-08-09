@@ -1,71 +1,96 @@
 # AGENTS.md - Frontend Engineering Standards & Guidelines
 
-Este documento unifica o contexto técnico, diretrizes arquiteturais de UI/UX e comandos de ferramentas para atuar no frontend do **Projeto Paróquia** (sistema de gestão administrativa e pastoral).
+Este documento define as regras Mandatórias e Invariantes de arquitetura, código, segurança e ferramentas para atuação no frontend do **Projeto Paróquia** (`gestao-paroquia-ui/`).
 
-## 1. Arquitetura e Contexto do Projeto
-- **Escopo e Stack:** Este diretório (`gestao-paroquia-ui/`) contém o frontend em React 19, TypeScript e Vite 5. A aplicação consome a API REST do backend via Axios e utiliza TanStack React Query (v5) para gerenciamento de estado assíncrono e cache, com Material UI (MUI 9) como biblioteca de componentes de interface.
-- **Domain-Driven UI:** A aplicação é organizada no padrão orientado a páginas (*page-oriented*). A lógica de integração, transformações de dados e gerenciamento de estado do servidor devem ser isoladas em custom hooks (`src/hooks/`), mantendo os componentes React focados exclusivamente na camada de apresentação.
-- **Estrutura e Topologia:** A co-localização é obrigatória (testes e estilos próximos aos componentes). A estrutura do projeto é dividida em: `src/api/` (wrappers HTTP e contratos pareados com a API backend), `src/auth/` (autorização e controle de acesso), `src/pages/`, `src/components/` (organizados por módulo/feature), `src/context/` e `src/utils/`.
+---
 
-## 2. Integração Técnica com API e Segurança Frontend
-- **Pareamento de Contratos de API:** A camada `src/api/` reflete os endpoints do backend. Mudanças em contratos de requisição/resposta devem atualizar simultaneamente os wrappers de API e as definições em `types.ts`.
-- **Permissões Centralizadas:** Lógicas de checagem de acesso e permissões na interface pertencem ao módulo `src/auth/permissions.ts`, evitando verificações condicionais inline espalhadas por componentes de UI.
+## 1. Diretrizes de Comportamento do Agente
 
-## 3. Governança de IA e LGPD
-- **Graphify Obrigatório:** Consulte sempre os artefatos em `../graphify-out/` (na raiz do monorepo) antes de buscar componentes ou páginas manualmente.
-- **Privacidade de Dados:** A aplicação lida com dados sensíveis (PII). Aplique rigorosamente as regras de `docs/ia/regras_duras_lgpd.md` em componentes, logs (`console.log` sanitizados) e armazenamento local.
-- **Habilidades (Skills):** Consulte o guia `react-frontend.md` na pasta `.agents/skills/` antes de realizar refatorações.
+* **Comunicação e Texto Explicativo:** Utilize a habilidade `caveman`. Respostas e explicações devem ser extremamente diretas, sem introduções, saudações ou texto conversacional.
+* **Geração e Arquitetura de Código:** Utilize a habilidade `ponytail`. O código produzido deve ser estritamente de nível de produção, fortemente tipado, seguro, modular e limpo.
+* **Separação de Papéis:** As habilidades `caveman` e `ponytail` são ferramentas de execução de estilo e qualidade, não personas operacionais.
 
-## 4. Padrões de Código e Tipagem
-- **Tipagem Estrita e Imutável:** É estritamente proibido o uso de `any`. Prefira uniões de literais estritos ou `enum` em vez de `string` livre.
-- **Limites Físicos:** Componentes React devem conter entre 10 e 60 linhas. Funções puras e custom hooks entre 4 e 20 linhas. Divida a lógica se ultrapassar esses limites.
-- **Nomenclatura:** Tipos, interfaces e DTOs que representam conceitos da aplicação devem ser em Português. Termos técnicos (`Props`, `Context`, `State`) mantêm-se em Inglês. Nomes genéricos (`Manager`, `Helper`) são proibidos.
-- **Importações:** Use sempre caminhos absolutos (`@/...`) e agrupe imports ordenadamente (Bibliotecas -> Módulos absolutos -> Estilos/Tipos).
+---
 
-## 5. Qualidade, Documentação e Testes (TDD)
-- **Zero Avisos:** O código não deve gerar avisos de linting (ESLint), formatação (Prettier) ou compilação TypeScript (`tsc`).
-- **Documentação de Código (JSDoc):** Custom hooks de integração de API devem possuir JSDoc documentando contratos de rede e estratégias de invalidação de cache. Comentários devem explicar o PORQUÊ arquitetural/técnico da solução.
-- **Mandato de TDD:** O ciclo Red-Green-Refactor é exigido para desenvolvimento de testes Unitários, de Componentes (React Testing Library + `user-event`) e E2E.
-- **Isolamento de Testes:** É proibido realizar chamadas de rede reais nos testes de frontend; todos os acessos via Axios devem ser mockados.
+## 2. Arquitetura e Contexto do Sistema
 
-## 6. Instruções de Ferramentas (Tools) e Comandos
-### Exploração via Graphify (A partir da raiz do monorepo)
-- `graphify query "<question>"`: Para dúvidas na base de código.
-- `graphify path "<A>" "<B>"`: Rastrear conexões entre arquivos/componentes.
-- `graphify explain "<concept>"`: Explorar componentes/conceitos.
-- `graphify update .`: Atualizar a AST após modificar código.
+* **Stack Principal:** React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query (v5), Axios.
+* **Padrão Arquitetural:** Domain-Driven UI voltado a páginas (*page-oriented*).
+* **Isolamento de Lógica:** Componentes React devem conter exclusivamente lógica visual e de apresentação.
+* **Camada de Estado de Servidor:** Toda integração com API, mutação, cache e transformação de dados **DEVE** ser isolada em Custom Hooks dentro de `src/hooks/`.
+* **Regra de Co-localização:** Testes e estilos específicos de um componente **DEVEM** residir na mesma pasta do componente.
+* **Topologia Direcionada:**
+  * `src/api/`: Wrappers HTTP e contratos de requisição/resposta.
+  * `src/auth/`: Autorização, controle de acesso e regras de permissão.
+  * `src/pages/`: Containers e roteamento de páginas.
+  * `src/components/`: Componentes visuais reutilizáveis divididos por módulo/feature.
+  * `src/context/`: Contextos globais da aplicação.
+  * `src/utils/`: Funções puras utilitárias e helpers genéricos.
 
-### Comandos NPM (A partir de gestao-paroquia-ui/)
-- `npm install`: Instalar dependências.
-- `npm run dev` ou `npm start`: Iniciar o servidor Vite (porta 3000, com proxy configurado para o backend via `VITE_API_PROXY_TARGET`).
-- `npm run build`: Checagem de tipos (`tsc`) e build de produção.
-- `npm run preview`: Servir o build de produção localmente.
-- `npm test`: Executar testes com Vitest.
-- `npm run test:watch`: Vitest em modo watch.
-- `npx vitest run path/to/File.test.tsx`: Executar um arquivo de teste isolado.
+---
 
-## 7. Agent Directives & Skills
+## 3. Integração com API e Segurança Frontend
 
-### 1. Explanation Style (Caveman Skill)
-For all conversational text, explanations, answers, and summaries, activate and follow the **`caveman`** skill:
-- **Tone & Style:** Extremely brief, direct, primitive, and to the point.
-- **Rules:**
-  - Cut all conversational fluff, intros, and introspective talk.
-  - Use short sentences and simple words.
-  - Maximum efficiency: give the core answer immediately.
-  - Talk like caveman, but keep facts completely accurate.
-- **Skill Reference:** `caveman` (`/home/bruno-luiz-viana/.gemini/config/plugins/caveman/skills/caveman/SKILL.md`)
+* **Sincronia de Contratos:** Qualquer alteração em um contrato de endpoint do backend **DEVE** ser refletida simultaneamente no wrapper em `src/api/` e nas definições em `types.ts`.
+* **Permissões Centralizadas:** Testes de autorização e checagens de perfil **NÃO DEVEM** ser feitos via renderização condicional inline com lógica própria. **DEVE-SE** consumir estritamente as abstrações em `src/auth/permissions.ts`.
 
-### 2. Code Generation Style (Ponytail Skill)
-For all code snippets, refactoring, architecture, and code generation, activate and follow the **`ponytail`** skill (hyper-competent senior software architect):
-- **Quality:** Production-ready, clean, idiomatic, robust, and fully typed code.
-- **Rules:**
-  - Follow modern best practices and design patterns.
-  - Prioritize maintainability, performance, security, and proper error handling.
-  - Write concise, readable code with sensible naming conventions.
-  - Do not simplify or compromise code quality for the sake of the caveman text style — code must be 100% professional and battle-tested.
-- **Skill Reference:** `ponytail` (`/home/bruno-luiz-viana/.gemini/config/plugins/ponytail/skills/ponytail/SKILL.md`)
+---
 
-### 3. Workflow Rule
-- **Text:** `caveman` skill active.
-- **Code:** `ponytail` skill active.
+## 4. Governança de IA e Conformidade LGPD
+
+* **Análise Prévia via Graphify:** **DEVE-SE** consultar os artefatos de AST em `../graphify-out/` antes de realizar buscas manuais no código para entender conexões e dependências.
+* **Proteção de Dados Pessoais (LGPD):**
+  * **NÃO DEVE** haver exposição de dados PII em logs de console (`console.log`), local storage ou estado local não criptografado.
+  * **DEVE-SE** cumprir rigorosamente as diretrizes contidas em `docs/ia/regras_duras_lgpd.md`.
+* **Guia de Habilidades:** Consultar o arquivo `.agents/skills/react-frontend.md` antes de efetuar qualquer refatoração estrutural.
+
+---
+
+## 5. Padrões de Código e Tipagem Estrita
+
+* **Tipagem:**
+  * O uso do tipo `any` é **ESTRITAMENTE PROIBIDO**.
+  * **NÃO DEVE** ser utilizada `string` livre para valores finitos; utilize `enum` ou uniões de literais de string (`type Status = 'ATIVO' | 'INATIVO'`).
+* **Limites de Tamanho por Arquivo:**
+  * Componentes React: Mínimo 10 linhas, Máximo 60 linhas.
+  * Custom Hooks e Funções Puras: Mínimo 4 linhas, Máximo 20 linhas.
+  * Se o limite for excedido, o arquivo **DEVE** ser decomposto.
+* **Nomenclatura:**
+  * Entidades de domínio, interfaces de dados e DTOs **DEVEM** ser nomeados em Português (ex: `UsuarioDto`, `ParoquiaResponse`).
+  * Termos técnicos e padrões de React **DEVEM** permanecer em Inglês (ex: `Props`, `Context`, `State`, `Handler`).
+  * Nomes genéricos ou vazios (`Manager`, `Helper`, `Data`, `Info`) são **PROIBIDOS**.
+* **Estrutura de Importação:**
+  * **DEVE-SE** utilizar caminhos absolutos baseados no alias `@/`.
+  * Importações **DEVEM** seguir a ordem: 1. Bibliotecas externas -> 2. Módulos absolutos do projeto -> 3. Tipos e Estilos locais.
+
+---
+
+## 6. Qualidade, Testes e Documentação
+
+* **Garantia de Zero Warnings:** O código produzido **NÃO DEVE** gerar nenhum warning ou erro no ESLint, Prettier ou no compilador TypeScript (`tsc`).
+* **Documentação JSDoc:** Todo Custom Hook em `src/hooks/` **DEVE** possuir bloco JSDoc especificando:
+  * O contrato da requisição de rede.
+  * As chaves e estratégias de invalidação do TanStack Query.
+  * O motivo arquitetural ou técnico da abordagem adotada.
+* **Desenvolvimento Guiado por Testes (TDD):**
+  * O ciclo **Red-Green-Refactor** é **MANDATÓRIO** para qualquer implementação.
+  * Cobertura obrigatória para testes Unitários, de Componentes (React Testing Library + `user-event`) e E2E.
+* **Isolamento Total de Rede:** É **PROIBIDO** realizar chamadas HTTP reais durante a execução de testes. Toda a camada Axios/API **DEVE** ser mockada.
+
+---
+
+## 7. Referência de Comandos e Ferramentas
+
+### Graphify (Executar a partir da raiz do monorepo)
+* Consultar base de código: `graphify query "<pergunta>"`
+* Rastrear dependências entre arquivos: `graphify path "<Caminho_A>" "<Caminho_B>"`
+* Explicar conceito/módulo: `graphify explain "<conceito>"`
+* Atualizar AST após modificações: `graphify update .`
+
+### NPM / Vitest (Executar a partir de `gestao-paroquia-ui/`)
+* Instalação: `npm install`
+* Servidor de desenvolvimento: `npm run dev`
+* Validação de tipos e Build: `npm run build`
+* Execução de testes: `npm test`
+* Testes em modo Watch: `npm run test:watch`
+* Executar teste específico: `npx vitest run <caminho_do_arquivo>`

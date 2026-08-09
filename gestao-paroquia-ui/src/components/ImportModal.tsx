@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {
     Alert,
     Box,
-    Button,
     Chip,
     CircularProgress,
     Dialog,
@@ -36,6 +35,7 @@ import {
     Error as ErrorIcon,
 } from '@mui/icons-material';
 import {useNotification} from '../context/NotificationContext';
+import {extractErrorMessage} from '../utils/errorUtils';
 import {useQueryClient} from '@tanstack/react-query';
 import {
     confirmarImportacao,
@@ -44,6 +44,7 @@ import {
     validarImportacao
 } from '../api/importacao';
 import theme from '../theme';
+import ActionButton from './ActionButton';
 
 interface ImportModalProps {
   open: boolean;
@@ -108,8 +109,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
       const res = await validarImportacao(entityType, selectedFile);
       setValidationResult(res);
       setActiveStep(1);
-    } catch (err: any) {
-      showError(err.response?.data?.message || 'Falha ao processar e validar o arquivo enviado.');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Falha ao processar e validar o arquivo enviado.'));
     } finally {
       setIsValidating(false);
     }
@@ -173,34 +174,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             </Alert>
 
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button
-                variant="outlined"
-                startIcon={<DownloadIcon />}
-                onClick={() => handleDownload('CSV')}
-                sx={{ textTransform: 'none' }}
-              >
-                Baixar Template CSV
-              </Button>
-              <Button
-                variant="outlined"
-                startIcon={<DownloadIcon />}
-                onClick={() => handleDownload('XLSX')}
-                sx={{ textTransform: 'none' }}
-              >
-                Baixar Template Excel (.xlsx)
-              </Button>
+              <ActionButton title="Baixar Template CSV" icon={<DownloadIcon />} color="primary" onClick={() => handleDownload('CSV')} />
+              <ActionButton title="Baixar Template Excel (.xlsx)" icon={<DownloadIcon />} color="primary" onClick={() => handleDownload('XLSX')} />
             </Box>
 
             <Box sx={{ border: '2px dashed', borderColor: 'divider', p: 3, textAlign: 'center', bgcolor: theme.custom.subtlePanelBg }}>
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={<UploadIcon />}
-                sx={{ textTransform: 'none', mb: 1 }}
-              >
-                Selecionar Arquivo (.csv, .xls, .xlsx)
-                <input type="file" hidden accept=".csv, .xls, .xlsx" onChange={handleFileChange} />
-              </Button>
+              <ActionButton title="Selecionar Arquivo CSV ou Excel" icon={<UploadIcon />} color="primary" component="label">
+                <input
+                  type="file"
+                  aria-label="Selecionar Arquivo"
+                  hidden
+                  accept=".csv,.xlsx"
+                  onChange={handleFileChange}
+                />
+              </ActionButton>
               <Typography variant="body2" color="textSecondary">
                 {selectedFile ? `Arquivo selecionado: ${selectedFile.name}` : 'Nenhum arquivo selecionado'}
               </Typography>
@@ -257,47 +244,36 @@ export const ImportModal: React.FC<ImportModalProps> = ({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleCloseModal} color="secondary" startIcon={<CloseIcon />} sx={{ textTransform: 'none' }}>
-          Cancelar
-        </Button>
+        <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={handleCloseModal} color="secondary" />
         {activeStep > 0 && (
-          <Button onClick={() => setActiveStep(activeStep - 1)} color="secondary" startIcon={<ArrowBackIcon />} sx={{ textTransform: 'none' }}>
-            Voltar
-          </Button>
+          <ActionButton title="Voltar" icon={<ArrowBackIcon />} onClick={() => setActiveStep(activeStep - 1)} color="secondary" />
         )}
         {activeStep === 0 && (
-          <Button
-            variant="contained"
+          <ActionButton
+            title="Validar Arquivo"
+            icon={isValidating ? <CircularProgress size={24} /> : <CheckIcon />}
+            color="primary"
             onClick={handleProceedToValidation}
             disabled={!selectedFile || isValidating}
-            startIcon={isValidating ? undefined : <CheckIcon />}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            {isValidating ? <CircularProgress size={24} /> : 'Validar Arquivo'}
-          </Button>
+          />
         )}
         {activeStep === 1 && (
-          <Button
-            variant="contained"
+          <ActionButton
+            title="Avançar para Confirmação"
+            icon={<ArrowForwardIcon />}
+            color="primary"
             onClick={() => setActiveStep(2)}
             disabled={validationResult?.totalValidos === 0}
-            startIcon={<ArrowForwardIcon />}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            Avançar para Confirmação
-          </Button>
+          />
         )}
         {activeStep === 2 && (
-          <Button
-            variant="contained"
+          <ActionButton
+            title="Confirmar Importação"
+            icon={isConfirming ? <CircularProgress size={24} /> : <UploadIcon />}
             color="primary"
             onClick={handleConfirmImport}
             disabled={isConfirming}
-            startIcon={isConfirming ? undefined : <UploadIcon />}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            {isConfirming ? <CircularProgress size={24} /> : 'Confirmar Importação'}
-          </Button>
+          />
         )}
       </DialogActions>
     </Dialog>

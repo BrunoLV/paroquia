@@ -2,8 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
     Avatar,
     Box,
-    Button,
-    Chip,
     CircularProgress,
     Dialog,
     DialogActions,
@@ -11,7 +9,6 @@ import {
     DialogContentText,
     DialogTitle,
     Divider,
-    IconButton,
     Paper,
     Stack,
     TextField,
@@ -26,8 +23,12 @@ import {
 } from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
 import {useNotification} from '../context/NotificationContext';
+import {extractErrorMessage} from '../utils/errorUtils';
+import StatusIcon from './StatusIcon';
+import {getObservacaoTipoMeta} from '../utils/statusMeta/observacaoTipo';
 import {Observacao} from '../api/types';
 import {createObservacao, deleteObservacao as deleteObsApi, getObservacoes, updateObservacao} from '../api/observacoes';
+import ActionButton from './ActionButton';
 
 interface ObservacoesEventoProps {
   eventoId: string;
@@ -60,7 +61,7 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
         (a, b) => new Date(a.criadoEmUtc).getTime() - new Date(b.criadoEmUtc).getTime()
       );
       setObservations(sorted);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching event observations:', err);
       showError('Não foi possível carregar as observações do evento.');
     } finally {
@@ -85,8 +86,8 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
       setNewNote('');
       showSuccess('Observação adicionada com sucesso.');
       await fetchObservations();
-    } catch (err: any) {
-      showError(err.response?.data?.message || 'Erro ao adicionar observação.');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao adicionar observação.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -112,8 +113,8 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
       setEditText('');
       showSuccess('Observação atualizada com sucesso.');
       await fetchObservations();
-    } catch (err: any) {
-      showError(err.response?.data?.message || 'Erro ao atualizar observação.');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao atualizar observação.'));
     } finally {
       setIsUpdating(false);
     }
@@ -128,8 +129,8 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
       setDeleteConfirmId(null);
       showSuccess('Observação excluída com sucesso.');
       await fetchObservations();
-    } catch (err: any) {
-      showError(err.response?.data?.message || 'Erro ao excluir observação.');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao excluir observação.'));
     } finally {
       setIsDeleting(false);
     }
@@ -184,12 +185,7 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
                       {isNote ? (isOwn ? 'Você' : 'Usuário') : 'Sistema'}
                     </Typography>
                     {!isNote && (
-                      <Chip
-                        label={obs.tipo}
-                        size="small"
-                        color="secondary"
-                        sx={{ fontSize: '0.65rem', height: 18, fontWeight: 600 }}
-                      />
+                      <StatusIcon {...getObservacaoTipoMeta(obs.tipo)} sx={{ fontSize: '0.65rem', height: 18, fontWeight: 600 }} />
                     )}
                   </Stack>
                   <Typography variant="caption" color="text.secondary">
@@ -209,12 +205,22 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
                       disabled={isUpdating}
                     />
                     <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: 'flex-end' }}>
-                      <IconButton size="small" onClick={handleCancelEdit} disabled={isUpdating} color="error">
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleUpdateNote(obs.id)} disabled={isUpdating || !editText.trim()} color="success">
-                        {isUpdating ? <CircularProgress size={16} /> : <CheckIcon fontSize="small" />}
-                      </IconButton>
+                      <ActionButton
+                        title="Cancelar edição"
+                        icon={<CloseIcon fontSize="small" />}
+                        size="small"
+                        onClick={handleCancelEdit}
+                        disabled={isUpdating}
+                        color="error"
+                      />
+                      <ActionButton
+                        title="Salvar alteração"
+                        icon={isUpdating ? <CircularProgress size={16} /> : <CheckIcon fontSize="small" />}
+                        size="small"
+                        onClick={() => handleUpdateNote(obs.id)}
+                        disabled={isUpdating || !editText.trim()}
+                        color="success"
+                      />
                     </Stack>
                   </Box>
                 ) : (
@@ -224,12 +230,22 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
                     </Typography>
                     {isNote && isOwn && (
                       <Stack direction="row" spacing={0.5}>
-                        <IconButton size="small" aria-label="edit" color="secondary" onClick={() => handleStartEdit(obs)}>
-                          <EditIcon fontSize="small" sx={{ fontSize: '1rem' }} />
-                        </IconButton>
-                        <IconButton size="small" aria-label="delete" onClick={() => setDeleteConfirmId(obs.id)} color="error">
-                          <DeleteIcon fontSize="small" sx={{ fontSize: '1rem' }} />
-                        </IconButton>
+                        <ActionButton
+                          title="Editar Observação"
+                          ariaLabel="edit"
+                          icon={<EditIcon fontSize="small" sx={{ fontSize: '1rem' }} />}
+                          size="small"
+                          color="secondary"
+                          onClick={() => handleStartEdit(obs)}
+                        />
+                        <ActionButton
+                          title="Excluir Observação"
+                          ariaLabel="delete"
+                          icon={<DeleteIcon fontSize="small" sx={{ fontSize: '1rem' }} />}
+                          size="small"
+                          color="error"
+                          onClick={() => setDeleteConfirmId(obs.id)}
+                        />
                       </Stack>
                     )}
                   </Box>
@@ -254,15 +270,13 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
             disabled={isSubmitting}
             autoComplete="off"
           />
-          <Button
+          <ActionButton
+            title="Adicionar Observação"
+            icon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
             type="submit"
-            variant="contained"
+            color="primary"
             disabled={isSubmitting || !newNote.trim()}
-            endIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : <SendIcon />}
-            sx={{ fontWeight: 600 }}
-          >
-            Adicionar
-          </Button>
+          />
         </Stack>
       </Box>
 
@@ -275,12 +289,14 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirmId(null)} color="secondary" startIcon={<CloseIcon />} disabled={isDeleting}>
-            Cancelar
-          </Button>
-          <Button onClick={handleDeleteNote} color="error" variant="contained" startIcon={isDeleting ? undefined : <DeleteIcon />} disabled={isDeleting} autoFocus>
-            {isDeleting ? <CircularProgress size={20} color="inherit" /> : 'Excluir'}
-          </Button>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={() => setDeleteConfirmId(null)} color="secondary" disabled={isDeleting} />
+          <ActionButton
+            title="Excluir Observação"
+            icon={isDeleting ? <CircularProgress size={20} color="inherit" /> : <DeleteIcon />}
+            onClick={handleDeleteNote}
+            color="error"
+            disabled={isDeleting}
+          />
         </DialogActions>
       </Dialog>
     </Box>

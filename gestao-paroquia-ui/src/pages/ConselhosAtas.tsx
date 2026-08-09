@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
-  Button,
   Card,
-  Chip,
   Container,
   Dialog,
   DialogActions,
@@ -24,8 +22,6 @@ import {
   TableRow,
   TextField,
   Typography,
-  IconButton,
-  Tooltip,
   Stack,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -40,6 +36,9 @@ import { getCpcDecisoes, createCpcDecisao, homologarCpcDecisao } from '../api/co
 import { getOrganizacoes } from '../api/organizacoes';
 import { CpcDecisao, StatusHomologacao } from '../api/types';
 import { CpcDecisaoModal } from '../components/CpcDecisaoModal';
+import ActionButton from '../components/ActionButton';
+import StatusIcon from '../components/StatusIcon';
+import { getHomologacaoStatusMeta } from '../utils/statusMeta/homologacaoStatus';
 import PageHeader from '../components/PageHeader';
 import theme from '../theme';
 
@@ -127,17 +126,6 @@ export const ConselhosAtas: React.FC = () => {
     setSelectedStatus('');
   };
 
-  const getStatusChip = (status: StatusHomologacao) => {
-    switch (status) {
-      case 'HOMOLOGADO':
-        return <Chip label="Homologado" color="success" size="small" sx={{ fontWeight: 600 }} />;
-      case 'VETADO':
-        return <Chip label="Vetado" color="error" size="small" sx={{ fontWeight: 600 }} />;
-      default:
-        return <Chip label="Pendente de Homologação" color="warning" size="small" sx={{ fontWeight: 600 }} />;
-    }
-  };
-
   const getCommunityName = (id: string) => {
     return communities.find((c) => c.id === id)?.nome || 'Comunidade';
   };
@@ -149,15 +137,12 @@ export const ConselhosAtas: React.FC = () => {
         title="Governança dos Conselhos (CPP & CPC)"
         subtitle="Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação."
         actions={
-          <Button
-            variant="contained"
+          <ActionButton
+            title="Nova Ata / Decisão"
+            icon={<AddIcon />}
             color="primary"
-            startIcon={<AddIcon />}
             onClick={() => setIsModalOpen(true)}
-            sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-          >
-            Nova Ata / Decisão
-          </Button>
+          />
         }
       />
 
@@ -208,11 +193,13 @@ export const ConselhosAtas: React.FC = () => {
           </FormControl>
 
           {(selectedComunidade || selectedStatus) && (
-            <Tooltip title="Limpar Filtros">
-              <IconButton size="small" onClick={handleClearFilters} color="default">
-                <FilterAltOffIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <ActionButton
+              title="Limpar Filtros"
+              icon={<FilterAltOffIcon fontSize="small" />}
+              size="small"
+              onClick={handleClearFilters}
+              color="inherit"
+            />
           )}
         </Stack>
       </Card>
@@ -265,30 +252,24 @@ export const ConselhosAtas: React.FC = () => {
                     </TableCell>
                     <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
                     <TableCell>{item.dataReuniao}</TableCell>
-                    <TableCell>{getStatusChip(item.statusHomologacao)}</TableCell>
+                    <TableCell><StatusIcon {...getHomologacaoStatusMeta(item.statusHomologacao)} sx={{ fontWeight: 600 }} /></TableCell>
                     <TableCell align="center">
                       {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
                         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                          <Tooltip title="Homologar Ata (Aprovar)">
-                            <IconButton
-                              color="success"
-                              size="small"
-                              onClick={() => handleHomologar(item.id)}
-                              data-testid={`homologate-btn-${item.id}`}
-                            >
-                              <CheckCircleIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Vetar Ata (Reprovar)">
-                            <IconButton
-                              color="error"
-                              size="small"
-                              onClick={() => setVetoDialogItem(item)}
-                              data-testid={`veto-btn-${item.id}`}
-                            >
-                              <CancelIcon />
-                            </IconButton>
-                          </Tooltip>
+                          <ActionButton
+                            title="Homologar Ata (Aprovar)"
+                            icon={<CheckCircleIcon />}
+                            color="success"
+                            size="small"
+                            onClick={() => handleHomologar(item.id)}
+                          />
+                          <ActionButton
+                            title="Vetar Ata (Reprovar)"
+                            icon={<CancelIcon />}
+                            color="error"
+                            size="small"
+                            onClick={() => setVetoDialogItem(item)}
+                          />
                         </Box>
                       ) : (
                         <Typography variant="caption" color="text.secondary">
@@ -332,12 +313,8 @@ export const ConselhosAtas: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setVetoDialogItem(null)} color="secondary" startIcon={<CloseIcon />}>
-            Cancelar
-          </Button>
-          <Button onClick={handleConfirmVeto} variant="contained" color="error" startIcon={<CancelIcon />}>
-            Confirmar Veto
-          </Button>
+          <ActionButton title="Cancelar veto" icon={<CloseIcon />} onClick={() => setVetoDialogItem(null)} color="secondary" />
+          <ActionButton title="Confirmar veto da ata / decisão" icon={<CancelIcon />} onClick={handleConfirmVeto} color="error" />
         </DialogActions>
       </Dialog>
     </Container>

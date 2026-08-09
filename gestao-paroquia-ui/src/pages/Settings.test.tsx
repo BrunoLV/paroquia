@@ -128,8 +128,8 @@ describe('Settings page', () => {
       expect(screen.getByText('Gestão do Ano Paroquial')).toBeInTheDocument();
       expect(screen.getByText('2026')).toBeInTheDocument();
       expect(screen.getByText('2025')).toBeInTheDocument();
-      expect(screen.getByText('Planejamento Aberto')).toBeInTheDocument();
-      expect(screen.getByText('Concluído')).toBeInTheDocument();
+      expect(screen.getByTestId('LockOpenIcon')).toBeInTheDocument();
+      expect(screen.getAllByTestId('CheckCircleIcon').length).toBeGreaterThan(0);
     });
   });
 
@@ -267,8 +267,8 @@ describe('Settings page - Locais CRUD', () => {
       expect(screen.getByText('Salão Paroquial')).toBeInTheDocument();
       expect(screen.getByText('400')).toBeInTheDocument();
       expect(screen.getByText('150')).toBeInTheDocument();
-      expect(screen.getByText('Ativo')).toBeInTheDocument();
-      expect(screen.getByText('Inativo')).toBeInTheDocument();
+      expect(screen.getByTestId('CheckCircleIcon')).toBeInTheDocument();
+      expect(screen.getByTestId('BlockIcon')).toBeInTheDocument();
     });
   });
 
@@ -554,8 +554,8 @@ describe('Settings page - Membros / Usuários', () => {
     await waitFor(() => {
       expect(screen.getByText('João Pending')).toBeInTheDocument();
       expect(screen.getByText('Maria Active')).toBeInTheDocument();
-      expect(screen.getByText('Pendente')).toBeInTheDocument();
-      expect(screen.getByText('Ativo')).toBeInTheDocument();
+      expect(screen.getByTestId('PendingActionsIcon')).toBeInTheDocument();
+      expect(screen.getAllByTestId('CheckCircleIcon').length).toBeGreaterThan(0);
     });
   });
 
@@ -595,7 +595,7 @@ describe('Settings page - Membros / Usuários', () => {
     });
 
     const approveBtn = screen.getByRole('button', { name: /Aprovar/i });
-    expect(approveBtn.className).toContain('MuiButton-colorSuccess');
+    expect(approveBtn.className).toContain('MuiIconButton-colorSuccess');
     expect(approveBtn.querySelector('[data-testid="CheckCircleIcon"]')).toBeInTheDocument();
   });
 });

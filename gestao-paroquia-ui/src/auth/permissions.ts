@@ -122,7 +122,7 @@ export const canTransitionProjeto = (user: User | null, projetoOrgId: string): b
   if (isGlobalCreator(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
-    return user.organizations.some((org: any) => org.id === projetoOrgId);
+    return user.organizations.some((org: Organization) => org.id === projetoOrgId);
   }
   return false;
 };
@@ -154,7 +154,7 @@ export const canTransferAtivo = (user: User | null, ativoOrgId: string): boolean
   if (isGlobalCreator(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
-    return user.organizations.some((org: any) => org.id === ativoOrgId);
+    return user.organizations.some((org: Organization) => org.id === ativoOrgId);
   }
   return false;
 };

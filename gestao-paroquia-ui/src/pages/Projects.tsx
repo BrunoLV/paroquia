@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
     Alert,
     Box,
-    Button,
     Card,
     Checkbox,
     Chip,
@@ -17,7 +16,6 @@ import {
     FormControl,
     FormControlLabel,
     Grid,
-    IconButton,
     InputLabel,
     LinearProgress,
     MenuItem,
@@ -50,6 +48,9 @@ import {
 } from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
 import PageHeader from '../components/PageHeader';
+import ActionButton from '../components/ActionButton';
+import StatusIcon from '../components/StatusIcon';
+import { getProjetoStatusMeta } from '../utils/statusMeta/projetoStatus';
 import {
     canManageProjetos as userCanManageProjetos,
     canTransitionProjeto as userCanTransitionProjeto,
@@ -58,6 +59,7 @@ import {
 import apiClient from '../api/client';
 import {Organizacao, Projeto} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
+import { extractErrorMessage } from '../utils/errorUtils';
 import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '../api/projects';
 
 // DTO interfaces for project summaries
@@ -208,8 +210,8 @@ const Projects = () => {
     setDialogOpen(true);
   };
 
-  const handleOpenEdit = (project: Projeto, e: React.MouseEvent) => {
-    e.stopPropagation(); // Avoid triggering details sidebar
+  const handleOpenEdit = (project: Projeto) => {
+    // TableCell já chama e.stopPropagation() antes de disparar o onClick da TableRow
     setFormId(project.id);
     setFormNome(project.nome);
     setFormDescricao(project.descricao || '');
@@ -248,7 +250,7 @@ const Projects = () => {
       return;
     }
 
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       nome: formNome,
       descricao: formDescricao || null,
       organizacaoResponsavelId: formOrgId,
@@ -274,17 +276,8 @@ const Projects = () => {
       }
       setDialogOpen(false);
       loadData();
-    } catch (err: any) {
-      let errorMsg = 'Erro ao salvar projeto.';
-      if (err.response?.data) {
-        const data = err.response.data;
-        if (Array.isArray(data.errors) && data.errors.length > 0) {
-          errorMsg = 'Por favor, corrija os seguintes erros:\n' + data.errors.map((e: any) => `• ${e.message || e.defaultMessage}`).join('\n');
-        } else if (data.message) {
-          errorMsg = data.message;
-        }
-      }
-      showError(errorMsg);
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao salvar projeto.'));
     }
   };
 
@@ -317,10 +310,9 @@ const Projects = () => {
       }
       setTransitionDialogOpen(false);
       loadData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro na transição de status:', err);
-      const errMsg = err.response?.data?.message || 'Erro ao processar transição de status.';
-      showError(errMsg);
+      showError(extractErrorMessage(err, 'Erro ao processar transição de status.'));
     } finally {
       setIsTransitioning(false);
     }
@@ -350,15 +342,7 @@ const Projects = () => {
         subtitle="Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais."
         actions={
           canManageProjetos() && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={handleOpenCreate}
-              sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-            >
-              Novo Projeto
-            </Button>
+            <ActionButton title="Novo Projeto" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />
           )
         }
       />
@@ -376,15 +360,7 @@ const Projects = () => {
             Nenhum projeto cadastrado.
           </Typography>
           {canManageProjetos() && (
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={handleOpenCreate}
-              sx={{ mt: 2, textTransform: 'none' }}
-            >
-              Cadastrar Primeiro Projeto
-            </Button>
+            <ActionButton title="Cadastrar Novo Projeto" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />
           )}
         </Card>
       ) : (
@@ -414,33 +390,12 @@ const Projects = () => {
                     <TableCell>{formatDate(project.inicio)}</TableCell>
                     <TableCell>{formatDate(project.fim)}</TableCell>
                     <TableCell>
-                      <Chip
-                        size="small"
-                        label={
-                          project.status === 'ABERTO' ? 'Aberto' :
-                          project.status === 'EM_ANDAMENTO' ? 'Em Andamento' :
-                          project.status === 'CANCELADO' ? 'Cancelado' :
-                          project.status === 'CONCLUIDO' ? 'Concluído' :
-                          project.status
-                        }
-                        color={
-                          project.status === 'EM_ANDAMENTO' ? 'success' :
-                          project.status === 'ABERTO' ? 'info' :
-                          project.status === 'CANCELADO' ? 'error' :
-                          'default'
-                        }
-                        variant="outlined"
-                       
-                      />
+                      <StatusIcon {...getProjetoStatusMeta(project.status)} variant="outlined" />
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
-                      <IconButton size="small" color="primary" onClick={() => handleRowClick(project)} title="Visualizar Indicadores">
-                        <VisibilityIcon />
-                      </IconButton>
+                      <ActionButton title="Visualizar Detalhes do Projeto" icon={<VisibilityIcon />} size="small" color="primary" onClick={() => handleRowClick(project)} />
                       {canManageProjetos() && (
-                        <IconButton size="small" color="secondary" onClick={(e) => handleOpenEdit(project, e)} title="Editar Projeto" sx={{ ml: 1 }}>
-                          <EditIcon />
-                        </IconButton>
+                        <ActionButton title="Editar Projeto" icon={<EditIcon />} size="small" color="secondary" onClick={() => handleOpenEdit(project)} sx={{ ml: 1 }} />
                       )}
                     </TableCell>
                   </TableRow>
@@ -543,10 +498,8 @@ const Projects = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDialogOpen(false)} color="secondary" startIcon={<CloseIcon />} sx={{ fontWeight: 600 }}>Cancelar</Button>
-            <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} sx={{ fontWeight: 600 }}>
-              {isEditMode ? 'Salvar Alterações' : 'Salvar'}
-            </Button>
+            <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={() => setDialogOpen(false)} color="secondary" />
+            <ActionButton title="Salvar" icon={<SaveIcon />} type="submit" color="primary" />
           </DialogActions>
         </form>
       </Dialog>
@@ -626,24 +579,7 @@ const Projects = () => {
                   <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>
                     STATUS
                   </Typography>
-                  <Chip
-                    size="small"
-                    label={
-                      selectedProject.status === 'ABERTO' ? 'Aberto' :
-                      selectedProject.status === 'EM_ANDAMENTO' ? 'Em Andamento' :
-                      selectedProject.status === 'CANCELADO' ? 'Cancelado' :
-                      selectedProject.status === 'CONCLUIDO' ? 'Concluído' :
-                      selectedProject.status
-                    }
-                    color={
-                      selectedProject.status === 'EM_ANDAMENTO' ? 'success' :
-                      selectedProject.status === 'ABERTO' ? 'info' :
-                      selectedProject.status === 'CANCELADO' ? 'error' :
-                      'default'
-                    }
-                    variant="outlined"
-                   
-                  />
+                  <StatusIcon {...getProjetoStatusMeta(selectedProject.status)} variant="outlined" />
                 </Box>
               </Box>
             </Box>
@@ -748,42 +684,16 @@ const Projects = () => {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 {selectedProject.status === 'ABERTO' && canTransitionProjeto(selectedProject) && (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    startIcon={<PlayArrowIcon />}
-                    onClick={() => handleOpenTransition('INICIAR')}
-                    sx={{ textTransform: 'none' }}
-                  >
-                    Iniciar
-                  </Button>
+                  <ActionButton title="Iniciar execução do projeto" icon={<PlayArrowIcon />} color="success" onClick={() => handleOpenTransition('INICIAR')} />
                 )}
                 {selectedProject.status === 'EM_ANDAMENTO' && canTransitionProjeto(selectedProject) && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<CheckIcon />}
-                    onClick={() => handleOpenTransition('CONCLUIR')}
-                    sx={{ textTransform: 'none' }}
-                  >
-                    Concluir
-                  </Button>
+                  <ActionButton title="Concluir execução do projeto" icon={<CheckIcon />} color="primary" onClick={() => handleOpenTransition('CONCLUIR')} />
                 )}
                 {(selectedProject.status === 'ABERTO' || selectedProject.status === 'EM_ANDAMENTO') && canTransitionProjeto(selectedProject) && (
-                  <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<CancelIcon />}
-                    onClick={() => handleOpenTransition('CANCELAR')}
-                    sx={{ textTransform: 'none' }}
-                  >
-                    Cancelar
-                  </Button>
+                  <ActionButton title="Cancelar projeto" icon={<CancelIcon />} color="error" onClick={() => handleOpenTransition('CANCELAR')} />
                 )}
               </Box>
-              <Button variant="outlined" color="secondary" startIcon={<CloseIcon />} onClick={() => setSelectedProject(null)} sx={{ textTransform: 'none' }}>
-                Fechar
-              </Button>
+              <ActionButton title="Fechar painel" icon={<CloseIcon />} color="secondary" onClick={() => setSelectedProject(null)} />
             </Box>
           </Box>
         )}
@@ -822,25 +732,20 @@ const Projects = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button
+          <ActionButton
+            title="Manter status atual"
+            icon={<CloseIcon />}
             onClick={() => setTransitionDialogOpen(false)}
             color="secondary"
-            startIcon={<CloseIcon />}
             disabled={isTransitioning}
-            sx={{ fontWeight: 600 }}
-          >
-            Não
-          </Button>
-          <Button
+          />
+          <ActionButton
+            title="Confirmar alteração de status"
+            icon={isTransitioning ? <CircularProgress size={24} /> : <CheckIcon />}
             onClick={handleTransitionSubmit}
-            variant="contained"
             color={transitionType === 'CANCELAR' ? 'error' : 'primary'}
-            startIcon={isTransitioning ? undefined : <CheckIcon />}
             disabled={isTransitioning}
-            sx={{ fontWeight: 600 }}
-          >
-            {isTransitioning ? <CircularProgress size={24} /> : 'Sim'}
-          </Button>
+          />
         </DialogActions>
       </Dialog>
     </Container>

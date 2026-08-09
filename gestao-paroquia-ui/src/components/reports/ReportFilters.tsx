@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {Box, Button, Stack, TextField} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Stack, TextField } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import ActionButton from '../ActionButton';
 
 interface ReportFiltersProps {
   startDate: string;
@@ -36,7 +37,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2, mb: 3 }}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
         <TextField
           label="Data Início"
@@ -45,10 +46,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           onChange={(e) => setLocalStartDate(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
           size="small"
-          sx={{
-            minWidth: 160,
-            '& .MuiOutlinedInput-root': {  },
-          }}
+          sx={{ minWidth: 160 }}
         />
         <TextField
           label="Data Fim"
@@ -57,46 +55,26 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           onChange={(e) => setLocalEndDate(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
           size="small"
+          sx={{ minWidth: 160 }}
+        />
+        <ActionButton
+          title="Filtrar"
+          icon={<FilterListIcon />}
+          type="submit"
+          color="primary"
           sx={{
-            minWidth: 160,
-            '& .MuiOutlinedInput-root': {  },
+            backgroundColor: '#1a237e',
+            color: '#fff',
+            '&:hover': { backgroundColor: '#0d47a1' },
           }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          size="small"
-          startIcon={<FilterListIcon />}
-          sx={{
-            
-            backgroundColor: '#1a237e',
-            textTransform: 'none',
-            fontWeight: 600,
-            height: 40,
-            px: 2.5,
-            '&:hover': {
-              backgroundColor: '#0d47a1',
-            },
-          }}
-        >
-          Filtrar
-        </Button>
-        <Button
+        <ActionButton
+          title="Limpar Filtros"
+          icon={<FilterAltOffIcon />}
           type="button"
-          variant="outlined"
           color="secondary"
-          size="small"
           onClick={handleClear}
-          startIcon={<FilterAltOffIcon />}
-          sx={{
-            
-            textTransform: 'none',
-            fontWeight: 600,
-            height: 40,
-          }}
-        >
-          Limpar Filtros
-        </Button>
+        />
       </Stack>
     </Box>
   );

@@ -229,7 +229,7 @@ export interface Evento {
   participantes?: string[];
   /** ID da série de recorrência à qual este evento pertence, ou `null`/ausente se não foi gerado por uma regra de recorrência. */
   recorrenciaId?: string | null;
-  recorrencia?: any;
+  recorrencia?: Record<string, unknown> | null;
   /**
    * Nome de `EstadoConflitoAgenda` — hoje o único valor possível é `"PENDENTE"` — quando a
    * política de integridade do calendário detecta sobreposição de agenda no mesmo

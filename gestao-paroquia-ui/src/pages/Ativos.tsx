@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   Checkbox,
-  Chip,
   Container,
   Dialog,
   DialogActions,
@@ -12,7 +10,6 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
-  IconButton,
   InputLabel,
   Menu,
   MenuItem,
@@ -63,7 +60,11 @@ import { AtivoCategoria, AtivoPatrimonial, Evento, Organizacao } from '../api/ty
 import { useNotification } from '../context/NotificationContext';
 import PageHeader from '../components/PageHeader';
 import AtivoAlocacoesModal from '../components/AtivoAlocacoesModal';
+import ActionButton from '../components/ActionButton';
+import StatusIcon from '../components/StatusIcon';
+import { getAtivoStatusMeta } from '../utils/statusMeta/ativoStatus';
 import { formatCurrencyBRL } from '../utils/currencyUtils';
+import { extractErrorMessage } from '../utils/errorUtils';
 
 const isOrganizacaoElegivelProprietaria = (org: Organizacao): boolean => org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
 
@@ -85,13 +86,6 @@ const formatEventoOption = (evento: Evento): string => {
 };
 
 const CATEGORIAS: AtivoCategoria[] = ['ELETRONICO', 'MOBILIARIO', 'PARAMENTO', 'INFRAESTRUTURA'];
-
-const STATUS_COLORS: Record<string, 'success' | 'warning' | 'default' | 'info'> = {
-  DISPONIVEL: 'success',
-  ALOCADO: 'info',
-  EM_MANUTENCAO: 'warning',
-  BAIXADO: 'default',
-};
 
 const Ativos = () => {
   const { user } = useAuth();
@@ -135,7 +129,8 @@ const Ativos = () => {
       return organizations;
     }
     if (user && Array.isArray(user.organizations)) {
-      return user.organizations as unknown as Organizacao[];
+      const userOrgIds = user.organizations.map((o: { id: string }) => o.id);
+      return organizations.filter((o) => userOrgIds.includes(o.id));
     }
     return [];
   };
@@ -145,7 +140,8 @@ const Ativos = () => {
   const loadOrganizations = async () => {
     try {
       const response = await apiClient.get<Organizacao[]>('/organizacoes');
-      setOrganizations(response.data || []);
+      const orgs = response.data || [];
+      setOrganizations(orgs);
     } catch (err) {
       console.error('Erro ao buscar organizações:', err);
       showError('Não foi possível carregar as organizações.');
@@ -173,6 +169,15 @@ const Ativos = () => {
     loadOrganizations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!selectedOrgId && organizations.length > 0) {
+      const elegiveis = getOrganizacoesElegiveisProprietarias();
+      if (elegiveis.length > 0) {
+        setSelectedOrgId(elegiveis[0].id);
+      }
+    }
+  }, [organizations, selectedOrgId]);
 
   useEffect(() => {
     if (selectedOrgId) {
@@ -229,18 +234,7 @@ const Ativos = () => {
     loadEventos(dataInicio, dataFim);
   };
 
-  const extractErrorMessage = (err: any, fallback: string): string => {
-    if (err.response?.data) {
-      const data = err.response.data;
-      if (Array.isArray(data.errors) && data.errors.length > 0) {
-        return 'Por favor, corrija os seguintes erros:\n' + data.errors.map((e: any) => `• ${e.message || e.defaultMessage}`).join('\n');
-      }
-      if (data.message) {
-        return data.message;
-      }
-    }
-    return fallback;
-  };
+
 
   const resetCreateForm = () => {
     setFormOrgId('');
@@ -284,7 +278,7 @@ const Ativos = () => {
       if (formOrgId === selectedOrgId) {
         loadAtivos(selectedOrgId);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao cadastrar ativo.'));
     }
   };
@@ -309,7 +303,7 @@ const Ativos = () => {
       setTransferNovaOrgId('');
       setTransferJustificativa('');
       loadAtivos(selectedOrgId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao transferir ativo.'));
     }
   };
@@ -334,7 +328,7 @@ const Ativos = () => {
       }
       closeAlocarDialog();
       loadAtivos(selectedOrgId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao alocar ativo.'));
     }
   };
@@ -368,7 +362,7 @@ const Ativos = () => {
       showSuccess('Manutenção iniciada com sucesso!');
       closeManutencaoDialog();
       loadAtivos(selectedOrgId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao iniciar manutenção.'));
     }
   };
@@ -378,7 +372,7 @@ const Ativos = () => {
       await finalizarManutencao(ativo.id);
       showSuccess('Manutenção finalizada — ativo disponível novamente.');
       loadAtivos(selectedOrgId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao finalizar manutenção.'));
     }
   };
@@ -388,7 +382,7 @@ const Ativos = () => {
       await desalocarAtivo(ativo.id);
       showSuccess('Ativo desalocado — devolvido para a organização dona.');
       loadAtivos(selectedOrgId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao desalocar ativo.'));
     }
   };
@@ -401,14 +395,14 @@ const Ativos = () => {
         subtitle="Gerencie o cadastro, transferência e alocação de ativos patrimoniais da paróquia."
         actions={
           canManageAtivos(user) && (
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
+            <ActionButton
+              title="Novo Ativo"
+              icon={<AddIcon />}
+              color="primary"
               disabled={!selectedOrgId}
               onClick={openCreateDialog}
-            >
-              Novo Ativo
-            </Button>
+              sx={{ border: '1px solid', borderColor: 'primary.main' }}
+            />
           )
         }
       />
@@ -455,17 +449,17 @@ const Ativos = () => {
                   <TableCell>{ativo.numeroTombamento}</TableCell>
                   <TableCell>{ativo.categoria}</TableCell>
                   <TableCell>
-                    <Chip label={ativo.status} color={STATUS_COLORS[ativo.status] || 'default'} size="small" />
+                    <StatusIcon {...getAtivoStatusMeta(ativo.status)} />
                   </TableCell>
                   <TableCell align="right">{formatCurrencyBRL(ativo.valorEstimado)}</TableCell>
                   <TableCell align="right">
-                    <IconButton
+                    <ActionButton
+                      title="Opções e Ações"
+                      ariaLabel="Ações"
+                      icon={<MoreVertIcon />}
                       size="small"
-                      aria-label="Ações"
                       onClick={(e) => setActionMenu({ anchorEl: e.currentTarget, ativo })}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -620,10 +614,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
-          <Button variant="contained" onClick={handleCreate} startIcon={<SaveIcon />}>
-            Salvar
-          </Button>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setCreateDialogOpen(false)} />
+          <ActionButton title="Salvar Ativo" icon={<SaveIcon />} color="primary" onClick={handleCreate} />
         </DialogActions>
       </Dialog>
 
@@ -659,10 +651,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setTransferDialogAtivo(null)} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
-          <Button variant="contained" onClick={handleTransferir} startIcon={<TransferIcon />}>
-            Transferir
-          </Button>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setTransferDialogAtivo(null)} />
+          <ActionButton title="Transferir Ativo" icon={<TransferIcon />} color="primary" onClick={handleTransferir} />
         </DialogActions>
       </Dialog>
 
@@ -735,10 +725,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeAlocarDialog} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
-          <Button variant="contained" onClick={handleAlocar} startIcon={<AllocateIcon />}>
-            Alocar
-          </Button>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={closeAlocarDialog} />
+          <ActionButton title="Alocar Ativo" icon={<AllocateIcon />} color="primary" onClick={handleAlocar} />
         </DialogActions>
       </Dialog>
 
@@ -783,10 +771,8 @@ const Ativos = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeManutencaoDialog} color="secondary" startIcon={<CloseIcon />}>Cancelar</Button>
-          <Button variant="contained" onClick={handleIniciarManutencao} startIcon={<BuildIcon />}>
-            Salvar
-          </Button>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={closeManutencaoDialog} />
+          <ActionButton title="Iniciar Manutenção" icon={<BuildIcon />} color="primary" onClick={handleIniciarManutencao} />
         </DialogActions>
       </Dialog>
 

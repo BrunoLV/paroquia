@@ -30,10 +30,20 @@ const theme = createTheme({
     error: {
       main: '#C62828', // Crimson Red
     },
+    success: {
+      main: '#2E7D32',
+    },
+    warning: {
+      main: '#ED6C02',
+    },
+    info: {
+      main: '#0288D1',
+    },
     background: {
       default: '#FFFDF4', // Cream / Light Yellow
       paper: '#FFFFFF', // White
     },
+    divider: 'rgba(0, 0, 0, 0.12)',
   },
   custom: {
     headerIconBg: 'rgba(26, 35, 126, 0.08)',
@@ -49,24 +59,42 @@ const theme = createTheme({
       'Inter',
       'sans-serif',
     ].join(','),
+    fontSize: 14,
     h1: {
       fontSize: scaledRem(2.5),
-      fontWeight: 500,
+      fontFamily: "'Merriweather', 'Georgia', serif",
+      fontWeight: 600,
+      color: '#1A237E',
     },
     h2: {
       fontSize: scaledRem(3.75),
+      fontFamily: "'Merriweather', 'Georgia', serif",
+      fontWeight: 600,
+      color: '#1A237E',
     },
     h3: {
       fontSize: scaledRem(3),
+      fontFamily: "'Merriweather', 'Georgia', serif",
+      fontWeight: 600,
+      color: '#1A237E',
     },
     h4: {
       fontSize: scaledRem(2.125),
+      fontFamily: "'Merriweather', 'Georgia', serif",
+      fontWeight: 600,
+      color: '#1A237E',
     },
     h5: {
       fontSize: scaledRem(1.5),
+      fontFamily: "'Merriweather', 'Georgia', serif",
+      fontWeight: 600,
+      color: '#1A237E',
     },
     h6: {
       fontSize: scaledRem(1.25),
+      fontFamily: "'Merriweather', 'Georgia', serif",
+      fontWeight: 600,
+      color: '#1A237E',
     },
     subtitle1: {
       fontSize: scaledRem(1),
@@ -95,8 +123,18 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
+          fontWeight: 600,
           borderRadius: '10px',
           padding: `${Math.round(6 * DENSITY_SCALE)}px ${Math.round(16 * DENSITY_SCALE)}px`,
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+          border: '1px solid rgba(0, 0, 0, 0.12)',
+          padding: `${Math.round(8 * DENSITY_SCALE)}px`,
         },
       },
     },
@@ -104,6 +142,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '10px',
+          fontSize: '0.875rem',
         },
         input: {
           padding: `${Math.round(16.5 * DENSITY_SCALE)}px ${Math.round(14 * DENSITY_SCALE)}px`,
@@ -123,12 +162,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '16px',
+          boxShadow: 'none',
+          border: '1px solid rgba(0, 0, 0, 0.12)',
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
-        root: {
+        rounded: {
           borderRadius: '16px',
         },
       },
@@ -174,6 +215,7 @@ const theme = createTheme({
         root: {
           borderTop: '1px solid rgba(0, 0, 0, 0.12)',
           padding: '16px 24px',
+          gap: `${Math.round(8 * DENSITY_SCALE)}px`,
         },
       },
     },

@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import {
     Alert,
     Box,
-    Button,
     Card,
     CardContent,
     Chip,
@@ -14,7 +13,6 @@ import {
     DialogTitle,
     FormControl,
     Grid,
-    IconButton,
     InputLabel,
     MenuItem,
     Select,
@@ -22,21 +20,25 @@ import {
 } from '@mui/material';
 import {
     Add as AddIcon,
+    Block as BlockIcon,
     Business as BusinessIcon,
     CalendarMonth as CalendarIcon,
     ChevronLeft,
     ChevronRight,
+    Close as CloseIcon,
     Description as DescriptionIcon,
     Download as DownloadIcon,
+    Edit as EditIcon,
     Event as EventIcon,
     FormatListBulleted as ListIcon,
     Groups as PeopleIcon,
     LocationOn as LocationIcon,
     Refresh as RefreshIcon,
     Schedule as ScheduleIcon,
+    Today as TodayIcon,
 } from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
-import apiClient from '../api/client';
+import { isGlobalCreator } from '../auth/permissions';
 import {useNotification} from '../context/NotificationContext';
 import CadastroEventoModal from '../components/CadastroEventoModal';
 import CancelarEventoDialog from '../components/CancelarEventoDialog';
@@ -45,7 +47,13 @@ import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
 import ObservacoesEvento from '../components/ObservacoesEvento';
 import AtivosAlocadosSection from '../components/AtivosAlocadosSection';
 import PageHeader from '../components/PageHeader';
+import ActionButton from '../components/ActionButton';
+import StatusIcon from '../components/StatusIcon';
+import { getEventoStatusMeta } from '../utils/statusMeta/eventoStatus';
+import { getCategoriaEventoMeta } from '../utils/statusMeta/categoriaEventoStatus';
 import theme from '../theme';
+import apiClient from '../api/client';
+import { extractErrorMessage } from '../utils/errorUtils';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
 import {fetchSolenidadesLiturgicasAtivas} from '../api/solenidades';
@@ -92,21 +100,6 @@ const getCategoryColor = (category: string) => {
       return { bg: '#e0f7fa', text: '#00838f', border: '#00bcd4' };
     default:
       return { bg: '#f5f5f5', text: '#616161', border: '#9e9e9e' };
-  }
-};
-
-const getStatusColor = (status: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
-  switch (status?.toUpperCase()) {
-    case 'CONFIRMADO':
-      return 'success';
-    case 'ADICIONADO_EXTRA':
-      return 'secondary';
-    case 'RASCUNHO':
-      return 'warning';
-    case 'CANCELADO':
-      return 'error';
-    default:
-      return 'default';
   }
 };
 
@@ -267,13 +260,13 @@ const Calendar = () => {
         // Apply organization filter
         if (selectedOrgFilter) {
           params.organizacaoIds = [selectedOrgFilter];
-        } else if (user && !(user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN'))) {
-          // Implicitly filter by user's organizations if none selected and not ADMIN
-          const userOrgIds = user.organizations.map(org => org.id);
+        } else if (user && !isGlobalCreator(user)) {
+          // Implicitly filter by user's organizations if none selected and not global creator
+          const userOrgIds = Array.isArray(user.organizations) ? user.organizations.map((org: { id: string }) => org.id) : [];
           if (userOrgIds.length > 0) {
             params.organizacaoIds = userOrgIds;
           } else {
-            // If user has no organizations and is not ADMIN, they shouldn't see events
+            // If user has no organizations and is not global creator, they shouldn't see events
             setEvents([]);
             return;
           }
@@ -368,7 +361,7 @@ const Calendar = () => {
       };
 
       await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), buscarAprovacoes(), fetchAnosParoquiais()]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching data:', err);
       const errMsg = 'Não foi possível carregar as informações do calendário.';
       showError(errMsg);
@@ -442,7 +435,7 @@ const Calendar = () => {
   };
 
   // Handle event submission (create or update)
-  const handleEventSubmit = async (data: any) => {
+  const handleEventSubmit = async (data: Record<string, unknown>) => {
     setIsSubmitting(true);
     try {
       if (editingEvent) {
@@ -494,18 +487,9 @@ const Calendar = () => {
 
       setIsCreateOpen(false);
       fetchData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Submit event error:', err);
-      let errorMsg = 'Erro ao processar evento. Verifique as regras de negócio.';
-      if (err.response?.data) {
-        const data = err.response.data;
-        if (Array.isArray(data.errors) && data.errors.length > 0) {
-          errorMsg = 'Por favor, corrija os seguintes erros:\n' + data.errors.map((e: any) => `• ${e.message || e.defaultMessage}`).join('\n');
-        } else if (data.message) {
-          errorMsg = data.message;
-        }
-      }
-      showError(errorMsg);
+      showError(extractErrorMessage(err, 'Erro ao processar evento. Verifique as regras de negócio.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -522,10 +506,9 @@ const Calendar = () => {
       setIsCancelOpen(false);
       setIsDetailsOpen(false);
       fetchData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Cancel event error:', err);
-      const errMsg = err.response?.data?.message || 'Erro ao cancelar evento.';
-      showError(errMsg);
+      showError(extractErrorMessage(err, 'Erro ao cancelar evento.'));
     } finally {
       setIsCancelling(false);
     }
@@ -658,33 +641,24 @@ const Calendar = () => {
         subtitle="Agendamento de eventos, celebrações e atividades pastorais da paróquia."
         actions={
           <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
-            <Button
-              variant="outlined"
+            <ActionButton
+              title="Solenidades & Santoral"
+              icon={<EventIcon />}
               color="secondary"
-              startIcon={<EventIcon />}
               onClick={() => setIsSolemnitiesOpen(true)}
-              sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
-            >
-              Solenidades & Santoral
-            </Button>
-            <Button
-              variant="outlined"
+            />
+            <ActionButton
+              title="Exportar"
+              icon={<DownloadIcon />}
               color="info"
-              startIcon={<DownloadIcon />}
               onClick={() => setIsExportOpen(true)}
-              sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
-            >
-              Exportar
-            </Button>
-            <Button
-              variant="contained"
+            />
+            <ActionButton
+              title="Novo Evento"
+              icon={<AddIcon />}
               color="primary"
-              startIcon={<AddIcon />}
               onClick={() => handleOpenCreate()}
-              sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
-            >
-              Novo Evento
-            </Button>
+            />
           </Box>
         }
       />
@@ -706,18 +680,12 @@ const Calendar = () => {
           <Grid container spacing={2} sx={{ alignItems: 'center' }}>
             {/* Top Line: Month Navigation (Left) & Action Buttons (Right) */}
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconButton onClick={handlePrevMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
-                <ChevronLeft />
-              </IconButton>
+              <ActionButton title="Mês Anterior" icon={<ChevronLeft />} onClick={handlePrevMonth} color="primary" />
               <Typography variant="h5" sx={{ minWidth: 150, textAlign: 'center', fontWeight: 600, color: '#37474f' }}>
                 {monthNames[currentMonth]} {currentYear}
               </Typography>
-              <IconButton onClick={handleNextMonth} color="primary" sx={{ border: '1px solid #e0e0e0' }}>
-                <ChevronRight />
-              </IconButton>
-              <Button variant="outlined" onClick={handleToday} sx={{ ml: 0.5, textTransform: 'none' }}>
-                Hoje
-              </Button>
+              <ActionButton title="Próximo Mês" icon={<ChevronRight />} onClick={handleNextMonth} color="primary" />
+              <ActionButton title="Ir para Mês Atual" icon={<TodayIcon />} onClick={handleToday} color="primary" sx={{ ml: 0.5 }} />
               <Chip
                 label={`Ano Litúrgico: ${liturgicalInfo.cycle}`}
                 color="primary"
@@ -737,24 +705,21 @@ const Calendar = () => {
 
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
               <Box sx={{ border: '1px solid #e0e0e0', overflow: 'hidden', display: 'flex' }}>
-                <IconButton
-                  color={viewMode === 'month' ? 'primary' : 'default'}
+                <ActionButton
+                  title="Visualização em Grade"
+                  ariaLabel="Mês"
+                  icon={<CalendarIcon />}
+                  color={viewMode === 'month' ? 'primary' : undefined}
                   onClick={() => setViewMode('month')}
-                  sx={{ bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
-                  title="Visualização Mensal"
-                  aria-label="Mês"
-                >
-                  <CalendarIcon />
-                </IconButton>
-                <IconButton
-                  color={viewMode === 'agenda' ? 'primary' : 'default'}
-                  onClick={() => setViewMode('agenda')}
-                  sx={{ bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
+                  sx={{ border: 'none', bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
+                />
+                <ActionButton
                   title="Visualização em Agenda"
-                  aria-label="Lista"
-                >
-                  <ListIcon />
-                </IconButton>
+                  icon={<ListIcon />}
+                  color={viewMode === 'agenda' ? 'primary' : undefined}
+                  onClick={() => setViewMode('agenda')}
+                  sx={{ border: 'none', bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
+                />
               </Box>
             </Grid>
 
@@ -800,9 +765,12 @@ const Calendar = () => {
                 </Select>
               </FormControl>
 
-              <IconButton onClick={fetchData} disabled={isLoading} title="Recarregar calendário" sx={{ border: '1px solid #e0e0e0' }}>
-                {isLoading ? <CircularProgress size={24} /> : <RefreshIcon />}
-              </IconButton>
+              <ActionButton
+                title="Recarregar dados do calendário"
+                icon={isLoading ? <CircularProgress size={24} /> : <RefreshIcon />}
+                onClick={fetchData}
+                disabled={isLoading}
+              />
             </Grid>
           </Grid>
         </CardContent>
@@ -1004,10 +972,10 @@ const Calendar = () => {
                         <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
                           {evt.descricao || 'Sem descrição.'}
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          <Chip size="small" label={evt.categoria} sx={{ bgcolor: styleColors.bg, color: styleColors.text, fontWeight: 600 }} />
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+                          <StatusIcon {...getCategoriaEventoMeta(evt.categoria)} />
                           <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId, evt.igrejaVinculoId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
-                          <Chip size="small" label={evt.status} color={getStatusColor(evt.status)} sx={{ fontWeight: 600 }} />
+                          <StatusIcon {...getEventoStatusMeta(evt.status)} sx={{ fontWeight: 600 }} />
                         </Box>
                       </Grid>
 
@@ -1036,7 +1004,7 @@ const Calendar = () => {
           <>
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               Detalhes do Evento
-              <Chip label={selectedEvent.status} color={getStatusColor(selectedEvent.status)} size="small" sx={{ fontWeight: 600 }} />
+              <StatusIcon {...getEventoStatusMeta(selectedEvent.status)} sx={{ fontWeight: 600 }} />
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -1175,31 +1143,15 @@ const Calendar = () => {
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setIsDetailsOpen(false)} color="secondary" sx={{ fontWeight: 600 }}>
-                Fechar
-              </Button>
+              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsDetailsOpen(false)} color="secondary" />
               {/* Editar/Cancelar ficam ocultos enquanto há uma solicitação pendente
                   para este evento (aprovacaoPendenteId) — evita empilhar uma segunda
                   solicitação de mudança sobre a mesma entidade antes que a primeira
                   seja decidida pelo aprovador. */}
               {selectedEvent.status !== 'CANCELADO' && !selectedEvent.aprovacaoPendenteId && canEditEvent(selectedEvent) && (
                 <>
-                  <Button 
-                    onClick={() => handleOpenCancel(selectedEvent)} 
-                    variant="outlined" 
-                    color="error" 
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Cancelar Evento
-                  </Button>
-                  <Button 
-                    onClick={() => handleOpenEdit(selectedEvent)} 
-                    variant="contained" 
-                    color="primary" 
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Editar Evento
-                  </Button>
+                  <ActionButton title="Cancelar Evento" icon={<BlockIcon />} onClick={() => handleOpenCancel(selectedEvent)} color="error" />
+                  <ActionButton title="Editar Evento" icon={<EditIcon />} onClick={() => handleOpenEdit(selectedEvent)} color="primary" />
                 </>
               )}
             </DialogActions>
@@ -1313,9 +1265,7 @@ const Calendar = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsSolemnitiesOpen(false)} variant="contained" color="primary">
-            Fechar
-          </Button>
+          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsSolemnitiesOpen(false)} color="primary" />
         </DialogActions>
       </Dialog>
     </Box>

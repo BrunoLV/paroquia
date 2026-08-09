@@ -1,7 +1,9 @@
 import React from 'react';
-import {Box, Chip, Grid, LinearProgress, Paper, Stack, Typography} from '@mui/material';
+import {Box, Chip, Grid, LinearProgress, Paper, Stack, Tooltip, Typography} from '@mui/material';
 import {AccessTime as TimeIcon, CalendarToday as EventIcon, Warning as WarningIcon} from '@mui/icons-material';
 import {ProjectDetail} from '../../api/types';
+import StatusIcon from '../StatusIcon';
+import {getProjetoStatusMeta, type ProjetoStatus} from '../../utils/statusMeta/projetoStatus';
 
 interface ActiveProjectsProgressListProps {
   projects: ProjectDetail[];
@@ -70,30 +72,15 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                   </Typography>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     {project.emRisco && (
-                      <Chip
-                        icon={<WarningIcon style={{ fontSize: 14, color: '#d32f2f' }} />}
-                        label="Em Risco"
-                        size="small"
-                        color="error"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: 11,
-                          animation: 'pulse 2s infinite',
-                          '@keyframes pulse': {
-                            '0%': { opacity: 0.8 },
-                            '50%': { opacity: 1 },
-                            '100%': { opacity: 0.8 },
-                          },
-                        }}
-                      />
+                      <Tooltip title="Projeto em risco: execução de eventos atrasada em relação ao tempo decorrido">
+                        <WarningIcon
+                          color="error"
+                          fontSize="small"
+                          sx={{ animation: 'pulse 2s infinite', '@keyframes pulse': { '0%': { opacity: 0.8 }, '50%': { opacity: 1 }, '100%': { opacity: 0.8 } } }}
+                        />
+                      </Tooltip>
                     )}
-                    <Chip
-                      label={project.status === 'EM_ANDAMENTO' ? 'Em Andamento' : 'Aberto'}
-                      size="small"
-                      variant="outlined"
-                      color={project.status === 'EM_ANDAMENTO' ? 'primary' : 'default'}
-                      sx={{ fontSize: 11, fontWeight: 500 }}
-                    />
+                    <StatusIcon {...getProjetoStatusMeta(project.status as ProjetoStatus)} />
                   </Stack>
                 </Box>
 

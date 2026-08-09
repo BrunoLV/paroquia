@@ -17,6 +17,7 @@ import {DashboardMetrics, Evento, Local, Organizacao, Projeto} from '../api/type
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {getDashboardMetrics} from '../api/dashboard';
 import PageHeader from '../components/PageHeader';
+import {extractErrorMessage} from '../utils/errorUtils';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -91,7 +92,7 @@ const Dashboard = () => {
         const nextMonth = new Date();
         nextMonth.setDate(now.getDate() + 30);
 
-        const params: any = {
+        const params: Record<string, unknown> = {
           dataInicio: now.toISOString(),
           dataFim: nextMonth.toISOString(),
           size: 5,
@@ -108,22 +109,23 @@ const Dashboard = () => {
           }
         }
 
-        const eventsRes = await apiClient.get<any>('/eventos', {
+        const eventsRes = await apiClient.get<{ content?: Evento[] } | Evento[]>('/eventos', {
           params,
           paramsSerializer: {
             indexes: null
           }
         });
 
-        if (eventsRes.data && Array.isArray(eventsRes.data.content)) {
-          setEvents(eventsRes.data.content);
-        } else if (Array.isArray(eventsRes.data)) {
-          setEvents(eventsRes.data);
+        const resData = eventsRes.data;
+        if (resData && !Array.isArray(resData) && Array.isArray(resData.content)) {
+          setEvents(resData.content);
+        } else if (Array.isArray(resData)) {
+          setEvents(resData);
         }
       };
 
       await Promise.all([fetchOrgs(), fetchLocais(), fetchProjetos(), fetchEvents()]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching dashboard metadata:', err);
       setError('Não foi possível carregar os dados do dashboard.');
     } finally {
@@ -136,7 +138,7 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const handleCreateEvent = async (data: any) => {
+  const handleCreateEvent = async (data: Record<string, unknown>) => {
     setIsSubmitting(true);
     try {
       const { recurrence, ...eventBaseData } = data;
@@ -164,8 +166,8 @@ const Dashboard = () => {
       // Invalidate dashboard metrics cache & reload metadata
       queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
       fetchData();
-    } catch (err: any) {
-      showError(err.response?.data?.message || 'Erro ao criar evento.');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao criar evento.'));
     } finally {
       setIsSubmitting(false);
     }

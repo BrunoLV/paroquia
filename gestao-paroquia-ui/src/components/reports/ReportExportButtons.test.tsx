@@ -44,7 +44,7 @@ describe('ReportExportButtons', () => {
 
     const csvButton = screen.getByRole('button', { name: /exportar csv/i });
     const pdfButton = screen.getByRole('button', { name: /exportar pdf/i });
-    expect(csvButton.className).toContain('MuiButton-colorInfo');
-    expect(pdfButton.className).toContain('MuiButton-colorInfo');
+    expect(csvButton.className).toContain('MuiIconButton-colorInfo');
+    expect(pdfButton.className).toContain('MuiIconButton-colorInfo');
   });
 });

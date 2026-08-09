@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {
     Box,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -17,6 +16,7 @@ import {
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {Local} from '../api/types';
 import {getOrganizacoes} from '../api/organizacoes';
+import ActionButton from '../components/ActionButton';
 
 interface LocalFormModalProps {
   open: boolean;
@@ -199,25 +199,14 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={onClose}
-            disabled={isPending}
-            color="secondary"
-            startIcon={<CloseIcon />}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            Cancelar
-          </Button>
-          <Button
+          <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} disabled={isPending} color="secondary" />
+          <ActionButton
+            title={local ? 'Salvar Alterações' : 'Salvar'}
+            icon={<SaveIcon />}
             type="submit"
-            variant="contained"
             color="primary"
-            startIcon={<SaveIcon />}
             disabled={isPending}
-            sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
-          >
-            {local ? 'Salvar Alterações' : 'Salvar'}
-          </Button>
+          />
         </DialogActions>
       </form>
     </Dialog>

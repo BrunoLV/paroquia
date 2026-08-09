@@ -106,7 +106,7 @@ test('renders calendar controls', async () => {
   await renderCalendar();
 
   expect(screen.getByRole('button', { name: /Novo Evento/i })).toBeInTheDocument();
-  expect(screen.getByText(/Hoje/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Ir para Mês Atual/i })).toBeInTheDocument();
 });
 
 test('loads events and displays them in the monthly grid', async () => {
@@ -160,7 +160,7 @@ test('restricts organization filter and events for non-ADMIN users', async () =>
 test('can switch to agenda list view', async () => {
   await renderCalendar();
 
-  const agendaButton = screen.getByTitle('Visualização em Agenda');
+  const agendaButton = screen.getByRole('button', { name: /Visualização em Agenda/i });
   await act(async () => {
     fireEvent.click(agendaButton);
   });
@@ -240,7 +240,7 @@ test('opens and submits event creation form', async () => {
   fireEvent.change(titleInput, { target: { value: 'Novo Evento Teste' } });
 
   // Select first organization from dropdown - mockOrgs has Pastoral da Juventude
-  const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+  const submitButton = screen.getByRole('button', { name: /Salvar/i });
 
   await act(async () => {
     fireEvent.click(submitButton);
@@ -342,14 +342,14 @@ test('shows error notification when calendar data fetch fails', async () => {
 test('toggles calendar view between Grid and List mode', async () => {
   await renderCalendar();
 
-  const listBtn = screen.getByRole('button', { name: /Lista/i });
+  const listBtn = screen.getByRole('button', { name: /Visualização em Agenda/i });
   await act(async () => {
     fireEvent.click(listBtn);
   });
 
   expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
 
-  const gridBtn = screen.getByRole('button', { name: /Mês/i });
+  const gridBtn = screen.getByRole('button', { name: /^Mês$/i });
   await act(async () => {
     fireEvent.click(gridBtn);
   });
@@ -383,7 +383,7 @@ test('renders Solenidades and Exportar buttons with their semantic icon/color', 
   const solemnitiesButton = screen.getByRole('button', { name: /Solenidades & Santoral/i });
   const exportButton = screen.getByRole('button', { name: /^Exportar$/i });
   expect(solemnitiesButton.querySelector('[data-testid="EventIcon"]')).toBeInTheDocument();
-  expect(exportButton.className).toContain('MuiButton-colorInfo');
+  expect(exportButton.className).toContain('MuiIconButton-colorInfo');
 });
 
 test('opens solemnities dialog when clicking Solenidades & Santoral button', async () => {

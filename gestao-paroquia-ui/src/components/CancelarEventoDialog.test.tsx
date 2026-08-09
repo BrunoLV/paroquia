@@ -33,33 +33,33 @@ describe('CancelarEventoDialog', () => {
 
   it('calls onClose when clicking "Voltar"', () => {
     render(<CancelarEventoDialog {...defaultProps} />);
-    fireEvent.click(screen.getByText(/Voltar/i));
+    fireEvent.click(screen.getByRole('button', { name: /Voltar/i }));
     expect(mockOnClose).toHaveBeenCalled();
   });
 
   it('shows error and does not call onConfirm if reason is empty', () => {
     render(<CancelarEventoDialog {...defaultProps} />);
-    fireEvent.click(screen.getByText(/Confirmar Cancelamento/i));
+    fireEvent.click(screen.getByRole('button', { name: /Confirmar Cancelamento/i }));
     
-    expect(mockShowError).toHaveBeenCalledWith('O motivo do cancelamento é obrigatório.');
+    expect(mockShowError).toHaveBeenCalledWith('A justificativa de cancelamento é obrigatória.');
     expect(mockOnConfirm).not.toHaveBeenCalled();
   });
 
   it('calls onConfirm with reason when filled', () => {
     render(<CancelarEventoDialog {...defaultProps} />);
     
-    const input = screen.getByLabelText(/Motivo do Cancelamento/i);
-    fireEvent.change(input, { target: { value: 'Imprevisto' } });
+    const input = screen.getByLabelText(/Justificativa de Cancelamento/i);
+    fireEvent.change(input, { target: { value: 'Imprevisto na paróquia' } });
     
-    fireEvent.submit(screen.getByRole('button', { name: /Confirmar Cancelamento/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirmar Cancelamento/i }));
     
-    expect(mockOnConfirm).toHaveBeenCalledWith('Imprevisto');
+    expect(mockOnConfirm).toHaveBeenCalledWith('Imprevisto na paróquia');
   });
 
   it('disables buttons when isSubmitting is true', () => {
     render(<CancelarEventoDialog {...defaultProps} isSubmitting={true} />);
-    expect(screen.getByText(/Voltar/i)).toBeDisabled();
-    expect(screen.getByText(/Cancelando.../i)).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Voltar/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Confirmar Cancelamento/i })).toBeDisabled();
   });
 
   it('renders Voltar and Confirmar Cancelamento buttons with their semantic icons', () => {

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
     Box,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -19,6 +18,7 @@ import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {Organizacao, PastoralMovimentoOficial} from '../api/types';
 import {Usuario} from '../api/usuarios';
 import {getOrganizacaoMembros} from '../api/organizacoes';
+import ActionButton from '../components/ActionButton';
 
 interface OrganizacaoFormModalProps {
   open: boolean;
@@ -314,25 +314,14 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={onClose}
-            disabled={isPending}
-            color="secondary"
-            startIcon={<CloseIcon />}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            Cancelar
-          </Button>
-          <Button
+          <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} disabled={isPending} color="secondary" />
+          <ActionButton
+            title={organizacao ? 'Salvar Alterações' : 'Salvar'}
+            icon={<SaveIcon />}
             type="submit"
-            variant="contained"
             color="primary"
-            startIcon={<SaveIcon />}
             disabled={isPending}
-            sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
-          >
-            {organizacao ? 'Salvar Alterações' : 'Salvar'}
-          </Button>
+          />
         </DialogActions>
       </form>
     </Dialog>

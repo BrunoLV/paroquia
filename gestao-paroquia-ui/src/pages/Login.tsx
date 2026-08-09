@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Button,
+  CircularProgress,
   Container,
   Paper,
   TextField,
@@ -10,6 +10,10 @@ import {
 import { useAuth } from '../auth/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
+import { extractErrorMessage } from '../utils/errorUtils';
+import ActionButton from '../components/ActionButton';
+
+import LoginIcon from '@mui/icons-material/Login';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -40,9 +44,8 @@ const Login = () => {
     try {
       await login(username, password);
       navigate(from, { replace: true });
-    } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'Falha ao entrar. Verifique suas credenciais.';
-      showError(errMsg);
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Falha ao entrar. Verifique suas credenciais.'));
     } finally {
       setIsLoading(false);
     }
@@ -111,15 +114,17 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <Button
+              <ActionButton
+                title="Entrar no sistema"
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                color="primary"
+                icon={isLoading ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
+                label={isLoading ? 'Entrando...' : 'Entrar'}
+                sx={{ mt: 3, mb: 2, fontWeight: 600, py: 1.2, textTransform: 'none' }}
                 disabled={isLoading}
-              >
-                {isLoading ? 'Entrando...' : 'Entrar'}
-              </Button>
+              />
             </Box>
           </Paper>
         </Box>

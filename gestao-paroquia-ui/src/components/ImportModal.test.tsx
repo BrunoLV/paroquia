@@ -81,7 +81,7 @@ describe('ImportModal', () => {
     renderModal(<ImportModal open={true} onClose={mockOnClose} />);
 
     const file = new File(['nomeCompleto\nMaria'], 'membros.csv', { type: 'text/csv' });
-    const fileInput = screen.getByLabelText(/Selecionar Arquivo/i);
+    const fileInput = screen.getByLabelText('Selecionar Arquivo');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     const validateButton = screen.getByRole('button', { name: /Validar Arquivo/i });
@@ -108,7 +108,7 @@ describe('ImportModal', () => {
     renderModal(<ImportModal open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
 
     const file = new File(['nomeCompleto\nJoão'], 'membros.csv', { type: 'text/csv' });
-    const fileInput = screen.getByLabelText(/Selecionar Arquivo/i);
+    const fileInput = screen.getByLabelText('Selecionar Arquivo');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     fireEvent.click(screen.getByRole('button', { name: /Validar Arquivo/i }));

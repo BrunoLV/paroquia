@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,6 +14,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
 import { Organizacao } from '../api/types';
+import ActionButton from './ActionButton';
 
 interface CpcDecisaoModalProps {
   open: boolean;
@@ -129,25 +129,20 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button
+          <ActionButton
+            title="Cancelar"
+            icon={<CloseIcon />}
             onClick={onClose}
             disabled={isSubmitting}
             color="secondary"
-            startIcon={<CloseIcon />}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            Cancelar
-          </Button>
-          <Button
+          />
+          <ActionButton
+            title="Submeter Ata para Homologação"
+            icon={<SendIcon />}
             type="submit"
-            variant="contained"
             color="primary"
-            startIcon={<SendIcon />}
             disabled={isSubmitting}
-            sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
-          >
-            Submeter Ata para Homologação
-          </Button>
+          />
         </DialogActions>
       </form>
     </Dialog>

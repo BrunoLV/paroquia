@@ -1,7 +1,8 @@
 import React from 'react';
-import {Button, Paper, Stack, Typography} from '@mui/material';
-import {Add as AddIcon, CalendarMonth as CalendarIcon} from '@mui/icons-material';
-import {useNavigate} from 'react-router-dom';
+import { Paper, Stack, Typography } from '@mui/material';
+import { Add as AddIcon, CalendarMonth as CalendarIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import ActionButton from '../ActionButton';
 
 interface QuickActionsProps {
   onNewEvent?: () => void;
@@ -15,25 +16,21 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Ações Rápidas
       </Typography>
-      <Stack spacing={2}>
-        <Button
-          variant="contained"
-          fullWidth
-          startIcon={<AddIcon />}
-          sx={{ textTransform: 'none', py: 1 }}
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-start' }}>
+        <ActionButton
+          title="Novo Evento"
+          icon={<AddIcon />}
+          color="primary"
+          sx={{ border: '1px solid', borderColor: 'primary.main' }}
           onClick={onNewEvent}
-        >
-          Novo Evento
-        </Button>
-        <Button
-          variant="outlined"
-          fullWidth
-          startIcon={<CalendarIcon />}
-          sx={{ textTransform: 'none', py: 1 }}
+        />
+        <ActionButton
+          title="Ver Calendário"
+          icon={<CalendarIcon />}
+          color="primary"
+          sx={{ border: '1px solid', borderColor: 'primary.main' }}
           onClick={() => navigate('/calendar')}
-        >
-          Ver Calendário
-        </Button>
+        />
       </Stack>
     </Paper>
   );

@@ -3,10 +3,9 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {
     Alert,
     Box,
-    Button,
     Card,
     Checkbox,
-    Chip,
+    CircularProgress,
     Container,
     Dialog,
     DialogActions,
@@ -76,12 +75,21 @@ import {
 } from '../api/pastoraisOficiais';
 import {AnoParoquialStatus, Local, Organizacao, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
+import {extractErrorMessage} from '../utils/errorUtils';
 import {useAuth} from '../auth/AuthContext';
 import {canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin} from '../auth/permissions';
 import LocalFormModal from './LocalFormModal';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
 import ImportModal from '../components/ImportModal';
 import PageHeader from '../components/PageHeader';
+import StatusIcon from '../components/StatusIcon';
+import SacramentoIcon from '../components/SacramentoIcon';
+import ActionButton from '../components/ActionButton';
+import { getAnoParoquialStatusMeta } from '../utils/statusMeta/anoParoquialStatus';
+import { SACRAMENTO_META } from '../utils/statusMeta/sacramentos';
+import { getLocalTipoMeta } from '../utils/statusMeta/localTipoStatus';
+import { getOrganismoTipoMeta } from '../utils/statusMeta/organismoTipoStatus';
+import { getSituacaoAtivoMeta, getUsuarioSituacaoMeta } from '../utils/statusMeta/situacaoStatus';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -177,10 +185,9 @@ const Settings = () => {
       setConfirmOpen(false);
       setSelectedYear(null);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Error updating parish year:', error);
-      const errMsg = error.response?.data?.message || 'Erro ao atualizar o ano paroquial.';
-      showError(errMsg);
+      showError(extractErrorMessage(error, 'Erro ao atualizar o ano paroquial.'));
       setConfirmOpen(false);
       setSelectedYear(null);
     },
@@ -199,9 +206,8 @@ const Settings = () => {
       showSuccess('Local cadastrado com sucesso!');
       setModalOpen(false);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao cadastrar local.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao cadastrar local.'));
     },
   });
 
@@ -213,9 +219,8 @@ const Settings = () => {
       setModalOpen(false);
       setSelectedLocal(null);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao atualizar local.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao atualizar local.'));
     },
   });
 
@@ -232,9 +237,8 @@ const Settings = () => {
       queryClient.invalidateQueries({ queryKey: ['locais'] });
       showSuccess(`Local ${local.ativo ? 'inativado' : 'ativado'} com sucesso!`);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao alterar status do local.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao alterar status do local.'));
     },
   });
 
@@ -258,9 +262,8 @@ const Settings = () => {
       queryClient.invalidateQueries({ queryKey: ['usuarios'] });
       showSuccess('Usuário aprovado com sucesso!');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao aprovar usuário.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao aprovar usuário.'));
     },
   });
 
@@ -280,9 +283,8 @@ const Settings = () => {
       setNewVinculoPapel('');
       setNewVinculoChurchId('');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao adicionar vínculo.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao adicionar vínculo.'));
     },
   });
 
@@ -293,9 +295,8 @@ const Settings = () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
       showSuccess('Vínculo removido com sucesso!');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao remover vínculo.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao remover vínculo.'));
     },
   });
 
@@ -317,9 +318,8 @@ const Settings = () => {
       setNovoMembroOrgPapel('');
       setNovoMembroOrgIgrejaId('');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao vincular membro.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao vincular membro.'));
     },
   });
 
@@ -332,9 +332,8 @@ const Settings = () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
       showSuccess('Membro removido com sucesso!');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao remover membro.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao remover membro.'));
     },
   });
 
@@ -354,9 +353,8 @@ const Settings = () => {
       setAdminRegisterUsername('');
       setAdminRegisterPassword('');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao cadastrar usuário.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao cadastrar usuário.'));
     },
   });
 
@@ -384,9 +382,8 @@ const Settings = () => {
       showSuccess('Tipo oficial cadastrado com sucesso!');
       setPoModalOpen(false);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao cadastrar tipo oficial.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao cadastrar tipo oficial.'));
     },
   });
 
@@ -399,9 +396,8 @@ const Settings = () => {
       setPoModalOpen(false);
       setSelectedPO(null);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao atualizar tipo oficial.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao atualizar tipo oficial.'));
     },
   });
 
@@ -411,9 +407,8 @@ const Settings = () => {
       queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
       showSuccess('Tipo oficial excluído com sucesso!');
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao excluir tipo oficial.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao excluir tipo oficial.'));
     },
   });
 
@@ -456,9 +451,8 @@ const Settings = () => {
       showSuccess('Pastoral / Movimento cadastrado com sucesso!');
       setOrgModalOpen(false);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao cadastrar pastoral/movimento.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao cadastrar pastoral/movimento.'));
     },
   });
 
@@ -474,9 +468,8 @@ const Settings = () => {
       setOrgModalOpen(false);
       setSelectedOrg(null);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao atualizar pastoral/movimento.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao atualizar pastoral/movimento.'));
     },
   });
 
@@ -489,26 +482,10 @@ const Settings = () => {
       queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
       showSuccess(`Pastoral / Movimento ${org.ativo ? 'inativado' : 'ativado'} com sucesso!`);
     },
-    onError: (error: any) => {
-      const errMsg = error.response?.data?.message || 'Erro ao alterar status da pastoral/movimento.';
-      showError(errMsg);
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao alterar status da pastoral/movimento.'));
     },
   });
-
-  const getTipoLabel = (tipo: string) => {
-    switch (tipo) {
-      case 'IGREJA':
-        return 'Igreja';
-      case 'SALAO':
-        return 'Salão';
-      case 'SALA':
-        return 'Sala';
-      case 'OUTRO':
-        return 'Outro';
-      default:
-        return tipo;
-    }
-  };
 
   const getOrgTipoLabel = (tipo: string) => {
     switch (tipo) {
@@ -558,19 +535,6 @@ const Settings = () => {
     }
   };
 
-  const getStatusLabel = (status: AnoParoquialStatus) => {
-    switch (status) {
-      case 'EM_PLANEJAMENTO':
-        return 'Planejamento Aberto';
-      case 'FECHADO':
-        return 'Planejamento Fechado (Trava)';
-      case 'CONCLUIDO':
-        return 'Concluído';
-      default:
-        return status;
-    }
-  };
-
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
     return new Date(dateStr).toLocaleString('pt-BR');
@@ -583,15 +547,12 @@ const Settings = () => {
         title="Configurações do Sistema"
         subtitle="Gerencie os parâmetros globais do sistema, como o calendário paroquial, os locais físicos e pastorais."
         actions={isAdmin(user) && (
-          <Button
-            variant="outlined"
+          <ActionButton
+            title="Importar em Lote (CSV/Excel)"
+            icon={<UploadIcon />}
             color="primary"
-            startIcon={<UploadIcon />}
             onClick={() => setIsImportModalOpen(true)}
-            sx={{ textTransform: 'none', fontWeight: 600, px: 2.5, py: 1 }}
-          >
-            Importar em Lote (CSV/Excel)
-          </Button>
+          />
         )}
       />
 
@@ -659,7 +620,7 @@ const Settings = () => {
                       return (
                         <TableRow key={y.ano}>
                           <TableCell>{y.ano}</TableCell>
-                          <TableCell>{getStatusLabel(y.status)}</TableCell>
+                          <TableCell><StatusIcon {...getAnoParoquialStatusMeta(y.status)} /></TableCell>
                           <TableCell>{formatDate(y.dataFechamentoUtc)}</TableCell>
                           <TableCell>{formatDate(y.updatedAt)}</TableCell>
                           {isAuthorizedAno && (
@@ -667,41 +628,33 @@ const Settings = () => {
                               {!isConcluido && (
                                 <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
                                   {y.status === 'EM_PLANEJAMENTO' && (
-                                    <Button
-                                      variant="outlined"
+                                    <ActionButton
+                                      title="Fechar"
+                                      icon={<LockIcon />}
                                       color="primary"
                                       size="small"
-                                      startIcon={<LockIcon />}
                                       onClick={() => handleClosePlanejamento(y.ano)}
                                       disabled={updateMutation.isPending || hasUnconcludedPriorYear}
-                                      title={hasUnconcludedPriorYear ? "O ano anterior precisa estar concluído." : undefined}
-                                    >
-                                      Fechar
-                                    </Button>
+                                    />
                                   )}
                                   {y.status === 'FECHADO' && (
-                                    <Button
-                                      variant="outlined"
+                                    <ActionButton
+                                      title="Reabrir"
+                                      icon={<LockOpenIcon />}
                                       color="primary"
                                       size="small"
-                                      startIcon={<LockOpenIcon />}
                                       onClick={() => handleReopenPlanejamento(y.ano)}
                                       disabled={updateMutation.isPending}
-                                    >
-                                      Reabrir
-                                    </Button>
+                                    />
                                   )}
-                                  <Button
-                                    variant="contained"
+                                  <ActionButton
+                                    title="Concluir"
+                                    icon={<CheckCircleIcon />}
                                     color="error"
                                     size="small"
-                                    startIcon={<CheckCircleIcon />}
                                     onClick={() => handleConcludeClick(y.ano)}
                                     disabled={updateMutation.isPending || hasUnconcludedPriorYear}
-                                    title={hasUnconcludedPriorYear ? "O ano anterior precisa estar concluído." : undefined}
-                                  >
-                                    Concluir
-                                  </Button>
+                                  />
                                 </Box>
                               )}
                               {isConcluido && <Typography color="textSecondary" variant="body2">-</Typography>}
@@ -747,18 +700,15 @@ const Settings = () => {
                   </Box>
                 </Box>
                 {isAuthorizedLocais && (
-                  <Button
-                    variant="contained"
+                  <ActionButton
+                    title="Novo Local"
+                    icon={<AddIcon />}
                     color="primary"
-                    startIcon={<AddIcon />}
                     onClick={() => {
                       setSelectedLocal(null);
                       setModalOpen(true);
                     }}
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Novo Local
-                  </Button>
+                  />
                 )}
               </Box>
 
@@ -779,53 +729,35 @@ const Settings = () => {
                     {locais.map((local) => (
                       <TableRow key={local.id}>
                         <TableCell sx={{ fontWeight: 500 }}>{local.nome}</TableCell>
-                        <TableCell>{getTipoLabel(local.tipo)}</TableCell>
+                        <TableCell><StatusIcon {...getLocalTipoMeta(local.tipo)} /></TableCell>
                         <TableCell>{local.capacidade !== null ? local.capacidade : '-'}</TableCell>
                         <TableCell>{local.organizacaoNome || '-'}</TableCell>
                         <TableCell>{local.endereco || '-'}</TableCell>
                         <TableCell>
-                          <Box
-                            sx={{
-                              display: 'inline-block',
-                              px: 1,
-                              py: 0.5,
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              color: local.ativo ? '#2e7d32' : '#c62828',
-                              bgcolor: local.ativo ? '#e8f5e9' : '#ffebee',
-                            }}
-                          >
-                            {local.ativo ? 'Ativo' : 'Inativo'}
-                          </Box>
+                          <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
                         </TableCell>
                         {isAuthorizedLocais && (
                           <TableCell align="right">
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              <Button
-                                variant="outlined"
+                              <ActionButton
+                                title="Editar"
+                                icon={<EditIcon />}
                                 color="secondary"
                                 size="small"
-                                startIcon={<EditIcon />}
                                 onClick={() => {
                                   setSelectedLocal(local);
                                   setModalOpen(true);
                                 }}
                                 disabled={toggleLocalStatusMutation.isPending}
-
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                variant="outlined"
+                              />
+                              <ActionButton
+                                title={local.ativo ? 'Inativar' : 'Ativar'}
+                                icon={local.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
                                 color={local.ativo ? 'error' : 'primary'}
                                 size="small"
-                                startIcon={local.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
                                 onClick={() => toggleLocalStatusMutation.mutate(local)}
                                 disabled={toggleLocalStatusMutation.isPending}
-
-                              >
-                                {local.ativo ? 'Inativar' : 'Ativar'}
-                              </Button>
+                              />
                             </Box>
                           </TableCell>
                         )}
@@ -880,7 +812,7 @@ const Settings = () => {
                 sx={{
                   p: 2,
                   mb: 1,
-                  
+
                   border: '1px solid',
                   borderColor: 'divider',
                   backgroundColor: '#fafafa',
@@ -896,18 +828,15 @@ const Settings = () => {
                     sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { bgcolor: '#fff' } }}
                   />
                   {isAuthorizedOrgs && (
-                    <Button
-                      variant="contained"
+                    <ActionButton
+                      title="Nova Pastoral / Movimento"
+                      icon={<AddIcon />}
                       color="primary"
-                      startIcon={<AddIcon />}
                       onClick={() => {
                         setSelectedOrg(null);
                         setOrgModalOpen(true);
                       }}
-                      sx={{ fontWeight: 600 }}
-                    >
-                      Nova Pastoral / Movimento
-                    </Button>
+                    />
                   )}
                 </Box>
               </Card>
@@ -929,67 +858,46 @@ const Settings = () => {
                     {filteredOrgs.map((org) => (
                       <TableRow key={org.id}>
                         <TableCell sx={{ fontWeight: 500 }}>{org.nome}</TableCell>
-                        <TableCell>{getOrgTipoLabel(org.tipo)}</TableCell>
+                        <TableCell><StatusIcon {...getOrganismoTipoMeta(org.tipo)} /></TableCell>
                         <TableCell>{org.coordenador || '-'}</TableCell>
                         <TableCell>{org.viceCoordenador || '-'}</TableCell>
                         <TableCell>{org.contato || '-'}</TableCell>
                         <TableCell>
-                          <Box
-                            sx={{
-                              display: 'inline-block',
-                              px: 1,
-                              py: 0.5,
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              color: org.ativo ? '#2e7d32' : '#c62828',
-                              bgcolor: org.ativo ? '#e8f5e9' : '#ffebee',
-                            }}
-                          >
-                            {org.ativo ? 'Ativo' : 'Inativo'}
-                          </Box>
+                          <StatusIcon {...getSituacaoAtivoMeta(org.ativo)} />
                         </TableCell>
                         <TableCell align="right">
                           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                            <Button
-                              variant="outlined"
+                            <ActionButton
+                              title="Membros"
+                              icon={<GroupsIcon />}
                               color="secondary"
                               size="small"
-                              startIcon={<GroupsIcon />}
                               onClick={() => {
                                 setOrganizacaoSelecionadaParaMembros(org);
                                 setIsModalMembrosOrgAberto(true);
                               }}
-
-                            >
-                              Membros
-                            </Button>
+                            />
                             {isAuthorizedOrgs && (
                               <>
-                                <Button
-                                  variant="outlined"
+                                <ActionButton
+                                  title="Editar"
+                                  icon={<EditIcon />}
                                   color="secondary"
                                   size="small"
-                                  startIcon={<EditIcon />}
                                   onClick={() => {
                                     setSelectedOrg(org);
                                     setOrgModalOpen(true);
                                   }}
                                   disabled={toggleOrgStatusMutation.isPending}
-
-                                >
-                                  Editar
-                                </Button>
-                                <Button
-                                  variant="outlined"
+                                />
+                                <ActionButton
+                                  title={org.ativo ? 'Inativar' : 'Ativar'}
+                                  icon={org.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
                                   color={org.ativo ? 'error' : 'primary'}
                                   size="small"
-                                  startIcon={org.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
                                   onClick={() => toggleOrgStatusMutation.mutate(org)}
                                   disabled={toggleOrgStatusMutation.isPending}
-
-                                >
-                                  {org.ativo ? 'Inativar' : 'Ativar'}
-                                </Button>
+                                />
                               </>
                             )}
                           </Box>
@@ -1040,15 +948,12 @@ const Settings = () => {
                   </Box>
                 </Box>
                 {user && user.roles.some(r => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
-                  <Button
-                    variant="contained"
+                  <ActionButton
+                    title="Cadastrar Usuário"
+                    icon={<AddIcon />}
                     color="primary"
-                    startIcon={<AddIcon />}
                     onClick={() => setIsAdminRegisterModalOpen(true)}
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Cadastrar Usuário
-                  </Button>
+                  />
                 )}
               </Box>
                 <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
@@ -1074,58 +979,40 @@ const Settings = () => {
                           <TableCell>{u.telefone || '-'}</TableCell>
                           <TableCell>{u.dataNascimento || '-'}</TableCell>
                           <TableCell>
-                            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                              {u.batizado && <Chip label="Batismo" size="small" color="info" variant="outlined" />}
-                              {u.primeiraComunhao && <Chip label="1ª Comunhão" size="small" color="success" variant="outlined" />}
-                              {u.crismado && <Chip label="Crisma" size="small" color="secondary" variant="outlined" />}
-                              {u.casadoIgrejaCatolica && <Chip label="Matrimônio" size="small" color="warning" variant="outlined" />}
+                            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                              {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
+                              {u.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="success" />}
+                              {u.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
+                              {u.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
                               {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
                             </Box>
                           </TableCell>
 
                           <TableCell>
-                            <Box
-                              sx={{
-                                display: 'inline-block',
-                                px: 1,
-                                py: 0.5,
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                color: u.enabled ? '#2e7d32' : '#ed6c02',
-                                bgcolor: u.enabled ? '#e8f5e9' : '#fff3e0',
-                              }}
-                            >
-                              {u.enabled ? 'Ativo' : 'Pendente'}
-                            </Box>
+                            <StatusIcon {...getUsuarioSituacaoMeta(u.enabled)} />
                           </TableCell>
                           <TableCell align="right">
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                               {!u.enabled && (
-                                <Button
-                                  variant="contained"
+                                <ActionButton
+                                  title="Aprovar"
+                                  icon={<CheckCircleIcon />}
                                   color="success"
                                   size="small"
-                                  startIcon={<CheckCircleIcon />}
                                   onClick={() => approveUserMutation.mutate(u.id)}
                                   disabled={approveUserMutation.isPending}
-                                  sx={{ fontWeight: 600 }}
-                                >
-                                  Aprovar
-                                </Button>
+                                />
                               )}
-                              <Button
-                                variant="outlined"
+                              <ActionButton
+                                title="Gerenciar Vínculos"
+                                icon={<LinkIcon />}
                                 color="secondary"
                                 size="small"
-                                startIcon={<LinkIcon />}
                                 onClick={() => {
                                   setSelectedUserForVinculos(u);
                                   setIsVinculosModalOpen(true);
                                 }}
-
-                              >
-                                Gerenciar Vínculos
-                              </Button>
+                              />
                             </Box>
                           </TableCell>
                         </TableRow>
@@ -1174,15 +1061,12 @@ const Settings = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  <Button
-                    variant="contained"
+                  <ActionButton
+                    title="Novo Tipo"
+                    icon={<AddIcon />}
                     color="primary"
-                    startIcon={<AddIcon />}
                     onClick={handleCreatePO}
-                    sx={{ fontWeight: 600 }}
-                  >
-                    Novo Tipo
-                  </Button>
+                  />
                 </Box>
 
                 <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
@@ -1201,31 +1085,25 @@ const Settings = () => {
                           <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
                           <TableCell align="right">
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              <Button
-                                variant="outlined"
+                              <ActionButton
+                                title="Editar"
+                                icon={<EditIcon />}
                                 color="secondary"
                                 size="small"
-                                startIcon={<EditIcon />}
                                 onClick={() => handleEditPO(po)}
-
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                variant="outlined"
+                              />
+                              <ActionButton
+                                title="Excluir"
+                                icon={<DeleteIcon />}
                                 color="error"
                                 size="small"
-                                startIcon={<DeleteIcon />}
                                 onClick={() => {
                                   if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
                                     deletePOMutation.mutate(po.id);
                                   }
                                 }}
                                 disabled={deletePOMutation.isPending}
-
-                              >
-                                Excluir
-                              </Button>
+                              />
                             </Box>
                           </TableCell>
                         </TableRow>
@@ -1290,21 +1168,18 @@ const Settings = () => {
                       <TableRow key={m.id}>
                         <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome || orgs.find((o) => o.id === m.organizacaoId)?.nome || '-'}</TableCell>
                         <TableCell>{m.igrejaVinculoNome || orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
-                        <TableCell>{getOrgTipoLabel(m.tipoOrganizacao)}</TableCell>
+                        <TableCell><StatusIcon {...getOrganismoTipoMeta(m.tipoOrganizacao)} /></TableCell>
                         <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
-                        <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
+                        <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
                         <TableCell align="right">
-                          <Button
-                            variant="text"
+                          <ActionButton
+                            title="Remover"
+                            icon={<DeleteIcon />}
                             color="error"
                             size="small"
-                            startIcon={<DeleteIcon />}
                             onClick={() => removeVinculoMutation.mutate(m.id)}
                             disabled={removeVinculoMutation.isPending}
-                            sx={{ textTransform: 'none' }}
-                          >
-                            Remover
-                          </Button>
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1406,10 +1281,10 @@ const Settings = () => {
                   ) : null;
                 })()}
 
-                <Button
-                  variant="contained"
+                <ActionButton
+                  title="Adicionar Vínculo"
+                  icon={addVinculoMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
                   color="primary"
-                  startIcon={addVinculoMutation.isPending ? undefined : <AddIcon />}
                   onClick={() => {
                     const selectedOrgObj = orgs.find((o) => o.id === newVinculoOrgId);
                     if (!selectedOrgObj) return;
@@ -1427,16 +1302,16 @@ const Settings = () => {
                     });
                   }}
                   disabled={!newVinculoOrgId || !newVinculoPapel || addVinculoMutation.isPending}
-                  sx={{ fontWeight: 600, height: 40 }}
-                >
-                  {addVinculoMutation.isPending ? 'Adicionando...' : 'Adicionar Vínculo'}
-                </Button>
+                />
               </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button
+          <ActionButton
+            title="Fechar"
+            icon={<CloseIcon />}
+            color="secondary"
             onClick={() => {
               setIsVinculosModalOpen(false);
               setSelectedUserForVinculos(null);
@@ -1444,11 +1319,7 @@ const Settings = () => {
               setNewVinculoPapel('');
               setNewVinculoChurchId('');
             }}
-            color="secondary"
-            startIcon={<CloseIcon />}
-          >
-            Fechar
-          </Button>
+          />
         </DialogActions>
       </Dialog>
 
@@ -1501,19 +1372,16 @@ const Settings = () => {
                           <TableCell>{orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
                         )}
                         <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
-                        <TableCell>{m.ativo ? 'Ativo' : 'Inativo'}</TableCell>
+                        <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
                         <TableCell align="right">
-                          <Button
-                            variant="text"
+                          <ActionButton
+                            title="Remover"
+                            icon={<DeleteIcon />}
                             color="error"
                             size="small"
-                            startIcon={<DeleteIcon />}
                             onClick={() => removeMembroOrgMutation.mutate({ userId: m.usuarioId || m.fielId || '', vinculoId: m.vinculoId })}
                             disabled={removeMembroOrgMutation.isPending}
-                            sx={{ textTransform: 'none' }}
-                          >
-                            Remover
-                          </Button>
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1607,10 +1475,10 @@ const Settings = () => {
                   </FormControl>
                 )}
 
-                <Button
-                  variant="contained"
+                <ActionButton
+                  title="Vincular Membro"
+                  icon={addMembroOrgMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
                   color="primary"
-                  startIcon={addMembroOrgMutation.isPending ? undefined : <AddIcon />}
                   onClick={() => {
                     if (!organizacaoSelecionadaParaMembros) return;
                     if (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') {
@@ -1630,16 +1498,16 @@ const Settings = () => {
                     });
                   }}
                   disabled={!novoMembroOrgUsuarioId || !novoMembroOrgPapel || addMembroOrgMutation.isPending}
-                  sx={{ fontWeight: 600, height: 40 }}
-                >
-                  {addMembroOrgMutation.isPending ? 'Vinculando...' : 'Vincular Membro'}
-                </Button>
+                />
               </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button
+          <ActionButton
+            title="Fechar"
+            icon={<CloseIcon />}
+            color="secondary"
             onClick={() => {
               setIsModalMembrosOrgAberto(false);
               setOrganizacaoSelecionadaParaMembros(null);
@@ -1647,11 +1515,7 @@ const Settings = () => {
               setNovoMembroOrgPapel('');
               setNovoMembroOrgIgrejaId('');
             }}
-            color="secondary"
-            startIcon={<CloseIcon />}
-          >
-            Fechar
-          </Button>
+          />
         </DialogActions>
       </Dialog>
 
@@ -1713,22 +1577,21 @@ const Settings = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button
+          <ActionButton
+            title="Cancelar"
+            icon={<CloseIcon />}
+            color="secondary"
             onClick={() => {
               setIsAdminRegisterModalOpen(false);
               setAdminRegisterFielId('');
               setAdminRegisterUsername('');
               setAdminRegisterPassword('');
             }}
-            color="secondary"
-            startIcon={<CloseIcon />}
-          >
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
+          />
+          <ActionButton
+            title="Cadastrar Usuário"
+            icon={registerUserMutation.isPending ? <CircularProgress size={20} /> : <SaveIcon />}
             color="primary"
-            startIcon={registerUserMutation.isPending ? undefined : <SaveIcon />}
             disabled={
               !adminRegisterFielId ||
               !adminRegisterUsername.trim() ||
@@ -1742,10 +1605,7 @@ const Settings = () => {
                 password: adminRegisterPassword,
               });
             }}
-            sx={{ fontWeight: 600 }}
-          >
-            {registerUserMutation.isPending ? 'Cadastrando...' : 'Cadastrar Usuário'}
-          </Button>
+          />
         </DialogActions>
       </Dialog>
 
@@ -1760,18 +1620,14 @@ const Settings = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)} color="secondary" startIcon={<CloseIcon />}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleConfirmConclude}
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setConfirmOpen(false)} />
+          <ActionButton
+            title="Confirmar"
+            icon={<CheckIcon />}
             color="error"
-            variant="contained"
-            startIcon={<CheckIcon />}
+            onClick={handleConfirmConclude}
             disabled={updateMutation.isPending}
-          >
-            Confirmar
-          </Button>
+          />
         </DialogActions>
       </Dialog>
 
@@ -1848,7 +1704,7 @@ const Settings = () => {
                   label="Tipo"
                   value={poTipo}
                   onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
-                 
+
                 >
                   <MenuItem value="PASTORAL">Pastoral</MenuItem>
                   <MenuItem value="MOVIMENTO">Movimento</MenuItem>
@@ -1857,19 +1713,14 @@ const Settings = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setPoModalOpen(false)} color="secondary" startIcon={<CloseIcon />}>
-              Cancelar
-            </Button>
-            <Button
+            <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setPoModalOpen(false)} />
+            <ActionButton
+              title="Salvar"
+              icon={(createPOMutation.isPending || updatePOMutation.isPending) ? <CircularProgress size={20} /> : <SaveIcon />}
               type="submit"
-              variant="contained"
               color="primary"
-              startIcon={(createPOMutation.isPending || updatePOMutation.isPending) ? undefined : <SaveIcon />}
               disabled={createPOMutation.isPending || updatePOMutation.isPending}
-              sx={{ fontWeight: 600 }}
-            >
-              {(createPOMutation.isPending || updatePOMutation.isPending) ? 'Salvando...' : 'Salvar'}
-            </Button>
+            />
           </DialogActions>
         </form>
       </Dialog>

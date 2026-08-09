@@ -41,6 +41,8 @@ import EventVolumeBarChart from '../components/reports/EventVolumeBarChart';
 import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from '../utils/exportUtils';
 import {useNotification} from '../context/NotificationContext';
 import PageHeader from '../components/PageHeader';
+import StatusIcon from '../components/StatusIcon';
+import { getProjetoStatusMeta, type ProjetoStatus } from '../utils/statusMeta/projetoStatus';
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();
@@ -88,21 +90,22 @@ const Reports: React.FC = () => {
       if (appliedStartDate) params.dataInicio = `${appliedStartDate}T00:00:00Z`;
       if (appliedEndDate) params.dataFim = `${appliedEndDate}T23:59:59Z`;
 
-      const response = await apiClient.get<any>('/eventos', { params });
-      const rawEvents = Array.isArray(response.data?.content)
-        ? response.data.content
-        : Array.isArray(response.data)
-        ? response.data
+      const response = await apiClient.get<{ content?: Record<string, unknown>[] } | Record<string, unknown>[]>('/eventos', { params });
+      const resData = response.data;
+      const rawEvents = (resData && !Array.isArray(resData) && Array.isArray(resData.content))
+        ? resData.content
+        : Array.isArray(resData)
+        ? resData
         : [];
 
-      return rawEvents.map((ev: any) => ({
-        titulo: ev.titulo || ev.nome || 'Evento sem título',
-        inicio: ev.inicio || ev.dataInicio || ev.criadoEmUtc || '',
-        localNome: ev.local?.nome || ev.localNome || 'Sem Local',
+      return rawEvents.map((ev: Record<string, unknown>) => ({
+        titulo: (ev.titulo as string) || (ev.nome as string) || 'Evento sem título',
+        inicio: (ev.inicio as string) || (ev.dataInicio as string) || (ev.criadoEmUtc as string) || '',
+        localNome: (ev.local as { nome?: string })?.nome || (ev.localNome as string) || 'Sem Local',
         organizacaoNome:
-          ev.organizacao?.nome ||
-          orgMap[ev.organizacaoResponsavelId] ||
-          ev.organizacaoNome ||
+          (ev.organizacao as { nome?: string })?.nome ||
+          orgMap[ev.organizacaoResponsavelId as string] ||
+          (ev.organizacaoNome as string) ||
           'Paróquia',
       }));
     },
@@ -437,11 +440,7 @@ const Reports: React.FC = () => {
                               sx={{ height: 22, fontSize: '0.7rem' }}
                             />
                           )}
-                          <Chip
-                            label={proj.status}
-                            size="small"
-                            sx={{ height: 22, fontSize: '0.7rem', backgroundColor: '#e3f2fd', color: '#0d47a1' }}
-                          />
+                          <StatusIcon {...getProjetoStatusMeta(proj.status as ProjetoStatus)} size="small" sx={{ height: 22, fontSize: '0.7rem' }} />
                         </Stack>
                       </Box>
 

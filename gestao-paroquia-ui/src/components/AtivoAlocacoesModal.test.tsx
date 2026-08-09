@@ -83,9 +83,9 @@ describe('AtivoAlocacoesModal', () => {
       renderModal();
     });
 
-    expect(screen.getByText('Alocação para Evento')).toBeInTheDocument();
+    expect(screen.getByTestId('EventIcon')).toBeInTheDocument();
     expect(screen.getByText('2026-09-01 — 2026-09-03')).toBeInTheDocument();
-    expect(screen.getByText('Confirmada')).toBeInTheDocument();
+    expect(screen.getByTestId('CheckCircleIcon')).toBeInTheDocument();
   });
 
   it('shows the impact warning chip when impactadaPorAtraso is true', async () => {

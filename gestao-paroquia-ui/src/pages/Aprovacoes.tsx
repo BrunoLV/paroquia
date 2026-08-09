@@ -3,13 +3,10 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {
     Alert,
     Box,
-    Button,
     Card,
-    Chip,
     Container,
     Divider,
     Drawer,
-    IconButton,
     Skeleton,
     Tab,
     Table,
@@ -36,8 +33,12 @@ import {decideAprovacao, getAprovacoes} from '../api/aprovacoes';
 import {decideAprovacaoProjeto, getAprovacoesProjeto} from '../api/projects';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
+import {extractErrorMessage} from '../utils/errorUtils';
 import apiClient from '../api/client';
 import PageHeader from '../components/PageHeader';
+import ActionButton from '../components/ActionButton';
+import StatusIcon from '../components/StatusIcon';
+import {getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
 
 /**
  * Tela de "caixa de entrada" de aprovações pastorais.
@@ -139,10 +140,9 @@ const Aprovacoes = () => {
       setAprovacaoSelecionada(null);
       setObservacao('');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Error deciding approval:', error);
-      const errMsg = error.response?.data?.message || 'Erro ao registrar decisão.';
-      showError(errMsg);
+      showError(extractErrorMessage(error, 'Erro ao registrar decisão.'));
     },
   });
 
@@ -159,10 +159,9 @@ const Aprovacoes = () => {
       setAprovacaoProjetoSelecionada(null);
       setObservacao('');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Error deciding project approval:', error);
-      const errMsg = error.response?.data?.message || 'Erro ao registrar decisão.';
-      showError(errMsg);
+      showError(extractErrorMessage(error, 'Erro ao registrar decisão.'));
     },
   });
 
@@ -178,37 +177,6 @@ const Aprovacoes = () => {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSize(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const getTipoLabel = (tipo: string) => {
-    switch (tipo) {
-      case 'CRIACAO_EVENTO':
-        return 'Criação de Evento';
-      case 'EDICAO_EVENTO':
-      case 'ALTERACAO_HORARIO':
-        return 'Edição de Evento';
-      case 'CANCELAMENTO':
-        return 'Cancelamento de Evento';
-      case 'ALOCACAO_ATIVO_EMPRESTIMO':
-        return 'Empréstimo de Ativo';
-      default:
-        return tipo;
-    }
-  };
-
-  const getStatusChip = (status: string) => {
-    switch (status) {
-      case 'PENDENTE':
-        return <Chip label="Pendente" color="warning" size="small" />;
-      case 'APROVADA':
-        return <Chip label="Aprovada" color="success" size="small" />;
-      case 'REPROVADA':
-        return <Chip label="Rejeitada" color="error" size="small" />;
-      case 'FALHA_EXECUCAO':
-        return <Chip label="Falha" color="error" size="small" variant="outlined" />;
-      default:
-        return <Chip label={status} size="small" />;
-    }
   };
 
   const parsePayload = (jsonStr: string | null) => {
@@ -340,7 +308,7 @@ const Aprovacoes = () => {
                       {data.content.map((approval) => (
                         <TableRow key={approval.id} hover>
                           <TableCell sx={{ fontWeight: 500 }}>
-                            {getTipoLabel(approval.tipoSolicitacao)}
+                            <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
                           </TableCell>
                           <TableCell>
                             {approval.tipoSolicitacao === 'CANCELAMENTO' ? (
@@ -357,18 +325,15 @@ const Aprovacoes = () => {
                           <TableCell>
                             {new Date(approval.criadoEmUtc).toLocaleString()}
                           </TableCell>
-                          <TableCell>{getStatusChip(approval.status)}</TableCell>
+                          <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
                           <TableCell align="right">
-                            <Button
-                              variant="outlined"
-                              color="secondary"
+                            <ActionButton
+                              title="Visualizar Detalhes"
+                              icon={<VisibilityIcon fontSize="small" />}
+                              color="primary"
                               size="small"
-                              startIcon={<VisibilityIcon />}
                               onClick={() => setAprovacaoSelecionada(approval)}
-                              sx={{ textTransform: 'none' }}
-                            >
-                              Visualizar
-                            </Button>
+                            />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -421,7 +386,7 @@ const Aprovacoes = () => {
                     {projectData.map((approval) => (
                       <TableRow key={approval.id} hover>
                         <TableCell sx={{ fontWeight: 500 }}>
-                          {approval.tipoSolicitacao === 'CRIACAO' ? 'Criação de Projeto' : 'Cancelamento de Projeto'}
+                          <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
                         </TableCell>
                         <TableCell>
                           {approval.tipoSolicitacao === 'CRIACAO' ? (
@@ -438,18 +403,15 @@ const Aprovacoes = () => {
                         <TableCell>
                           {new Date(approval.criadoEmUtc).toLocaleString()}
                         </TableCell>
-                        <TableCell>{getStatusChip(approval.status)}</TableCell>
+                        <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
                         <TableCell align="right">
-                          <Button
-                            variant="outlined"
-                            color="secondary"
+                          <ActionButton
+                            title="Visualizar Detalhes"
+                            icon={<VisibilityIcon fontSize="small" />}
+                            color="primary"
                             size="small"
-                            startIcon={<VisibilityIcon />}
                             onClick={() => setAprovacaoProjetoSelecionada(approval)}
-                            sx={{ textTransform: 'none' }}
-                          >
-                            Visualizar
-                          </Button>
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -480,9 +442,7 @@ const Aprovacoes = () => {
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 Detalhes da Solicitação
               </Typography>
-              <IconButton onClick={() => setAprovacaoSelecionada(null)}>
-                <CloseIcon />
-              </IconButton>
+              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setAprovacaoSelecionada(null)} />
             </Box>
             <Divider sx={{ mb: 3 }} />
 
@@ -491,9 +451,15 @@ const Aprovacoes = () => {
             </Typography>
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2"><strong>Solicitante:</strong> {aprovacaoSelecionada.solicitanteId}</Typography>
-              <Typography variant="body2"><strong>Tipo:</strong> {getTipoLabel(aprovacaoSelecionada.tipoSolicitacao)}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <Typography variant="body2"><strong>Tipo:</strong></Typography>
+                <StatusIcon {...getAprovacaoTipoMeta(aprovacaoSelecionada.tipoSolicitacao)} />
+              </Box>
               <Typography variant="body2"><strong>Criado em:</strong> {new Date(aprovacaoSelecionada.criadoEmUtc).toLocaleString()}</Typography>
-              <Typography variant="body2"><strong>Status:</strong> {aprovacaoSelecionada.status}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                <Typography variant="body2"><strong>Status:</strong></Typography>
+                <StatusIcon {...getAprovacaoStatusMeta(aprovacaoSelecionada.status)} />
+              </Box>
             </Box>
 
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
@@ -567,26 +533,22 @@ const Aprovacoes = () => {
                   helperText={`${observacao.length}/2000 caracteres`}
                 />
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Button
-                    variant="contained"
+                  <ActionButton
+                    title="Aprovar solicitação"
+                    icon={<CheckCircleIcon />}
                     color="success"
-                    fullWidth
-                    startIcon={<CheckCircleIcon />}
                     onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'APROVADA', observacao })}
                     disabled={decisionMutation.isPending}
-                  >
-                    Aprovar
-                  </Button>
-                  <Button
-                    variant="outlined"
+                    sx={{ border: '1px solid', borderColor: 'success.main' }}
+                  />
+                  <ActionButton
+                    title="Rejeitar solicitação"
+                    icon={<CancelIcon />}
                     color="error"
-                    fullWidth
-                    startIcon={<CancelIcon />}
                     onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'REPROVADA', observacao })}
                     disabled={decisionMutation.isPending}
-                  >
-                    Rejeitar
-                  </Button>
+                    sx={{ border: '1px solid', borderColor: 'error.main' }}
+                  />
                 </Box>
               </Box>
             )}
@@ -612,9 +574,11 @@ const Aprovacoes = () => {
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 Detalhes da Solicitação de Projeto
               </Typography>
-              <IconButton onClick={() => setAprovacaoProjetoSelecionada(null)}>
-                <CloseIcon />
-              </IconButton>
+              <ActionButton
+                title="Fechar painel"
+                icon={<CloseIcon />}
+                onClick={() => setAprovacaoProjetoSelecionada(null)}
+              />
             </Box>
             <Divider sx={{ mb: 3 }} />
 
@@ -623,11 +587,15 @@ const Aprovacoes = () => {
             </Typography>
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2"><strong>Solicitante:</strong> {aprovacaoProjetoSelecionada.solicitanteId}</Typography>
-              <Typography variant="body2">
-                <strong>Tipo:</strong> {aprovacaoProjetoSelecionada.tipoSolicitacao === 'CRIACAO' ? 'Criação de Projeto' : 'Cancelamento de Projeto'}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <Typography variant="body2"><strong>Tipo:</strong></Typography>
+                <StatusIcon {...getAprovacaoTipoMeta(aprovacaoProjetoSelecionada.tipoSolicitacao)} />
+              </Box>
               <Typography variant="body2"><strong>Criado em:</strong> {new Date(aprovacaoProjetoSelecionada.criadoEmUtc).toLocaleString()}</Typography>
-              <Typography variant="body2"><strong>Status:</strong> {aprovacaoProjetoSelecionada.status}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                <Typography variant="body2"><strong>Status:</strong></Typography>
+                <StatusIcon {...getAprovacaoStatusMeta(aprovacaoProjetoSelecionada.status)} />
+              </Box>
             </Box>
 
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
@@ -689,26 +657,22 @@ const Aprovacoes = () => {
                   helperText={`${observacao.length}/2000 caracteres`}
                 />
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Button
-                    variant="contained"
+                  <ActionButton
+                    title="Aprovar solicitação de projeto"
+                    icon={<CheckCircleIcon />}
                     color="success"
-                    fullWidth
-                    startIcon={<CheckCircleIcon />}
                     onClick={() => projectDecisionMutation.mutate({ id: aprovacaoProjetoSelecionada.id, aprovado: true, observacao })}
                     disabled={projectDecisionMutation.isPending}
-                  >
-                    Aprovar
-                  </Button>
-                  <Button
-                    variant="outlined"
+                    sx={{ border: '1px solid', borderColor: 'success.main' }}
+                  />
+                  <ActionButton
+                    title="Rejeitar solicitação de projeto"
+                    icon={<CancelIcon />}
                     color="error"
-                    fullWidth
-                    startIcon={<CancelIcon />}
                     onClick={() => projectDecisionMutation.mutate({ id: aprovacaoProjetoSelecionada.id, aprovado: false, observacao })}
                     disabled={projectDecisionMutation.isPending}
-                  >
-                    Rejeitar
-                  </Button>
+                    sx={{ border: '1px solid', borderColor: 'error.main' }}
+                  />
                 </Box>
               </Box>
             )}

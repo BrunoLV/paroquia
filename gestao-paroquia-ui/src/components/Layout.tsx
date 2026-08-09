@@ -5,7 +5,6 @@ import {
     Container,
     Divider,
     Drawer,
-    IconButton,
     List,
     ListItem,
     ListItemButton,
@@ -35,6 +34,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser } from '../auth/permissions';
+import ActionButton from './ActionButton';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -113,23 +113,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 </Typography>
               </Box>
             </Box>
-            <IconButton
+            <ActionButton
+              title={drawerOpen ? "Recolher menu lateral" : "Expandir menu lateral"}
+              ariaLabel={drawerOpen ? "recolher menu" : "expandir menu"}
+              icon={<MenuIcon />}
               color="primary"
-              aria-label={drawerOpen ? "recolher menu" : "expandir menu"}
               onClick={handleDrawerToggle}
               sx={{ p: 0.5 }}
-            >
-              <MenuIcon />
-            </IconButton>
+            />
           </>
         ) : (
-          <IconButton
+          <ActionButton
+            title={drawerOpen ? "Recolher menu lateral" : "Expandir menu lateral"}
+            ariaLabel={drawerOpen ? "recolher menu" : "expandir menu"}
+            icon={<MenuIcon />}
             color="primary"
-            aria-label={drawerOpen ? "recolher menu" : "expandir menu"}
             onClick={handleDrawerToggle}
-          >
-            <MenuIcon />
-          </IconButton>
+          />
         )}
       </Box>
       <Divider />
@@ -227,15 +227,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <AppBar position="static" color="primary" sx={{ mb: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', bgcolor: 'primary.main' }}>
           <Toolbar>
             {!isMdUp && (
-              <IconButton
+              <ActionButton
+                title="Abrir menu de navegação"
+                ariaLabel="abrir menu"
+                icon={<MenuIcon />}
                 color="inherit"
-                aria-label="abrir menu"
-                edge="start"
                 onClick={handleDrawerToggle}
                 sx={{ mr: 2 }}
-              >
-                <MenuIcon />
-              </IconButton>
+              />
             )}
             
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600, letterSpacing: '0.5px' }}>
@@ -247,9 +246,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500 }}>
                   Olá, {user.name}
                 </Typography>
-                <IconButton color="inherit" onClick={handleLogout} title="Sair do sistema">
-                  <LogoutIcon />
-                </IconButton>
+                <ActionButton title="Sair do sistema" icon={<LogoutIcon />} color="inherit" onClick={handleLogout} />
               </Box>
             )}
           </Toolbar>

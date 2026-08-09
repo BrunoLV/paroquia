@@ -51,8 +51,8 @@ describe('CadastroEventoModal', () => {
 
   it('renders Salvar and Cancelar buttons with their semantic icons', () => {
     render(<CadastroEventoModal {...defaultProps} />);
-    const saveButton = screen.getByRole('button', { name: /^Salvar$/i });
-    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
+    const saveButton = screen.getByRole('button', { name: /Salvar/i });
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
     expect(saveButton.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
     expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
   });
@@ -153,7 +153,7 @@ describe('CadastroEventoModal', () => {
     const titleInput = screen.getByLabelText(/título do evento/i);
     fireEvent.change(titleInput, { target: { value: '' } });
 
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
     expect(mockShowError).toHaveBeenCalledWith('O título do evento é obrigatório.');
@@ -166,7 +166,7 @@ describe('CadastroEventoModal', () => {
     const titleInput = screen.getByLabelText(/título do evento/i);
     fireEvent.change(titleInput, { target: { value: 'Missa' } });
 
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
     expect(mockShowError).toHaveBeenCalledWith('A organização responsável é obrigatória.');
@@ -182,7 +182,7 @@ describe('CadastroEventoModal', () => {
     const startInput = screen.getByLabelText(/data e hora de início/i);
     fireEvent.change(startInput, { target: { value: '' } });
 
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
     expect(mockShowError).toHaveBeenCalledWith('A data e hora de início é obrigatória.');
@@ -198,7 +198,7 @@ describe('CadastroEventoModal', () => {
     const endInput = screen.getByLabelText(/data e hora de término/i);
     fireEvent.change(endInput, { target: { value: '' } });
 
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
     expect(mockShowError).toHaveBeenCalledWith('A data e hora de término é obrigatória.');
@@ -217,7 +217,7 @@ describe('CadastroEventoModal', () => {
     const endInput = screen.getByLabelText(/data e hora de término/i);
     fireEvent.change(endInput, { target: { value: '2026-05-31T11:00' } });
 
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
     expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
@@ -383,7 +383,7 @@ describe('CadastroEventoModal', () => {
     const justificationInput = screen.getByLabelText(/Justificativa Extra/i);
     fireEvent.change(justificationInput, { target: { value: '' } });
 
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
     expect(mockShowError).toHaveBeenCalledWith('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
@@ -411,7 +411,7 @@ describe('CadastroEventoModal', () => {
   it('renders action buttons with standardized right alignment and border-radius 0', () => {
     render(<CadastroEventoModal {...defaultProps} />);
     const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
-    const submitButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const submitButton = screen.getByRole('button', { name: /Salvar/i });
 
     expect(cancelButton).toBeInTheDocument();
     expect(submitButton).toBeInTheDocument();

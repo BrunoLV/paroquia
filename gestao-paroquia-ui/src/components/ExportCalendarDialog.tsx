@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {
     Box,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -20,6 +19,7 @@ import {
 
 import {Close as CloseIcon, Download as DownloadIcon} from '@mui/icons-material';
 import {Organizacao} from '../api/types';
+import ActionButton from './ActionButton';
 
 export interface ExportCalendarDialogProps {
   open: boolean;
@@ -225,18 +225,14 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" size="small" startIcon={<CloseIcon />} sx={{ textTransform: 'none' }}>Cancelar</Button>
-        <Button
+        <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} color="secondary" />
+        <ActionButton
+          title="Exportar Calendário"
+          icon={<DownloadIcon />}
           onClick={handleExport}
-          variant="contained"
           color="primary"
-          size="small"
-          startIcon={<DownloadIcon />}
           disabled={opcao === 'PERIODO' && (!dataInicio || !dataFim)}
-          sx={{ textTransform: 'none', fontWeight: 600 }}
-        >
-          Exportar
-        </Button>
+        />
       </DialogActions>
     </Dialog>
   );

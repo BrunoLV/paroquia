@@ -11,9 +11,11 @@ import {
     Collapse,
     Container,
     Grid,
+    IconButton,
     Skeleton,
     ToggleButton,
     ToggleButtonGroup,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import {
@@ -276,22 +278,15 @@ const Organograma: React.FC = () => {
 
           {membrosOrdinarios.length > 0 && (
             <Box sx={{ mt: 'auto', pt: 0.5 }}>
-              <Button
-                size="small"
-                fullWidth
-                onClick={() => toggleExpand(org.id)}
-                endIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                sx={{
-                  justifyContent: 'space-between',
-                  color: headerStyle.textColor,
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  fontSize: '0.75rem',
-                  p: 0,
-                }}
-              >
-                {isExpanded ? 'Ocultar Membros' : `Ver Membros (${membrosOrdinarios.length})`}
-              </Button>
+              <Tooltip title={isExpanded ? 'Ocultar Membros' : 'Ver Membros'}>
+                <IconButton
+                  size="small"
+                  onClick={() => toggleExpand(org.id)}
+                  sx={{ color: headerStyle.textColor }}
+                >
+                  {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </Tooltip>
 
               <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                 <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column' }}>
@@ -315,7 +310,7 @@ const Organograma: React.FC = () => {
    * enquanto `children` (o campo que o orgchart de fato percorre para desenhar a árvore) é
    * filtrado para conter apenas sub-organizações, recursivamente.
    */
-  const transformToOrgchartData = (node: OrganogramaNode): any => {
+  const transformToOrgchartData = (node: OrganogramaNode): Record<string, unknown> | null => {
     if (!node) return null;
     const childrenOrgs = (node.children || []).filter(c => c && c.type === 'ORGANIZACAO');
     return {
@@ -328,7 +323,7 @@ const Organograma: React.FC = () => {
   };
 
 
-  const OrgchartNodeTemplate = ({ nodeData }: { nodeData: any }) => {
+  const OrgchartNodeTemplate = ({ nodeData }: { nodeData: OrganogramaNode }) => {
     return renderOrgNode(nodeData, true);
   };
 
@@ -408,14 +403,18 @@ const Organograma: React.FC = () => {
               size="small"
               sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
             >
-              <ToggleButton value="tree" aria-label="Visualização em Árvore">
-                <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
-                Árvore
-              </ToggleButton>
-              <ToggleButton value="grid" aria-label="Visualização em Grade">
-                <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
-                Grade
-              </ToggleButton>
+              <Tooltip title="Visualização em Árvore">
+                <ToggleButton value="tree" aria-label="Visualização em Árvore">
+                  <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
+                  Árvore
+                </ToggleButton>
+              </Tooltip>
+              <Tooltip title="Visualização em Grade">
+                <ToggleButton value="grid" aria-label="Visualização em Grade">
+                  <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
+                  Grade
+                </ToggleButton>
+              </Tooltip>
             </ToggleButtonGroup>
           </Box>
         }
@@ -434,50 +433,51 @@ const Organograma: React.FC = () => {
                 sx={{
                   bgcolor: 'white',
                   border: '1px solid #e2e8f0',
-                  
                   boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                 }}
               >
-                <Button
-                  onClick={handleZoomOut}
-                  disabled={zoom <= 0.5}
-                  title="Diminuir Zoom"
-                  sx={{
-                    color: 'primary.main',
-                    borderColor: '#e2e8f0',
-                    
-                    '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                  }}
-                >
-                  <ZoomOutIcon fontSize="small" />
-                </Button>
-                <Button
-                  onClick={handleZoomReset}
-                  title="Resetar Zoom"
-                  sx={{
-                    color: 'primary.main',
-                    borderColor: '#e2e8f0',
-                    fontWeight: 700,
-                    fontSize: '0.75rem',
-                    px: 2,
-                    '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                  }}
-                >
-                  {Math.round(zoom * 100)}%
-                </Button>
-                <Button
-                  onClick={handleZoomIn}
-                  disabled={zoom >= 1.5}
-                  title="Aumentar Zoom"
-                  sx={{
-                    color: 'primary.main',
-                    borderColor: '#e2e8f0',
-                    
-                    '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                  }}
-                >
-                  <ZoomInIcon fontSize="small" />
-                </Button>
+                <Tooltip title="Diminuir Zoom">
+                  <Button
+                    onClick={handleZoomOut}
+                    disabled={zoom <= 0.5}
+                    sx={{
+                      color: 'primary.main',
+                      borderColor: '#e2e8f0',
+                      '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                    }}
+                  >
+                    <ZoomOutIcon fontSize="small" />
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Resetar Zoom">
+                  <Button
+                    onClick={handleZoomReset}
+                    sx={{
+                      color: 'primary.main',
+                      borderColor: '#e2e8f0',
+                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      px: 2,
+                      '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                      minWidth: 52,
+                    }}
+                  >
+                    {Math.round(zoom * 100)}%
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Aumentar Zoom">
+                  <Button
+                    onClick={handleZoomIn}
+                    disabled={zoom >= 1.5}
+                    sx={{
+                      color: 'primary.main',
+                      borderColor: '#e2e8f0',
+                      '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
+                    }}
+                  >
+                    <ZoomInIcon fontSize="small" />
+                  </Button>
+                </Tooltip>
               </ButtonGroup>
             </Box>
 

@@ -122,7 +122,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     expect(screen.getByText('TV 55 polegadas')).toBeInTheDocument();
@@ -166,7 +166,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     await act(async () => {
@@ -198,7 +198,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     await act(async () => {
@@ -224,7 +224,7 @@ describe('Ativos Page', () => {
     });
 
     await act(async () => {
-      screen.getByRole('button', { name: /^Alocar$/i }).click();
+      screen.getByRole('button', { name: /Alocar Ativo/i }).click();
     });
 
     expect(mockedApiClient.post).toHaveBeenCalledWith('/ativos/ativo-1/alocar', expect.objectContaining({
@@ -254,7 +254,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     await act(async () => {
@@ -276,7 +276,7 @@ describe('Ativos Page', () => {
     });
 
     await act(async () => {
-      screen.getByRole('button', { name: /^Alocar$/i }).click();
+      screen.getByRole('button', { name: /Alocar Ativo/i }).click();
     });
 
     expect(mockShowSuccess).toHaveBeenCalledWith(expect.stringMatching(/aguardando aprova/i));
@@ -297,7 +297,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     await act(async () => {
@@ -312,7 +312,7 @@ describe('Ativos Page', () => {
     });
 
     await act(async () => {
-      screen.getByRole('button', { name: /^Alocar$/i }).click();
+      screen.getByRole('button', { name: /Alocar Ativo/i }).click();
     });
 
     expect(mockedApiClient.post).toHaveBeenCalledWith('/ativos/ativo-1/alocar', expect.objectContaining({
@@ -329,7 +329,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     expect(screen.getByText('R$ 3.500,00')).toBeInTheDocument();
@@ -343,7 +343,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     await act(async () => {
@@ -375,7 +375,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     // ativo[0] is DISPONIVEL: expect "Iniciar Manutenção" with icon
@@ -403,7 +403,7 @@ describe('Ativos Page', () => {
       fireEvent.mouseDown(screen.getByLabelText('Organização'));
     });
     await act(async () => {
-      screen.getByText('Comunidade Santo Agostinho').click();
+      screen.getByRole('option', { name: 'Comunidade Santo Agostinho' }).click();
     });
 
     await act(async () => {
@@ -411,8 +411,8 @@ describe('Ativos Page', () => {
     });
 
     await screen.findByText('Novo Ativo Patrimonial');
-    const cancelButton = screen.getByRole('button', { name: /^Cancelar$/i });
-    const saveButton = screen.getByRole('button', { name: /^Salvar$/i });
+    const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+    const saveButton = screen.getByRole('button', { name: /Salvar Ativo/i });
     expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
     expect(saveButton.querySelector('[data-testid="SaveIcon"]')).toBeInTheDocument();
   });

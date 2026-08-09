@@ -132,7 +132,7 @@ describe('Aprovacoes page', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
-      expect(screen.getAllByText('Cancelamento de Evento')).toHaveLength(2);
+      expect(screen.getAllByText('Cancelamento de Evento')).toHaveLength(1);
       expect(screen.getByText('user-1')).toBeInTheDocument();
       expect(screen.getByText('user-2')).toBeInTheDocument();
     });
@@ -309,7 +309,7 @@ describe('Aprovacoes page', () => {
     fireEvent.click(screen.getByRole('tab', { name: /Solicitações de Projetos/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Criação de Projeto')).toBeInTheDocument();
+      expect(screen.getByTestId('AddCircleOutlineOutlinedIcon')).toBeInTheDocument();
       expect(screen.getByText('Evangelização das Famílias')).toBeInTheDocument();
     });
   });

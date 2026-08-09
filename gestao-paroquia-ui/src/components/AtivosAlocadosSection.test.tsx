@@ -58,7 +58,7 @@ describe('AtivosAlocadosSection', () => {
 
     expect(await screen.findByText('Ativos Alocados')).toBeInTheDocument();
     expect(screen.getByText('Caixa de Som')).toBeInTheDocument();
-    expect(screen.getByText('Confirmada')).toBeInTheDocument();
+    expect(screen.getByTestId('CheckCircleIcon')).toBeInTheDocument();
   });
 
   it('shows the impact warning chip when impactadaPorAtraso is true', async () => {

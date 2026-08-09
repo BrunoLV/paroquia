@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -18,6 +17,7 @@ import {
     EventRepeat as EventRepeatIcon,
     Update as UpdateIcon,
 } from '@mui/icons-material';
+import ActionButton from './ActionButton';
 
 export type EditScope = 'ONLY_THIS' | 'THIS_AND_FOLLOWING' | 'EDIT_ALL';
 
@@ -84,9 +84,7 @@ const EditScopeDialog: React.FC<EditScopeDialogProps> = ({ open, onClose, onSele
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" startIcon={<CloseIcon />} sx={{ textTransform: 'none' }}>
-          Cancelar
-        </Button>
+        <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} color="secondary" />
       </DialogActions>
     </Dialog>
   );

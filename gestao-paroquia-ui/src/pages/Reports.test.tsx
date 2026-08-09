@@ -72,8 +72,8 @@ describe('Reports Page', () => {
     await renderReports();
 
     expect(screen.getByText(/Relatórios & Métricas/i)).toBeInTheDocument();
-    expect(screen.getByText('Exportar CSV')).toBeInTheDocument();
-    expect(screen.getByText('Exportar PDF')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Exportar CSV/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Exportar PDF/i })).toBeInTheDocument();
     expect(screen.getByLabelText('Data Início')).toBeInTheDocument();
 
     await waitFor(() => {
@@ -95,7 +95,7 @@ describe('Reports Page', () => {
       expect(screen.getByText('15')).toBeInTheDocument();
     });
 
-    const csvButton = screen.getByText('Exportar CSV');
+    const csvButton = screen.getByRole('button', { name: /Exportar CSV/i });
     fireEvent.click(csvButton);
 
     expect(exportUtils.downloadCSV).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('Reports Page', () => {
       expect(screen.getByText('15')).toBeInTheDocument();
     });
 
-    const pdfButton = screen.getByText('Exportar PDF');
+    const pdfButton = screen.getByRole('button', { name: /Exportar PDF/i });
     fireEvent.click(pdfButton);
 
     expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-container', 'relatorio-gerencial.pdf');
@@ -124,7 +124,7 @@ describe('Reports Page', () => {
     const startDateInput = screen.getByLabelText('Data Início');
     fireEvent.change(startDateInput, { target: { value: '2026-01-01' } });
 
-    const filterButton = screen.getByText('Filtrar');
+    const filterButton = screen.getByRole('button', { name: /^Filtrar$/i });
     fireEvent.click(filterButton);
 
     await waitFor(() => {

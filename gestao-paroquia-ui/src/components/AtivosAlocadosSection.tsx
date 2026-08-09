@@ -1,28 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Chip, Skeleton, Typography } from '@mui/material';
-import { Inventory as InventoryIcon } from '@mui/icons-material';
+import { Box, Chip, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Inventory as InventoryIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
 import { getAlocacoesPorEvento } from '../api/ativos';
 import { AtivoAlocacaoResponse } from '../api/types';
+import StatusIcon from './StatusIcon';
+import { getAtivoAlocacaoStatusMeta } from '../utils/statusMeta/ativoAlocacaoStatus';
 
 interface AtivosAlocadosSectionProps {
   eventoId: string;
 }
-
-const STATUS_LABELS: Record<string, string> = {
-  PENDENTE_APROVACAO: 'Pendente de Aprovação',
-  CONFIRMADA: 'Confirmada',
-  ATRASADA: 'Atrasada',
-  DEVOLVIDA: 'Devolvida',
-  CANCELADA: 'Cancelada',
-};
-
-const STATUS_COLORS: Record<string, 'success' | 'warning' | 'default' | 'info' | 'error'> = {
-  PENDENTE_APROVACAO: 'warning',
-  CONFIRMADA: 'info',
-  ATRASADA: 'error',
-  DEVOLVIDA: 'default',
-  CANCELADA: 'default',
-};
 
 const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId }) => {
   const [alocacoes, setAlocacoes] = useState<AtivoAlocacaoResponse[]>([]);
@@ -70,18 +56,17 @@ const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId 
               <Typography variant="body2" color="text.secondary">
                 {alocacao.dataInicio} — {alocacao.dataFim}
               </Typography>
-              <Chip
-                label={STATUS_LABELS[alocacao.status] || alocacao.status}
-                color={STATUS_COLORS[alocacao.status] || 'default'}
-                size="small"
-              />
+              <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
               {alocacao.impactadaPorAtraso && (
-                <Chip
-                  label="Pode atrasar"
-                  color="warning"
-                  size="small"
-                  variant="outlined"
-                />
+                <Tooltip title="Risco de atraso na devolução">
+                  <Chip
+                    label="Pode atrasar"
+                    color="warning"
+                    icon={<WarningAmberIcon />}
+                    size="small"
+                    variant="outlined"
+                  />
+                </Tooltip>
               )}
             </Box>
           ))}

@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
-import {Button, CircularProgress, ListItemIcon, ListItemText, Menu, MenuItem,} from '@mui/material';
+import React, {useRef, useState} from 'react';
+import {CircularProgress, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ImageIcon from '@mui/icons-material/Image';
 import CodeIcon from '@mui/icons-material/Code';
 import {ExportFormat} from '../../hooks/useOrganogramaExport';
+import ActionButton from '../ActionButton';
 
 export interface OrganogramaExportButtonProps {
   onExport: (format: ExportFormat) => void;
@@ -17,9 +18,10 @@ export const OrganogramaExportButton: React.FC<OrganogramaExportButtonProps> = (
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const anchorRef = useRef<HTMLSpanElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = () => {
+    setAnchorEl(anchorRef.current);
   };
 
   const handleClose = () => {
@@ -31,35 +33,32 @@ export const OrganogramaExportButton: React.FC<OrganogramaExportButtonProps> = (
     onExport(format);
   };
 
+  const buttonTitle = isExporting ? 'Exportando...' : 'Exportar Organograma';
+
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        disabled={isExporting}
-        onClick={handleClick}
-        startIcon={
-          isExporting ? (
-            <CircularProgress
-              size={20}
-              color="inherit"
-              data-testid="export-loading-indicator"
-            />
-          ) : (
-            <FileDownloadIcon />
-          )
-        }
-        endIcon={<KeyboardArrowDownIcon />}
-        sx={{
-          
-          fontWeight: 600,
-          textTransform: 'none',
-          px: 2.5,
-          py: 1,
-        }}
-      >
-        {isExporting ? 'Exportando...' : 'Exportar Organograma'}
-      </Button>
+      <span ref={anchorRef} style={{ display: 'inline-block' }}>
+        <ActionButton
+          title={buttonTitle}
+          icon={
+            isExporting ? (
+              <CircularProgress
+                size={20}
+                color="inherit"
+                data-testid="export-loading-indicator"
+              />
+            ) : (
+              <>
+                <FileDownloadIcon />
+                <KeyboardArrowDownIcon fontSize="small" />
+              </>
+            )
+          }
+          color="primary"
+          disabled={isExporting}
+          onClick={handleClick}
+        />
+      </span>
 
       <Menu
         anchorEl={anchorEl}
@@ -77,7 +76,6 @@ export const OrganogramaExportButton: React.FC<OrganogramaExportButtonProps> = (
           paper: {
             elevation: 3,
             sx: {
-              
               minWidth: 200,
               mt: 0.5,
             },

@@ -128,8 +128,8 @@ describe('ObservacoesEvento Component', () => {
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
     fireEvent.click(deleteButtons[0]);
 
-    const cancelButton = await screen.findByRole('button', { name: /^Cancelar$/i });
-    const confirmDeleteButton = screen.getByRole('button', { name: /^Excluir$/i });
+    const cancelButton = await screen.findByRole('button', { name: /Cancelar/i });
+    const confirmDeleteButton = screen.getByRole('button', { name: /Excluir Observação/i });
     expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
     expect(confirmDeleteButton.querySelector('[data-testid="DeleteIcon"]')).toBeInTheDocument();
   });

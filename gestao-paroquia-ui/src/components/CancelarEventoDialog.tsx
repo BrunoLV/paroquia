@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {
     Box,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -11,6 +10,7 @@ import {
 } from '@mui/material';
 import {ArrowBack as ArrowBackIcon, Block as BlockIcon} from '@mui/icons-material';
 import {useNotification} from '../context/NotificationContext';
+import ActionButton from './ActionButton';
 
 interface CancelarEventoDialogProps {
   open: boolean;
@@ -25,47 +25,46 @@ const CancelarEventoDialog: React.FC<CancelarEventoDialogProps> = ({
   onClose,
   onConfirm,
   isSubmitting = false,
-  eventTitle = 'este evento',
+  eventTitle,
 }) => {
   const [reason, setReason] = useState('');
   const { showError } = useNotification();
-
-  const handleConfirm = () => {
-    if (!reason.trim()) {
-      showError('O motivo do cancelamento é obrigatório.');
-      return;
-    }
-    onConfirm(reason);
-  };
 
   const handleClose = () => {
     setReason('');
     onClose();
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reason.trim()) {
+      showError('A justificativa de cancelamento é obrigatória.');
+      return;
+    }
+    if (reason.trim().length < 5) {
+      showError('A justificativa deve conter pelo menos 5 caracteres.');
+      return;
+    }
+    onConfirm(reason.trim());
+    setReason('');
+  };
+
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="xs"
-      fullWidth
-    >
-      <form onSubmit={(e) => { e.preventDefault(); handleConfirm(); }} noValidate>
-        <DialogTitle sx={{ color: 'error.main' }}>
-          Cancelar Evento
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
-            Você tem certeza que deseja cancelar o evento <strong>{eventTitle}</strong>? Esta ação não pode ser desfeita.
-          </DialogContentText>
-          <Box sx={{ mt: 1 }}>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <form onSubmit={handleSubmit} noValidate>
+        <DialogTitle>Cancelar Evento</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <DialogContentText color="text.secondary">
+              Você está prestes a cancelar o evento{eventTitle ? ` "${eventTitle}"` : ''}.
+              Por favor, informe a justificativa abaixo. Esta ação é irreversível e notificará os organizadores.
+            </DialogContentText>
             <TextField
-              autoFocus
-              required
-              label="Motivo do Cancelamento"
-              fullWidth
+              label="Justificativa de Cancelamento"
               multiline
               rows={3}
+              fullWidth
+              required
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               disabled={isSubmitting}
@@ -74,19 +73,20 @@ const CancelarEventoDialog: React.FC<CancelarEventoDialogProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isSubmitting} color="secondary" startIcon={<ArrowBackIcon />}>
-            Voltar
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="error"
-            startIcon={<BlockIcon />}
+          <ActionButton
+            title="Voltar"
+            icon={<ArrowBackIcon />}
+            onClick={handleClose}
             disabled={isSubmitting}
-            sx={{ fontWeight: 600 }}
-          >
-            {isSubmitting ? 'Cancelando...' : 'Confirmar Cancelamento'}
-          </Button>
+            color="secondary"
+          />
+          <ActionButton
+            title="Confirmar Cancelamento"
+            icon={<BlockIcon />}
+            type="submit"
+            color="error"
+            disabled={isSubmitting}
+          />
         </DialogActions>
       </form>
     </Dialog>

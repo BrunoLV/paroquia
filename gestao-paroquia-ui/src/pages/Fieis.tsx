@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   Checkbox,
-  Chip,
   Container,
   Dialog,
   DialogActions,
@@ -12,7 +10,6 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -24,7 +21,6 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import {
@@ -46,10 +42,15 @@ import {
   Organizacao,
   UpdateFielPayload,
   Vocacao,
-  VOCACAO_LABELS,
 } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
+import { extractErrorMessage } from '../utils/errorUtils';
+import ActionButton from '../components/ActionButton';
 import PageHeader from '../components/PageHeader';
+import StatusIcon from '../components/StatusIcon';
+import SacramentoIcon from '../components/SacramentoIcon';
+import { SACRAMENTO_META } from '../utils/statusMeta/sacramentos';
+import { getVocacaoMeta } from '../utils/statusMeta/vocacaoStatus';
 
 const Fieis = () => {
   const { user } = useAuth();
@@ -102,8 +103,8 @@ const Fieis = () => {
       ]);
       setFieis(fieisData);
       setOrganizacoes(orgsData);
-    } catch (err: any) {
-      showError(err?.response?.data?.message || 'Erro ao carregar lista de fiéis');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao carregar lista de fiéis'));
     } finally {
       setLoading(false);
     }
@@ -166,8 +167,8 @@ const Fieis = () => {
       }
       setModalOpen(false);
       loadData();
-    } catch (err: any) {
-      showError(err?.response?.data?.message || 'Erro ao salvar fiel');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao salvar fiel'));
     }
   };
 
@@ -204,8 +205,8 @@ const Fieis = () => {
       );
       setPromoteModalOpen(false);
       loadData();
-    } catch (err: any) {
-      showError(err?.response?.data?.message || 'Erro ao promover fiel');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao promover fiel'));
     }
   };
 
@@ -223,15 +224,12 @@ const Fieis = () => {
         title="Gestão de Fiéis"
         subtitle="Cadastro unificado de paroquianos e dados sacramentais (LGPD)."
         actions={
-          <Button
-            variant="contained"
+          <ActionButton
+            title="Novo Fiel"
+            icon={<AddIcon />}
             color="primary"
-            startIcon={<AddIcon />}
             onClick={handleOpenCreateModal}
-            sx={{ fontWeight: 600 }}
-          >
-            Novo Fiel
-          </Button>
+          />
         }
       />
 
@@ -282,12 +280,7 @@ const Fieis = () => {
                   </TableCell>
                   <TableCell>{fiel.cpf}</TableCell>
                   <TableCell>
-                    <Chip
-                      label={VOCACAO_LABELS[fiel.vocacao] || fiel.vocacao}
-                      size="small"
-                      color={fiel.vocacao === 'LEIGO' ? 'default' : 'primary'}
-                      variant="outlined"
-                    />
+                    <StatusIcon {...getVocacaoMeta(fiel.vocacao)} />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">{fiel.email}</Typography>
@@ -296,26 +289,30 @@ const Fieis = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                      {fiel.batizado && <Chip label="Batismo" size="small" color="success" variant="outlined" />}
-                      {fiel.primeiraComunhao && <Chip label="1ª Comunhão" size="small" color="info" variant="outlined" />}
-                      {fiel.crismado && <Chip label="Crisma" size="small" color="secondary" variant="outlined" />}
-                      {fiel.casadoIgrejaCatolica && <Chip label="Matrimônio" size="small" color="warning" variant="outlined" />}
+                    <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                      {fiel.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="success" />}
+                      {fiel.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="info" />}
+                      {fiel.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
+                      {fiel.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
                     </Box>
                   </TableCell>
                   <TableCell align="right">
-                    <Tooltip title="Editar Fiel">
-                      <IconButton size="small" color="primary" onClick={() => handleOpenEditModal(fiel)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    <ActionButton
+                      title="Editar Fiel"
+                      icon={<EditIcon fontSize="small" />}
+                      size="small"
+                      color="primary"
+                      onClick={() => handleOpenEditModal(fiel)}
+                    />
 
                     {isCoordinatorPromoter() && (
-                      <Tooltip title="Promover a Coordenador">
-                        <IconButton size="small" color="secondary" onClick={() => handleOpenPromoteModal(fiel)}>
-                          <PromoteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
+                      <ActionButton
+                        title="Promover a Coordenador"
+                        icon={<PromoteIcon fontSize="small" />}
+                        size="small"
+                        color="secondary"
+                        onClick={() => handleOpenPromoteModal(fiel)}
+                      />
                     )}
                   </TableCell>
                 </TableRow>
@@ -331,9 +328,7 @@ const Fieis = () => {
           <Typography variant="h6">
             {editingFiel ? 'Editar Fiel' : 'Cadastrar Fiel'}
           </Typography>
-          <IconButton size="small" onClick={() => setModalOpen(false)}>
-            <CloseIcon />
-          </IconButton>
+          <ActionButton title="Fechar formulário" icon={<CloseIcon />} size="small" onClick={() => setModalOpen(false)} />
         </DialogTitle>
         <DialogContent dividers>
           <Grid container spacing={2} sx={{ pt: 1 }}>
@@ -460,12 +455,8 @@ const Fieis = () => {
           </Grid>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setModalOpen(false)} startIcon={<CloseIcon />}>
-            Cancelar
-          </Button>
-          <Button variant="contained" onClick={handleSaveFiel} startIcon={<SaveIcon />}>
-            Salvar Fiel
-          </Button>
+          <ActionButton title="Cancelar e fechar formulário" icon={<CloseIcon />} onClick={() => setModalOpen(false)} color="secondary" />
+          <ActionButton title="Salvar dados do fiel" icon={<SaveIcon />} color="primary" onClick={handleSaveFiel} />
         </DialogActions>
       </Dialog>
 
@@ -475,9 +466,7 @@ const Fieis = () => {
           <Typography variant="h6">
             Promover a Coordenador: {promotingFiel?.nome}
           </Typography>
-          <IconButton size="small" onClick={() => setPromoteModalOpen(false)}>
-            <CloseIcon />
-          </IconButton>
+          <ActionButton title="Fechar formulário" icon={<CloseIcon />} size="small" onClick={() => setPromoteModalOpen(false)} />
         </DialogTitle>
         <DialogContent dividers>
           <Grid container spacing={2} sx={{ pt: 1 }}>
@@ -539,17 +528,8 @@ const Fieis = () => {
           </Grid>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setPromoteModalOpen(false)} startIcon={<CloseIcon />}>
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleExecutePromote}
-            startIcon={<PromoteIcon />}
-          >
-            Promover a Coordenador
-          </Button>
+          <ActionButton title="Cancelar promoção" icon={<CloseIcon />} onClick={() => setPromoteModalOpen(false)} color="secondary" />
+          <ActionButton title="Promover fiel para papel de liderança" icon={<PromoteIcon />} color="secondary" onClick={handleExecutePromote} />
         </DialogActions>
       </Dialog>
     </Container>

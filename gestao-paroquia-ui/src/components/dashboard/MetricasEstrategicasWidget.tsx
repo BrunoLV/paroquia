@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, Card, CardContent, Grid, Typography, Chip, Skeleton, Button } from '@mui/material';
+import { Box, Card, CardContent, Grid, Typography, Chip, Skeleton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { usePainelMetricasEstrategicas } from '../../hooks/useMetricasEstrategicas';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ActionButton from '../ActionButton';
 
 export const MetricasEstrategicasWidget: React.FC = () => {
   const navigate = useNavigate();
@@ -29,14 +30,13 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               Inteligência Paroquial & Governança (CPP/CAE)
             </Typography>
           </Box>
-          <Button
+          <ActionButton
+            title="Ver Relatório Completo"
+            icon={<ArrowForwardIcon />}
             size="small"
-            endIcon={<ArrowForwardIcon />}
             onClick={() => navigate('/reports')}
-            sx={{ fontWeight: 600 }}
-          >
-            Ver Relatório Completo
-          </Button>
+            color="primary"
+          />
         </Box>
 
         <Grid container spacing={2}>

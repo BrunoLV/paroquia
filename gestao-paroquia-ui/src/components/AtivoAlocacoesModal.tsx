@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Box,
-  Button,
   Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  InputLabel,
   Skeleton,
   Table,
   TableBody,
@@ -16,12 +16,17 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Block as BlockIcon, Close as CloseIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Block as BlockIcon, Close as CloseIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
 import { cancelarAlocacao, getAlocacoesPorAtivo } from '../api/ativos';
 import { AtivoAlocacaoResponse } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
+import { extractErrorMessage } from '../utils/errorUtils';
+import StatusIcon from './StatusIcon';
+import ActionButton from './ActionButton';
+import { getAtivoAlocacaoStatusMeta, getAtivoAlocacaoTipoMeta } from '../utils/statusMeta/ativoAlocacaoStatus';
 
 interface AtivoAlocacoesModalProps {
   ativoId: string | null;
@@ -29,27 +34,6 @@ interface AtivoAlocacoesModalProps {
   onClose: () => void;
   onChanged?: () => void;
 }
-
-const TIPO_LABELS: Record<string, string> = {
-  ALOCACAO_EVENTO: 'Alocação para Evento',
-  MANUTENCAO: 'Manutenção',
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  PENDENTE_APROVACAO: 'Pendente de Aprovação',
-  CONFIRMADA: 'Confirmada',
-  ATRASADA: 'Atrasada',
-  DEVOLVIDA: 'Devolvida',
-  CANCELADA: 'Cancelada',
-};
-
-const STATUS_COLORS: Record<string, 'success' | 'warning' | 'default' | 'info' | 'error'> = {
-  PENDENTE_APROVACAO: 'warning',
-  CONFIRMADA: 'info',
-  ATRASADA: 'error',
-  DEVOLVIDA: 'default',
-  CANCELADA: 'default',
-};
 
 const isCancelavel = (alocacao: AtivoAlocacaoResponse): boolean => {
   if (alocacao.status !== 'PENDENTE_APROVACAO' && alocacao.status !== 'CONFIRMADA') {
@@ -100,8 +84,8 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
         loadAlocacoes(ativoId);
       }
       onChanged?.();
-    } catch (err: any) {
-      showError(err.response?.data?.message || 'Erro ao cancelar a reserva.');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao cancelar a reserva.'));
     }
   };
 
@@ -134,30 +118,33 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
                 <TableBody>
                   {alocacoes.map((alocacao) => (
                     <TableRow key={alocacao.id}>
-                      <TableCell>{TIPO_LABELS[alocacao.tipo] || alocacao.tipo}</TableCell>
+                      <TableCell><StatusIcon {...getAtivoAlocacaoTipoMeta(alocacao.tipo)} /></TableCell>
                       <TableCell>{alocacao.dataInicio} — {alocacao.dataFim}</TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                          <Chip
-                            label={STATUS_LABELS[alocacao.status] || alocacao.status}
-                            color={STATUS_COLORS[alocacao.status] || 'default'}
-                            size="small"
-                          />
+                          <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
                           {alocacao.impactadaPorAtraso && (
-                            <Chip
-                              label="Pode atrasar"
-                              color="warning"
-                              size="small"
-                              variant="outlined"
-                            />
+                            <Tooltip title="Risco de atraso na devolução">
+                              <Chip
+                                label="Pode atrasar"
+                                color="warning"
+                                icon={<WarningAmberIcon />}
+                                size="small"
+                                variant="outlined"
+                              />
+                            </Tooltip>
                           )}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
                         {isCancelavel(alocacao) && (
-                          <Button size="small" color="error" startIcon={<BlockIcon />} onClick={() => setCancelandoAlocacao(alocacao)}>
-                            Cancelar Reserva
-                          </Button>
+                          <ActionButton
+                            title="Cancelar Reserva"
+                            icon={<BlockIcon fontSize="small" />}
+                            size="small"
+                            color="error"
+                            onClick={() => setCancelandoAlocacao(alocacao)}
+                          />
                         )}
                       </TableCell>
                     </TableRow>
@@ -168,7 +155,7 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="secondary" startIcon={<CloseIcon />}>Fechar</Button>
+          <ActionButton title="Fechar histórico de alocações" icon={<CloseIcon />} color="secondary" onClick={onClose} />
         </DialogActions>
       </Dialog>
 
@@ -192,10 +179,8 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCancelandoAlocacao(null)} color="secondary" startIcon={<ArrowBackIcon />}>Voltar</Button>
-          <Button variant="contained" color="error" startIcon={<BlockIcon />} onClick={handleConfirmCancelamento}>
-            Confirmar Cancelamento
-          </Button>
+          <ActionButton title="Voltar ao histórico" icon={<ArrowBackIcon />} color="secondary" onClick={() => setCancelandoAlocacao(null)} />
+          <ActionButton title="Confirmar cancelamento da reserva" icon={<BlockIcon />} color="error" onClick={handleConfirmCancelamento} />
         </DialogActions>
       </Dialog>
     </>

@@ -2,7 +2,6 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {
     Alert,
     Box,
-    Button,
     Chip,
     Collapse,
     Dialog,
@@ -21,9 +20,11 @@ import {
 } from '@mui/material';
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
+import {isGlobalCreator} from '../auth/permissions';
 import {useNotification} from '../context/NotificationContext';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
+import ActionButton from './ActionButton';
 
 const CATEGORIES = [
   'SOLENIDADE',
@@ -57,7 +58,7 @@ import { formatIsoToLocal, formatLocalDate, getRecurrenceDates } from '../utils/
 interface CadastroEventoModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Record<string, unknown>) => void;
   isSubmitting?: boolean;
   organizations: Organizacao[];
   locais?: Local[];
@@ -125,9 +126,9 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
-    if (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN')) return organizations;
+    if (isGlobalCreator(user)) return organizations;
     
-    const userOrgIds = user.organizations.map(org => org.id);
+    const userOrgIds = Array.isArray(user.organizations) ? user.organizations.map((org: { id: string }) => org.id) : [];
     return organizations.filter(org => userOrgIds.includes(org.id));
   }, [user, organizations]);
 
@@ -230,7 +231,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         setIsRecurring(!!initialEvent.recorrenciaId);
         
         if (initialEvent.recorrencia) {
-          setRecurrenceRule(initialEvent.recorrencia);
+          setRecurrenceRule(initialEvent.recorrencia as unknown as RecurrenceRule);
         }
       } else {
         setTitle('');
@@ -639,12 +640,20 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={isSubmitting} color="secondary" startIcon={<CloseIcon />} sx={{ fontWeight: 600, textTransform: 'none' }}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} disabled={isSubmitting || !!projectValidationError} sx={{ fontWeight: 600, textTransform: 'none' }}>
-            {initialEvent ? 'Salvar Alterações' : 'Salvar'}
-          </Button>
+          <ActionButton
+            title="Cancelar"
+            icon={<CloseIcon />}
+            onClick={onClose}
+            disabled={isSubmitting}
+            color="secondary"
+          />
+          <ActionButton
+            title={initialEvent ? 'Salvar Alterações' : 'Salvar Evento'}
+            icon={<SaveIcon />}
+            type="submit"
+            color="primary"
+            disabled={isSubmitting || !!projectValidationError}
+          />
         </DialogActions>
       </form>
     </Dialog>
