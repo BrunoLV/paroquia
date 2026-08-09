@@ -19,6 +19,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.springframework.test.context.jdbc.Sql;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
+@Sql(scripts = "classpath:sql/security-fixtures.sql")
 class ApproveUpdateEventoIntegrationTest {
 
     @Autowired

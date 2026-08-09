@@ -16,6 +16,7 @@ import {useNotification} from '../context/NotificationContext';
 import {DashboardMetrics, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {getDashboardMetrics} from '../api/dashboard';
+import { getOrganizacoes } from '../api/organizacoes';
 import PageHeader from '../components/PageHeader';
 import {extractErrorMessage} from '../utils/errorUtils';
 
@@ -53,9 +54,9 @@ const Dashboard = () => {
       // Fetch organizations list independently
       const fetchOrgs = async () => {
         try {
-          const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
-          if (orgsRes.data && Array.isArray(orgsRes.data)) {
-            setOrganizations(orgsRes.data);
+          const orgsData = await getOrganizacoes();
+          if (Array.isArray(orgsData)) {
+            setOrganizations(orgsData);
           }
         } catch (err) {
           console.error('Error fetching organizations:', err);

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
+  Chip,
   Container,
   Dialog,
   DialogActions,
@@ -10,6 +11,7 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
+  InputAdornment,
   InputLabel,
   Menu,
   MenuItem,
@@ -21,10 +23,12 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from '@mui/material';
+import { FormattedCurrency } from '../components/FormattedCell';
 import {
   Add as AddIcon,
   Build as BuildIcon,
@@ -36,6 +40,7 @@ import {
   Inventory as InventoryIcon,
   MoreVert as MoreVertIcon,
   Save as SaveIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -56,6 +61,7 @@ import {
   transferirAtivo,
 } from '../api/ativos';
 import { listEventos } from '../api/eventos';
+import { getOrganizacoes } from '../api/organizacoes';
 import { AtivoCategoria, AtivoPatrimonial, Evento, Organizacao } from '../api/types';
 import { useNotification } from '../context/NotificationContext';
 import PageHeader from '../components/PageHeader';
@@ -63,6 +69,7 @@ import AtivoAlocacoesModal from '../components/AtivoAlocacoesModal';
 import ActionButton from '../components/ActionButton';
 import StatusIcon from '../components/StatusIcon';
 import { getAtivoStatusMeta } from '../utils/statusMeta/ativoStatus';
+import { getCategoriaAtivoMeta } from '../utils/statusMeta/categoriaAtivoStatus';
 import { formatCurrencyBRL } from '../utils/currencyUtils';
 import { extractErrorMessage } from '../utils/errorUtils';
 
@@ -95,6 +102,10 @@ const Ativos = () => {
   const [selectedOrgId, setSelectedOrgId] = useState('');
   const [ativos, setAtivos] = useState<AtivoPatrimonial[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('TODAS');
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [formOrgId, setFormOrgId] = useState('');
@@ -137,11 +148,22 @@ const Ativos = () => {
 
   const getOrganizacoesElegiveisProprietarias = () => getSelectableOrgs().filter(isOrganizacaoElegivelProprietaria);
 
+  const filteredAtivos = useMemo(() => {
+    return ativos.filter((a) => {
+      const search = searchTerm.trim().toLowerCase();
+      const matchesSearch =
+        !search ||
+        a.nome.toLowerCase().includes(search) ||
+        a.numeroTombamento.toLowerCase().includes(search);
+      const matchesCategory = categoryFilter === 'TODAS' || a.categoria === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [ativos, searchTerm, categoryFilter]);
+
   const loadOrganizations = async () => {
     try {
-      const response = await apiClient.get<Organizacao[]>('/organizacoes');
-      const orgs = response.data || [];
-      setOrganizations(orgs);
+      const orgs = await getOrganizacoes();
+      setOrganizations(orgs || []);
     } catch (err) {
       console.error('Erro ao buscar organizações:', err);
       showError('Não foi possível carregar as organizações.');
@@ -407,72 +429,160 @@ const Ativos = () => {
         }
       />
 
-      <FormControl sx={{ minWidth: 280, mb: 3 }}>
-        <InputLabel id="organizacao-select-label">Organização</InputLabel>
-        <Select
-          labelId="organizacao-select-label"
-          label="Organização"
-          value={selectedOrgId}
-          onChange={(e) => setSelectedOrgId(e.target.value as string)}
-        >
-          {getOrganizacoesElegiveisProprietarias().map((org) => (
-            <MenuItem key={org.id} value={org.id}>
-              {org.nome}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Paper sx={{ p: 2.5, mb: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid size={{ xs: 12, md: 4 }}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="organizacao-select-label">Organização</InputLabel>
+              <Select
+                labelId="organizacao-select-label"
+                label="Organização"
+                value={selectedOrgId}
+                onChange={(e) => setSelectedOrgId(e.target.value as string)}
+              >
+                {getOrganizacoesElegiveisProprietarias().map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="categoria-select-label">Categoria</InputLabel>
+              <Select
+                labelId="categoria-select-label"
+                label="Categoria"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value as string)}
+              >
+                <MenuItem value="TODAS">Todas as Categorias</MenuItem>
+                {CATEGORIAS.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <StatusIcon {...getCategoriaAtivoMeta(cat)} />
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Buscar por Nome ou Tombamento..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(0);
+              }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
 
       {isLoading ? (
         <Box>
           <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
           <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
           <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
+          <Skeleton variant="rounded" height={56} sx={{ mb: 1 }} />
         </Box>
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nome</TableCell>
-                <TableCell>Tombamento</TableCell>
-                <TableCell>Categoria</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Valor Estimado</TableCell>
-                <TableCell align="right">Ações</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {ativos.map((ativo) => (
-                <TableRow key={ativo.id}>
-                  <TableCell>{ativo.nome}</TableCell>
-                  <TableCell>{ativo.numeroTombamento}</TableCell>
-                  <TableCell>{ativo.categoria}</TableCell>
-                  <TableCell>
-                    <StatusIcon {...getAtivoStatusMeta(ativo.status)} />
-                  </TableCell>
-                  <TableCell align="right">{formatCurrencyBRL(ativo.valorEstimado)}</TableCell>
-                  <TableCell align="right">
-                    <ActionButton
-                      title="Opções e Ações"
-                      ariaLabel="Ações"
-                      icon={<MoreVertIcon />}
-                      size="small"
-                      onClick={(e) => setActionMenu({ anchorEl: e.currentTarget, ativo })}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-              {ativos.length === 0 && (
+        <>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    Nenhum ativo cadastrado para esta organização.
-                  </TableCell>
+                  <TableCell>Nome</TableCell>
+                  <TableCell>Tombamento</TableCell>
+                  <TableCell>Categoria</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell align="right">Valor Estimado</TableCell>
+                  <TableCell align="right">Ações</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredAtivos
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((ativo) => (
+                    <TableRow key={ativo.id} hover>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                            {ativo.nome}
+                          </Typography>
+                          {ativo.reservavel && (
+                            <Chip
+                              size="small"
+                              label="Reservável"
+                              color="primary"
+                              variant="outlined"
+                              sx={{ height: 20, fontSize: '0.68rem' }}
+                            />
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell>{ativo.numeroTombamento}</TableCell>
+                      <TableCell>
+                        <StatusIcon {...getCategoriaAtivoMeta(ativo.categoria)} />
+                      </TableCell>
+                      <TableCell>
+                        <StatusIcon {...getAtivoStatusMeta(ativo.status)} />
+                      </TableCell>
+                      <TableCell align="right">
+                        <FormattedCurrency value={ativo.valorEstimado} />
+                      </TableCell>
+                      <TableCell align="right">
+                        <ActionButton
+                          title="Opções e Ações"
+                          ariaLabel="Ações"
+                          icon={<MoreVertIcon />}
+                          size="small"
+                          onClick={(e) => setActionMenu({ anchorEl: e.currentTarget, ativo })}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                {filteredAtivos.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {ativos.length === 0
+                          ? 'Nenhum ativo cadastrado para esta organização.'
+                          : 'Nenhum ativo encontrado com os filtros aplicados.'}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            component="div"
+            count={filteredAtivos.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            labelRowsPerPage="Itens por página:"
+          />
+        </>
       )}
 
       <Menu
@@ -487,7 +597,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
-            <TransferIcon fontSize="small" sx={{ mr: 1 }} />
+            <TransferIcon fontSize="small" color="action" sx={{ mr: 1.5 }} />
             Transferir
           </MenuItem>
         )}
@@ -498,7 +608,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
-            <AllocateIcon fontSize="small" sx={{ mr: 1 }} />
+            <AllocateIcon fontSize="small" color="primary" sx={{ mr: 1.5 }} />
             Alocar
           </MenuItem>
         )}
@@ -509,7 +619,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
-            <DeallocateIcon fontSize="small" sx={{ mr: 1 }} />
+            <DeallocateIcon fontSize="small" color="warning" sx={{ mr: 1.5 }} />
             Desalocar
           </MenuItem>
         )}
@@ -520,7 +630,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
-            <BuildIcon fontSize="small" sx={{ mr: 1 }} />
+            <BuildIcon fontSize="small" color="warning" sx={{ mr: 1.5 }} />
             Iniciar Manutenção
           </MenuItem>
         )}
@@ -531,7 +641,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
-            <CheckCircleIcon fontSize="small" sx={{ mr: 1 }} />
+            <CheckCircleIcon fontSize="small" color="success" sx={{ mr: 1.5 }} />
             Finalizar Manutenção
           </MenuItem>
         )}
@@ -542,7 +652,7 @@ const Ativos = () => {
               setActionMenu(null);
             }}
           >
-            <InventoryIcon fontSize="small" sx={{ mr: 1 }} />
+            <InventoryIcon fontSize="small" color="info" sx={{ mr: 1.5 }} />
             Ver Alocações
           </MenuItem>
         )}
@@ -585,7 +695,9 @@ const Ativos = () => {
               >
                 {CATEGORIAS.map((categoria) => (
                   <MenuItem key={categoria} value={categoria}>
-                    {categoria}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <StatusIcon {...getCategoriaAtivoMeta(categoria)} />
+                    </Box>
                   </MenuItem>
                 ))}
               </Select>

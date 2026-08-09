@@ -14,9 +14,11 @@ DELETE FROM calendario.grupo_paroquial;
 DELETE FROM calendario.unidade_territorial;
 DELETE FROM calendario.pastorais_movimentos_oficiais;
 
--- Clero D (dd) é uma UnidadeTerritorial, não um GrupoParoquial (track linguagem_ubiqua_dominio)
+-- Clero D (dd) e Matriz (01/100) são UnidadesTerritoriais (track linguagem_ubiqua_dominio)
 INSERT INTO calendario.unidade_territorial (id, nome, tipo)
-VALUES ('00000000-0000-0000-0000-0000000000dd', 'Clero D', 'CLERO');
+VALUES ('00000000-0000-0000-0000-0000000000dd', 'Clero D', 'CLERO'),
+       ('00000000-0000-0000-0000-000000000001', 'Igreja Default', 'MATRIZ'),
+       ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz', 'MATRIZ');
 
 INSERT INTO calendario.grupo_paroquial (id, nome, tipo)
 VALUES ('00000000-0000-0000-0000-000000000001', 'Organizacao Default', 'MINISTERIO'),

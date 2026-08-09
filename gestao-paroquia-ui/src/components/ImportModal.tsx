@@ -21,6 +21,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     Typography,
 } from '@mui/material';
@@ -69,6 +70,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   const [isValidating, setIsValidating] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [validationResult, setValidationResult] = useState<ImportacaoValidacaoResultado | null>(null);
+  const [importPage, setImportPage] = useState(0);
+  const [importRowsPerPage, setImportRowsPerPage] = useState(10);
 
   const handleReset = () => {
     setActiveStep(0);
@@ -204,7 +207,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
             <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', maxHeight: 320 }}>
               <Table size="small" stickyHeader>
-                <TableHead>
+                <TableHead sx={{ backgroundColor: 'action.hover' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 600 }}>Linha</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -212,21 +215,36 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {validationResult.itens.map((item) => (
-                    <TableRow key={item.linha} sx={{ bgcolor: item.valido ? '#f1f8e9' : '#ffebee' }}>
-                      <TableCell>{item.linha}</TableCell>
-                      <TableCell>
-                        {item.valido ? (
-                          <Chip label="Válido" color="success" size="small" />
-                        ) : (
-                          <Chip label="Erro" color="error" size="small" />
-                        )}
-                      </TableCell>
-                      <TableCell>{item.valido ? 'Pronto para importação' : item.mensagemErro}</TableCell>
-                    </TableRow>
-                  ))}
+                  {validationResult.itens
+                    .slice(importPage * importRowsPerPage, importPage * importRowsPerPage + importRowsPerPage)
+                    .map((item) => (
+                      <TableRow key={item.linha} hover sx={{ bgcolor: item.valido ? '#f1f8e9' : '#ffebee' }}>
+                        <TableCell>{item.linha}</TableCell>
+                        <TableCell>
+                          {item.valido ? (
+                            <Chip label="Válido" color="success" size="small" />
+                          ) : (
+                            <Chip label="Erro" color="error" size="small" />
+                          )}
+                        </TableCell>
+                        <TableCell>{item.valido ? 'Pronto para importação' : item.mensagemErro}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={validationResult.itens.length}
+                rowsPerPage={importRowsPerPage}
+                page={importPage}
+                onPageChange={(_, newPage) => setImportPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setImportRowsPerPage(parseInt(e.target.value, 10));
+                  setImportPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
             </TableContainer>
           </Box>
         )}

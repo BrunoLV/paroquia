@@ -15,6 +15,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     Typography,
     Tabs,
@@ -50,6 +51,8 @@ const Reports: React.FC = () => {
   const [appliedEndDate, setAppliedEndDate] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
+  const [reportsPage, setReportsPage] = useState(0);
+  const [reportsRowsPerPage, setReportsRowsPerPage] = useState(10);
 
   // Fetch baseline metrics from dashboard endpoint
   const {
@@ -510,7 +513,7 @@ const Reports: React.FC = () => {
         {filteredMetrics.eventosSemana && filteredMetrics.eventosSemana.length > 0 ? (
           <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #eee' }}>
             <Table size="small">
-              <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>Título do Evento</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>Organização</TableCell>
@@ -519,24 +522,39 @@ const Reports: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredMetrics.eventosSemana.map((ev, idx) => (
-                  <TableRow key={idx} hover>
-                    <TableCell sx={{ fontWeight: 600 }}>{ev.titulo}</TableCell>
-                    <TableCell>{ev.organizacaoNome || '-'}</TableCell>
-                    <TableCell>{ev.localNome || '-'}</TableCell>
-                    <TableCell>
-                      {new Date(ev.inicio).toLocaleString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filteredMetrics.eventosSemana
+                  .slice(reportsPage * reportsRowsPerPage, reportsPage * reportsRowsPerPage + reportsRowsPerPage)
+                  .map((ev, idx) => (
+                    <TableRow key={idx} hover>
+                      <TableCell sx={{ fontWeight: 600 }}>{ev.titulo}</TableCell>
+                      <TableCell>{ev.organizacaoNome || '-'}</TableCell>
+                      <TableCell>{ev.localNome || '-'}</TableCell>
+                      <TableCell>
+                        {new Date(ev.inicio).toLocaleString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              component="div"
+              count={filteredMetrics.eventosSemana.length}
+              rowsPerPage={reportsRowsPerPage}
+              page={reportsPage}
+              onPageChange={(_, newPage) => setReportsPage(newPage)}
+              onRowsPerPageChange={(e) => {
+                setReportsRowsPerPage(parseInt(e.target.value, 10));
+                setReportsPage(0);
+              }}
+              labelRowsPerPage="Itens por página:"
+            />
           </TableContainer>
         ) : (
           <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>

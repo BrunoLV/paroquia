@@ -25,11 +25,13 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     Tabs,
     TextField,
     Typography,
 } from '@mui/material';
+import { FormattedAddress, FormattedContact, FormattedEmail, FormattedPhone } from '../components/FormattedCell';
 import {
   CalendarMonth as CalendarIcon,
   Category as CategoryIcon,
@@ -140,6 +142,22 @@ const Settings = () => {
   const [orgModalOpen, setOrgModalOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
   const [orgSearch, setOrgSearch] = useState('');
+
+  // Pagination states
+  const [anoPage, setAnoPage] = useState(0);
+  const [anoRowsPerPage, setAnoRowsPerPage] = useState(10);
+
+  const [locaisPage, setLocaisPage] = useState(0);
+  const [locaisRowsPerPage, setLocaisRowsPerPage] = useState(10);
+
+  const [orgsPage, setOrgsPage] = useState(0);
+  const [orgsRowsPerPage, setOrgsRowsPerPage] = useState(10);
+
+  const [usersPage, setUsersPage] = useState(0);
+  const [usersRowsPerPage, setUsersRowsPerPage] = useState(10);
+
+  const [poPage, setPoPage] = useState(0);
+  const [poRowsPerPage, setPoRowsPerPage] = useState(10);
 
   // User and Vinculo states
   const [selectedUserForVinculos, setSelectedUserForVinculos] = useState<Usuario | null>(null);
@@ -601,7 +619,7 @@ const Settings = () => {
 
               <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
-                  <TableHead sx={{ bgcolor: 'grey.100' }}>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Ano</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -611,61 +629,75 @@ const Settings = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {years.map((y) => {
-                      const isConcluido = y.status === 'CONCLUIDO';
-                      const hasUnconcludedPriorYear = years.some(
-                        (other) => other.ano < y.ano && other.status !== 'CONCLUIDO'
-                      );
+                    {years
+                      .slice(anoPage * anoRowsPerPage, anoPage * anoRowsPerPage + anoRowsPerPage)
+                      .map((y) => {
+                        const isConcluido = y.status === 'CONCLUIDO';
+                        const hasUnconcludedPriorYear = years.some(
+                          (other) => other.ano < y.ano && other.status !== 'CONCLUIDO'
+                        );
 
-                      return (
-                        <TableRow key={y.ano}>
-                          <TableCell>{y.ano}</TableCell>
-                          <TableCell><StatusIcon {...getAnoParoquialStatusMeta(y.status)} /></TableCell>
-                          <TableCell>{formatDate(y.dataFechamentoUtc)}</TableCell>
-                          <TableCell>{formatDate(y.updatedAt)}</TableCell>
-                          {isAuthorizedAno && (
-                            <TableCell align="right">
-                              {!isConcluido && (
-                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
-                                  {y.status === 'EM_PLANEJAMENTO' && (
+                        return (
+                          <TableRow key={y.ano} hover>
+                            <TableCell>{y.ano}</TableCell>
+                            <TableCell><StatusIcon {...getAnoParoquialStatusMeta(y.status)} /></TableCell>
+                            <TableCell>{formatDate(y.dataFechamentoUtc)}</TableCell>
+                            <TableCell>{formatDate(y.updatedAt)}</TableCell>
+                            {isAuthorizedAno && (
+                              <TableCell align="right">
+                                {!isConcluido && (
+                                  <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                    {y.status === 'EM_PLANEJAMENTO' && (
+                                      <ActionButton
+                                        title="Fechar"
+                                        icon={<LockIcon />}
+                                        color="primary"
+                                        size="small"
+                                        onClick={() => handleClosePlanejamento(y.ano)}
+                                        disabled={updateMutation.isPending || hasUnconcludedPriorYear}
+                                      />
+                                    )}
+                                    {y.status === 'FECHADO' && (
+                                      <ActionButton
+                                        title="Reabrir"
+                                        icon={<LockOpenIcon />}
+                                        color="primary"
+                                        size="small"
+                                        onClick={() => handleReopenPlanejamento(y.ano)}
+                                        disabled={updateMutation.isPending}
+                                      />
+                                    )}
                                     <ActionButton
-                                      title="Fechar"
-                                      icon={<LockIcon />}
-                                      color="primary"
+                                      title="Concluir"
+                                      icon={<CheckCircleIcon />}
+                                      color="success"
                                       size="small"
-                                      onClick={() => handleClosePlanejamento(y.ano)}
-                                      disabled={updateMutation.isPending || hasUnconcludedPriorYear}
-                                    />
-                                  )}
-                                  {y.status === 'FECHADO' && (
-                                    <ActionButton
-                                      title="Reabrir"
-                                      icon={<LockOpenIcon />}
-                                      color="primary"
-                                      size="small"
-                                      onClick={() => handleReopenPlanejamento(y.ano)}
+                                      onClick={() => handleConcludeClick(y.ano)}
                                       disabled={updateMutation.isPending}
                                     />
-                                  )}
-                                  <ActionButton
-                                    title="Concluir"
-                                    icon={<CheckCircleIcon />}
-                                    color="error"
-                                    size="small"
-                                    onClick={() => handleConcludeClick(y.ano)}
-                                    disabled={updateMutation.isPending || hasUnconcludedPriorYear}
-                                  />
-                                </Box>
-                              )}
-                              {isConcluido && <Typography color="textSecondary" variant="body2">-</Typography>}
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      );
-                    })}
+                                  </Box>
+                                )}
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        );
+                      })}
                   </TableBody>
                 </Table>
               </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={years.length}
+                rowsPerPage={anoRowsPerPage}
+                page={anoPage}
+                onPageChange={(_, newPage) => setAnoPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setAnoRowsPerPage(parseInt(e.target.value, 10));
+                  setAnoPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
             </Box>
           )}
         </CustomTabPanel>
@@ -673,7 +705,7 @@ const Settings = () => {
         {/* Tab 2: Locais */}
         <CustomTabPanel value={tabValue} index={1}>
           {isLoadingLocais ? (
-            <Box sx={{ my: 4 }}>
+            <Box sx={{ py: 4 }}>
               <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
@@ -681,21 +713,21 @@ const Settings = () => {
             </Box>
           ) : isErrorLocais ? (
             <Alert severity="error">
-              Erro ao carregar as informações dos locais.
+              Erro ao carregar os locais cadastrados.
             </Alert>
           ) : (
-            <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
                     <LocationIcon sx={{ fontSize: 26, color: 'primary.main' }} />
                   </Box>
                   <Box>
                     <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                      Gestão de Locais (Espaços Físicos)
+                      Gestão de Locais da Paróquia
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
-                      Cadastre e gerencie os espaços disponíveis na paróquia para a realização de eventos.
+                      Cadastre os espaços disponíveis para realização de missas, eventos e encontros pastorais.
                     </Typography>
                   </Box>
                 </Box>
@@ -714,7 +746,7 @@ const Settings = () => {
 
               <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
-                  <TableHead sx={{ bgcolor: 'grey.100' }}>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
@@ -726,43 +758,45 @@ const Settings = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {locais.map((local) => (
-                      <TableRow key={local.id}>
-                        <TableCell sx={{ fontWeight: 500 }}>{local.nome}</TableCell>
-                        <TableCell><StatusIcon {...getLocalTipoMeta(local.tipo)} /></TableCell>
-                        <TableCell>{local.capacidade !== null ? local.capacidade : '-'}</TableCell>
-                        <TableCell>{local.organizacaoNome || '-'}</TableCell>
-                        <TableCell>{local.endereco || '-'}</TableCell>
-                        <TableCell>
-                          <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
-                        </TableCell>
-                        {isAuthorizedLocais && (
-                          <TableCell align="right">
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              <ActionButton
-                                title="Editar"
-                                icon={<EditIcon />}
-                                color="secondary"
-                                size="small"
-                                onClick={() => {
-                                  setSelectedLocal(local);
-                                  setModalOpen(true);
-                                }}
-                                disabled={toggleLocalStatusMutation.isPending}
-                              />
-                              <ActionButton
-                                title={local.ativo ? 'Inativar' : 'Ativar'}
-                                icon={local.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
-                                color={local.ativo ? 'error' : 'primary'}
-                                size="small"
-                                onClick={() => toggleLocalStatusMutation.mutate(local)}
-                                disabled={toggleLocalStatusMutation.isPending}
-                              />
-                            </Box>
+                    {locais
+                      .slice(locaisPage * locaisRowsPerPage, locaisPage * locaisRowsPerPage + locaisRowsPerPage)
+                      .map((local) => (
+                        <TableRow key={local.id} hover>
+                          <TableCell sx={{ fontWeight: 500 }}>{local.nome}</TableCell>
+                          <TableCell><StatusIcon {...getLocalTipoMeta(local.tipo)} /></TableCell>
+                          <TableCell>{local.capacidade !== null ? local.capacidade : '-'}</TableCell>
+                          <TableCell>{local.organizacaoNome || '-'}</TableCell>
+                          <TableCell><FormattedAddress value={local.endereco} /></TableCell>
+                          <TableCell>
+                            <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
                           </TableCell>
-                        )}
-                      </TableRow>
-                    ))}
+                          {isAuthorizedLocais && (
+                            <TableCell align="right">
+                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                <ActionButton
+                                  title="Editar"
+                                  icon={<EditIcon />}
+                                  color="secondary"
+                                  size="small"
+                                  onClick={() => {
+                                    setSelectedLocal(local);
+                                    setModalOpen(true);
+                                  }}
+                                  disabled={toggleLocalStatusMutation.isPending}
+                                />
+                                <ActionButton
+                                  title={local.ativo ? 'Inativar' : 'Ativar'}
+                                  icon={local.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
+                                  color={local.ativo ? 'error' : 'primary'}
+                                  size="small"
+                                  onClick={() => toggleLocalStatusMutation.mutate(local)}
+                                  disabled={toggleLocalStatusMutation.isPending}
+                                />
+                              </Box>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))}
                     {locais.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={isAuthorizedLocais ? 6 : 5} align="center" sx={{ py: 3, color: 'text.secondary' }}>
@@ -773,6 +807,19 @@ const Settings = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={locais.length}
+                rowsPerPage={locaisRowsPerPage}
+                page={locaisPage}
+                onPageChange={(_, newPage) => setLocaisPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setLocaisRowsPerPage(parseInt(e.target.value, 10));
+                  setLocaisPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
             </Box>
           )}
         </CustomTabPanel>
@@ -843,7 +890,7 @@ const Settings = () => {
 
               <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Table>
-                  <TableHead sx={{ bgcolor: 'grey.100' }}>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
@@ -855,55 +902,57 @@ const Settings = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {filteredOrgs.map((org) => (
-                      <TableRow key={org.id}>
-                        <TableCell sx={{ fontWeight: 500 }}>{org.nome}</TableCell>
-                        <TableCell><StatusIcon {...getOrganismoTipoMeta(org.tipo)} /></TableCell>
-                        <TableCell>{org.coordenador || '-'}</TableCell>
-                        <TableCell>{org.viceCoordenador || '-'}</TableCell>
-                        <TableCell>{org.contato || '-'}</TableCell>
-                        <TableCell>
-                          <StatusIcon {...getSituacaoAtivoMeta(org.ativo)} />
-                        </TableCell>
-                        <TableCell align="right">
-                          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                            <ActionButton
-                              title="Membros"
-                              icon={<GroupsIcon />}
-                              color="secondary"
-                              size="small"
-                              onClick={() => {
-                                setOrganizacaoSelecionadaParaMembros(org);
-                                setIsModalMembrosOrgAberto(true);
-                              }}
-                            />
-                            {isAuthorizedOrgs && (
-                              <>
-                                <ActionButton
-                                  title="Editar"
-                                  icon={<EditIcon />}
-                                  color="secondary"
-                                  size="small"
-                                  onClick={() => {
-                                    setSelectedOrg(org);
-                                    setOrgModalOpen(true);
-                                  }}
-                                  disabled={toggleOrgStatusMutation.isPending}
-                                />
-                                <ActionButton
-                                  title={org.ativo ? 'Inativar' : 'Ativar'}
-                                  icon={org.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
-                                  color={org.ativo ? 'error' : 'primary'}
-                                  size="small"
-                                  onClick={() => toggleOrgStatusMutation.mutate(org)}
-                                  disabled={toggleOrgStatusMutation.isPending}
-                                />
-                              </>
-                            )}
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {filteredOrgs
+                      .slice(orgsPage * orgsRowsPerPage, orgsPage * orgsRowsPerPage + orgsRowsPerPage)
+                      .map((org) => (
+                        <TableRow key={org.id} hover>
+                          <TableCell sx={{ fontWeight: 500 }}>{org.nome}</TableCell>
+                          <TableCell><StatusIcon {...getOrganismoTipoMeta(org.tipo)} /></TableCell>
+                          <TableCell>{org.coordenador || '-'}</TableCell>
+                          <TableCell>{org.viceCoordenador || '-'}</TableCell>
+                          <TableCell><FormattedContact value={org.contato} /></TableCell>
+                          <TableCell>
+                            <StatusIcon {...getSituacaoAtivoMeta(org.ativo)} />
+                          </TableCell>
+                          <TableCell align="right">
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                              <ActionButton
+                                title="Membros"
+                                icon={<GroupsIcon />}
+                                color="secondary"
+                                size="small"
+                                onClick={() => {
+                                  setOrganizacaoSelecionadaParaMembros(org);
+                                  setIsModalMembrosOrgAberto(true);
+                                }}
+                              />
+                              {isAuthorizedOrgs && (
+                                <>
+                                  <ActionButton
+                                    title="Editar"
+                                    icon={<EditIcon />}
+                                    color="secondary"
+                                    size="small"
+                                    onClick={() => {
+                                      setSelectedOrg(org);
+                                      setOrgModalOpen(true);
+                                    }}
+                                    disabled={toggleOrgStatusMutation.isPending}
+                                  />
+                                  <ActionButton
+                                    title={org.ativo ? 'Inativar' : 'Ativar'}
+                                    icon={org.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
+                                    color={org.ativo ? 'error' : 'primary'}
+                                    size="small"
+                                    onClick={() => toggleOrgStatusMutation.mutate(org)}
+                                    disabled={toggleOrgStatusMutation.isPending}
+                                  />
+                                </>
+                              )}
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     {filteredOrgs.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
@@ -914,6 +963,19 @@ const Settings = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={filteredOrgs.length}
+                rowsPerPage={orgsRowsPerPage}
+                page={orgsPage}
+                onPageChange={(_, newPage) => setOrgsPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setOrgsRowsPerPage(parseInt(e.target.value, 10));
+                  setOrgsPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
             </Box>
           )}
         </CustomTabPanel>
@@ -958,7 +1020,7 @@ const Settings = () => {
               </Box>
                 <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                   <Table>
-                    <TableHead sx={{ bgcolor: 'grey.100' }}>
+                    <TableHead sx={{ backgroundColor: 'action.hover' }}>
                       <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
@@ -971,55 +1033,57 @@ const Settings = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {users.map((u) => (
-                        <TableRow key={u.id}>
-                          <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
-                          <TableCell>{u.username}</TableCell>
-                          <TableCell>{u.igrejaNome || '-'}</TableCell>
-                          <TableCell>{u.telefone || '-'}</TableCell>
-                          <TableCell>{u.dataNascimento || '-'}</TableCell>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                              {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
-                              {u.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="success" />}
-                              {u.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
-                              {u.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
-                              {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
-                            </Box>
-                          </TableCell>
+                      {users
+                        .slice(usersPage * usersRowsPerPage, usersPage * usersRowsPerPage + usersRowsPerPage)
+                        .map((u) => (
+                          <TableRow key={u.id} hover>
+                            <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
+                            <TableCell><FormattedEmail value={u.username} /></TableCell>
+                            <TableCell>{u.igrejaNome || '-'}</TableCell>
+                            <TableCell><FormattedPhone value={u.telefone} /></TableCell>
+                            <TableCell>{u.dataNascimento || '-'}</TableCell>
+                            <TableCell>
+                              <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                                {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
+                                {u.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="success" />}
+                                {u.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
+                                {u.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
+                                {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
+                              </Box>
+                            </TableCell>
 
-                          <TableCell>
-                            <StatusIcon {...getUsuarioSituacaoMeta(u.enabled)} />
-                          </TableCell>
-                          <TableCell align="right">
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              {!u.enabled && (
+                            <TableCell>
+                              <StatusIcon {...getUsuarioSituacaoMeta(u.enabled)} />
+                            </TableCell>
+                            <TableCell align="right">
+                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                {!u.enabled && (
+                                  <ActionButton
+                                    title="Aprovar"
+                                    icon={<CheckCircleIcon />}
+                                    color="success"
+                                    size="small"
+                                    onClick={() => approveUserMutation.mutate(u.id)}
+                                    disabled={approveUserMutation.isPending}
+                                  />
+                                )}
                                 <ActionButton
-                                  title="Aprovar"
-                                  icon={<CheckCircleIcon />}
-                                  color="success"
+                                  title="Gerenciar Vínculos"
+                                  icon={<LinkIcon />}
+                                  color="secondary"
                                   size="small"
-                                  onClick={() => approveUserMutation.mutate(u.id)}
-                                  disabled={approveUserMutation.isPending}
+                                  onClick={() => {
+                                    setSelectedUserForVinculos(u);
+                                    setIsVinculosModalOpen(true);
+                                  }}
                                 />
-                              )}
-                              <ActionButton
-                                title="Gerenciar Vínculos"
-                                icon={<LinkIcon />}
-                                color="secondary"
-                                size="small"
-                                onClick={() => {
-                                  setSelectedUserForVinculos(u);
-                                  setIsVinculosModalOpen(true);
-                                }}
-                              />
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       {users.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                          <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                             Nenhum usuário encontrado.
                           </TableCell>
                         </TableRow>
@@ -1027,6 +1091,19 @@ const Settings = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 20, 50, 100]}
+                  component="div"
+                  count={users.length}
+                  rowsPerPage={usersRowsPerPage}
+                  page={usersPage}
+                  onPageChange={(_, newPage) => setUsersPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setUsersRowsPerPage(parseInt(e.target.value, 10));
+                    setUsersPage(0);
+                  }}
+                  labelRowsPerPage="Itens por página:"
+                />
               </Box>
             )}
           </CustomTabPanel>
@@ -1071,7 +1148,7 @@ const Settings = () => {
 
                 <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                   <Table>
-                    <TableHead sx={{ bgcolor: 'grey.100' }}>
+                    <TableHead sx={{ backgroundColor: 'action.hover' }}>
                       <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
@@ -1079,35 +1156,37 @@ const Settings = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {pastoraisOficiais.map((po) => (
-                        <TableRow key={po.id}>
-                          <TableCell sx={{ fontWeight: 500 }}>{po.nome}</TableCell>
-                          <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
-                          <TableCell align="right">
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              <ActionButton
-                                title="Editar"
-                                icon={<EditIcon />}
-                                color="secondary"
-                                size="small"
-                                onClick={() => handleEditPO(po)}
-                              />
-                              <ActionButton
-                                title="Excluir"
-                                icon={<DeleteIcon />}
-                                color="error"
-                                size="small"
-                                onClick={() => {
-                                  if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
-                                    deletePOMutation.mutate(po.id);
-                                  }
-                                }}
-                                disabled={deletePOMutation.isPending}
-                              />
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {pastoraisOficiais
+                        .slice(poPage * poRowsPerPage, poPage * poRowsPerPage + poRowsPerPage)
+                        .map((po) => (
+                          <TableRow key={po.id} hover>
+                            <TableCell sx={{ fontWeight: 500 }}>{po.nome}</TableCell>
+                            <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
+                            <TableCell align="right">
+                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                <ActionButton
+                                  title="Editar"
+                                  icon={<EditIcon />}
+                                  color="secondary"
+                                  size="small"
+                                  onClick={() => handleEditPO(po)}
+                                />
+                                <ActionButton
+                                  title="Excluir"
+                                  icon={<DeleteIcon />}
+                                  color="error"
+                                  size="small"
+                                  onClick={() => {
+                                    if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
+                                      deletePOMutation.mutate(po.id);
+                                    }
+                                  }}
+                                  disabled={deletePOMutation.isPending}
+                                />
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       {pastoraisOficiais.length === 0 && (
                         <TableRow>
                           <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
@@ -1118,6 +1197,19 @@ const Settings = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 20, 50, 100]}
+                  component="div"
+                  count={pastoraisOficiais.length}
+                  rowsPerPage={poRowsPerPage}
+                  page={poPage}
+                  onPageChange={(_, newPage) => setPoPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setPoRowsPerPage(parseInt(e.target.value, 10));
+                    setPoPage(0);
+                  }}
+                  labelRowsPerPage="Itens por página:"
+                />
               </Box>
             )}
           </CustomTabPanel>

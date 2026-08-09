@@ -449,7 +449,7 @@ export interface Observacao {
 export interface OrganogramaNode {
   id: string;
   label: string;
-  type: 'PAROQUIA' | 'ORGANIZACAO' | 'MEMBRO' | 'GRUPO';
+  type: 'PAROQUIA' | 'ORGANIZACAO' | 'UNIDADE_TERRITORIAL' | 'GRUPO_PAROQUIAL' | 'MEMBRO' | 'GRUPO' | string;
   subtype: string;
   responsavelNome: string | null;
   responsavelPapel: string | null;

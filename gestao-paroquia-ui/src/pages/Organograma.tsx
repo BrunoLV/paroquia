@@ -71,6 +71,10 @@ const Organograma: React.FC = () => {
     switch (subtype?.toUpperCase()) {
       case 'CLERO':
         return 'Clero Paroquial';
+      case 'MATRIZ':
+        return 'Matriz Paroquial';
+      case 'COMUNIDADE':
+        return 'Comunidade Territorial';
       case 'CONSELHO':
         return 'Conselho Pastoral Paroquial';
       case 'CONSELHO_ECONOMICO':
@@ -79,6 +83,8 @@ const Organograma: React.FC = () => {
         return 'Pastoral';
       case 'MOVIMENTO':
         return 'Movimento';
+      case 'MINISTERIO':
+        return 'Ministério';
       case 'LAICATO':
         return 'Laicato';
       default:
@@ -312,7 +318,7 @@ const Organograma: React.FC = () => {
    */
   const transformToOrgchartData = (node: OrganogramaNode): Record<string, unknown> | null => {
     if (!node) return null;
-    const childrenOrgs = (node.children || []).filter(c => c && c.type === 'ORGANIZACAO');
+    const childrenOrgs = (node.children || []).filter(c => c && c.type !== 'MEMBRO');
     return {
       ...node,
       name: node.label,
@@ -373,7 +379,7 @@ const Organograma: React.FC = () => {
   const cleroOrgs = collectNodesBySubtypes(organograma, ['CLERO']);
   const matrizesOrgs = collectNodesBySubtypes(organograma, ['MATRIZ', 'COMUNIDADE']);
   const conselhoOrgs = collectNodesBySubtypes(organograma, ['CONSELHO', 'CONSELHO_ECONOMICO']);
-  const pastoralOrgs = collectNodesBySubtypes(organograma, ['PASTORAL', 'MOVIMENTO', 'LAICATO', 'OUTRO']);
+  const pastoralOrgs = collectNodesBySubtypes(organograma, ['PASTORAL', 'MOVIMENTO', 'MINISTERIO', 'LAICATO', 'OUTRO']);
 
   // A visão em árvore usa o Clero como raiz visual (pároco no topo da hierarquia pastoral), não
   // o nó raiz literal devolvido pela API (que normalmente é a Paróquia/Matriz). Se a raiz da API
@@ -394,7 +400,9 @@ const Organograma: React.FC = () => {
         subtitle="Visualização completa da hierarquia e lideranças da paróquia."
         actions={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-            <OrganogramaExportButton onExport={handleExport} isExporting={isExporting} />
+            {viewMode === 'tree' && (
+              <OrganogramaExportButton onExport={handleExport} isExporting={isExporting} />
+            )}
 
             <ToggleButtonGroup
               value={viewMode}
@@ -420,8 +428,7 @@ const Organograma: React.FC = () => {
         }
       />
 
-      {/* Container de captura para exportação de imagem */}
-      <Box ref={chartRef} sx={{ bgcolor: '#ffffff', p: 1 }}>
+      <Box sx={{ p: 1 }}>
         {viewMode === 'tree' ? (
           /* Connected Interactive Tree View powered by @dabeng/react-orgchart */
           <Box>
@@ -482,7 +489,7 @@ const Organograma: React.FC = () => {
             </Box>
 
             <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
-              <Box sx={{ width: 'max-content', minWidth: '100%', zoom: zoom }}>
+              <Box ref={chartRef} sx={{ width: 'max-content', minWidth: '100%', zoom: zoom, bgcolor: '#ffffff', p: 2 }}>
                 <OrganizationChart
                   datasource={transformToOrgchartData(cleroRootNode)}
                   NodeTemplate={OrgchartNodeTemplate}

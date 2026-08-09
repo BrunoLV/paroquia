@@ -14,6 +14,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Tooltip,
@@ -48,6 +49,8 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
   const [isLoading, setIsLoading] = useState(false);
   const [cancelandoAlocacao, setCancelandoAlocacao] = useState<AtivoAlocacaoResponse | null>(null);
   const [motivoCancelamento, setMotivoCancelamento] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const loadAlocacoes = async (id: string) => {
     setIsLoading(true);
@@ -107,7 +110,7 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
           ) : (
             <TableContainer>
               <Table size="small">
-                <TableHead>
+                <TableHead sx={{ backgroundColor: 'action.hover' }}>
                   <TableRow>
                     <TableCell>Tipo</TableCell>
                     <TableCell>Período</TableCell>
@@ -116,41 +119,56 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {alocacoes.map((alocacao) => (
-                    <TableRow key={alocacao.id}>
-                      <TableCell><StatusIcon {...getAtivoAlocacaoTipoMeta(alocacao.tipo)} /></TableCell>
-                      <TableCell>{alocacao.dataInicio} — {alocacao.dataFim}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                          <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
-                          {alocacao.impactadaPorAtraso && (
-                            <Tooltip title="Risco de atraso na devolução">
-                              <Chip
-                                label="Pode atrasar"
-                                color="warning"
-                                icon={<WarningAmberIcon />}
-                                size="small"
-                                variant="outlined"
-                              />
-                            </Tooltip>
+                  {alocacoes
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((alocacao) => (
+                      <TableRow key={alocacao.id} hover>
+                        <TableCell><StatusIcon {...getAtivoAlocacaoTipoMeta(alocacao.tipo)} /></TableCell>
+                        <TableCell>{alocacao.dataInicio} — {alocacao.dataFim}</TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                            <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
+                            {alocacao.impactadaPorAtraso && (
+                              <Tooltip title="Risco de atraso na devolução">
+                                <Chip
+                                  label="Pode atrasar"
+                                  color="warning"
+                                  icon={<WarningAmberIcon />}
+                                  size="small"
+                                  variant="outlined"
+                                />
+                              </Tooltip>
+                            )}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">
+                          {isCancelavel(alocacao) && (
+                            <ActionButton
+                              title="Cancelar Reserva"
+                              icon={<BlockIcon fontSize="small" />}
+                              size="small"
+                              color="error"
+                              onClick={() => setCancelandoAlocacao(alocacao)}
+                            />
                           )}
-                        </Box>
-                      </TableCell>
-                      <TableCell align="right">
-                        {isCancelavel(alocacao) && (
-                          <ActionButton
-                            title="Cancelar Reserva"
-                            icon={<BlockIcon fontSize="small" />}
-                            size="small"
-                            color="error"
-                            onClick={() => setCancelandoAlocacao(alocacao)}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={alocacoes.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, newPage) => setPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
             </TableContainer>
           )}
         </DialogContent>

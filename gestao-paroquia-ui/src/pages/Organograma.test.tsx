@@ -114,6 +114,9 @@ describe('Organograma Page', () => {
     expect(screen.getByText('Maria do Conselho')).toBeInTheDocument();
     expect(screen.getByText('Maria Oliveira')).toBeInTheDocument();
 
+    // Export button should be visible in tree mode
+    expect(screen.getByRole('button', { name: /Exportar Organograma/i })).toBeInTheDocument();
+
     // Now, switch to Grid view
     const gridBtn = screen.getByRole('button', { name: /Visualização em Grade/i });
     await act(async () => {
@@ -122,6 +125,8 @@ describe('Organograma Page', () => {
 
     // In grid mode, "Pastorais e Movimentos" group header should be visible
     expect(screen.getByText('Pastorais e Movimentos')).toBeInTheDocument();
+    // Export button should NOT be visible in grid mode
+    expect(screen.queryByRole('button', { name: /Exportar Organograma/i })).not.toBeInTheDocument();
   });
 
   test('expands members list inside pastoral card on click', async () => {
@@ -140,5 +145,80 @@ describe('Organograma Page', () => {
 
     // Now it should be visible
     expect(screen.getByText('Carlos de Oliveira')).toBeInTheDocument();
+  });
+
+  test('renders tree correctly with UNIDADE_TERRITORIAL and GRUPO_PAROQUIAL node types', async () => {
+    const mockRefactoredData = {
+      id: 'ut-clero',
+      label: 'Clero Paroquial',
+      type: 'UNIDADE_TERRITORIAL',
+      subtype: 'CLERO',
+      responsavelNome: 'Padre Antônio',
+      responsavelPapel: 'PÁROCO',
+      viceResponsavelNome: null,
+      children: [
+        {
+          id: 'ut-matriz',
+          label: 'Matriz São José',
+          type: 'UNIDADE_TERRITORIAL',
+          subtype: 'MATRIZ',
+          responsavelNome: null,
+          responsavelPapel: null,
+          viceResponsavelNome: null,
+          children: [
+            {
+              id: 'gp-conselho',
+              label: 'Conselho Pastoral Matriz',
+              type: 'GRUPO_PAROQUIAL',
+              subtype: 'CONSELHO',
+              responsavelNome: 'Coordenador Matriz',
+              responsavelPapel: 'COORDENADOR',
+              viceResponsavelNome: null,
+              children: [
+                {
+                  id: 'gp-ministerio',
+                  label: 'Ministério de Música',
+                  type: 'GRUPO_PAROQUIAL',
+                  subtype: 'MINISTERIO',
+                  responsavelNome: 'Líder de Música',
+                  responsavelPapel: 'COORDENADOR',
+                  viceResponsavelNome: null,
+                  children: [],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    mockedApiClient.get.mockImplementation((url) => {
+      if (url === '/auth/me') {
+        return Promise.resolve({ data: { id: '1', name: 'Admin', roles: ['ADMIN'] } });
+      }
+      if (url === '/organizacoes/organograma') {
+        return Promise.resolve({ data: mockRefactoredData });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <QueryProvider>
+            <AuthProvider>
+              <ThemeProvider theme={theme}>
+                <Organograma />
+              </ThemeProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </MemoryRouter>
+      );
+    });
+
+    expect(await screen.findByText('Clero Paroquial')).toBeInTheDocument();
+    expect(screen.getByText('Matriz São José')).toBeInTheDocument();
+    expect(screen.getByText('Conselho Pastoral Matriz')).toBeInTheDocument();
+    expect(screen.getByText('Ministério de Música')).toBeInTheDocument();
   });
 });

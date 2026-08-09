@@ -23,28 +23,30 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({
   title, icon, label, onClick, type = 'button', color = 'primary', variant = 'outlined',
   size = 'medium', disabled, fullWidth, component, sx, children, ariaLabel,
-}) => (
-  <Tooltip title={title}>
-    <span>
-      {label ? (
-        <Button
-          type={type} color={color} variant={variant} size={size} onClick={onClick}
-          startIcon={icon} disabled={disabled} fullWidth={fullWidth}
-          sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
-        >
-          {label}
-        </Button>
-      ) : (
-        <IconButton
-          type={type} color={color} size={size} onClick={onClick} disabled={disabled}
-          sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
-        >
-          {icon}
-          {children}
-        </IconButton>
-      )}
-    </span>
-  </Tooltip>
-);
+}) => {
+  const buttonEl = label ? (
+    <Button
+      type={type} color={color} variant={variant} size={size} onClick={onClick}
+      startIcon={icon} disabled={disabled} fullWidth={fullWidth}
+      sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
+    >
+      {label}
+    </Button>
+  ) : (
+    <IconButton
+      type={type} color={color} size={size} onClick={onClick} disabled={disabled}
+      sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
+    >
+      {icon}
+      {children}
+    </IconButton>
+  );
+
+  return (
+    <Tooltip title={title}>
+      {disabled ? <span>{buttonEl}</span> : buttonEl}
+    </Tooltip>
+  );
+};
 
 export default ActionButton;

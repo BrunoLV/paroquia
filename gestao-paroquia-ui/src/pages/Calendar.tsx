@@ -53,6 +53,7 @@ import { getEventoStatusMeta } from '../utils/statusMeta/eventoStatus';
 import { getCategoriaEventoMeta } from '../utils/statusMeta/categoriaEventoStatus';
 import theme from '../theme';
 import apiClient from '../api/client';
+import { getOrganizacoes } from '../api/organizacoes';
 import { extractErrorMessage } from '../utils/errorUtils';
 import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
@@ -299,9 +300,9 @@ const Calendar = () => {
         // Fetch organizations list (only if empty)
         if (organizations.length === 0) {
           try {
-            const orgsRes = await apiClient.get<Organizacao[]>('/organizacoes');
-            if (Array.isArray(orgsRes.data)) {
-              setOrganizations(orgsRes.data);
+            const orgsData = await getOrganizacoes();
+            if (Array.isArray(orgsData)) {
+              setOrganizations(orgsData);
             }
           } catch (err) {
             console.error('Error fetching organizations:', err);

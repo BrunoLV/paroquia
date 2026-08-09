@@ -123,7 +123,7 @@ describe('Projects Page', () => {
     // Check elements in Details Drawer
     expect(screen.getByText('Detalhes do Projeto')).toBeInTheDocument();
     expect(screen.getByText('35.5%')).toBeInTheDocument(); // percentualTempoDecorrido
-    expect(screen.getByText('10')).toBeInTheDocument(); // totalEventos
+    expect(screen.getAllByText('10').length).toBeGreaterThan(0); // totalEventos e TablePagination
     expect(screen.getByText('4')).toBeInTheDocument(); // eventosRealizados
   });
 

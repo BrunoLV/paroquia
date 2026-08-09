@@ -89,7 +89,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
               <TableContainer component={Paper} variant="outlined">
                 <Table size="small">
-                  <TableHead sx={{ bgcolor: 'grey.100' }}>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
                       <TableCell>Ciclo / Festa</TableCell>
                       <TableCell align="center">Fator Demanda</TableCell>

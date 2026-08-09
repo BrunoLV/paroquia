@@ -19,10 +19,13 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from '@mui/material';
+import { FormattedAddress, FormattedCpf, FormattedEmail, FormattedPhone } from '../components/FormattedCell';
+import { formatProgressiveCpf } from '../utils/cpfUtils';
 import {
   Add as AddIcon,
   Close as CloseIcon,
@@ -60,6 +63,8 @@ const Fieis = () => {
   const [organizacoes, setOrganizacoes] = useState<Organizacao[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   // Fiel Modal State
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -241,7 +246,10 @@ const Fieis = () => {
             size="small"
             placeholder="Buscar fiel por Nome, CPF ou E-mail..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(0);
+            }}
           />
         </Box>
       </Paper>
@@ -268,59 +276,72 @@ const Fieis = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredFieis.map((fiel) => (
-                <TableRow key={fiel.id} hover>
-                  <TableCell>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                      {fiel.nome}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {fiel.endereco}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{fiel.cpf}</TableCell>
-                  <TableCell>
-                    <StatusIcon {...getVocacaoMeta(fiel.vocacao)} />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{fiel.email}</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {fiel.telefone}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                      {fiel.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="success" />}
-                      {fiel.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="info" />}
-                      {fiel.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
-                      {fiel.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">
-                    <ActionButton
-                      title="Editar Fiel"
-                      icon={<EditIcon fontSize="small" />}
-                      size="small"
-                      color="primary"
-                      onClick={() => handleOpenEditModal(fiel)}
-                    />
-
-                    {isCoordinatorPromoter() && (
+              filteredFieis
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((fiel) => (
+                  <TableRow key={fiel.id} hover>
+                    <TableCell>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                        {fiel.nome}
+                      </Typography>
+                      <FormattedAddress value={fiel.endereco} />
+                    </TableCell>
+                    <TableCell><FormattedCpf value={fiel.cpf} /></TableCell>
+                    <TableCell>
+                      <StatusIcon {...getVocacaoMeta(fiel.vocacao)} />
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                        <FormattedEmail value={fiel.email} />
+                        <FormattedPhone value={fiel.telefone} variant="caption" color="text.secondary" />
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                        {fiel.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="success" />}
+                        {fiel.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="info" />}
+                        {fiel.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
+                        {fiel.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
+                      </Box>
+                    </TableCell>
+                    <TableCell align="right">
                       <ActionButton
-                        title="Promover a Coordenador"
-                        icon={<PromoteIcon fontSize="small" />}
+                        title="Editar Fiel"
+                        icon={<EditIcon fontSize="small" />}
                         size="small"
-                        color="secondary"
-                        onClick={() => handleOpenPromoteModal(fiel)}
+                        color="primary"
+                        onClick={() => handleOpenEditModal(fiel)}
                       />
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
+
+                      {isCoordinatorPromoter() && (
+                        <ActionButton
+                          title="Promover a Coordenador"
+                          icon={<PromoteIcon fontSize="small" />}
+                          size="small"
+                          color="secondary"
+                          onClick={() => handleOpenPromoteModal(fiel)}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
             )}
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10, 20, 50, 100]}
+        component="div"
+        count={filteredFieis.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
+        labelRowsPerPage="Itens por página:"
+      />
 
       {/* Modal de Cadastro / Edição de Fiel */}
       <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="md" fullWidth>
@@ -347,7 +368,8 @@ const Fieis = () => {
                 fullWidth
                 required
                 value={formValues.cpf}
-                onChange={(e) => setFormValues({ ...formValues, cpf: e.target.value })}
+                onChange={(e) => setFormValues({ ...formValues, cpf: formatProgressiveCpf(e.target.value) })}
+                slotProps={{ htmlInput: { maxLength: 14 } }}
               />
             </Grid>
 

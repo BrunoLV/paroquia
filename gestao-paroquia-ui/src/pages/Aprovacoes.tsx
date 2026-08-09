@@ -59,6 +59,9 @@ const Aprovacoes = () => {
   const [tabValue, setTabValue] = useState(0);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+
+  const [projPage, setProjPage] = useState(0);
+  const [projRowsPerPage, setProjRowsPerPage] = useState(10);
   // Solicitação selecionada abre o drawer de detalhes/decisão; cada tipo de
   // aprovação tem seu próprio drawer porque os payloads (actionPayloadJson) e as
   // regras de exibição diferem entre evento e projeto.
@@ -294,7 +297,7 @@ const Aprovacoes = () => {
               <>
                 <TableContainer>
                   <Table>
-                    <TableHead sx={{ bgcolor: '#f8f9fa' }}>
+                    <TableHead sx={{ backgroundColor: 'action.hover' }}>
                       <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Evento / Detalhe</TableCell>
@@ -341,13 +344,14 @@ const Aprovacoes = () => {
                   </Table>
                 </TableContainer>
                 <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[10, 20, 50, 100]}
                   component="div"
                   count={data.totalElements}
                   rowsPerPage={size}
                   page={page}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
+                  labelRowsPerPage="Itens por página:"
                 />
               </>
             )
@@ -370,56 +374,73 @@ const Aprovacoes = () => {
                 </Typography>
               </Box>
             ) : (
-              <TableContainer>
-                <Table>
-                  <TableHead sx={{ bgcolor: '#f8f9fa' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Projeto / Detalhe</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Solicitante</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Data Criação</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }} align="right">Ações</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {projectData.map((approval) => (
-                      <TableRow key={approval.id} hover>
-                        <TableCell sx={{ fontWeight: 500 }}>
-                          <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
-                        </TableCell>
-                        <TableCell>
-                          {approval.tipoSolicitacao === 'CRIACAO' ? (
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {parsePayload(approval.actionPayloadJson)?.nome || 'Novo Projeto'}
-                            </Typography>
-                          ) : (
-                            <Typography variant="body2" color="error" sx={{ fontWeight: 500 }}>
-                              {projectsMap[approval.projetoId || ''] || 'Projeto Solicitado'}
-                            </Typography>
-                          )}
-                        </TableCell>
-                        <TableCell>{approval.solicitanteId}</TableCell>
-                        <TableCell>
-                          {new Date(approval.criadoEmUtc).toLocaleString()}
-                        </TableCell>
-                        <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
-                        <TableCell align="right">
-                          <ActionButton
-                            title="Visualizar Detalhes"
-                            icon={<VisibilityIcon fontSize="small" />}
-                            color="primary"
-                            size="small"
-                            onClick={() => setAprovacaoProjetoSelecionada(approval)}
-                          />
-                        </TableCell>
+              <>
+                <TableContainer>
+                  <Table>
+                    <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Projeto / Detalhe</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Solicitante</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Data Criação</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }} align="right">Ações</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHead>
+                    <TableBody>
+                      {projectData
+                        .slice(projPage * projRowsPerPage, projPage * projRowsPerPage + projRowsPerPage)
+                        .map((approval) => (
+                          <TableRow key={approval.id} hover>
+                            <TableCell sx={{ fontWeight: 500 }}>
+                              <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
+                            </TableCell>
+                            <TableCell>
+                              {approval.tipoSolicitacao === 'CRIACAO' ? (
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                  {parsePayload(approval.actionPayloadJson)?.nome || 'Novo Projeto'}
+                                </Typography>
+                              ) : (
+                                <Typography variant="body2" color="error" sx={{ fontWeight: 500 }}>
+                                  {projectsMap[approval.projetoId || ''] || 'Projeto Solicitado'}
+                                </Typography>
+                              )}
+                            </TableCell>
+                            <TableCell>{approval.solicitanteId}</TableCell>
+                            <TableCell>
+                              {new Date(approval.criadoEmUtc).toLocaleString()}
+                            </TableCell>
+                            <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
+                            <TableCell align="right">
+                              <ActionButton
+                                title="Visualizar Detalhes"
+                                icon={<VisibilityIcon fontSize="small" />}
+                                color="primary"
+                                size="small"
+                                onClick={() => setAprovacaoProjetoSelecionada(approval)}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
                 </TableContainer>
-              )
-            )}
+                <TablePagination
+                  rowsPerPageOptions={[10, 20, 50, 100]}
+                  component="div"
+                  count={projectData.length}
+                  rowsPerPage={projRowsPerPage}
+                  page={projPage}
+                  onPageChange={(_, newPage) => setProjPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setProjRowsPerPage(parseInt(e.target.value, 10));
+                    setProjPage(0);
+                  }}
+                  labelRowsPerPage="Itens por página:"
+                />
+              </>
+            )
+          )}
         </Card>
 
       {/* Details Drawer: mostra o payload da solicitação de evento/ativo e, apenas

@@ -14,6 +14,8 @@ import {
     TextField,
 } from '@mui/material';
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
+import {useAuth} from '../auth/AuthContext';
+import {isGlobalCreator} from '../auth/permissions';
 import {Local} from '../api/types';
 import {getOrganizacoes} from '../api/organizacoes';
 import ActionButton from '../components/ActionButton';
@@ -33,6 +35,7 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
   local,
   isPending,
 }) => {
+  const { user } = useAuth();
   const [nome, setNome] = useState('');
   const [tipo, setTipo] = useState('OUTRO');
   const [endereco, setEndereco] = useState('');
@@ -47,8 +50,19 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
     enabled: open,
   });
 
-  const matrizComunidades = orgs.filter(
-    (o) => o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE' || o.tipo === 'CLERO'
+  const getSelectableOrgs = () => {
+    if (isGlobalCreator(user)) {
+      return orgs;
+    }
+    if (user && Array.isArray(user.organizations)) {
+      const userOrgIds = user.organizations.map((o: { id: string }) => o.id);
+      return orgs.filter((o) => userOrgIds.includes(o.id));
+    }
+    return orgs;
+  };
+
+  const matrizComunidades = getSelectableOrgs().filter(
+    (o) => (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') && o.ativo !== false
   );
 
   useEffect(() => {

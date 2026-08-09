@@ -28,13 +28,25 @@ describe('Organizacoes API Client', () => {
     ativo: true,
   };
 
-  test('getOrganizacoes should fetch organizations', async () => {
-    (apiClient.get as jest.Mock).mockResolvedValue({ data: [mockOrg] });
+  test('getOrganizacoes should fetch organizations from both /unidades-territoriais and /organizacoes', async () => {
+    const mockUnidade: Organizacao = {
+      id: 'uuid-unidade-1',
+      nome: 'Igreja Matriz',
+      tipo: 'MATRIZ',
+      contato: 'matriz@test.com',
+      ativo: true,
+    };
+    (apiClient.get as jest.Mock).mockImplementation((url: string) => {
+      if (url === '/unidades-territoriais') return Promise.resolve({ data: [mockUnidade] });
+      if (url === '/organizacoes') return Promise.resolve({ data: [mockOrg] });
+      return Promise.resolve({ data: [] });
+    });
 
     const result = await getOrganizacoes();
 
+    expect(apiClient.get).toHaveBeenCalledWith('/unidades-territoriais');
     expect(apiClient.get).toHaveBeenCalledWith('/organizacoes');
-    expect(result).toEqual([mockOrg]);
+    expect(result).toEqual([mockUnidade, mockOrg]);
   });
 
   test('createOrganizacao should post a new organization', async () => {

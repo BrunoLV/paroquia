@@ -27,6 +27,7 @@ import {
     TableCell,
     TableContainer,
     TableHead,
+    TablePagination,
     TableRow,
     TextField,
     Typography,
@@ -57,6 +58,7 @@ import {
     isGlobalCreator as userIsGlobalCreator
 } from '../auth/permissions';
 import apiClient from '../api/client';
+import { getOrganizacoes } from '../api/organizacoes';
 import {Organizacao, Projeto} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
 import { extractErrorMessage } from '../utils/errorUtils';
@@ -141,16 +143,19 @@ const Projects = () => {
     return [];
   };
 
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+
   // 2. Fetch Initial Data
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [projRes, orgsRes] = await Promise.all([
+      const [projRes, orgsData] = await Promise.all([
         apiClient.get<Projeto[]>('/projetos'),
-        apiClient.get<Organizacao[]>('/organizacoes')
+        getOrganizacoes()
       ]);
       setProjects(projRes.data || []);
-      setOrganizations(orgsRes.data || []);
+      setOrganizations(orgsData || []);
     } catch (err) {
       console.error('Erro ao buscar dados:', err);
       showError('Não foi possível carregar os projetos e organizações.');
@@ -367,7 +372,7 @@ const Projects = () => {
         <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <TableContainer component={Paper} elevation={0}>
             <Table>
-              <TableHead sx={{ bgcolor: 'rgba(26, 35, 126, 0.04)' }}>
+              <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>Nome</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>Responsável</TableCell>
@@ -378,31 +383,46 @@ const Projects = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {projects.map((project) => (
-                  <TableRow
-                    key={project.id}
-                    hover
-                    onClick={() => handleRowClick(project)}
-                    sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
-                    <TableCell>{getOrgName(project.organizacaoResponsavelId)}</TableCell>
-                    <TableCell>{formatDate(project.inicio)}</TableCell>
-                    <TableCell>{formatDate(project.fim)}</TableCell>
-                    <TableCell>
-                      <StatusIcon {...getProjetoStatusMeta(project.status)} variant="outlined" />
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
-                      <ActionButton title="Visualizar Detalhes do Projeto" icon={<VisibilityIcon />} size="small" color="primary" onClick={() => handleRowClick(project)} />
-                      {canManageProjetos() && (
-                        <ActionButton title="Editar Projeto" icon={<EditIcon />} size="small" color="secondary" onClick={() => handleOpenEdit(project)} sx={{ ml: 1 }} />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {projects
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((project) => (
+                    <TableRow
+                      key={project.id}
+                      hover
+                      onClick={() => handleRowClick(project)}
+                      sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
+                      <TableCell>{getOrgName(project.organizacaoResponsavelId)}</TableCell>
+                      <TableCell>{formatDate(project.inicio)}</TableCell>
+                      <TableCell>{formatDate(project.fim)}</TableCell>
+                      <TableCell>
+                        <StatusIcon {...getProjetoStatusMeta(project.status)} variant="outlined" />
+                      </TableCell>
+                      <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                        <ActionButton title="Visualizar Detalhes do Projeto" icon={<VisibilityIcon />} size="small" color="primary" onClick={() => handleRowClick(project)} />
+                        {canManageProjetos() && (
+                          <ActionButton title="Editar Projeto" icon={<EditIcon />} size="small" color="secondary" onClick={() => handleOpenEdit(project)} sx={{ ml: 1 }} />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            component="div"
+            count={projects.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            labelRowsPerPage="Itens por página:"
+          />
         </Card>
       )}
 

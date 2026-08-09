@@ -19,6 +19,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -49,6 +50,9 @@ export const ConselhosAtas: React.FC = () => {
 
   const [selectedComunidade, setSelectedComunidade] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -235,53 +239,68 @@ export const ConselhosAtas: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                decisoes.map((item) => (
-                  <TableRow key={item.id} hover>
-                    <TableCell sx={{ maxW: 400 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                        {item.titulo}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
-                        {item.pautaDescricao}
-                      </Typography>
-                      {item.motivoVeto && (
-                        <Typography variant="caption" sx={{ display: 'block', color: 'error.main', mt: 0.5, fontWeight: 500 }}>
-                          Motivo do Veto: {item.motivoVeto}
+                decisoes
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((item) => (
+                    <TableRow key={item.id} hover>
+                      <TableCell sx={{ maxW: 400 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                          {item.titulo}
                         </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
-                    <TableCell>{item.dataReuniao}</TableCell>
-                    <TableCell><StatusIcon {...getHomologacaoStatusMeta(item.statusHomologacao)} sx={{ fontWeight: 600 }} /></TableCell>
-                    <TableCell align="center">
-                      {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                          <ActionButton
-                            title="Homologar Ata (Aprovar)"
-                            icon={<CheckCircleIcon />}
-                            color="success"
-                            size="small"
-                            onClick={() => handleHomologar(item.id)}
-                          />
-                          <ActionButton
-                            title="Vetar Ata (Reprovar)"
-                            icon={<CancelIcon />}
-                            color="error"
-                            size="small"
-                            onClick={() => setVetoDialogItem(item)}
-                          />
-                        </Box>
-                      ) : (
-                        <Typography variant="caption" color="text.secondary">
-                          —
+                        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
+                          {item.pautaDescricao}
                         </Typography>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
+                        {item.motivoVeto && (
+                          <Typography variant="caption" sx={{ display: 'block', color: 'error.main', mt: 0.5, fontWeight: 500 }}>
+                            Motivo do Veto: {item.motivoVeto}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
+                      <TableCell>{item.dataReuniao}</TableCell>
+                      <TableCell><StatusIcon {...getHomologacaoStatusMeta(item.statusHomologacao)} sx={{ fontWeight: 600 }} /></TableCell>
+                      <TableCell align="center">
+                        {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
+                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                            <ActionButton
+                              title="Homologar Ata (Aprovar)"
+                              icon={<CheckCircleIcon />}
+                              color="success"
+                              size="small"
+                              onClick={() => handleHomologar(item.id)}
+                            />
+                            <ActionButton
+                              title="Vetar Ata (Reprovar)"
+                              icon={<CancelIcon />}
+                              color="error"
+                              size="small"
+                              onClick={() => setVetoDialogItem(item)}
+                            />
+                          </Box>
+                        ) : (
+                          <Typography variant="caption" color="text.secondary">
+                            —
+                          </Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            component="div"
+            count={decisoes.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            labelRowsPerPage="Itens por página:"
+          />
         </TableContainer>
       )}
 

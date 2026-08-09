@@ -1,14 +1,19 @@
 import apiClient from './client';
 import {Organizacao, OrganogramaNode} from './types';
+import {getUnidadesTerritoriais} from './unidadesTerritoriais';
+
+export {getUnidadesTerritoriais};
 
 /**
- * Busca todas as organizações da paróquia (Matriz, Comunidades, pastorais,
- * movimentos, clero etc.), sem filtragem por hierarquia — a árvore de
- * parentesco (`parentId`) precisa ser montada no cliente quando necessário.
+ * Busca todas as organizações da paróquia (Unidades Territoriais como Matriz, Comunidades,
+ * Clero e Grupos Paroquiais como pastorais, movimentos, conselhos).
  */
 export const getOrganizacoes = async (): Promise<Organizacao[]> => {
-  const response = await apiClient.get<Organizacao[]>('/organizacoes');
-  return response.data;
+  const [unidades, grupos] = await Promise.all([
+    getUnidadesTerritoriais().catch(() => []),
+    apiClient.get<Organizacao[]>('/organizacoes').then((r) => r.data).catch(() => []),
+  ]);
+  return [...unidades, ...grupos];
 };
 
 /**
