@@ -380,8 +380,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Reports.tsx": {
-    "mtime": 1786249907.9776611,
-    "ast_hash": "90276ddc309ca181be0e8c822597c772",
+    "mtime": 1786250359.3397143,
+    "ast_hash": "b805f5fbd29fd581f1fdfef734d16cc6",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Settings.test.tsx": {
@@ -425,13 +425,13 @@
     "semantic_hash": "9ea3e38473cd39d5d4efcf3d47ba7ed0"
   },
   "gestao-paroquia-ui/src/utils/exportUtils.test.ts": {
-    "mtime": 1786249475.992673,
-    "ast_hash": "9d0cd8bec877fd6ae73ad0e6c156a5e0",
+    "mtime": 1786250368.8397365,
+    "ast_hash": "0fa3281a74692f2fed5366b1f4f8c419",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/exportUtils.ts": {
-    "mtime": 1786249361.3525245,
-    "ast_hash": "1664b0f569348ba7b203a7ee06767987",
+    "mtime": 1786250256.6564746,
+    "ast_hash": "694f6aa35bf6fe92dedcbb176eaca5e5",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/recurrenceUtils.ts": {

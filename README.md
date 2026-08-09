@@ -7,9 +7,9 @@
 [![Vite 5](https://img.shields.io/badge/Vite-5-646CFF.svg?style=flat-square&logo=vite)](./gestao-paroquia-ui)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-336791.svg?style=flat-square&logo=postgresql)](./docker-compose.yml)
 
-Sistema unificado de gestão administrativa e pastoral para a Paróquia Nossa Senhora de Fátima, integrando backend monolítico modular em **Java 25 (Spring Boot 3)** e frontend em **React 19 (TypeScript + Material UI 9 + Vite)**.
+Sistema unificado de gestão administrativa e pastoral, construído para servir com precisão e zelo a rotina de uma paróquia — do agendamento de uma missa à homologação de uma ata do Conselho Paroquial. Backend monolítico modular em **Java 25 (Spring Boot 3)**, frontend em **React 19 (TypeScript + Material UI 9 + Vite)**.
 
-O sistema cobre o ciclo operacional completo da paróquia: agendamento de eventos e espaços, fluxos de aprovação, gestão de membros e da estrutura organizacional (pastorais, movimentos, conselhos), controle de patrimônio (ativos e alocações), importação/exportação de relatórios e um dashboard executivo com métricas consolidadas — tudo sob rígidos controles de auditoria e conformidade com a LGPD.
+O sistema cobre o ciclo operacional completo da paróquia: agendamento de eventos e espaços, fluxos de aprovação, cadastro de fiéis e gestão de membros na estrutura organizacional (pastorais, movimentos, conselhos), decisões e homologações do Conselho Paroquial (CPC), controle de patrimônio (ativos e alocações), importação e exportação de relatórios (CSV, PDF e Word) e um dashboard executivo com métricas consolidadas — tudo sob rígidos controles de auditoria e conformidade com a LGPD. Tecnologia a serviço da missão, sem abrir mão de rigor.
 
 ---
 
@@ -17,7 +17,7 @@ O sistema cobre o ciclo operacional completo da paróquia: agendamento de evento
 
 O repositório é organizado em módulos independentes, cada um com suas próprias regras de arquitetura, testes e documentação:
 
-- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 3**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 14 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
+- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 3**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
 - **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
 - **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4 e seeder automático de dados. Variáveis de ambiente em [`.env.example`](./.env.example).
 - **[Documentação (`gestao-paroquia/docs/`)](./gestao-paroquia/docs):** Portal de documentação técnica — arquitetura, guia de início rápido, documentação por domínio e regras de conformidade com a LGPD.
@@ -28,7 +28,7 @@ O repositório é organizado em módulos independentes, cada um com suas própri
 
 ## 🧭 Domínios de Negócio
 
-O backend está organizado em 14 bounded contexts sob o pacote `br.com.nsfatima.gestao`. Resumo funcional (detalhes técnicos no [README do backend](./gestao-paroquia/README.md)):
+O backend está organizado em 15 bounded contexts sob o pacote `br.com.nsfatima.gestao`. Resumo funcional (detalhes técnicos no [README do backend](./gestao-paroquia/README.md)):
 
 | Domínio | Responsabilidade |
 | :--- | :--- |
@@ -38,7 +38,8 @@ O backend está organizado em 14 bounded contexts sob o pacote `br.com.nsfatima.
 | `iam` | Identidade, acesso, roles e autenticação JWT |
 | `governanca` | Auditoria, políticas de segurança e rastreabilidade |
 | `organizacao` | Hierarquia organizacional (pastorais, movimentos, setores, comunidades) |
-| `membro` | Cadastro e acompanhamento de fiéis e membros atuantes |
+| `fiel` | Cadastro base da pessoa fiel (identidade, contato, vocação) |
+| `membro` | Vínculo do fiel a grupos, papéis e lideranças na estrutura organizacional |
 | `projeto` | Vinculação de eventos a projetos paroquiais e métricas |
 | `conselho` | Decisões e homologações do Conselho Paroquial (CPC) |
 | `patrimonio` | Ativos patrimoniais, alocação, transferência e manutenção |
@@ -114,7 +115,7 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 | **Frontend** | React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query 5, Axios, React Router DOM 6 |
 | **Banco de Dados** | PostgreSQL 16 (Ambiente de Execução / Docker), H2 Database (Ambiente de Testes) |
 | **Qualidade & Linters** | **Backend:** Checkstyle 13.8.0, PMD 7.16.0, SpotBugs, JaCoCo <br> **Frontend:** Vitest, React Testing Library, TypeScript (`tsc`) |
-| **Relatórios / Mídia** | Apache POI (Excel), OpenPDF (PDF), `html-to-image` (Exportação de Organogramas) |
+| **Relatórios / Mídia** | **Backend:** Apache POI (Excel), OpenPDF (PDF) <br> **Frontend:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo, `html-to-image` (exportação de organogramas) |
 
 ---
 
@@ -136,4 +137,4 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 
 
 ---
-*Sistema desenvolvido para apoiar a gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima, com foco em eficiência, alta confiabilidade e conformidade com a LGPD.* ⛪
+*Construído com rigor de engenharia e reverência ao propósito que serve: sustentar, com eficiência, alta confiabilidade e conformidade com a LGPD, a gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima.* ⛪
