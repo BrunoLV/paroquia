@@ -19,22 +19,22 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
     {
       title: 'Eventos este Mês',
       value: metrics ? metrics.monthlyEvents : '--',
-      color: '#0288d1',
-      bgGradient: 'linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%)',
+      accentColor: '#1a237e',
+      bgGradient: 'linear-gradient(135deg, #1a237e 0%, #3f51b5 100%)',
       icon: CalendarIcon,
     },
     {
       title: 'Projetos Ativos',
       value: metrics && metrics.activeProjects !== undefined ? metrics.activeProjects : '--',
-      color: '#00796b',
-      bgGradient: 'linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%)',
+      accentColor: '#00796b',
+      bgGradient: 'linear-gradient(135deg, #00796b 0%, #00bfa5 100%)',
       icon: ProjectIcon,
     },
     {
       title: 'Pendentes',
       value: metrics ? metrics.aprovacoesPendentes : '--',
-      color: '#f57c00',
-      bgGradient: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+      accentColor: '#e65100',
+      bgGradient: 'linear-gradient(135deg, #e65100 0%, #ff9800 100%)',
       icon: PendingIcon,
     },
   ];
@@ -48,17 +48,17 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
             <Card
               elevation={0}
               sx={{
-                
                 border: '1px solid',
                 borderColor: 'divider',
+                borderTop: `4px solid ${card.accentColor}`,
                 background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.03)',
                 position: 'relative',
                 overflow: 'hidden',
                 transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                 '&:hover': {
                   transform: 'translateY(-3px)',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.06)',
                 },
               }}
             >
@@ -74,15 +74,16 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
                   </Box>
                   <Box
                     sx={{
-                      p: 1.5,
-                      
+                      p: 1.75,
+                      borderRadius: 2,
                       background: card.bgGradient,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
                     }}
                   >
-                    <IconComponent sx={{ fontSize: 28, color: card.color }} />
+                    <IconComponent sx={{ fontSize: 28, color: '#ffffff' }} />
                   </Box>
                 </Box>
               </CardContent>

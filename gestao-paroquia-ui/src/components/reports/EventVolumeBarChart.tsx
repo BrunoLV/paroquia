@@ -15,12 +15,15 @@ const ChartCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       p: 3,
       border: '1px solid',
       borderColor: 'divider',
+      borderTop: '4px solid #00897b',
       height: '100%',
+      background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)',
     }}
   >
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-      <BarIcon sx={{ color: 'primary.main' }} />
-      <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
+      <BarIcon sx={{ color: '#00897b' }} />
+      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
         Volume de Eventos por Organização
       </Typography>
     </Box>
@@ -42,11 +45,12 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
   }
 
   const palette = [
-    theme.palette.primary.main,
-    theme.palette.secondary.main,
-    theme.palette.info.main,
-    theme.palette.warning.main,
-    theme.palette.success.main,
+    '#1a237e', // Indigo
+    '#00897b', // Teal
+    '#8e24aa', // Purple
+    '#fb8c00', // Amber
+    '#d81b60', // Rose
+    '#039be5', // Cyan
   ];
 
   return (

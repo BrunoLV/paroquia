@@ -1,5 +1,6 @@
 import React from 'react';
 import {Stack} from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import ActionButton from '../ActionButton';
@@ -7,12 +8,14 @@ import ActionButton from '../ActionButton';
 interface ReportExportButtonsProps {
   onExportCSV: () => void;
   onExportPDF: () => void;
+  onExportWord?: () => void;
   isExporting?: boolean;
 }
 
 const ReportExportButtons: React.FC<ReportExportButtonsProps> = ({
   onExportCSV,
   onExportPDF,
+  onExportWord,
   isExporting = false,
 }) => {
   return (
@@ -34,6 +37,17 @@ const ReportExportButtons: React.FC<ReportExportButtonsProps> = ({
         disabled={isExporting}
         onClick={onExportPDF}
       />
+
+      {onExportWord && (
+        <ActionButton
+          title="Exportar Word"
+          icon={<DescriptionIcon />}
+          color="info"
+          size="small"
+          disabled={isExporting}
+          onClick={onExportWord}
+        />
+      )}
     </Stack>
   );
 };

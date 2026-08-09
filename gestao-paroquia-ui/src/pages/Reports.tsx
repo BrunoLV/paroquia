@@ -25,6 +25,7 @@ import MetricasEstrategicasTab from '../components/reports/MetricasEstrategicasT
 import {
     Assessment as AssessmentIcon,
     Assignment as ProjectIcon,
+    AutoGraph as AutoGraphIcon,
     Event as EventIcon,
     FilterList as FilterIcon,
     PendingActions as PendingIcon,
@@ -39,7 +40,16 @@ import ReportFilters from '../components/reports/ReportFilters';
 import ReportExportButtons from '../components/reports/ReportExportButtons';
 import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
 import EventVolumeBarChart from '../components/reports/EventVolumeBarChart';
-import {downloadCSV, exportElementAsPDF, generateMetricsCSV} from '../utils/exportUtils';
+import { usePainelMetricasEstrategicas } from '../hooks/useMetricasEstrategicas';
+import {
+  downloadCSV,
+  generateMetricsCSV,
+  generateStrategicMetricsCSV,
+  generateStrategicStructuredPDF,
+  generateStrategicWordDocument,
+  generateStructuredPDF,
+  generateWordDocument,
+} from '../utils/exportUtils';
 import {useNotification} from '../context/NotificationContext';
 import PageHeader from '../components/PageHeader';
 import StatusIcon from '../components/StatusIcon';
@@ -171,12 +181,25 @@ const Reports: React.FC = () => {
     return Object.entries(counts).map(([status, count]) => ({ status, count }));
   }, [metricsData]);
 
+  // Fetch strategic metrics for tab 1 export
+  const { data: strategicData } = usePainelMetricasEstrategicas();
+
   const handleExportCSV = () => {
-    if (!filteredMetrics) return;
     try {
-      const csvStr = generateMetricsCSV(filteredMetrics);
-      downloadCSV(csvStr, `relatorio-gerencial-${new Date().toISOString().slice(0, 10)}.csv`);
-      showSuccess('Relatório CSV exportado com sucesso!');
+      if (currentTab === 1) {
+        if (!strategicData) {
+          showError('Dados de métricas estratégicas ainda não carregados.');
+          return;
+        }
+        const csvStr = generateStrategicMetricsCSV(strategicData);
+        downloadCSV(csvStr, `metricas-estrategicas-${new Date().toISOString().slice(0, 10)}.csv`);
+        showSuccess('Métricas Estratégicas CSV exportadas com sucesso!');
+      } else {
+        if (!filteredMetrics) return;
+        const csvStr = generateMetricsCSV(filteredMetrics);
+        downloadCSV(csvStr, `relatorio-gerencial-${new Date().toISOString().slice(0, 10)}.csv`);
+        showSuccess('Relatório CSV exportado com sucesso!');
+      }
     } catch (err) {
       console.error('Error exporting CSV:', err);
       showError('Falha ao exportar relatório CSV.');
@@ -186,15 +209,66 @@ const Reports: React.FC = () => {
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      const success = await exportElementAsPDF('reports-container', 'relatorio-gerencial.pdf');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      let success = false;
+
+      if (currentTab === 1) {
+        if (!strategicData) {
+          showError('Dados de métricas estratégicas ainda não carregados.');
+          setIsExporting(false);
+          return;
+        }
+        success = await generateStrategicStructuredPDF(strategicData, `metricas-estrategicas-${dateStr}.pdf`);
+      } else {
+        if (!filteredMetrics) {
+          setIsExporting(false);
+          return;
+        }
+        success = await generateStructuredPDF(filteredMetrics, `relatorio-gerencial-${dateStr}.pdf`);
+      }
+
       if (success) {
-        showSuccess('Relatório visual preparado para impressão/PDF.');
+        showSuccess('Relatório PDF exportado com sucesso!');
       } else {
         showError('Falha ao gerar relatório PDF.');
       }
     } catch (err) {
       console.error('Error exporting PDF:', err);
       showError('Erro ao exportar PDF.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportWord = async () => {
+    setIsExporting(true);
+    try {
+      const dateStr = new Date().toISOString().slice(0, 10);
+      let success = false;
+
+      if (currentTab === 1) {
+        if (!strategicData) {
+          showError('Dados de métricas estratégicas ainda não carregados.');
+          setIsExporting(false);
+          return;
+        }
+        success = await generateStrategicWordDocument(strategicData, `metricas-estrategicas-${dateStr}.docx`);
+      } else {
+        if (!filteredMetrics) {
+          setIsExporting(false);
+          return;
+        }
+        success = await generateWordDocument(filteredMetrics, `relatorio-gerencial-${dateStr}.docx`);
+      }
+
+      if (success) {
+        showSuccess('Relatório Word (.docx) exportado com sucesso!');
+      } else {
+        showError('Falha ao gerar documento Word.');
+      }
+    } catch (err) {
+      console.error('Error exporting Word:', err);
+      showError('Erro ao exportar Word.');
     } finally {
       setIsExporting(false);
     }
@@ -220,13 +294,9 @@ const Reports: React.FC = () => {
     );
   }
 
-  if (metricsError || !metricsData || !filteredMetrics) {
+  if (metricsError || !filteredMetrics) {
     return (
-      <Box sx={{ p: 1 }}>
-        <PageHeader
-          icon={<AssessmentIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
-          title="Relatórios & Métricas Gerenciais"
-        />
+      <Box sx={{ p: 2 }}>
         <Alert severity="error">
           Não foi possível carregar os relatórios. Verifique sua conexão ou permissões.
         </Alert>
@@ -239,22 +309,22 @@ const Reports: React.FC = () => {
       title: isFiltered ? 'Eventos no Período' : 'Total Eventos no Mês',
       value: filteredMetrics.resumoGeral?.totalEventosMes ?? 0,
       icon: EventIcon,
-      color: '#1a237e',
-      bgGradient: 'linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%)',
+      accentColor: '#1a237e',
+      bgGradient: 'linear-gradient(135deg, #1a237e 0%, #3f51b5 100%)',
     },
     {
       title: 'Projetos Ativos',
       value: filteredMetrics.resumoGeral?.projetosAtivos ?? 0,
       icon: ProjectIcon,
-      color: '#00796b',
-      bgGradient: 'linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%)',
+      accentColor: '#00796b',
+      bgGradient: 'linear-gradient(135deg, #00796b 0%, #00bfa5 100%)',
     },
     {
       title: 'Solicitações Pendentes',
       value: filteredMetrics.resumoGeral?.solicitacoesPendentes ?? 0,
       icon: PendingIcon,
-      color: '#f57c00',
-      bgGradient: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+      accentColor: '#e65100',
+      bgGradient: 'linear-gradient(135deg, #e65100 0%, #ff9800 100%)',
     },
   ];
 
@@ -268,12 +338,13 @@ const Reports: React.FC = () => {
           <ReportExportButtons
             onExportCSV={handleExportCSV}
             onExportPDF={handleExportPDF}
+            onExportWord={handleExportWord}
             isExporting={isExporting}
           />
         }
       />
 
-      {/* Tabs de Seleção de Relatório */}
+      {/* Tabs de Seleção de Relatório com Ícones */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs
           value={currentTab}
@@ -281,8 +352,8 @@ const Reports: React.FC = () => {
           indicatorColor="primary"
           textColor="primary"
         >
-          <Tab label="Indicadores Operacionais" sx={{ fontWeight: 600 }} />
-          <Tab label="Métricas Estratégicas & Preditivas" sx={{ fontWeight: 600 }} />
+          <Tab icon={<AssessmentIcon />} iconPosition="start" label="Indicadores Operacionais" sx={{ fontWeight: 600 }} />
+          <Tab icon={<AutoGraphIcon />} iconPosition="start" label="Métricas Estratégicas & Preditivas" sx={{ fontWeight: 600 }} />
         </Tabs>
       </Box>
 
@@ -298,10 +369,10 @@ const Reports: React.FC = () => {
         sx={{
           p: 2,
           mb: 3,
-          
           border: '1px solid',
           borderColor: 'divider',
-          backgroundColor: '#fafafa',
+          borderLeft: '4px solid #1a237e',
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%)',
         }}
       >
         <ReportFilters
@@ -326,7 +397,7 @@ const Reports: React.FC = () => {
         </Alert>
       )}
 
-      {/* KPI Cards */}
+      {/* KPI Cards Vibrantes */}
       <Grid container spacing={3}>
         {summaryCards.map((card, idx) => {
           const IconComp = card.icon;
@@ -335,15 +406,15 @@ const Reports: React.FC = () => {
               <Card
                 elevation={0}
                 sx={{
-                  
                   border: '1px solid',
                   borderColor: 'divider',
+                  borderTop: `4px solid ${card.accentColor}`,
                   background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.03)',
                   transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.07)',
                   },
                 }}
               >
@@ -359,14 +430,16 @@ const Reports: React.FC = () => {
                     </Box>
                     <Box
                       sx={{
-                        p: 1.5,
+                        p: 1.75,
+                        borderRadius: 2,
                         background: card.bgGradient,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
                       }}
                     >
-                      <IconComp sx={{ fontSize: 32, color: card.color }} />
+                      <IconComp sx={{ fontSize: 32, color: '#ffffff' }} />
                     </Box>
                   </Box>
                 </CardContent>
@@ -396,15 +469,16 @@ const Reports: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              
               border: '1px solid',
               borderColor: 'divider',
+              borderTop: '4px solid #1a237e',
+              background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ProjectIcon sx={{ color: '#1a237e' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
                   Acompanhamento de Projetos Ativos & Status
                 </Typography>
               </Box>
@@ -416,6 +490,7 @@ const Reports: React.FC = () => {
                       key={i}
                       label={`${b.status}: ${b.count}`}
                       size="small"
+                      color="primary"
                       variant="outlined"
                       sx={{ fontWeight: 600 }}
                     />
@@ -428,7 +503,17 @@ const Reports: React.FC = () => {
               <Grid container spacing={2} sx={{ mt: 0.5 }}>
                 {filteredMetrics.projetosAtivosDetalhes.map((proj, idx) => (
                   <Grid key={idx} size={{ xs: 12, md: 6 }}>
-                    <Box sx={{ p: 2, border: '1px solid #eee', backgroundColor: '#fafafa', height: '100%', boxSizing: 'border-box' }}>
+                    <Box
+                      sx={{
+                        p: 2.25,
+                        border: '1px solid #e0e0e0',
+                        borderLeft: proj.emRisco ? '4px solid #d32f2f' : '4px solid #00796b',
+                        backgroundColor: '#fafafa',
+                        borderRadius: 1.5,
+                        height: '100%',
+                        boxSizing: 'border-box',
+                      }}
+                    >
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1a237e' }}>
                           {proj.nome}

@@ -15,9 +15,9 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
       elevation={0}
       sx={{
         p: 3,
-        
         border: '1px solid',
         borderColor: 'divider',
+        borderTop: '4px solid #00796b',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',

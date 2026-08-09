@@ -1,14 +1,14 @@
 import React from 'react';
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Reports from './Reports';
-import {ThemeProvider} from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
-import {MemoryRouter} from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import apiClient from '../api/client';
-import {AuthProvider} from '../auth/AuthContext';
-import {QueryProvider} from '../api/QueryProvider';
+import { AuthProvider } from '../auth/AuthContext';
+import { QueryProvider } from '../api/QueryProvider';
 import * as exportUtils from '../utils/exportUtils';
-import {vi} from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 vi.mock('../api/client');
 const mockedApiClient = vi.mocked(apiClient);
@@ -22,7 +22,8 @@ vi.mock('../context/NotificationContext', () => ({
 }));
 
 vi.spyOn(exportUtils, 'downloadCSV').mockImplementation(() => {});
-vi.spyOn(exportUtils, 'exportElementAsPDF').mockResolvedValue(true);
+vi.spyOn(exportUtils, 'generateStructuredPDF').mockResolvedValue(true);
+vi.spyOn(exportUtils, 'generateWordDocument').mockResolvedValue(true);
 
 describe('Reports Page', () => {
   beforeEach(() => {
@@ -68,12 +69,13 @@ describe('Reports Page', () => {
     return renderResult;
   };
 
-  test('renders page title, filter controls, export buttons, and metric cards after loading', async () => {
+  it('renders page title, filter controls, export buttons, and metric cards after loading', async () => {
     await renderReports();
 
     expect(screen.getByText(/Relatórios & Métricas/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Exportar CSV/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Exportar PDF/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Exportar Word/i })).toBeInTheDocument();
     expect(screen.getByLabelText('Data Início')).toBeInTheDocument();
 
     await waitFor(() => {
@@ -88,7 +90,7 @@ describe('Reports Page', () => {
     expect(screen.getByText('Festa Padroeiro')).toBeInTheDocument();
   });
 
-  test('triggers CSV download when Export CSV button is clicked', async () => {
+  it('triggers CSV download when Export CSV button is clicked', async () => {
     await renderReports();
 
     await waitFor(() => {
@@ -101,7 +103,7 @@ describe('Reports Page', () => {
     expect(exportUtils.downloadCSV).toHaveBeenCalled();
   });
 
-  test('triggers PDF export when Export PDF button is clicked', async () => {
+  it('triggers PDF export when Export PDF button is clicked', async () => {
     await renderReports();
 
     await waitFor(() => {
@@ -109,12 +111,29 @@ describe('Reports Page', () => {
     });
 
     const pdfButton = screen.getByRole('button', { name: /Exportar PDF/i });
-    fireEvent.click(pdfButton);
+    await act(async () => {
+      fireEvent.click(pdfButton);
+    });
 
-    expect(exportUtils.exportElementAsPDF).toHaveBeenCalledWith('reports-container', 'relatorio-gerencial.pdf');
+    expect(exportUtils.generateStructuredPDF).toHaveBeenCalledWith(expect.any(Object), expect.stringMatching(/\.pdf$/));
   });
 
-  test('filters dates and fetches events from backend when Filtrar button is clicked', async () => {
+  it('triggers Word export when Export Word button is clicked', async () => {
+    await renderReports();
+
+    await waitFor(() => {
+      expect(screen.getByText('15')).toBeInTheDocument();
+    });
+
+    const wordButton = screen.getByRole('button', { name: /Exportar Word/i });
+    await act(async () => {
+      fireEvent.click(wordButton);
+    });
+
+    expect(exportUtils.generateWordDocument).toHaveBeenCalledWith(expect.any(Object), expect.stringMatching(/\.docx$/));
+  });
+
+  it('filters dates and fetches events from backend when Filtrar button is clicked', async () => {
     await renderReports();
 
     await waitFor(() => {
@@ -132,7 +151,7 @@ describe('Reports Page', () => {
     });
   });
 
-  test('renders error state on API failure', async () => {
+  it('renders error state on API failure', async () => {
     mockedApiClient.get.mockImplementation((url: string) => {
       if (url === '/auth/me') return Promise.resolve({ data: { id: '1', name: 'Admin', roles: ['ADMIN'] } });
       return Promise.reject(new Error('Network Error'));
@@ -157,5 +176,3 @@ describe('Reports Page', () => {
     });
   });
 });
-
-

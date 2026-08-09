@@ -1,7 +1,7 @@
 {
   "gestao-paroquia-ui/package.json": {
-    "mtime": 1786155567.8935938,
-    "ast_hash": "043e0bd8076c9bcd41f9d4b05f169adc",
+    "mtime": 1786249219.1832974,
+    "ast_hash": "1c217a8b233254db4ebde43b039dd981",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/public/manifest.json": {
@@ -205,14 +205,14 @@
     "semantic_hash": "9c1e2896a03a23009c0a61315f5fc51b"
   },
   "gestao-paroquia-ui/src/components/dashboard/ActiveProjectsProgressList.tsx": {
-    "mtime": 1786242643.1229331,
-    "ast_hash": "9d8370bfb27305765a64e155549c4d77",
+    "mtime": 1786250092.261091,
+    "ast_hash": "fc40ea415b8ac7f16d9a0f3959655c47",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/dashboard/EventDistributionPieChart.tsx": {
-    "mtime": 1786036367.2756548,
-    "ast_hash": "abae483821322bb6e7bc64a8fdf23d0d",
-    "semantic_hash": "abae483821322bb6e7bc64a8fdf23d0d"
+    "mtime": 1786250039.3339677,
+    "ast_hash": "d4cf3290bf330c6b91bc06cd0af1fe7b",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/dashboard/QuickActions.tsx": {
     "mtime": 1786240492.5170088,
@@ -220,9 +220,9 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/dashboard/SummaryCards.tsx": {
-    "mtime": 1786036367.2756548,
-    "ast_hash": "6baaa7233c6a093744e20b98eeba41b8",
-    "semantic_hash": "6baaa7233c6a093744e20b98eeba41b8"
+    "mtime": 1786250084.2120724,
+    "ast_hash": "a88bc0671a85f41efbbbb425128675c2",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/dashboard/UpcomingEvents.tsx": {
     "mtime": 1786036367.2756548,
@@ -250,13 +250,13 @@
     "semantic_hash": "875453410771ca9239607ac85fd32798"
   },
   "gestao-paroquia-ui/src/components/reports/ReportExportButtons.test.tsx": {
-    "mtime": 1786240863.058296,
-    "ast_hash": "a7d1612ffe8992a62e8dd1dd4b4cfdd4",
+    "mtime": 1786249481.67668,
+    "ast_hash": "44f6c17c9e8d14d90281743be9781dc1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/ReportExportButtons.tsx": {
-    "mtime": 1786240537.7236576,
-    "ast_hash": "29f59a280012672d401c43e97de0dcb4",
+    "mtime": 1786249370.2505362,
+    "ast_hash": "beee40c67b8a11b94a946f99c22ac247",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/ReportFilters.test.tsx": {
@@ -375,13 +375,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Reports.test.tsx": {
-    "mtime": 1786240883.2453685,
-    "ast_hash": "77e968c20b4c999a613099543d0651c7",
+    "mtime": 1786249504.8897207,
+    "ast_hash": "c6b50f78d328c3b6d520196532a525fb",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Reports.tsx": {
-    "mtime": 1786248806.0208068,
-    "ast_hash": "a9e482ecca639f49ec646b1e52b6f94b",
+    "mtime": 1786249907.9776611,
+    "ast_hash": "90276ddc309ca181be0e8c822597c772",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Settings.test.tsx": {
@@ -425,14 +425,14 @@
     "semantic_hash": "9ea3e38473cd39d5d4efcf3d47ba7ed0"
   },
   "gestao-paroquia-ui/src/utils/exportUtils.test.ts": {
-    "mtime": 1786036367.2785087,
-    "ast_hash": "19e85fbc3aeb54cf47429fb1ef614bb3",
-    "semantic_hash": "19e85fbc3aeb54cf47429fb1ef614bb3"
+    "mtime": 1786249475.992673,
+    "ast_hash": "9d0cd8bec877fd6ae73ad0e6c156a5e0",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/exportUtils.ts": {
-    "mtime": 1786036367.2785087,
-    "ast_hash": "b8d61be61491e6967f27b526b3a2eb81",
-    "semantic_hash": "b8d61be61491e6967f27b526b3a2eb81"
+    "mtime": 1786249361.3525245,
+    "ast_hash": "1664b0f569348ba7b203a7ee06767987",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/recurrenceUtils.ts": {
     "mtime": 1786036367.2785087,
@@ -3005,8 +3005,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/EventVolumeBarChart.tsx": {
-    "mtime": 1786154401.8393562,
-    "ast_hash": "eefcd3b778a22b6056853c2ed0a04d7a",
+    "mtime": 1786249884.9296074,
+    "ast_hash": "b7ed98c443513ee546521cedeb4e0a4c",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/MetricasEstrategicasTab.tsx": {
@@ -4100,9 +4100,9 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/dashboard/AprovacoesPendentes.tsx": {
-    "mtime": 1786036367.2756548,
-    "ast_hash": "169827072d1853bc20f6dd47802054b4",
-    "semantic_hash": "169827072d1853bc20f6dd47802054b4"
+    "mtime": 1786250100.1021094,
+    "ast_hash": "702047f0f97d31bab45af22172075cb1",
+    "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Aprovacoes.test.tsx": {
     "mtime": 1786240868.6743162,

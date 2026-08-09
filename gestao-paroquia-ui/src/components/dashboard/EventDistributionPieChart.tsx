@@ -51,6 +51,7 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
     theme.palette.info.main,
     theme.palette.warning.main,
     theme.palette.success.main,
+    theme.palette.error.main,
   ];
 
   return (
@@ -58,9 +59,9 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
       elevation={0}
       sx={{
         p: 3,
-        
         border: '1px solid',
         borderColor: 'divider',
+        borderTop: '4px solid #8e24aa',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
