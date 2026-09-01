@@ -6,7 +6,16 @@ import { useNavigate } from 'react-router-dom';
 import { getAprovacoes } from '../../api/aprovacoes';
 import StatusIcon from '../StatusIcon';
 import ActionButton from '../ActionButton';
-import { getAprovacaoTipoMeta } from '../../utils/statusMeta/aprovacaoStatus';
+import { getAprovacaoDetalhe, getAprovacaoTipoMeta } from '../../utils/statusMeta/aprovacaoStatus';
+
+const formatTempoPendente = (isoDate: string): string => {
+  const minutos = Math.max(0, Math.floor((Date.now() - new Date(isoDate).getTime()) / 60000));
+  if (minutos < 60) return `há ${minutos || 1} min`;
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) return `há ${horas}h`;
+  const dias = Math.floor(horas / 24);
+  return `há ${dias} dia${dias > 1 ? 's' : ''}`;
+};
 
 const AprovacoesPendentes = () => {
   const navigate = useNavigate();
@@ -41,45 +50,29 @@ const AprovacoesPendentes = () => {
           {pendentes.map((aprovacao) => {
             const meta = getAprovacaoTipoMeta(aprovacao.tipoSolicitacao);
             return (
-              <Box
-                key={aprovacao.id}
-                onClick={() => navigate('/aprovacoes')}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  py: 1,
-                  px: 1,
-                  mx: -1,
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  '&:hover': { bgcolor: 'action.hover' },
-                }}
-              >
+              <Box key={aprovacao.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1 }}>
                 <StatusIcon {...meta} size="small" />
                 <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                  <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
-                    {meta.label}
+                  <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+                    {getAprovacaoDetalhe(aprovacao)}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {new Date(aprovacao.criadoEmUtc).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    {meta.label} · {formatTempoPendente(aprovacao.criadoEmUtc)}
                   </Typography>
                 </Box>
               </Box>
             );
           })}
 
-          {total > pendentes.length && (
-            <ActionButton
-              title="Ver todas as aprovações pendentes"
-              label={`Ver todas (${total})`}
-              icon={<PendingActionsIcon />}
-              variant="text"
-              size="small"
-              onClick={() => navigate('/aprovacoes')}
-              sx={{ mt: 1, alignSelf: 'flex-start' }}
-            />
-          )}
+          <ActionButton
+            title="Ir para a tela de Aprovações"
+            label="Ver Aprovações"
+            icon={<PendingActionsIcon />}
+            variant="text"
+            size="small"
+            onClick={() => navigate('/approvals')}
+            sx={{ mt: 1, alignSelf: 'flex-start' }}
+          />
         </Stack>
       ) : (
         <Box sx={{ py: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>

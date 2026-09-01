@@ -16,6 +16,7 @@ import {
     Grid,
     InputLabel,
     MenuItem,
+    Paper,
     Select,
     Typography,
 } from '@mui/material';
@@ -922,80 +923,97 @@ const Calendar = () => {
         </Card>
       ) : (
         /* Agenda / List View */
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {agendaEvents.length === 0 ? (
-             <Card sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-              <CalendarIcon sx={{ fontSize: 48, color: 'action.disabled', mb: 2 }} />
-              <Typography variant="h6">Nenhum evento agendado para o período visível.</Typography>
-            </Card>
-          ) : (
-            agendaEvents.map((evt) => {
+        agendaEvents.length === 0 ? (
+          <Card sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            <CalendarIcon sx={{ fontSize: 48, color: 'action.disabled' }} />
+            <Typography variant="body2" color="text.secondary">
+              Nenhum evento agendado para o período visível.
+            </Typography>
+          </Card>
+        ) : (
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+            {agendaEvents.map((evt, idx) => {
               const styleColors = getCategoryColor(evt.categoria);
               const start = new Date(evt.inicio);
               const end = new Date(evt.fim);
+              const isCancelado = evt.status?.toUpperCase() === 'CANCELADO';
 
               return (
-                <Card
+                <Box
                   key={evt.id}
                   onClick={() => handleOpenDetails(evt)}
-                   sx={{
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    p: 2,
                     cursor: 'pointer',
-                    borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? 'error.main' : styleColors.border}`,
-                    opacity: evt.aprovacaoPendenteId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1),
+                    borderBottom: idx < agendaEvents.length - 1 ? '1px solid' : 'none',
+                    borderColor: 'divider',
+                    borderLeft: '4px solid',
+                    borderLeftColor: isCancelado ? 'error.main' : styleColors.border,
+                    opacity: evt.aprovacaoPendenteId ? 0.6 : (isCancelado ? 0.8 : 1),
+                    '&:hover': { bgcolor: 'action.hover' },
                   }}
                 >
-                  <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
-                    <Grid container spacing={2} sx={{ alignItems: 'center' }}>
-                      {/* Event Date badge */}
-                      <Grid size={{ xs: 12, sm: 2, md: 1.5 }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.dark' : 'text.primary', lineHeight: 1 }}>
-                          {start.getDate()}
-                        </Typography>
-                        <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.main' : 'text.secondary', mt: 0.5 }}>
-                          {monthNames[start.getMonth()].substring(0, 3)}
-                        </Typography>
-                      </Grid>
+                  {/* Date badge */}
+                  <Box
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      flexShrink: 0,
+                      borderRadius: 1,
+                      bgcolor: 'action.hover',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      lineHeight: 1,
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', color: isCancelado ? 'error.main' : 'text.secondary', textTransform: 'uppercase' }}>
+                      {monthNames[start.getMonth()].substring(0, 3)}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.1, color: isCancelado ? 'error.dark' : 'text.primary' }}>
+                      {start.getDate()}
+                    </Typography>
+                  </Box>
 
-                      {/* Title, description & badges */}
-                      <Grid size={{ xs: 12, sm: 7, md: 8 }}>
-                        <Typography 
-                          variant="h6" 
-                          sx={{ 
-                            fontWeight: 600, 
-                            mb: 0.5, 
-                            color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.dark' : 'text.primary',
-                            textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none'
-                          }}
-                        >
-                          {evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
-                          {evt.descricao || 'Sem descrição.'}
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-                          <StatusIcon {...getCategoriaEventoMeta(evt.categoria)} />
-                          <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId, evt.igrejaVinculoId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
-                          <StatusIcon {...getEventoStatusMeta(evt.status)} sx={{ fontWeight: 600 }} />
-                        </Box>
-                      </Grid>
+                  {/* Title, description & badges */}
+                  <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 700,
+                        color: isCancelado ? 'error.dark' : 'text.primary',
+                        textDecoration: isCancelado ? 'line-through' : 'none',
+                      }}
+                    >
+                      {evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 0.5 }}>
+                      {evt.descricao || 'Sem descrição.'}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <StatusIcon {...getCategoriaEventoMeta(evt.categoria)} />
+                      <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId, evt.igrejaVinculoId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
+                      <StatusIcon {...getEventoStatusMeta(evt.status)} />
+                    </Box>
+                  </Box>
 
-                      {/* Event time range */}
-                      <Grid size={{ xs: 12, sm: 3, md: 2.5 }} sx={{ textAlign: { sm: 'right' } }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, gap: 0.5, color: 'text.secondary' }}>
-                          <ScheduleIcon sx={{ fontSize: 18 }} />
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} -{' '}
-                            {end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+                  {/* Event time range */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', flexShrink: 0 }}>
+                    <ScheduleIcon sx={{ fontSize: 18 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500, whiteSpace: 'nowrap' }}>
+                      {start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} -{' '}
+                      {end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </Typography>
+                  </Box>
+                </Box>
               );
-            })
-          )}
-        </Box>
+            })}
+          </Paper>
+        )
       )}
 
       {/* Details Dialog Modal */}
@@ -1028,14 +1046,7 @@ const Calendar = () => {
                   <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
                     {selectedEvent.titulo}
                   </Typography>
-                  <Chip
-                    label={selectedEvent.categoria}
-                    sx={{
-                      bgcolor: getCategoryColor(selectedEvent.categoria).bg,
-                      color: getCategoryColor(selectedEvent.categoria).text,
-                      fontWeight: 600,
-                    }}
-                  />
+                  <StatusIcon {...getCategoriaEventoMeta(selectedEvent.categoria)} />
                 </Box>
 
                 {/* Date & Time */}

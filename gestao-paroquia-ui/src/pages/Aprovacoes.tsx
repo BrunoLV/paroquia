@@ -39,7 +39,7 @@ import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
 import StatusIcon from '../components/StatusIcon';
 import theme from '../theme';
-import {getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
+import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
 
 /**
  * Tela de "caixa de entrada" de aprovações pastorais.
@@ -192,14 +192,6 @@ const Aprovacoes = () => {
     }
   };
 
-  const getEventTitle = (approval: AprovacaoResponse) => {
-    const payload = parsePayload(approval.actionPayloadJson);
-    if (approval.tipoSolicitacao === 'ALOCACAO_ATIVO_EMPRESTIMO') {
-      return payload?.ativoNome ? `Empréstimo — ${payload.ativoNome}` : 'Empréstimo de Ativo';
-    }
-    return payload?.titulo || 'Sem título / Cancelamento';
-  };
-
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
@@ -321,7 +313,7 @@ const Aprovacoes = () => {
                               </Typography>
                             ) : (
                               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                {getEventTitle(approval)}
+                                {getAprovacaoDetalhe(approval)}
                               </Typography>
                             )}
                           </TableCell>

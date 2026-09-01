@@ -43,3 +43,21 @@ const APROVACAO_TIPO_META: Record<AprovacaoTipoSolicitacao, AprovacaoStatusMeta>
 export const getAprovacaoStatusMeta = (status: AprovacaoStatus): AprovacaoStatusMeta => APROVACAO_STATUS_META[status];
 
 export const getAprovacaoTipoMeta = (tipo: AprovacaoTipoSolicitacao): AprovacaoStatusMeta => APROVACAO_TIPO_META[tipo];
+
+/**
+ * Extrai o assunto real da solicitação (título do evento, ativo emprestado, etc.) do
+ * `actionPayloadJson` — o que efetivamente identifica a solicitação para quem está
+ * decidindo, ao contrário do `tipoSolicitacao` (que só diz a categoria).
+ */
+export const getAprovacaoDetalhe = (aprovacao: AprovacaoResponse): string => {
+  let payload: Record<string, unknown> | null = null;
+  try {
+    payload = aprovacao.actionPayloadJson ? JSON.parse(aprovacao.actionPayloadJson) : null;
+  } catch {
+    payload = null;
+  }
+  if (aprovacao.tipoSolicitacao === 'ALOCACAO_ATIVO_EMPRESTIMO') {
+    return payload?.ativoNome ? `Empréstimo — ${payload.ativoNome}` : 'Empréstimo de Ativo';
+  }
+  return (payload?.titulo as string) || 'Sem título / Cancelamento';
+};

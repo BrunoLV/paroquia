@@ -180,7 +180,7 @@ test('opens event details modal when clicking an event', async () => {
 
   // Verify details modal header
   expect(screen.getByText('Detalhes do Evento')).toBeInTheDocument();
-  expect(screen.getAllByText('LITURGICO').length).toBeGreaterThan(0);
+  expect(screen.getAllByTestId('ChurchIcon').length).toBeGreaterThan(0);
 });
 
 test('event details modal displays Local and Supporting Organizations', async () => {
