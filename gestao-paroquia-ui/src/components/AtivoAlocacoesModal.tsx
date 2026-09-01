@@ -28,6 +28,7 @@ import { extractErrorMessage } from '../utils/errorUtils';
 import StatusIcon from './StatusIcon';
 import ActionButton from './ActionButton';
 import { getAtivoAlocacaoStatusMeta, getAtivoAlocacaoTipoMeta } from '../utils/statusMeta/ativoAlocacaoStatus';
+import { formatDateBr } from '../utils/masks';
 
 interface AtivoAlocacoesModalProps {
   ativoId: string | null;
@@ -124,7 +125,7 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
                     .map((alocacao) => (
                       <TableRow key={alocacao.id} hover>
                         <TableCell><StatusIcon {...getAtivoAlocacaoTipoMeta(alocacao.tipo)} /></TableCell>
-                        <TableCell>{alocacao.dataInicio} — {alocacao.dataFim}</TableCell>
+                        <TableCell>{formatDateBr(alocacao.dataInicio)} — {formatDateBr(alocacao.dataFim)}</TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
                             <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />

@@ -53,10 +53,8 @@ class GetUsuarioUseCaseTest {
         fiel.setTelefone("11955554444");
         fiel.setEndereco("Rua X, 1");
         fiel.setVocacao(Vocacao.LEIGO);
-        fiel.setBatizado(true);
-        fiel.setPrimeiraComunhao(true);
-        fiel.setCrismado(false);
-        fiel.setCasadoIgrejaCatolica(false);
+        fiel.setDataBatismo(LocalDate.of(1985, 5, 10));
+        fiel.setDataPrimeiraComunhao(LocalDate.of(1995, 5, 10));
 
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));

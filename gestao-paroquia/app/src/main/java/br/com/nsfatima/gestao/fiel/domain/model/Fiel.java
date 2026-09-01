@@ -1,41 +1,54 @@
 package br.com.nsfatima.gestao.fiel.domain.model;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
  * Representa a pessoa física real (o paroquiano) no Contexto Paroquial, independente de qualquer credencial
- * de acesso ao sistema. Nunca possui e-mail de login ou senha — o {@code email} aqui é dado de contato,
- * conceitualmente distinto (e não sincronizado) do {@code username} de um eventual {@code Usuario} vinculado
- * via {@code fielId}.
- *
- * @param id             identificador do Fiel
- * @param nome           nome completo
- * @param cpf            CPF (documento único, criptografado em repouso via {@code FielEntity})
- * @param dataNascimento data de nascimento
- * @param email          e-mail de contato, independente de login
- * @param telefone       telefone de contato
- * @param endereco       endereço de contato
- * @param vocacao        estado de vida / vocação (LEIGO, SACERDOTE, DIACONO, RELIGIOSO)
- * @param ativo          se o cadastro está ativo
- * @param batizado       se o Fiel é batizado
- * @param primeiraComunhao se o Fiel já fez a primeira comunhão
- * @param crismado       se o Fiel é crismado
- * @param casadoIgrejaCatolica se o Fiel é casado pela Igreja Católica
+ * de acesso ao sistema. Estruturado conforme diretrizes canônicas, CNBB Doc 106 e regras de LGPD.
  */
 public record Fiel(
         UUID id,
         String nome,
         String cpf,
+        String rg,
         LocalDate dataNascimento,
+        Sexo sexo,
+        String profissao,
         String email,
         String telefone,
-        String endereco,
+        String telefoneFixo,
+        String celularWhatsapp,
+        PreferenciaCanalComunicacao preferenciaCanalComunicacao,
+        Endereco endereco,
+        EstadoCivil estadoCivil,
+        UUID conjugeId,
         Vocacao vocacao,
         boolean ativo,
-        boolean batizado,
-        boolean primeiraComunhao,
-        boolean crismado,
-        boolean casadoIgrejaCatolica
+        VidaSacramental vidaSacramental,
+        List<Dependente> dependentes,
+        String habilidadesVoluntariado,
+        ConsentimentoLgpd consentimentoLgpd
 ) {
+    public Fiel {
+        dependentes = dependentes != null ? List.copyOf(dependentes) : List.of();
+    }
+
+    // Métodos convenientes de compatibilidade para vida sacramental
+    public boolean batizado() {
+        return vidaSacramental != null && vidaSacramental.batizado();
+    }
+
+    public boolean primeiraComunhao() {
+        return vidaSacramental != null && vidaSacramental.primeiraComunhao();
+    }
+
+    public boolean crismado() {
+        return vidaSacramental != null && vidaSacramental.crismado();
+    }
+
+    public boolean casadoIgrejaCatolica() {
+        return vidaSacramental != null && vidaSacramental.casadoIgrejaCatolica();
+    }
 }

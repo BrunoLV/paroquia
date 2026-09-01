@@ -36,7 +36,8 @@ class IndicadorRetrabalhoIntegrationTest {
         UUID eventoA = UUID.randomUUID();
         UUID eventoB = UUID.randomUUID();
 
-        auditoriaOperacaoJpaRepository.save(record(grupoParoquialId, eventoA, "atualizar", "{\"agendaAlterada\":true}"));
+        auditoriaOperacaoJpaRepository.save(
+                record(grupoParoquialId, eventoA, "atualizar", "{\"agendaAlterada\":true}"));
         auditoriaOperacaoJpaRepository.save(record(grupoParoquialId, eventoA, "cancelar", "{}"));
         auditoriaOperacaoJpaRepository
                 .save(record(grupoParoquialId, eventoB, "atualizar", "{\"grupoParoquialResponsavelAlterada\":true}"));

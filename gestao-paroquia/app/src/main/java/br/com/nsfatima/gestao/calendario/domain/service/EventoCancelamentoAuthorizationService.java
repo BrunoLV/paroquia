@@ -62,7 +62,8 @@ public class EventoCancelamentoAuthorizationService {
             if (actorOrganizationId == null) {
                 throw new ForbiddenOperationException("Usuário não pode cancelar eventos sem um escopo de organização");
             }
-            if (eventoGrupoParoquialResponsavelId == null || !eventoGrupoParoquialResponsavelId.equals(actorOrganizationId)) {
+            if (eventoGrupoParoquialResponsavelId == null
+                    || !eventoGrupoParoquialResponsavelId.equals(actorOrganizationId)) {
                 throw new ForbiddenOperationException(
                         "User cannot cancel events outside the responsible organization scope");
             }

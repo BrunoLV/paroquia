@@ -42,6 +42,7 @@ import StatusIcon from '../components/StatusIcon';
 import { getHomologacaoStatusMeta } from '../utils/statusMeta/homologacaoStatus';
 import PageHeader from '../components/PageHeader';
 import theme from '../theme';
+import { formatDateBr } from '../utils/masks';
 
 export const ConselhosAtas: React.FC = () => {
   const { user } = useAuth();
@@ -216,7 +217,7 @@ export const ConselhosAtas: React.FC = () => {
           <Skeleton variant="rectangular" height={72} />
         </Stack>
       ) : (
-        <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+        <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
           <Table>
             <TableHead sx={{ backgroundColor: 'action.hover' }}>
               <TableRow>
@@ -257,7 +258,7 @@ export const ConselhosAtas: React.FC = () => {
                         )}
                       </TableCell>
                       <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
-                      <TableCell>{item.dataReuniao}</TableCell>
+                      <TableCell>{formatDateBr(item.dataReuniao)}</TableCell>
                       <TableCell><StatusIcon {...getHomologacaoStatusMeta(item.statusHomologacao)} sx={{ fontWeight: 600 }} /></TableCell>
                       <TableCell align="center">
                         {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (

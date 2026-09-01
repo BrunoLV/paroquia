@@ -17,49 +17,147 @@ export const VOCACAO_LABELS: Record<Vocacao, string> = {
   RELIGIOSO: 'Religioso(a)',
 };
 
+export type Sexo = 'MASCULINO' | 'FEMININO' | 'NAO_INFORMADO';
+export type EstadoCivil = 'SOLTEIRO' | 'CASADO_IGREJA' | 'CASADO_CIVIL' | 'VIUVO' | 'DIVORCIADO' | 'UNIAO_ESTAVEL';
+export type PreferenciaCanalComunicacao = 'WHATSAPP' | 'EMAIL' | 'SMS' | 'TELEFONE' | 'NENHUM';
+export type Parentesco = 'FILHO' | 'ENTEADO' | 'TUTELADO' | 'OUTRO';
+
+export interface Endereco {
+  logradouro?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cep?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+}
+
+export interface Dependente {
+  id?: string;
+  nome: string;
+  dataNascimento?: string | null;
+  parentesco?: Parentesco;
+  batizado?: boolean;
+  primeiraComunhao?: boolean;
+  crismado?: boolean;
+}
+
+export interface VidaSacramental {
+  batizado?: boolean;
+  dataBatismo?: string | null;
+  paroquiaBatismo?: string | null;
+  celebranteBatismo?: string | null;
+  livroBatismo?: string | null;
+  folhaBatismo?: string | null;
+  termoBatismo?: string | null;
+  padrinhosBatismo?: string | null;
+
+  primeiraComunhao?: boolean;
+  dataPrimeiraComunhao?: string | null;
+  paroquiaPrimeiraComunhao?: string | null;
+  turmaCatequese?: string | null;
+
+  crismado?: boolean;
+  dataCrisma?: string | null;
+  paroquiaCrisma?: string | null;
+  celebranteCrisma?: string | null;
+  padrinhoCrisma?: string | null;
+
+  casadoIgrejaCatolica?: boolean;
+  dataMatrimonio?: string | null;
+  paroquiaMatrimonio?: string | null;
+  numeroProcessoMatrimonial?: string | null;
+  certidaoMatrimonio?: string | null;
+}
+
+export interface ConsentimentoLgpd {
+  termoConsentimentoAceito?: boolean;
+  dataHoraConsentimentoUtc?: string | null;
+  ipConsentimento?: string | null;
+  versaoTermoConsentimento?: string | null;
+  usoImagemAutorizado?: boolean;
+  permitirDivulgacaoAniversario?: boolean;
+}
+
 export interface Fiel {
   id: string;
   nome: string;
   cpf: string;
+  rg?: string | null;
   dataNascimento: string;
+  sexo?: Sexo;
+  profissao?: string | null;
   email: string;
   telefone: string;
-  endereco: string;
+  telefoneFixo?: string | null;
+  celularWhatsapp?: string | null;
+  preferenciaCanalComunicacao?: PreferenciaCanalComunicacao;
+  endereco?: Endereco | string | null;
+  estadoCivil?: EstadoCivil;
+  conjugeId?: string | null;
   vocacao: Vocacao;
   ativo: boolean;
-  batizado: boolean;
-  primeiraComunhao: boolean;
-  crismado: boolean;
-  casadoIgrejaCatolica: boolean;
+  batizado?: boolean;
+  primeiraComunhao?: boolean;
+  crismado?: boolean;
+  casadoIgrejaCatolica?: boolean;
+  vidaSacramental?: VidaSacramental | null;
+  dependentes?: Dependente[];
+  habilidadesVoluntariado?: string | null;
+  consentimentoLgpd?: ConsentimentoLgpd | null;
 }
 
 export interface CreateFielPayload {
   nome: string;
   cpf: string;
+  rg?: string;
   dataNascimento: string;
+  sexo?: Sexo;
+  profissao?: string;
   email: string;
   telefone: string;
-  endereco: string;
+  telefoneFixo?: string;
+  celularWhatsapp?: string;
+  preferenciaCanalComunicacao?: PreferenciaCanalComunicacao;
+  endereco?: Endereco | string;
+  estadoCivil?: EstadoCivil;
+  conjugeId?: string;
   vocacao: Vocacao;
   batizado?: boolean;
   primeiraComunhao?: boolean;
   crismado?: boolean;
   casadoIgrejaCatolica?: boolean;
+  vidaSacramental?: VidaSacramental;
+  dependentes?: Dependente[];
+  habilidadesVoluntariado?: string;
+  consentimentoLgpd?: ConsentimentoLgpd;
 }
 
 export interface UpdateFielPayload {
   nome?: string;
   cpf?: string;
+  rg?: string;
   dataNascimento?: string;
+  sexo?: Sexo;
+  profissao?: string;
   email?: string;
   telefone?: string;
-  endereco?: string;
+  telefoneFixo?: string;
+  celularWhatsapp?: string;
+  preferenciaCanalComunicacao?: PreferenciaCanalComunicacao;
+  endereco?: Endereco | string;
+  estadoCivil?: EstadoCivil;
+  conjugeId?: string;
   vocacao?: Vocacao;
   ativo?: boolean;
   batizado?: boolean;
   primeiraComunhao?: boolean;
   crismado?: boolean;
   casadoIgrejaCatolica?: boolean;
+  vidaSacramental?: VidaSacramental;
+  dependentes?: Dependente[];
+  habilidadesVoluntariado?: string;
+  consentimentoLgpd?: ConsentimentoLgpd;
 }
 
 export type SetorPastoral =

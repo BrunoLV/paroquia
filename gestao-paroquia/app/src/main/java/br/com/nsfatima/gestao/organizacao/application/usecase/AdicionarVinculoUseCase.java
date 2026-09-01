@@ -151,8 +151,8 @@ public class AdicionarVinculoUseCase {
         if (isPapelCoordenador) {
             java.util.Optional<MembroGrupoEntity> existing;
             if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
-                existing = vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(grupoParoquialId,
-                        papel.name(), igrejaVinculoId);
+                existing = vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(
+                        grupoParoquialId, papel.name(), igrejaVinculoId);
 
             } else {
                 existing = vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(

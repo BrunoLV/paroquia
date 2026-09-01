@@ -93,7 +93,8 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
      * @return resposta de erro 400 padronizada
      */
     @ExceptionHandler(AtivoGrupoParoquialInvalidaException.class)
-    public ResponseEntity<ValidationErrorResponse> handleGrupoParoquialInvalida(AtivoGrupoParoquialInvalidaException ex) {
+    public ResponseEntity<ValidationErrorResponse> handleGrupoParoquialInvalida(
+            AtivoGrupoParoquialInvalidaException ex) {
         return buildValidation(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.DOMAIN_RULE_VIOLATION,

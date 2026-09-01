@@ -53,6 +53,6 @@ Contains the implementation of the interfaces defined in the Domain and Applicat
 
 ## Tech Stack
 
-- **Backend**: Java 21, Spring Boot 3.
+- **Backend**: Java 25, Spring Boot 3.
 - **Database**: PostgreSQL (Migrations with Flyway).
 - **Documentation**: Docsify (this site) and SpringDoc OpenAPI (Swagger).

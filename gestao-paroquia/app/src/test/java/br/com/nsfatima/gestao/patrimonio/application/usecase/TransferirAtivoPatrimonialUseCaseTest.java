@@ -88,7 +88,8 @@ class TransferirAtivoPatrimonialUseCaseTest {
         when(repository.findById(ativoId)).thenReturn(Optional.of(ativo));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        var response = useCase.execute(ativoId, new TransferirAtivoRequest(novaGrupoParoquialId, "Justificativa válida"));
+        var response = useCase.execute(
+                ativoId, new TransferirAtivoRequest(novaGrupoParoquialId, "Justificativa válida"));
 
         assertThat(response.grupoParoquialId()).isEqualTo(novaGrupoParoquialId);
     }

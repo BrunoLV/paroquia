@@ -84,7 +84,7 @@ describe('AtivoAlocacoesModal', () => {
     });
 
     expect(screen.getByTestId('EventIcon')).toBeInTheDocument();
-    expect(screen.getByText('2026-09-01 — 2026-09-03')).toBeInTheDocument();
+    expect(screen.getByText('01/09/2026 — 03/09/2026')).toBeInTheDocument();
     expect(screen.getByTestId('CheckCircleIcon')).toBeInTheDocument();
   });
 

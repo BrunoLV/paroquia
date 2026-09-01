@@ -38,6 +38,7 @@ import apiClient from '../api/client';
 import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
 import StatusIcon from '../components/StatusIcon';
+import theme from '../theme';
 import {getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
 
 /**
@@ -229,13 +230,13 @@ const Aprovacoes = () => {
           </Tabs>
         </Box>
 
-        <Card sx={{ width: '100%', mb: 4, overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <Card sx={{ width: '100%', mb: 4, overflow: 'hidden' }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
             indicatorColor="primary"
             textColor="primary"
-            sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#fff' }}
+            sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}
           >
             <Tab label="Pendentes" />
             <Tab label="Aprovadas" />
@@ -460,7 +461,7 @@ const Aprovacoes = () => {
         {aprovacaoSelecionada && (
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Detalhes da Solicitação
               </Typography>
               <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setAprovacaoSelecionada(null)} />
@@ -486,7 +487,7 @@ const Aprovacoes = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa' }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom.subtlePanelBg }}>
               {aprovacaoSelecionada.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>
@@ -592,7 +593,7 @@ const Aprovacoes = () => {
         {aprovacaoProjetoSelecionada && (
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Detalhes da Solicitação de Projeto
               </Typography>
               <ActionButton
@@ -622,7 +623,7 @@ const Aprovacoes = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8f9fa' }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom.subtlePanelBg }}>
               {aprovacaoProjetoSelecionada.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>

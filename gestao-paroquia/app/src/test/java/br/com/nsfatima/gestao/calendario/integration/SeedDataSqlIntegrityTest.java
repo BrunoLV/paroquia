@@ -47,6 +47,8 @@ public class SeedDataSqlIntegrityTest {
         jdbcTemplate.execute("TRUNCATE TABLE calendario.cpc_decisoes;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_envolvidos;");
         jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_ativo_patrimonial;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.fiel_dependentes;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.fieis;");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
     }
 
@@ -64,12 +66,8 @@ public class SeedDataSqlIntegrityTest {
             sqlContent = sqlContent.substring(0, doIndex) + sqlContent.substring(endDoIndex + "END $$;".length());
         }
 
-        // Replace PostgreSQL ON CONFLICT for H2 compatibility in tests
-        sqlContent = sqlContent.replaceAll("ON CONFLICT\\s*\\([^)]+\\)\\s*DO NOTHING", "")
-                               .replaceAll(
-                                       "ON CONFLICT\\s*\\(ano\\)\\s*DO UPDATE SET status = EXCLUDED.status,"
-                                       + " data_fechamento_utc = EXCLUDED.data_fechamento_utc", "")
-                               .replaceAll("ON CONFLICT\\s*DO NOTHING", "");
+        // Replace PostgreSQL ON CONFLICT (including multiline DO UPDATE SET) for H2 compatibility in tests
+        sqlContent = sqlContent.replaceAll("(?s)ON CONFLICT\\b[^;]*", "");
 
         String[] statements = sqlContent.split(";");
 

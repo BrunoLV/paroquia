@@ -1,6 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {
     Alert,
+    alpha,
     Box,
     Card,
     CardContent,
@@ -309,22 +310,19 @@ const Reports: React.FC = () => {
       title: isFiltered ? 'Eventos no Período' : 'Total Eventos no Mês',
       value: filteredMetrics.resumoGeral?.totalEventosMes ?? 0,
       icon: EventIcon,
-      accentColor: '#1a237e',
-      bgGradient: 'linear-gradient(135deg, #1a237e 0%, #3f51b5 100%)',
+      paletteKey: 'primary' as const,
     },
     {
       title: 'Projetos Ativos',
       value: filteredMetrics.resumoGeral?.projetosAtivos ?? 0,
       icon: ProjectIcon,
-      accentColor: '#00796b',
-      bgGradient: 'linear-gradient(135deg, #00796b 0%, #00bfa5 100%)',
+      paletteKey: 'success' as const,
     },
     {
       title: 'Solicitações Pendentes',
       value: filteredMetrics.resumoGeral?.solicitacoesPendentes ?? 0,
       icon: PendingIcon,
-      accentColor: '#e65100',
-      bgGradient: 'linear-gradient(135deg, #e65100 0%, #ff9800 100%)',
+      paletteKey: 'warning' as const,
     },
   ];
 
@@ -371,8 +369,6 @@ const Reports: React.FC = () => {
           mb: 3,
           border: '1px solid',
           borderColor: 'divider',
-          borderLeft: '4px solid #1a237e',
-          background: 'linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%)',
         }}
       >
         <ReportFilters
@@ -389,7 +385,7 @@ const Reports: React.FC = () => {
           severity="info"
           variant="outlined"
           icon={<FilterIcon />}
-          sx={{ mb: 3, borderLeft: '4px solid #1a237e' }}
+          sx={{ mb: 3 }}
           onClose={handleClearFilters}
         >
           Filtro ativo de <strong>{appliedStartDate || 'início do registro'}</strong> até{' '}
@@ -403,21 +399,7 @@ const Reports: React.FC = () => {
           const IconComp = card.icon;
           return (
             <Grid key={idx} size={{ xs: 12, md: 4 }}>
-              <Card
-                elevation={0}
-                sx={{
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderTop: `4px solid ${card.accentColor}`,
-                  background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.03)',
-                  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.07)',
-                  },
-                }}
-              >
+              <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
                 <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
@@ -430,16 +412,15 @@ const Reports: React.FC = () => {
                     </Box>
                     <Box
                       sx={{
-                        p: 1.75,
+                        p: 1.5,
                         borderRadius: 2,
-                        background: card.bgGradient,
+                        bgcolor: (theme) => alpha(theme.palette[card.paletteKey].main, 0.1),
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
                       }}
                     >
-                      <IconComp sx={{ fontSize: 32, color: '#ffffff' }} />
+                      <IconComp sx={{ fontSize: 24, color: `${card.paletteKey}.main` }} />
                     </Box>
                   </Box>
                 </CardContent>
@@ -465,19 +446,10 @@ const Reports: React.FC = () => {
       {/* Projects Status & Progress Section */}
       <Grid container spacing={3} sx={{ mt: 1 }}>
         <Grid size={{ xs: 12 }}>
-          <Card
-            elevation={0}
-            sx={{
-              p: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderTop: '4px solid #1a237e',
-              background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-            }}
-          >
+          <Card elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ProjectIcon sx={{ color: '#1a237e' }} />
+                <ProjectIcon sx={{ color: 'primary.main', fontSize: 20 }} />
                 <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
                   Acompanhamento de Projetos Ativos & Status
                 </Typography>
@@ -506,16 +478,27 @@ const Reports: React.FC = () => {
                     <Box
                       sx={{
                         p: 2.25,
-                        border: '1px solid #e0e0e0',
-                        borderLeft: proj.emRisco ? '4px solid #d32f2f' : '4px solid #00796b',
-                        backgroundColor: '#fafafa',
+                        border: '1px solid',
+                        borderColor: proj.emRisco ? 'error.light' : 'divider',
+                        bgcolor: proj.emRisco ? (theme) => alpha(theme.palette.error.main, 0.08) : 'background.paper',
                         borderRadius: 1.5,
                         height: '100%',
                         boxSizing: 'border-box',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&::before': proj.emRisco ? {
+                          content: '""',
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: '4px',
+                          backgroundColor: 'error.main',
+                        } : undefined,
                       }}
                     >
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1a237e' }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main' }}>
                           {proj.nome}
                         </Typography>
                         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -546,10 +529,9 @@ const Reports: React.FC = () => {
                         value={Math.min(100, Math.max(0, proj.percentualTempoDecorrido))}
                         sx={{
                           height: 8,
-                          
-                          backgroundColor: '#e0e0e0',
+                          bgcolor: 'grey.300',
                           '& .MuiLinearProgress-bar': {
-                            backgroundColor: proj.emRisco ? '#d32f2f' : '#1a237e',
+                            bgcolor: proj.emRisco ? 'error.main' : 'primary.main',
                           },
                         }}
                       />
@@ -569,9 +551,12 @@ const Reports: React.FC = () => {
                 ))}
               </Grid>
             ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
-                Nenhum projeto ativo no momento.
-              </Typography>
+              <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                <ProjectIcon sx={{ fontSize: 36, color: 'action.disabled' }} />
+                <Typography variant="body2" color="text.secondary">
+                  Nenhum projeto ativo no momento.
+                </Typography>
+              </Box>
             )}
           </Card>
         </Grid>
@@ -589,14 +574,14 @@ const Reports: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <AssessmentIcon sx={{ color: '#1a237e' }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a237e' }}>
+          <AssessmentIcon sx={{ color: 'primary.main' }} />
+          <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
             Atividades Recentes & Eventos {isFiltered ? 'no Período' : 'da Semana'}
           </Typography>
         </Box>
 
         {filteredMetrics.eventosSemana && filteredMetrics.eventosSemana.length > 0 ? (
-          <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #eee' }}>
+          <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
             <Table size="small">
               <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
@@ -642,9 +627,12 @@ const Reports: React.FC = () => {
             />
           </TableContainer>
         ) : (
-          <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
-            Nenhum evento encontrado no período selecionado.
-          </Typography>
+          <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            <EventIcon sx={{ fontSize: 36, color: 'action.disabled' }} />
+            <Typography variant="body2" color="text.secondary">
+              Nenhum evento encontrado no período selecionado.
+            </Typography>
+          </Box>
         )}
       </Card>
       </>

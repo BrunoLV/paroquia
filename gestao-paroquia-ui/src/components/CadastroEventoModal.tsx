@@ -139,8 +139,8 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
 
   const selectedProjectInfo = useMemo(() => {
     if (!selectedProject) return '';
-    const startStr = selectedProject.inicio ? new Date(selectedProject.inicio).toLocaleDateString() : '';
-    const endStr = selectedProject.fim ? new Date(selectedProject.fim).toLocaleDateString() : '';
+    const startStr = selectedProject.inicio ? new Date(selectedProject.inicio).toLocaleDateString('pt-BR') : '';
+    const endStr = selectedProject.fim ? new Date(selectedProject.fim).toLocaleDateString('pt-BR') : '';
     if (startStr && endStr) {
       return `${startStr} a ${endStr}`;
     }
@@ -164,7 +164,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
     const eventStart = new Date(startDate);
 
     if (projStart && eventStart < projStart) {
-      return `A data de início do evento (${eventStart.toLocaleDateString()}) é anterior ao início do projeto (${projStart.toLocaleDateString()}).`;
+      return `A data de início do evento (${eventStart.toLocaleDateString('pt-BR')}) é anterior ao início do projeto (${projStart.toLocaleDateString('pt-BR')}).`;
     }
 
     if (isRecurring) {
@@ -178,7 +178,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         if (dataLimite) {
           const limitDate = new Date(dataLimite + 'T23:59:59');
           if (limitDate > projEnd) {
-            return `O limite da repetição (${limitDate.toLocaleDateString()}) excede o fim do projeto (${projEnd.toLocaleDateString()}).`;
+            return `O limite da repetição (${limitDate.toLocaleDateString('pt-BR')}) excede o fim do projeto (${projEnd.toLocaleDateString('pt-BR')}).`;
           }
         }
 
@@ -190,7 +190,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
           if (occurrences.length > 0) {
             const lastOccurrence = occurrences[occurrences.length - 1];
             if (lastOccurrence > projEnd) {
-              return `A última ocorrência (${lastOccurrence.toLocaleDateString()}) excede o fim do projeto (${projEnd.toLocaleDateString()}).`;
+              return `A última ocorrência (${lastOccurrence.toLocaleDateString('pt-BR')}) excede o fim do projeto (${projEnd.toLocaleDateString('pt-BR')}).`;
             }
           }
         }
@@ -199,7 +199,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
       if (!endDate) return null;
       const eventEnd = new Date(endDate);
       if (projEnd && eventEnd > projEnd) {
-        return `A data de término do evento (${eventEnd.toLocaleDateString()}) excede o término do projeto (${projEnd.toLocaleDateString()}).`;
+        return `A data de término do evento (${eventEnd.toLocaleDateString('pt-BR')}) excede o término do projeto (${projEnd.toLocaleDateString('pt-BR')}).`;
       }
     }
 

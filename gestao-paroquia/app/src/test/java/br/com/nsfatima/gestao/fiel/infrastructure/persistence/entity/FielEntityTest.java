@@ -24,7 +24,10 @@ class FielEntityTest {
         fiel.setDataNascimento(LocalDate.of(1985, 3, 10));
         fiel.setEmail("jose@example.com");
         fiel.setTelefone("11988887777");
-        fiel.setEndereco("Av. Principal, 456");
+        fiel.setEnderecoLogradouro("Av. Principal");
+        fiel.setEnderecoNumero("456");
+        fiel.setEnderecoCidade("São Paulo");
+        fiel.setEnderecoEstado("SP");
         fiel.setVocacao(Vocacao.SACERDOTE);
         fiel.setAtivo(false);
         fiel.setCriadoEmUtc(criadoEm);
@@ -38,7 +41,8 @@ class FielEntityTest {
         assertThat(fiel.getDataNascimento()).isEqualTo(LocalDate.of(1985, 3, 10));
         assertThat(fiel.getEmail()).isEqualTo("jose@example.com");
         assertThat(fiel.getTelefone()).isEqualTo("11988887777");
-        assertThat(fiel.getEndereco()).isEqualTo("Av. Principal, 456");
+        assertThat(fiel.getEnderecoLogradouro()).isEqualTo("Av. Principal");
+        assertThat(fiel.getEnderecoNumero()).isEqualTo("456");
         assertThat(fiel.getVocacao()).isEqualTo(Vocacao.SACERDOTE);
         assertThat(fiel.isAtivo()).isFalse();
         assertThat(fiel.getCriadoEmUtc()).isEqualTo(criadoEm);

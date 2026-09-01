@@ -33,11 +33,17 @@ vi.mock('../context/NotificationContext', () => ({
 const mockFiel: Fiel = {
   id: 'fiel-1',
   nome: 'Maria da Silva',
-  cpf: '123.456.789-00',
+  cpf: '12345678900',
   dataNascimento: '1990-01-01',
   email: 'maria@test.com',
-  telefone: '(11) 91234-5678',
-  endereco: 'Rua A, 100',
+  telefone: '11912345678',
+  endereco: {
+    logradouro: 'Rua A',
+    numero: '100',
+    bairro: 'Centro',
+    cidade: 'São Paulo',
+    estado: 'SP',
+  },
   vocacao: 'LEIGO',
   ativo: true,
   batizado: true,
@@ -53,17 +59,18 @@ describe('Fieis Page', () => {
     (organizacoesApi.getOrganizacoes as any).mockResolvedValue([]);
   });
 
-  test('renders page title and list of fiéis', async () => {
+  test('renders page title and list of fiéis with LGPD masking', async () => {
     render(<Fieis />);
 
     expect(screen.getByText('Gestão de Fiéis')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('Maria da Silva')).toBeInTheDocument();
     });
-    expect(screen.getByText('123.456.789-00')).toBeInTheDocument();
+    // LGPD Partial CPF Masking by default: ***.456.789-**
+    expect(screen.getByText('***.456.789-**')).toBeInTheDocument();
   });
 
-  test('opens create modal when clicking "Novo Fiel" button', async () => {
+  test('opens create modal with structured tabs when clicking "Novo Fiel" button', async () => {
     render(<Fieis />);
 
     await waitFor(() => {
@@ -73,8 +80,12 @@ describe('Fieis Page', () => {
     const newBtn = screen.getByRole('button', { name: /Novo Fiel/i });
     fireEvent.click(newBtn);
 
-    expect(screen.getByText('Cadastrar Fiel')).toBeInTheDocument();
+    expect(screen.getByText('Cadastrar Novo Fiel')).toBeInTheDocument();
     expect(screen.getByLabelText(/Nome Completo/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/CPF/i)).toBeInTheDocument();
+    expect(screen.getByText('1. Dados & Contato')).toBeInTheDocument();
+    expect(screen.getByText('2. Família & Filhos')).toBeInTheDocument();
+    expect(screen.getByText('3. Vida Sacramental')).toBeInTheDocument();
+    expect(screen.getByText('4. Voluntariado & LGPD')).toBeInTheDocument();
   });
 });

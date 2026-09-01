@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
     Alert,
+    alpha,
     Box,
     Card,
     CardContent,
@@ -673,7 +674,7 @@ const Calendar = () => {
           
           border: '1px solid',
           borderColor: 'divider',
-          backgroundColor: '#fafafa',
+          backgroundColor: 'action.hover',
           overflow: 'visible',
         }}
       >
@@ -682,7 +683,7 @@ const Calendar = () => {
             {/* Top Line: Month Navigation (Left) & Action Buttons (Right) */}
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <ActionButton title="Mês Anterior" icon={<ChevronLeft />} onClick={handlePrevMonth} color="primary" />
-              <Typography variant="h5" sx={{ minWidth: 150, textAlign: 'center', fontWeight: 600, color: '#37474f' }}>
+              <Typography variant="h5" sx={{ minWidth: 150, textAlign: 'center', fontWeight: 600, color: 'text.primary' }}>
                 {monthNames[currentMonth]} {currentYear}
               </Typography>
               <ActionButton title="Próximo Mês" icon={<ChevronRight />} onClick={handleNextMonth} color="primary" />
@@ -692,7 +693,7 @@ const Calendar = () => {
                 color="primary"
                 variant="outlined"
                 size="small"
-                sx={{ fontWeight: 700, border: '1px solid #1a237e' }}
+                sx={{ fontWeight: 700 }}
               />
               {liturgicalInfo.isClosed && (
                 <Chip
@@ -705,27 +706,27 @@ const Calendar = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <Box sx={{ border: '1px solid #e0e0e0', overflow: 'hidden', display: 'flex' }}>
+              <Box sx={{ border: '1px solid', borderColor: 'divider', overflow: 'hidden', display: 'flex' }}>
                 <ActionButton
                   title="Visualização em Grade"
                   ariaLabel="Mês"
                   icon={<CalendarIcon />}
                   color={viewMode === 'month' ? 'primary' : undefined}
                   onClick={() => setViewMode('month')}
-                  sx={{ border: 'none', bgcolor: viewMode === 'month' ? '#e8f5e9' : 'transparent' }}
+                  sx={{ border: 'none', bgcolor: viewMode === 'month' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
                 />
                 <ActionButton
                   title="Visualização em Agenda"
                   icon={<ListIcon />}
                   color={viewMode === 'agenda' ? 'primary' : undefined}
                   onClick={() => setViewMode('agenda')}
-                  sx={{ border: 'none', bgcolor: viewMode === 'agenda' ? '#e8f5e9' : 'transparent' }}
+                  sx={{ border: 'none', bgcolor: viewMode === 'agenda' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
                 />
               </Box>
             </Grid>
 
             {/* Line Below: Filtering Controls */}
-            <Grid size={{ xs: 12 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mt: 1, pt: 1, borderTop: '1px solid #f0f0f0' }}>
+            <Grid size={{ xs: 12 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
               <FormControl size="small" sx={{ minWidth: 200, maxWidth: 300, flexGrow: 1 }}>
                 <InputLabel id="org-filter-label">Organização</InputLabel>
                 <Select
@@ -780,12 +781,12 @@ const Calendar = () => {
       {/* View Content */}
       {viewMode === 'month' ? (
         /* Monthly Grid View */
-         <Card elevation={2} sx={{ overflow: 'hidden', boxShadow: '0 4px 25px rgba(0,0,0,0.04)' }}>
+         <Card sx={{ overflow: 'hidden' }}>
           {/* Days of week header */}
-          <Grid container columns={7} sx={{ bgcolor: '#eceff1', borderBottom: '1px solid #cfd8dc', textAlign: 'center', py: 1.5 }}>
+          <Grid container columns={7} sx={{ bgcolor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider', textAlign: 'center', py: 1.5 }}>
             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
               <Grid size={{ xs: 1 }} key={day}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#455a64' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.secondary' }}>
                   {day}
                 </Typography>
               </Grid>
@@ -805,15 +806,20 @@ const Calendar = () => {
                   onClick={() => handleOpenCreate(date)}
                   sx={{
                     minHeight: 130,
-                    borderRight: '1px solid #e0e0e0',
-                    borderBottom: '1px solid #e0e0e0',
-                    bgcolor: isToday ? '#f1f8e9' : isCurrentMonth ? seasonStyle.backgroundColor : '#fafafa',
+                    borderRight: '1px solid',
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    bgcolor: isToday
+                      ? (theme) => alpha(theme.palette.success.main, 0.08)
+                      : isCurrentMonth ? seasonStyle.backgroundColor : 'action.hover',
                     p: 1,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                     position: 'relative',
                     '&:hover': {
-                      bgcolor: isToday ? '#e8f5e9' : '#f5f5f5',
+                      bgcolor: isToday
+                        ? (theme) => alpha(theme.palette.success.main, 0.16)
+                        : 'action.selected',
                       '& .add-day-btn': { opacity: 1 },
                     },
                   }}
@@ -824,8 +830,8 @@ const Calendar = () => {
                       variant="body2"
                       sx={{
                         fontWeight: isToday ? 700 : 500,
-                        color: isToday ? '#2e7d32' : isCurrentMonth ? '#37474f' : '#b0bec5',
-                        bgcolor: isToday ? '#c8e6c9' : 'transparent',
+                        color: isToday ? 'success.dark' : isCurrentMonth ? 'text.primary' : 'text.disabled',
+                        bgcolor: isToday ? (theme) => alpha(theme.palette.success.main, 0.2) : 'transparent',
                         borderRadius: '50%',
                         width: 24,
                         height: 24,
@@ -864,7 +870,7 @@ const Calendar = () => {
                         fontSize: '1rem',
                         opacity: 0,
                         transition: 'opacity 0.2s',
-                        '&:hover': { color: '#2e7d32' },
+                        '&:hover': { color: 'success.dark' },
                       }}
                     />
                   </Box>
@@ -881,10 +887,11 @@ const Calendar = () => {
                             handleOpenDetails(evt);
                           }}
                           sx={{
-                            bgcolor: evt.status?.toUpperCase() === 'CANCELADO' ? '#ffebee' : styleColors.bg,
-                            color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : styleColors.text,
-                            borderLeft: `3px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
-                             
+                            bgcolor: evt.status?.toUpperCase() === 'CANCELADO'
+                              ? (theme) => alpha(theme.palette.error.main, 0.12)
+                              : styleColors.bg,
+                            color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.dark' : styleColors.text,
+                            borderLeft: `3px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? 'error.main' : styleColors.border}`,
                             px: 1,
                             py: 0.5,
                             mb: 0.5,
@@ -894,7 +901,6 @@ const Calendar = () => {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             transition: 'all 0.2s',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                             textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none',
                             opacity: evt.aprovacaoPendenteId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1),
                             '&:hover': {
@@ -919,7 +925,7 @@ const Calendar = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {agendaEvents.length === 0 ? (
              <Card sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-              <CalendarIcon sx={{ fontSize: 48, color: '#cfd8dc', mb: 2 }} />
+              <CalendarIcon sx={{ fontSize: 48, color: 'action.disabled', mb: 2 }} />
               <Typography variant="h6">Nenhum evento agendado para o período visível.</Typography>
             </Card>
           ) : (
@@ -933,26 +939,19 @@ const Calendar = () => {
                   key={evt.id}
                   onClick={() => handleOpenDetails(evt)}
                    sx={{
-                    
                     cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                    borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : styleColors.border}`,
-                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    borderLeft: `5px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? 'error.main' : styleColors.border}`,
                     opacity: evt.aprovacaoPendenteId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.8 : 1),
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    },
                   }}
                 >
                   <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
                     <Grid container spacing={2} sx={{ alignItems: 'center' }}>
                       {/* Event Date badge */}
                       <Grid size={{ xs: 12, sm: 2, md: 1.5 }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : '#37474f', lineHeight: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.dark' : 'text.primary', lineHeight: 1 }}>
                           {start.getDate()}
                         </Typography>
-                        <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: evt.status?.toUpperCase() === 'CANCELADO' ? '#ef5350' : '#78909c', mt: 0.5 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.main' : 'text.secondary', mt: 0.5 }}>
                           {monthNames[start.getMonth()].substring(0, 3)}
                         </Typography>
                       </Grid>
@@ -964,7 +963,7 @@ const Calendar = () => {
                           sx={{ 
                             fontWeight: 600, 
                             mb: 0.5, 
-                            color: evt.status?.toUpperCase() === 'CANCELADO' ? '#c62828' : '#263238',
+                            color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.dark' : 'text.primary',
                             textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none'
                           }}
                         >
@@ -1073,7 +1072,7 @@ const Calendar = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
                       Descrição
                     </Typography>
-                     <Typography variant="body1" sx={{ color: '#546e7a', whiteSpace: 'pre-wrap', bgcolor: theme.custom.subtlePanelBg, p: 1.5, border: '1px solid #eceff1' }}>
+                     <Typography variant="body1" sx={{ color: 'text.secondary', whiteSpace: 'pre-wrap', bgcolor: theme.custom.subtlePanelBg, p: 1.5, border: '1px solid', borderColor: 'divider' }}>
                       {selectedEvent.descricao || 'Nenhuma descrição fornecida.'}
                     </Typography>
                   </Box>

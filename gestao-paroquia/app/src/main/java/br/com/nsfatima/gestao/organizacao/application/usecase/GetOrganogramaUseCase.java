@@ -1,5 +1,9 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.PapelGlobalEntity;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.PapelGlobalJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
@@ -36,16 +40,22 @@ public class GetOrganogramaUseCase {
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private final ListGrupoParoquialMembrosUseCase listMembrosUseCase;
+    private final PapelGlobalJpaRepository papelGlobalRepository;
+    private final FielJpaRepository fielRepository;
     private final String paroquiaNome;
 
     public GetOrganogramaUseCase(
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
             ListGrupoParoquialMembrosUseCase listMembrosUseCase,
+            PapelGlobalJpaRepository papelGlobalRepository,
+            FielJpaRepository fielRepository,
             @Value("${app.paroquia.nome:Paróquia Nossa Senhora de Fátima}") String paroquiaNome) {
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.unidadeTerritorialRepository = unidadeTerritorialRepository;
         this.listMembrosUseCase = listMembrosUseCase;
+        this.papelGlobalRepository = papelGlobalRepository;
+        this.fielRepository = fielRepository;
         this.paroquiaNome = paroquiaNome;
     }
 
@@ -123,18 +133,36 @@ public class GetOrganogramaUseCase {
         List<GrupoParoquialEntity> gruposFilhos = gruposPorPaiId.getOrDefault(unidade.getId(), List.of());
         gruposFilhos.forEach(org -> nosFilhos.add(buildOrgNodeRecursively(org, gruposPorPaiId)));
 
-        String responsavelPapel = unidade.getTipo() == TipoUnidadeTerritorial.CLERO ? "PÁROCO" : null;
+        boolean isClero = unidade.getTipo() == TipoUnidadeTerritorial.CLERO;
+        String responsavelPapel = isClero ? "PÁROCO" : null;
+        String responsavelNome = isClero ? findFielNomePorPapelGlobal(PapelGlobal.PAROCO.storedValue()) : null;
+        String viceResponsavelNome = isClero ? findFielNomePorPapelGlobal(PapelGlobal.VIGARIO.storedValue()) : null;
 
         return new OrganogramaNodeResponse(
                 unidade.getId().toString(),
                 unidade.getNome(),
                 "UNIDADE_TERRITORIAL",
                 unidade.getTipo().name(),
-                null,
+                responsavelNome,
                 responsavelPapel,
-                null,
+                viceResponsavelNome,
                 nosFilhos
         );
+    }
+
+    /**
+     * Resolve o nome do primeiro {@code Fiel} com o papel global informado ({@code paroco}/{@code vigario}),
+     * usado para preencher Pároco/Vigário do nó Clero — papéis globais não têm vínculo com nenhuma
+     * organização/unidade territorial (ver {@link PapelGlobalEntity}), então a busca é sempre pelo papel,
+     * sem filtrar por unidade.
+     */
+    private String findFielNomePorPapelGlobal(String papel) {
+        return papelGlobalRepository.findByPapelAndAtivoTrue(papel).stream()
+                .findFirst()
+                .map(PapelGlobalEntity::getFielId)
+                .flatMap(fielRepository::findById)
+                .map(fiel -> fiel.getNome())
+                .orElse(null);
     }
 
     private OrganogramaNodeResponse buildOrgNodeRecursively(GrupoParoquialEntity org,

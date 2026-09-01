@@ -26,7 +26,7 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'Organizacao Default', 'MINISTER
        ('00000000-0000-0000-0000-0000000000bb', 'Pastoral B', 'PASTORAL'),
        ('00000000-0000-0000-0000-0000000000cc', 'Conselho C', 'CONSELHO');
 
-INSERT INTO calendario.fieis (id, nome, cpf, cpf_hash, data_nascimento, email, telefone, endereco, vocacao,
+INSERT INTO calendario.fieis (id, nome, cpf, cpf_hash, data_nascimento, email, telefone, endereco_logradouro, vocacao,
                               ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por)
 VALUES ('f0000000-0000-0000-0000-000000000001', 'Joao Silva', '11111111111',
         '1111111111111111111111111111111111111111111111111111111111111111', '1990-01-01',

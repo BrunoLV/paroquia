@@ -30,19 +30,11 @@ const WeeklyTimeline: React.FC<WeeklyTimelineProps> = ({ events }) => {
       elevation={0}
       sx={{
         p: 3,
-        
         border: '1px solid',
         borderColor: 'divider',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)',
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
-        },
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>

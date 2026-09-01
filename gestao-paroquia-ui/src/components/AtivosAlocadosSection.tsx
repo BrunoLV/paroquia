@@ -5,6 +5,7 @@ import { getAlocacoesPorEvento } from '../api/ativos';
 import { AtivoAlocacaoResponse } from '../api/types';
 import StatusIcon from './StatusIcon';
 import { getAtivoAlocacaoStatusMeta } from '../utils/statusMeta/ativoAlocacaoStatus';
+import { formatDateBr } from '../utils/masks';
 
 interface AtivosAlocadosSectionProps {
   eventoId: string;
@@ -54,7 +55,7 @@ const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId 
                 {alocacao.ativoNome || alocacao.ativoId}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {alocacao.dataInicio} — {alocacao.dataFim}
+                {formatDateBr(alocacao.dataInicio)} — {formatDateBr(alocacao.dataFim)}
               </Typography>
               <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
               {alocacao.impactadaPorAtraso && (

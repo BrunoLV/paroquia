@@ -247,7 +247,7 @@ const Dashboard = () => {
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
             Visão Geral
           </Typography>
           <SummaryCards metrics={summaryMetrics} />

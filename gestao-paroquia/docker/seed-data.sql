@@ -85,20 +85,20 @@ VALUES
     ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', 'Maria do Conselho', 'José do Conselho', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
     ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO', 'economico@nsfatima.com', 'Pedro Finanças', 'Ana Administração', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
     -- Conselhos Comunitários (organização-mãe: cada Comunidade)
-    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO', 'cpc.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO', 'cec.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO', 'cpc.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
-    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO', 'cec.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO', 'cpc.saojose@nsfatima.com', 'Gabriel Coordenador São José', 'Rafael Vice São José', TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
+    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO', 'cec.saojose@nsfatima.com', 'Marcos Tesoureiro São José', NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
+    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO', 'cpc.santoagostinho@nsfatima.com', 'Lúcia Fernandes (Presidente CPC Santo Agostinho)', NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO', 'cec.santoagostinho@nsfatima.com', 'Mateus Tesoureiro Santo Agostinho', NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
     -- Pastorais Paroquiais (organização-mãe: CPP)
-    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
+    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', 'Tiago Pascom', NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
     ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', 'Pedro Junior', 'Lucas dos Santos', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000012', 0),
     ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', 'Maria Oliveira', 'Lúcia de Oliveira', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000021', 0),
-    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000020', 0),
+    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', 'Isabel Batismo', NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000020', 0),
     -- Pastorais Comunitárias (filhas dos CPCs)
-    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000022', 0),
-    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000025', 0),
-    ('00000000-0000-0000-0000-0000000003a1', 'Pastoral da Liturgia - Santo Agostinho', 'PASTORAL', 'liturgia.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000018', 0),
-    ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', NULL, NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
+    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', 'Marta Acolhida São José', NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000022', 0),
+    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', 'Paulo Dízimo São José', NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000025', 0),
+    ('00000000-0000-0000-0000-0000000003a1', 'Pastoral da Liturgia - Santo Agostinho', 'PASTORAL', 'liturgia.santoagostinho@nsfatima.com', 'João Santos', NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000018', 0),
+    ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', 'Teresa Social Santo Agostinho', NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
 ON CONFLICT (id) DO NOTHING;
 
 -- Locations (Locais) — sempre vinculadas a uma UnidadeTerritorial (Matriz/Comunidade)
@@ -113,30 +113,56 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Users (Usuarios)
--- Fieis (pessoas físicas correspondentes aos Usuarios abaixo)
-INSERT INTO calendario.fieis (id, nome, cpf, cpf_hash, data_nascimento, email, telefone, endereco,
-                              vocacao, ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por,
-                              batizado, primeira_comunhao, crismado, casado_igreja_catolica)
+-- Fieis (pessoas físicas correspondentes aos Usuarios e membros de comunidades)
+INSERT INTO calendario.fieis (
+    id, nome, cpf, cpf_hash, data_nascimento, email, telefone,
+    endereco_logradouro, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_cep,
+    rg, sexo, profissao, celular_whatsapp, preferencia_canal_comunicacao, estado_civil,
+    vocacao, ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por,
+    habilidades_voluntariado, termo_consentimento_aceito, uso_imagem_autorizado, permitir_divulgacao_aniversario
+)
 VALUES
-    ('1f000000-0000-0000-0000-000000000001', 'Pedro da Silva (Padre)', '00000000001', '031f50e5e09a5f61b2da02c2f59fde68fba579de4e1ef7a5490d6425f810977e', '1980-01-01', 'padre.pedro@example.com', '11999990001', 'Endereco Seed 1', 'SACERDOTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000002', 'Maria Oliveira', '00000000002', '83764048c38ff46c8bea9b07d9ff2d8f8ee759334e3c4040da075c6de4964ade', '1980-01-01', 'maria.catequese@example.com', '11999990002', 'Endereco Seed 2', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000003', 'João Santos', '00000000003', '5fe5f4974dabb8ad6e16a663a5da789608363f7ef8d036e90a08a82e76725a7e', '1980-01-01', 'joao.liturgia@example.com', '11999990003', 'Endereco Seed 3', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000004', 'Pedro Junior', '00000000004', '8edd917ae34b0c41d9c5d1219601a98c5c24a6949334f89b8075cbcae32d6d14', '1980-01-01', 'pedro.liturgia@example.com', '11999990004', 'Endereco Seed 4', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000005', 'Maria do Conselho', '00000000005', '575bb6dd332492ed89809e98c1eb300343e97898c12b09414560471242bed35a', '1980-01-01', 'maria.conselho@example.com', '11999990005', 'Endereco Seed 5', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000006', 'João Batista (Vigário)', '00000000006', '471e904bc81fd079271f4add8b7b78384f30c19e557fb4a32e5f310ec4260ec6', '1980-01-01', 'padre.joao@example.com', '11999990007', 'Endereco Seed 6', 'SACERDOTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000007', 'José do Conselho', '00000000007', '6b315f73399206b7b957093bc830705cf059be0d2c0bfdcf1afe52b704c1e7a9', '1980-01-01', 'jose.conselho@example.com', '11999990008', 'Endereco Seed 7', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000008', 'Ana do Conselho', '00000000008', '46026a0184154dba96ac2cf6ef69aa6a57dcc07d768d8354b3ddd16008d355ea', '1980-01-01', 'ana.conselho@example.com', '11999990009', 'Endereco Seed 8', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000009', 'Lúcia de Oliveira', '00000000009', 'cb10f8c68fbb2772eb8c11b4e4f0ee27937db6f3347d9696f709df9e94a5c487', '1980-01-01', 'lucia.catequese@example.com', '11999990010', 'Endereco Seed 9', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000010', 'Carlos de Oliveira', '00000000010', 'bc40a6e499021d2b5a4b0b60e932d6b53053384218f81acdcb11fd83939be605', '1980-01-01', 'carlos.catequese@example.com', '11999990011', 'Endereco Seed 10', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000011', 'Lucas dos Santos', '00000000011', 'ec95ca9a68d5e645068bff18a444f5035a9c474a6b44d186a20ed7e05a29689f', '1980-01-01', 'lucas.juventude@example.com', '11999990012', 'Endereco Seed 11', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000012', 'Pedro Finanças', '00000000012', 'a7bbab4eab5ae60a310a77448f83ecae88ce92dfd60157871d94db9a07fe185f', '1980-01-01', 'pedro.financas@example.com', '11999990091', 'Endereco Seed 12', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000013', 'Ana Administração', '00000000013', '82af09a26b663ccb5c486e3f39ae6c96edef701c29417c3003451839ce2a889b', '1980-01-01', 'ana.administracao@example.com', '11999990092', 'Endereco Seed 13', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000014', 'Lúcia Fernandes (Presidente CPC Santo Agostinho)', '00000000014', 'a2b86a5f7a87f04cc769393e90bbeef42e403ba38d565f2ada4cfd886096bb4b', '1980-01-01', 'lucia.presidentecpc@example.com', '11999990013', 'Endereco Seed 14', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', TRUE, TRUE, TRUE, FALSE)
+    ('1f000000-0000-0000-0000-000000000000', 'Administrador do Sistema', '00000000000', '0000000000000000000000000000000000000000000000000000000000000000', '1980-01-01', 'admin@example.com', '11999990000', 'Rua da Matriz', '1', 'Centro', 'São Paulo', 'SP', '08000-000', '000000000', 'NAO_INFORMADO', 'Administrador', '11999990000', 'EMAIL', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Administração de Sistemas', TRUE, TRUE, FALSE),
+    ('1f000000-0000-0000-0000-000000000001', 'Pedro da Silva (Padre)', '00000000001', '031f50e5e09a5f61b2da02c2f59fde68fba579de4e1ef7a5490d6425f810977e', '1980-01-01', 'padre.pedro@example.com', '11999990001', 'Rua da Matriz', '10', 'Centro', 'São Paulo', 'SP', '08000-000', '111111111', 'MASCULINO', 'Sacerdote', '11999990001', 'EMAIL', 'SOLTEIRO', 'SACERDOTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Atendimento Pastoral', TRUE, TRUE, FALSE),
+    ('1f000000-0000-0000-0000-000000000002', 'Maria Oliveira', '00000000002', '83764048c38ff46c8bea9b07d9ff2d8f8ee759334e3c4040da075c6de4964ade', '1980-01-01', 'maria.catequese@example.com', '11999990002', 'Rua das Flores', '100', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '222222222', 'FEMININO', 'Professora', '11999990002', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Catequese, Canto', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000003', 'João Santos', '00000000003', '5fe5f4974dabb8ad6e16a663a5da789608363f7ef8d036e90a08a82e76725a7e', '1980-01-01', 'joao.liturgia@example.com', '11999990003', 'Rua Santo Agostinho', '25', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '333333333', 'MASCULINO', 'Engenheiro', '11999990003', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Som e Mídia, Liturgia', TRUE, FALSE, TRUE),
+    ('1f000000-0000-0000-0000-000000000004', 'Pedro Junior', '00000000004', '8edd917ae34b0c41d9c5d1219601a98c5c24a6949334f89b8075cbcae32d6d14', '1980-01-01', 'pedro.liturgia@example.com', '11999990004', 'Av. São José', '50', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '444444444', 'MASCULINO', 'Estudante', '11999990004', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Juventude, Violão', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000005', 'Maria do Conselho', '00000000005', '575bb6dd332492ed89809e98c1eb300343e97898c12b09414560471242bed35a', '1980-01-01', 'maria.conselho@example.com', '11999990005', 'Rua Central', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '555555555', 'FEMININO', 'Administradora', '11999990005', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Gestão Pastoral', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000006', 'João Batista (Vigário)', '00000000006', '471e904bc81fd079271f4add8b7b78384f30c19e557fb4a32e5f310ec4260ec6', '1980-01-01', 'padre.joao@example.com', '11999990007', 'Rua da Matriz', '10', 'Centro', 'São Paulo', 'SP', '08000-000', '666666666', 'MASCULINO', 'Sacerdote', '11999990007', 'EMAIL', 'SOLTEIRO', 'SACERDOTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Atendimento Confissões', TRUE, TRUE, FALSE),
+    ('1f000000-0000-0000-0000-000000000007', 'José do Conselho', '00000000007', '6b315f73399206b7b957093bc830705cf059be0d2c0bfdcf1afe52b704c1e7a9', '1980-01-01', 'jose.conselho@example.com', '11999990008', 'Rua Central', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '777777777', 'MASCULINO', 'Contador', '11999990008', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Conselho Pastoral', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000008', 'Ana do Conselho', '00000000008', '46026a0184154dba96ac2cf6ef69aa6a57dcc07d768d8354b3ddd16008d355ea', '1980-01-01', 'ana.conselho@example.com', '11999990009', 'Rua Nova', '45', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '888888888', 'FEMININO', 'Advogada', '11999990009', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Apoio Jurídico', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000009', 'Lúcia de Oliveira', '00000000009', 'cb10f8c68fbb2772eb8c11b4e4f0ee27937db6f3347d9696f709df9e94a5c487', '1980-01-01', 'lucia.catequese@example.com', '11999990010', 'Rua das Flores', '100', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '999999999', 'FEMININO', 'Pedagoga', '11999990010', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Catequese Infantil', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000010', 'Carlos de Oliveira', '00000000010', 'bc40a6e499021d2b5a4b0b60e932d6b53053384218f81acdcb11fd83939be605', '1980-01-01', 'carlos.catequese@example.com', '11999990011', 'Rua das Flores', '100', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '101010101', 'MASCULINO', 'Arquiteto', '11999990011', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Apoio Eventos', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000011', 'Lucas dos Santos', '00000000011', 'ec95ca9a68d5e645068bff18a444f5035a9c474a6b44d186a20ed7e05a29689f', '1980-01-01', 'lucas.juventude@example.com', '11999990012', 'Av. São José', '55', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '111011101', 'MASCULINO', 'Designer', '11999990012', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Redes Sociais, Mídia', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000012', 'Pedro Finanças', '00000000012', 'a7bbab4eab5ae60a310a77448f83ecae88ce92dfd60157871d94db9a07fe185f', '1980-01-01', 'pedro.financas@example.com', '11999990091', 'Rua Principal', '200', 'Centro', 'São Paulo', 'SP', '08000-000', '121212121', 'MASCULINO', 'Economista', '11999990091', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Finanças Paroquiais', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000013', 'Ana Administração', '00000000013', '82af09a26b663ccb5c486e3f39ae6c96edef701c29417c3003451839ce2a889b', '1980-01-01', 'ana.administracao@example.com', '11999990092', 'Rua Principal', '200', 'Centro', 'São Paulo', 'SP', '08000-000', '131313131', 'FEMININO', 'Administradora', '11999990092', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Administração', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000014', 'Lúcia Fernandes (Presidente CPC Santo Agostinho)', '00000000014', 'a2b86a5f7a87f04cc769393e90bbeef42e403ba38d565f2ada4cfd886096bb4b', '1980-01-01', 'lucia.presidentecpc@example.com', '11999990013', 'Rua Santo Agostinho', '80', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '141414141', 'FEMININO', 'Assistente Social', '11999990013', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Coordenação Comunitária', TRUE, TRUE, TRUE),
+
+    -- Fiéis adicionais para cobertura de TODAS as Comunidades e Pastorais:
+    ('1f000000-0000-0000-0000-000000000015', 'Gabriel Coordenador São José', '00000000015', 'f15hash000000000000000000000000000000000000000000000000000000001', '1985-03-15', 'gabriel.saojose@example.com', '11988880015', 'Rua das Palmeiras', '30', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '151515151', 'MASCULINO', 'Comerciante', '11988880015', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Coordenação Pastoral', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000016', 'Rafael Vice São José', '00000000016', 'f16hash000000000000000000000000000000000000000000000000000000002', '1988-07-20', 'rafael.saojose@example.com', '11988880016', 'Rua das Palmeiras', '35', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '161616161', 'MASCULINO', 'Professor', '11988880016', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Apoio Comunitário', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000017', 'Marcos Tesoureiro São José', '00000000017', 'f17hash000000000000000000000000000000000000000000000000000000003', '1979-11-05', 'marcos.tesoureiro@example.com', '11988880017', 'Av. São José', '102', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '171717171', 'MASCULINO', 'Bancário', '11988880017', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Finanças e Caixa', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000018', 'Mateus Tesoureiro Santo Agostinho', '00000000018', 'f18hash000000000000000000000000000000000000000000000000000000004', '1982-04-12', 'mateus.santoagostinho@example.com', '11988880018', 'Rua Santo Agostinho', '150', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '181818181', 'MASCULINO', 'Administrador', '11988880018', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Gestão Financeira', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000019', 'Tiago Pascom', '00000000019', 'f19hash000000000000000000000000000000000000000000000000000000005', '1992-09-08', 'tiago.pascom@example.com', '11988880019', 'Rua Central', '88', 'Centro', 'São Paulo', 'SP', '08000-000', '191919191', 'MASCULINO', 'Jornalista', '11988880019', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Fotografia, Transmissões', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000020', 'Isabel Batismo', '00000000020', 'f20hash000000000000000000000000000000000000000000000000000000006', '1975-01-25', 'isabel.batismo@example.com', '11988880020', 'Rua das Rosas', '14', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '202020202', 'FEMININO', 'Enfermeira', '11988880020', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Preparação do Batismo', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000021', 'Marta Acolhida São José', '00000000021', 'f21hash000000000000000000000000000000000000000000000000000000007', '1984-06-18', 'marta.acolhida@example.com', '11988880021', 'Rua das Palmeiras', '90', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '212121212', 'FEMININO', 'Recepcionista', '11988880021', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Acolhida nas Missas', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000022', 'Paulo Dízimo São José', '00000000022', 'f22hash000000000000000000000000000000000000000000000000000000008', '1978-12-02', 'paulo.dizimo@example.com', '11988880022', 'Av. São José', '210', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '222222223', 'MASCULINO', 'Vendedor', '11988880022', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Conscientização do Dízimo', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000023', 'Teresa Social Santo Agostinho', '00000000023', 'f23hash000000000000000000000000000000000000000000000000000000009', '1981-08-30', 'teresa.social@example.com', '11988880023', 'Rua Santo Agostinho', '215', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '232323234', 'FEMININO', 'Assistente Social', '11988880023', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Cestas Básicas e Vicentinos', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000024', 'Lucas Fiel São José', '00000000024', 'f24hash000000000000000000000000000000000000000000000000000000010', '1995-10-10', 'lucas.saojose@example.com', '11988880024', 'Av. São José', '300', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '242424245', 'MASCULINO', 'Técnico em TI', '11988880024', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Vicentinos, Acolhida', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000025', 'Clara Fiel Santo Agostinho', '00000000025', 'f25hash000000000000000000000000000000000000000000000000000000011', '1993-05-14', 'clara.santoagostinho@example.com', '11988880025', 'Rua Santo Agostinho', '310', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '252525256', 'FEMININO', 'Bióloga', '11988880025', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Decoração e Liturgia', TRUE, TRUE, TRUE)
+ON CONFLICT (id) DO NOTHING;
+
+-- Tabela de Dependentes / Filhos do Fiel
+INSERT INTO calendario.fiel_dependentes (id, fiel_id, nome, data_nascimento, parentesco, batizado, primeira_comunhao, crismado, criado_em_utc)
+VALUES
+    ('95000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000002', 'Lucas Oliveira', '2015-05-12', 'FILHO', TRUE, TRUE, FALSE, CURRENT_TIMESTAMP),
+    ('95000000-0000-0000-0000-000000000002', '1f000000-0000-0000-0000-000000000002', 'Sofia Oliveira', '2018-09-20', 'FILHO', TRUE, FALSE, FALSE, CURRENT_TIMESTAMP),
+    ('95000000-0000-0000-0000-000000000003', '1f000000-0000-0000-0000-000000000007', 'Gabriel do Conselho', '2012-01-30', 'FILHO', TRUE, TRUE, TRUE, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO calendario.usuarios (id, username, password_hash, enabled, roles, igreja_id, version, fiel_id)
 VALUES 
-    ('10000000-0000-0000-0000-000000000000', 'admin', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000001'),
+    ('10000000-0000-0000-0000-000000000000', 'admin', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000000'),
     ('10000000-0000-0000-0000-000000000001', 'padre.pedro', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000001'),
     ('10000000-0000-0000-0000-000000000002', 'maria.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_GLOBAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000002'),
     ('10000000-0000-0000-0000-000000000003', 'joao.liturgia', '{noop}senha123', TRUE, 'VOLUNTARIO_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000003'),
@@ -150,11 +176,13 @@ VALUES
     ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000011'),
     ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000012'),
     ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000013'),
-    -- Presidente do CPC de Santo Agostinho, escopado diretamente à comunidade — usado para testar a
-    -- autorização de empréstimo de ativos patrimoniais (só o presidente do CPC da organização DONA do
-    -- ativo pode aprovar o empréstimo, junto com o pároco/admin)
     ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000014')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (username) DO UPDATE SET
+    password_hash = EXCLUDED.password_hash,
+    enabled = EXCLUDED.enabled,
+    roles = EXCLUDED.roles,
+    igreja_id = EXCLUDED.igreja_id,
+    fiel_id = EXCLUDED.fiel_id;
 
 
 -- Papéis Globais (Pároco/Vigário): desde a track roles_globais_vs_escopo, acesso irrestrito não é mais
@@ -166,25 +194,54 @@ VALUES
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000006', 'vigario', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
 ON CONFLICT DO NOTHING;
 
--- Vínculos Fiel-GrupoParoquial (membro_grupo): chaveados por fiel_id, nunca por usuario_id — um Fiel pode ter
--- vínculo sem nunca ter tido Usuario. Os fiel_id abaixo correspondem ao fiel_id de cada usuario inserido acima.
--- Os antigos 4 tipos de conselho colapsaram em CONSELHO (track linguagem_ubiqua_dominio).
+-- Vínculos Fiel-GrupoParoquial (membro_grupo): chaveados por fiel_id, garantindo membros e coordenadores em TODAS as pastorais e conselhos.
 INSERT INTO calendario.membro_grupo (id, fiel_id, grupo_paroquial_id, tipo_grupo, papel, igreja_vinculo_id, ativo, criado_em_utc, atualizado_em_utc)
 VALUES
+    -- CPP e CAE (Matriz)
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'mesa-diretora-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'membro-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-0000000000cc', 'CONSELHO', 'membro-cpp', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000099', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000099', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- CPC e CEC São José Allamano
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-0000000002c0', 'CONSELHO', 'presidente-cpc', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000016', '00000000-0000-0000-0000-0000000002c0', 'CONSELHO', 'membro-cpc', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000017', '00000000-0000-0000-0000-0000000002e0', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- CPC e CEC Santo Agostinho
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-0000000003c0', 'CONSELHO', 'presidente-cpc', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000018', '00000000-0000-0000-0000-0000000003e0', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000025', '00000000-0000-0000-0000-0000000003c0', 'CONSELHO', 'membro-cpc', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Pastorais Paroquiais (PASCOM, Juventude, Catequese, Batismo)
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000019', '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'coordenador-pastoral-global', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-0000000000ee', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-0000000000bb', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000003a1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000099', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000099', 'CONSELHO', 'membro-cae', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    -- Escopo direto na Comunidade (grupo_paroquial_id = Santo Agostinho), não no conselho — necessário para
-    -- a checagem de autorização de empréstimo de ativos, que compara o contexto do ator diretamente
-    -- contra a organização dona do ativo.
+
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-0000000000ff', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-0000000000ff', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Pastorais Comunitárias (São José Allamano & Santo Agostinho)
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-0000000002a1', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000024', '00000000-0000-0000-0000-0000000002a1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000022', '00000000-0000-0000-0000-0000000002d1', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-0000000002d1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000003a1', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000025', '00000000-0000-0000-0000-0000000003a1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000023', '00000000-0000-0000-0000-0000000003b1', 'PASTORAL', 'coordenador-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-0000000003b1', 'PASTORAL', 'voluntario-pastoral-local', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Escopo direto na Comunidade (grupo_paroquial_id = Santo Agostinho)
     (gen_random_uuid(), '1f000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000300', 'CONSELHO', 'presidente-cpc', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 
 ON CONFLICT DO NOTHING;

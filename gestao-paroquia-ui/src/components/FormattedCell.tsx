@@ -49,8 +49,25 @@ export function FormattedEmail({ value, variant = 'body2', color = 'text.primary
   );
 }
 
-export function FormattedAddress({ value, variant = 'caption', color = 'text.secondary', sx }: FormattedCellProps) {
-  if (!value || !String(value).trim()) {
+export function FormattedAddress({ value, variant = 'caption', color = 'text.secondary', sx }: Omit<FormattedCellProps, 'value'> & { value?: string | object | null }) {
+  if (!value) {
+    return <Typography variant={variant} color="text.secondary">-</Typography>;
+  }
+
+  let text = '';
+  if (typeof value === 'object' && value !== null) {
+    const end = value as any;
+    const parts = [
+      end.logradouro ? `${end.logradouro}${end.numero ? `, ${end.numero}` : ''}` : '',
+      end.bairro,
+      end.cidade ? `${end.cidade}${end.estado ? `/${end.estado}` : ''}` : ''
+    ].filter(Boolean);
+    text = parts.join(' - ');
+  } else {
+    text = String(value).trim();
+  }
+
+  if (!text) {
     return <Typography variant={variant} color="text.secondary">-</Typography>;
   }
 
@@ -58,7 +75,7 @@ export function FormattedAddress({ value, variant = 'caption', color = 'text.sec
     <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, ...sx }}>
       <LocationOnIcon sx={{ fontSize: '0.9rem', color: 'text.secondary' }} />
       <Typography variant={variant} color={color}>
-        {String(value)}
+        {text}
       </Typography>
     </Box>
   );

@@ -98,9 +98,11 @@ class ProjetoAgregacaoRepositoryTest {
 
         // Setup organizations in grupo_paroquial
         jdbcTemplate.execute(
-                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgProjeto + "', 'Pastoral do Projeto')");
+                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgProjeto
+                        + "', 'Pastoral do Projeto')");
         jdbcTemplate.execute(
-                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEvento1 + "', 'Pastoral do Evento')");
+                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEvento1
+                        + "', 'Pastoral do Evento')");
         jdbcTemplate.execute("INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEnvolvido1 +
                 "', 'Pastoral Envolvida')");
 

@@ -25,6 +25,10 @@ public class UnidadeTerritorialService {
     private static final String AUDIT_ACTION = "acao-admin";
     private static final String AUDIT_TARGET = "unidadeTerritorial";
     private static final String AUDIT_RESULT = "sucesso";
+    private static final String AUDIT_KEY_RESOURCE_TYPE = "resourceType";
+    private static final String AUDIT_KEY_RESOURCE_ID = "resourceId";
+    private static final String AUDIT_KEY_ACTION = "action";
+    private static final String AUDIT_VALUE_UNIDADE_TERRITORIAL = "UNIDADE_TERRITORIAL";
 
     private final UnidadeTerritorialJpaRepository repository;
     private final AuditoriaPersistenceService auditLogService;
@@ -47,10 +51,12 @@ public class UnidadeTerritorialService {
     }
 
     @Transactional
-    public UnidadeTerritorialEntity create(String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
+    public UnidadeTerritorialEntity create(
+            String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
         if (parentId != null) {
             var parent = repository.findById(parentId)
-                    .orElseThrow(() -> new GrupoParoquialNegocioException("Unidade territorial mãe não encontrada com ID: " + parentId));
+                    .orElseThrow(() -> new GrupoParoquialNegocioException(
+                            "Unidade territorial mãe não encontrada com ID: " + parentId));
             if (!parent.isAtivo()) {
                 throw new GrupoParoquialNegocioException("Unidade territorial mãe não está ativa.");
             }
@@ -67,9 +73,9 @@ public class UnidadeTerritorialService {
         repository.save(entity);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
-                "resourceType", "UNIDADE_TERRITORIAL",
-                "resourceId", entity.getId(),
-                "action", "CRIAR",
+                AUDIT_KEY_RESOURCE_TYPE, AUDIT_VALUE_UNIDADE_TERRITORIAL,
+                AUDIT_KEY_RESOURCE_ID, entity.getId(),
+                AUDIT_KEY_ACTION, "CRIAR",
                 "nome", nome
         ));
 
@@ -77,7 +83,8 @@ public class UnidadeTerritorialService {
     }
 
     @Transactional
-    public UnidadeTerritorialEntity update(UUID id, String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
+    public UnidadeTerritorialEntity update(
+            UUID id, String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
         UnidadeTerritorialEntity entity = repository.findById(id)
                 .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
 
@@ -86,7 +93,8 @@ public class UnidadeTerritorialService {
                 throw new GrupoParoquialNegocioException("Uma unidade territorial não pode ser mãe de si mesma.");
             }
             var parent = repository.findById(parentId)
-                    .orElseThrow(() -> new GrupoParoquialNegocioException("Unidade territorial mãe não encontrada com ID: " + parentId));
+                    .orElseThrow(() -> new GrupoParoquialNegocioException(
+                            "Unidade territorial mãe não encontrada com ID: " + parentId));
             if (!parent.isAtivo()) {
                 throw new GrupoParoquialNegocioException("Unidade territorial mãe não está ativa.");
             }
@@ -101,9 +109,9 @@ public class UnidadeTerritorialService {
         repository.save(entity);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
-                "resourceType", "UNIDADE_TERRITORIAL",
-                "resourceId", id,
-                "action", "ATUALIZAR"
+                AUDIT_KEY_RESOURCE_TYPE, AUDIT_VALUE_UNIDADE_TERRITORIAL,
+                AUDIT_KEY_RESOURCE_ID, id,
+                AUDIT_KEY_ACTION, "ATUALIZAR"
         ));
 
         return entity;
@@ -117,9 +125,9 @@ public class UnidadeTerritorialService {
         repository.delete(entity);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
-                "resourceType", "UNIDADE_TERRITORIAL",
-                "resourceId", id,
-                "action", "EXCLUIR"
+                AUDIT_KEY_RESOURCE_TYPE, AUDIT_VALUE_UNIDADE_TERRITORIAL,
+                AUDIT_KEY_RESOURCE_ID, id,
+                AUDIT_KEY_ACTION, "EXCLUIR"
         ));
     }
 }

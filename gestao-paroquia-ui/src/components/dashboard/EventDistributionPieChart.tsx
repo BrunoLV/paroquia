@@ -1,5 +1,6 @@
 import React from 'react';
 import {Box, Paper, Typography, useTheme} from '@mui/material';
+import PieChartOutlineIcon from '@mui/icons-material/PieChartOutlineOutlined';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {EventDistribution} from '../../api/types';
 
@@ -61,17 +62,9 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
         p: 3,
         border: '1px solid',
         borderColor: 'divider',
-        borderTop: '4px solid #8e24aa',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)',
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
-        },
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
@@ -123,9 +116,12 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
             </PieChart>
           </ResponsiveContainer>
         ) : (
-          <Typography variant="body2" color="text.secondary">
-            Sem dados de eventos para exibir
-          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            <PieChartOutlineIcon sx={{ fontSize: 36, color: 'action.disabled' }} />
+            <Typography variant="body2" color="text.secondary">
+              Sem dados de eventos para exibir
+            </Typography>
+          </Box>
         )}
       </Box>
     </Paper>

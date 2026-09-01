@@ -62,11 +62,6 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
           icon={<FilterListIcon />}
           type="submit"
           color="primary"
-          sx={{
-            backgroundColor: '#1a237e',
-            color: '#fff',
-            '&:hover': { backgroundColor: '#0d47a1' },
-          }}
         />
         <ActionButton
           title="Limpar Filtros"

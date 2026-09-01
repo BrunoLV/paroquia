@@ -67,7 +67,8 @@ public class EventoPatchAuthorizationService {
      * @param igrejaVinculoId identificador da igreja vinculada ao evento a ser criado, ou {@code null}
      * @throws AccessDeniedException se o ator não tiver papel ou escopo autorizado a criar o evento
      */
-    public void assertCanCreate(EventoActorContext actorContext, UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
+    public void assertCanCreate(
+            EventoActorContext actorContext, UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
         resolveCreateRequestMode(actorContext, grupoParoquialResponsavelId, igrejaVinculoId);
     }
 

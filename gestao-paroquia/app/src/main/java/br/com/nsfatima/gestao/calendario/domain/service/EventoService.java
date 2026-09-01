@@ -101,7 +101,8 @@ public class EventoService {
         }
 
         // Outros podem ver eventos da sua própria organização
-        if (actorContext.organizationId() != null && actorContext.organizationId().equals(grupoParoquialResponsavelId)) {
+        if (actorContext.organizationId() != null
+                && actorContext.organizationId().equals(grupoParoquialResponsavelId)) {
             return;
         }
 

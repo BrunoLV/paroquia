@@ -1,5 +1,9 @@
 import React from 'react';
-import {Divider, List, ListItem, ListItemText, Paper, Typography} from '@mui/material';
+import {Box, Paper, Skeleton, Stack, Typography} from '@mui/material';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
+import { useNavigate } from 'react-router-dom';
+import StatusIcon from '../StatusIcon';
+import { getCategoriaEventoMeta } from '../../utils/statusMeta/categoriaEventoStatus';
 
 interface Evento {
   id: string;
@@ -14,37 +18,91 @@ interface UpcomingEventsProps {
 }
 
 const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events, isLoading }) => {
+  const navigate = useNavigate();
+
   return (
-    <Paper sx={{ p: 3, minHeight: 400, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+    <Paper elevation={0} sx={{ p: 3, minHeight: 400, border: '1px solid', borderColor: 'divider' }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
         Próximos Eventos
       </Typography>
-      
+
       {isLoading ? (
-        <Typography color="textSecondary">Carregando eventos...</Typography>
-      ) : events && events.length > 0 ? (
-        <List>
-          {events.map((event, index) => (
-            <React.Fragment key={event.id}>
-              <ListItem alignItems="flex-start" sx={{ px: 0 }}>
-                <ListItemText
-                  primary={event.titulo}
-                  secondary={
-                    <React.Fragment>
-                      <Typography component="span" variant="body2" color="text.primary">
-                        {new Date(event.inicio).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-                      </Typography>
-                      {` — ${event.categoria}`}
-                    </React.Fragment>
-                  }
-                />
-              </ListItem>
-              {index < events.length - 1 && <Divider component="li" />}
-            </React.Fragment>
+        <Stack spacing={2}>
+          {[1, 2, 3].map((i) => (
+            <Stack key={i} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              <Skeleton variant="rounded" width={44} height={44} />
+              <Box sx={{ flexGrow: 1 }}>
+                <Skeleton variant="text" width="70%" />
+                <Skeleton variant="text" width="40%" />
+              </Box>
+            </Stack>
           ))}
-        </List>
+        </Stack>
+      ) : events && events.length > 0 ? (
+        <Stack spacing={0.5}>
+          {events.map((event) => {
+            const start = new Date(event.inicio);
+            const meta = getCategoriaEventoMeta(event.categoria);
+            return (
+              <Box
+                key={event.id}
+                onClick={() => navigate('/calendar')}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  py: 1,
+                  px: 1,
+                  mx: -1,
+                  borderRadius: 1,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s',
+                  '&:hover': { bgcolor: 'action.hover' },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    flexShrink: 0,
+                    borderRadius: 1,
+                    bgcolor: 'action.hover',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    lineHeight: 1,
+                  }}
+                >
+                  <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', color: 'text.secondary', textTransform: 'uppercase' }}>
+                    {start.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.1 }}>
+                    {start.getDate()}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                  <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
+                    {event.titulo}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {start.toLocaleDateString('pt-BR', { weekday: 'long' })} · {start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </Typography>
+                </Box>
+
+                <StatusIcon {...meta} size="small" />
+              </Box>
+            );
+          })}
+        </Stack>
       ) : (
-        <Typography color="textSecondary">Não há eventos próximos para mostrar.</Typography>
+        <Box sx={{ py: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <EventBusyIcon sx={{ fontSize: 40, color: 'action.disabled' }} />
+          <Typography color="text.secondary" variant="body2">
+            Não há eventos próximos para mostrar.
+          </Typography>
+        </Box>
       )}
     </Paper>
   );

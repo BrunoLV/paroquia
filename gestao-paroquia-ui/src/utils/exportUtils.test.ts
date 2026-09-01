@@ -111,10 +111,10 @@ describe('exportUtils', () => {
       const csv = generateStrategicMetricsCSV(mockStrategicMetrics);
 
       expect(csv).toContain('RELATORIO DE METRICAS ESTRATEGICAS E PREDITIVAS');
-      expect(csv).toContain('"Quaresma",1.8x,25,45,PICO_OPERACIONAL');
+      expect(csv).toContain('"Quaresma",1.8x,25,45,Pico Operacional');
       expect(csv).toContain('Taxa Conclusao %,80%');
-      expect(csv).toContain('Status SLA,EXCELENTE');
-      expect(csv).toContain('Diagnostico Pastoral,MISSIONARIA_EM_SAIDA');
+      expect(csv).toContain('Status SLA,Excelente');
+      expect(csv).toContain('Diagnostico Pastoral,Missionária em Saída');
     });
   });
 

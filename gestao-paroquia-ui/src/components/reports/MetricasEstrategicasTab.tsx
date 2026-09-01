@@ -27,6 +27,14 @@ import {
 } from '@mui/icons-material';
 import { usePainelMetricasEstrategicas } from '../../hooks/useMetricasEstrategicas';
 import ConcorrenciaAlertaBanner from '../ConcorrenciaAlertaBanner';
+import {
+  getAvaliacaoExecutivaLabel,
+  getDiagnosticoPastoralLabel,
+  getNivelDemandaLabel,
+  getNivelRiscoLabel,
+  getRecomendacaoCaeLabel,
+  getStatusSlaLabel,
+} from '../../utils/statusMeta/metricasEstrategicasLabels';
 
 export const MetricasEstrategicasTab: React.FC = () => {
   const { data, isLoading, error } = usePainelMetricasEstrategicas();
@@ -75,10 +83,10 @@ export const MetricasEstrategicasTab: React.FC = () => {
       <Grid container spacing={3}>
         {/* 1. Sazonalidade Litúrgica (Predictive Pastoral Analytics) */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', borderTop: '4px solid #1a237e' }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <PredictiveIcon sx={{ color: '#1a237e' }} />
+                <PredictiveIcon sx={{ color: 'primary.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   1. Sazonalidade Litúrgica (Predictive Analytics)
                 </Typography>
@@ -109,7 +117,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                         </TableCell>
                         <TableCell align="right">
                           <Chip
-                            label={s.nivelDemanda}
+                            label={getNivelDemandaLabel(s.nivelDemanda)}
                             size="small"
                             color={s.nivelDemanda === 'PICO_OPERACIONAL' ? 'error' : s.nivelDemanda === 'ALTA' ? 'warning' : 'default'}
                             sx={{ fontSize: '0.65rem' }}
@@ -126,10 +134,10 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 2. Taxa de Conclusão e Abandono de Projetos (CPP/CAE) */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', borderTop: '4px solid #00796b' }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <ProjectIcon sx={{ color: '#00796b' }} />
+                <ProjectIcon sx={{ color: 'success.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   2. Conclusão & Abandono de Projetos (CPP/CAE)
                 </Typography>
@@ -172,12 +180,12 @@ export const MetricasEstrategicasTab: React.FC = () => {
                 />
               </Box>
 
-              <Box sx={{ p: 1.5, bgcolor: 'background.default', borderLeft: '4px solid #00796b' }}>
+              <Box sx={{ p: 1.5, bgcolor: 'background.default', borderRadius: 1 }}>
                 <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary' }}>
                   Diagnóstico CPP/CAE
                 </Typography>
                 <Chip
-                  label={`Avaliação: ${taxaProjetos.avaliacaoExecutiva}`}
+                  label={`Avaliação: ${getAvaliacaoExecutivaLabel(taxaProjetos.avaliacaoExecutiva)}`}
                   color={taxaProjetos.avaliacaoExecutiva === 'SAUDAVEL' ? 'success' : 'warning'}
                   size="small"
                   sx={{ fontWeight: 700, mt: 0.5 }}
@@ -189,10 +197,10 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 3. SLA de Despacho Pastoral */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', borderTop: '4px solid #f57c00' }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <SlaIcon sx={{ color: '#f57c00' }} />
+                <SlaIcon sx={{ color: 'warning.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   3. SLA de Despacho Pastoral (Tempo de Homologação)
                 </Typography>
@@ -207,7 +215,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
                     <Typography variant="caption" color="text.secondary">
                       Tempo Médio
                     </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#f57c00' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: 'warning.main' }}>
                       {slaDespacho.tempoMedioAprovacaoHoras}h
                     </Typography>
                   </Paper>
@@ -225,7 +233,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
               </Grid>
 
               <Chip
-                label={`Status SLA: ${slaDespacho.statusSla}`}
+                label={`Status SLA: ${getStatusSlaLabel(slaDespacho.statusSla)}`}
                 color={slaDespacho.statusSla === 'EXCELENTE' ? 'success' : 'warning'}
                 sx={{ fontWeight: 700 }}
               />
@@ -235,10 +243,10 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 4. Coeficiente de Impacto Social (Pastoral em Saída) */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', borderTop: '4px solid #e91e63' }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <SocialIcon sx={{ color: '#e91e63' }} />
+                <SocialIcon sx={{ color: 'secondary.main' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   4. Coeficiente de Impacto Social (Pastoral em Saída)
                 </Typography>
@@ -261,16 +269,16 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   value={impactoSocial.coeficienteImpactoSocialPercentual}
                   sx={{
                     height: 10,
-                    
                     bgcolor: 'grey.300',
-                    '& .MuiLinearProgress-bar': { bgcolor: '#e91e63' },
+                    '& .MuiLinearProgress-bar': { bgcolor: 'secondary.main' },
                   }}
                 />
               </Box>
 
               <Chip
-                label={`Diretriz Pastoral: ${impactoSocial.diagnosticoPastoral}`}
-                sx={{ fontWeight: 700, bgcolor: '#fce4ec', color: '#c2185b' }}
+                label={`Diretriz Pastoral: ${getDiagnosticoPastoralLabel(impactoSocial.diagnosticoPastoral)}`}
+                color="secondary"
+                sx={{ fontWeight: 700 }}
               />
             </CardContent>
           </Card>
@@ -278,10 +286,10 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 5. Alerta de Concorrência Interpastoral */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', borderTop: '4px solid #7b1fa2' }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <ConflictIcon sx={{ color: '#7b1fa2' }} />
+                <ConflictIcon sx={{ color: 'text.secondary' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   5. Alerta de Concorrência Interpastoral
                 </Typography>
@@ -295,12 +303,12 @@ export const MetricasEstrategicasTab: React.FC = () => {
                   Conflitos Detectados: {concorrenciaInterpastoral.totalConflitosDetectados}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Nível de Risco do Calendário: {concorrenciaInterpastoral.nivelRiscoConcorrencia}
+                  Nível de Risco do Calendário: {getNivelRiscoLabel(concorrenciaInterpastoral.nivelRiscoConcorrencia)}
                 </Typography>
               </Paper>
 
               <Chip
-                label={`Risco Interpastoral: ${concorrenciaInterpastoral.nivelRiscoConcorrencia}`}
+                label={`Risco Interpastoral: ${getNivelRiscoLabel(concorrenciaInterpastoral.nivelRiscoConcorrencia)}`}
                 color={concorrenciaInterpastoral.nivelRiscoConcorrencia === 'BAIXO' ? 'success' : 'warning'}
                 sx={{ fontWeight: 700 }}
               />
@@ -310,10 +318,10 @@ export const MetricasEstrategicasTab: React.FC = () => {
 
         {/* 6. Índice de Ociosidade Patrimonial */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', borderTop: '4px solid #455a64' }}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <PropertyIcon sx={{ color: '#455a64' }} />
+                <PropertyIcon sx={{ color: 'text.secondary' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   6. Índice de Ociosidade Patrimonial (CAE)
                 </Typography>
@@ -346,7 +354,7 @@ export const MetricasEstrategicasTab: React.FC = () => {
               </Grid>
 
               <Chip
-                label={`Recomendação CAE: ${ociosidadePatrimonial.recomendacaoCae}`}
+                label={`Recomendação CAE: ${getRecomendacaoCaeLabel(ociosidadePatrimonial.recomendacaoCae)}`}
                 color="info"
                 sx={{ fontWeight: 700 }}
               />

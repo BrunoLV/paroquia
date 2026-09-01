@@ -4,14 +4,12 @@ import {
     Alert,
     Avatar,
     Box,
-    Button,
     ButtonGroup,
     Card,
     CardContent,
     Collapse,
     Container,
     Grid,
-    IconButton,
     Skeleton,
     ToggleButton,
     ToggleButtonGroup,
@@ -36,6 +34,7 @@ import {OrganogramaNode} from '../api/types';
 import {ExportFormat, useOrganogramaExport} from '../hooks/useOrganogramaExport';
 import {OrganogramaExportButton} from '../components/organograma/OrganogramaExportButton';
 import PageHeader from '../components/PageHeader';
+import ActionButton from '../components/ActionButton';
 
 const Organograma: React.FC = () => {
   const { data: organograma, isLoading, isError } = useQuery({
@@ -130,13 +129,6 @@ const Organograma: React.FC = () => {
           maxWidth: 240,
           mx: 'auto',
           borderLeft: `4px solid ${roleColor}`,
-          
-          boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-          transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            transform: 'translateY(-1px)',
-            boxShadow: '0 3px 8px rgba(0,0,0,0.1)',
-          },
         }}
       >
         <CardContent sx={{ display: 'flex', alignItems: 'center', p: '8px 12px !important', gap: 1 }}>
@@ -221,19 +213,13 @@ const Organograma: React.FC = () => {
       <Card
         sx={{
           height: '100%',
+          minHeight: isInsideTree ? 190 : undefined,
           width: isInsideTree ? 260 : '100%',
           maxWidth: isInsideTree ? 260 : 550,
           display: 'flex',
           flexDirection: 'column',
-          
-          boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
-          border: '1px solid #eef2f6',
-          background: 'linear-gradient(to bottom, #ffffff, #fafafa)',
-          transition: 'all 0.25s ease-in-out',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 6px 18px rgba(26, 35, 126, 0.1)',
-          },
+          border: '1px solid',
+          borderColor: 'divider',
         }}
       >
         <Box
@@ -265,7 +251,7 @@ const Organograma: React.FC = () => {
               <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', fontSize: '0.7rem' }}>
                 {org.subtype === 'CLERO' ? 'Pároco' : 'Coordenador(a)'}
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#333', fontSize: '0.8rem' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', fontSize: '0.8rem' }}>
                 {coord}
               </Typography>
             </Box>
@@ -276,7 +262,7 @@ const Organograma: React.FC = () => {
               <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', fontSize: '0.7rem' }}>
                 {org.subtype === 'CLERO' ? 'Vigário / Padres' : 'Vice-Coordenador(a)'}
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#555', fontSize: '0.8rem' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem' }}>
                 {vice}
               </Typography>
             </Box>
@@ -284,18 +270,17 @@ const Organograma: React.FC = () => {
 
           {membrosOrdinarios.length > 0 && (
             <Box sx={{ mt: 'auto', pt: 0.5 }}>
-              <Tooltip title={isExpanded ? 'Ocultar Membros' : 'Ver Membros'}>
-                <IconButton
-                  size="small"
-                  onClick={() => toggleExpand(org.id)}
-                  sx={{ color: headerStyle.textColor }}
-                >
-                  {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-              </Tooltip>
+              <ActionButton
+                title={isExpanded ? 'Ocultar Membros' : 'Ver Membros'}
+                icon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                size="small"
+                variant="text"
+                onClick={() => toggleExpand(org.id)}
+                sx={{ color: headerStyle.textColor }}
+              />
 
               <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed', borderColor: 'divider', display: 'flex', flexDirection: 'column' }}>
                   {membrosOrdinarios.map((m: OrganogramaNode) => renderMembroNode(m, org.subtype))}
 
                 </Box>
@@ -409,7 +394,7 @@ const Organograma: React.FC = () => {
               exclusive
               onChange={(_, nextValue) => nextValue && setViewMode(nextValue)}
               size="small"
-              sx={{ bgcolor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+              sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}
             >
               <Tooltip title="Visualização em Árvore">
                 <ToggleButton value="tree" aria-label="Visualização em Árvore">
@@ -438,63 +423,49 @@ const Organograma: React.FC = () => {
                 size="small"
                 variant="outlined"
                 sx={{
-                  bgcolor: 'white',
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                  bgcolor: 'background.paper',
+                  border: '1px solid',
+                  borderColor: 'divider',
                 }}
               >
-                <Tooltip title="Diminuir Zoom">
-                  <Button
-                    onClick={handleZoomOut}
-                    disabled={zoom <= 0.5}
-                    sx={{
-                      color: 'primary.main',
-                      borderColor: '#e2e8f0',
-                      '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                    }}
-                  >
-                    <ZoomOutIcon fontSize="small" />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Resetar Zoom">
-                  <Button
-                    onClick={handleZoomReset}
-                    sx={{
-                      color: 'primary.main',
-                      borderColor: '#e2e8f0',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      px: 2,
-                      '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                      minWidth: 52,
-                    }}
-                  >
-                    {Math.round(zoom * 100)}%
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Aumentar Zoom">
-                  <Button
-                    onClick={handleZoomIn}
-                    disabled={zoom >= 1.5}
-                    sx={{
-                      color: 'primary.main',
-                      borderColor: '#e2e8f0',
-                      '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' },
-                    }}
-                  >
-                    <ZoomInIcon fontSize="small" />
-                  </Button>
-                </Tooltip>
+                <ActionButton
+                  title="Diminuir Zoom"
+                  icon={<ZoomOutIcon fontSize="small" />}
+                  onClick={handleZoomOut}
+                  disabled={zoom <= 0.5}
+                  sx={{ color: 'primary.main', borderColor: 'divider' }}
+                />
+                <ActionButton
+                  title="Resetar Zoom"
+                  icon={<></>}
+                  label={`${Math.round(zoom * 100)}%`}
+                  onClick={handleZoomReset}
+                  sx={{
+                    color: 'primary.main',
+                    borderColor: 'divider',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    px: 2,
+                    minWidth: 52,
+                  }}
+                />
+                <ActionButton
+                  title="Aumentar Zoom"
+                  icon={<ZoomInIcon fontSize="small" />}
+                  onClick={handleZoomIn}
+                  disabled={zoom >= 1.5}
+                  sx={{ color: 'primary.main', borderColor: 'divider' }}
+                />
               </ButtonGroup>
             </Box>
 
             <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>
-              <Box ref={chartRef} sx={{ width: 'max-content', minWidth: '100%', zoom: zoom, bgcolor: '#ffffff', p: 2 }}>
+              <Box ref={chartRef} sx={{ width: 'max-content', minWidth: '100%', zoom: zoom, bgcolor: 'background.paper', p: 2 }}>
                 <OrganizationChart
                   datasource={transformToOrgchartData(cleroRootNode)}
                   NodeTemplate={OrgchartNodeTemplate}
                   pan={true}
-                  zoom={true}
+                  zoom={false}
                   chartClass="paroquia-orgchart"
                 />
               </Box>

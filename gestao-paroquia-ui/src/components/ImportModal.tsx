@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {
     Alert,
+    alpha,
     Box,
     Chip,
     CircularProgress,
@@ -218,7 +219,16 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   {validationResult.itens
                     .slice(importPage * importRowsPerPage, importPage * importRowsPerPage + importRowsPerPage)
                     .map((item) => (
-                      <TableRow key={item.linha} hover sx={{ bgcolor: item.valido ? '#f1f8e9' : '#ffebee' }}>
+                      <TableRow
+                        key={item.linha}
+                        hover
+                        sx={{
+                          bgcolor: (theme) => alpha(
+                            item.valido ? theme.palette.success.main : theme.palette.error.main,
+                            0.08
+                          ),
+                        }}
+                      >
                         <TableCell>{item.linha}</TableCell>
                         <TableCell>
                           {item.valido ? (
@@ -251,7 +261,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
         {activeStep === 2 && validationResult && (
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
               Pronto para efetivar a gravação!
             </Typography>
             <Typography variant="body1" color="textSecondary">

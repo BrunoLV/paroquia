@@ -1,5 +1,13 @@
 import { DashboardMetrics } from '../api/types';
 import { MetricasEstrategicasPainelResponse } from '../api/metricasTypes';
+import {
+  getAvaliacaoExecutivaLabel,
+  getDiagnosticoPastoralLabel,
+  getNivelDemandaLabel,
+  getNivelRiscoLabel,
+  getRecomendacaoCaeLabel,
+  getStatusSlaLabel,
+} from './statusMeta/metricasEstrategicasLabels';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
@@ -72,7 +80,7 @@ export const generateStrategicMetricsCSV = (data: MetricasEstrategicasPainelResp
   lines.push('Ciclo Liturgico,Fator Demanda,Eventos Historicos,Eventos Previstos,Nivel Demanda');
   if (data.sazonalidadeLiturgica && data.sazonalidadeLiturgica.length > 0) {
     data.sazonalidadeLiturgica.forEach((s) => {
-      lines.push(`"${s.cicloNome}",${s.fatorDemanda}x,${s.quantidadeEventosHistoricos},${s.quantidadeEventosPrevistos},${s.nivelDemanda}`);
+      lines.push(`"${s.cicloNome}",${s.fatorDemanda}x,${s.quantidadeEventosHistoricos},${s.quantidadeEventosPrevistos},${getNivelDemandaLabel(s.nivelDemanda)}`);
     });
   }
   lines.push('');
@@ -86,7 +94,7 @@ export const generateStrategicMetricsCSV = (data: MetricasEstrategicasPainelResp
   lines.push(`Projetos Cancelados,${data.taxaProjetos?.projetosCancelados ?? 0}`);
   lines.push(`Taxa Conclusao %,${data.taxaProjetos?.taxaConclusaoPercentual ?? 0}%`);
   lines.push(`Taxa Abandono %,${data.taxaProjetos?.taxaAbandonoPercentual ?? 0}%`);
-  lines.push(`Avaliacao Executiva,${data.taxaProjetos?.avaliacaoExecutiva ?? 'N/A'}`);
+  lines.push(`Avaliacao Executiva,${getAvaliacaoExecutivaLabel(data.taxaProjetos?.avaliacaoExecutiva ?? 'N/A')}`);
   lines.push('');
 
   // 3. SLA de Despacho Pastoral
@@ -95,7 +103,7 @@ export const generateStrategicMetricsCSV = (data: MetricasEstrategicasPainelResp
   lines.push(`Tempo Medio Aprovacao (Horas),${data.slaDespacho?.tempoMedioAprovacaoHoras ?? 0}`);
   lines.push(`Meta SLA (Horas),${data.slaDespacho?.slaMetaHoras ?? 0}`);
   lines.push(`Percentual Dentro do SLA,${data.slaDespacho?.percentualDentroSla ?? 0}%`);
-  lines.push(`Status SLA,${data.slaDespacho?.statusSla ?? 'N/A'}`);
+  lines.push(`Status SLA,${getStatusSlaLabel(data.slaDespacho?.statusSla ?? 'N/A')}`);
   lines.push('');
 
   // 4. Coeficiente de Impacto Social
@@ -105,13 +113,13 @@ export const generateStrategicMetricsCSV = (data: MetricasEstrategicasPainelResp
   lines.push(`Eventos Sociais e Caridade,${data.impactoSocial?.eventosSociaisCaridade ?? 0}`);
   lines.push(`Reunioes Internas Burocraticas,${data.impactoSocial?.reunioesInternas ?? 0}`);
   lines.push(`Coeficiente de Acao Missionaria %,${data.impactoSocial?.coeficienteImpactoSocialPercentual ?? 0}%`);
-  lines.push(`Diagnostico Pastoral,${data.impactoSocial?.diagnosticoPastoral ?? 'N/A'}`);
+  lines.push(`Diagnostico Pastoral,${getDiagnosticoPastoralLabel(data.impactoSocial?.diagnosticoPastoral ?? 'N/A')}`);
   lines.push('');
 
   // 5. Concorrência Interpastoral
   lines.push('5. CONCORRENCIA INTERPASTORAL');
   lines.push(`Conflitos Detectados,${data.concorrenciaInterpastoral?.totalConflitosDetectados ?? 0}`);
-  lines.push(`Nivel de Risco,${data.concorrenciaInterpastoral?.nivelRiscoConcorrencia ?? 'BAIXO'}`);
+  lines.push(`Nivel de Risco,${getNivelRiscoLabel(data.concorrenciaInterpastoral?.nivelRiscoConcorrencia ?? 'BAIXO')}`);
   lines.push('');
 
   // 6. Ociosidade Patrimonial
@@ -119,7 +127,7 @@ export const generateStrategicMetricsCSV = (data: MetricasEstrategicasPainelResp
   lines.push('Indicador,Valor');
   lines.push(`Horas Ociosas por Semana,${data.ociosidadePatrimonial?.horasOciosasSemana ?? 0}`);
   lines.push(`Indice Ociosidade %,${data.ociosidadePatrimonial?.indiceOciosidadePercentual ?? 0}%`);
-  lines.push(`Recomendacao CAE,${data.ociosidadePatrimonial?.recomendacaoCae ?? 'N/A'}`);
+  lines.push(`Recomendacao CAE,${getRecomendacaoCaeLabel(data.ociosidadePatrimonial?.recomendacaoCae ?? 'N/A')}`);
 
   return lines.join('\n');
 };
@@ -343,7 +351,7 @@ export const generateStrategicStructuredPDF = async (
       `${s.fatorDemanda}x`,
       String(s.quantidadeEventosHistoricos),
       String(s.quantidadeEventosPrevistos),
-      s.nivelDemanda,
+      getNivelDemandaLabel(s.nivelDemanda),
     ]) || [];
 
     autoTable(doc, {
@@ -372,7 +380,7 @@ export const generateStrategicStructuredPDF = async (
         ['Projetos Concluídos com Sucesso', String(data.taxaProjetos?.projetosConcluidos ?? 0)],
         ['Projetos Cancelados / Abandonados', String(data.taxaProjetos?.projetosCancelados ?? 0)],
         ['Taxa de Conclusão %', `${data.taxaProjetos?.taxaConclusaoPercentual ?? 0}%`],
-        ['Avaliação Executiva CPP/CAE', data.taxaProjetos?.avaliacaoExecutiva ?? 'N/A'],
+        ['Avaliação Executiva CPP/CAE', getAvaliacaoExecutivaLabel(data.taxaProjetos?.avaliacaoExecutiva ?? 'N/A')],
       ],
       headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: 'bold' },
       styles: { fontSize: 8.5, cellPadding: 2.5 },
@@ -392,10 +400,10 @@ export const generateStrategicStructuredPDF = async (
       startY: currentY,
       head: [['Indicador', 'Resultado', 'Meta / Classificação']],
       body: [
-        ['SLA Médio de Aprovação Pastoral', `${data.slaDespacho?.tempoMedioAprovacaoHoras ?? 0}h`, `Meta: ${data.slaDespacho?.slaMetaHoras ?? 0}h (${data.slaDespacho?.statusSla ?? 'N/A'})`],
-        ['Percentual de Aprovações no Prazo', `${data.slaDespacho?.percentualDentroSla ?? 0}%`, data.slaDespacho?.statusSla ?? 'N/A'],
-        ['Índice de Ação Missionária (Social)', `${data.impactoSocial?.coeficienteImpactoSocialPercentual ?? 0}%`, data.impactoSocial?.diagnosticoPastoral ?? 'N/A'],
-        ['Ociosidade Patrimonial (Salas/Capelas)', `${data.ociosidadePatrimonial?.indiceOciosidadePercentual ?? 0}% (${data.ociosidadePatrimonial?.horasOciosasSemana ?? 0}h/sem)`, data.ociosidadePatrimonial?.recomendacaoCae ?? 'N/A'],
+        ['SLA Médio de Aprovação Pastoral', `${data.slaDespacho?.tempoMedioAprovacaoHoras ?? 0}h`, `Meta: ${data.slaDespacho?.slaMetaHoras ?? 0}h (${getStatusSlaLabel(data.slaDespacho?.statusSla ?? 'N/A')})`],
+        ['Percentual de Aprovações no Prazo', `${data.slaDespacho?.percentualDentroSla ?? 0}%`, getStatusSlaLabel(data.slaDespacho?.statusSla ?? 'N/A')],
+        ['Índice de Ação Missionária (Social)', `${data.impactoSocial?.coeficienteImpactoSocialPercentual ?? 0}%`, getDiagnosticoPastoralLabel(data.impactoSocial?.diagnosticoPastoral ?? 'N/A')],
+        ['Ociosidade Patrimonial (Salas/Capelas)', `${data.ociosidadePatrimonial?.indiceOciosidadePercentual ?? 0}% (${data.ociosidadePatrimonial?.horasOciosasSemana ?? 0}h/sem)`, getRecomendacaoCaeLabel(data.ociosidadePatrimonial?.recomendacaoCae ?? 'N/A')],
       ],
       headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: 'bold' },
       styles: { fontSize: 8.5, cellPadding: 2.5 },
@@ -725,7 +733,7 @@ export const generateStrategicWordDocument = async (
                             new TableCell({ children: [new Paragraph(`${s.fatorDemanda}x`)] }),
                             new TableCell({ children: [new Paragraph(String(s.quantidadeEventosHistoricos))] }),
                             new TableCell({ children: [new Paragraph(String(s.quantidadeEventosPrevistos))] }),
-                            new TableCell({ children: [new Paragraph(s.nivelDemanda)] }),
+                            new TableCell({ children: [new Paragraph(getNivelDemandaLabel(s.nivelDemanda))] }),
                           ],
                         })
                     )
@@ -753,28 +761,28 @@ export const generateStrategicWordDocument = async (
                   children: [
                     new TableCell({ children: [new Paragraph('Taxa de Conclusão de Projetos')] }),
                     new TableCell({ children: [new Paragraph(`${data.taxaProjetos?.taxaConclusaoPercentual ?? 0}% (${data.taxaProjetos?.projetosConcluidos ?? 0}/${data.taxaProjetos?.totalProjetos ?? 0})`)] }),
-                    new TableCell({ children: [new Paragraph(data.taxaProjetos?.avaliacaoExecutiva ?? 'N/A')] }),
+                    new TableCell({ children: [new Paragraph(getAvaliacaoExecutivaLabel(data.taxaProjetos?.avaliacaoExecutiva ?? 'N/A'))] }),
                   ],
                 }),
                 new TableRow({
                   children: [
                     new TableCell({ children: [new Paragraph('SLA Médio de Aprovação Pastoral')] }),
                     new TableCell({ children: [new Paragraph(`${data.slaDespacho?.tempoMedioAprovacaoHoras ?? 0}h (${data.slaDespacho?.percentualDentroSla ?? 0}% dentro do prazo)`)] }),
-                    new TableCell({ children: [new Paragraph(data.slaDespacho?.statusSla ?? 'N/A')] }),
+                    new TableCell({ children: [new Paragraph(getStatusSlaLabel(data.slaDespacho?.statusSla ?? 'N/A'))] }),
                   ],
                 }),
                 new TableRow({
                   children: [
                     new TableCell({ children: [new Paragraph('Coeficiente de Impacto Social (Caridade/Saída)')] }),
                     new TableCell({ children: [new Paragraph(`${data.impactoSocial?.coeficienteImpactoSocialPercentual ?? 0}% (${data.impactoSocial?.eventosSociaisCaridade ?? 0} sociais / ${data.impactoSocial?.reunioesInternas ?? 0} reuniões)`)] }),
-                    new TableCell({ children: [new Paragraph(data.impactoSocial?.diagnosticoPastoral ?? 'N/A')] }),
+                    new TableCell({ children: [new Paragraph(getDiagnosticoPastoralLabel(data.impactoSocial?.diagnosticoPastoral ?? 'N/A'))] }),
                   ],
                 }),
                 new TableRow({
                   children: [
                     new TableCell({ children: [new Paragraph('Ociosidade Patrimonial (Locais)')] }),
                     new TableCell({ children: [new Paragraph(`${data.ociosidadePatrimonial?.indiceOciosidadePercentual ?? 0}% (${data.ociosidadePatrimonial?.horasOciosasSemana ?? 0}h ociosas/sem)`)] }),
-                    new TableCell({ children: [new Paragraph(data.ociosidadePatrimonial?.recomendacaoCae ?? 'N/A')] }),
+                    new TableCell({ children: [new Paragraph(getRecomendacaoCaeLabel(data.ociosidadePatrimonial?.recomendacaoCae ?? 'N/A'))] }),
                   ],
                 }),
               ],

@@ -73,7 +73,8 @@ public class UnidadeTerritorialController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing territorial unit")
-    public UnidadeTerritorialResponse update(@PathVariable UUID id, @RequestBody @Valid UnidadeTerritorialRequest request) {
+    public UnidadeTerritorialResponse update(
+            @PathVariable UUID id, @RequestBody @Valid UnidadeTerritorialRequest request) {
         UnidadeTerritorialEntity entity = service.update(
                 id,
                 request.nome(),

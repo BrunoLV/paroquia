@@ -149,8 +149,8 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
   }
 
   return (
-    <Box sx={{ mt: 3, borderTop: '1px solid #eee', pt: 3 }}>
-      <Typography variant="h6" sx={{ fontWeight: 600, color: '#37474f', mb: 2 }}>
+    <Box sx={{ mt: 3, borderTop: '1px solid', borderColor: 'divider', pt: 3 }}>
+      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 2 }}>
         Observações e Notas ({observations.length})
       </Typography>
 
@@ -170,15 +170,15 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
                 variant="outlined"
                 sx={{
                   p: 1.5,
-                  
-                  bgcolor: isNote ? '#ffffff' : '#fcfcfc',
-                  borderColor: isNote ? '#e0e0e0' : '#e0f2f1',
-                  borderLeft: isNote ? '3px solid #1976d2' : '3px solid #009688',
+                  bgcolor: 'background.paper',
+                  borderColor: 'divider',
+                  borderLeft: '3px solid',
+                  borderLeftColor: isNote ? 'primary.main' : 'secondary.main',
                 }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem', bgcolor: isNote ? (isOwn ? 'primary.main' : 'grey.600') : 'teal.600' }}>
+                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem', bgcolor: isNote ? (isOwn ? 'primary.main' : 'grey.600') : 'secondary.main' }}>
                       {isNote ? (isOwn ? 'V' : 'U') : 'S'}
                     </Avatar>
                     <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
@@ -225,7 +225,7 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
                   </Box>
                 ) : (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <Typography variant="body2" sx={{ color: '#37474f', whiteSpace: 'pre-wrap' }}>
+                    <Typography variant="body2" sx={{ color: 'text.primary', whiteSpace: 'pre-wrap' }}>
                       {obs.conteudo}
                     </Typography>
                     {isNote && isOwn && (

@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, AlertTitle, Box, Typography, Chip, Stack } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { ConflitoItemDto } from '../api/metricasTypes';
+import { getNivelRiscoLabel } from '../utils/statusMeta/metricasEstrategicasLabels';
 
 interface ConcorrenciaAlertaBannerProps {
   conflitos: ConflitoItemDto[];
@@ -38,7 +39,7 @@ export const ConcorrenciaAlertaBanner: React.FC<ConcorrenciaAlertaBannerProps> =
         sx={{ border: '1px solid', borderColor: severity === 'error' ? 'error.main' : 'warning.main' }}
       >
         <AlertTitle sx={{ fontWeight: 700 }}>
-          Atenção: Risco de Concorrência Interpastoral ({nivelRisco})
+          Atenção: Risco de Concorrência Interpastoral ({getNivelRiscoLabel(nivelRisco)})
         </AlertTitle>
         <Typography variant="body2" sx={{ mb: 1 }}>
           Foram identificadas sobreposições de público/tema em datas próximas por pastorais distintas.

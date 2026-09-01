@@ -5,6 +5,13 @@ import { usePainelMetricasEstrategicas } from '../../hooks/useMetricasEstrategic
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ActionButton from '../ActionButton';
+import theme from '../../theme';
+import {
+  getAvaliacaoExecutivaLabel,
+  getDiagnosticoPastoralLabel,
+  getNivelRiscoLabel,
+  getStatusSlaLabel,
+} from '../../utils/statusMeta/metricasEstrategicasLabels';
 
 export const MetricasEstrategicasWidget: React.FC = () => {
   const navigate = useNavigate();
@@ -21,11 +28,11 @@ export const MetricasEstrategicasWidget: React.FC = () => {
   const { taxaProjetos, slaDespacho, impactoSocial, concorrenciaInterpastoral } = data;
 
   return (
-    <Card sx={{ mb: 3, borderLeft: '4px solid #1a237e', bgcolor: '#f8f9fa' }}>
+    <Card sx={{ mb: 3, bgcolor: theme.custom.subtlePanelBg }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TrendingUpIcon sx={{ color: '#1a237e' }} />
+            <TrendingUpIcon sx={{ color: 'primary.main' }} />
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
               Inteligência Paroquial & Governança (CPP/CAE)
             </Typography>
@@ -45,10 +52,10 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="caption" color="text.secondary">
                 SLA Despacho Pastoral
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#f57c00' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
                 {slaDespacho.tempoMedioAprovacaoHoras}h
               </Typography>
-              <Chip label={slaDespacho.statusSla} size="small" color="success" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={getStatusSlaLabel(slaDespacho.statusSla)} size="small" color="success" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
 
@@ -57,10 +64,10 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="caption" color="text.secondary">
                 Conclusão de Projetos
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#00796b' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
                 {taxaProjetos.taxaConclusaoPercentual}%
               </Typography>
-              <Chip label={taxaProjetos.avaliacaoExecutiva} size="small" color="info" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={getAvaliacaoExecutivaLabel(taxaProjetos.avaliacaoExecutiva)} size="small" color="info" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
 
@@ -69,10 +76,10 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="caption" color="text.secondary">
                 Pastoral em Saída
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#e91e63' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main' }}>
                 {impactoSocial.coeficienteImpactoSocialPercentual}%
               </Typography>
-              <Chip label={impactoSocial.diagnosticoPastoral} size="small" color="secondary" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={getDiagnosticoPastoralLabel(impactoSocial.diagnosticoPastoral)} size="small" color="secondary" sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
 
@@ -81,10 +88,10 @@ export const MetricasEstrategicasWidget: React.FC = () => {
               <Typography variant="caption" color="text.secondary">
                 Risco Interpastoral
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#7b1fa2' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.secondary' }}>
                 {concorrenciaInterpastoral.totalConflitosDetectados} conflitos
               </Typography>
-              <Chip label={`Risco ${concorrenciaInterpastoral.nivelRiscoConcorrencia}`} size="small" color={concorrenciaInterpastoral.nivelRiscoConcorrencia === 'BAIXO' ? 'success' : 'warning'} sx={{ fontSize: '0.65rem', mt: 0.5 }} />
+              <Chip label={`Risco ${getNivelRiscoLabel(concorrenciaInterpastoral.nivelRiscoConcorrencia)}`} size="small" color={concorrenciaInterpastoral.nivelRiscoConcorrencia === 'BAIXO' ? 'success' : 'warning'} sx={{ fontSize: '0.65rem', mt: 0.5 }} />
             </Box>
           </Grid>
         </Grid>

@@ -11,3 +11,16 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* @dabeng/react-orgchart ships a red dotted-grid background and a dashed
+   editor-style border meant for its drag-and-drop demo; not wanted on the
+   read-only Organograma screen. */
+.orgchart-container {
+  height: auto !important;
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.orgchart {
+  background-image: none !important;
+}

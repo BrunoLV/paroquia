@@ -36,7 +36,8 @@ public class GetIndicadorRetrabalhoUseCase {
      * }
      */
     @Transactional(readOnly = true)
-    public IndicadorRetrabalhoResponse execute(UUID grupoParoquialId, String granularidade, Instant inicio, Instant fim) {
+    public IndicadorRetrabalhoResponse execute(
+            UUID grupoParoquialId, String granularidade, Instant inicio, Instant fim) {
         assertAccessToOrganization(grupoParoquialId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
         return reworkRateCalculator.calculateForOrganization(grupoParoquialId, periodo);

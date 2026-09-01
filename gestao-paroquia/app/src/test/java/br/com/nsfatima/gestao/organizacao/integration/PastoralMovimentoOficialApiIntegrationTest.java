@@ -64,7 +64,8 @@ class PastoralMovimentoOficialApiIntegrationTest {
         unidadeTerritorialRepository.save(matriz);
 
         // Conselho (GrupoParoquial)
-        GrupoParoquialEntity conselho = grupoParoquialRepository.findById(conselhoId).orElseGet(GrupoParoquialEntity::new);
+        GrupoParoquialEntity conselho = grupoParoquialRepository.findById(conselhoId)
+                .orElseGet(GrupoParoquialEntity::new);
         conselho.setId(conselhoId);
         conselho.setNome("Conselho Pastoral Teste");
         conselho.setTipo(TipoGrupo.CONSELHO);

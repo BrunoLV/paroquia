@@ -17,4 +17,6 @@ public interface PapelGlobalJpaRepository extends JpaRepository<PapelGlobalEntit
     List<PapelGlobalEntity> findByFielIdAndAtivoTrue(UUID fielId);
 
     Optional<PapelGlobalEntity> findByFielIdAndPapel(UUID fielId, String papel);
+
+    List<PapelGlobalEntity> findByPapelAndAtivoTrue(String papel);
 }

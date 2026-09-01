@@ -1,5 +1,6 @@
 import React from 'react';
 import {render, screen} from '@testing-library/react';
+import {MemoryRouter} from 'react-router-dom';
 import SummaryCards from './SummaryCards';
 import UpcomingEvents from './UpcomingEvents';
 import {ThemeProvider} from '@mui/material/styles';
@@ -31,12 +32,14 @@ describe('Dashboard Widgets', () => {
 
   describe('UpcomingEvents', () => {
     test('renders loading state', () => {
-      render(
-        <ThemeProvider theme={theme}>
-          <UpcomingEvents isLoading={true} />
-        </ThemeProvider>
+      const { container } = render(
+        <MemoryRouter>
+          <ThemeProvider theme={theme}>
+            <UpcomingEvents isLoading={true} />
+          </ThemeProvider>
+        </MemoryRouter>
       );
-      expect(screen.getByText(/Carregando eventos/i)).toBeInTheDocument();
+      expect(container.querySelectorAll('.MuiSkeleton-root').length).toBeGreaterThan(0);
     });
 
     test('renders list of events', () => {
@@ -44,19 +47,23 @@ describe('Dashboard Widgets', () => {
         { id: '1', titulo: 'Missa de Teste', inicio: '2026-05-21T10:00:00Z', categoria: 'LITURGICO' }
       ];
       render(
-        <ThemeProvider theme={theme}>
-          <UpcomingEvents events={events} isLoading={false} />
-        </ThemeProvider>
+        <MemoryRouter>
+          <ThemeProvider theme={theme}>
+            <UpcomingEvents events={events} isLoading={false} />
+          </ThemeProvider>
+        </MemoryRouter>
       );
       expect(screen.getByText('Missa de Teste')).toBeInTheDocument();
-      expect(screen.getByText(/LITURGICO/i)).toBeInTheDocument();
+      expect(screen.getByTestId('ChurchIcon')).toBeInTheDocument();
     });
 
     test('renders empty state', () => {
       render(
-        <ThemeProvider theme={theme}>
-          <UpcomingEvents events={[]} isLoading={false} />
-        </ThemeProvider>
+        <MemoryRouter>
+          <ThemeProvider theme={theme}>
+            <UpcomingEvents events={[]} isLoading={false} />
+          </ThemeProvider>
+        </MemoryRouter>
       );
       expect(screen.getByText(/Não há eventos próximos/i)).toBeInTheDocument();
     });

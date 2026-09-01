@@ -58,7 +58,7 @@ public class AuthController {
         return new GrupoParoquialResponse(
                 vinculo.organizationId(),
                 vinculo.organizationName(),
-                TipoGrupo.valueOf(vinculo.organizationType()),
+                TipoGrupo.fromStoredValue(vinculo.organizationType()),
                 vinculo.organizationContact(),
                 vinculo.organizationCoordinator(),
                 vinculo.organizationViceCoordinator(),

@@ -154,7 +154,8 @@ public class CreateEventoUseCase {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
         calendarLockPolicy.checkLock(request.inicio(), status);
-        domainService.validateGrupoParoquialParticipantes(request.grupoParoquialResponsavelId(), request.participantes());
+        domainService.validateGrupoParoquialParticipantes(
+                request.grupoParoquialResponsavelId(), request.participantes());
         projetoVincularPolicy.validateLink(request.projetoId(), request.inicio(), request.fim());
 
         List<EventoEntity> autoCancel = agendaPriorityValidatorService.validatePriorityAndConflicts(

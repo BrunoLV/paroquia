@@ -32,7 +32,7 @@ describe('ConcorrenciaAlertaBanner', () => {
     );
 
     expect(
-      screen.getByText(/Atenção: Risco de Concorrência Interpastoral \(MEDIO\)/i)
+      screen.getByText(/Atenção: Risco de Concorrência Interpastoral \(Médio\)/i)
     ).toBeInTheDocument();
     expect(
       screen.getByText(/Encontro de Casais Matriz \(Pastoral Familiar\) vs Encontro de Casais Capela/i)

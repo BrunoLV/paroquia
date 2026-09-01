@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    alpha,
     AppBar,
     Box,
     Container,
@@ -84,7 +85,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const drawerWidth = isMdUp ? (drawerOpen ? 240 : 72) : 240;
 
   const drawerContent = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'white' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
       <Box sx={{ 
         p: 2, 
         display: 'flex', 
@@ -97,7 +98,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         {(drawerOpen || !isMdUp) ? (
           <>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
-              <Box sx={{ bgcolor: 'white', p: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+              <Box sx={{ bgcolor: 'background.paper', p: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0 }}>
                 <img 
                   src="/logo-paroquia.png" 
                   alt="Logo da Paróquia" 
@@ -151,10 +152,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 px: 2,
                 py: 1,
                 '&.Mui-selected': {
-                  bgcolor: 'rgba(26, 35, 126, 0.08)',
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
                   color: 'primary.main',
                   '&:hover': {
-                    bgcolor: 'rgba(26, 35, 126, 0.12)',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
                   },
                   '& .MuiListItemIcon-root': {
                     color: 'primary.main',
@@ -198,7 +199,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f4f6f8' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       <Drawer
         variant={isMdUp ? 'permanent' : 'temporary'}
         open={isMdUp ? true : mobileOpen}
@@ -215,7 +216,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               duration: theme.transitions.duration.enteringScreen,
             }),
             overflowX: 'hidden',
-            borderRight: '1px solid rgba(0, 0, 0, 0.12)'
+            borderRight: '1px solid',
+            borderColor: 'divider'
           },
         }}
       >
@@ -224,7 +226,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       {/* Main Content Area */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <AppBar position="static" color="primary" sx={{ mb: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', bgcolor: 'primary.main' }}>
+        <AppBar position="static" color="primary" sx={{ mb: 4 }}>
           <Toolbar>
             {!isMdUp && (
               <ActionButton

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Chip, Grid, LinearProgress, Paper, Stack, Tooltip, Typography} from '@mui/material';
+import {alpha, Box, Chip, Grid, LinearProgress, Paper, Stack, Tooltip, Typography} from '@mui/material';
 import {AccessTime as TimeIcon, CalendarToday as EventIcon, Warning as WarningIcon} from '@mui/icons-material';
 import {ProjectDetail} from '../../api/types';
 import StatusIcon from '../StatusIcon';
@@ -17,17 +17,9 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
         p: 3,
         border: '1px solid',
         borderColor: 'divider',
-        borderTop: '4px solid #00796b',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(to bottom, #ffffff, #fcfcfc)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)',
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
-        },
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
@@ -52,7 +44,7 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                   
                   border: '1px solid',
                   borderColor: project.emRisco ? 'error.light' : 'divider',
-                  bgcolor: project.emRisco ? 'error.lighter' : 'background.paper',
+                  bgcolor: project.emRisco ? (theme) => alpha(theme.palette.error.main, 0.08) : 'background.paper',
                   position: 'relative',
                   overflow: 'hidden',
                   '&::before': project.emRisco ? {

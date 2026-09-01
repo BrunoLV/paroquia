@@ -78,6 +78,8 @@ import {
 import {AnoParoquialStatus, Local, Organizacao, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial} from '../api/types';
 import {useNotification} from '../context/NotificationContext';
 import {extractErrorMessage} from '../utils/errorUtils';
+import {formatCpf} from '../utils/cpfUtils';
+import {formatDateBr} from '../utils/masks';
 import {useAuth} from '../auth/AuthContext';
 import {canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin} from '../auth/permissions';
 import LocalFormModal from './LocalFormModal';
@@ -617,7 +619,7 @@ const Settings = () => {
                 </Box>
               </Box>
 
-              <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <TableContainer component={Paper}>
                 <Table>
                   <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
@@ -744,7 +746,7 @@ const Settings = () => {
                 )}
               </Box>
 
-              <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <TableContainer component={Paper}>
                 <Table>
                   <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
@@ -859,10 +861,8 @@ const Settings = () => {
                 sx={{
                   p: 2,
                   mb: 1,
-
                   border: '1px solid',
                   borderColor: 'divider',
-                  backgroundColor: '#fafafa',
                 }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
@@ -872,7 +872,7 @@ const Settings = () => {
                     size="small"
                     value={orgSearch}
                     onChange={(e) => setOrgSearch(e.target.value)}
-                    sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { bgcolor: '#fff' } }}
+                    sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}
                   />
                   {isAuthorizedOrgs && (
                     <ActionButton
@@ -888,7 +888,7 @@ const Settings = () => {
                 </Box>
               </Card>
 
-              <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <TableContainer component={Paper}>
                 <Table>
                   <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
@@ -1018,7 +1018,7 @@ const Settings = () => {
                   />
                 )}
               </Box>
-                <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <TableContainer component={Paper}>
                   <Table>
                     <TableHead sx={{ backgroundColor: 'action.hover' }}>
                       <TableRow>
@@ -1041,7 +1041,7 @@ const Settings = () => {
                             <TableCell><FormattedEmail value={u.username} /></TableCell>
                             <TableCell>{u.igrejaNome || '-'}</TableCell>
                             <TableCell><FormattedPhone value={u.telefone} /></TableCell>
-                            <TableCell>{u.dataNascimento || '-'}</TableCell>
+                            <TableCell>{formatDateBr(u.dataNascimento) || '-'}</TableCell>
                             <TableCell>
                               <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
                                 {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
@@ -1146,7 +1146,7 @@ const Settings = () => {
                   />
                 </Box>
 
-                <TableContainer component={Paper} sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <TableContainer component={Paper}>
                   <Table>
                     <TableHead sx={{ backgroundColor: 'action.hover' }}>
                       <TableRow>
@@ -1639,7 +1639,7 @@ const Settings = () => {
               >
                 {fieisList.map((fiel) => (
                   <MenuItem key={fiel.id} value={fiel.id}>
-                    {fiel.nome} — CPF: {fiel.cpf}
+                    {fiel.nome} — CPF: {formatCpf(fiel.cpf)}
                   </MenuItem>
                 ))}
               </Select>
