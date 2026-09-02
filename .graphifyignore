@@ -1,0 +1,6 @@
+# Agent tooling configs - not project source
+.codex/
+.agents/
+.claude/
+.antigravitycli/
+.github/copilot-instructions.md
