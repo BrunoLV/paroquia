@@ -36,8 +36,8 @@ const renderChart = (data: EventDistribution[], mode: 'light' | 'dark' = 'light'
 describe('EventDistributionPieChart', () => {
   test('renders slices from EventDistribution[]', () => {
     renderChart([
-      { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
-      { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 },
+      { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 8 },
+      { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 4 },
     ]);
 
     expect(screen.getByText(/Pastoral A: 8/)).toBeInTheDocument();
@@ -46,9 +46,9 @@ describe('EventDistributionPieChart', () => {
 
   test('groups organizations below 3% representativeness into "Outras"', () => {
     renderChart([
-      { organizacaoNome: 'Pastoral A', quantidadeEventos: 95 },
-      { organizacaoNome: 'Pastoral B', quantidadeEventos: 3 },
-      { organizacaoNome: 'Pastoral C', quantidadeEventos: 2 },
+      { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 95 },
+      { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 3 },
+      { grupoParoquialNome: 'Pastoral C', quantidadeEventos: 2 },
     ]);
 
     expect(screen.getByText(/Outras: 2/)).toBeInTheDocument();
@@ -58,8 +58,8 @@ describe('EventDistributionPieChart', () => {
 
   test('does not show "Outras" slice when no organization is below the threshold', () => {
     renderChart([
-      { organizacaoNome: 'Pastoral A', quantidadeEventos: 60 },
-      { organizacaoNome: 'Pastoral B', quantidadeEventos: 40 },
+      { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 60 },
+      { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 40 },
     ]);
 
     expect(screen.queryByText(/Outras/)).not.toBeInTheDocument();
@@ -72,15 +72,15 @@ describe('EventDistributionPieChart', () => {
   });
 
   test('shows empty state message when all values are zero', () => {
-    renderChart([{ organizacaoNome: 'Pastoral A', quantidadeEventos: 0 }]);
+    renderChart([{ grupoParoquialNome: 'Pastoral A', quantidadeEventos: 0 }]);
 
     expect(screen.getByText('Sem dados de eventos para exibir')).toBeInTheDocument();
   });
 
   test('applies MUI theme palette colors to slices and reacts to palette.mode', () => {
     const { rerender } = renderChart([
-      { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
-      { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 },
+      { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 8 },
+      { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 4 },
     ], 'light');
 
     const lightTheme = createTheme({ palette: { mode: 'light' } });
@@ -93,8 +93,8 @@ describe('EventDistributionPieChart', () => {
       <ThemeProvider theme={darkTheme}>
         <EventDistributionPieChart
           data={[
-            { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
-            { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 },
+            { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 8 },
+            { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 4 },
           ]}
         />
       </ThemeProvider>

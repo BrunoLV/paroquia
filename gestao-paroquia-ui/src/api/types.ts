@@ -480,32 +480,76 @@ export interface ProjetoAprovacaoResponse {
   cancelarEventosVinculados: boolean;
 }
 
+/** Recorte temporal do filtro global do dashboard. */
+export type PeriodoDashboard = 'HOJE' | 'SEMANA' | 'MES';
+
 /** Cartões-resumo do topo do dashboard. */
 export interface GeneralSummary {
-  totalEventosMes: number;
+  /** Eventos com início dentro do recorte temporal selecionado. */
+  totalEventosPeriodo: number;
   projetosAtivos: number;
-  /** Total de solicitações de aprovação (eventos/projetos/ativos) ainda sem decisão. */
+  /** Total de solicitações de aprovação (eventos/projetos) ainda sem decisão. */
   solicitacoesPendentes: number;
+  /** Fiéis com cadastro ativo. */
+  totalFieisAtivos: number;
+  /** Fiéis cadastrados desde o primeiro dia do mês corrente (sempre mensal). */
+  novosFieisMes: number;
+  /** Fiéis distintos com vínculo ativo a uma pastoral ou movimento. */
+  fieisEngajadosPastoral: number;
+  /** Fiéis ativos sem nenhum vínculo pastoral ativo. */
+  fieisSemVinculoPastoral: number;
 }
 
 /** Ponto de dados para o gráfico de distribuição de eventos por organização responsável. */
 export interface EventDistribution {
-  organizacaoNome: string;
+  grupoParoquialNome: string;
   quantidadeEventos: number;
+}
+
+/** Próximo evento crítico ainda por ocorrer de um projeto ativo. */
+export interface ProximoMarco {
+  titulo: string;
+  inicio: string;
+  /** 1 = prioridade máxima, 4 = mínima. */
+  nivelPrioridade: number;
 }
 
 /** Resumo de acompanhamento de um projeto ativo, exibido na lista de projetos do dashboard. */
 export interface ProjectDetail {
   nome: string;
   status: string;
-  /** Percentual do período do projeto já decorrido (0-100), usado para a barra de progresso temporal. */
+  /** Percentual do período do projeto já decorrido (0-100). */
   percentualTempoDecorrido: number;
   totalEventos: number;
   eventosRealizados: number;
-  /** `true` quando o progresso de eventos está atrasado em relação ao tempo decorrido, sinalizando risco de não conclusão. */
+  /** Percentual (0-100) de eventos concluídos sobre os previstos. */
+  percentualExecucao: number;
+  /** Eventos do projeto ainda aguardando aprovação. */
+  eventosPendentesAprovacao: number;
+  /** `true` quando o prazo está apertado com pendências. */
   emRisco: boolean;
+  /** Próximo marco crítico, ou `null`. */
+  proximoMarco: ProximoMarco | null;
   /** Nomes das organizações/pessoas envolvidas no projeto. */
   envolvidos: string[];
+}
+
+/** Distribuição dos projetos pelas faixas de status exibidas no dashboard. */
+export interface ProjetosPorStatus {
+  planejamento: number;
+  emExecucao: number;
+  concluidos: number;
+  /** Projetos ativos com prazo vencido ou classificados em risco (derivado). */
+  atrasados: number;
+}
+
+/** Evento sem projeto vinculado, com eventual sugestão de vínculo. */
+export interface EventoOrfao {
+  eventoId: string;
+  titulo: string;
+  inicio: string;
+  projetoSugeridoId: string | null;
+  projetoSugeridoNome: string | null;
 }
 
 /** Evento resumido para a lista "eventos da semana" do dashboard. */
@@ -513,14 +557,79 @@ export interface WeeklyEvent {
   titulo: string;
   inicio: string;
   localNome: string;
-  organizacaoNome: string;
+  grupoParoquialNome: string;
+}
+
+/** Aniversariante do período (dados mínimos por LGPD: primeiro nome + dia/mês). */
+export interface Aniversariante {
+  primeiroNome: string;
+  dia: number;
+  mes: number;
+}
+
+/** Pastoral em situação de atenção quanto à retenção de membros. */
+export interface RetencaoPastoral {
+  grupoId: string;
+  nome: string;
+  totalVoluntarios: number;
+  temLideranca: boolean;
+  motivos: string[];
+}
+
+/** Seção de vida comunitária do Dashboard. */
+export interface DashboardComunidade {
+  retencaoPastorais: RetencaoPastoral[];
+}
+
+/** Par de eventos que disputam o mesmo local em horários sobrepostos. */
+export interface ChoqueHorario {
+  localNome: string;
+  eventoATitulo: string;
+  eventoBTitulo: string;
+  inicio: string;
+}
+
+/** Ocupação estimada de um ambiente na semana. */
+export interface OcupacaoLocal {
+  localNome: string;
+  taxaSemanaPercentual: number;
+  horasOcupadasSemana: number;
+}
+
+/** Taxa de ocupação estimada dos ambientes (dia e semana). */
+export interface OcupacaoAmbientes {
+  taxaDiaPercentual: number;
+  taxaSemanaPercentual: number;
+  porLocal: OcupacaoLocal[];
+}
+
+/** Contagem de eventos por organização responsável no período. */
+export interface EventosPorResponsavel {
+  grupoParoquialNome: string;
+  quantidade: number;
+}
+
+/** Pendências de homologação agrupadas por tipo de solicitação. */
+export interface PendenciaHomologacao {
+  tipo: string;
+  quantidade: number;
+}
+
+/** Seção de logística/espaços/agenda do Dashboard. */
+export interface DashboardLogistica {
+  choquesHorario: ChoqueHorario[];
+  ocupacaoAmbientes: OcupacaoAmbientes;
+  eventosPorResponsavel: EventosPorResponsavel[];
+  pendenciasHomologacao: PendenciaHomologacao[];
 }
 
 /** Agregado de métricas exibidas na tela inicial (Dashboard). */
 export interface DashboardMetrics {
   resumoGeral: GeneralSummary;
-  eventosPorOrganizacao: EventDistribution[];
+  eventosPorGrupoParoquial: EventDistribution[];
+  projetosPorStatus: ProjetosPorStatus;
   projetosAtivosDetalhes: ProjectDetail[];
+  eventosOrfaos: EventoOrfao[];
   eventosSemana: WeeklyEvent[];
 }
 

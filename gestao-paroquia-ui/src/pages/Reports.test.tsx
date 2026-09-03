@@ -38,14 +38,20 @@ describe('Reports Page', () => {
       if (url === '/dashboard/metrics') {
         return Promise.resolve({
           data: {
-            resumoGeral: { totalEventosMes: 15, projetosAtivos: 4, solicitacoesPendentes: 3 },
-            eventosPorOrganizacao: [
-              { organizacaoNome: 'Pastoral Familiar', quantidadeEventos: 8 },
-              { organizacaoNome: 'Catequese', quantidadeEventos: 7 },
+            resumoGeral: {
+              totalEventosPeriodo: 15, projetosAtivos: 4, solicitacoesPendentes: 3,
+              totalFieisAtivos: 50, novosFieisMes: 2, fieisEngajadosPastoral: 30, fieisSemVinculoPastoral: 20
+            },
+            eventosPorGrupoParoquial: [
+              { grupoParoquialNome: 'Pastoral Familiar', quantidadeEventos: 8 },
+              { grupoParoquialNome: 'Catequese', quantidadeEventos: 7 },
             ],
+            projetosPorStatus: { planejamento: 2, emExecucao: 4, concluidos: 6, atrasados: 1 },
             projetosAtivosDetalhes: [
-              { id: '1', nome: 'Festa Padroeiro', responsavel: 'Pe. João', status: 'EM_ANDAMENTO', percentualTempoDecorrido: 60, totalEventos: 5, eventosRealizados: 3, emRisco: false },
+              { nome: 'Festa Padroeiro', status: 'EM_ANDAMENTO', percentualTempoDecorrido: 60, totalEventos: 5, eventosRealizados: 3, percentualExecucao: 60, eventosPendentesAprovacao: 0, emRisco: false, proximoMarco: null, envolvidos: [] },
             ],
+            eventosOrfaos: [],
+            eventosSemana: [],
           },
         });
       }

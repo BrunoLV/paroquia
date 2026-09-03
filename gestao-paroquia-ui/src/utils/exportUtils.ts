@@ -32,7 +32,7 @@ export const generateMetricsCSV = (metrics: DashboardMetrics): string => {
   // Cabeçalho / UTF-8 BOM para garantir acentuação no Excel
   lines.push('RESUMO GERAL DE METRICAS');
   lines.push('Indicador,Valor');
-  lines.push(`Total Eventos no Mes,${metrics.resumoGeral.totalEventosMes}`);
+  lines.push(`Total Eventos no Mes,${metrics.resumoGeral.totalEventosPeriodo}`);
   lines.push(`Projetos Ativos,${metrics.resumoGeral.projetosAtivos}`);
   lines.push(`Solicitacoes Pendentes,${metrics.resumoGeral.solicitacoesPendentes}`);
   lines.push('');
@@ -40,9 +40,9 @@ export const generateMetricsCSV = (metrics: DashboardMetrics): string => {
   // Distribuição de Eventos por Organização
   lines.push('DISTRIBUICAO DE EVENTOS POR ORGANIZACAO');
   lines.push('Organizacao,Quantidade de Eventos');
-  if (metrics.eventosPorOrganizacao && metrics.eventosPorOrganizacao.length > 0) {
-    metrics.eventosPorOrganizacao.forEach((item) => {
-      lines.push(`"${item.organizacaoNome}",${item.quantidadeEventos}`);
+  if (metrics.eventosPorGrupoParoquial && metrics.eventosPorGrupoParoquial.length > 0) {
+    metrics.eventosPorGrupoParoquial.forEach((item) => {
+      lines.push(`"${item.grupoParoquialNome}",${item.quantidadeEventos}`);
     });
   } else {
     lines.push('Nenhuma organizacao registrada,0');
@@ -189,7 +189,7 @@ export const generateStructuredPDF = async (
       startY: currentY,
       head: [['Indicador', 'Valor']],
       body: [
-        ['Total de Eventos no Mês / Período', String(metrics.resumoGeral.totalEventosMes)],
+        ['Total de Eventos no Mês / Período', String(metrics.resumoGeral.totalEventosPeriodo)],
         ['Projetos Pastorais Ativos', String(metrics.resumoGeral.projetosAtivos)],
         ['Solicitações Pendentes de Aprovação', String(metrics.resumoGeral.solicitacoesPendentes)],
       ],
@@ -207,8 +207,8 @@ export const generateStructuredPDF = async (
     doc.text('2. Distribuição de Eventos por Organização / Pastoral', 14, currentY);
     currentY += 4;
 
-    const orgRows = metrics.eventosPorOrganizacao?.map((item) => [
-      item.organizacaoNome,
+    const orgRows = metrics.eventosPorGrupoParoquial?.map((item) => [
+      item.grupoParoquialNome,
       String(item.quantidadeEventos),
     ]) || [['Nenhuma organização registrada', '0']];
 
@@ -264,7 +264,7 @@ export const generateStructuredPDF = async (
 
       const eventRows = metrics.eventosSemana.map((ev) => [
         ev.titulo,
-        ev.organizacaoNome || 'Paróquia',
+        ev.grupoParoquialNome || 'Paróquia',
         ev.localNome || 'Sem Local',
         ev.inicio
           ? new Date(ev.inicio).toLocaleString('pt-BR', {
@@ -494,7 +494,7 @@ export const generateWordDocument = async (
                 new TableRow({
                   children: [
                     new TableCell({ children: [new Paragraph('Total de Eventos no Mês / Período')] }),
-                    new TableCell({ children: [new Paragraph(String(metrics.resumoGeral.totalEventosMes))] }),
+                    new TableCell({ children: [new Paragraph(String(metrics.resumoGeral.totalEventosPeriodo))] }),
                   ],
                 }),
                 new TableRow({
@@ -527,12 +527,12 @@ export const generateWordDocument = async (
                     new TableCell({ children: [new Paragraph({ text: 'Quantidade de Eventos', bold: true })] }),
                   ],
                 }),
-                ...(metrics.eventosPorOrganizacao && metrics.eventosPorOrganizacao.length > 0
-                  ? metrics.eventosPorOrganizacao.map(
+                ...(metrics.eventosPorGrupoParoquial && metrics.eventosPorGrupoParoquial.length > 0
+                  ? metrics.eventosPorGrupoParoquial.map(
                       (item) =>
                         new TableRow({
                           children: [
-                            new TableCell({ children: [new Paragraph(item.organizacaoNome)] }),
+                            new TableCell({ children: [new Paragraph(item.grupoParoquialNome)] }),
                             new TableCell({ children: [new Paragraph(String(item.quantidadeEventos))] }),
                           ],
                         })
@@ -617,7 +617,7 @@ export const generateWordDocument = async (
                           new TableRow({
                             children: [
                               new TableCell({ children: [new Paragraph(ev.titulo)] }),
-                              new TableCell({ children: [new Paragraph(ev.organizacaoNome || 'Paróquia')] }),
+                              new TableCell({ children: [new Paragraph(ev.grupoParoquialNome || 'Paróquia')] }),
                               new TableCell({ children: [new Paragraph(ev.localNome || 'Sem Local')] }),
                               new TableCell({
                                 children: [

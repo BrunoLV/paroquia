@@ -14,20 +14,26 @@ import { describe, expect, it, vi } from 'vitest';
 describe('exportUtils', () => {
   const mockMetrics: DashboardMetrics = {
     resumoGeral: {
-      totalEventosMes: 15,
+      totalEventosPeriodo: 15,
       projetosAtivos: 3,
       solicitacoesPendentes: 2,
+      totalFieisAtivos: 40,
+      novosFieisMes: 2,
+      fieisEngajadosPastoral: 25,
+      fieisSemVinculoPastoral: 15,
     },
-    eventosPorOrganizacao: [
-      { organizacaoNome: 'Catequese', quantidadeEventos: 10 },
-      { organizacaoNome: 'Pastoral da Família', quantidadeEventos: 5 },
+    eventosPorGrupoParoquial: [
+      { grupoParoquialNome: 'Catequese', quantidadeEventos: 10 },
+      { grupoParoquialNome: 'Pastoral da Família', quantidadeEventos: 5 },
     ],
+    projetosPorStatus: { planejamento: 1, emExecucao: 3, concluidos: 5, atrasados: 0 },
+    eventosOrfaos: [],
     eventosSemana: [
       {
         titulo: 'Missa das Crianças',
         inicio: '2026-08-10T10:00:00Z',
         localNome: 'Igreja Matriz',
-        organizacaoNome: 'Catequese',
+        grupoParoquialNome: 'Catequese',
       },
     ],
     projetosAtivosDetalhes: [
@@ -37,7 +43,10 @@ describe('exportUtils', () => {
         percentualTempoDecorrido: 75,
         totalEventos: 4,
         eventosRealizados: 3,
+        percentualExecucao: 75,
+        eventosPendentesAprovacao: 0,
         emRisco: false,
+        proximoMarco: null,
         envolvidos: [],
       },
     ],

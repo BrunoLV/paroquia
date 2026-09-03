@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -279,6 +279,18 @@ const Fieis = () => {
     resetForm();
     setModalOpen(true);
   };
+
+  // Abre o formulário de cadastro ao chegar de "Novo Fiel" no dashboard (`/fieis?novo=1`),
+  // depois limpa o parâmetro para não reabrir em refresh/voltar.
+  const abriuPorParametro = useRef(false);
+  useEffect(() => {
+    if (loading || abriuPorParametro.current) return;
+    if (new URLSearchParams(window.location.search).get('novo') !== '1') return;
+    abriuPorParametro.current = true;
+    handleOpenCreateModal();
+    window.history.replaceState({}, '', window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const handleOpenEditModal = (fiel: Fiel) => {
     setEditingFiel(fiel);

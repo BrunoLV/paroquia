@@ -59,7 +59,7 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
         <ResponsiveContainer width="100%" height={310}>
           <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 25 }}>
             <XAxis
-              dataKey="organizacaoNome"
+              dataKey="grupoParoquialNome"
               tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
               interval={0}
             />

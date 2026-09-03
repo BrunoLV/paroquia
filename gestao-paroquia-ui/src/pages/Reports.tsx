@@ -71,8 +71,8 @@ const Reports: React.FC = () => {
     isLoading: isMetricsLoading,
     error: metricsError,
   } = useQuery<DashboardMetrics>({
-    queryKey: ['dashboardMetrics'],
-    queryFn: getDashboardMetrics,
+    queryKey: ['dashboard', 'metrics', 'MES', null],
+    queryFn: () => getDashboardMetrics({periodo: 'MES'}),
   });
 
   // Fetch organizations list for resolving names
@@ -116,10 +116,10 @@ const Reports: React.FC = () => {
         titulo: (ev.titulo as string) || (ev.nome as string) || 'Evento sem título',
         inicio: (ev.inicio as string) || (ev.dataInicio as string) || (ev.criadoEmUtc as string) || '',
         localNome: (ev.local as { nome?: string })?.nome || (ev.localNome as string) || 'Sem Local',
-        organizacaoNome:
+        grupoParoquialNome:
           (ev.organizacao as { nome?: string })?.nome ||
-          orgMap[ev.organizacaoResponsavelId as string] ||
-          (ev.organizacaoNome as string) ||
+          orgMap[ev.grupoParoquialResponsavelId as string] ||
+          (ev.grupoParoquialNome as string) ||
           'Paróquia',
       }));
     },
@@ -149,13 +149,13 @@ const Reports: React.FC = () => {
     // Aggregate counts per organization from fetched filtered events
     const orgCountMap: Record<string, number> = {};
     eventsList.forEach((ev) => {
-      const orgName = ev.organizacaoNome || 'Paróquia';
+      const orgName = ev.grupoParoquialNome || 'Paróquia';
       orgCountMap[orgName] = (orgCountMap[orgName] || 0) + 1;
     });
 
-    const filteredEventosPorOrganizacao = Object.entries(orgCountMap).map(
-      ([organizacaoNome, quantidadeEventos]) => ({
-        organizacaoNome,
+    const filteredEventosPorGrupoParoquial = Object.entries(orgCountMap).map(
+      ([grupoParoquialNome, quantidadeEventos]) => ({
+        grupoParoquialNome,
         quantidadeEventos,
       })
     );
@@ -164,9 +164,9 @@ const Reports: React.FC = () => {
       ...metricsData,
       resumoGeral: {
         ...metricsData.resumoGeral,
-        totalEventosMes: eventsList.length,
+        totalEventosPeriodo: eventsList.length,
       },
-      eventosPorOrganizacao: filteredEventosPorOrganizacao,
+      eventosPorGrupoParoquial: filteredEventosPorGrupoParoquial,
       eventosSemana: eventsList,
     };
   }, [metricsData, isFiltered, customEventsData]);
@@ -308,7 +308,7 @@ const Reports: React.FC = () => {
   const summaryCards = [
     {
       title: isFiltered ? 'Eventos no Período' : 'Total Eventos no Mês',
-      value: filteredMetrics.resumoGeral?.totalEventosMes ?? 0,
+      value: filteredMetrics.resumoGeral?.totalEventosPeriodo ?? 0,
       icon: EventIcon,
       paletteKey: 'primary' as const,
     },
@@ -434,12 +434,12 @@ const Reports: React.FC = () => {
       <Grid container spacing={3} sx={{ mt: 1 }}>
         {/* PieChart - Event Distribution */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <EventDistributionPieChart data={filteredMetrics.eventosPorOrganizacao || []} />
+          <EventDistributionPieChart data={filteredMetrics.eventosPorGrupoParoquial || []} />
         </Grid>
 
         {/* BarChart - Volume Comparison */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <EventVolumeBarChart data={filteredMetrics.eventosPorOrganizacao || []} />
+          <EventVolumeBarChart data={filteredMetrics.eventosPorGrupoParoquial || []} />
         </Grid>
       </Grid>
 
@@ -597,7 +597,7 @@ const Reports: React.FC = () => {
                   .map((ev, idx) => (
                     <TableRow key={idx} hover>
                       <TableCell sx={{ fontWeight: 600 }}>{ev.titulo}</TableCell>
-                      <TableCell>{ev.organizacaoNome || '-'}</TableCell>
+                      <TableCell>{ev.grupoParoquialNome || '-'}</TableCell>
                       <TableCell>{ev.localNome || '-'}</TableCell>
                       <TableCell>
                         {new Date(ev.inicio).toLocaleString('pt-BR', {

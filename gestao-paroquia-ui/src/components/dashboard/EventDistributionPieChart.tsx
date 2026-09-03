@@ -29,7 +29,7 @@ export const groupMinorSlices = (data: EventDistribution[]): ChartSlice[] => {
     if (share < OUTRAS_THRESHOLD_PERCENT) {
       outrasValue += item.quantidadeEventos;
     } else {
-      mainSlices.push({ label: item.organizacaoNome, value: item.quantidadeEventos });
+      mainSlices.push({ label: item.grupoParoquialNome, value: item.quantidadeEventos });
     }
   });
 

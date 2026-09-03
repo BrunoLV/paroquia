@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Box, Grid, Skeleton, Stack, Typography,} from '@mui/material';
+import {Alert, Box, Grid, Skeleton, Stack, Typography} from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import UpcomingEvents from '../components/dashboard/UpcomingEvents';
@@ -9,21 +9,35 @@ import EventDistributionPieChart from '../components/dashboard/EventDistribution
 import ActiveProjectsProgressList from '../components/dashboard/ActiveProjectsProgressList';
 import WeeklyTimeline from '../components/dashboard/WeeklyTimeline';
 import MetricasEstrategicasWidget from '../components/dashboard/MetricasEstrategicasWidget';
+import ProjetosPorStatusCard from '../components/dashboard/ProjetosPorStatusCard';
+import MembrosPorPastoralCard from '../components/dashboard/MembrosPorPastoralCard';
+import EventosOrfaosCard from '../components/dashboard/EventosOrfaosCard';
+import ChoqueHorarioAlert from '../components/dashboard/ChoqueHorarioAlert';
+import OcupacaoAmbientesCard from '../components/dashboard/OcupacaoAmbientesCard';
+import EventosPorResponsavelCard from '../components/dashboard/EventosPorResponsavelCard';
+import ExportarAgendaButton from '../components/dashboard/ExportarAgendaButton';
+import AniversariantesCard from '../components/dashboard/AniversariantesCard';
+import RetencaoPastoraisCard from '../components/dashboard/RetencaoPastoraisCard';
+import DashboardFilterBar from '../components/dashboard/DashboardFilterBar';
 import apiClient from '../api/client';
 import CadastroEventoModal from '../components/CadastroEventoModal';
 import {useAuth} from '../auth/AuthContext';
 import {useNotification} from '../context/NotificationContext';
-import {DashboardMetrics, Evento, Local, Organizacao, Projeto} from '../api/types';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
-import {getDashboardMetrics} from '../api/dashboard';
-import { getOrganizacoes } from '../api/organizacoes';
+import {DashboardFilterProvider, useDashboardFilter} from '../context/DashboardFilterContext';
+import {Evento, Local, Organizacao, PeriodoDashboard, Projeto} from '../api/types';
+import {useQueryClient} from '@tanstack/react-query';
+import {useDashboardMetrics} from '../hooks/useDashboardMetrics';
+import {useDashboardLogistica} from '../hooks/useDashboardLogistica';
+import {useAniversariantes, useDashboardComunidade} from '../hooks/useDashboardComunidade';
+import {getOrganizacoes} from '../api/organizacoes';
 import PageHeader from '../components/PageHeader';
 import {extractErrorMessage} from '../utils/errorUtils';
 
-const Dashboard = () => {
-  const { user } = useAuth();
-  const { showError } = useNotification();
+const DashboardContent = () => {
+  const {user} = useAuth();
+  const {showError} = useNotification();
   const queryClient = useQueryClient();
+  const {periodo, grupoParoquialId} = useDashboardFilter();
 
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
@@ -31,107 +45,63 @@ const Dashboard = () => {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch dashboard metrics via React Query
-  const {
-    data: metrics,
-    isLoading: isMetricsLoading,
-    error: metricsError,
-  } = useQuery<DashboardMetrics>({
-    queryKey: ['dashboardMetrics'],
-    queryFn: getDashboardMetrics,
-    enabled: !!user,
-  });
+  const {data: metrics, isLoading: isMetricsLoading, error: metricsError} =
+    useDashboardMetrics(periodo, grupoParoquialId);
+  const {data: logistica} = useDashboardLogistica(periodo, grupoParoquialId);
+  const [janelaAniversario, setJanelaAniversario] = useState<PeriodoDashboard>('SEMANA');
+  const {data: aniversariantes} = useAniversariantes(janelaAniversario);
+  const {data: comunidade} = useDashboardComunidade(grupoParoquialId);
 
   const fetchData = async () => {
     setIsLoading(true);
     setError('');
     try {
-      // Fetch organizations list independently
-      const fetchOrgs = async () => {
-        try {
-          const orgsData = await getOrganizacoes();
-          if (Array.isArray(orgsData)) {
-            setOrganizations(orgsData);
-          }
-        } catch (err) {
-          console.error('Error fetching organizations:', err);
-        }
-      };
-
-      // Fetch locales list
-      const fetchLocais = async () => {
-        try {
-          const res = await apiClient.get<Local[]>('/locais');
-          if (res.data && Array.isArray(res.data)) {
-            setLocais(res.data);
-          }
-        } catch (err) {
-          console.error('Error fetching locales:', err);
-        }
-      };
-
-      // Fetch projects list
-      const fetchProjetos = async () => {
-        try {
-          const res = await apiClient.get<Projeto[]>('/projetos');
-          if (res.data && Array.isArray(res.data)) {
-            setProjetos(res.data);
-          }
-        } catch (err) {
-          console.error('Error fetching projects:', err);
-        }
-      };
-
-      // Fetch upcoming events (next 30 days)
-      const fetchEvents = async () => {
-        const now = new Date();
-        const nextMonth = new Date();
-        nextMonth.setDate(now.getDate() + 30);
-
-        const params: Record<string, unknown> = {
-          dataInicio: now.toISOString(),
-          dataFim: nextMonth.toISOString(),
-          size: 5,
-          sort: 'inicioUtc,asc' // Corrected field name to match backend Entity property
-        };
-
-        if (user && !(user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN'))) {
-          const userOrgIds = user.organizations.map(org => org.id);
-          if (userOrgIds.length > 0) {
-            params.organizacaoIds = userOrgIds;
-          } else {
-            setEvents([]);
-            return;
-          }
-        }
-
-        const eventsRes = await apiClient.get<{ content?: Evento[] } | Evento[]>('/eventos', {
-          params,
-          paramsSerializer: {
-            indexes: null
-          }
-        });
-
-        const resData = eventsRes.data;
-        if (resData && !Array.isArray(resData) && Array.isArray(resData.content)) {
-          setEvents(resData.content);
-        } else if (Array.isArray(resData)) {
-          setEvents(resData);
-        }
-      };
-
-      await Promise.all([fetchOrgs(), fetchLocais(), fetchProjetos(), fetchEvents()]);
-    } catch (err: unknown) {
+      const [orgsData, locaisRes, projetosRes] = await Promise.all([
+        getOrganizacoes().catch(() => []),
+        apiClient.get<Local[]>('/locais').catch(() => ({data: []})),
+        apiClient.get<Projeto[]>('/projetos').catch(() => ({data: []})),
+      ]);
+      if (Array.isArray(orgsData)) setOrganizations(orgsData);
+      if (Array.isArray(locaisRes.data)) setLocais(locaisRes.data);
+      if (Array.isArray(projetosRes.data)) setProjetos(projetosRes.data);
+      await fetchEvents();
+    } catch (err) {
       console.error('Error fetching dashboard metadata:', err);
       setError('Não foi possível carregar os dados do dashboard.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchEvents = async () => {
+    const now = new Date();
+    const nextMonth = new Date();
+    nextMonth.setDate(now.getDate() + 30);
+    const params: Record<string, unknown> = {
+      dataInicio: now.toISOString(),
+      dataFim: nextMonth.toISOString(),
+      size: 5,
+      sort: 'inicioUtc,asc',
+    };
+    const isAdmin = !!user && (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN'));
+    if (!isAdmin) {
+      const userOrgIds = user?.organizations.map((org) => org.id) ?? [];
+      if (userOrgIds.length === 0) {
+        setEvents([]);
+        return;
+      }
+      params.organizacaoIds = userOrgIds;
+    }
+    const res = await apiClient.get<{content?: Evento[]} | Evento[]>('/eventos', {
+      params,
+      paramsSerializer: {indexes: null},
+    });
+    const data = res.data;
+    if (data && !Array.isArray(data) && Array.isArray(data.content)) setEvents(data.content);
+    else if (Array.isArray(data)) setEvents(data);
   };
 
   useEffect(() => {
@@ -142,30 +112,23 @@ const Dashboard = () => {
   const handleCreateEvent = async (data: Record<string, unknown>) => {
     setIsSubmitting(true);
     try {
-      const { recurrence, ...eventBaseData } = data;
+      const {recurrence, ...eventBaseData} = data;
       const requestData = {
         ...eventBaseData,
         projetoId: data.projetoId || null,
         localId: data.localId || null,
         participantes: data.participantes || [],
       };
-
-      const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && crypto.randomUUID
           ? crypto.randomUUID()
           : Math.random().toString(36).substring(2) + Date.now().toString(36);
-
-      const res = await apiClient.post('/eventos', requestData, {
-        headers: { 'Idempotency-Key': idempotencyKey }
-      });
-
-      // If recurrence is enabled, call the recurrence endpoint
+      const res = await apiClient.post('/eventos', requestData, {headers: {'Idempotency-Key': idempotencyKey}});
       if (recurrence && res.data?.id) {
         await apiClient.put(`/eventos/${res.data.id}/recorrencia`, recurrence);
       }
-
       setIsModalOpen(false);
-      // Invalidate dashboard metrics cache & reload metadata
-      queryClient.invalidateQueries({ queryKey: ['dashboardMetrics'] });
+      queryClient.invalidateQueries({queryKey: ['dashboard']});
       fetchData();
     } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao criar evento.'));
@@ -174,63 +137,29 @@ const Dashboard = () => {
     }
   };
 
-  // Filter organizations shown in registration modal based on user's authorized organizations (non-admin only)
   const allowedOrgs = React.useMemo(() => {
     if (!user) return [];
     const isAdmin = user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN');
-    if (isAdmin) {
-      return organizations;
-    }
-    const userOrgIds = user.organizations.map(org => org.id);
-    return organizations.filter(org => userOrgIds.includes(org.id));
+    if (isAdmin) return organizations;
+    const userOrgIds = user.organizations.map((org) => org.id);
+    return organizations.filter((org) => userOrgIds.includes(org.id));
   }, [user, organizations]);
 
   const showSkeleton = isLoading || isMetricsLoading;
   const errorMsg = error || (metricsError ? 'Não foi possível carregar os dados do dashboard.' : '');
 
-  const summaryMetrics = React.useMemo(() => {
-    if (metrics?.resumoGeral) {
-      return {
-        monthlyEvents: metrics.resumoGeral.totalEventosMes,
-        aprovacoesPendentes: metrics.resumoGeral.solicitacoesPendentes,
-        activeProjects: metrics.resumoGeral.projetosAtivos,
-      };
-    }
-    return undefined;
-  }, [metrics]);
-
   if (showSkeleton) {
     return (
       <Box>
-        <Skeleton variant="text" width={200} height={60} sx={{ mb: 4 }} />
+        <Skeleton variant="text" width={220} height={56} sx={{mb: 3}} />
         <Grid container spacing={3}>
-          {[1, 2, 3].map((i) => (
-            <Grid key={i} size={{ xs: 12, sm: 4 }}>
-              <Skeleton variant="rounded" height={120} />
+          {[1, 2, 3, 4].map((i) => (
+            <Grid key={i} size={{xs: 12, sm: 6, md: 3}}>
+              <Skeleton variant="rounded" height={130} />
             </Grid>
           ))}
         </Grid>
-        <Grid container spacing={3} sx={{ mt: 1 }}>
-          <Grid size={{ xs: 12, md: 8 }}>
-            <Stack spacing={3}>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <Skeleton variant="rounded" height={300} />
-                </Grid>
-                <Grid size={{ xs: 12, lg: 6 }}>
-                  <Skeleton variant="rounded" height={300} />
-                </Grid>
-              </Grid>
-              <Skeleton variant="rounded" height={250} />
-            </Stack>
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Stack spacing={3}>
-              <Skeleton variant="rounded" height={150} />
-              <Skeleton variant="rounded" height={200} />
-            </Stack>
-          </Grid>
-        </Grid>
+        <Skeleton variant="rounded" height={320} sx={{mt: 3}} />
       </Box>
     );
   }
@@ -238,49 +167,81 @@ const Dashboard = () => {
   return (
     <Box>
       <PageHeader
-        icon={<DashboardIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<DashboardIcon sx={{fontSize: 32, color: 'primary.main'}} />}
         title="Dashboard"
         subtitle="Visão geral e indicadores consolidados das atividades, projetos e eventos da paróquia."
+        actions={<DashboardFilterBar />}
       />
 
-      {errorMsg && <Alert severity="error" sx={{ mb: 3 }}>{errorMsg}</Alert>}
+      {errorMsg && <Alert severity="error" sx={{mb: 3}}>{errorMsg}</Alert>}
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-            Visão Geral
-          </Typography>
-          <SummaryCards metrics={summaryMetrics} />
+        <Grid size={{xs: 12}}>
+          <Typography variant="h6" sx={{mb: 2, fontWeight: 700}}>Visão Geral</Typography>
+          <SummaryCards resumo={metrics?.resumoGeral} />
         </Grid>
 
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{xs: 12, md: 8}}>
+          <ProjetosPorStatusCard data={metrics?.projetosPorStatus} />
+        </Grid>
+        <Grid size={{xs: 12, md: 4}}>
+          <MembrosPorPastoralCard resumo={metrics?.resumoGeral} />
+        </Grid>
+
+        <Grid size={{xs: 12}}>
+          <ChoqueHorarioAlert choques={logistica?.choquesHorario} />
+        </Grid>
+        <Grid size={{xs: 12, md: 6}}>
+          <OcupacaoAmbientesCard data={logistica?.ocupacaoAmbientes} />
+        </Grid>
+        <Grid size={{xs: 12, md: 6}}>
+          <EventosPorResponsavelCard data={logistica?.eventosPorResponsavel} />
+        </Grid>
+
+        <Grid size={{xs: 12}}>
           <MetricasEstrategicasWidget />
         </Grid>
 
-        {/* Charts & Project Progress */}
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid size={{xs: 12, md: 8}}>
           <Stack spacing={3}>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12, lg: 6 }}>
-                <EventDistributionPieChart data={metrics?.eventosPorOrganizacao || []} />
+              <Grid size={{xs: 12, lg: 6}}>
+                <EventDistributionPieChart data={metrics?.eventosPorGrupoParoquial || []} />
               </Grid>
-              <Grid size={{ xs: 12, lg: 6 }}>
+              <Grid size={{xs: 12, lg: 6}}>
                 <ActiveProjectsProgressList projects={metrics?.projetosAtivosDetalhes || []} />
               </Grid>
             </Grid>
-            
-            <WeeklyTimeline events={metrics?.eventosSemana || []} />
-            
+            <EventosOrfaosCard eventos={metrics?.eventosOrfaos} />
+            <Box>
+              <Stack direction="row" sx={{justifyContent: 'flex-end', mb: 1}}>
+                <ExportarAgendaButton eventosSemana={metrics?.eventosSemana} />
+              </Stack>
+              <WeeklyTimeline events={metrics?.eventosSemana || []} />
+            </Box>
             <UpcomingEvents events={events} isLoading={isLoading} />
           </Stack>
         </Grid>
 
-        {/* Sidebar Actions & Pending Approvals */}
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{xs: 12, md: 4}}>
           <Stack spacing={3}>
             <QuickActions onNewEvent={() => setIsModalOpen(true)} />
             <AprovacoesPendentes />
           </Stack>
+        </Grid>
+
+        <Grid size={{xs: 12}}>
+          <Typography variant="h6" sx={{mb: 2, fontWeight: 700}}>Vida Comunitária</Typography>
+        </Grid>
+        <Grid size={{xs: 12, md: 6}}>
+          <AniversariantesCard
+            aniversariantes={aniversariantes}
+            janela={janelaAniversario}
+            onJanelaChange={setJanelaAniversario}
+          />
+        </Grid>
+        <Grid size={{xs: 12, md: 6}}>
+          <RetencaoPastoraisCard pastorais={comunidade?.retencaoPastorais} />
         </Grid>
       </Grid>
 
@@ -289,12 +250,18 @@ const Dashboard = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateEvent}
         isSubmitting={isSubmitting}
-        organizations={allowedOrgs.filter(org => org.ativo)}
-        locais={locais.filter(l => l.ativo)}
-        projetos={projetos.filter(p => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
+        organizations={allowedOrgs.filter((org) => org.ativo)}
+        locais={locais.filter((l) => l.ativo)}
+        projetos={projetos.filter((p) => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
       />
     </Box>
   );
 };
+
+const Dashboard = () => (
+  <DashboardFilterProvider>
+    <DashboardContent />
+  </DashboardFilterProvider>
+);
 
 export default Dashboard;

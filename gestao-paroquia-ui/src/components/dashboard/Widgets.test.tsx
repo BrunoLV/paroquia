@@ -9,14 +9,23 @@ import theme from '../../theme';
 describe('Dashboard Widgets', () => {
   describe('SummaryCards', () => {
     test('renders metrics when provided', () => {
-      const metrics = { monthlyEvents: 5, aprovacoesPendentes: 2 };
+      const resumo = {
+        totalEventosPeriodo: 5,
+        projetosAtivos: 7,
+        solicitacoesPendentes: 2,
+        totalFieisAtivos: 9,
+        novosFieisMes: 1,
+        fieisEngajadosPastoral: 4,
+        fieisSemVinculoPastoral: 5,
+      };
       render(
         <ThemeProvider theme={theme}>
-          <SummaryCards metrics={metrics} />
+          <SummaryCards resumo={resumo} />
         </ThemeProvider>
       );
       expect(screen.getByText('5')).toBeInTheDocument();
       expect(screen.getByText('2')).toBeInTheDocument();
+      expect(screen.getByText('+1 no mês')).toBeInTheDocument();
     });
 
     test('renders placeholders when metrics are missing', () => {

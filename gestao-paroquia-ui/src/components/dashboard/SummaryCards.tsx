@@ -3,45 +3,38 @@ import {alpha, Box, Card, CardContent, Grid, Typography} from '@mui/material';
 import {
     Assignment as ProjectIcon,
     CalendarMonth as CalendarIcon,
+    Groups as PeopleIcon,
     HourglassEmpty as PendingIcon
 } from '@mui/icons-material';
+import {GeneralSummary} from '../../api/types';
 
 interface SummaryCardsProps {
-  metrics?: {
-    monthlyEvents: number;
-    aprovacoesPendentes: number;
-    activeProjects?: number;
-  };
+  resumo?: GeneralSummary;
 }
 
-const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
-  const cards = [
+type PaletteKey = 'primary' | 'success' | 'warning' | 'info';
+
+const SummaryCards: React.FC<SummaryCardsProps> = ({ resumo }) => {
+  const fmt = (n?: number) => (n === undefined ? '--' : n);
+  const cards: Array<{ title: string; value: number | string; paletteKey: PaletteKey; icon: typeof CalendarIcon; hint?: string }> = [
+    { title: 'Eventos no Período', value: fmt(resumo?.totalEventosPeriodo), paletteKey: 'primary', icon: CalendarIcon },
+    { title: 'Projetos Ativos', value: fmt(resumo?.projetosAtivos), paletteKey: 'success', icon: ProjectIcon },
+    { title: 'Aprovações Pendentes', value: fmt(resumo?.solicitacoesPendentes), paletteKey: 'warning', icon: PendingIcon },
     {
-      title: 'Eventos este Mês',
-      value: metrics ? metrics.monthlyEvents : '--',
-      paletteKey: 'primary' as const,
-      icon: CalendarIcon,
-    },
-    {
-      title: 'Projetos Ativos',
-      value: metrics && metrics.activeProjects !== undefined ? metrics.activeProjects : '--',
-      paletteKey: 'success' as const,
-      icon: ProjectIcon,
-    },
-    {
-      title: 'Pendentes',
-      value: metrics ? metrics.aprovacoesPendentes : '--',
-      paletteKey: 'warning' as const,
-      icon: PendingIcon,
+      title: 'Fiéis Ativos',
+      value: fmt(resumo?.totalFieisAtivos),
+      paletteKey: 'info',
+      icon: PeopleIcon,
+      hint: resumo ? `+${resumo.novosFieisMes} no mês` : undefined,
     },
   ];
 
   return (
     <Grid container spacing={3}>
-      {cards.map((card, idx) => {
+      {cards.map((card) => {
         const IconComponent = card.icon;
         return (
-          <Grid key={idx} size={{ xs: 12, sm: 4 }}>
+          <Grid key={card.title} size={{ xs: 12, sm: 6, md: 3 }}>
             <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
               <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -52,6 +45,9 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ metrics }) => {
                     <Typography variant="h3" sx={{ fontWeight: 800, color: 'text.primary' }}>
                       {card.value}
                     </Typography>
+                    {card.hint && (
+                      <Typography variant="caption" color="text.secondary">{card.hint}</Typography>
+                    )}
                   </Box>
                   <Box
                     sx={{

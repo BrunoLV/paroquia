@@ -1,6 +1,12 @@
 import React from 'react';
 import {alpha, Box, Chip, Grid, LinearProgress, Paper, Stack, Tooltip, Typography} from '@mui/material';
-import {AccessTime as TimeIcon, CalendarToday as EventIcon, Warning as WarningIcon} from '@mui/icons-material';
+import {
+  AccessTime as TimeIcon,
+  CalendarToday as EventIcon,
+  Flag as FlagIcon,
+  HourglassEmpty as PendingIcon,
+  Warning as WarningIcon,
+} from '@mui/icons-material';
 import {ProjectDetail} from '../../api/types';
 import StatusIcon from '../StatusIcon';
 import {getProjetoStatusMeta, type ProjetoStatus} from '../../utils/statusMeta/projetoStatus';
@@ -118,8 +124,29 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
                   </Grid>
                 </Grid>
 
+                <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.5, alignItems: 'center' }}>
+                  {project.proximoMarco && (
+                    <Chip
+                      icon={<FlagIcon />}
+                      size="small"
+                      color="info"
+                      variant="outlined"
+                      label={`Próximo marco: ${project.proximoMarco.titulo} · ${new Date(project.proximoMarco.inicio).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`}
+                    />
+                  )}
+                  {project.eventosPendentesAprovacao > 0 && (
+                    <Chip
+                      icon={<PendingIcon />}
+                      size="small"
+                      color="warning"
+                      variant="outlined"
+                      label={`${project.eventosPendentesAprovacao} evento(s) pendente(s) de aprovação`}
+                    />
+                  )}
+                </Box>
+
                 {project.envolvidos.length > 0 && (
-                  <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {project.envolvidos.map((env, envIdx) => (
                       <Chip
                         key={envIdx}

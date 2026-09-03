@@ -104,10 +104,10 @@ const WeeklyTimeline: React.FC<WeeklyTimelineProps> = ({ events }) => {
                           <Typography variant="caption">{event.localNome}</Typography>
                         </Box>
                       )}
-                      {event.organizacaoNome && (
+                      {event.grupoParoquialNome && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
                           <OrgIcon sx={{ fontSize: 12 }} />
-                          <Typography variant="caption">{event.organizacaoNome}</Typography>
+                          <Typography variant="caption">{event.grupoParoquialNome}</Typography>
                         </Box>
                       )}
                     </Stack>

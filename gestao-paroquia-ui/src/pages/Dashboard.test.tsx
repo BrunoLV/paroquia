@@ -32,20 +32,41 @@ describe('Dashboard Page', () => {
       if (url === '/dashboard/metrics') {
         return Promise.resolve({
           data: {
-            resumoGeral: { totalEventosMes: 12, projetosAtivos: 3, solicitacoesPendentes: 2 },
-            eventosPorOrganizacao: [
-              { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
-              { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 }
+            resumoGeral: {
+              totalEventosPeriodo: 12, projetosAtivos: 3, solicitacoesPendentes: 2,
+              totalFieisAtivos: 40, novosFieisMes: 3, fieisEngajadosPastoral: 25, fieisSemVinculoPastoral: 15
+            },
+            eventosPorGrupoParoquial: [
+              { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 8 },
+              { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 4 }
             ],
+            projetosPorStatus: { planejamento: 1, emExecucao: 2, concluidos: 4, atrasados: 1 },
             projetosAtivosDetalhes: [
-              { nome: 'Projeto Alfa', status: 'EM_ANDAMENTO', percentualTempoDecorrido: 65.0, totalEventos: 10, eventosRealizados: 6, emRisco: false, envolvidos: ['Pastoral A'] },
-              { nome: 'Projeto Beta', status: 'ABERTO', percentualTempoDecorrido: 85.0, totalEventos: 5, eventosRealizados: 2, emRisco: true, envolvidos: ['Pastoral B'] }
+              { nome: 'Projeto Alfa', status: 'EM_ANDAMENTO', percentualTempoDecorrido: 65.0, totalEventos: 10, eventosRealizados: 6, percentualExecucao: 60, eventosPendentesAprovacao: 1, emRisco: false, proximoMarco: null, envolvidos: ['Pastoral A'] },
+              { nome: 'Projeto Beta', status: 'ABERTO', percentualTempoDecorrido: 85.0, totalEventos: 5, eventosRealizados: 2, percentualExecucao: 40, eventosPendentesAprovacao: 2, emRisco: true, proximoMarco: null, envolvidos: ['Pastoral B'] }
             ],
+            eventosOrfaos: [],
             eventosSemana: [
-              { titulo: 'Missa das Flores', inicio: '2026-06-15T10:00:00.000', localNome: 'Igreja Matriz', organizacaoNome: 'Pastoral A' }
+              { titulo: 'Missa das Flores', inicio: '2026-06-15T10:00:00.000', localNome: 'Igreja Matriz', grupoParoquialNome: 'Pastoral A' }
             ]
           }
         });
+      }
+      if (url === '/dashboard/logistica') {
+        return Promise.resolve({
+          data: {
+            choquesHorario: [],
+            ocupacaoAmbientes: { taxaDiaPercentual: 10, taxaSemanaPercentual: 20, porLocal: [] },
+            eventosPorResponsavel: [{ grupoParoquialNome: 'Pastoral A', quantidade: 3 }],
+            pendenciasHomologacao: [],
+          }
+        });
+      }
+      if (url === '/dashboard/aniversariantes') {
+        return Promise.resolve({ data: [{ primeiroNome: 'Maria', dia: 15, mes: 6 }] });
+      }
+      if (url === '/dashboard/comunidade') {
+        return Promise.resolve({ data: { retencaoPastorais: [] } });
       }
       if (url === '/organizacoes') {
         return Promise.resolve({ data: [

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     Alert,
     Box,
@@ -214,6 +214,18 @@ const Projects = () => {
     
     setDialogOpen(true);
   };
+
+  // Abre o formulário de criação automaticamente quando chega de "Novo Projeto" no dashboard
+  // (`/projects?novo=1`), depois limpa o parâmetro para não reabrir em refresh/voltar.
+  const abriuPorParametro = useRef(false);
+  useEffect(() => {
+    if (isLoading || abriuPorParametro.current) return;
+    if (new URLSearchParams(window.location.search).get('novo') !== '1') return;
+    abriuPorParametro.current = true;
+    handleOpenCreate();
+    window.history.replaceState({}, '', window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   const handleOpenEdit = (project: Projeto) => {
     // TableCell já chama e.stopPropagation() antes de disparar o onClick da TableRow
