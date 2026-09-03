@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -165,4 +166,71 @@ public interface EventoConsultaJpaRepository {
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc,
             @Param("excludeId") UUID excludeId);
+
+    /**
+     * Busca eventos não cancelados sem projeto vinculado cujo início cai no período informado,
+     * usado pelo indicador de "eventos órfãos" do dashboard. O intervalo é semiaberto
+     * {@code [inicio, fim)} para casar com {@code JanelaTemporal}.
+     *
+     * @param inicioUtc limite inferior (inclusive) do início do evento
+     * @param fimUtc limite superior (exclusive) do início do evento
+     * @return eventos sem projeto no período, ordenados cronologicamente
+     */
+    @Query("""
+            select e from EventoEntity e
+            where e.projetoId is null
+              and e.status != 'CANCELADO'
+              and e.inicioUtc >= :inicioUtc and e.inicioUtc < :fimUtc
+            order by e.inicioUtc asc
+            """)
+    List<EventoEntity> findOrfaosNoPeriodo(
+            @Param("inicioUtc") Instant inicioUtc,
+            @Param("fimUtc") Instant fimUtc);
+
+    /**
+     * Busca o próximo evento não cancelado de um projeto ainda por ocorrer, priorizando o de
+     * maior criticidade (menor {@code nivelPrioridade}) e, em empate, o mais próximo no tempo —
+     * o "próximo marco crítico" exibido no card do projeto.
+     *
+     * @param projetoId identificador do projeto
+     * @param agora instante de referência; só eventos que começam a partir dele são considerados
+     * @return o próximo marco, ou {@link java.util.Optional#empty()} se não houver evento futuro
+     */
+    @Query("""
+            select e from EventoEntity e
+            where e.projetoId = :projetoId
+              and e.status != 'CANCELADO'
+              and e.inicioUtc >= :agora
+            order by e.nivelPrioridade asc, e.inicioUtc asc
+            limit 1
+            """)
+    Optional<EventoEntity> findProximoMarco(
+            @Param("projetoId") UUID projetoId,
+            @Param("agora") Instant agora);
+
+    /**
+     * Detecta pares de eventos não cancelados que dividem o mesmo local físico e se sobrepõem no
+     * tempo, dentro do período informado — o indicador de choque de horário do dashboard. Cada
+     * linha é {@code [localId (UUID), tituloA (String), tituloB (String), inicioA (Instant)]};
+     * {@code a.id < b.id} garante que cada par apareça uma única vez.
+     *
+     * <p>É uma auto-junção O(eventos por local²): sempre chamada com uma janela temporal (nunca
+     * global) para manter o custo baixo.
+     *
+     * @param inicioUtc limite inferior (inclusive) do início do primeiro evento do par
+     * @param fimUtc limite superior (exclusive) do início do primeiro evento do par
+     * @return pares em choque, ordenados por início
+     */
+    @Query("""
+            select a.localId, a.titulo, b.titulo, a.inicioUtc
+            from EventoEntity a, EventoEntity b
+            where a.localId = b.localId and a.id < b.id
+              and a.status != 'CANCELADO' and b.status != 'CANCELADO'
+              and a.inicioUtc < b.fimUtc and b.inicioUtc < a.fimUtc
+              and a.inicioUtc >= :inicioUtc and a.inicioUtc < :fimUtc
+            order by a.inicioUtc asc
+            """)
+    List<Object[]> findChoquesHorarioPorLocal(
+            @Param("inicioUtc") Instant inicioUtc,
+            @Param("fimUtc") Instant fimUtc);
 }

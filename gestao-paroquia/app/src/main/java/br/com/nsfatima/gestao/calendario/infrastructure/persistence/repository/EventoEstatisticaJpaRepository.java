@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
@@ -128,4 +129,37 @@ public interface EventoEstatisticaJpaRepository {
      * @return quantidade de eventos do projeto não encerrados até o instante informado
      */
     long countByProjetoIdAndFimUtcGreaterThanEqual(UUID projetoId, Instant now);
+
+    /**
+     * Conta eventos não cancelados por organização responsável dentro de um período, para o
+     * indicador "eventos por responsável" do dashboard. Cada linha é
+     * {@code [grupoParoquialResponsavelId (UUID), quantidade (long)]}.
+     *
+     * @param inicio limite inferior (inclusive) do início do evento
+     * @param fim limite superior (exclusive) do início do evento
+     * @return contagem por organização responsável
+     */
+    @Query("""
+            select e.grupoParoquialResponsavelId, count(e) from EventoEntity e
+            where e.status != 'CANCELADO'
+              and e.inicioUtc >= :inicio and e.inicioUtc < :fim
+            group by e.grupoParoquialResponsavelId
+            """)
+    List<Object[]> contarPorResponsavelNoPeriodo(@Param("inicio") Instant inicio, @Param("fim") Instant fim);
+
+    /**
+     * Busca eventos não cancelados que ocupam um local físico dentro de um período, para o cálculo
+     * de taxa de ocupação dos ambientes.
+     *
+     * @param inicio limite inferior (inclusive) do início do evento
+     * @param fim limite superior (exclusive) do início do evento
+     * @return eventos com {@code localId} preenchido no período
+     */
+    @Query("""
+            select e from EventoEntity e
+            where e.localId is not null
+              and e.status != 'CANCELADO'
+              and e.inicioUtc >= :inicio and e.inicioUtc < :fim
+            """)
+    List<EventoEntity> findComLocalNoPeriodo(@Param("inicio") Instant inicio, @Param("fim") Instant fim);
 }

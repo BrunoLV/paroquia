@@ -29,4 +29,19 @@ public interface LocalJpaRepository extends JpaRepository<LocalEntity, UUID> {
      * @return lista de Locais vinculados à organização informada
      */
     List<LocalEntity> findByGrupoParoquialId(UUID grupoParoquialId);
+
+    /**
+     * Conta os locais ativos — capacidade instalada de ambientes, usada como denominador da taxa
+     * de ocupação no dashboard.
+     *
+     * @return quantidade de locais ativos
+     */
+    long countByAtivoTrue();
+
+    /**
+     * Busca os locais ativos, para resolver nomes no detalhamento de ocupação por ambiente.
+     *
+     * @return locais com cadastro ativo
+     */
+    List<LocalEntity> findByAtivoTrue();
 }

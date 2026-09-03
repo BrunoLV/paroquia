@@ -230,4 +230,15 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     public boolean existsById(UUID uuid) {
         return findById(uuid).isPresent();
     }
+
+    @Override
+    public List<Object[]> contarPorTipoComStatus(AprovacaoStatus status) {
+        return storage.stream()
+                .filter(a -> a.getStatus() == status)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        AprovacaoEntity::getTipoSolicitacao, java.util.stream.Collectors.counting()))
+                .entrySet().stream()
+                .map(e -> new Object[]{e.getKey(), e.getValue()})
+                .toList();
+    }
 }

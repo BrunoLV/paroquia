@@ -6,31 +6,33 @@ import java.util.List;
 
 /**
  * Progresso e risco de um projeto ativo (status {@code ABERTO} ou {@code EM_ANDAMENTO}) para
- * exibição no dashboard. {@code percentualTempoDecorrido} e {@code emRisco} são calculados por
- * {@code ProjetoAgregacaoDomainService} a partir da janela do projeto e da quantidade de eventos
- * ainda pendentes.
+ * exibição no dashboard. {@code percentualTempoDecorrido} e {@code emRisco} vêm de
+ * {@code ProjetoAgregacaoDomainService} (janela do projeto × pendências); {@code percentualExecucao}
+ * é a razão eventos concluídos / eventos previstos, que pode divergir do tempo decorrido e
+ * evidencia atraso de execução.
+ *
+ * @param nome nome do projeto
+ * @param status status atual
+ * @param percentualTempoDecorrido percentual (0-100) da janela do projeto já decorrida
+ * @param totalEventos eventos vinculados ao projeto
+ * @param eventosRealizados eventos que já ocorreram
+ * @param percentualExecucao percentual (0-100) de eventos concluídos sobre os previstos
+ * @param eventosPendentesAprovacao eventos do projeto ainda aguardando aprovação
+ * @param emRisco prazo apertado com pendências
+ * @param proximoMarco próximo evento crítico do projeto, ou {@code null}
+ * @param envolvidos nomes das pastorais envolvidas
  */
 @Schema(description = "Detalhes de um projeto ativo para exibição no dashboard")
 public record DetalheProjetoDTO(
-        @Schema(description = "Nome do projeto")
         String nome,
-
-        @Schema(description = "Status atual do projeto")
         String status,
-
-        @Schema(description = "Percentual de tempo decorrido do projeto")
         double percentualTempoDecorrido,
-
-        @Schema(description = "Total de eventos vinculados ao projeto")
         int totalEventos,
-
-        @Schema(description = "Total de eventos que já ocorreram")
         int eventosRealizados,
-
-        @Schema(description = "Indica se o projeto está em risco (prazo apertado com pendências)")
+        double percentualExecucao,
+        int eventosPendentesAprovacao,
         boolean emRisco,
-
-        @Schema(description = "Nomes das pastorais envolvidas no projeto")
+        ProximoMarcoDTO proximoMarco,
         List<String> envolvidos
 ) {
 }

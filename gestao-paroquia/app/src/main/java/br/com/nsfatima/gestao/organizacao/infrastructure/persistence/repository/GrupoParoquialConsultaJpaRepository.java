@@ -1,8 +1,11 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,4 +23,13 @@ public interface GrupoParoquialConsultaJpaRepository {
      * @return a organização encontrada, se houver
      */
     Optional<GrupoParoquialEntity> findByNomeIgnoreCase(String nome);
+
+    /**
+     * Lista os grupos ativos de um conjunto de tipos, usado pelo índice de retenção de pastorais
+     * do dashboard (tipicamente {@code PASTORAL}, {@code MOVIMENTO}, {@code MINISTERIO}).
+     *
+     * @param tipos tipos de grupo a incluir
+     * @return grupos ativos dos tipos informados
+     */
+    List<GrupoParoquialEntity> findByTipoInAndAtivoTrue(Collection<TipoGrupo> tipos);
 }

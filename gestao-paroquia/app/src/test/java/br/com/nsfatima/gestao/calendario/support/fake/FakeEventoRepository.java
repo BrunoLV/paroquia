@@ -166,6 +166,68 @@ public class FakeEventoRepository implements EventoJpaRepository {
                 .toList();
     }
 
+    @Override
+    public List<EventoEntity> findOrfaosNoPeriodo(Instant inicioUtc, Instant fimUtc) {
+        return storage.stream()
+                .filter(e -> e.getProjetoId() == null)
+                .filter(e -> !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> !e.getInicioUtc().isBefore(inicioUtc) && e.getInicioUtc().isBefore(fimUtc))
+                .sorted(Comparator.comparing(EventoEntity::getInicioUtc))
+                .toList();
+    }
+
+    @Override
+    public List<Object[]> findChoquesHorarioPorLocal(Instant inicioUtc, Instant fimUtc) {
+        List<Object[]> pares = new ArrayList<>();
+        List<EventoEntity> janela = storage.stream()
+                .filter(e -> e.getLocalId() != null && !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> !e.getInicioUtc().isBefore(inicioUtc) && e.getInicioUtc().isBefore(fimUtc))
+                .sorted(Comparator.comparing(EventoEntity::getInicioUtc))
+                .toList();
+        for (int i = 0; i < janela.size(); i++) {
+            for (int j = i + 1; j < janela.size(); j++) {
+                EventoEntity a = janela.get(i);
+                EventoEntity b = janela.get(j);
+                if (a.getLocalId().equals(b.getLocalId())
+                        && a.getInicioUtc().isBefore(b.getFimUtc()) && b.getInicioUtc().isBefore(a.getFimUtc())) {
+                    pares.add(new Object[]{a.getLocalId(), a.getTitulo(), b.getTitulo(), a.getInicioUtc()});
+                }
+            }
+        }
+        return pares;
+    }
+
+    @Override
+    public List<Object[]> contarPorResponsavelNoPeriodo(Instant inicio, Instant fim) {
+        return storage.stream()
+                .filter(e -> !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> !e.getInicioUtc().isBefore(inicio) && e.getInicioUtc().isBefore(fim))
+                .collect(java.util.stream.Collectors.groupingBy(EventoEntity::getGrupoParoquialResponsavelId,
+                        java.util.stream.Collectors.counting()))
+                .entrySet().stream()
+                .map(en -> new Object[]{en.getKey(), en.getValue()})
+                .toList();
+    }
+
+    @Override
+    public List<EventoEntity> findComLocalNoPeriodo(Instant inicio, Instant fim) {
+        return storage.stream()
+                .filter(e -> e.getLocalId() != null && !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> !e.getInicioUtc().isBefore(inicio) && e.getInicioUtc().isBefore(fim))
+                .toList();
+    }
+
+    @Override
+    public Optional<EventoEntity> findProximoMarco(UUID projetoId, Instant agora) {
+        return storage.stream()
+                .filter(e -> projetoId.equals(e.getProjetoId()))
+                .filter(e -> !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> !e.getInicioUtc().isBefore(agora))
+                .min(Comparator.<EventoEntity>comparingInt(
+                        e -> e.getNivelPrioridade() == null ? 4 : e.getNivelPrioridade())
+                        .thenComparing(EventoEntity::getInicioUtc));
+    }
+
     // Default JPA methods
     @Override
     public List<EventoEntity> findAll() {

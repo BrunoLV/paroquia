@@ -22,6 +22,13 @@ public class CacheConfig {
     public static final String PROJECT_RESUMO_CACHE = "projectResumo";
     /** Nome do cache que guarda os dados do ano paroquial corrente. */
     public static final String ANO_PAROQUIAL_CACHE = "anoParoquial";
+    /**
+     * Cache dos aniversariantes do dashboard. O cálculo descriptografa todos os fiéis ativos,
+     * então vale evitar recomputá-lo a cada abertura da tela.
+     * ponytail: compartilha a expiração de 10 min do gerenciador; se a base de fiéis crescer,
+     * mover para colunas-sombra dia/mês não criptografadas em vez de aumentar só o TTL.
+     */
+    public static final String DASHBOARD_ANIVERSARIANTES_CACHE = "dashboardAniversariantes";
 
     /**
      * Cria o {@link CacheManager} baseado em Caffeine com política de expiração e capacidade
@@ -32,7 +39,8 @@ public class CacheConfig {
      */
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager(PROJECT_RESUMO_CACHE, ANO_PAROQUIAL_CACHE);
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                PROJECT_RESUMO_CACHE, ANO_PAROQUIAL_CACHE, DASHBOARD_ANIVERSARIANTES_CACHE);
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .initialCapacity(100)
                 .maximumSize(500)

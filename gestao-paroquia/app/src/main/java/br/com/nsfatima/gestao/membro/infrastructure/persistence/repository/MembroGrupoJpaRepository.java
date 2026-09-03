@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.membro.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,4 +57,27 @@ public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntit
     List<MembroGrupoEntity> findByIgrejaVinculoIdAndAtivoTrue(UUID igrejaVinculoId);
 
     boolean existsByGrupoParoquialId(UUID grupoParoquialId);
+
+    /**
+     * Conta fiéis <em>distintos</em> com pelo menos um vínculo ativo em grupos dos tipos
+     * informados, usado pelo indicador de engajamento pastoral do dashboard (um fiel em três
+     * pastorais conta uma vez).
+     *
+     * @param tipos tipos de grupo considerados engajamento (tipicamente {@code PASTORAL},
+     *     {@code MOVIMENTO})
+     * @return quantidade de fiéis distintos engajados
+     */
+    @Query("""
+            SELECT count(DISTINCT m.fielId) FROM MembroGrupoEntity m
+            WHERE m.ativo = true AND m.tipoGrupo IN :tipos
+            """)
+    long contarFieisDistintosEngajados(@Param("tipos") Collection<TipoGrupo> tipos);
+
+    /**
+     * Conta vínculos ativos de um grupo, usado pelo índice de retenção de pastorais.
+     *
+     * @param grupoParoquialId identificador do grupo
+     * @return quantidade de vínculos ativos
+     */
+    long countByGrupoParoquialIdAndAtivoTrue(UUID grupoParoquialId);
 }

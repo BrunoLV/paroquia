@@ -104,4 +104,16 @@ public interface AprovacaoJpaRepository extends JpaRepository<AprovacaoEntity, U
             @Param("eventoId") UUID eventoId,
             @Param("status") AprovacaoStatus status,
             Pageable pageable);
+
+    /**
+     * Conta as aprovações de evento em um status, agrupadas por tipo de solicitação — o
+     * detalhamento de pendências de homologação do dashboard. Cada linha é
+     * {@code [tipoSolicitacao (String), quantidade (long)]}.
+     *
+     * @param status status a considerar (tipicamente {@link AprovacaoStatus#PENDENTE})
+     * @return contagem por tipo de solicitação
+     */
+    @Query("SELECT a.tipoSolicitacao, count(a) FROM AprovacaoEntity a WHERE a.status = :status "
+            + "GROUP BY a.tipoSolicitacao")
+    List<Object[]> contarPorTipoComStatus(@Param("status") AprovacaoStatus status);
 }

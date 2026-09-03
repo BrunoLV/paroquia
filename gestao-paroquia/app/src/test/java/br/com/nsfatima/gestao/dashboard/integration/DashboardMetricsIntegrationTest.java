@@ -12,9 +12,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(scripts = "classpath:sql/security-fixtures.sql")
@@ -37,10 +40,29 @@ class DashboardMetricsIntegrationTest {
         mockMvc.perform(get("/api/v1/dashboard/metrics")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resumoGeral").exists())
+                .andExpect(jsonPath("$.resumoGeral.totalEventosPeriodo").exists())
+                .andExpect(jsonPath("$.resumoGeral.totalFieisAtivos").exists())
+                .andExpect(jsonPath("$.resumoGeral.novosFieisMes").exists())
+                .andExpect(jsonPath("$.resumoGeral.fieisEngajadosPastoral").exists())
+                .andExpect(jsonPath("$.resumoGeral.fieisSemVinculoPastoral").exists())
                 .andExpect(jsonPath("$.eventosPorGrupoParoquial").isArray())
+                .andExpect(jsonPath("$.projetosPorStatus.planejamento").exists())
+                .andExpect(jsonPath("$.projetosPorStatus.emExecucao").exists())
+                .andExpect(jsonPath("$.projetosPorStatus.concluidos").exists())
+                .andExpect(jsonPath("$.projetosPorStatus.atrasados").exists())
                 .andExpect(jsonPath("$.projetosAtivosDetalhes").isArray())
+                .andExpect(jsonPath("$.eventosOrfaos").isArray())
                 .andExpect(jsonPath("$.eventosSemana").isArray());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deveAceitarRecorteTemporalNoFiltro() throws Exception {
+        mockMvc.perform(get("/api/v1/dashboard/metrics")
+                        .param("periodo", "MES")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resumoGeral").exists());
     }
 
     @Test
@@ -53,5 +75,16 @@ class DashboardMetricsIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral").exists())
                 .andExpect(jsonPath("$.eventosPorGrupoParoquial").isArray());
+    }
+
+    @Test
+    void deveNegarNaoAdminQueSolicitaOutraComunidadeNoFiltro() throws Exception {
+        MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
+
+        mockMvc.perform(get("/api/v1/dashboard/metrics")
+                        .session(session)
+                        .param("grupoParoquialId", UUID.randomUUID().toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 }

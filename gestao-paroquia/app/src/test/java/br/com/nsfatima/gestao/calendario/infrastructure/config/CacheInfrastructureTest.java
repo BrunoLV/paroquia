@@ -24,7 +24,8 @@ class CacheInfrastructureTest {
     @Test
     void deveTerConfiguredCacheia() {
         assertThat(cacheManager.getCacheNames())
-                .containsExactlyInAnyOrder(CacheConfig.PROJECT_RESUMO_CACHE, CacheConfig.ANO_PAROQUIAL_CACHE);
+                .containsExactlyInAnyOrder(CacheConfig.PROJECT_RESUMO_CACHE, CacheConfig.ANO_PAROQUIAL_CACHE,
+                        CacheConfig.DASHBOARD_ANIVERSARIANTES_CACHE);
     }
 
     @Test

@@ -9,9 +9,19 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardMetricsDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DetalheProjetoDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DistribuicaoEventosDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventoOrfaoDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventoSemanalDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.ProjetosPorStatusDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.ProximoMarcoDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.ResumoGeralDTO;
+import br.com.nsfatima.gestao.dashboard.application.service.EscopoDashboardResolver;
+import br.com.nsfatima.gestao.dashboard.domain.model.JanelaTemporal;
+import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
+import br.com.nsfatima.gestao.dashboard.domain.service.JanelaTemporalResolver;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
@@ -31,23 +41,32 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Agrega, em uma única leitura, as métricas exibidas no dashboard gerencial: elas são calculadas
- * sob demanda a partir dos contextos de calendário, projeto e aprovação — não existe uma tabela
- * de métricas persistida. Quando o ator autenticado possui uma organização associada
- * ({@link EventoActorContext#organizationId()} não nulo), todas as métricas são restritas aos
- * dados dessa organização; caso contrário, a visão é global (perfis com alcance
- * multiorganizacional).
+ * Agrega, em uma única leitura, as métricas das seções "crítica" e "projetos" do dashboard
+ * gerencial. Não existe tabela de métricas persistida: tudo é calculado sob demanda a partir dos
+ * contextos de calendário, projeto, aprovação, fiel e membro. As métricas de volume (eventos do
+ * período, distribuição por organização, eventos órfãos) respeitam o recorte temporal
+ * {@link PeriodoDashboard}; as de estado corrente (fiéis ativos, projetos por status, novos fiéis
+ * no mês) o ignoram. O escopo organizacional vem de {@link EscopoDashboardResolver}: a organização
+ * pedida no filtro, quando o ator tem acesso a ela, senão a organização do próprio ator.
  */
 @Service
 public class GetDashboardMetricsUseCase {
+
+    private static final String STATUS_EVENTO_PENDENTE = "RASCUNHO";
+    private static final Set<ProjetoStatus> STATUS_ATIVOS =
+            EnumSet.of(ProjetoStatus.ABERTO, ProjetoStatus.EM_ANDAMENTO);
+    private static final Set<TipoGrupo> TIPOS_ENGAJAMENTO = EnumSet.of(TipoGrupo.PASTORAL, TipoGrupo.MOVIMENTO);
 
     private final EventoJpaRepository eventoRepository;
     private final ProjetoEventoJpaRepository projetoRepository;
@@ -55,7 +74,11 @@ public class GetDashboardMetricsUseCase {
     private final ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository;
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final LocalJpaRepository localRepository;
+    private final FielJpaRepository fielRepository;
+    private final MembroGrupoJpaRepository membroRepository;
     private final ProjetoAgregacaoDomainService projetoAgregacaoDomainService;
+    private final JanelaTemporalResolver janelaResolver;
+    private final EscopoDashboardResolver escopoResolver;
 
     public GetDashboardMetricsUseCase(
             EventoJpaRepository eventoRepository,
@@ -64,199 +87,237 @@ public class GetDashboardMetricsUseCase {
             ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,
             LocalJpaRepository localRepository,
-            ProjetoAgregacaoDomainService projetoAgregacaoDomainService) {
+            FielJpaRepository fielRepository,
+            MembroGrupoJpaRepository membroRepository,
+            ProjetoAgregacaoDomainService projetoAgregacaoDomainService,
+            JanelaTemporalResolver janelaResolver,
+            EscopoDashboardResolver escopoResolver) {
         this.eventoRepository = eventoRepository;
         this.projetoRepository = projetoRepository;
         this.aprovacaoRepository = aprovacaoRepository;
         this.projetoAprovacaoRepository = projetoAprovacaoRepository;
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.localRepository = localRepository;
+        this.fielRepository = fielRepository;
+        this.membroRepository = membroRepository;
         this.projetoAgregacaoDomainService = projetoAgregacaoDomainService;
+        this.janelaResolver = janelaResolver;
+        this.escopoResolver = escopoResolver;
     }
 
     /**
-     * Calcula e monta o snapshot completo de métricas do dashboard para o ator informado.
+     * Calcula o snapshot de métricas do dashboard para o ator, o recorte temporal e a organização
+     * solicitados.
      *
-     * <p>Métricas produzidas e como cada uma é obtida:
-     * <ul>
-     *   <li><b>Resumo geral</b> ({@link ResumoGeralDTO}): total de eventos cujo período de
-     *       ocorrência intersecta o mês corrente ({@code findAllInPeriod} entre o primeiro e o
-     *       último dia do mês); total de projetos cujo status é {@code ABERTO} ou
-     *       {@code EM_ANDAMENTO} ("ativos"); e total de solicitações de aprovação pendentes,
-     *       somando aprovações de evento e de projeto com status {@code PENDENTE}.</li>
-     *   <li><b>Distribuição de eventos por organização</b> ({@link DistribuicaoEventosDTO}):
-     *       contagem dos eventos do mês corrente agrupados por organização responsável,
-     *       ordenada da maior para a menor quantidade, para alimentar o gráfico de distribuição.</li>
-     *   <li><b>Detalhes de projetos ativos</b> ({@link DetalheProjetoDTO}): para cada projeto
-     *       ativo, o total de eventos vinculados, quantos já ocorreram (fim já passou em
-     *       relação ao instante corrente) e quantos ainda estão pendentes; o percentual de
-     *       tempo decorrido e a sinalização de risco são delegados a
-     *       {@code ProjetoAgregacaoDomainService}, que cruza a janela temporal do projeto
-     *       (início/fim) com a quantidade de eventos ainda pendentes para decidir se o prazo
-     *       está apertado demais para o que falta ser executado.</li>
-     *   <li><b>Eventos da semana</b> ({@link EventoSemanalDTO}): eventos cujo início cai na
-     *       semana corrente, delimitada de segunda-feira a domingo (inclusive), com nome do
-     *       local e da organização resolvidos a partir de mapas carregados uma única vez para
-     *       evitar consultas repetidas por evento.</li>
-     * </ul>
-     *
-     * <p><b>Escopo por organização:</b> quando {@code actorContext.organizationId()} não é nulo,
-     * todas as métricas acima são filtradas para considerar apenas eventos/projetos/aprovações
-     * associados àquela organização — é o caso de atores com papel restrito a uma pastoral ou
-     * comunidade específica. Quando é nulo (ator com alcance global), nenhum filtro adicional é
-     * aplicado.
-     *
-     * @param actorContext contexto do ator autenticado, usado para determinar o escopo
-     *                      organizacional das métricas
-     * @return snapshot consolidado das métricas do dashboard, já filtrado pelo escopo do ator
+     * @param actorContext contexto do ator autenticado (define o escopo padrão e o que ele pode ver)
+     * @param periodo recorte temporal do filtro global; {@code null} equivale a
+     *     {@link PeriodoDashboard#SEMANA}
+     * @param grupoParoquialIdSolicitado organização escolhida no filtro, ou {@code null} para usar o
+     *     escopo do próprio ator
+     * @return snapshot consolidado das métricas
+     * @throws org.springframework.security.access.AccessDeniedException se o ator não tiver acesso à
+     *     organização solicitada
      */
     @Transactional(readOnly = true)
-    public DashboardMetricsDTO execute(EventoActorContext actorContext) {
-        UUID orgId = actorContext.organizationId();
-        boolean isFilterNeeded = orgId != null;
-
+    public DashboardMetricsDTO execute(
+            EventoActorContext actorContext, PeriodoDashboard periodo, UUID grupoParoquialIdSolicitado) {
         Instant agora = Instant.now();
-        ZonedDateTime nowZoned = ZonedDateTime.now(ZoneOffset.UTC);
+        JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
+        Optional<UUID> escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado);
 
-        // 1. Calcular limites do mês atual
-        ZonedDateTime startOfMonth = nowZoned.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime endOfMonth =
-                nowZoned.with(TemporalAdjusters.lastDayOfMonth()).plusDays(1).truncatedTo(ChronoUnit.DAYS);
-        Instant inicioMes = startOfMonth.toInstant();
-        Instant fimMes = endOfMonth.toInstant();
-
-        // 2. Buscar eventos do mês atual
-        List<EventoEntity> eventosMes = eventoRepository.findAllInPeriod(inicioMes, fimMes);
-        if (isFilterNeeded) {
-            eventosMes = eventosMes.stream()
-                    .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId()))
-                    .toList();
-        }
-
-        // 3. Buscar todos os projetos
+        List<EventoEntity> eventosPeriodo = comEscopo(eventoRepository.findAllInPeriod(janela.inicio(), janela.fim()),
+                escopo);
         List<ProjetoEventoEntity> projetos = projetoRepository.findAll();
-        List<ProjetoEventoEntity> projetosAtivosEntities = projetos.stream()
-                .filter(p -> p.getStatus() == ProjetoStatus.ABERTO || p.getStatus() == ProjetoStatus.EM_ANDAMENTO)
-                .filter(p -> !isFilterNeeded || orgId.equals(p.getGrupoParoquialResponsavelId()))
-                .toList();
+        List<ProjetoEventoEntity> projetosAtivos = filtrarProjetosAtivos(projetos, escopo);
+        Map<UUID, String> nomesOrganizacoes = carregarNomesOrganizacoes();
 
-        // 4. Contar aprovações pendentes
-        // Aprovações de evento
-        List<AprovacaoEntity> aprovacoesPendentes =
+        return new DashboardMetricsDTO(
+                resumoGeral(eventosPeriodo, projetosAtivos, agora, escopo),
+                distribuicao(eventosPeriodo, nomesOrganizacoes),
+                projetosPorStatus(projetos, escopo, agora),
+                projetosAtivos.stream().map(p -> detalheProjeto(p, agora)).toList(),
+                eventosOrfaos(janela, escopo, projetosAtivos),
+                eventosSemana(agora, escopo, nomesOrganizacoes));
+    }
+
+    private ResumoGeralDTO resumoGeral(List<EventoEntity> eventosPeriodo, List<ProjetoEventoEntity> projetosAtivos,
+                                       Instant agora, Optional<UUID> escopo) {
+        long engajados = membroRepository.contarFieisDistintosEngajados(TIPOS_ENGAJAMENTO);
+        long ativos = fielRepository.countByAtivoTrue();
+        return new ResumoGeralDTO(
+                eventosPeriodo.size(),
+                projetosAtivos.size(),
+                contarAprovacoesPendentes(escopo),
+                ativos,
+                fielRepository.countByAtivoTrueAndCriadoEmUtcGreaterThanEqual(inicioDoMes(agora)),
+                engajados,
+                Math.max(0, ativos - engajados));
+    }
+
+    private int contarAprovacoesPendentes(Optional<UUID> escopo) {
+        List<AprovacaoEntity> aprovacoesEvento =
                 aprovacaoRepository.findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE);
-        long contagemAprovacoesEvento = aprovacoesPendentes.stream()
-                .filter(a -> {
-                    if (!isFilterNeeded) {
-                        return true;
-                    }
-                    if (a.getEventoId() == null) {
-                        return false;
-                    }
-                    Optional<EventoEntity> ev = eventoRepository.findById(a.getEventoId());
-                    return ev.isPresent() && orgId.equals(ev.get().getGrupoParoquialResponsavelId());
-                })
-                .count();
-
-        // Aprovações de projeto
-        List<ProjetoSolicitacaoAprovacaoEntity> projetoAprovacoesPendentes =
+        List<ProjetoSolicitacaoAprovacaoEntity> aprovacoesProjeto =
                 projetoAprovacaoRepository.findByStatus(AprovacaoStatus.PENDENTE);
-        long contagemAprovacoesProjeto = projetoAprovacoesPendentes.stream()
-                .filter(a -> {
-                    if (!isFilterNeeded) {
-                        return true;
-                    }
-                    if (a.getProjetoId() == null) {
-                        return false;
-                    }
-                    Optional<ProjetoEventoEntity> pr = projetoRepository.findById(a.getProjetoId());
-                    return pr.isPresent() && orgId.equals(pr.get().getGrupoParoquialResponsavelId());
+        if (escopo.isEmpty()) {
+            return aprovacoesEvento.size() + aprovacoesProjeto.size();
+        }
+        UUID orgId = escopo.get();
+        return contarNoEscopoEvento(aprovacoesEvento, orgId) + contarNoEscopoProjeto(aprovacoesProjeto, orgId);
+    }
+
+    private int contarNoEscopoEvento(List<AprovacaoEntity> aprovacoes, UUID orgId) {
+        Set<UUID> ids = aprovacoes.stream()
+                .map(AprovacaoEntity::getEventoId).filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<UUID> noEscopo = eventoRepository.findAllById(ids).stream()
+                .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId()))
+                .map(EventoEntity::getId).collect(Collectors.toSet());
+        return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getEventoId())).count();
+    }
+
+    private int contarNoEscopoProjeto(List<ProjetoSolicitacaoAprovacaoEntity> aprovacoes, UUID orgId) {
+        Set<UUID> ids = aprovacoes.stream()
+                .map(ProjetoSolicitacaoAprovacaoEntity::getProjetoId)
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<UUID> noEscopo = projetoRepository.findAllById(ids).stream()
+                .filter(p -> orgId.equals(p.getGrupoParoquialResponsavelId()))
+                .map(ProjetoEventoEntity::getId).collect(Collectors.toSet());
+        return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getProjetoId())).count();
+    }
+
+    private ProjetosPorStatusDTO projetosPorStatus(List<ProjetoEventoEntity> projetos, Optional<UUID> escopo,
+                                                   Instant agora) {
+        List<ProjetoEventoEntity> visiveis = projetos.stream()
+                .filter(p -> escopo.isEmpty() || escopo.get().equals(p.getGrupoParoquialResponsavelId()))
+                .toList();
+        int atrasados = (int) visiveis.stream().filter(p -> estaAtrasado(p, agora)).count();
+        return new ProjetosPorStatusDTO(
+                contarStatus(visiveis, ProjetoStatus.ABERTO),
+                contarStatus(visiveis, ProjetoStatus.EM_ANDAMENTO),
+                contarStatus(visiveis, ProjetoStatus.CONCLUIDO),
+                atrasados);
+    }
+
+    private int contarStatus(List<ProjetoEventoEntity> projetos, ProjetoStatus status) {
+        return (int) projetos.stream().filter(p -> p.getStatus() == status).count();
+    }
+
+    private boolean estaAtrasado(ProjetoEventoEntity p, Instant agora) {
+        if (!STATUS_ATIVOS.contains(p.getStatus())) {
+            return false;
+        }
+        if (p.getFimUtc() != null && p.getFimUtc().isBefore(agora)) {
+            return true;
+        }
+        int pendentes = (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
+        return projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(), pendentes);
+    }
+
+    private DetalheProjetoDTO detalheProjeto(ProjetoEventoEntity p, Instant agora) {
+        int totalEventos = (int) eventoRepository.countByProjetoId(p.getId());
+        int realizados = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
+        int pendentes = (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
+        int pendentesAprovacao = (int) eventoRepository.countByProjetoIdAndStatus(p.getId(), STATUS_EVENTO_PENDENTE);
+        return new DetalheProjetoDTO(
+                p.getNome(),
+                p.getStatus().name(),
+                projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(), p.getFimUtc()),
+                totalEventos,
+                realizados,
+                totalEventos == 0 ? 0.0 : realizados * 100.0 / totalEventos,
+                pendentesAprovacao,
+                projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(), pendentes),
+                proximoMarco(p.getId(), agora),
+                eventoRepository.findInvolvedOrganizationNames(p.getId()));
+    }
+
+    private ProximoMarcoDTO proximoMarco(UUID projetoId, Instant agora) {
+        return eventoRepository.findProximoMarco(projetoId, agora)
+                .map(e -> new ProximoMarcoDTO(
+                        e.getTitulo(),
+                        LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
+                        e.getNivelPrioridade() == null ? 4 : e.getNivelPrioridade()))
+                .orElse(null);
+    }
+
+    private List<EventoOrfaoDTO> eventosOrfaos(JanelaTemporal janela, Optional<UUID> escopo,
+                                               List<ProjetoEventoEntity> projetosAtivos) {
+        return comEscopo(eventoRepository.findOrfaosNoPeriodo(janela.inicio(), janela.fim()), escopo).stream()
+                .map(e -> {
+                    Optional<ProjetoEventoEntity> sugestao = sugerirProjeto(e, projetosAtivos);
+                    return new EventoOrfaoDTO(
+                            e.getId(),
+                            e.getTitulo(),
+                            LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
+                            sugestao.map(ProjetoEventoEntity::getId).orElse(null),
+                            sugestao.map(ProjetoEventoEntity::getNome).orElse(null));
                 })
-                .count();
+                .toList();
+    }
 
-        int totalSolicitacoesPendentes = (int) (contagemAprovacoesEvento + contagemAprovacoesProjeto);
+    private Optional<ProjetoEventoEntity> sugerirProjeto(
+            EventoEntity evento, List<ProjetoEventoEntity> projetosAtivos) {
+        return projetosAtivos.stream()
+                .filter(p -> p.getInicioUtc() != null && p.getFimUtc() != null)
+                .filter(p -> evento.getGrupoParoquialResponsavelId().equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> !evento.getInicioUtc().isBefore(p.getInicioUtc())
+                        && evento.getInicioUtc().isBefore(p.getFimUtc()))
+                .findFirst();
+    }
 
-        ResumoGeralDTO resumoGeral = new ResumoGeralDTO(
-                eventosMes.size(),
-                projetosAtivosEntities.size(),
-                totalSolicitacoesPendentes
-        );
-
-        // 5. Calcular distribuição de eventos por organização
-        Map<UUID, String> nomesOrganizacoes = new HashMap<>();
-        grupoParoquialRepository.findAll().forEach(o -> nomesOrganizacoes.put(o.getId(), o.getNome()));
-
-        Map<UUID, Long> contagemPorGrupoParoquial = eventosMes.stream()
-                .collect(Collectors.groupingBy(EventoEntity::getGrupoParoquialResponsavelId, Collectors.counting()));
-
-        List<DistribuicaoEventosDTO> eventosPorGrupoParoquial = contagemPorGrupoParoquial.entrySet().stream()
-                .map(entry -> new DistribuicaoEventosDTO(
-                        nomesOrganizacoes.getOrDefault(entry.getKey(), "Organização Desconhecida"),
-                        entry.getValue()
-                ))
+    private List<DistribuicaoEventosDTO> distribuicao(List<EventoEntity> eventos, Map<UUID, String> nomes) {
+        return eventos.stream()
+                .collect(Collectors.groupingBy(EventoEntity::getGrupoParoquialResponsavelId, Collectors.counting()))
+                .entrySet().stream()
+                .map(e -> new DistribuicaoEventosDTO(nomes.getOrDefault(e.getKey(), "Organização Desconhecida"),
+                        e.getValue()))
                 .sorted(Comparator.comparingLong(DistribuicaoEventosDTO::quantidadeEventos).reversed())
                 .toList();
+    }
 
-        // 6. Montar detalhes dos projetos ativos
-        List<DetalheProjetoDTO> projetosAtivosDetalhes = projetosAtivosEntities.stream()
-                .map(p -> {
-                    int totalEventos = (int) eventoRepository.countByProjetoId(p.getId());
-                    int eventosConcluidos = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
-                    int eventosPendentes =
-                            (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
-
-                    double percent = projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(),
-                            p.getFimUtc());
-                    boolean emRisco =
-                            projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(),
-                                    eventosPendentes);
-
-                    List<String> organizacoesEnvolvidas = eventoRepository.findInvolvedOrganizationNames(p.getId());
-
-                    return new DetalheProjetoDTO(
-                            p.getNome(),
-                            p.getStatus().name(),
-                            percent,
-                            totalEventos,
-                            eventosConcluidos,
-                            emRisco,
-                            organizacoesEnvolvidas
-                    );
-                })
-                .toList();
-
-        // 7. Fetch events for the current week (Monday to Sunday)
-        // Encontrar segunda e domingo desta semana
-        ZonedDateTime startOfWeek =
-                nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime endOfWeek =
-                nowZoned.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1).truncatedTo(ChronoUnit.DAYS);
-        Instant inicioSemana = startOfWeek.toInstant();
-        Instant fimSemana = endOfWeek.toInstant();
-
-        List<EventoEntity> eventosSemanaEntities = eventoRepository.findAllInPeriod(inicioSemana, fimSemana);
-        if (isFilterNeeded) {
-            eventosSemanaEntities = eventosSemanaEntities.stream()
-                    .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId()))
-                    .toList();
-        }
-
-        Map<UUID, String> nomesLocais = new HashMap<>();
-        localRepository.findAll().forEach(l -> nomesLocais.put(l.getId(), l.getNome()));
-
-        List<EventoSemanalDTO> eventosSemana = eventosSemanaEntities.stream()
+    private List<EventoSemanalDTO> eventosSemana(Instant agora, Optional<UUID> escopo, Map<UUID, String> nomesOrg) {
+        ZonedDateTime nowZoned = agora.atZone(ZoneOffset.UTC);
+        Instant inicio = nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .truncatedTo(ChronoUnit.DAYS).toInstant();
+        Instant fim = nowZoned.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+                .plusDays(1).truncatedTo(ChronoUnit.DAYS).toInstant();
+        Map<UUID, String> nomesLocais = carregarNomesLocais();
+        return comEscopo(eventoRepository.findAllInPeriod(inicio, fim), escopo).stream()
                 .map(e -> new EventoSemanalDTO(
                         e.getTitulo(),
                         LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
                         nomesLocais.getOrDefault(e.getLocalId(), "Sem Local"),
-                        nomesOrganizacoes.getOrDefault(e.getGrupoParoquialResponsavelId(), "Organização Desconhecida")
-                ))
+                        nomesOrg.getOrDefault(e.getGrupoParoquialResponsavelId(), "Organização Desconhecida")))
                 .toList();
+    }
 
-        return new DashboardMetricsDTO(
-                resumoGeral,
-                eventosPorGrupoParoquial,
-                projetosAtivosDetalhes,
-                eventosSemana
-        );
+    private List<ProjetoEventoEntity> filtrarProjetosAtivos(List<ProjetoEventoEntity> projetos, Optional<UUID> escopo) {
+        return projetos.stream()
+                .filter(p -> STATUS_ATIVOS.contains(p.getStatus()))
+                .filter(p -> escopo.isEmpty() || escopo.get().equals(p.getGrupoParoquialResponsavelId()))
+                .toList();
+    }
+
+    private List<EventoEntity> comEscopo(List<EventoEntity> eventos, Optional<UUID> escopo) {
+        return escopo.map(orgId -> eventos.stream()
+                        .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId())).toList())
+                .orElse(eventos);
+    }
+
+    private Map<UUID, String> carregarNomesOrganizacoes() {
+        Map<UUID, String> nomes = new HashMap<>();
+        grupoParoquialRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
+        return nomes;
+    }
+
+    private Map<UUID, String> carregarNomesLocais() {
+        Map<UUID, String> nomes = new HashMap<>();
+        localRepository.findAll().forEach(l -> nomes.put(l.getId(), l.getNome()));
+        return nomes;
+    }
+
+    private Instant inicioDoMes(Instant agora) {
+        return agora.atZone(ZoneOffset.UTC)
+                .with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS).toInstant();
     }
 }
