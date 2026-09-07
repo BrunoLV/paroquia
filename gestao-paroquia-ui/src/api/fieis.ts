@@ -1,6 +1,7 @@
 import apiClient from './client';
 import { CreateFielPayload, Fiel, UpdateFielPayload } from './types';
 
+
 /**
  * Busca a lista de Fiéis cadastrados na paróquia.
  */
@@ -31,4 +32,9 @@ export const createFiel = async (payload: CreateFielPayload): Promise<Fiel> => {
 export const updateFiel = async (id: string, payload: UpdateFielPayload): Promise<Fiel> => {
   const response = await apiClient.put<Fiel>(`/fieis/${id}`, payload);
   return response.data;
+};
+
+/** Altera o ciclo de vida do cadastro. A API também suspende/restaura a conta vinculada. */
+export const alterarStatusFiel = async (id: string, ativo: boolean): Promise<void> => {
+  await apiClient.patch(`/fieis/${id}/status`, { ativo });
 };

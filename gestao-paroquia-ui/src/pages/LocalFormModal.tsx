@@ -111,8 +111,9 @@ const LocalFormModal: React.FC<LocalFormModalProps> = ({
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit} noValidate>
-        <DialogTitle>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {local ? 'Editar Local' : 'Novo Local'}
+          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={onClose} disabled={isPending} />
         </DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>

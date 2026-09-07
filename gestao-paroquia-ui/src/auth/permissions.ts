@@ -63,6 +63,23 @@ export const isAdmin = (user: User | null): boolean => {
   return user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN');
 };
 
+/**
+ * Papéis administrativos responsáveis pelo ciclo de vida do cadastro civil de fiéis.
+ * Coordenadores mantêm somente a consulta restrita à sua própria organização.
+ */
+export const canManageCadastroFieis = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(
+    user,
+    'ADMIN',
+    'GLOBAL_ADMIN',
+    'PAROCO',
+    'GLOBAL_PAROCO',
+    'SECRETARIA_PAROQUIAL',
+    'GLOBAL_SECRETARIA_PAROQUIAL'
+  );
+};
+
 /** Pároco ou Bispo: palavra deliberativa final */
 export const isParoco = (user: User | null): boolean => hasRole(user, ...PAROCO_ROLES);
 

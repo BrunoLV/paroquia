@@ -142,9 +142,9 @@ describe('AtivoAlocacoesModal', () => {
       renderModal();
     });
 
-    await act(async () => {
-      screen.getByRole('button', { name: /Cancelar Reserva/i }).click();
-    });
+    fireEvent.click(screen.getByRole('button', { name: /^Ações$/i }));
+    const cancelMenuItem = await screen.findByRole('menuitem', { name: /Cancelar reserva/i });
+    fireEvent.click(cancelMenuItem);
 
     fireEvent.change(screen.getByLabelText(/Motivo do Cancelamento/i), {
       target: { value: 'Evento foi remarcado para outra data' },

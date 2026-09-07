@@ -383,7 +383,7 @@ test('renders Solenidades and Exportar buttons with their semantic icon/color', 
   const solemnitiesButton = screen.getByRole('button', { name: /Solenidades & Santoral/i });
   const exportButton = screen.getByRole('button', { name: /^Exportar$/i });
   expect(solemnitiesButton.querySelector('[data-testid="EventIcon"]')).toBeInTheDocument();
-  expect(exportButton.className).toContain('MuiIconButton-colorInfo');
+  expect(exportButton.className).toContain('MuiButton-colorInfo');
 });
 
 test('opens solemnities dialog when clicking Solenidades & Santoral button', async () => {
@@ -396,5 +396,4 @@ test('opens solemnities dialog when clicking Solenidades & Santoral button', asy
   expect(screen.getByText(/Santa Maria, Mãe de Deus/i)).toBeInTheDocument();
   expect(screen.getByText(/Natal do Senhor/i)).toBeInTheDocument();
 });
-
 

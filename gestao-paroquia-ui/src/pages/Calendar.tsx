@@ -307,7 +307,6 @@ const Calendar = () => {
               setOrganizations(orgsData);
             }
           } catch (err) {
-            console.error('Error fetching organizations:', err);
           }
         }
       };
@@ -319,7 +318,6 @@ const Calendar = () => {
             setLocais(res.data);
           }
         } catch (err) {
-          console.error('Error fetching locales:', err);
         }
       };
 
@@ -330,7 +328,6 @@ const Calendar = () => {
             setProjetos(res.data);
           }
         } catch (err) {
-          console.error('Error fetching projects:', err);
         }
       };
 
@@ -347,7 +344,6 @@ const Calendar = () => {
             setAprovacoesPendentes([]);
           }
         } catch (err) {
-          console.warn('Could not fetch pending approvals:', err);
           setAprovacoesPendentes([]);
         }
       };
@@ -359,13 +355,11 @@ const Calendar = () => {
             setAnosParoquiais(anos);
           }
         } catch (err) {
-          console.warn('Could not fetch anos paroquiais:', err);
         }
       };
 
       await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), buscarAprovacoes(), fetchAnosParoquiais()]);
     } catch (err: unknown) {
-      console.error('Error fetching data:', err);
       const errMsg = 'Não foi possível carregar as informações do calendário.';
       showError(errMsg);
     } finally {
@@ -491,7 +485,6 @@ const Calendar = () => {
       setIsCreateOpen(false);
       fetchData();
     } catch (err: unknown) {
-      console.error('Submit event error:', err);
       showError(extractErrorMessage(err, 'Erro ao processar evento. Verifique as regras de negócio.'));
     } finally {
       setIsSubmitting(false);
@@ -510,7 +503,6 @@ const Calendar = () => {
       setIsDetailsOpen(false);
       fetchData();
     } catch (err: unknown) {
-      console.error('Cancel event error:', err);
       showError(extractErrorMessage(err, 'Erro ao cancelar evento.'));
     } finally {
       setIsCancelling(false);
@@ -682,13 +674,13 @@ const Calendar = () => {
         <CardContent sx={{ p: { xs: 2, md: 3 } }}>
           <Grid container spacing={2} sx={{ alignItems: 'center' }}>
             {/* Top Line: Month Navigation (Left) & Action Buttons (Right) */}
-            <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <ActionButton title="Mês Anterior" icon={<ChevronLeft />} onClick={handlePrevMonth} color="primary" />
-              <Typography variant="h5" sx={{ minWidth: 150, textAlign: 'center', fontWeight: 600, color: 'text.primary' }}>
+            <Grid size={{ xs: 12, lg: 8 }} sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+              <ActionButton label="Anterior" title="Mês anterior" icon={<ChevronLeft />} onClick={handlePrevMonth} color="primary" />
+              <Typography variant="h5" sx={{ minWidth: 130, textAlign: 'center', fontWeight: 600, color: 'text.primary' }}>
                 {monthNames[currentMonth]} {currentYear}
               </Typography>
-              <ActionButton title="Próximo Mês" icon={<ChevronRight />} onClick={handleNextMonth} color="primary" />
-              <ActionButton title="Ir para Mês Atual" icon={<TodayIcon />} onClick={handleToday} color="primary" sx={{ ml: 0.5 }} />
+              <ActionButton label="Próximo" title="Próximo mês" icon={<ChevronRight />} onClick={handleNextMonth} color="primary" />
+              <ActionButton label="Hoje" title="Ir para Mês Atual" icon={<TodayIcon />} onClick={handleToday} color="primary" />
               <Chip
                 label={`Ano Litúrgico: ${liturgicalInfo.cycle}`}
                 color="primary"
@@ -706,10 +698,11 @@ const Calendar = () => {
               )}
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+            <Grid size={{ xs: 12, lg: 4 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', lg: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
               <Box sx={{ border: '1px solid', borderColor: 'divider', overflow: 'hidden', display: 'flex' }}>
                 <ActionButton
-                  title="Visualização em Grade"
+                  label="Grade"
+                  title="Visualização em grade"
                   ariaLabel="Mês"
                   icon={<CalendarIcon />}
                   color={viewMode === 'month' ? 'primary' : undefined}
@@ -717,7 +710,8 @@ const Calendar = () => {
                   sx={{ border: 'none', bgcolor: viewMode === 'month' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
                 />
                 <ActionButton
-                  title="Visualização em Agenda"
+                  label="Agenda"
+                  title="Visualização em agenda"
                   icon={<ListIcon />}
                   color={viewMode === 'agenda' ? 'primary' : undefined}
                   onClick={() => setViewMode('agenda')}
@@ -1021,10 +1015,15 @@ const Calendar = () => {
         {selectedEvent && (
           <>
             <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              Detalhes do Evento
-              <StatusIcon {...getEventoStatusMeta(selectedEvent.status)} sx={{ fontWeight: 600 }} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
+                  Detalhes do Evento
+                </Typography>
+                <StatusIcon {...getEventoStatusMeta(selectedEvent.status)} sx={{ fontWeight: 600 }} />
+              </Box>
+              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsDetailsOpen(false)} />
             </DialogTitle>
-            <DialogContent sx={{ pt: 3 }}>
+            <DialogContent dividers sx={{py: 2, maxHeight: 'calc(100vh - 220px)'}}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 {/* Quando este evento tem uma solicitação de aprovação em aberto
                     (ver merge em combinedEvents), avisamos qual tipo de mudança está
@@ -1153,7 +1152,7 @@ const Calendar = () => {
                 <ObservacoesEvento eventoId={selectedEvent.id} />
               </Box>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{flexWrap: 'wrap', gap: 1}}>
               <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsDetailsOpen(false)} color="secondary" />
               {/* Editar/Cancelar ficam ocultos enquanto há uma solicitação pendente
                   para este evento (aprovacaoPendenteId) — evita empilhar uma segunda
@@ -1213,8 +1212,11 @@ const Calendar = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle sx={{ color: 'primary.main' }}>
-          Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalInfo.cycle})
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'primary.main' }}>
+          <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
+            Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalInfo.cycle})
+          </Typography>
+          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsSolemnitiesOpen(false)} />
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

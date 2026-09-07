@@ -65,7 +65,7 @@ describe('Layout component link visibility', () => {
     expect(screen.queryByText('Aprovações')).not.toBeInTheDocument();
   });
 
-  test('renders "Projetos" link and hamburger menu button in layout', () => {
+  test('places Fiéis and Pastorais e Movimentos in gestão paroquial', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
@@ -87,6 +87,8 @@ describe('Layout component link visibility', () => {
     );
 
     expect(screen.getByText('Projetos')).toBeInTheDocument();
+    expect(screen.getByText('Fiéis')).toBeInTheDocument();
+    expect(screen.getByText('Pastorais e Movimentos')).toBeInTheDocument();
     expect(screen.getByLabelText('abrir menu')).toBeInTheDocument();
   });
 

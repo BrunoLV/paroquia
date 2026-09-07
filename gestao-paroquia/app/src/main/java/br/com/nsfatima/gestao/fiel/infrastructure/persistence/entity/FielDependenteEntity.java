@@ -29,7 +29,7 @@ public class FielDependenteEntity {
     @JoinColumn(name = "fiel_id", nullable = false)
     private FielEntity fiel;
 
-    @Column(nullable = false)
+    @Column
     @Convert(converter = EncryptedStringConverter.class)
     private String nome;
 

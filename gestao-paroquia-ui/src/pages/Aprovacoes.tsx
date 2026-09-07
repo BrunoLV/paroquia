@@ -37,6 +37,7 @@ import {extractErrorMessage} from '../utils/errorUtils';
 import apiClient from '../api/client';
 import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
+import TableActionMenu from '../components/TableActionMenu';
 import StatusIcon from '../components/StatusIcon';
 import theme from '../theme';
 import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
@@ -84,7 +85,6 @@ const Aprovacoes = () => {
         }
         setProjectsMap(mapping);
       } catch (err) {
-        console.error('Error loading projects mapping:', err);
       }
     };
     loadProjects();
@@ -145,7 +145,6 @@ const Aprovacoes = () => {
       setObservacao('');
     },
     onError: (error: unknown) => {
-      console.error('Error deciding approval:', error);
       showError(extractErrorMessage(error, 'Erro ao registrar decisão.'));
     },
   });
@@ -164,7 +163,6 @@ const Aprovacoes = () => {
       setObservacao('');
     },
     onError: (error: unknown) => {
-      console.error('Error deciding project approval:', error);
       showError(extractErrorMessage(error, 'Erro ao registrar decisão.'));
     },
   });
@@ -323,13 +321,7 @@ const Aprovacoes = () => {
                           </TableCell>
                           <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
                           <TableCell align="right">
-                            <ActionButton
-                              title="Visualizar Detalhes"
-                              icon={<VisibilityIcon fontSize="small" />}
-                              color="primary"
-                              size="small"
-                              onClick={() => setAprovacaoSelecionada(approval)}
-                            />
+                            <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setAprovacaoSelecionada(approval) }]} />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -405,13 +397,7 @@ const Aprovacoes = () => {
                             </TableCell>
                             <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
                             <TableCell align="right">
-                              <ActionButton
-                                title="Visualizar Detalhes"
-                                icon={<VisibilityIcon fontSize="small" />}
-                                color="primary"
-                                size="small"
-                                onClick={() => setAprovacaoProjetoSelecionada(approval)}
-                              />
+                              <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setAprovacaoProjetoSelecionada(approval) }]} />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -446,7 +432,7 @@ const Aprovacoes = () => {
         onClose={() => setAprovacaoSelecionada(null)}
         slotProps={{
           paper: {
-            sx: { width: { xs: '100%', sm: 450 }, p: 3 }
+            sx: { width: { xs: '100%', sm: 480, md: 540 }, p: 3 }
           }
         }}
       >
@@ -578,7 +564,7 @@ const Aprovacoes = () => {
         onClose={() => setAprovacaoProjetoSelecionada(null)}
         slotProps={{
           paper: {
-            sx: { width: { xs: '100%', sm: 450 }, p: 3 }
+            sx: { width: { xs: '100%', sm: 480, md: 540 }, p: 3 }
           }
         }}
       >

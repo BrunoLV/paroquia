@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip, type ChipProps, type SvgIconProps, type SxProps, type Theme } from '@mui/material';
+import { Box, Typography, type ChipProps, type SvgIconProps, type SxProps, type Theme } from '@mui/material';
 
 interface StatusIconProps {
   label: string;
@@ -11,13 +11,16 @@ interface StatusIconProps {
   sx?: SxProps<Theme>;
 }
 
-const toSvgColor = (color: ChipProps['color']): SvgIconProps['color'] => (color === 'default' ? undefined : color);
-
-/** Ícone colorido com tooltip, sem texto — padrão visual único p/ status/sacramentos/tags. */
-const StatusIcon: React.FC<StatusIconProps> = ({ color, icon, tooltip, sx }) => (
-  <Tooltip title={tooltip}>
-    {React.cloneElement(icon, { color: toSvgColor(color), fontSize: 'small', sx })}
-  </Tooltip>
+/** Indicador textual sem aparência de botão; tooltip apenas complementa a informação. */
+const StatusIcon: React.FC<StatusIconProps> = ({ color, icon, label, size = 'small', sx }) => (
+  <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: color === 'default' ? 'text.secondary' : `${color}.main` }}>
+    <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle', lineHeight: 1, ...sx }}>
+      {React.cloneElement(icon, { color: 'inherit', fontSize: size === 'small' ? 'small' : 'medium' })}
+      <Typography component="span" variant="caption" sx={{ display: 'block', ml: 0.5, fontWeight: 600, lineHeight: 1 }}>
+        {label}
+      </Typography>
+    </Box>
+  </Box>
 );
 
 export default StatusIcon;

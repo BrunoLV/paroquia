@@ -165,7 +165,6 @@ const Ativos = () => {
       const orgs = await getOrganizacoes();
       setOrganizations(orgs || []);
     } catch (err) {
-      console.error('Erro ao buscar organizações:', err);
       showError('Não foi possível carregar as organizações.');
     }
   };
@@ -180,7 +179,6 @@ const Ativos = () => {
       const data = await getAtivosPorOrganizacao(organizacaoId);
       setAtivos(data || []);
     } catch (err) {
-      console.error('Erro ao buscar ativos:', err);
       showError('Não foi possível carregar os ativos patrimoniais.');
     } finally {
       setIsLoading(false);
@@ -223,7 +221,6 @@ const Ativos = () => {
       });
       setEventosDisponiveis(data || []);
     } catch (err) {
-      console.error('Erro ao buscar eventos:', err);
       showError('Não foi possível carregar os eventos do período informado.');
       setEventosDisponiveis([]);
     } finally {
@@ -430,7 +427,7 @@ const Ativos = () => {
       />
 
       <Paper sx={{ p: 2.5, mb: 3 }}>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
           <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="organizacao-select-label">Organização</InputLabel>
@@ -546,6 +543,7 @@ const Ativos = () => {
                       </TableCell>
                       <TableCell align="right">
                         <ActionButton
+                          label="Ações"
                           title="Opções e Ações"
                           ariaLabel="Ações"
                           icon={<MoreVertIcon />}

@@ -42,15 +42,6 @@ import ReportExportButtons from '../components/reports/ReportExportButtons';
 import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
 import EventVolumeBarChart from '../components/reports/EventVolumeBarChart';
 import { usePainelMetricasEstrategicas } from '../hooks/useMetricasEstrategicas';
-import {
-  downloadCSV,
-  generateMetricsCSV,
-  generateStrategicMetricsCSV,
-  generateStrategicStructuredPDF,
-  generateStrategicWordDocument,
-  generateStructuredPDF,
-  generateWordDocument,
-} from '../utils/exportUtils';
 import {useNotification} from '../context/NotificationContext';
 import PageHeader from '../components/PageHeader';
 import StatusIcon from '../components/StatusIcon';
@@ -100,7 +91,7 @@ const Reports: React.FC = () => {
   } = useQuery<WeeklyEvent[]>({
     queryKey: ['reportCustomEvents', appliedStartDate, appliedEndDate],
     queryFn: async () => {
-      const params: Record<string, any> = { size: 500 };
+      const params: Record<string, string | number> = { size: 500 };
       if (appliedStartDate) params.dataInicio = `${appliedStartDate}T00:00:00Z`;
       if (appliedEndDate) params.dataFim = `${appliedEndDate}T23:59:59Z`;
 
@@ -185,8 +176,9 @@ const Reports: React.FC = () => {
   // Fetch strategic metrics for tab 1 export
   const { data: strategicData } = usePainelMetricasEstrategicas();
 
-  const handleExportCSV = () => {
+  const handleExportCSV = async () => {
     try {
+      const {downloadCSV, generateMetricsCSV, generateStrategicMetricsCSV} = await import('../utils/exportUtils');
       if (currentTab === 1) {
         if (!strategicData) {
           showError('Dados de métricas estratégicas ainda não carregados.');
@@ -201,8 +193,7 @@ const Reports: React.FC = () => {
         downloadCSV(csvStr, `relatorio-gerencial-${new Date().toISOString().slice(0, 10)}.csv`);
         showSuccess('Relatório CSV exportado com sucesso!');
       }
-    } catch (err) {
-      console.error('Error exporting CSV:', err);
+    } catch {
       showError('Falha ao exportar relatório CSV.');
     }
   };
@@ -210,6 +201,7 @@ const Reports: React.FC = () => {
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
+      const {generateStrategicStructuredPDF, generateStructuredPDF} = await import('../utils/exportUtils');
       const dateStr = new Date().toISOString().slice(0, 10);
       let success = false;
 
@@ -233,8 +225,7 @@ const Reports: React.FC = () => {
       } else {
         showError('Falha ao gerar relatório PDF.');
       }
-    } catch (err) {
-      console.error('Error exporting PDF:', err);
+    } catch {
       showError('Erro ao exportar PDF.');
     } finally {
       setIsExporting(false);
@@ -244,6 +235,7 @@ const Reports: React.FC = () => {
   const handleExportWord = async () => {
     setIsExporting(true);
     try {
+      const {generateStrategicWordDocument, generateWordDocument} = await import('../utils/exportUtils');
       const dateStr = new Date().toISOString().slice(0, 10);
       let success = false;
 
@@ -267,8 +259,7 @@ const Reports: React.FC = () => {
       } else {
         showError('Falha ao gerar documento Word.');
       }
-    } catch (err) {
-      console.error('Error exporting Word:', err);
+    } catch {
       showError('Erro ao exportar Word.');
     } finally {
       setIsExporting(false);

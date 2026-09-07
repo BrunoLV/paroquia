@@ -13,7 +13,6 @@ import {
     Skeleton,
     ToggleButton,
     ToggleButtonGroup,
-    Tooltip,
     Typography,
 } from '@mui/material';
 import {
@@ -396,18 +395,14 @@ const Organograma: React.FC = () => {
               size="small"
               sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}
             >
-              <Tooltip title="Visualização em Árvore">
-                <ToggleButton value="tree" aria-label="Visualização em Árvore">
-                  <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
-                  Árvore
-                </ToggleButton>
-              </Tooltip>
-              <Tooltip title="Visualização em Grade">
-                <ToggleButton value="grid" aria-label="Visualização em Grade">
-                  <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
-                  Grade
-                </ToggleButton>
-              </Tooltip>
+              <ToggleButton value="tree" aria-label="Visualização em Árvore">
+                <AccountTreeIcon sx={{ mr: 1, fontSize: 18 }} />
+                Árvore
+              </ToggleButton>
+              <ToggleButton value="grid" aria-label="Visualização em Grade">
+                <GridViewIcon sx={{ mr: 1, fontSize: 18 }} />
+                Grade
+              </ToggleButton>
             </ToggleButtonGroup>
           </Box>
         }

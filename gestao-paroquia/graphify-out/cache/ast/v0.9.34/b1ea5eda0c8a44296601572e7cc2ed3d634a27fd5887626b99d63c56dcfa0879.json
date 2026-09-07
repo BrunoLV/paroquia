@@ -1,0 +1,1 @@
+{"nodes": [{"id": "$graphify-root$_app_src_test_resources_sql_security_fixtures_sql", "label": "security-fixtures.sql", "file_type": "code", "source_file": "app/src/test/resources/sql/security-fixtures.sql", "source_location": null}], "edges": []}

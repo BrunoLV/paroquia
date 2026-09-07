@@ -55,6 +55,12 @@ interface ImportModalProps {
   defaultEntity?: 'MEMBRO' | 'USUARIO' | 'ORGANIZACAO' | 'EVENTO';
 }
 
+type EntidadeImportacao = NonNullable<ImportModalProps['defaultEntity']>;
+
+const isEntidadeImportacao = (value: string): value is EntidadeImportacao => (
+  value === 'MEMBRO' || value === 'USUARIO' || value === 'ORGANIZACAO' || value === 'EVENTO'
+);
+
 const STEPS = ['Upload e Template', 'Pré-visualização e Validação', 'Confirmação'];
 
 export const ImportModal: React.FC<ImportModalProps> = ({
@@ -143,8 +149,9 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   return (
     <Dialog open={open} onClose={handleCloseModal} maxWidth="md" fullWidth>
-      <DialogTitle>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         Importação de Registros em Lote
+        <ActionButton title="Fechar" icon={<CloseIcon />} onClick={handleCloseModal} disabled={isValidating || isConfirming} />
       </DialogTitle>
 
       <DialogContent dividers>
@@ -164,7 +171,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 labelId="import-entity-label"
                 value={entityType}
                 label="Tipo de Cadastro"
-                onChange={(e) => setEntityType(e.target.value as any)}
+                onChange={(e) => isEntidadeImportacao(e.target.value) && setEntityType(e.target.value)}
               >
                 <MenuItem value="MEMBRO">Membros / Féis Leigos</MenuItem>
                 <MenuItem value="USUARIO">Usuários do Sistema</MenuItem>

@@ -23,6 +23,10 @@ import {
   WidthType,
 } from 'docx';
 
+const createTableHeaderCell = (text: string): TableCell => new TableCell({
+  children: [new Paragraph({ children: [new TextRun({ text, bold: true })] })],
+});
+
 /**
  * Converte o objeto de métricas do dashboard em uma string CSV formatada.
  */
@@ -304,7 +308,6 @@ export const generateStructuredPDF = async (
     doc.save(filename);
     return true;
   } catch (error) {
-    console.error('Erro ao gerar PDF estruturado:', error);
     return false;
   }
 };
@@ -427,7 +430,6 @@ export const generateStrategicStructuredPDF = async (
     doc.save(filename);
     return true;
   } catch (error) {
-    console.error('Erro ao gerar PDF de métricas estratégicas:', error);
     return false;
   }
 };
@@ -487,8 +489,8 @@ export const generateWordDocument = async (
               rows: [
                 new TableRow({
                   children: [
-                    new TableCell({ children: [new Paragraph({ text: 'Indicador', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Valor', bold: true })] }),
+                    createTableHeaderCell('Indicador'),
+                    createTableHeaderCell('Valor'),
                   ],
                 }),
                 new TableRow({
@@ -523,8 +525,8 @@ export const generateWordDocument = async (
               rows: [
                 new TableRow({
                   children: [
-                    new TableCell({ children: [new Paragraph({ text: 'Organização / Pastoral', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Quantidade de Eventos', bold: true })] }),
+                    createTableHeaderCell('Organização / Pastoral'),
+                    createTableHeaderCell('Quantidade de Eventos'),
                   ],
                 }),
                 ...(metrics.eventosPorGrupoParoquial && metrics.eventosPorGrupoParoquial.length > 0
@@ -559,11 +561,11 @@ export const generateWordDocument = async (
               rows: [
                 new TableRow({
                   children: [
-                    new TableCell({ children: [new Paragraph({ text: 'Projeto', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Status', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Tempo Decorrido', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Eventos (Realizados/Total)', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Situação', bold: true })] }),
+                    createTableHeaderCell('Projeto'),
+                    createTableHeaderCell('Status'),
+                    createTableHeaderCell('Tempo Decorrido'),
+                    createTableHeaderCell('Eventos (Realizados/Total)'),
+                    createTableHeaderCell('Situação'),
                   ],
                 }),
                 ...(metrics.projetosAtivosDetalhes && metrics.projetosAtivosDetalhes.length > 0
@@ -606,10 +608,10 @@ export const generateWordDocument = async (
                     rows: [
                       new TableRow({
                         children: [
-                          new TableCell({ children: [new Paragraph({ text: 'Título do Evento', bold: true })] }),
-                          new TableCell({ children: [new Paragraph({ text: 'Organização', bold: true })] }),
-                          new TableCell({ children: [new Paragraph({ text: 'Local', bold: true })] }),
-                          new TableCell({ children: [new Paragraph({ text: 'Data / Horário', bold: true })] }),
+                          createTableHeaderCell('Título do Evento'),
+                          createTableHeaderCell('Organização'),
+                          createTableHeaderCell('Local'),
+                          createTableHeaderCell('Data / Horário'),
                         ],
                       }),
                       ...metrics.eventosSemana.map(
@@ -657,7 +659,6 @@ export const generateWordDocument = async (
     URL.revokeObjectURL(url);
     return true;
   } catch (error) {
-    console.error('Erro ao gerar documento Word:', error);
     return false;
   }
 };
@@ -717,11 +718,11 @@ export const generateStrategicWordDocument = async (
               rows: [
                 new TableRow({
                   children: [
-                    new TableCell({ children: [new Paragraph({ text: 'Ciclo Litúrgico', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Fator Demanda', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Histórico', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Projeção', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Nível Demanda', bold: true })] }),
+                    createTableHeaderCell('Ciclo Litúrgico'),
+                    createTableHeaderCell('Fator Demanda'),
+                    createTableHeaderCell('Histórico'),
+                    createTableHeaderCell('Projeção'),
+                    createTableHeaderCell('Nível Demanda'),
                   ],
                 }),
                 ...(data.sazonalidadeLiturgica
@@ -752,9 +753,9 @@ export const generateStrategicWordDocument = async (
               rows: [
                 new TableRow({
                   children: [
-                    new TableCell({ children: [new Paragraph({ text: 'Indicador', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Valor', bold: true })] }),
-                    new TableCell({ children: [new Paragraph({ text: 'Avaliação Executiva', bold: true })] }),
+                    createTableHeaderCell('Indicador'),
+                    createTableHeaderCell('Valor'),
+                    createTableHeaderCell('Avaliação Executiva'),
                   ],
                 }),
                 new TableRow({
@@ -803,7 +804,6 @@ export const generateStrategicWordDocument = async (
     URL.revokeObjectURL(url);
     return true;
   } catch (error) {
-    console.error('Erro ao gerar Word de métricas estratégicas:', error);
     return false;
   }
 };

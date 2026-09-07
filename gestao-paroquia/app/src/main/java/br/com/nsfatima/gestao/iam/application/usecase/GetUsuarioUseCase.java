@@ -70,14 +70,11 @@ public class GetUsuarioUseCase {
                                     .collect(Collectors.toList()),
                             List.of(),
                             fiel == null ? null : fiel.getNome(),
-                            fiel == null ? null : fiel.getTelefone(),
+                            fiel == null ? null : fiel.getCelular(),
                             fiel == null ? null : fiel.getDataNascimento(),
                             igrejaId,
                             igrejaNome,
-                            fiel != null && fiel.isBatizado(),
-                            fiel != null && fiel.isPrimeiraComunhao(),
-                            fiel != null && fiel.isCrismado(),
-                            fiel != null && fiel.isCasadoIgrejaCatolica());
+                            false, false, false, false);
 
                 })
                 .orElseThrow(() -> new UsuarioNotFoundException(id));

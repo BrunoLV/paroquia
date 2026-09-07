@@ -62,7 +62,6 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
       );
       setObservations(sorted);
     } catch (err: unknown) {
-      console.error('Error fetching event observations:', err);
       showError('Não foi possível carregar as observações do evento.');
     } finally {
       setIsLoading(false);
@@ -154,7 +153,7 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
         Observações e Notas ({observations.length})
       </Typography>
 
-      <Stack spacing={2} sx={{ maxWaitHeight: '300px', overflowY: 'auto', mb: 3, pr: 1 }}>
+      <Stack spacing={2} sx={{maxHeight: 300, overflowY: 'auto', mb: 3, pr: 1}}>
         {observations.length === 0 ? (
           <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', textAlign: 'center', py: 2 }}>
             Nenhuma observação registrada para este evento.
@@ -259,16 +258,15 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
       <Divider sx={{ my: 2 }} />
 
       {/* Add note form */}
-      <Box component="form" onSubmit={handleAddNote}>
-        <Stack direction="row" spacing={1}>
+      <Box component="form" onSubmit={handleAddNote} sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 1}}>
           <TextField
-            fullWidth
             size="small"
             placeholder="Adicione uma nota..."
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             disabled={isSubmitting}
             autoComplete="off"
+            sx={{flex: '1 1 260px', minWidth: 0}}
           />
           <ActionButton
             title="Adicionar Observação"
@@ -276,8 +274,8 @@ const ObservacoesEvento = ({ eventoId }: ObservacoesEventoProps) => {
             type="submit"
             color="primary"
             disabled={isSubmitting || !newNote.trim()}
+            sx={{flexShrink: 0}}
           />
-        </Stack>
       </Box>
 
       {/* Delete confirmation dialog */}

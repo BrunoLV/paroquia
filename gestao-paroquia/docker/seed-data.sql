@@ -66,6 +66,7 @@ VALUES
     ('50000000-0000-0000-0000-000000000110', 'Oficinas de Oração e Vida', 'MOVIMENTO', 0)
 ON CONFLICT (id) DO NOTHING;
 
+
 -- Hierarquia territorial (UnidadeTerritorial): Clero -> Matriz/Comunidades. Desde a track
 -- linguagem_ubiqua_dominio, CLERO/MATRIZ/COMUNIDADE não são mais GrupoParoquial.
 INSERT INTO calendario.unidade_territorial (id, nome, tipo, contato, ativo, parent_id, version)
@@ -638,4 +639,15 @@ INSERT INTO calendario.observacoes_ativo_patrimonial (
     0
 ) ON CONFLICT (id) DO NOTHING;
 
+-- Cadastro de Fiéis: Matriz como vínculo inicial e dados de contato brutos.
+UPDATE calendario.fieis
+SET pais_origem = 'BRA', celular = regexp_replace(COALESCE(celular_whatsapp, telefone), '\\D', '', 'g'),
+    is_whatsapp = COALESCE(celular_whatsapp IS NOT NULL, FALSE),
+    unidade_territorial_id = '00000000-0000-0000-0000-000000000100', is_dizimista = FALSE
+WHERE pais_origem IS NULL OR unidade_territorial_id IS NULL;
 
+-- Padre e diácono não integram a massa do agregado Fiel.
+DELETE FROM calendario.membro_grupo WHERE fiel_id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');
+DELETE FROM calendario.papel_global WHERE fiel_id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');
+DELETE FROM calendario.usuarios WHERE fiel_id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');
+DELETE FROM calendario.fieis WHERE id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');

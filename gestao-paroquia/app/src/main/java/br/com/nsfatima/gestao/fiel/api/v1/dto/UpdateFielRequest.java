@@ -1,34 +1,12 @@
 package br.com.nsfatima.gestao.fiel.api.v1.dto;
 
-import br.com.nsfatima.gestao.fiel.domain.model.EstadoCivil;
-import br.com.nsfatima.gestao.fiel.domain.model.PreferenciaCanalComunicacao;
 import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
-import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
-
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
+/** Contrato administrativo de substituição do cadastro civil do fiel. */
 public record UpdateFielRequest(
-        String nome,
-        String cpf,
-        String rg,
-        LocalDate dataNascimento,
-        Sexo sexo,
-        String profissao,
-        String email,
-        String telefone,
-        String telefoneFixo,
-        String celularWhatsapp,
-        PreferenciaCanalComunicacao preferenciaCanalComunicacao,
-        EnderecoDto endereco,
-        EstadoCivil estadoCivil,
-        UUID conjugeId,
-        Vocacao vocacao,
-        Boolean ativo,
-        VidaSacramentalDto vidaSacramental,
-        List<DependenteDto> dependentes,
-        String habilidadesVoluntariado,
-        ConsentimentoLgpdDto consentimentoLgpd
-) {
-}
+        String nome, Sexo sexo, LocalDate dataNascimento, String paisOrigem, String cpf, String rg,
+        String tipoDocumentoEstrangeiro, String numeroDocumentoEstrangeiro, String email, String celular,
+        Boolean isWhatsapp, String telefoneFixo, EnderecoDto endereco, UUID unidadeTerritorialId,
+        Boolean isDizimista, Boolean permitirDivulgacaoAniversario) { }

@@ -18,6 +18,7 @@ import {
 import theme from '../theme';
 
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';
+type TerminationType = 'NEVER' | 'DATE' | 'COUNT';
 
 /**
  * Regra de recorrência enviada ao backend para gerar as ocorrências do evento (ver
@@ -60,7 +61,7 @@ const DAYS_OF_WEEK = [
 ];
 
 const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disabled }) => {
-  const [terminationType, setTerminationType] = React.useState<'NEVER' | 'DATE' | 'COUNT'>(
+  const [terminationType, setTerminationType] = React.useState<TerminationType>(
     rule.dataLimite ? 'DATE' : rule.numeroOcorrencias ? 'COUNT' : 'NEVER'
   );
 
@@ -80,7 +81,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
     onChange({ ...rule, diasDaSemana: newDays });
   };
 
-  const handleTerminationChange = (type: 'NEVER' | 'DATE' | 'COUNT') => {
+  const handleTerminationChange = (type: TerminationType) => {
     setTerminationType(type);
     // dataLimite e numeroOcorrencias são mutuamente exclusivos na regra final: trocar o tipo de
     // término sempre limpa o campo do modo anterior para não enviar os dois preenchidos ao
@@ -253,7 +254,10 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
             <FormLabel component="legend" sx={{ fontSize: '0.75rem', mb: 1 }}>Termina em:</FormLabel>
             <RadioGroup
               value={terminationType}
-              onChange={(e) => handleTerminationChange(e.target.value as any)}
+              onChange={(e) => {
+                const type = e.target.value;
+                if (type === 'NEVER' || type === 'DATE' || type === 'COUNT') handleTerminationChange(type);
+              }}
             >
               <Grid container spacing={1} sx={{ alignItems: 'center' }}>
                 <Grid size={{ xs: 4 }}>

@@ -14,6 +14,6 @@ test('renders Gestão Paróquia heading', async () => {
     render(<App />);
   });
 
-  const headerElement = screen.getByText(/Gestão Paroquial/i);
+  const headerElement = await screen.findByText(/Gestão Paroquial/i);
   expect(headerElement).toBeInTheDocument();
 });

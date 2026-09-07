@@ -1,99 +1,83 @@
-import React, {useState} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-    Alert,
-    Box,
-    Card,
-    Checkbox,
-    CircularProgress,
-    Container,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    Skeleton,
-    Tab,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TablePagination,
-    TableRow,
-    Tabs,
-    TextField,
-    Typography,
+  Alert,
+  Box,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Skeleton,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Tabs,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { FormattedAddress, FormattedContact, FormattedEmail, FormattedPhone } from '../components/FormattedCell';
 import {
-  CalendarMonth as CalendarIcon,
-  Category as CategoryIcon,
-  CloudUpload as UploadIcon,
   Add as AddIcon,
-  Check as CheckIcon,
+  Category as CategoryIcon,
   CheckCircle as CheckCircleIcon,
   Close as CloseIcon,
+  CloudUpload as UploadIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
   Link as LinkIcon,
   Lock as LockIcon,
-  LockOpen as LockOpenIcon,
-  Save as SaveIcon,
-  ToggleOff as ToggleOffIcon,
-  ToggleOn as ToggleOnIcon,
-  Groups as GroupsIcon,
-  LocationOn as LocationIcon,
-  People as PeopleIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 
-import {getAnosParoquiais, updateAnoParoquialStatus} from '../api/anosParoquiais';
-import {createLocal, deleteLocal, getLocais, updateLocal} from '../api/locais';
-import {createOrganizacao, getOrganizacaoMembros, getOrganizacoes, updateOrganizacao} from '../api/organizacoes';
+import { getAnosParoquiais, updateAnoParoquialStatus } from '@/api/anosParoquiais';
+import { getOrganizacoes } from '@/api/organizacoes';
 import {
-    adicionarVinculo,
-    AdicionarVinculoRequest,
-    approveUsuario,
-    createUsuario,
-    CreateUsuarioRequest,
-    getVinculos,
-    getUsuarios,
-    removerVinculo,
-    Usuario
-} from '../api/usuarios';
-import {getFieis} from '../api/fieis';
+  adicionarVinculo,
+  AdicionarVinculoRequest,
+  approveUsuario,
+  createUsuario,
+  CreateUsuarioRequest,
+  getUsuarios,
+  getVinculos,
+  removerVinculo,
+  Usuario,
+} from '@/api/usuarios';
+import { getFieis } from '@/api/fieis';
 import {
-    createPastoralOficial,
-    deletePastoralOficial,
-    getPastoraisOficiais,
-    updatePastoralOficial
-} from '../api/pastoraisOficiais';
-import {AnoParoquialStatus, Local, Organizacao, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial} from '../api/types';
-import {useNotification} from '../context/NotificationContext';
-import {extractErrorMessage} from '../utils/errorUtils';
-import {formatCpf} from '../utils/cpfUtils';
-import {formatDateBr} from '../utils/masks';
-import {useAuth} from '../auth/AuthContext';
-import {canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isAdmin} from '../auth/permissions';
-import LocalFormModal from './LocalFormModal';
-import OrganizacaoFormModal from './OrganizacaoFormModal';
-import ImportModal from '../components/ImportModal';
-import PageHeader from '../components/PageHeader';
-import StatusIcon from '../components/StatusIcon';
-import SacramentoIcon from '../components/SacramentoIcon';
-import ActionButton from '../components/ActionButton';
-import { getAnoParoquialStatusMeta } from '../utils/statusMeta/anoParoquialStatus';
-import { SACRAMENTO_META } from '../utils/statusMeta/sacramentos';
-import { getLocalTipoMeta } from '../utils/statusMeta/localTipoStatus';
-import { getOrganismoTipoMeta } from '../utils/statusMeta/organismoTipoStatus';
-import { getSituacaoAtivoMeta, getUsuarioSituacaoMeta } from '../utils/statusMeta/situacaoStatus';
+  createPastoralOficial,
+  deletePastoralOficial,
+  getPastoraisOficiais,
+  updatePastoralOficial,
+} from '@/api/pastoraisOficiais';
+import { AnoParoquialStatus, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial } from '@/api/types';
+import { useNotification } from '@/context/NotificationContext';
+import { extractErrorMessage } from '@/utils/errorUtils';
+import { formatDateBr } from '@/utils/masks';
+import { useAuth } from '@/auth/AuthContext';
+import { canManageAnoParoquial, canManageOrganizacoes, isAdmin } from '@/auth/permissions';
+import ImportModal from '@/components/ImportModal';
+import PageHeader from '@/components/PageHeader';
+import StatusIcon from '@/components/StatusIcon';
+import SacramentoIcon from '@/components/SacramentoIcon';
+import ActionButton from '@/components/ActionButton';
+import TableActionMenu from '@/components/TableActionMenu';
+import { getAnoParoquialStatusMeta } from '@/utils/statusMeta/anoParoquialStatus';
+import { SACRAMENTO_META } from '@/utils/statusMeta/sacramentos';
+import { getOrganismoTipoMeta } from '@/utils/statusMeta/organismoTipoStatus';
+import { getSituacaoAtivoMeta, getUsuarioSituacaoMeta } from '@/utils/statusMeta/situacaoStatus';
+import { FormattedEmail, FormattedPhone } from '@/components/FormattedCell';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -103,7 +87,6 @@ interface TabPanelProps {
 
 const CustomTabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -112,52 +95,32 @@ const CustomTabPanel = (props: TabPanelProps) => {
       aria-labelledby={`settings-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ py: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
   );
 };
 
-const a11yProps = (index: number) => {
-  return {
-    id: `settings-tab-${index}`,
-    'aria-controls': `settings-tabpanel-${index}`,
-  };
-};
+const a11yProps = (index: number) => ({
+  id: `settings-tab-${index}`,
+  'aria-controls': `settings-tabpanel-${index}`,
+});
 
-const Settings = () => {
+export const Settings = () => {
   const { user } = useAuth();
   const { showError, showSuccess } = useNotification();
   const queryClient = useQueryClient();
   const isAuthorizedAno = canManageAnoParoquial(user);
-  const isAuthorizedLocais = canManageLocais(user);
-  const isAuthorizedOrgs = canManageOrganizacoes(user);
+  const isAuthorizedUsers = canManageOrganizacoes(user);
 
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState<number>(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
-  const [orgModalOpen, setOrgModalOpen] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
-  const [orgSearch, setOrgSearch] = useState('');
 
   // Pagination states
   const [anoPage, setAnoPage] = useState(0);
   const [anoRowsPerPage, setAnoRowsPerPage] = useState(10);
-
-  const [locaisPage, setLocaisPage] = useState(0);
-  const [locaisRowsPerPage, setLocaisRowsPerPage] = useState(10);
-
-  const [orgsPage, setOrgsPage] = useState(0);
-  const [orgsRowsPerPage, setOrgsRowsPerPage] = useState(10);
-
   const [usersPage, setUsersPage] = useState(0);
   const [usersRowsPerPage, setUsersRowsPerPage] = useState(10);
-
   const [poPage, setPoPage] = useState(0);
   const [poRowsPerPage, setPoRowsPerPage] = useState(10);
 
@@ -168,20 +131,12 @@ const Settings = () => {
   const [newVinculoPapel, setNewVinculoPapel] = useState('');
   const [newVinculoChurchId, setNewVinculoChurchId] = useState('');
 
-  // Organization members states
-  const [organizacaoSelecionadaParaMembros, setOrganizacaoSelecionadaParaMembros] = useState<Organizacao | null>(null);
-  const [isModalMembrosOrgAberto, setIsModalMembrosOrgAberto] = useState(false);
-  const [novoMembroOrgUsuarioId, setNovoMembroOrgUsuarioId] = useState('');
-  const [novoMembroOrgPapel, setNovoMembroOrgPapel] = useState('');
-  const [novoMembroOrgIgrejaId, setNovoMembroOrgIgrejaId] = useState('');
-
   // Admin user registration states
   const [isAdminRegisterModalOpen, setIsAdminRegisterModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [adminRegisterFielId, setAdminRegisterFielId] = useState('');
   const [adminRegisterUsername, setAdminRegisterUsername] = useState('');
   const [adminRegisterPassword, setAdminRegisterPassword] = useState('');
-
 
   // Catalog states
   const [poModalOpen, setPoModalOpen] = useState(false);
@@ -190,13 +145,13 @@ const Settings = () => {
   const [poTipo, setPoTipo] = useState<'PASTORAL' | 'MOVIMENTO'>('PASTORAL');
   const [poErrors, setPoErrors] = useState<{ nome?: string }>({});
 
-  const { data: years = [], isLoading, isError } = useQuery({
+  const { data: years = [], isLoading: isLoadingYears, isError: isErrorYears } = useQuery({
     queryKey: ['anosParoquiais'],
     queryFn: getAnosParoquiais,
     enabled: tabValue === 0,
   });
 
-  const updateMutation = useMutation({
+  const updateAnoMutation = useMutation({
     mutationFn: ({ ano, status }: { ano: number; status: AnoParoquialStatus }) =>
       updateAnoParoquialStatus(ano, status),
     onSuccess: (updated) => {
@@ -206,74 +161,22 @@ const Settings = () => {
       setSelectedYear(null);
     },
     onError: (error: unknown) => {
-      console.error('Error updating parish year:', error);
       showError(extractErrorMessage(error, 'Erro ao atualizar o ano paroquial.'));
       setConfirmOpen(false);
       setSelectedYear(null);
     },
   });
 
-  const { data: locais = [], isLoading: isLoadingLocais, isError: isErrorLocais } = useQuery({
-    queryKey: ['locais'],
-    queryFn: getLocais,
-    enabled: tabValue === 1,
-  });
-
-  const createLocalMutation = useMutation({
-    mutationFn: (data: Omit<Local, 'id'>) => createLocal(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['locais'] });
-      showSuccess('Local cadastrado com sucesso!');
-      setModalOpen(false);
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao cadastrar local.'));
-    },
-  });
-
-  const updateLocalMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Omit<Local, 'id'> }) => updateLocal(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['locais'] });
-      showSuccess('Local atualizado com sucesso!');
-      setModalOpen(false);
-      setSelectedLocal(null);
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao atualizar local.'));
-    },
-  });
-
-  const toggleLocalStatusMutation = useMutation({
-    mutationFn: async (local: Local) => {
-      if (local.ativo) {
-        return deleteLocal(local.id);
-      } else {
-        const { id, ...data } = local;
-        return updateLocal(id, { ...data, ativo: true });
-      }
-    },
-    onSuccess: (_, local) => {
-      queryClient.invalidateQueries({ queryKey: ['locais'] });
-      showSuccess(`Local ${local.ativo ? 'inativado' : 'ativado'} com sucesso!`);
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao alterar status do local.'));
-    },
-  });
-
-  const { data: orgs = [], isLoading: isLoadingOrgs, isError: isErrorOrgs } = useQuery({
+  const { data: orgs = [] } = useQuery({
     queryKey: ['organizacoes'],
     queryFn: getOrganizacoes,
-    enabled: tabValue === 2 || tabValue === 3,
+    enabled: isVinculosModalOpen,
   });
-
-  const isAuthorizedUsers = canManageOrganizacoes(user);
 
   const { data: users = [], isLoading: isLoadingUsers, isError: isErrorUsers } = useQuery({
     queryKey: ['usuarios'],
     queryFn: getUsuarios,
-    enabled: (tabValue === 3 || isModalMembrosOrgAberto || orgModalOpen) && isAuthorizedUsers,
+    enabled: tabValue === 1 && isAuthorizedUsers,
   });
 
   const approveUserMutation = useMutation({
@@ -320,43 +223,6 @@ const Settings = () => {
     },
   });
 
-  const { data: membrosOrg = [], isLoading: isCarregandoMembrosOrg } = useQuery({
-    queryKey: ['organizacaoMembros', organizacaoSelecionadaParaMembros?.id],
-    queryFn: () => getOrganizacaoMembros(organizacaoSelecionadaParaMembros!.id),
-    enabled: !!organizacaoSelecionadaParaMembros && isModalMembrosOrgAberto,
-  });
-
-  const addMembroOrgMutation = useMutation({
-    mutationFn: ({ userId, request }: { userId: string; request: AdicionarVinculoRequest }) =>
-      adicionarVinculo(userId, request),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizacaoMembros', organizacaoSelecionadaParaMembros?.id] });
-      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      showSuccess('Membro vinculado com sucesso!');
-      setNovoMembroOrgUsuarioId('');
-      setNovoMembroOrgPapel('');
-      setNovoMembroOrgIgrejaId('');
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao vincular membro.'));
-    },
-  });
-
-  const removeMembroOrgMutation = useMutation({
-    mutationFn: ({ userId, vinculoId }: { userId: string; vinculoId: string }) =>
-      removerVinculo(userId, vinculoId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizacaoMembros', organizacaoSelecionadaParaMembros?.id] });
-      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      showSuccess('Membro removido com sucesso!');
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao remover membro.'));
-    },
-  });
-
   const { data: fieisList = [] } = useQuery({
     queryKey: ['fieis'],
     queryFn: getFieis,
@@ -378,29 +244,19 @@ const Settings = () => {
     },
   });
 
-  const filteredOrgs = orgs.filter((org) => {
-    const query = orgSearch.toLowerCase().trim();
-    if (!query) return true;
-    return (
-      org.nome.toLowerCase().includes(query) ||
-      (org.coordenador && org.coordenador.toLowerCase().includes(query)) ||
-      (org.viceCoordenador && org.viceCoordenador.toLowerCase().includes(query)) ||
-      getOrgTipoLabel(org.tipo).toLowerCase().includes(query)
-    );
-  });
-
   const { data: pastoraisOficiais = [], isLoading: isLoadingPO, isError: isErrorPO } = useQuery({
     queryKey: ['pastoraisOficiais'],
     queryFn: getPastoraisOficiais,
-    enabled: tabValue === 4 || orgModalOpen,
+    enabled: tabValue === 2 && isAdmin(user),
   });
 
   const createPOMutation = useMutation({
     mutationFn: (data: Omit<PastoralMovimentoOficial, 'id'>) => createPastoralOficial(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
-      showSuccess('Tipo oficial cadastrado com sucesso!');
+      showSuccess('Tipo oficial criado com sucesso!');
       setPoModalOpen(false);
+      setSelectedPO(null);
     },
     onError: (error: unknown) => {
       showError(extractErrorMessage(error, 'Erro ao cadastrar tipo oficial.'));
@@ -425,10 +281,10 @@ const Settings = () => {
     mutationFn: (id: string) => deletePastoralOficial(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
-      showSuccess('Tipo oficial excluído com sucesso!');
+      showSuccess('Tipo oficial removido com sucesso!');
     },
     onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao excluir tipo oficial.'));
+      showError(extractErrorMessage(error, 'Erro ao remover tipo oficial.'));
     },
   });
 
@@ -448,110 +304,19 @@ const Settings = () => {
     setPoModalOpen(true);
   };
 
-  const handlePOSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSavePO = () => {
+    const errors: { nome?: string } = {};
     if (!poNome.trim()) {
-      setPoErrors({ nome: 'O nome é obrigatório' });
+      errors.nome = 'O nome é obrigatório';
+    }
+    if (Object.keys(errors).length > 0) {
+      setPoErrors(errors);
       return;
     }
     if (selectedPO) {
       updatePOMutation.mutate({ id: selectedPO.id, data: { nome: poNome.trim(), tipo: poTipo } });
     } else {
       createPOMutation.mutate({ nome: poNome.trim(), tipo: poTipo });
-    }
-  };
-
-  const createOrgMutation = useMutation({
-    mutationFn: async ({ data }: { data: Omit<Organizacao, 'id'> }) => {
-      return createOrganizacao(data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      showSuccess('Pastoral / Movimento cadastrado com sucesso!');
-      setOrgModalOpen(false);
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao cadastrar pastoral/movimento.'));
-    },
-  });
-
-  const updateOrgMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Omit<Organizacao, 'id'> }) => {
-      return updateOrganizacao(id, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      queryClient.invalidateQueries({ queryKey: ['organizacaoMembros'] });
-      showSuccess('Pastoral / Movimento atualizado com sucesso!');
-      setOrgModalOpen(false);
-      setSelectedOrg(null);
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao atualizar pastoral/movimento.'));
-    },
-  });
-
-  const toggleOrgStatusMutation = useMutation({
-    mutationFn: async (org: Organizacao) => {
-      const { id, ...data } = org;
-      return updateOrganizacao(id, { ...data, ativo: !org.ativo });
-    },
-    onSuccess: (_, org) => {
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      showSuccess(`Pastoral / Movimento ${org.ativo ? 'inativado' : 'ativado'} com sucesso!`);
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao alterar status da pastoral/movimento.'));
-    },
-  });
-
-  const getOrgTipoLabel = (tipo: string) => {
-    switch (tipo) {
-      case 'PASTORAL':
-        return 'Pastoral';
-      case 'MOVIMENTO':
-        return 'Movimento';
-      case 'CLERO':
-        return 'Clero';
-      case 'CONSELHO_PASTORAL':
-        return 'Conselho Pastoral Paroquial (CPP)';
-      case 'CONSELHO_ECONOMICO':
-        return 'Conselho Econômico Paroquial (CAE)';
-      case 'MATRIZ':
-        return 'Matriz';
-      case 'COMUNIDADE':
-        return 'Comunidade';
-      case 'OUTRO':
-        return 'Outro';
-      default:
-        return tipo;
-    }
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
-  const handleClosePlanejamento = (ano: number) => {
-    if (!isAuthorizedAno) return;
-    updateMutation.mutate({ ano, status: 'FECHADO' });
-  };
-
-  const handleReopenPlanejamento = (ano: number) => {
-    if (!isAuthorizedAno) return;
-    updateMutation.mutate({ ano, status: 'EM_PLANEJAMENTO' });
-  };
-
-  const handleConcludeClick = (ano: number) => {
-    setSelectedYear(ano);
-    setConfirmOpen(true);
-  };
-
-  const handleConfirmConclude = () => {
-    if (selectedYear !== null) {
-      updateMutation.mutate({ ano: selectedYear, status: 'CONCLUIDO' });
     }
   };
 
@@ -565,451 +330,141 @@ const Settings = () => {
       <PageHeader
         icon={<SettingsIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Configurações do Sistema"
-        subtitle="Gerencie os parâmetros globais do sistema, como o calendário paroquial, os locais físicos e pastorais."
-        actions={isAdmin(user) && (
-          <ActionButton
-            title="Importar em Lote (CSV/Excel)"
-            icon={<UploadIcon />}
-            color="primary"
-            onClick={() => setIsImportModalOpen(true)}
-          />
-        )}
+        subtitle="Gerencie os parâmetros administrativos e técnicos do sistema."
+        actions={
+          isAdmin(user) && (
+            <ActionButton
+              title="Importar em Lote (CSV/Excel)"
+              icon={<UploadIcon />}
+              color="primary"
+              onClick={() => setIsImportModalOpen(true)}
+            />
+          )
+        }
       />
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} aria-label="Abas de Configurações">
-            <Tab label="Ano Paroquial" {...a11yProps(0)} sx={{ fontWeight: 600 }} />
-            <Tab label="Locais" {...a11yProps(1)} sx={{ fontWeight: 600 }} />
-            <Tab label="Pastorais e Movimentos" {...a11yProps(2)} sx={{ fontWeight: 600 }} />
-            {isAuthorizedUsers && (
-              <Tab label="Membros / Usuários" {...a11yProps(3)} sx={{ fontWeight: 600 }} />
-            )}
-            {isAdmin(user) && (
-              <Tab label="Catálogo Oficial" {...a11yProps(4)} sx={{ fontWeight: 600 }} />
-            )}
-          </Tabs>
-        </Box>
-
-        {/* Tab 1: Ano Paroquial */}
-        <CustomTabPanel value={tabValue} index={0}>
-          {isLoading ? (
-            <Box sx={{ my: 4 }}>
-              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
-              ))}
-            </Box>
-          ) : isError ? (
-            <Alert severity="error">
-              Erro ao carregar as informações dos anos paroquiais.
-            </Alert>
-          ) : (
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                  <CalendarIcon sx={{ fontSize: 26, color: 'primary.main' }} />
-                </Box>
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    Gestão do Ano Paroquial
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
-                    Controle as fases de planejamento e fechamento do calendário paroquial.
-                  </Typography>
-                </Box>
-              </Box>
-
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Ano</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Data de Fechamento</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Última Atualização</TableCell>
-                      {isAuthorizedAno && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {years
-                      .slice(anoPage * anoRowsPerPage, anoPage * anoRowsPerPage + anoRowsPerPage)
-                      .map((y) => {
-                        const isConcluido = y.status === 'CONCLUIDO';
-                        const hasUnconcludedPriorYear = years.some(
-                          (other) => other.ano < y.ano && other.status !== 'CONCLUIDO'
-                        );
-
-                        return (
-                          <TableRow key={y.ano} hover>
-                            <TableCell>{y.ano}</TableCell>
-                            <TableCell><StatusIcon {...getAnoParoquialStatusMeta(y.status)} /></TableCell>
-                            <TableCell>{formatDate(y.dataFechamentoUtc)}</TableCell>
-                            <TableCell>{formatDate(y.updatedAt)}</TableCell>
-                            {isAuthorizedAno && (
-                              <TableCell align="right">
-                                {!isConcluido && (
-                                  <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
-                                    {y.status === 'EM_PLANEJAMENTO' && (
-                                      <ActionButton
-                                        title="Fechar"
-                                        icon={<LockIcon />}
-                                        color="primary"
-                                        size="small"
-                                        onClick={() => handleClosePlanejamento(y.ano)}
-                                        disabled={updateMutation.isPending || hasUnconcludedPriorYear}
-                                      />
-                                    )}
-                                    {y.status === 'FECHADO' && (
-                                      <ActionButton
-                                        title="Reabrir"
-                                        icon={<LockOpenIcon />}
-                                        color="primary"
-                                        size="small"
-                                        onClick={() => handleReopenPlanejamento(y.ano)}
-                                        disabled={updateMutation.isPending}
-                                      />
-                                    )}
-                                    <ActionButton
-                                      title="Concluir"
-                                      icon={<CheckCircleIcon />}
-                                      color="success"
-                                      size="small"
-                                      onClick={() => handleConcludeClick(y.ano)}
-                                      disabled={updateMutation.isPending}
-                                    />
-                                  </Box>
-                                )}
-                              </TableCell>
-                            )}
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
-                component="div"
-                count={years.length}
-                rowsPerPage={anoRowsPerPage}
-                page={anoPage}
-                onPageChange={(_, newPage) => setAnoPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setAnoRowsPerPage(parseInt(e.target.value, 10));
-                  setAnoPage(0);
-                }}
-                labelRowsPerPage="Itens por página:"
-              />
-            </Box>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+        <Tabs value={tabValue} onChange={(_, val) => setTabValue(val)} aria-label="Abas de Configurações">
+          <Tab label="Ano Paroquial" {...a11yProps(0)} sx={{ fontWeight: 600 }} />
+          {isAuthorizedUsers && (
+            <Tab label="Membros / Usuários" {...a11yProps(1)} sx={{ fontWeight: 600 }} />
           )}
-        </CustomTabPanel>
-
-        {/* Tab 2: Locais */}
-        <CustomTabPanel value={tabValue} index={1}>
-          {isLoadingLocais ? (
-            <Box sx={{ py: 4 }}>
-              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
-              ))}
-            </Box>
-          ) : isErrorLocais ? (
-            <Alert severity="error">
-              Erro ao carregar os locais cadastrados.
-            </Alert>
-          ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                    <LocationIcon sx={{ fontSize: 26, color: 'primary.main' }} />
-                  </Box>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                      Gestão de Locais da Paróquia
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
-                      Cadastre os espaços disponíveis para realização de missas, eventos e encontros pastorais.
-                    </Typography>
-                  </Box>
-                </Box>
-                {isAuthorizedLocais && (
-                  <ActionButton
-                    title="Novo Local"
-                    icon={<AddIcon />}
-                    color="primary"
-                    onClick={() => {
-                      setSelectedLocal(null);
-                      setModalOpen(true);
-                    }}
-                  />
-                )}
-              </Box>
-
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Capacidade</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Matriz / Comunidade</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Endereço</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                      {isAuthorizedLocais && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {locais
-                      .slice(locaisPage * locaisRowsPerPage, locaisPage * locaisRowsPerPage + locaisRowsPerPage)
-                      .map((local) => (
-                        <TableRow key={local.id} hover>
-                          <TableCell sx={{ fontWeight: 500 }}>{local.nome}</TableCell>
-                          <TableCell><StatusIcon {...getLocalTipoMeta(local.tipo)} /></TableCell>
-                          <TableCell>{local.capacidade !== null ? local.capacidade : '-'}</TableCell>
-                          <TableCell>{local.organizacaoNome || '-'}</TableCell>
-                          <TableCell><FormattedAddress value={local.endereco} /></TableCell>
-                          <TableCell>
-                            <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
-                          </TableCell>
-                          {isAuthorizedLocais && (
-                            <TableCell align="right">
-                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                <ActionButton
-                                  title="Editar"
-                                  icon={<EditIcon />}
-                                  color="secondary"
-                                  size="small"
-                                  onClick={() => {
-                                    setSelectedLocal(local);
-                                    setModalOpen(true);
-                                  }}
-                                  disabled={toggleLocalStatusMutation.isPending}
-                                />
-                                <ActionButton
-                                  title={local.ativo ? 'Inativar' : 'Ativar'}
-                                  icon={local.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
-                                  color={local.ativo ? 'error' : 'primary'}
-                                  size="small"
-                                  onClick={() => toggleLocalStatusMutation.mutate(local)}
-                                  disabled={toggleLocalStatusMutation.isPending}
-                                />
-                              </Box>
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      ))}
-                    {locais.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={isAuthorizedLocais ? 6 : 5} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                          Nenhum local cadastrado.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
-                component="div"
-                count={locais.length}
-                rowsPerPage={locaisRowsPerPage}
-                page={locaisPage}
-                onPageChange={(_, newPage) => setLocaisPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setLocaisRowsPerPage(parseInt(e.target.value, 10));
-                  setLocaisPage(0);
-                }}
-                labelRowsPerPage="Itens por página:"
-              />
-            </Box>
+          {isAdmin(user) && (
+            <Tab label="Catálogo Oficial" {...a11yProps(2)} sx={{ fontWeight: 600 }} />
           )}
-        </CustomTabPanel>
+        </Tabs>
+      </Box>
 
-        <CustomTabPanel value={tabValue} index={2}>
-          {isLoadingOrgs ? (
-            <Box sx={{ py: 4 }}>
-              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
-              ))}
-            </Box>
-          ) : isErrorOrgs ? (
-            <Alert severity="error">
-              Erro ao carregar pastorais e movimentos.
-            </Alert>
-          ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                    <GroupsIcon sx={{ fontSize: 26, color: 'primary.main' }} />
-                  </Box>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                      Gestão de Pastorais e Movimentos
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
-                      Cadastre e organize as pastorais, movimentos e organismos da paróquia.
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-
-              <Card
-                elevation={0}
-                sx={{
-                  p: 2,
-                  mb: 1,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                  <TextField
-                    placeholder="Pesquisar por nome, tipo ou coordenador..."
-                    variant="outlined"
-                    size="small"
-                    value={orgSearch}
-                    onChange={(e) => setOrgSearch(e.target.value)}
-                    sx={{ minWidth: 320, '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}
-                  />
-                  {isAuthorizedOrgs && (
-                    <ActionButton
-                      title="Nova Pastoral / Movimento"
-                      icon={<AddIcon />}
-                      color="primary"
-                      onClick={() => {
-                        setSelectedOrg(null);
-                        setOrgModalOpen(true);
-                      }}
-                    />
-                  )}
-                </Box>
-              </Card>
-
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Coordenador</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Vice-Coordenador</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Contato</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredOrgs
-                      .slice(orgsPage * orgsRowsPerPage, orgsPage * orgsRowsPerPage + orgsRowsPerPage)
-                      .map((org) => (
-                        <TableRow key={org.id} hover>
-                          <TableCell sx={{ fontWeight: 500 }}>{org.nome}</TableCell>
-                          <TableCell><StatusIcon {...getOrganismoTipoMeta(org.tipo)} /></TableCell>
-                          <TableCell>{org.coordenador || '-'}</TableCell>
-                          <TableCell>{org.viceCoordenador || '-'}</TableCell>
-                          <TableCell><FormattedContact value={org.contato} /></TableCell>
-                          <TableCell>
-                            <StatusIcon {...getSituacaoAtivoMeta(org.ativo)} />
-                          </TableCell>
+      {/* Tab 0: Ano Paroquial */}
+      <CustomTabPanel value={tabValue} index={0}>
+        {isLoadingYears ? (
+          <Box sx={{ my: 4 }}>
+            <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
+            ))}
+          </Box>
+        ) : isErrorYears ? (
+          <Alert severity="error">Erro ao carregar as informações dos anos paroquiais.</Alert>
+        ) : (
+          <Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600 }}>Ano</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Data de Fechamento</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Última Atualização</TableCell>
+                    {isAuthorizedAno && <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {years
+                    .slice(anoPage * anoRowsPerPage, anoPage * anoRowsPerPage + anoRowsPerPage)
+                    .map((ano) => (
+                      <TableRow key={ano.ano} hover>
+                        <TableCell sx={{ fontWeight: 500 }}>{ano.ano}</TableCell>
+                        <TableCell><StatusIcon {...getAnoParoquialStatusMeta(ano.status)} /></TableCell>
+                        <TableCell>{formatDate(ano.dataFechamentoUtc)}</TableCell>
+                        <TableCell>{formatDate(ano.updatedAt)}</TableCell>
+                        {isAuthorizedAno && (
                           <TableCell align="right">
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                            {ano.status === 'EM_PLANEJAMENTO' && (
                               <ActionButton
-                                title="Membros"
-                                icon={<GroupsIcon />}
-                                color="secondary"
-                                size="small"
-                                onClick={() => {
-                                  setOrganizacaoSelecionadaParaMembros(org);
-                                  setIsModalMembrosOrgAberto(true);
-                                }}
+                                title="Fechar Ano"
+                                label="Fechar Ano"
+                                icon={<LockIcon />}
+                                color="warning"
+                                onClick={() => updateAnoMutation.mutate({ ano: ano.ano, status: 'FECHADO' })}
+                                disabled={updateAnoMutation.isPending}
                               />
-                              {isAuthorizedOrgs && (
-                                <>
-                                  <ActionButton
-                                    title="Editar"
-                                    icon={<EditIcon />}
-                                    color="secondary"
-                                    size="small"
-                                    onClick={() => {
-                                      setSelectedOrg(org);
-                                      setOrgModalOpen(true);
-                                    }}
-                                    disabled={toggleOrgStatusMutation.isPending}
-                                  />
-                                  <ActionButton
-                                    title={org.ativo ? 'Inativar' : 'Ativar'}
-                                    icon={org.ativo ? <ToggleOffIcon /> : <ToggleOnIcon />}
-                                    color={org.ativo ? 'error' : 'primary'}
-                                    size="small"
-                                    onClick={() => toggleOrgStatusMutation.mutate(org)}
-                                    disabled={toggleOrgStatusMutation.isPending}
-                                  />
-                                </>
-                              )}
-                            </Box>
+                            )}
+                            {ano.status === 'FECHADO' && (
+                              <ActionButton
+                                title="Concluir Ano"
+                                label="Concluir Ano"
+                                icon={<CheckCircleIcon />}
+                                color="secondary"
+                                onClick={() => {
+                                  setSelectedYear(ano.ano);
+                                  setConfirmOpen(true);
+                                }}
+                                disabled={updateAnoMutation.isPending}
+                              />
+                            )}
+                            {ano.status === 'CONCLUIDO' && (
+                              <Typography variant="body2" color="text.secondary">
+                                Concluído
+                              </Typography>
+                            )}
                           </TableCell>
-                        </TableRow>
-                      ))}
-                    {filteredOrgs.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                          Nenhuma pastoral ou movimento encontrado.
-                        </TableCell>
+                        )}
                       </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
-                component="div"
-                count={filteredOrgs.length}
-                rowsPerPage={orgsRowsPerPage}
-                page={orgsPage}
-                onPageChange={(_, newPage) => setOrgsPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setOrgsRowsPerPage(parseInt(e.target.value, 10));
-                  setOrgsPage(0);
-                }}
-                labelRowsPerPage="Itens por página:"
-              />
-            </Box>
-          )}
-        </CustomTabPanel>
+                    ))}
+                  {years.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={isAuthorizedAno ? 5 : 4} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                        Nenhum ano paroquial registrado.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              component="div"
+              count={years.length}
+              rowsPerPage={anoRowsPerPage}
+              page={anoPage}
+              onPageChange={(_, newPage) => setAnoPage(newPage)}
+              onRowsPerPageChange={(e) => {
+                setAnoRowsPerPage(parseInt(e.target.value, 10));
+                setAnoPage(0);
+              }}
+              labelRowsPerPage="Itens por página:"
+            />
+          </Box>
+        )}
+      </CustomTabPanel>
 
-        {isAuthorizedUsers && (
-          <CustomTabPanel value={tabValue} index={3}>
-            {isLoadingUsers ? (
-              <Box sx={{ py: 4 }}>
-                <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
-                {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
-                ))}
-              </Box>
-            ) : isErrorUsers ? (
-              <Alert severity="error">
-                Erro ao carregar os usuários.
-              </Alert>
-            ) : (
+      {/* Tab 1: Membros / Usuários */}
+      {isAuthorizedUsers && (
+        <CustomTabPanel value={tabValue} index={1}>
+          {isLoadingUsers ? (
+            <Box sx={{ py: 4 }}>
+              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
+              ))}
+            </Box>
+          ) : isErrorUsers ? (
+            <Alert severity="error">Erro ao carregar os usuários.</Alert>
+          ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                    <PeopleIcon sx={{ fontSize: 26, color: 'primary.main' }} />
-                  </Box>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                      Gestão de Membros e Usuários
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
-                      Gerencie o acesso, permissões e papéis dos usuários e membros cadastrados no sistema.
-                    </Typography>
-                  </Box>
-                </Box>
-                {user && user.roles.some(r => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1 }}>
+                {user && user.roles.some((r) => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
                   <ActionButton
                     title="Cadastrar Usuário"
                     icon={<AddIcon />}
@@ -1018,202 +473,157 @@ const Settings = () => {
                   />
                 )}
               </Box>
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead sx={{ backgroundColor: 'action.hover' }}>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Data de Nascimento</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Sacramentos</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {users
-                        .slice(usersPage * usersRowsPerPage, usersPage * usersRowsPerPage + usersRowsPerPage)
-                        .map((u) => (
-                          <TableRow key={u.id} hover>
-                            <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
-                            <TableCell><FormattedEmail value={u.username} /></TableCell>
-                            <TableCell>{u.igrejaNome || '-'}</TableCell>
-                            <TableCell><FormattedPhone value={u.telefone} /></TableCell>
-                            <TableCell>{formatDateBr(u.dataNascimento) || '-'}</TableCell>
-                            <TableCell>
-                              <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                                {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
-                                {u.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="success" />}
-                                {u.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
-                                {u.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
-                                {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
-                              </Box>
-                            </TableCell>
-
-                            <TableCell>
-                              <StatusIcon {...getUsuarioSituacaoMeta(u.enabled)} />
-                            </TableCell>
-                            <TableCell align="right">
-                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                {!u.enabled && (
-                                  <ActionButton
-                                    title="Aprovar"
-                                    icon={<CheckCircleIcon />}
-                                    color="success"
-                                    size="small"
-                                    onClick={() => approveUserMutation.mutate(u.id)}
-                                    disabled={approveUserMutation.isPending}
-                                  />
-                                )}
-                                <ActionButton
-                                  title="Gerenciar Vínculos"
-                                  icon={<LinkIcon />}
-                                  color="secondary"
-                                  size="small"
-                                  onClick={() => {
-                                    setSelectedUserForVinculos(u);
-                                    setIsVinculosModalOpen(true);
-                                  }}
-                                />
-                              </Box>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      {users.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                            Nenhum usuário encontrado.
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Data de Nascimento</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Sacramentos</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {users
+                      .slice(usersPage * usersRowsPerPage, usersPage * usersRowsPerPage + usersRowsPerPage)
+                      .map((u) => (
+                        <TableRow key={u.id} hover>
+                          <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
+                          <TableCell><FormattedEmail value={u.username} /></TableCell>
+                          <TableCell>{u.igrejaNome || '-'}</TableCell>
+                          <TableCell><FormattedPhone value={u.telefone} /></TableCell>
+                          <TableCell>{formatDateBr(u.dataNascimento) || '-'}</TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                              {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
+                              {u.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="success" />}
+                              {u.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
+                              {u.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
+                              {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
+                            </Box>
+                          </TableCell>
+                          <TableCell><StatusIcon {...getUsuarioSituacaoMeta(u.enabled)} /></TableCell>
+                          <TableCell align="right">
+                            <TableActionMenu
+                              actions={[
+                                ...(!u.enabled ? [{ label: 'Aprovar', icon: <CheckCircleIcon fontSize="small" />, onClick: () => approveUserMutation.mutate(u.id), disabled: approveUserMutation.isPending }] : []),
+                                { label: 'Gerenciar vínculos', icon: <LinkIcon fontSize="small" />, onClick: () => { setSelectedUserForVinculos(u); setIsVinculosModalOpen(true); } },
+                              ]}
+                            />
                           </TableCell>
                         </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <TablePagination
-                  rowsPerPageOptions={[10, 20, 50, 100]}
-                  component="div"
-                  count={users.length}
-                  rowsPerPage={usersRowsPerPage}
-                  page={usersPage}
-                  onPageChange={(_, newPage) => setUsersPage(newPage)}
-                  onRowsPerPageChange={(e) => {
-                    setUsersRowsPerPage(parseInt(e.target.value, 10));
-                    setUsersPage(0);
-                  }}
-                  labelRowsPerPage="Itens por página:"
-                />
-              </Box>
-            )}
-          </CustomTabPanel>
-        )}
-
-        {isAdmin(user) && (
-          <CustomTabPanel value={tabValue} index={4}>
-            {isLoadingPO ? (
-              <Box sx={{ py: 4 }}>
-                <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
-                ))}
-              </Box>
-            ) : isErrorPO ? (
-              <Alert severity="error">
-                Erro ao carregar o catálogo de pastorais e movimentos oficiais.
-              </Alert>
-            ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                      <CategoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                        Catálogo Oficial de Pastorais e Movimentos
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
-                        Mantenha o catálogo oficial padronizado de pastorais e movimentos da diocese.
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <ActionButton
-                    title="Novo Tipo"
-                    icon={<AddIcon />}
-                    color="primary"
-                    onClick={handleCreatePO}
-                  />
-                </Box>
-
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                      ))}
+                    {users.length === 0 && (
                       <TableRow>
-                        <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                        <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                          Nenhum usuário encontrado.
+                        </TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {pastoraisOficiais
-                        .slice(poPage * poRowsPerPage, poPage * poRowsPerPage + poRowsPerPage)
-                        .map((po) => (
-                          <TableRow key={po.id} hover>
-                            <TableCell sx={{ fontWeight: 500 }}>{po.nome}</TableCell>
-                            <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
-                            <TableCell align="right">
-                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                <ActionButton
-                                  title="Editar"
-                                  icon={<EditIcon />}
-                                  color="secondary"
-                                  size="small"
-                                  onClick={() => handleEditPO(po)}
-                                />
-                                <ActionButton
-                                  title="Excluir"
-                                  icon={<DeleteIcon />}
-                                  color="error"
-                                  size="small"
-                                  onClick={() => {
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={users.length}
+                rowsPerPage={usersRowsPerPage}
+                page={usersPage}
+                onPageChange={(_, newPage) => setUsersPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setUsersRowsPerPage(parseInt(e.target.value, 10));
+                  setUsersPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
+            </Box>
+          )}
+        </CustomTabPanel>
+      )}
+
+      {/* Tab 2: Catálogo Oficial */}
+      {isAdmin(user) && (
+        <CustomTabPanel value={tabValue} index={2}>
+          {isLoadingPO ? (
+            <Box sx={{ py: 4 }}>
+              <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
+              ))}
+            </Box>
+          ) : isErrorPO ? (
+            <Alert severity="error">Erro ao carregar o catálogo de pastorais e movimentos oficiais.</Alert>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1 }}>
+                <ActionButton title="Novo Tipo" icon={<AddIcon />} color="primary" onClick={handleCreatePO} />
+              </Box>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {pastoraisOficiais
+                      .slice(poPage * poRowsPerPage, poPage * poRowsPerPage + poRowsPerPage)
+                      .map((po) => (
+                        <TableRow key={po.id} hover>
+                          <TableCell sx={{ fontWeight: 500 }}>{po.nome}</TableCell>
+                          <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
+                          <TableCell align="right">
+                            <TableActionMenu
+                              actions={[
+                                { label: 'Editar', icon: <EditIcon fontSize="small" />, onClick: () => handleEditPO(po) },
+                                {
+                                  label: 'Excluir',
+                                  icon: <DeleteIcon fontSize="small" />,
+                                  onClick: () => {
                                     if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
                                       deletePOMutation.mutate(po.id);
                                     }
-                                  }}
-                                  disabled={deletePOMutation.isPending}
-                                />
-                              </Box>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      {pastoraisOficiais.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                            Nenhum tipo cadastrado.
+                                  },
+                                  disabled: deletePOMutation.isPending,
+                                },
+                              ]}
+                            />
                           </TableCell>
                         </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <TablePagination
-                  rowsPerPageOptions={[10, 20, 50, 100]}
-                  component="div"
-                  count={pastoraisOficiais.length}
-                  rowsPerPage={poRowsPerPage}
-                  page={poPage}
-                  onPageChange={(_, newPage) => setPoPage(newPage)}
-                  onRowsPerPageChange={(e) => {
-                    setPoRowsPerPage(parseInt(e.target.value, 10));
-                    setPoPage(0);
-                  }}
-                  labelRowsPerPage="Itens por página:"
-                />
-              </Box>
-            )}
-          </CustomTabPanel>
-        )}
+                      ))}
+                    {pastoraisOficiais.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                          Nenhum tipo cadastrado.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={pastoraisOficiais.length}
+                rowsPerPage={poRowsPerPage}
+                page={poPage}
+                onPageChange={(_, newPage) => setPoPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setPoRowsPerPage(parseInt(e.target.value, 10));
+                  setPoPage(0);
+                }}
+                labelRowsPerPage="Itens por página:"
+              />
+            </Box>
+          )}
+        </CustomTabPanel>
+      )}
 
       {/* User Vinculos Dialog */}
       <Dialog
@@ -1223,13 +633,12 @@ const Settings = () => {
           setSelectedUserForVinculos(null);
           setNewVinculoOrgId('');
           setNewVinculoPapel('');
+          setNewVinculoChurchId('');
         }}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
-          Gerenciar Vínculos - {selectedUserForVinculos?.nome}
-        </DialogTitle>
+        <DialogTitle>Gerenciar Vínculos - {selectedUserForVinculos?.nome}</DialogTitle>
         <DialogContent dividers>
           {isLoadingVinculos ? (
             <Box sx={{ py: 2 }}>
@@ -1240,12 +649,10 @@ const Settings = () => {
             </Box>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                Vínculos Atuais:
-              </Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Vínculos Atuais:</Typography>
               <TableContainer component={Paper} variant="outlined">
                 <Table size="small">
-                  <TableHead sx={{ bgcolor: 'grey.50' }}>
+                  <TableHead sx={{ bgcolor: 'action.hover' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Organização</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
@@ -1264,14 +671,7 @@ const Settings = () => {
                         <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
                         <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
                         <TableCell align="right">
-                          <ActionButton
-                            title="Remover"
-                            icon={<DeleteIcon />}
-                            color="error"
-                            size="small"
-                            onClick={() => removeVinculoMutation.mutate(m.id)}
-                            disabled={removeVinculoMutation.isPending}
-                          />
+                          <TableActionMenu actions={[{ label: 'Remover', icon: <DeleteIcon fontSize="small" />, onClick: () => removeVinculoMutation.mutate(m.id), disabled: removeVinculoMutation.isPending }]} />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1288,15 +688,12 @@ const Settings = () => {
 
               <Box sx={{ borderBottom: 1, borderColor: 'divider', my: 1 }} />
 
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                Adicionar Novo Vínculo:
-              </Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Adicionar Novo Vínculo:</Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                 <FormControl sx={{ minWidth: 250 }} size="small">
                   <InputLabel id="add-vinculo-org-label">Organização</InputLabel>
                   <Select
                     labelId="add-vinculo-org-label"
-                    id="add-vinculo-org"
                     value={newVinculoOrgId}
                     label="Organização"
                     onChange={(e) => setNewVinculoOrgId(e.target.value)}
@@ -1309,14 +706,11 @@ const Settings = () => {
                         if (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') {
                           return o.id === userChurch;
                         }
-                        if (o.tipo === 'PASTORAL' || o.tipo === 'MOVIMENTO') {
-                          return true;
-                        }
                         return o.parentId === userChurch || !o.parentId;
                       })
                       .map((o) => (
                         <MenuItem key={o.id} value={o.id}>
-                          {o.nome} ({getOrgTipoLabel(o.tipo)})
+                          {o.nome}
                         </MenuItem>
                       ))}
                   </Select>
@@ -1326,7 +720,6 @@ const Settings = () => {
                   <InputLabel id="add-vinculo-role-label">Papel</InputLabel>
                   <Select
                     labelId="add-vinculo-role-label"
-                    id="add-vinculo-role"
                     value={newVinculoPapel}
                     label="Papel"
                     onChange={(e) => setNewVinculoPapel(e.target.value)}
@@ -1355,7 +748,6 @@ const Settings = () => {
                       <InputLabel id="add-vinculo-church-label">Igreja de Atuação</InputLabel>
                       <Select
                         labelId="add-vinculo-church-label"
-                        id="add-vinculo-church"
                         value={newVinculoChurchId}
                         label="Igreja de Atuação"
                         onChange={(e) => setNewVinculoChurchId(e.target.value)}
@@ -1390,7 +782,7 @@ const Settings = () => {
                       organizacaoId: newVinculoOrgId,
                       tipo: selectedOrgObj.tipo,
                       papel: newVinculoPapel,
-                      igrejaVinculoId: (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? newVinculoChurchId : undefined
+                      igrejaVinculoId: (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? newVinculoChurchId : undefined,
                     });
                   }}
                   disabled={!newVinculoOrgId || !newVinculoPapel || addVinculoMutation.isPending}
@@ -1415,411 +807,142 @@ const Settings = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Organization Members Dialog */}
-      <Dialog
-        open={isModalMembrosOrgAberto}
-        onClose={() => {
-          setIsModalMembrosOrgAberto(false);
-          setOrganizacaoSelecionadaParaMembros(null);
-          setNovoMembroOrgUsuarioId('');
-          setNovoMembroOrgPapel('');
-        }}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          Membros - {organizacaoSelecionadaParaMembros?.nome}
-        </DialogTitle>
+      {/* Admin User Register Modal */}
+      <Dialog open={isAdminRegisterModalOpen} onClose={() => setIsAdminRegisterModalOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Cadastrar Novo Usuário do Sistema</DialogTitle>
         <DialogContent dividers>
-          {isCarregandoMembrosOrg ? (
-            <Box sx={{ py: 2 }}>
-              <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1 }} />
-              ))}
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                Membros Vinculados:
-              </Typography>
-              <TableContainer component={Paper} variant="outlined">
-                <Table size="small">
-                  <TableHead sx={{ bgcolor: 'grey.50' }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600 }}>Nome do Membro</TableCell>
-                      {organizacaoSelecionadaParaMembros && (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') && (
-                        <TableCell sx={{ fontWeight: 600 }}>Igreja de Atuação</TableCell>
-                      )}
-                      <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {(membrosOrg || []).map((m) => (
-                      <TableRow key={m.vinculoId}>
-                        <TableCell sx={{ fontWeight: 500 }}>{m.usuarioNome}</TableCell>
-                        {organizacaoSelecionadaParaMembros && (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') && (
-                          <TableCell>{orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
-                        )}
-                        <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
-                        <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
-                        <TableCell align="right">
-                          <ActionButton
-                            title="Remover"
-                            icon={<DeleteIcon />}
-                            color="error"
-                            size="small"
-                            onClick={() => removeMembroOrgMutation.mutate({ userId: m.usuarioId || m.fielId || '', vinculoId: m.vinculoId })}
-                            disabled={removeMembroOrgMutation.isPending}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {(membrosOrg || []).length === 0 && (
-                      <TableRow>
-                        <TableCell
-                          colSpan={organizacaoSelecionadaParaMembros && (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') ? 5 : 4}
-                          align="center"
-                          sx={{ py: 2, color: 'text.secondary' }}
-                        >
-                          Nenhum membro vinculado a esta pastoral/movimento.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', my: 1 }} />
-
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                Vincular Novo Membro:
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-                <FormControl sx={{ minWidth: 250 }} size="small">
-                  <InputLabel id="add-member-user-label">Usuário</InputLabel>
-                  <Select
-                    labelId="add-member-user-label"
-                    id="add-member-user"
-                    value={novoMembroOrgUsuarioId}
-                    label="Usuário"
-                    onChange={(e) => setNovoMembroOrgUsuarioId(e.target.value)}
-                  >
-                    {users
-                      .filter((u) => {
-                        if (!u.enabled) return false;
-                        const targetChurch = novoMembroOrgIgrejaId || organizacaoSelecionadaParaMembros?.parentId || (organizacaoSelecionadaParaMembros?.tipo === 'MATRIZ' || organizacaoSelecionadaParaMembros?.tipo === 'COMUNIDADE' ? organizacaoSelecionadaParaMembros?.id : undefined);
-                        if (!targetChurch || !u.igrejaId) return true;
-                        return u.igrejaId === targetChurch;
-                      })
-                      .map((u) => (
-                        <MenuItem key={u.id} value={u.id}>
-                          {u.nome} ({u.username})
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl sx={{ minWidth: 200 }} size="small">
-                  <InputLabel id="add-member-role-label">Papel</InputLabel>
-                  <Select
-                    labelId="add-member-role-label"
-                    id="add-member-role"
-                    value={novoMembroOrgPapel}
-                    label="Papel"
-                    onChange={(e) => setNovoMembroOrgPapel(e.target.value)}
-                  >
-                    <MenuItem value="COORD_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
-                    <MenuItem value="COORD_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
-                    <MenuItem value="COORD_MOVIMENTO">Coordenador de Movimento</MenuItem>
-                    <MenuItem value="VOLUNTARIO_PASTORAL_LOCAL">Voluntário Pastoral Local</MenuItem>
-                    <MenuItem value="MEMBRO_MOVIMENTO">Membro de Movimento</MenuItem>
-                    <MenuItem value="PRESIDENTE_CPC">Presidente CPC</MenuItem>
-                    <MenuItem value="MEMBRO_CPC">Membro CPC</MenuItem>
-                    <MenuItem value="MESA_CPP">Mesa Diretora CPP</MenuItem>
-                    <MenuItem value="MEMBRO_CPP">Membro CPP</MenuItem>
-                    <MenuItem value="MEMBRO_CAE">Membro CAE</MenuItem>
-                    <MenuItem value="SECRETARIO">Secretário</MenuItem>
-                  </Select>
-                </FormControl>
-
-                {organizacaoSelecionadaParaMembros && (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') && (
-                  <FormControl sx={{ minWidth: 200 }} size="small">
-                    <InputLabel id="add-member-church-label">Igreja de Atuação</InputLabel>
-                    <Select
-                      labelId="add-member-church-label"
-                      id="add-member-church"
-                      value={novoMembroOrgIgrejaId}
-                      label="Igreja de Atuação"
-                      onChange={(e) => setNovoMembroOrgIgrejaId(e.target.value)}
-                      inputProps={{ 'data-testid': 'add-member-church-select' }}
-                    >
-                      {orgs
-                        .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
-                        .map((o) => (
-                          <MenuItem key={o.id} value={o.id}>
-                            {o.nome}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
-                )}
-
-                <ActionButton
-                  title="Vincular Membro"
-                  icon={addMembroOrgMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
-                  color="primary"
-                  onClick={() => {
-                    if (!organizacaoSelecionadaParaMembros) return;
-                    if (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') {
-                      if (!novoMembroOrgIgrejaId) {
-                        showError('A igreja de atuação é obrigatória para pastorais e movimentos');
-                        return;
-                      }
-                    }
-                    addMembroOrgMutation.mutate({
-                      userId: novoMembroOrgUsuarioId,
-                      request: {
-                        organizacaoId: organizacaoSelecionadaParaMembros.id,
-                        tipo: organizacaoSelecionadaParaMembros.tipo,
-                        papel: novoMembroOrgPapel,
-                        igrejaVinculoId: (organizacaoSelecionadaParaMembros.tipo === 'PASTORAL' || organizacaoSelecionadaParaMembros.tipo === 'MOVIMENTO') ? novoMembroOrgIgrejaId : undefined
-                      }
-                    });
-                  }}
-                  disabled={!novoMembroOrgUsuarioId || !novoMembroOrgPapel || addMembroOrgMutation.isPending}
-                />
-              </Box>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <ActionButton
-            title="Fechar"
-            icon={<CloseIcon />}
-            color="secondary"
-            onClick={() => {
-              setIsModalMembrosOrgAberto(false);
-              setOrganizacaoSelecionadaParaMembros(null);
-              setNovoMembroOrgUsuarioId('');
-              setNovoMembroOrgPapel('');
-              setNovoMembroOrgIgrejaId('');
-            }}
-          />
-        </DialogActions>
-      </Dialog>
-
-      {/* Admin User Registration Dialog */}
-      <Dialog
-        open={isAdminRegisterModalOpen}
-        onClose={() => {
-          setIsAdminRegisterModalOpen(false);
-          setAdminRegisterFielId('');
-          setAdminRegisterUsername('');
-          setAdminRegisterPassword('');
-        }}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          Cadastrar Novo Usuário (IAM)
-        </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-            <FormControl fullWidth required size="small">
-              <InputLabel id="admin-reg-fiel-label">Selecionar Fiel</InputLabel>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="admin-reg-fiel-label">Vincular a Fiel Cadastrado</InputLabel>
               <Select
                 labelId="admin-reg-fiel-label"
-                id="admin-reg-fiel"
                 value={adminRegisterFielId}
-                label="Selecionar Fiel"
-                onChange={(e) => setAdminRegisterFielId(e.target.value)}
+                label="Vincular a Fiel Cadastrado"
+                onChange={(e) => {
+                  setAdminRegisterFielId(e.target.value);
+                  const fielSel = fieisList.find((f) => f.id === e.target.value);
+                  if (fielSel && fielSel.email) {
+                    setAdminRegisterUsername(fielSel.email);
+                  }
+                }}
               >
-                {fieisList.map((fiel) => (
-                  <MenuItem key={fiel.id} value={fiel.id}>
-                    {fiel.nome} — CPF: {formatCpf(fiel.cpf)}
+                {fieisList.map((f) => (
+                  <MenuItem key={f.id} value={f.id}>
+                    {f.nome} ({f.cpf})
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
+
             <TextField
-              required
+              label="E-mail / Username"
+              type="email"
               fullWidth
               size="small"
-              id="adminRegisterUsername"
-              label="Nome de Usuário / E-mail de Login"
-              name="adminRegisterUsername"
-              type="email"
+              required
               value={adminRegisterUsername}
               onChange={(e) => setAdminRegisterUsername(e.target.value)}
             />
+
             <TextField
-              required
+              label="Senha de Acesso"
+              type="password"
               fullWidth
               size="small"
-              name="adminRegisterPassword"
-              label="Senha"
-              type="password"
-              id="adminRegisterPassword"
+              required
               value={adminRegisterPassword}
               onChange={(e) => setAdminRegisterPassword(e.target.value)}
             />
           </Box>
         </DialogContent>
         <DialogActions>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setIsAdminRegisterModalOpen(false)} />
           <ActionButton
-            title="Cancelar"
-            icon={<CloseIcon />}
-            color="secondary"
-            onClick={() => {
-              setIsAdminRegisterModalOpen(false);
-              setAdminRegisterFielId('');
-              setAdminRegisterUsername('');
-              setAdminRegisterPassword('');
-            }}
-          />
-          <ActionButton
-            title="Cadastrar Usuário"
-            icon={registerUserMutation.isPending ? <CircularProgress size={20} /> : <SaveIcon />}
+            title="Cadastrar"
+            icon={registerUserMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
             color="primary"
-            disabled={
-              !adminRegisterFielId ||
-              !adminRegisterUsername.trim() ||
-              !adminRegisterPassword ||
-              registerUserMutation.isPending
-            }
             onClick={() => {
+              if (!adminRegisterFielId || !adminRegisterUsername.trim() || !adminRegisterPassword) {
+                showError('Selecione o fiel e preencha o e-mail e a senha.');
+                return;
+              }
               registerUserMutation.mutate({
-                fielId: adminRegisterFielId,
-                username: adminRegisterUsername,
+                username: adminRegisterUsername.trim(),
                 password: adminRegisterPassword,
+                fielId: adminRegisterFielId,
               });
             }}
+            disabled={!adminRegisterFielId || !adminRegisterUsername.trim() || !adminRegisterPassword || registerUserMutation.isPending}
           />
         </DialogActions>
       </Dialog>
 
-      {/* Confirmation Modal */}
+      {/* PO Form Modal */}
+      <Dialog open={poModalOpen} onClose={() => setPoModalOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{selectedPO ? 'Editar Tipo Oficial' : 'Novo Tipo Oficial'}</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <TextField
+              label="Nome do Tipo Oficial"
+              fullWidth
+              size="small"
+              required
+              value={poNome}
+              onChange={(e) => setPoNome(e.target.value)}
+              error={!!poErrors.nome}
+              helperText={poErrors.nome}
+            />
+            <FormControl fullWidth size="small">
+              <InputLabel id="po-tipo-label">Tipo</InputLabel>
+              <Select
+                labelId="po-tipo-label"
+                value={poTipo}
+                label="Tipo"
+                onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
+              >
+                <MenuItem value="PASTORAL">Pastoral</MenuItem>
+                <MenuItem value="MOVIMENTO">Movimento</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setPoModalOpen(false)} />
+          <ActionButton
+            title="Salvar"
+            icon={createPOMutation.isPending || updatePOMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
+            color="primary"
+            onClick={handleSavePO}
+            disabled={createPOMutation.isPending || updatePOMutation.isPending}
+          />
+        </DialogActions>
+      </Dialog>
+
+      {/* Conclude Confirmation Dialog */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>Confirmar Conclusão</DialogTitle>
+        <DialogTitle>Confirmar Conclusão do Ano Paroquial</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Tem certeza que deseja concluir o ano paroquial de {selectedYear}?
-            Esta ação é irreversível e o ano ficará como histórico de leitura.
-            O próximo ano será inicializado em modo de planejamento automaticamente.
+            Tem certeza de que deseja concluir o ano paroquial {selectedYear}? Esta ação fechará definitivamente o período.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setConfirmOpen(false)} />
           <ActionButton
             title="Confirmar"
-            icon={<CheckIcon />}
-            color="error"
-            onClick={handleConfirmConclude}
-            disabled={updateMutation.isPending}
+            icon={updateAnoMutation.isPending ? <CircularProgress size={20} /> : <CheckCircleIcon />}
+            color="primary"
+            onClick={() => {
+              if (selectedYear !== null) {
+                updateAnoMutation.mutate({ ano: selectedYear, status: 'CONCLUIDO' });
+              }
+            }}
+            disabled={updateAnoMutation.isPending}
           />
         </DialogActions>
       </Dialog>
 
-      <LocalFormModal
-        open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setSelectedLocal(null);
-        }}
-        onSave={(data) => {
-          if (selectedLocal) {
-            updateLocalMutation.mutate({ id: selectedLocal.id, data });
-          } else {
-            createLocalMutation.mutate(data);
-          }
-        }}
-        local={selectedLocal}
-        isPending={createLocalMutation.isPending || updateLocalMutation.isPending}
-      />
-
-      <OrganizacaoFormModal
-        open={orgModalOpen}
-        onClose={() => {
-          setOrgModalOpen(false);
-          setSelectedOrg(null);
-        }}
-        onSave={(data) => {
-          if (selectedOrg) {
-            updateOrgMutation.mutate({ id: selectedOrg.id, data });
-          } else {
-            createOrgMutation.mutate({ data });
-          }
-        }}
-        organizacao={selectedOrg}
-        isPending={createOrgMutation.isPending || updateOrgMutation.isPending}
-        usuarios={users}
-        igrejas={orgs.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))}
-        organizacoes={orgs}
-        pastoraisOficiais={pastoraisOficiais}
-      />
-
-      {/* Official Catalog Form Modal */}
-      <Dialog
-        open={poModalOpen}
-        onClose={() => setPoModalOpen(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <form onSubmit={handlePOSubmit}>
-          <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
-            {selectedPO ? 'Editar Tipo Oficial' : 'Novo Tipo Oficial'}
-          </DialogTitle>
-          <DialogContent dividers>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-              <TextField
-                label="Nome"
-                variant="outlined"
-                fullWidth
-                required
-                size="small"
-                value={poNome}
-                onChange={(e) => {
-                  setPoNome(e.target.value);
-                  if (e.target.value.trim()) setPoErrors({});
-                }}
-                error={!!poErrors.nome}
-                helperText={poErrors.nome}
-                sx={{ '& .MuiOutlinedInput-root': {  } }}
-              />
-              <FormControl fullWidth required size="small">
-                <InputLabel id="po-tipo-label">Tipo</InputLabel>
-                <Select
-                  labelId="po-tipo-label"
-                  label="Tipo"
-                  value={poTipo}
-                  onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
-
-                >
-                  <MenuItem value="PASTORAL">Pastoral</MenuItem>
-                  <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setPoModalOpen(false)} />
-            <ActionButton
-              title="Salvar"
-              icon={(createPOMutation.isPending || updatePOMutation.isPending) ? <CircularProgress size={20} /> : <SaveIcon />}
-              type="submit"
-              color="primary"
-              disabled={createPOMutation.isPending || updatePOMutation.isPending}
-            />
-          </DialogActions>
-        </form>
-      </Dialog>
-      <ImportModal
-        open={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
-      />
+      <ImportModal open={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
     </Container>
   );
 };

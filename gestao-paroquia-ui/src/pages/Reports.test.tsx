@@ -104,9 +104,11 @@ describe('Reports Page', () => {
     });
 
     const csvButton = screen.getByRole('button', { name: /Exportar CSV/i });
-    fireEvent.click(csvButton);
+    await act(async () => {
+      fireEvent.click(csvButton);
+    });
 
-    expect(exportUtils.downloadCSV).toHaveBeenCalled();
+    await waitFor(() => expect(exportUtils.downloadCSV).toHaveBeenCalled());
   });
 
   it('triggers PDF export when Export PDF button is clicked', async () => {
@@ -121,7 +123,7 @@ describe('Reports Page', () => {
       fireEvent.click(pdfButton);
     });
 
-    expect(exportUtils.generateStructuredPDF).toHaveBeenCalledWith(expect.any(Object), expect.stringMatching(/\.pdf$/));
+    await waitFor(() => expect(exportUtils.generateStructuredPDF).toHaveBeenCalledWith(expect.any(Object), expect.stringMatching(/\.pdf$/)));
   });
 
   it('triggers Word export when Export Word button is clicked', async () => {
@@ -136,7 +138,7 @@ describe('Reports Page', () => {
       fireEvent.click(wordButton);
     });
 
-    expect(exportUtils.generateWordDocument).toHaveBeenCalledWith(expect.any(Object), expect.stringMatching(/\.docx$/));
+    await waitFor(() => expect(exportUtils.generateWordDocument).toHaveBeenCalledWith(expect.any(Object), expect.stringMatching(/\.docx$/)));
   });
 
   it('filters dates and fetches events from backend when Filtrar button is clicked', async () => {

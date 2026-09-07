@@ -17,7 +17,6 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Block as BlockIcon, Close as CloseIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
@@ -27,6 +26,7 @@ import { useNotification } from '../context/NotificationContext';
 import { extractErrorMessage } from '../utils/errorUtils';
 import StatusIcon from './StatusIcon';
 import ActionButton from './ActionButton';
+import TableActionMenu from './TableActionMenu';
 import { getAtivoAlocacaoStatusMeta, getAtivoAlocacaoTipoMeta } from '../utils/statusMeta/ativoAlocacaoStatus';
 import { formatDateBr } from '../utils/masks';
 
@@ -59,7 +59,6 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
       const data = await getAlocacoesPorAtivo(id);
       setAlocacoes(data || []);
     } catch (err) {
-      console.error('Erro ao buscar alocações do ativo:', err);
       showError('Não foi possível carregar o histórico de alocações.');
     } finally {
       setIsLoading(false);
@@ -130,27 +129,13 @@ const AtivoAlocacoesModal: React.FC<AtivoAlocacoesModalProps> = ({ ativoId, ativ
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
                             <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
                             {alocacao.impactadaPorAtraso && (
-                              <Tooltip title="Risco de atraso na devolução">
-                                <Chip
-                                  label="Pode atrasar"
-                                  color="warning"
-                                  icon={<WarningAmberIcon />}
-                                  size="small"
-                                  variant="outlined"
-                                />
-                              </Tooltip>
+                              <Chip label="Pode atrasar" color="warning" icon={<WarningAmberIcon />} size="small" variant="outlined" />
                             )}
                           </Box>
                         </TableCell>
                         <TableCell align="right">
                           {isCancelavel(alocacao) && (
-                            <ActionButton
-                              title="Cancelar Reserva"
-                              icon={<BlockIcon fontSize="small" />}
-                              size="small"
-                              color="error"
-                              onClick={() => setCancelandoAlocacao(alocacao)}
-                            />
+                            <TableActionMenu actions={[{ label: 'Cancelar reserva', icon: <BlockIcon fontSize="small" />, onClick: () => setCancelandoAlocacao(alocacao) }]} />
                           )}
                         </TableCell>
                       </TableRow>

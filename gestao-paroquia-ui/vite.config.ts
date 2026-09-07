@@ -27,10 +27,27 @@ export default defineConfig({
     host: '0.0.0.0',
     port: Number(process.env.PORT) || 3000,
   },
+  build: {
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/docx/')) return 'document-word';
+          if (id.includes('node_modules/jspdf/') || id.includes('node_modules/jspdf-autotable/')) return 'document-pdf';
+          return undefined;
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
     css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/setupTests.ts', 'src/vite-env.d.ts'],
+    },
   },
 });

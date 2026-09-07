@@ -1,5 +1,4 @@
 import {RefObject, useCallback, useState} from 'react';
-import {toPng, toSvg} from 'html-to-image';
 
 /** Formatos suportados de exportação do organograma: imagem rasterizada (`png`) ou vetorial (`svg`). */
 export type ExportFormat = 'png' | 'svg';
@@ -120,6 +119,7 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
       const modifiedElements: ModifiedElementState[] = [];
 
       try {
+        const {toPng, toSvg} = await import('html-to-image');
         // 1. Encontrar as maiores dimensões reais de conteúdo unclipped
         let fullWidth = element.scrollWidth;
         let fullHeight = element.scrollHeight;
@@ -222,8 +222,7 @@ export function useOrganogramaExport(): UseOrganogramaExportReturn {
 
         const filename = customFilename || generateFilename('paroquia', format);
         downloadFile(dataUrl, filename);
-      } catch (error) {
-        console.error('Erro ao exportar organograma:', error);
+      } catch (error: unknown) {
         throw error;
       } finally {
         // 3. Restaurar fielmente todos os estilos originais dos elementos

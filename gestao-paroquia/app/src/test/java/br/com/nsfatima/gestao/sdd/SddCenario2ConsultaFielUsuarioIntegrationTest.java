@@ -1,9 +1,10 @@
 package br.com.nsfatima.gestao.sdd;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.EnderecoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.application.usecase.CreateFielUseCase;
-import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
+import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
@@ -11,6 +12,9 @@ import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +49,9 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
     @Autowired
     private GrupoParoquialJpaRepository grupoParoquialRepository;
 
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
+
     @Test
     @DisplayName("Cenário 2 BDD: Consulta de membros de GrupoParoquial cruza fielId com papéis de Liderança")
     void deveListarMembrosCruzandoFielELideranca() {
@@ -56,28 +63,35 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
         org.setAtivo(true);
         grupoParoquialRepository.saveAndFlush(org);
 
-        // 2. Cadastrar 2 Fiéis
+        UnidadeTerritorialEntity matriz = new UnidadeTerritorialEntity();
+        matriz.setId(UUID.randomUUID());
+        matriz.setNome("Matriz de Teste " + UUID.randomUUID());
+        matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
+        matriz.setAtivo(true);
+        unidadeTerritorialRepository.saveAndFlush(matriz);
+
+        // 2. Cadastrar 2 Fiéis leigos
         CreateFielRequest reqCoord = new CreateFielRequest(
                 "Coordenador da Pastoral " + UUID.randomUUID(),
-                "111.222.333-44",
+                Sexo.MASCULINO,
                 LocalDate.of(1980, 1, 1),
+                "BRA", "52998224725", null, null, null,
                 "coord@paroquia.org",
-                "(11) 97777-6666",
-                "Rua B, 200",
-                Vocacao.LEIGO,
-                true, true, true, true
+                "11977776666", true, null,
+                new EnderecoDto("Rua B", "200", null, null, null, null, null),
+                matriz.getId(), false, false
         );
         FielResponse fielCoord = createFielUseCase.execute(reqCoord, "test-actor");
 
         CreateFielRequest reqMembro = new CreateFielRequest(
                 "Membro da Pastoral " + UUID.randomUUID(),
-                "555.666.777-88",
+                Sexo.FEMININO,
                 LocalDate.of(1992, 3, 15),
+                "BRA", "11144477735", null, null, null,
                 "membro@paroquia.org",
-                "(11) 96666-5555",
-                "Rua C, 300",
-                Vocacao.LEIGO,
-                true, true, false, false
+                "11966665555", true, null,
+                new EnderecoDto("Rua C", "300", null, null, null, null, null),
+                matriz.getId(), false, false
         );
         FielResponse fielMembro = createFielUseCase.execute(reqMembro, "test-actor");
 

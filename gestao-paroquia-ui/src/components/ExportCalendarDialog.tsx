@@ -27,6 +27,12 @@ export interface ExportCalendarDialogProps {
   organizations: Organizacao[];
 }
 
+type FormatoExportacao = 'PDF' | 'EXCEL' | 'CSV';
+type OpcaoPeriodo = 'ANO' | 'MES' | 'PERIODO';
+
+const isFormatoExportacao = (value: string): value is FormatoExportacao => ['PDF', 'EXCEL', 'CSV'].includes(value);
+const isOpcaoPeriodo = (value: string): value is OpcaoPeriodo => ['ANO', 'MES', 'PERIODO'].includes(value);
+
 const CATEGORIES = [
   'PASTORAL',
   'SOCIAL',
@@ -41,8 +47,8 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
-  const [formato, setFormato] = useState<'PDF' | 'EXCEL' | 'CSV'>('PDF');
-  const [opcao, setOpcao] = useState<'ANO' | 'MES' | 'PERIODO'>('MES');
+  const [formato, setFormato] = useState<FormatoExportacao>('PDF');
+  const [opcao, setOpcao] = useState<OpcaoPeriodo>('MES');
   const [ano, setAno] = useState<number>(currentYear);
   const [mes, setMes] = useState<number>(currentMonth);
   const [dataInicio, setDataInicio] = useState<string>('');
@@ -85,7 +91,7 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
           
           <FormControl>
             <FormLabel sx={{ fontWeight: 600, fontSize: '0.75rem', mb: 0.5 }}>Formato de Saída:</FormLabel>
-            <RadioGroup row value={formato} onChange={(e) => setFormato(e.target.value as any)}>
+            <RadioGroup row value={formato} onChange={(e) => isFormatoExportacao(e.target.value) && setFormato(e.target.value)}>
               <FormControlLabel value="PDF" control={<Radio size="small" />} label="PDF" />
               <FormControlLabel value="EXCEL" control={<Radio size="small" />} label="Excel" />
               <FormControlLabel value="CSV" control={<Radio size="small" />} label="CSV" />
@@ -94,7 +100,7 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
 
           <FormControl>
             <FormLabel sx={{ fontWeight: 600, fontSize: '0.75rem', mb: 0.5 }}>Filtrar Período por:</FormLabel>
-            <RadioGroup row value={opcao} onChange={(e) => setOpcao(e.target.value as any)}>
+            <RadioGroup row value={opcao} onChange={(e) => isOpcaoPeriodo(e.target.value) && setOpcao(e.target.value)}>
               <FormControlLabel value="ANO" control={<Radio size="small" />} label="Ano" />
               <FormControlLabel value="MES" control={<Radio size="small" />} label="Mês" />
               <FormControlLabel value="PERIODO" control={<Radio size="small" />} label="Período" />

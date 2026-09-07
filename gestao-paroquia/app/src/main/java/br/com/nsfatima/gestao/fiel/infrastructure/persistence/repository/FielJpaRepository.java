@@ -38,4 +38,6 @@ public interface FielJpaRepository extends JpaRepository<FielEntity, UUID> {
      * @return fiéis com cadastro ativo
      */
     List<FielEntity> findByAtivoTrue();
+
+    List<FielEntity> findByAtivoFalseAndDadosCadastraisEliminadosFalseAndDesativadoEmUtcBefore(Instant limite);
 }

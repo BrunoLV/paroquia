@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
@@ -49,12 +48,7 @@ class GetUsuarioUseCaseTest {
         fiel.setNome("Maria Aparecida");
         fiel.setCpf("12312312312");
         fiel.setDataNascimento(LocalDate.of(1985, 4, 12));
-        fiel.setEmail("maria@example.com");
         fiel.setTelefone("11955554444");
-        fiel.setEndereco("Rua X, 1");
-        fiel.setVocacao(Vocacao.LEIGO);
-        fiel.setDataBatismo(LocalDate.of(1985, 5, 10));
-        fiel.setDataPrimeiraComunhao(LocalDate.of(1995, 5, 10));
 
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
@@ -64,8 +58,9 @@ class GetUsuarioUseCaseTest {
         assertThat(response.nome()).isEqualTo("Maria Aparecida");
         assertThat(response.telefone()).isEqualTo("11955554444");
         assertThat(response.dataNascimento()).isEqualTo(LocalDate.of(1985, 4, 12));
-        assertThat(response.batizado()).isTrue();
-        assertThat(response.primeiraComunhao()).isTrue();
+        // O histórico sacramental não integra mais o cadastro civil do fiel.
+        assertThat(response.batizado()).isFalse();
+        assertThat(response.primeiraComunhao()).isFalse();
         assertThat(response.crismado()).isFalse();
         assertThat(response.casadoIgrejaCatolica()).isFalse();
     }

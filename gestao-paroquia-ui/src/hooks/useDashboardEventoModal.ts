@@ -75,7 +75,6 @@ export const useDashboardEventoModal = () => {
       if (Array.isArray(projetosRes.data)) setProjetos(projetosRes.data);
       await fetchEvents();
     } catch (err) {
-      console.error('Error fetching dashboard metadata:', err);
       setError('Não foi possível carregar os dados do dashboard.');
     } finally {
       setIsLoading(false);

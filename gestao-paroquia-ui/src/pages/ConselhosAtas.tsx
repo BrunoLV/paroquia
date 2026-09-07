@@ -38,6 +38,7 @@ import { getOrganizacoes } from '../api/organizacoes';
 import { CpcDecisao, StatusHomologacao } from '../api/types';
 import { CpcDecisaoModal } from '../components/CpcDecisaoModal';
 import ActionButton from '../components/ActionButton';
+import TableActionMenu from '../components/TableActionMenu';
 import StatusIcon from '../components/StatusIcon';
 import { getHomologacaoStatusMeta } from '../utils/statusMeta/homologacaoStatus';
 import PageHeader from '../components/PageHeader';
@@ -262,22 +263,12 @@ export const ConselhosAtas: React.FC = () => {
                       <TableCell><StatusIcon {...getHomologacaoStatusMeta(item.statusHomologacao)} sx={{ fontWeight: 600 }} /></TableCell>
                       <TableCell align="center">
                         {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
-                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                            <ActionButton
-                              title="Homologar Ata (Aprovar)"
-                              icon={<CheckCircleIcon />}
-                              color="success"
-                              size="small"
-                              onClick={() => handleHomologar(item.id)}
-                            />
-                            <ActionButton
-                              title="Vetar Ata (Reprovar)"
-                              icon={<CancelIcon />}
-                              color="error"
-                              size="small"
-                              onClick={() => setVetoDialogItem(item)}
-                            />
-                          </Box>
+                          <TableActionMenu
+                            actions={[
+                              { label: 'Homologar ata', icon: <CheckCircleIcon fontSize="small" />, onClick: () => handleHomologar(item.id) },
+                              { label: 'Vetar ata', icon: <CancelIcon fontSize="small" />, onClick: () => setVetoDialogItem(item) },
+                            ]}
+                          />
                         ) : (
                           <Typography variant="caption" color="text.secondary">
                             —

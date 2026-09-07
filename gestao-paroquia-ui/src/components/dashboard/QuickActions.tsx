@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Stack, Typography } from '@mui/material';
+import {Card, CardContent, Stack, Typography} from '@mui/material';
 import {
   Add as AddIcon,
   CalendarMonth as CalendarIcon,
@@ -17,37 +17,19 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onNewEvent }) => {
   const navigate = useNavigate();
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-        Ações Rápidas
-      </Typography>
-      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 1, justifyContent: 'flex-start' }}>
-        <ActionButton
-          title="Novo Evento"
-          icon={<AddIcon />}
-          color="primary"
-          onClick={onNewEvent}
-        />
-        <ActionButton
-          title="Novo Fiel"
-          icon={<MemberIcon />}
-          color="primary"
-          onClick={() => navigate('/fieis?novo=1')}
-        />
-        <ActionButton
-          title="Novo Projeto"
-          icon={<ProjectIcon />}
-          color="primary"
-          onClick={() => navigate('/projects?novo=1')}
-        />
-        <ActionButton
-          title="Ver Calendário"
-          icon={<CalendarIcon />}
-          color="primary"
-          onClick={() => navigate('/calendar')}
-        />
-      </Stack>
-    </Paper>
+    <Card variant="outlined">
+      <CardContent sx={{py: 1.5, '&:last-child': {pb: 1.5}}}>
+        <Stack direction={{xs: 'column', md: 'row'}} sx={{alignItems: {md: 'center'}, justifyContent: 'space-between', gap: 1.5}}>
+          <Typography variant="h6" sx={{fontWeight: 700}}>Ações Rápidas</Typography>
+          <Stack direction="row" sx={{flexWrap: 'wrap', gap: 1}}>
+            <ActionButton title="Novo Evento" icon={<AddIcon />} color="primary" onClick={onNewEvent} />
+            <ActionButton title="Novo Fiel" icon={<MemberIcon />} color="primary" onClick={() => navigate('/fieis?novo=1')} />
+            <ActionButton title="Novo Projeto" icon={<ProjectIcon />} color="primary" onClick={() => navigate('/projects?novo=1')} />
+            <ActionButton title="Ver Calendário" icon={<CalendarIcon />} color="primary" onClick={() => navigate('/calendar')} />
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 };
 

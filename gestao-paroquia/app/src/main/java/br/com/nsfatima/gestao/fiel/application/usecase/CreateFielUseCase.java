@@ -1,135 +1,50 @@
 package br.com.nsfatima.gestao.fiel.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
-import br.com.nsfatima.gestao.fiel.api.v1.dto.DependenteDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
-import br.com.nsfatima.gestao.fiel.domain.model.Parentesco;
-import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielDependenteEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
+import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
+import java.time.Instant;
+import java.util.UUID;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 @Service
 public class CreateFielUseCase {
-
-    private final FielJpaRepository fielRepository;
-    private final FielMapper fielMapper;
-
-    public CreateFielUseCase(FielJpaRepository fielRepository, FielMapper fielMapper) {
-        this.fielRepository = fielRepository;
-        this.fielMapper = fielMapper;
-    }
-
+    private static final Set<String> PAISES_ISO3 = java.util.Arrays.stream(Locale.getISOCountries()).map(c -> new Locale.Builder().setRegion(c).build().getISO3Country()).collect(Collectors.toUnmodifiableSet());
+    private final FielJpaRepository repository;
+    private final FielMapper mapper;
+    private final UnidadeTerritorialJpaRepository unidades;
+    public CreateFielUseCase(FielJpaRepository repository, FielMapper mapper, UnidadeTerritorialJpaRepository unidades) { this.repository = repository; this.mapper = mapper; this.unidades = unidades; }
     @Transactional
     public FielResponse execute(CreateFielRequest request, String actor) {
-        FielEntity entity = new FielEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setNome(request.nome());
-        entity.setCpf(request.cpf());
-        entity.setRg(request.rg());
-        entity.setDataNascimento(request.dataNascimento());
-        entity.setSexo(request.sexo() != null ? request.sexo() : Sexo.NAO_INFORMADO);
-        entity.setProfissao(request.profissao());
-        entity.setEmail(request.email());
-        entity.setTelefone(request.telefone());
-        entity.setTelefoneFixo(request.telefoneFixo());
-        entity.setCelularWhatsapp(request.celularWhatsapp());
-        if (request.preferenciaCanalComunicacao() != null) {
-            entity.setPreferenciaCanalComunicacao(request.preferenciaCanalComunicacao());
-        }
-
-        if (request.endereco() != null) {
-            entity.setEnderecoLogradouro(request.endereco().logradouro());
-            entity.setEnderecoNumero(request.endereco().numero());
-            entity.setEnderecoComplemento(request.endereco().complemento());
-            entity.setEnderecoBairro(request.endereco().bairro());
-            entity.setEnderecoCep(request.endereco().cep());
-            entity.setEnderecoCidade(request.endereco().cidade());
-            entity.setEnderecoEstado(request.endereco().estado());
-        }
-
-        entity.setEstadoCivil(request.estadoCivil());
-        entity.setConjugeId(request.conjugeId());
-        entity.setVocacao(request.vocacao());
-        entity.setAtivo(true);
-
-        // Vida Sacramental
-        if (request.vidaSacramental() != null) {
-            var vs = request.vidaSacramental();
-            entity.setDataBatismo(vs.dataBatismo());
-            entity.setParoquiaBatismo(vs.paroquiaBatismo());
-            entity.setCelebranteBatismo(vs.celebranteBatismo());
-            entity.setLivroBatismo(vs.livroBatismo());
-            entity.setFolhaBatismo(vs.folhaBatismo());
-            entity.setTermoBatismo(vs.termoBatismo());
-            entity.setPadrinhosBatismo(vs.padrinhosBatismo());
-
-            entity.setDataPrimeiraComunhao(vs.dataPrimeiraComunhao());
-            entity.setParoquiaPrimeiraComunhao(vs.paroquiaPrimeiraComunhao());
-            entity.setTurmaCatequese(vs.turmaCatequese());
-
-            entity.setDataCrisma(vs.dataCrisma());
-            entity.setParoquiaCrisma(vs.paroquiaCrisma());
-            entity.setCelebranteCrisma(vs.celebranteCrisma());
-            entity.setPadrinhoCrisma(vs.padrinhoCrisma());
-
-            entity.setDataMatrimonio(vs.dataMatrimonio());
-            entity.setParoquiaMatrimonio(vs.paroquiaMatrimonio());
-            entity.setNumeroProcessoMatrimonial(vs.numeroProcessoMatrimonial());
-            entity.setCertidaoMatrimonio(vs.certidaoMatrimonio());
-        }
-
-        entity.setHabilidadesVoluntariado(request.habilidadesVoluntariado());
-
-        // Consentimento LGPD
-        if (request.consentimentoLgpd() != null) {
-            var c = request.consentimentoLgpd();
-            entity.setTermoConsentimentoAceito(Boolean.TRUE.equals(c.termoConsentimentoAceito()));
-            entity.setDataHoraConsentimentoUtc(
-                    c.dataHoraConsentimentoUtc() != null ? c.dataHoraConsentimentoUtc() : Instant.now());
-            entity.setIpConsentimento(c.ipConsentimento());
-            if (c.versaoTermoConsentimento() != null) {
-                entity.setVersaoTermoConsentimento(c.versaoTermoConsentimento());
-            }
-            entity.setUsoImagemAutorizado(Boolean.TRUE.equals(c.usoImagemAutorizado()));
-            Boolean permitirDivulgacao = c.permitirDivulgacaoAniversario();
-            entity.setPermitirDivulgacaoAniversario(
-                    permitirDivulgacao == null || Boolean.TRUE.equals(permitirDivulgacao));
-        }
-
-        // Dependentes
-        if (request.dependentes() != null && !request.dependentes().isEmpty()) {
-            List<FielDependenteEntity> depEntities = new ArrayList<>();
-            for (DependenteDto depDto : request.dependentes()) {
-                FielDependenteEntity depEntity = new FielDependenteEntity();
-                depEntity.setId(UUID.randomUUID());
-                depEntity.setFiel(entity);
-                depEntity.setNome(depDto.nome());
-                depEntity.setDataNascimento(depDto.dataNascimento());
-                depEntity.setParentesco(depDto.parentesco() != null ? depDto.parentesco() : Parentesco.FILHO);
-                depEntity.setBatizado(Boolean.TRUE.equals(depDto.batizado()));
-                depEntity.setPrimeiraComunhao(Boolean.TRUE.equals(depDto.primeiraComunhao()));
-                depEntity.setCrismado(Boolean.TRUE.equals(depDto.crismado()));
-                depEntities.add(depEntity);
-            }
-            entity.setDependentes(depEntities);
-        }
-
-        Instant now = Instant.now();
-        entity.setCriadoEmUtc(now);
-        entity.setAtualizadoEmUtc(now);
-        entity.setCriadoPor(actor != null ? actor : "system");
-        entity.setAtualizadoPor(actor != null ? actor : "system");
-
-        FielEntity saved = fielRepository.save(entity);
-        return fielMapper.toResponse(saved);
+        validarPais(request.paisOrigem()); validarDocumento(request.paisOrigem(), request.cpf(), request.tipoDocumentoEstrangeiro(), request.numeroDocumentoEstrangeiro());
+        if (request.sexo() == Sexo.NAO_INFORMADO) throw new IllegalArgumentException("Sexo deve ser masculino ou feminino.");
+        validarUnidade(request.unidadeTerritorialId());
+        FielEntity fiel = new FielEntity(); fiel.setId(UUID.randomUUID()); aplicar(fiel, request);
+        Instant agora = Instant.now(); fiel.setCriadoEmUtc(agora); fiel.setAtualizadoEmUtc(agora);
+        fiel.setCriadoPor(actor == null ? "system" : actor); fiel.setAtualizadoPor(actor == null ? "system" : actor);
+        return mapper.toResponse(repository.save(fiel));
     }
+    private void aplicar(FielEntity fiel, CreateFielRequest r) {
+        fiel.setNome(r.nome()); fiel.setSexo(r.sexo()); fiel.setDataNascimento(r.dataNascimento()); fiel.setPaisOrigem(r.paisOrigem()); fiel.setCpf(r.cpf()); fiel.setRg(r.rg()); fiel.setDocumentoEstrangeiroTipo(r.tipoDocumentoEstrangeiro()); fiel.setDocumentoEstrangeiroNumero(r.numeroDocumentoEstrangeiro()); fiel.setEmail(r.email()); fiel.setCelular(r.celular()); fiel.setWhatsapp(r.isWhatsapp()); fiel.setTelefoneFixo(r.telefoneFixo()); fiel.setUnidadeTerritorialId(r.unidadeTerritorialId()); fiel.setDizimista(r.isDizimista()); fiel.setPermitirDivulgacaoAniversario(r.permitirDivulgacaoAniversario());
+        fiel.setEnderecoLogradouro(r.endereco().logradouro()); fiel.setEnderecoNumero(r.endereco().numero()); fiel.setEnderecoComplemento(r.endereco().complemento()); fiel.setEnderecoBairro(r.endereco().bairro()); fiel.setEnderecoCep(r.endereco().cep()); fiel.setEnderecoCidade(r.endereco().cidade()); fiel.setEnderecoEstado(r.endereco().estado());
+    }
+    static void validarDocumento(String pais, String cpf, String tipo, String numero) {
+        boolean brasil = "BRA".equalsIgnoreCase(pais); boolean cpfPresente = cpf != null && cpf.replaceAll("\\D", "").length() == 11;
+        if (brasil && (!cpfPresente || !cpfValido(cpf.replaceAll("\\D", "")))) throw new IllegalArgumentException("CPF brasileiro é obrigatório e deve ser válido.");
+        if (!brasil && (tipo == null || numero == null || numero.isBlank())) throw new IllegalArgumentException("RNE/RNM ou passaporte é obrigatório para estrangeiros.");
+        if (!brasil && !"RNE_RNM".equals(tipo) && !"PASSAPORTE".equals(tipo)) throw new IllegalArgumentException("Documento estrangeiro deve ser RNE_RNM ou PASSAPORTE.");
+    }
+    static void validarPais(String pais) { if (pais == null || !PAISES_ISO3.contains(pais.toUpperCase(Locale.ROOT))) throw new IllegalArgumentException("País de origem deve usar ISO-3166 alpha-3."); }
+    private static boolean cpfValido(String cpf) { if (cpf.chars().distinct().count() == 1) return false; return digito(cpf, 9) == cpf.charAt(9) - '0' && digito(cpf, 10) == cpf.charAt(10) - '0'; }
+    private static int digito(String cpf, int limite) { int soma = 0; for (int i = 0; i < limite; i++) soma += (cpf.charAt(i) - '0') * (limite + 1 - i); int resto = soma % 11; return resto < 2 ? 0 : 11 - resto; }
+    private void validarUnidade(UUID id) { var unidade = unidades.findById(id).orElseThrow(() -> new IllegalArgumentException("Igreja não encontrada.")); if (!unidade.isAtivo() || (unidade.getTipo() != TipoUnidadeTerritorial.MATRIZ && unidade.getTipo() != TipoUnidadeTerritorial.COMUNIDADE)) throw new IllegalArgumentException("Igreja deve ser Matriz ou Comunidade ativa."); }
 }

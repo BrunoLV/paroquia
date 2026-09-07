@@ -1,1417 +1,699 @@
-import React, { useEffect, useRef, useState } from 'react';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
+  Add as AddIcon,
+  Block as BlockIcon,
+  CheckCircleOutlined as ActivateIcon,
+  Search as SearchIcon,
+} from "@mui/icons-material";
+import {
+  Alert,
   Box,
   Button,
   Checkbox,
-  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   FormControlLabel,
-  Grid,
-  IconButton,
-  InputLabel,
   MenuItem,
   Paper,
-  Select,
-  Tab,
+  Stack,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
-  Tabs,
   TextField,
-  Tooltip,
   Typography,
-} from '@mui/material';
-import { FormattedAddress, FormattedEmail, FormattedPhone } from '../components/FormattedCell';
-import { formatCep, formatPhone, formatRg } from '../utils/masks';
-import { formatCpf } from '../utils/cpfUtils';
+} from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
-  Add as AddIcon,
-  Close as CloseIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  ExpandMore as ExpandMoreIcon,
-  FamilyRestroom as FamilyIcon,
-  Gavel as LgpdIcon,
-  LocationOn as LocationIcon,
-  People as PeopleIcon,
-  PersonAdd as PromoteIcon,
-  Save as SaveIcon,
-  Search as SearchIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-} from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
-import { createFiel, getFieis, updateFiel } from '../api/fieis';
-import { getOrganizacoes } from '../api/organizacoes';
-import { promoverACoordenador } from '../api/membros';
+  alterarStatusFiel,
+  createFiel,
+  getFiel,
+  getFieis,
+  updateFiel,
+} from "@/api/fieis";
 import {
+  criarRelacionamentoFamiliar,
+  listarFamiliares,
+  removerRelacionamentoFamiliar,
+  type TipoRelacionamentoFamiliar,
+} from "@/api/familiares";
+import { listarAjustesPendentesDoFiel } from "@/api/ajustesCadastrais";
+import { getUnidadesTerritoriais } from "@/api/unidadesTerritoriais";
+import type {
   CreateFielPayload,
-  Dependente,
-  EstadoCivil,
+  Endereco,
   Fiel,
-  Organizacao,
-  Parentesco,
-  PreferenciaCanalComunicacao,
-  Sexo,
+  TipoDocumentoEstrangeiro,
   UpdateFielPayload,
-  Vocacao,
-} from '../api/types';
-import { useNotification } from '../context/NotificationContext';
-import { extractErrorMessage } from '../utils/errorUtils';
-import ActionButton from '../components/ActionButton';
-import PageHeader from '../components/PageHeader';
-import StatusIcon from '../components/StatusIcon';
-import SacramentoIcon from '../components/SacramentoIcon';
-import { SACRAMENTO_META } from '../utils/statusMeta/sacramentos';
-import { getVocacaoMeta } from '../utils/statusMeta/vocacaoStatus';
+} from "@/api/types";
+import PageHeader from "@/components/PageHeader";
+import { useAuth } from "@/auth/AuthContext";
+import { canManageCadastroFieis } from "@/auth/permissions";
+import { useNotification } from "@/context/NotificationContext";
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+const vazio = (): CreateFielPayload => ({
+  nome: "",
+  sexo: "MASCULINO",
+  dataNascimento: "",
+  paisOrigem: "BRA",
+  cpf: "",
+  rg: "",
+  tipoDocumentoEstrangeiro: undefined,
+  numeroDocumentoEstrangeiro: "",
+  email: "",
+  celular: "",
+  isWhatsapp: true,
+  endereco: {},
+  unidadeTerritorialId: "",
+  isDizimista: false,
+  permitirDivulgacaoAniversario: false,
+});
 
-function CustomTabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`fiel-tabpanel-${index}`} {...other}>
-      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
-    </div>
-  );
-}
+const PAISES_ORIGEM = [
+  { codigo: "BRA", nome: "Brasil" },
+  { codigo: "ARG", nome: "Argentina" },
+  { codigo: "BOL", nome: "Bolívia" },
+  { codigo: "COL", nome: "Colômbia" },
+  { codigo: "PRT", nome: "Portugal" },
+  { codigo: "VEN", nome: "Venezuela" },
+] as const;
+
+const cadastroVazio = (): UpdateFielPayload => ({
+  nome: "",
+  sexo: "MASCULINO",
+  dataNascimento: "",
+  paisOrigem: "BRA",
+  cpf: "",
+  rg: "",
+  tipoDocumentoEstrangeiro: undefined,
+  numeroDocumentoEstrangeiro: "",
+  email: "",
+  celular: "",
+  isWhatsapp: true,
+  telefoneFixo: "",
+  endereco: {},
+  unidadeTerritorialId: "",
+  isDizimista: false,
+  permitirDivulgacaoAniversario: false,
+});
+
+const normalizarDigitos = (valor: string | null | undefined): string =>
+  (valor ?? "").replace(/\D/g, "");
+
+const paraCadastro = (fiel: Fiel): UpdateFielPayload => ({
+  ...cadastroVazio(),
+  nome: fiel.nome ?? "",
+  sexo: fiel.sexo ?? "MASCULINO",
+  dataNascimento: fiel.dataNascimento ?? "",
+  paisOrigem: fiel.dadosIdentificacao?.paisOrigem ?? "BRA",
+  cpf: normalizarDigitos(fiel.dadosIdentificacao?.cpfFormatado ?? fiel.cpf),
+  rg: fiel.dadosIdentificacao?.rg ?? fiel.rg ?? "",
+  tipoDocumentoEstrangeiro:
+    fiel.dadosIdentificacao?.tipoDocumentoEstrangeiro ?? undefined,
+  numeroDocumentoEstrangeiro:
+    fiel.dadosIdentificacao?.documentoEstrangeiroFormatado ?? "",
+  email: fiel.contato?.email ?? fiel.email ?? "",
+  celular: normalizarDigitos(fiel.contato?.celularFormatado ?? fiel.telefone),
+  isWhatsapp: fiel.contato?.isWhatsapp ?? true,
+  telefoneFixo: normalizarDigitos(
+    fiel.contato?.telefoneFixoFormatado ?? fiel.telefoneFixo,
+  ),
+  endereco:
+    typeof fiel.endereco === "object" && fiel.endereco ? fiel.endereco : {},
+  unidadeTerritorialId: fiel.igrejaFrequenta?.id ?? "",
+  isDizimista: fiel.isDizimista ?? false,
+  permitirDivulgacaoAniversario: fiel.permitirDivulgacaoAniversario ?? false,
+});
 
 const Fieis = () => {
+  const [busca, setBusca] = useState("");
+  const [novo, setNovo] = useState(false);
+  const [form, setForm] = useState(vazio());
+  const [selecionado, setSelecionado] = useState<Fiel | null>(null);
+  const [cadastro, setCadastro] = useState<UpdateFielPayload>(cadastroVazio());
+  const [destino, setDestino] = useState("");
+  const [tipo, setTipo] = useState<TipoRelacionamentoFamiliar>("CONJUGE");
+  const cliente = useQueryClient();
+  const { showSuccess, showError } = useNotification();
+  const id = selecionado?.fielId ?? selecionado?.id;
   const { user } = useAuth();
-  const { showError, showSuccess } = useNotification();
-
-  const [fieis, setFieis] = useState<Fiel[]>([]);
-  const [organizacoes, setOrganizacoes] = useState<Organizacao[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [showMaskedPii, setShowMaskedPii] = useState<boolean>(true);
-
-  // Modal State
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [editingFiel, setEditingFiel] = useState<Fiel | null>(null);
-
-  // Form State
-  const [formValues, setFormValues] = useState<CreateFielPayload>({
-    nome: '',
-    cpf: '',
-    rg: '',
-    dataNascimento: '',
-    sexo: 'NAO_INFORMADO',
-    profissao: '',
-    email: '',
-    telefone: '',
-    telefoneFixo: '',
-    celularWhatsapp: '',
-    preferenciaCanalComunicacao: 'WHATSAPP',
-    endereco: {
-      logradouro: '',
-      numero: '',
-      complemento: '',
-      bairro: '',
-      cep: '',
-      cidade: '',
-      estado: '',
-    },
-    estadoCivil: 'SOLTEIRO',
-    conjugeId: '',
-    vocacao: 'LEIGO',
-    batizado: false,
-    primeiraComunhao: false,
-    crismado: false,
-    casadoIgrejaCatolica: false,
-    vidaSacramental: {
-      batizado: false,
-      dataBatismo: '',
-      paroquiaBatismo: '',
-      celebranteBatismo: '',
-      livroBatismo: '',
-      folhaBatismo: '',
-      termoBatismo: '',
-      padrinhosBatismo: '',
-      primeiraComunhao: false,
-      dataPrimeiraComunhao: '',
-      paroquiaPrimeiraComunhao: '',
-      turmaCatequese: '',
-      crismado: false,
-      dataCrisma: '',
-      paroquiaCrisma: '',
-      celebranteCrisma: '',
-      padrinhoCrisma: '',
-      casadoIgrejaCatolica: false,
-      dataMatrimonio: '',
-      paroquiaMatrimonio: '',
-      numeroProcessoMatrimonial: '',
-      certidaoMatrimonio: '',
-    },
-    dependentes: [],
-    habilidadesVoluntariado: '',
-    consentimentoLgpd: {
-      termoConsentimentoAceito: true,
-      dataHoraConsentimentoUtc: new Date().toISOString(),
-      versaoTermoConsentimento: 'v1.0',
-      usoImagemAutorizado: false,
-      permitirDivulgacaoAniversario: true,
-    },
+  const podeGerirCadastro = canManageCadastroFieis(user);
+  const fieis = useQuery({ queryKey: ["fieis"], queryFn: getFieis });
+  const unidades = useQuery({
+    queryKey: ["unidades"],
+    queryFn: getUnidadesTerritoriais,
   });
-
-  // Promote Modal State
-  const [promoteModalOpen, setPromoteModalOpen] = useState<boolean>(false);
-  const [promotingFiel, setPromotingFiel] = useState<Fiel | null>(null);
-  const [promoteValues, setPromoteValues] = useState({
-    grupoParoquialId: '',
-    papel: 'COORD_PASTORAL',
-    username: '',
-    password: '',
+  const detalhe = useQuery({
+    queryKey: ["fiel", id],
+    queryFn: () => getFiel(id!),
+    enabled: !!id,
   });
-
-  const isCoordinatorPromoter = () => {
-    if (!user || !user.roles) return false;
-    const allowed = ['ADMIN', 'PAROCO', 'VIGARIO', 'MESA_CPP', 'BISPO_DIOCESANO', 'SECRETARIO', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_VIGARIO'];
-    return user.roles.some((r: string) => allowed.includes(r));
-  };
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [fieisData, orgsData] = await Promise.all([
-        getFieis(),
-        getOrganizacoes(),
-      ]);
-      setFieis(fieisData);
-      setOrganizacoes(orgsData);
-    } catch (err: unknown) {
-      showError(extractErrorMessage(err, 'Erro ao carregar lista de fiéis'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const resetForm = () => {
-    setActiveTab(0);
-    setFormValues({
-      nome: '',
-      cpf: '',
-      rg: '',
-      dataNascimento: '',
-      sexo: 'NAO_INFORMADO',
-      profissao: '',
-      email: '',
-      telefone: '',
-      telefoneFixo: '',
-      celularWhatsapp: '',
-      preferenciaCanalComunicacao: 'WHATSAPP',
-      endereco: {
-        logradouro: '',
-        numero: '',
-        complemento: '',
-        bairro: '',
-        cep: '',
-        cidade: '',
-        estado: '',
-      },
-      estadoCivil: 'SOLTEIRO',
-      conjugeId: '',
-      vocacao: 'LEIGO',
-      batizado: false,
-      primeiraComunhao: false,
-      crismado: false,
-      casadoIgrejaCatolica: false,
-      vidaSacramental: {
-        batizado: false,
-        dataBatismo: '',
-        paroquiaBatismo: '',
-        celebranteBatismo: '',
-        livroBatismo: '',
-        folhaBatismo: '',
-        termoBatismo: '',
-        padrinhosBatismo: '',
-        primeiraComunhao: false,
-        dataPrimeiraComunhao: '',
-        paroquiaPrimeiraComunhao: '',
-        turmaCatequese: '',
-        crismado: false,
-        dataCrisma: '',
-        paroquiaCrisma: '',
-        celebranteCrisma: '',
-        padrinhoCrisma: '',
-        casadoIgrejaCatolica: false,
-        dataMatrimonio: '',
-        paroquiaMatrimonio: '',
-        numeroProcessoMatrimonial: '',
-        certidaoMatrimonio: '',
-      },
-      dependentes: [],
-      habilidadesVoluntariado: '',
-      consentimentoLgpd: {
-        termoConsentimentoAceito: true,
-        dataHoraConsentimentoUtc: new Date().toISOString(),
-        versaoTermoConsentimento: 'v1.0',
-        usoImagemAutorizado: false,
-        permitirDivulgacaoAniversario: true,
-      },
-    });
-  };
-
-  const handleOpenCreateModal = () => {
-    setEditingFiel(null);
-    resetForm();
-    setModalOpen(true);
-  };
-
-  // Abre o formulário de cadastro ao chegar de "Novo Fiel" no dashboard (`/fieis?novo=1`),
-  // depois limpa o parâmetro para não reabrir em refresh/voltar.
-  const abriuPorParametro = useRef(false);
-  useEffect(() => {
-    if (loading || abriuPorParametro.current) return;
-    if (new URLSearchParams(window.location.search).get('novo') !== '1') return;
-    abriuPorParametro.current = true;
-    handleOpenCreateModal();
-    window.history.replaceState({}, '', window.location.pathname);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
-
-  const handleOpenEditModal = (fiel: Fiel) => {
-    setEditingFiel(fiel);
-    setActiveTab(0);
-
-    const endObj = typeof fiel.endereco === 'object' && fiel.endereco !== null
-      ? fiel.endereco
-      : { logradouro: typeof fiel.endereco === 'string' ? fiel.endereco : '', numero: '', complemento: '', bairro: '', cep: '', cidade: '', estado: '' };
-
-    setFormValues({
-      nome: fiel.nome || '',
-      cpf: fiel.cpf || '',
-      rg: fiel.rg || '',
-      dataNascimento: fiel.dataNascimento || '',
-      sexo: fiel.sexo || 'NAO_INFORMADO',
-      profissao: fiel.profissao || '',
-      email: fiel.email || '',
-      telefone: fiel.telefone || '',
-      telefoneFixo: fiel.telefoneFixo || '',
-      celularWhatsapp: fiel.celularWhatsapp || fiel.telefone || '',
-      preferenciaCanalComunicacao: fiel.preferenciaCanalComunicacao || 'WHATSAPP',
-      endereco: endObj,
-      estadoCivil: fiel.estadoCivil || 'SOLTEIRO',
-      conjugeId: fiel.conjugeId || '',
-      vocacao: fiel.vocacao || 'LEIGO',
-      batizado: fiel.batizado || false,
-      primeiraComunhao: fiel.primeiraComunhao || false,
-      crismado: fiel.crismado || false,
-      casadoIgrejaCatolica: fiel.casadoIgrejaCatolica || false,
-      vidaSacramental: fiel.vidaSacramental || {
-        batizado: fiel.batizado || false,
-        primeiraComunhao: fiel.primeiraComunhao || false,
-        crismado: fiel.crismado || false,
-        casadoIgrejaCatolica: fiel.casadoIgrejaCatolica || false,
-      },
-      dependentes: fiel.dependentes || [],
-      habilidadesVoluntariado: fiel.habilidadesVoluntariado || '',
-      consentimentoLgpd: fiel.consentimentoLgpd || {
-        termoConsentimentoAceito: true,
-        versaoTermoConsentimento: 'v1.0',
-        usoImagemAutorizado: false,
-        permitirDivulgacaoAniversario: true,
-      },
-    });
-    setModalOpen(true);
-  };
-
-  const handleSaveFiel = async () => {
-    if (!formValues.nome || !formValues.cpf || !formValues.email) {
-      showError('Preencha os campos obrigatórios (Nome, CPF, E-mail)');
-      return;
-    }
-
-    try {
-      if (editingFiel) {
-        const updatePayload: UpdateFielPayload = { ...formValues };
-        await updateFiel(editingFiel.id, updatePayload);
-        showSuccess('Fiel atualizado com sucesso!');
-      } else {
-        await createFiel(formValues);
-        showSuccess('Fiel cadastrado com sucesso!');
-      }
-      setModalOpen(false);
-      loadData();
-    } catch (err: unknown) {
-      showError(extractErrorMessage(err, 'Erro ao salvar fiel'));
-    }
-  };
-
-  const handleAddDependente = () => {
-    const newDep: Dependente = {
-      nome: '',
-      dataNascimento: '',
-      parentesco: 'FILHO',
-      batizado: false,
-      primeiraComunhao: false,
-      crismado: false,
-    };
-    setFormValues({
-      ...formValues,
-      dependentes: [...(formValues.dependentes || []), newDep],
-    });
-  };
-
-  const handleRemoveDependente = (index: number) => {
-    const updated = [...(formValues.dependentes || [])];
-    updated.splice(index, 1);
-    setFormValues({ ...formValues, dependentes: updated });
-  };
-
-  const handleUpdateDependente = (index: number, field: keyof Dependente, value: any) => {
-    const updated = [...(formValues.dependentes || [])];
-    updated[index] = { ...updated[index], [field]: value };
-    setFormValues({ ...formValues, dependentes: updated });
-  };
-
-  const handleOpenPromoteModal = (fiel: Fiel) => {
-    setPromotingFiel(fiel);
-    setPromoteValues({
-      grupoParoquialId: organizacoes.length > 0 ? organizacoes[0].id : '',
-      papel: 'COORD_PASTORAL',
-      username: '',
-      password: '',
-    });
-    setPromoteModalOpen(true);
-  };
-
-  const handleExecutePromote = async () => {
-    if (!promotingFiel || !promoteValues.grupoParoquialId) {
-      showError('Selecione uma organização/grupo paroquial');
-      return;
-    }
-
-    try {
-      const res = await promoverACoordenador({
-        fielId: promotingFiel.id,
-        grupoParoquialId: promoteValues.grupoParoquialId,
-        papel: promoteValues.papel,
-        username: promoteValues.username || undefined,
-        password: promoteValues.password || undefined,
-      });
-
-      showSuccess(
-        res.novoUsuarioCriado
-          ? 'Fiel promovido e conta de usuário criada com sucesso!'
-          : 'Fiel promovido a coordenador com sucesso!'
-      );
-      setPromoteModalOpen(false);
-      loadData();
-    } catch (err: unknown) {
-      showError(extractErrorMessage(err, 'Erro ao promover fiel'));
-    }
-  };
-
-  const filteredFieis = fieis.filter(
-    (f) =>
-      f.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      f.cpf.includes(searchTerm) ||
-      f.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const familiares = useQuery({
+    queryKey: ["familiares", id],
+    queryFn: () => listarFamiliares(id!),
+    enabled: !!id,
+  });
+  const ajustesPendentes = useQuery({
+    queryKey: ["fiel", id, "ajustes-cadastrais"],
+    queryFn: () => listarAjustesPendentesDoFiel(id!),
+    enabled: !!id && podeGerirCadastro,
+  });
+  const criar = useMutation({
+    mutationFn: createFiel,
+    onSuccess: () => {
+      cliente.invalidateQueries({ queryKey: ["fieis"] });
+      setNovo(false);
+      setForm(vazio());
+      showSuccess("Fiel cadastrado.");
+    },
+    onError: () => showError("Não foi possível cadastrar o fiel."),
+  });
+  const status = useMutation({
+    mutationFn: ({ id, ativo }: { id: string; ativo: boolean }) =>
+      alterarStatusFiel(id, ativo),
+    onSuccess: (_, v) => {
+      cliente.invalidateQueries({ queryKey: ["fieis"] });
+      showSuccess(v.ativo ? "Cadastro reativado." : "Cadastro desativado.");
+    },
+    onError: () => showError("Não foi possível alterar o status."),
+  });
+  const salvarCadastro = useMutation({
+    mutationFn: () => updateFiel(id!, cadastro),
+    onSuccess: () => {
+      cliente.invalidateQueries({ queryKey: ["fieis"] });
+      cliente.invalidateQueries({ queryKey: ["fiel", id] });
+      showSuccess("Cadastro atualizado.");
+    },
+    onError: () => showError("Não foi possível atualizar o cadastro."),
+  });
+  const criarFamiliar = useMutation({
+    mutationFn: () => criarRelacionamentoFamiliar(id!, destino, tipo),
+    onSuccess: () => {
+      familiares.refetch();
+      setDestino("");
+      showSuccess("Vínculo familiar criado.");
+    },
+    onError: () => showError("Não foi possível criar o vínculo."),
+  });
+  const removerFamiliar = useMutation({
+    mutationFn: (relacaoId: string) =>
+      removerRelacionamentoFamiliar(id!, relacaoId),
+    onSuccess: () => {
+      familiares.refetch();
+      showSuccess("Vínculo familiar inativado.");
+    },
+    onError: () => showError("Não foi possível inativar o vínculo."),
+  });
+  const filtrados = (fieis.data ?? []).filter((f) =>
+    f.nome?.toLowerCase().includes(busca.toLowerCase()),
   );
-
+  const alterar = <K extends keyof CreateFielPayload>(
+    campo: K,
+    valor: CreateFielPayload[K],
+  ) => setForm((f) => ({ ...f, [campo]: valor }));
+  const alterarCadastro = <K extends keyof UpdateFielPayload>(
+    campo: K,
+    valor: UpdateFielPayload[K],
+  ) => setCadastro((atual) => ({ ...atual, [campo]: valor }));
+  const alterarEndereco = (campo: keyof Endereco, valor: string) =>
+    setCadastro((atual) => ({
+      ...atual,
+      endereco: {
+        ...(typeof atual.endereco === "object" && atual.endereco
+          ? atual.endereco
+          : {}),
+        [campo]: valor,
+      },
+    }));
+  const alterarEnderecoNovo = (campo: keyof Endereco, valor: string) =>
+    setForm((atual) => ({
+      ...atual,
+      endereco: {
+        ...(typeof atual.endereco === "object" && atual.endereco
+          ? atual.endereco
+          : {}),
+        [campo]: valor,
+      },
+    }));
+  const abrir = (f: Fiel) => {
+    setSelecionado(f);
+    setCadastro(paraCadastro(f));
+  };
+  useEffect(() => {
+    if (detalhe.data) setCadastro(paraCadastro(detalhe.data));
+  }, [detalhe.data]);
+  const endereco =
+    typeof cadastro.endereco === "object" && cadastro.endereco
+      ? cadastro.endereco
+      : {};
+  const enderecoNovo =
+    typeof form.endereco === "object" && form.endereco ? form.endereco : {};
+  const estrangeiro = form.paisOrigem !== "BRA";
+  const documentoEstrangeiroPreenchido = Boolean(
+    form.tipoDocumentoEstrangeiro && form.numeroDocumentoEstrangeiro,
+  );
+  const enderecoObrigatorioPreenchido = Boolean(
+    enderecoNovo.logradouro &&
+      enderecoNovo.numero &&
+      enderecoNovo.bairro &&
+      enderecoNovo.cidade &&
+      enderecoNovo.estado &&
+      enderecoNovo.cep,
+  );
+  const podeSalvarNovo = Boolean(
+    form.nome &&
+      form.dataNascimento &&
+      form.email &&
+      form.celular &&
+      form.unidadeTerritorialId &&
+      enderecoObrigatorioPreenchido &&
+      (estrangeiro ? documentoEstrangeiroPreenchido : form.cpf) &&
+      !criar.isPending,
+  );
+  const acaoNovoFiel = podeGerirCadastro ? (
+    <Button
+      color="primary"
+      variant="outlined"
+      startIcon={<AddIcon />}
+      onClick={() => setNovo(true)}
+    >
+      Novo fiel
+    </Button>
+  ) : undefined;
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ p: 3 }}>
       <PageHeader
-        icon={<PeopleIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<SearchIcon />}
         title="Gestão de Fiéis"
-        subtitle="Cadastro unificado de paroquianos, vida sacramental e conformidade LGPD."
-        actions={
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title={showMaskedPii ? 'Exibir dados PII completos' : 'Mascarar dados PII (LGPD)'}>
-              <IconButton color="secondary" onClick={() => setShowMaskedPii(!showMaskedPii)}>
-                {showMaskedPii ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </Tooltip>
-            <ActionButton
-              title="Novo Fiel"
-              icon={<AddIcon />}
-              color="primary"
-              onClick={handleOpenCreateModal}
-            />
-          </Box>
-        }
+        subtitle="Cadastro civil, contato e vínculo comunitário."
+        actions={acaoNovoFiel}
       />
-
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <SearchIcon color="action" />
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Buscar fiel por Nome, CPF ou E-mail..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(0);
-            }}
-          />
-        </Box>
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <TextField
+          fullWidth
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Buscar fiel por nome"
+        />
       </Paper>
-
-      <TableContainer component={Paper}>
+      <Paper>
         <Table>
-          <TableHead sx={{ backgroundColor: 'action.hover' }}>
+          <TableHead>
             <TableRow>
-              <TableCell>Nome / Endereço</TableCell>
-              <TableCell>CPF</TableCell>
-              <TableCell>Vocação</TableCell>
+              <TableCell>Nome</TableCell>
               <TableCell>Contato</TableCell>
-
-              <TableCell>Sacramentos</TableCell>
-              <TableCell align="right">Ações</TableCell>
+              <TableCell>Comunidade</TableCell>
+              <TableCell>Status</TableCell>
+              {podeGerirCadastro ? (
+                <TableCell align="right">Ações</TableCell>
+              ) : null}
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredFieis.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {loading ? 'Carregando fiéis...' : 'Nenhum fiel encontrado.'}
-                  </Typography>
+            {filtrados.map((f) => {
+              const fielId = f.fielId ?? f.id;
+              const ativo = f.isAtivo ?? f.ativo;
+              const acaoStatus = podeGerirCadastro ? (
+                <TableCell align="right">
+                  <Button
+                    size="small"
+                    color={ativo ? "warning" : "success"}
+                    startIcon={ativo ? <BlockIcon /> : <ActivateIcon />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      status.mutate({ id: fielId, ativo: !ativo });
+                    }}
+                  >
+                    {ativo ? "Desativar" : "Reativar"}
+                  </Button>
                 </TableCell>
-              </TableRow>
-            ) : (
-              filteredFieis
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((fiel) => (
-                  <TableRow key={fiel.id} hover>
-                    <TableCell>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                        {fiel.nome}
-                      </Typography>
-                      <FormattedAddress value={fiel.endereco} />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {showMaskedPii ? formatCpf(fiel.cpf, 'masked_ends') : formatCpf(fiel.cpf)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <StatusIcon {...getVocacaoMeta(fiel.vocacao)} />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-                        <FormattedEmail value={fiel.email} />
-                        <FormattedPhone value={fiel.celularWhatsapp || fiel.telefone} variant="caption" color="text.secondary" />
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                        {(fiel.batizado || fiel.vidaSacramental?.batizado) && (
-                          <SacramentoIcon {...SACRAMENTO_META.batizado} color="success" />
-                        )}
-                        {(fiel.primeiraComunhao || fiel.vidaSacramental?.primeiraComunhao) && (
-                          <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="info" />
-                        )}
-                        {(fiel.crismado || fiel.vidaSacramental?.crismado) && (
-                          <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />
-                        )}
-                        {(fiel.casadoIgrejaCatolica || fiel.vidaSacramental?.casadoIgrejaCatolica) && (
-                          <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />
-                        )}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <ActionButton
-                        title="Editar Fiel"
-                        icon={<EditIcon fontSize="small" />}
-                        size="small"
-                        color="primary"
-                        onClick={() => handleOpenEditModal(fiel)}
-                      />
-
-                      {isCoordinatorPromoter() && (
-                        <ActionButton
-                          title="Promover a Coordenador"
-                          icon={<PromoteIcon fontSize="small" />}
-                          size="small"
-                          color="secondary"
-                          onClick={() => handleOpenPromoteModal(fiel)}
-                        />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
-            )}
+              ) : null;
+              return (
+                <TableRow
+                  hover
+                  key={fielId}
+                  onClick={() => abrir(f)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell>{f.nome}</TableCell>
+                  <TableCell>
+                    {f.contato?.celularFormatado ?? f.telefone}
+                  </TableCell>
+                  <TableCell>{f.igrejaFrequenta?.nome ?? "-"}</TableCell>
+                  <TableCell>{ativo ? "Ativo" : "Inativo"}</TableCell>
+                  {acaoStatus}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 20, 50, 100]}
-        component="div"
-        count={filteredFieis.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => {
-          setRowsPerPage(parseInt(e.target.value, 10));
-          setPage(0);
-        }}
-        labelRowsPerPage="Itens por página:"
-      />
-
-      {/* Modal de Cadastro / Edição de Fiel com Abas Estruturadas */}
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">
-            {editingFiel ? `Editar Fiel: ${editingFiel.nome}` : 'Cadastrar Novo Fiel'}
-          </Typography>
-          <ActionButton title="Fechar formulário" icon={<CloseIcon />} size="small" onClick={() => setModalOpen(false)} />
-        </DialogTitle>
-
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)} variant="fullWidth">
-            <Tab label="1. Dados & Contato" />
-            <Tab label="2. Família & Filhos" icon={<FamilyIcon />} iconPosition="start" />
-            <Tab label="3. Vida Sacramental" />
-            <Tab label="4. Voluntariado & LGPD" icon={<LgpdIcon />} iconPosition="start" />
-          </Tabs>
-        </Box>
-
-        <DialogContent dividers sx={{ p: 0 }}>
-          {/* Aba 1: Dados Pessoais & Contato com Endereço Estruturado */}
-          <CustomTabPanel value={activeTab} index={0}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 6 }}>
+      </Paper>
+      <Dialog
+        open={novo}
+        onClose={() => setNovo(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Novo fiel</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <Alert severity="info">
+              Dados são armazenados sem máscaras e exibidos formatados.
+            </Alert>
+            <TextField
+              required
+              label="Nome completo"
+              value={form.nome}
+              onChange={(e) => alterar("nome", e.target.value)}
+            />
+            <TextField
+              select
+              label="Sexo"
+              value={form.sexo}
+              onChange={(e) =>
+                alterar("sexo", e.target.value as CreateFielPayload["sexo"])
+              }
+            >
+              <MenuItem value="MASCULINO">Masculino</MenuItem>
+              <MenuItem value="FEMININO">Feminino</MenuItem>
+            </TextField>
+            <TextField
+              required
+              type="date"
+              label="Nascimento"
+              slotProps={{ inputLabel: { shrink: true } }}
+              value={form.dataNascimento}
+              onChange={(e) => alterar("dataNascimento", e.target.value)}
+            />
+            <TextField
+              select
+              required
+              label="País de origem"
+              value={form.paisOrigem}
+              onChange={(e) => {
+                const paisOrigem = e.target.value;
+                setForm((atual) => ({
+                  ...atual,
+                  paisOrigem,
+                  cpf: paisOrigem === "BRA" ? atual.cpf : "",
+                  rg: paisOrigem === "BRA" ? atual.rg : "",
+                  tipoDocumentoEstrangeiro:
+                    paisOrigem === "BRA"
+                      ? undefined
+                      : atual.tipoDocumentoEstrangeiro,
+                  numeroDocumentoEstrangeiro:
+                    paisOrigem === "BRA"
+                      ? ""
+                      : atual.numeroDocumentoEstrangeiro,
+                }));
+              }}
+            >
+              {PAISES_ORIGEM.map((pais) => (
+                <MenuItem key={pais.codigo} value={pais.codigo}>
+                  {pais.nome}
+                </MenuItem>
+              ))}
+            </TextField>
+            {estrangeiro ? (
+              <>
                 <TextField
-                  label="Nome Completo"
-                  fullWidth
+                  select
                   required
-                  value={formValues.nome}
-                  onChange={(e) => setFormValues({ ...formValues, nome: e.target.value })}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 3 }}>
+                  label="Documento estrangeiro"
+                  value={form.tipoDocumentoEstrangeiro ?? ""}
+                  onChange={(e) =>
+                    alterar(
+                      "tipoDocumentoEstrangeiro",
+                      (e.target.value || undefined) as
+                        | TipoDocumentoEstrangeiro
+                        | undefined,
+                    )
+                  }
+                >
+                  <MenuItem value="RNE_RNM">RNE/RNM</MenuItem>
+                  <MenuItem value="PASSAPORTE">Passaporte</MenuItem>
+                </TextField>
                 <TextField
+                  required
+                  label="Número do documento"
+                  value={form.numeroDocumentoEstrangeiro ?? ""}
+                  onChange={(e) =>
+                    alterar("numeroDocumentoEstrangeiro", e.target.value)
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <TextField
+                  required
                   label="CPF"
-                  fullWidth
-                  required
-                  value={formValues.cpf}
-                  onChange={(e) => setFormValues({ ...formValues, cpf: formatCpf(e.target.value) })}
-                  slotProps={{ htmlInput: { maxLength: 14 } }}
+                  value={form.cpf}
+                  onChange={(e) => alterar("cpf", e.target.value)}
+                  helperText="Informe os 11 dígitos, sem necessidade de máscara."
                 />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 3 }}>
                 <TextField
                   label="RG"
-                  fullWidth
-                  value={formValues.rg || ''}
-                  onChange={(e) => setFormValues({ ...formValues, rg: formatRg(e.target.value) })}
-                  slotProps={{ htmlInput: { maxLength: 12 } }}
+                  value={form.rg ?? ""}
+                  onChange={(e) => alterar("rg", e.target.value)}
                 />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Data de Nascimento"
-                  type="date"
-                  fullWidth
-                  required
-                  slotProps={{ inputLabel: { shrink: true } }}
-                  value={formValues.dataNascimento}
-                  onChange={(e) => setFormValues({ ...formValues, dataNascimento: e.target.value })}
+              </>
+            )}
+            <TextField
+              required
+              label="E-mail"
+              value={form.email}
+              onChange={(e) => alterar("email", e.target.value)}
+            />
+            <TextField
+              required
+              label="Celular"
+              value={form.celular}
+              onChange={(e) => alterar("celular", e.target.value)}
+            />
+            <TextField
+              label="Telefone fixo"
+              value={form.telefoneFixo ?? ""}
+              onChange={(e) => alterar("telefoneFixo", e.target.value)}
+            />
+            <Typography variant="subtitle2">Endereço</Typography>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <TextField required fullWidth label="Logradouro" value={enderecoNovo.logradouro ?? ""} onChange={(e) => alterarEnderecoNovo("logradouro", e.target.value)} />
+              <TextField required fullWidth label="Número" value={enderecoNovo.numero ?? ""} onChange={(e) => alterarEnderecoNovo("numero", e.target.value)} />
+            </Stack>
+            <TextField fullWidth label="Complemento" value={enderecoNovo.complemento ?? ""} onChange={(e) => alterarEnderecoNovo("complemento", e.target.value)} />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <TextField required fullWidth label="Bairro" value={enderecoNovo.bairro ?? ""} onChange={(e) => alterarEnderecoNovo("bairro", e.target.value)} />
+              <TextField required fullWidth label="Cidade" value={enderecoNovo.cidade ?? ""} onChange={(e) => alterarEnderecoNovo("cidade", e.target.value)} />
+            </Stack>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <TextField required fullWidth label="UF" slotProps={{ htmlInput: { maxLength: 2 } }} value={enderecoNovo.estado ?? ""} onChange={(e) => alterarEnderecoNovo("estado", e.target.value.toUpperCase())} />
+              <TextField required fullWidth label="CEP" value={enderecoNovo.cep ?? ""} onChange={(e) => alterarEnderecoNovo("cep", e.target.value)} />
+            </Stack>
+            <TextField
+              select
+              required
+              label="Igreja que frequenta"
+              value={form.unidadeTerritorialId}
+              onChange={(e) => alterar("unidadeTerritorialId", e.target.value)}
+            >
+              {(unidades.data ?? [])
+                .filter((u) => u.tipo === "MATRIZ" || u.tipo === "COMUNIDADE")
+                .map((u) => (
+                  <MenuItem key={u.id} value={u.id}>
+                    {u.nome}
+                  </MenuItem>
+                ))}
+            </TextField>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={form.isWhatsapp}
+                  onChange={(e) => alterar("isWhatsapp", e.target.checked)}
                 />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="sexo-label">Sexo</InputLabel>
-                  <Select
-                    labelId="sexo-label"
-                    label="Sexo"
-                    value={formValues.sexo || 'NAO_INFORMADO'}
-                    onChange={(e) => setFormValues({ ...formValues, sexo: e.target.value as Sexo })}
-                  >
-                    <MenuItem value="MASCULINO">Masculino</MenuItem>
-                    <MenuItem value="FEMININO">Feminino</MenuItem>
-                    <MenuItem value="NAO_INFORMADO">Não Informado</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Profissão / Ocupação"
-                  fullWidth
-                  value={formValues.profissao || ''}
-                  onChange={(e) => setFormValues({ ...formValues, profissao: e.target.value })}
+              }
+              label="Este celular possui WhatsApp"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={form.isDizimista}
+                  onChange={(e) => alterar("isDizimista", e.target.checked)}
                 />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="E-mail de Contato"
-                  type="email"
-                  fullWidth
-                  required
-                  value={formValues.email}
-                  onChange={(e) => setFormValues({ ...formValues, email: e.target.value })}
+              }
+              label="Dizimista"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={form.permitirDivulgacaoAniversario}
+                  onChange={(e) =>
+                    alterar("permitirDivulgacaoAniversario", e.target.checked)
+                  }
                 />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Celular / WhatsApp"
-                  fullWidth
-                  required
-                  value={formValues.celularWhatsapp || formValues.telefone}
-                  onChange={(e) => {
-                    const masked = formatPhone(e.target.value);
-                    setFormValues({ ...formValues, celularWhatsapp: masked, telefone: masked });
-                  }}
-                  slotProps={{ htmlInput: { maxLength: 15 } }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Telefone Fixo (Opcional)"
-                  fullWidth
-                  value={formValues.telefoneFixo || ''}
-                  onChange={(e) => setFormValues({ ...formValues, telefoneFixo: formatPhone(e.target.value) })}
-                  slotProps={{ htmlInput: { maxLength: 14 } }}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="canal-label">Canal de Comunicação Preferido</InputLabel>
-                  <Select
-                    labelId="canal-label"
-                    label="Canal de Comunicação Preferido"
-                    value={formValues.preferenciaCanalComunicacao || 'WHATSAPP'}
-                    onChange={(e) => setFormValues({ ...formValues, preferenciaCanalComunicacao: e.target.value as PreferenciaCanalComunicacao })}
-                  >
-                    <MenuItem value="WHATSAPP">WhatsApp</MenuItem>
-                    <MenuItem value="EMAIL">E-mail</MenuItem>
-                    <MenuItem value="SMS">SMS</MenuItem>
-                    <MenuItem value="TELEFONE">Ligação Telefônica</MenuItem>
-                    <MenuItem value="NENHUM">Nenhum</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 8 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="vocacao-label">Vocação / Estado de Vida</InputLabel>
-                  <Select
-                    labelId="vocacao-label"
-                    label="Vocação / Estado de Vida"
-                    value={formValues.vocacao}
-                    onChange={(e) => setFormValues({ ...formValues, vocacao: e.target.value as Vocacao })}
-                  >
-                    <MenuItem value="LEIGO">Leigo(a)</MenuItem>
-                    <MenuItem value="SACERDOTE">Sacerdote</MenuItem>
-                    <MenuItem value="DIACONO">Diácono</MenuItem>
-                    <MenuItem value="RELIGIOSO">Religioso(a)</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12 }}>
-                <Typography variant="subtitle2" sx={{ mt: 1, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <LocationIcon fontSize="small" color="primary" /> Endereço Residencial Estruturado
-                </Typography>
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 3 }}>
-                <TextField
-                  label="CEP"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.cep || '' : ''}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, cep: formatCep(e.target.value) } });
-                  }}
-                  slotProps={{ htmlInput: { maxLength: 9 } }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  label="Logradouro / Rua"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.logradouro || '' : String(formValues.endereco || '')}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, logradouro: e.target.value } });
-                  }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 3 }}>
-                <TextField
-                  label="Número"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.numero || '' : ''}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, numero: e.target.value } });
-                  }}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Complemento"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.complemento || '' : ''}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, complemento: e.target.value } });
-                  }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
-                  label="Bairro"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.bairro || '' : ''}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, bairro: e.target.value } });
-                  }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 3 }}>
-                <TextField
-                  label="Cidade"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.cidade || '' : ''}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, cidade: e.target.value } });
-                  }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 1 }}>
-                <TextField
-                  label="UF"
-                  fullWidth
-                  value={typeof formValues.endereco === 'object' ? formValues.endereco.estado || '' : ''}
-                  onChange={(e) => {
-                    const end = typeof formValues.endereco === 'object' ? formValues.endereco : {};
-                    setFormValues({ ...formValues, endereco: { ...end, estado: e.target.value.toUpperCase().slice(0, 2) } });
-                  }}
-                  slotProps={{ htmlInput: { maxLength: 2 } }}
-                />
-              </Grid>
-            </Grid>
-          </CustomTabPanel>
-
-          {/* Aba 2: Família & Dependentes */}
-          <CustomTabPanel value={activeTab} index={1}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="estado-civil-label">Estado Civil</InputLabel>
-                  <Select
-                    labelId="estado-civil-label"
-                    label="Estado Civil"
-                    value={formValues.estadoCivil || 'SOLTEIRO'}
-                    onChange={(e) => setFormValues({ ...formValues, estadoCivil: e.target.value as EstadoCivil })}
-                  >
-                    <MenuItem value="SOLTEIRO">Solteiro(a)</MenuItem>
-                    <MenuItem value="CASADO_IGREJA">Casado(a) na Igreja Católica</MenuItem>
-                    <MenuItem value="CASADO_CIVIL">Casado(a) apenas no Civil</MenuItem>
-                    <MenuItem value="VIUVO">Viúvo(a)</MenuItem>
-                    <MenuItem value="DIVORCIADO">Divorciado(a)</MenuItem>
-                    <MenuItem value="UNIAO_ESTAVEL">União Estável</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="conjuge-label">Cônjuge (Fiel cadastrado)</InputLabel>
-                  <Select
-                    labelId="conjuge-label"
-                    label="Cônjuge (Fiel cadastrado)"
-                    value={formValues.conjugeId || ''}
-                    onChange={(e) => setFormValues({ ...formValues, conjugeId: e.target.value })}
-                  >
-                    <MenuItem value="">Nenhum / Não cadastrado</MenuItem>
-                    {fieis
-                      .filter((f) => f.id !== editingFiel?.id)
-                      .map((f) => (
-                        <MenuItem key={f.id} value={f.id}>
-                          {f.nome} ({formatCpf(f.cpf)})
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                    Dependentes / Filhos (Catequese & Pastoral Familiar)
-                  </Typography>
-                  <Button startIcon={<AddIcon />} variant="outlined" size="small" onClick={handleAddDependente}>
-                    Adicionar Filho/Dependente
-                  </Button>
-                </Box>
-
-                {(!formValues.dependentes || formValues.dependentes.length === 0) ? (
-                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', py: 1 }}>
-                    Nenhum dependente cadastrado.
-                  </Typography>
-                ) : (
-                  formValues.dependentes.map((dep, idx) => (
-                    <Paper key={idx} variant="outlined" sx={{ p: 2, mb: 1.5, position: 'relative' }}>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleRemoveDependente(idx)}
-                        sx={{ position: 'absolute', top: 8, right: 8 }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                      <Grid container spacing={1.5} sx={{ pr: 4 }}>
-                        <Grid size={{ xs: 12, sm: 5 }}>
-                          <TextField
-                            label="Nome do Filho/Dependente"
-                            size="small"
-                            fullWidth
-                            value={dep.nome}
-                            onChange={(e) => handleUpdateDependente(idx, 'nome', e.target.value)}
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 4 }}>
-                          <TextField
-                            label="Data de Nascimento"
-                            type="date"
-                            size="small"
-                            fullWidth
-                            slotProps={{ inputLabel: { shrink: true } }}
-                            value={dep.dataNascimento || ''}
-                            onChange={(e) => handleUpdateDependente(idx, 'dataNascimento', e.target.value)}
-                          />
-                        </Grid>
-                        <Grid size={{ xs: 12, sm: 3 }}>
-                          <FormControl fullWidth size="small">
-                            <InputLabel id={`parentesco-${idx}`}>Parentesco</InputLabel>
-                            <Select
-                              labelId={`parentesco-${idx}`}
-                              label="Parentesco"
-                              value={dep.parentesco || 'FILHO'}
-                              onChange={(e) => handleUpdateDependente(idx, 'parentesco', e.target.value as Parentesco)}
-                            >
-                              <MenuItem value="FILHO">Filho(a)</MenuItem>
-                              <MenuItem value="ENTEADO">Enteado(a)</MenuItem>
-                              <MenuItem value="TUTELADO">Tutelado(a)</MenuItem>
-                              <MenuItem value="OUTRO">Outro</MenuItem>
-                            </Select>
-                          </FormControl>
-                        </Grid>
-
-                        <Grid size={{ xs: 12 }}>
-                          <Box sx={{ display: 'flex', gap: 2 }}>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={!!dep.batizado}
-                                  onChange={(e) => handleUpdateDependente(idx, 'batizado', e.target.checked)}
-                                />
-                              }
-                              label="Batizado"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={!!dep.primeiraComunhao}
-                                  onChange={(e) => handleUpdateDependente(idx, 'primeiraComunhao', e.target.checked)}
-                                />
-                              }
-                              label="1ª Eucaristia"
-                            />
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={!!dep.crismado}
-                                  onChange={(e) => handleUpdateDependente(idx, 'crismado', e.target.checked)}
-                                />
-                              }
-                              label="Crismado"
-                            />
-                          </Box>
-                        </Grid>
-                      </Grid>
-                    </Paper>
-                  ))
-                )}
-              </Grid>
-            </Grid>
-          </CustomTabPanel>
-
-          {/* Aba 3: Vida Sacramental & Livros Paroquiais */}
-          <CustomTabPanel value={activeTab} index={2}>
-            <Grid container spacing={2}>
-              {/* Batismo */}
-              <Grid size={{ xs: 12 }}>
-                <Accordion defaultExpanded>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                      1. Sacramento do Batismo
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={1.5}>
-                      <Grid size={{ xs: 12 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={!!formValues.vidaSacramental?.batizado || !!formValues.batizado}
-                              onChange={(e) => {
-                                const val = e.target.checked;
-                                setFormValues({
-                                  ...formValues,
-                                  batizado: val,
-                                  vidaSacramental: { ...formValues.vidaSacramental, batizado: val },
-                                });
-                              }}
-                            />
-                          }
-                          label="Recebeu o Batismo"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <TextField
-                          label="Data do Batismo"
-                          type="date"
-                          fullWidth
-                          size="small"
-                          slotProps={{ inputLabel: { shrink: true } }}
-                          value={formValues.vidaSacramental?.dataBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, dataBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <TextField
-                          label="Paróquia / Local"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.paroquiaBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, paroquiaBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <TextField
-                          label="Celebrante (Padre/Diácono)"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.celebranteBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, celebranteBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Livro Nº"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.livroBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, livroBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Folha Nº"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.folhaBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, folhaBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Termo Nº"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.termoBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, termoBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Padrinhos"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.padrinhosBatismo || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, padrinhosBatismo: e.target.value } })}
-                        />
-                      </Grid>
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-              </Grid>
-
-              {/* Primeira Comunhão */}
-              <Grid size={{ xs: 12 }}>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                      2. Primeira Eucaristia / Catequese
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={1.5}>
-                      <Grid size={{ xs: 12 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={!!formValues.vidaSacramental?.primeiraComunhao || !!formValues.primeiraComunhao}
-                              onChange={(e) => {
-                                const val = e.target.checked;
-                                setFormValues({
-                                  ...formValues,
-                                  primeiraComunhao: val,
-                                  vidaSacramental: { ...formValues.vidaSacramental, primeiraComunhao: val },
-                                });
-                              }}
-                            />
-                          }
-                          label="Fez a Primeira Comunhão"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <TextField
-                          label="Data da 1ª Comunhão"
-                          type="date"
-                          fullWidth
-                          size="small"
-                          slotProps={{ inputLabel: { shrink: true } }}
-                          value={formValues.vidaSacramental?.dataPrimeiraComunhao || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, dataPrimeiraComunhao: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <TextField
-                          label="Paróquia"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.paroquiaPrimeiraComunhao || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, paroquiaPrimeiraComunhao: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <TextField
-                          label="Turma de Catequese"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.turmaCatequese || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, turmaCatequese: e.target.value } })}
-                        />
-                      </Grid>
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-              </Grid>
-
-              {/* Crisma */}
-              <Grid size={{ xs: 12 }}>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                      3. Sacramento da Crisma
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={1.5}>
-                      <Grid size={{ xs: 12 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={!!formValues.vidaSacramental?.crismado || !!formValues.crismado}
-                              onChange={(e) => {
-                                const val = e.target.checked;
-                                setFormValues({
-                                  ...formValues,
-                                  crismado: val,
-                                  vidaSacramental: { ...formValues.vidaSacramental, crismado: val },
-                                });
-                              }}
-                            />
-                          }
-                          label="Recebeu a Crisma"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Data da Crisma"
-                          type="date"
-                          fullWidth
-                          size="small"
-                          slotProps={{ inputLabel: { shrink: true } }}
-                          value={formValues.vidaSacramental?.dataCrisma || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, dataCrisma: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Paróquia"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.paroquiaCrisma || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, paroquiaCrisma: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Bispo / Celebrante"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.celebranteCrisma || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, celebranteCrisma: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Padrinho / Madrinha"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.padrinhoCrisma || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, padrinhoCrisma: e.target.value } })}
-                        />
-                      </Grid>
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-              </Grid>
-
-              {/* Matrimônio */}
-              <Grid size={{ xs: 12 }}>
-                <Accordion>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                      4. Matrimônio Católico
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={1.5}>
-                      <Grid size={{ xs: 12 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={!!formValues.vidaSacramental?.casadoIgrejaCatolica || !!formValues.casadoIgrejaCatolica}
-                              onChange={(e) => {
-                                const val = e.target.checked;
-                                setFormValues({
-                                  ...formValues,
-                                  casadoIgrejaCatolica: val,
-                                  vidaSacramental: { ...formValues.vidaSacramental, casadoIgrejaCatolica: val },
-                                });
-                              }}
-                            />
-                          }
-                          label="Casado pela Igreja Católica"
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Data do Matrimônio"
-                          type="date"
-                          fullWidth
-                          size="small"
-                          slotProps={{ inputLabel: { shrink: true } }}
-                          value={formValues.vidaSacramental?.dataMatrimonio || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, dataMatrimonio: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Paróquia"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.paroquiaMatrimonio || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, paroquiaMatrimonio: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Nº Processo Matrimonial"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.numeroProcessoMatrimonial || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, numeroProcessoMatrimonial: e.target.value } })}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 3 }}>
-                        <TextField
-                          label="Nº Certidão Matrimonial"
-                          fullWidth
-                          size="small"
-                          value={formValues.vidaSacramental?.certidaoMatrimonio || ''}
-                          onChange={(e) => setFormValues({ ...formValues, vidaSacramental: { ...formValues.vidaSacramental, certidaoMatrimonio: e.target.value } })}
-                        />
-                      </Grid>
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-              </Grid>
-            </Grid>
-          </CustomTabPanel>
-
-          {/* Aba 4: Voluntariado & LGPD */}
-          <CustomTabPanel value={activeTab} index={3}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }}>
-                <TextField
-                  label="Habilidades e Disponibilidade para Servir / Voluntariado"
-                  fullWidth
-                  multiline
-                  rows={2}
-                  placeholder="Ex: Som e Mídia, Ornamentação, Cozinha, Apoio Médico, Acolhida..."
-                  value={formValues.habilidadesVoluntariado || ''}
-                  onChange={(e) => setFormValues({ ...formValues, habilidadesVoluntariado: e.target.value })}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12 }}>
-                <Paper variant="outlined" sx={{ p: 2, bgcolor: 'action.hover', mt: 1 }}>
-                  <Typography variant="subtitle2" color="primary" sx={{ fontWeight: 'bold', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <LgpdIcon fontSize="small" /> Proteção de Dados (LGPD - Lei 13.709/2018)
-                  </Typography>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={!!formValues.consentimentoLgpd?.termoConsentimentoAceito}
-                        onChange={(e) => setFormValues({
-                          ...formValues,
-                          consentimentoLgpd: { ...formValues.consentimentoLgpd, termoConsentimentoAceito: e.target.checked },
-                        })}
-                      />
-                    }
-                    label="Termo de Consentimento Aceito (armazenamento e tratamento dos dados paroquiais)"
-                  />
-                  <br />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={!!formValues.consentimentoLgpd?.usoImagemAutorizado}
-                        onChange={(e) => setFormValues({
-                          ...formValues,
-                          consentimentoLgpd: { ...formValues.consentimentoLgpd, usoImagemAutorizado: e.target.checked },
-                        })}
-                      />
-                    }
-                    label="Autoriza uso de imagem/vídeo em transmissões de missas e mídias sociais da Paróquia"
-                  />
-                  <br />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={formValues.consentimentoLgpd?.permitirDivulgacaoAniversario !== false}
-                        onChange={(e) => setFormValues({
-                          ...formValues,
-                          consentimentoLgpd: { ...formValues.consentimentoLgpd, permitirDivulgacaoAniversario: e.target.checked },
-                        })}
-                      />
-                    }
-                    label="Permite divulgação do nome na lista paroquial de aniversariantes do mês"
-                  />
-                </Paper>
-              </Grid>
-            </Grid>
-          </CustomTabPanel>
+              }
+              label="Autoriza divulgar somente dia e mês do aniversário"
+            />
+          </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <ActionButton title="Cancelar e fechar formulário" icon={<CloseIcon />} onClick={() => setModalOpen(false)} color="secondary" />
-          <ActionButton title="Salvar dados do fiel" icon={<SaveIcon />} color="primary" onClick={handleSaveFiel} />
+        <DialogActions>
+          <Button onClick={() => setNovo(false)}>Cancelar</Button>
+          <Button
+            variant="contained"
+            disabled={!podeSalvarNovo}
+            onClick={() => criar.mutate(form)}
+          >
+            Salvar
+          </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Modal de Promoção a Coordenador */}
-      <Dialog open={promoteModalOpen} onClose={() => setPromoteModalOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">
-            Promover a Coordenador: {promotingFiel?.nome}
-          </Typography>
-          <ActionButton title="Fechar formulário" icon={<CloseIcon />} size="small" onClick={() => setPromoteModalOpen(false)} />
-        </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid size={{ xs: 12 }}>
-              <FormControl fullWidth required>
-                <InputLabel id="grupo-paroquial-label">Grupo Paroquial / Organização</InputLabel>
-                <Select
-                  labelId="grupo-paroquial-label"
-                  label="Grupo Paroquial / Organização"
-                  value={promoteValues.grupoParoquialId}
-                  onChange={(e) => setPromoteValues({ ...promoteValues, grupoParoquialId: e.target.value })}
+      <Dialog
+        open={!!selecionado}
+        onClose={() => setSelecionado(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Ficha do fiel</DialogTitle>
+        <DialogContent>
+          <Stack spacing={3} sx={{ mt: 1 }}>
+            <Typography variant="h6">
+              {detalhe.data?.nome ?? selecionado?.nome}
+            </Typography>
+            <Typography variant="body2">
+              {detalhe.data?.dadosIdentificacao?.cpfFormatado ??
+                "Documento não informado"}{" "}
+              ·{" "}
+              {detalhe.data?.igrejaFrequenta?.nome ??
+                "Comunidade não informada"}
+            </Typography>
+            {podeGerirCadastro && (ajustesPendentes.data ?? []).map((ajuste) => (
+              <Alert key={ajuste.id} severity="warning">
+                Ajuste cadastral pendente: {[
+                  ajuste.email,
+                  ajuste.celular,
+                  ajuste.endereco.logradouro,
+                  ajuste.endereco.cidade,
+                ].filter(Boolean).join(" · ") || "dados propostos"}.
+              </Alert>
+            ))}
+            {podeGerirCadastro ? (
+              <>
+                <Typography variant="subtitle1">Dados civis</Typography>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField required fullWidth size="small" label="Nome completo" value={cadastro.nome ?? ""} onChange={(e) => alterarCadastro("nome", e.target.value)} />
+                  <TextField select required size="small" label="Sexo" value={cadastro.sexo ?? "MASCULINO"} onChange={(e) => alterarCadastro("sexo", e.target.value as UpdateFielPayload["sexo"])}><MenuItem value="MASCULINO">Masculino</MenuItem><MenuItem value="FEMININO">Feminino</MenuItem></TextField>
+                  <TextField required size="small" type="date" label="Nascimento" slotProps={{ inputLabel: { shrink: true } }} value={cadastro.dataNascimento ?? ""} onChange={(e) => alterarCadastro("dataNascimento", e.target.value)} />
+                </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField select required fullWidth size="small" label="País de origem" value={cadastro.paisOrigem ?? "BRA"} onChange={(e) => alterarCadastro("paisOrigem", e.target.value)}><MenuItem value="BRA">Brasil</MenuItem><MenuItem value="PRT">Portugal</MenuItem><MenuItem value="ARG">Argentina</MenuItem><MenuItem value="BOL">Bolívia</MenuItem><MenuItem value="COL">Colômbia</MenuItem><MenuItem value="VEN">Venezuela</MenuItem></TextField>
+                  <TextField fullWidth size="small" label="CPF" value={cadastro.cpf ?? ""} onChange={(e) => alterarCadastro("cpf", e.target.value)} />
+                  <TextField fullWidth size="small" label="RG" value={cadastro.rg ?? ""} onChange={(e) => alterarCadastro("rg", e.target.value)} />
+                </Stack>
+                {cadastro.paisOrigem !== "BRA" ? <Stack direction={{ xs: "column", sm: "row" }} spacing={2}><TextField select required fullWidth size="small" label="Documento estrangeiro" value={cadastro.tipoDocumentoEstrangeiro ?? ""} onChange={(e) => alterarCadastro("tipoDocumentoEstrangeiro", (e.target.value || undefined) as TipoDocumentoEstrangeiro | undefined)}><MenuItem value="RNE_RNM">RNE/RNM</MenuItem><MenuItem value="PASSAPORTE">Passaporte</MenuItem></TextField><TextField required fullWidth size="small" label="Número do documento" value={cadastro.numeroDocumentoEstrangeiro ?? ""} onChange={(e) => alterarCadastro("numeroDocumentoEstrangeiro", e.target.value)} /></Stack> : null}
+                <Typography variant="subtitle1">Contato e endereço</Typography>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField required fullWidth size="small" label="E-mail" value={cadastro.email ?? ""} onChange={(e) => alterarCadastro("email", e.target.value)} />
+                  <TextField required fullWidth size="small" label="Celular" value={cadastro.celular ?? ""} onChange={(e) => alterarCadastro("celular", e.target.value)} />
+                  <TextField fullWidth size="small" label="Telefone fixo" value={cadastro.telefoneFixo ?? ""} onChange={(e) => alterarCadastro("telefoneFixo", e.target.value)} />
+                </Stack>
+                <FormControlLabel control={<Checkbox checked={cadastro.isWhatsapp ?? false} onChange={(e) => alterarCadastro("isWhatsapp", e.target.checked)} />} label="Este celular possui WhatsApp" />
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField fullWidth size="small" label="Logradouro" value={endereco.logradouro ?? ""} onChange={(e) => alterarEndereco("logradouro", e.target.value)} />
+                  <TextField fullWidth size="small" label="Número" value={endereco.numero ?? ""} onChange={(e) => alterarEndereco("numero", e.target.value)} />
+                  <TextField fullWidth size="small" label="Complemento" value={endereco.complemento ?? ""} onChange={(e) => alterarEndereco("complemento", e.target.value)} />
+                </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField fullWidth size="small" label="Bairro" value={endereco.bairro ?? ""} onChange={(e) => alterarEndereco("bairro", e.target.value)} />
+                  <TextField fullWidth size="small" label="Cidade" value={endereco.cidade ?? ""} onChange={(e) => alterarEndereco("cidade", e.target.value)} />
+                  <TextField fullWidth size="small" label="UF" value={endereco.estado ?? ""} onChange={(e) => alterarEndereco("estado", e.target.value)} />
+                  <TextField fullWidth size="small" label="CEP" value={endereco.cep ?? ""} onChange={(e) => alterarEndereco("cep", e.target.value)} />
+                </Stack>
+                <TextField select required fullWidth size="small" label="Igreja que frequenta" value={cadastro.unidadeTerritorialId ?? ""} onChange={(e) => alterarCadastro("unidadeTerritorialId", e.target.value)}>{(unidades.data ?? []).filter((u) => u.tipo === "MATRIZ" || u.tipo === "COMUNIDADE").map((u) => <MenuItem key={u.id} value={u.id}>{u.nome}</MenuItem>)}</TextField>
+                <Stack direction={{ xs: "column", sm: "row" }}><FormControlLabel control={<Checkbox checked={cadastro.isDizimista ?? false} onChange={(e) => alterarCadastro("isDizimista", e.target.checked)} />} label="Dizimista" /><FormControlLabel control={<Checkbox checked={cadastro.permitirDivulgacaoAniversario ?? false} onChange={(e) => alterarCadastro("permitirDivulgacaoAniversario", e.target.checked)} />} label="Autoriza divulgar dia e mês do aniversário" /></Stack>
+                <Button color="primary" variant="outlined" startIcon={<ActivateIcon />} disabled={salvarCadastro.isPending} onClick={() => salvarCadastro.mutate()}>Salvar alterações</Button>
+              </>
+            ) : null}
+            <Typography variant="h6">Família</Typography>
+            {(familiares.data ?? []).map((r) => {
+              const acaoInativar = podeGerirCadastro ? (
+                <Button
+                  size="small"
+                  color="error"
+                  startIcon={<BlockIcon />}
+                  onClick={() => removerFamiliar.mutate(r.id)}
                 >
-                  {organizacoes.map((org) => (
-                    <MenuItem key={org.id} value={org.id}>
-                      {org.nome} ({org.tipo})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12 }}>
-              <FormControl fullWidth required>
-                <InputLabel id="papel-promocao-label">Papel de Liderança</InputLabel>
-                <Select
-                  labelId="papel-promocao-label"
-                  label="Papel de Liderança"
-                  value={promoteValues.papel}
-                  onChange={(e) => setPromoteValues({ ...promoteValues, papel: e.target.value })}
+                  Inativar
+                </Button>
+              ) : null;
+              return (
+                <Stack
+                  key={r.id}
+                  direction="row"
+                  sx={{ justifyContent: "space-between" }}
                 >
-                  <MenuItem value="COORD_PASTORAL">Coordenador Pastoral</MenuItem>
-                  <MenuItem value="COORD_MOVIMENTO">Coordenador de Movimento</MenuItem>
-                  <MenuItem value="VICE_COORDENADOR">Vice-Coordenador</MenuItem>
-                  <MenuItem value="SECRETARIO">Secretário</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Username (Login)"
-                fullWidth
-                placeholder="Ex: joao.silva"
-                value={promoteValues.username}
-                onChange={(e) => setPromoteValues({ ...promoteValues, username: e.target.value })}
-                helperText="Se o Fiel não tiver conta, informe para criar um usuário."
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                label="Senha Inicial"
-                type="password"
-                fullWidth
-                value={promoteValues.password}
-                onChange={(e) => setPromoteValues({ ...promoteValues, password: e.target.value })}
-              />
-            </Grid>
-          </Grid>
+                  <Typography>
+                    {r.nome} · {r.relacao}
+                  </Typography>
+                  {acaoInativar}
+                </Stack>
+              );
+            })}
+            {podeGerirCadastro ? (
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Fiel relacionado"
+                  value={destino}
+                  onChange={(e) => setDestino(e.target.value)}
+                >
+                  {(fieis.data ?? [])
+                    .filter((f) => (f.fielId ?? f.id) !== id)
+                    .map((f) => (
+                      <MenuItem key={f.fielId ?? f.id} value={f.fielId ?? f.id}>
+                        {f.nome}
+                      </MenuItem>
+                    ))}
+                </TextField>
+                <TextField
+                  select
+                  label="Relação"
+                  value={tipo}
+                  onChange={(e) =>
+                    setTipo(e.target.value as TipoRelacionamentoFamiliar)
+                  }
+                >
+                  <MenuItem value="CONJUGE">Cônjuge</MenuItem>
+                  <MenuItem value="GENITOR">Genitor</MenuItem>
+                  <MenuItem value="FILHO">Filho(a)</MenuItem>
+                  <MenuItem value="IRMAO">Irmão(ã)</MenuItem>
+                </TextField>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  disabled={!destino || criarFamiliar.isPending}
+                  onClick={() => criarFamiliar.mutate()}
+                >
+                  Vincular
+                </Button>
+              </Stack>
+            ) : null}
+          </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <ActionButton title="Cancelar promoção" icon={<CloseIcon />} onClick={() => setPromoteModalOpen(false)} color="secondary" />
-          <ActionButton title="Promover fiel para papel de liderança" icon={<PromoteIcon />} color="secondary" onClick={handleExecutePromote} />
+        <DialogActions>
+          <Button
+            color="secondary"
+            startIcon={<BlockIcon />}
+            onClick={() => setSelecionado(null)}
+          >
+            Fechar
+          </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
-
 export default Fieis;

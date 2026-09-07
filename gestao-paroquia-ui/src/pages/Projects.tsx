@@ -50,6 +50,7 @@ import {
 import {useAuth} from '../auth/AuthContext';
 import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
+import TableActionMenu from '../components/TableActionMenu';
 import StatusIcon from '../components/StatusIcon';
 import { getProjetoStatusMeta } from '../utils/statusMeta/projetoStatus';
 import {
@@ -157,7 +158,6 @@ const Projects = () => {
       setProjects(projRes.data || []);
       setOrganizations(orgsData || []);
     } catch (err) {
-      console.error('Erro ao buscar dados:', err);
       showError('Não foi possível carregar os projetos e organizações.');
     } finally {
       setIsLoading(false);
@@ -176,7 +176,6 @@ const Projects = () => {
       const res = await apiClient.get<ProjetoResumo>(`/projetos/${projectId}/resumo`);
       setResumo(res.data);
     } catch (err) {
-      console.error('Erro ao buscar resumo:', err);
       showError('Não foi possível carregar o resumo do projeto.');
       setResumo(null);
     } finally {
@@ -328,7 +327,6 @@ const Projects = () => {
       setTransitionDialogOpen(false);
       loadData();
     } catch (err: unknown) {
-      console.error('Erro na transição de status:', err);
       showError(extractErrorMessage(err, 'Erro ao processar transição de status.'));
     } finally {
       setIsTransitioning(false);
@@ -412,10 +410,14 @@ const Projects = () => {
                         <StatusIcon {...getProjetoStatusMeta(project.status)} variant="outlined" />
                       </TableCell>
                       <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
-                        <ActionButton title="Visualizar Detalhes do Projeto" icon={<VisibilityIcon />} size="small" color="primary" onClick={() => handleRowClick(project)} />
-                        {canManageProjetos() && (
-                          <ActionButton title="Editar Projeto" icon={<EditIcon />} size="small" color="secondary" onClick={() => handleOpenEdit(project)} sx={{ ml: 1 }} />
-                        )}
+                        <TableActionMenu
+                          actions={[
+                            { label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => handleRowClick(project) },
+                            ...(canManageProjetos()
+                              ? [{ label: 'Editar projeto', icon: <EditIcon fontSize="small" />, onClick: () => handleOpenEdit(project) }]
+                              : []),
+                          ]}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -441,8 +443,9 @@ const Projects = () => {
       {/* CREATE & EDIT DIALOG */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': {  } }}>
         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
-          <DialogTitle>
+          <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
+            <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setDialogOpen(false)} />
           </DialogTitle>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
@@ -542,18 +545,21 @@ const Projects = () => {
         open={selectedProject !== null}
         onClose={() => setSelectedProject(null)}
         sx={{
-          '& .MuiDrawer-paper': { width: { xs: '100%', sm: 420 }, p: 3, boxSizing: 'border-box' }
+          '& .MuiDrawer-paper': { width: { xs: '100%', sm: 480, md: 540 }, p: 3, boxSizing: 'border-box' }
         }}
       >
         {selectedProject && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 3.5 }}>
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
-                Detalhes do Projeto
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Visão consolidada de dados e indicadores.
-              </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 0.5 }}>
+                  Detalhes do Projeto
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Visão consolidada de dados e indicadores.
+                </Typography>
+              </Box>
+              <ActionButton title="Fechar" icon={<CloseIcon />} size="small" color="secondary" onClick={() => setSelectedProject(null)} />
             </Box>
             
             <Divider />
@@ -713,19 +719,22 @@ const Projects = () => {
 
             <Divider />
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5, pt: 1 }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}>
+                {canManageProjetos() && selectedProject.status !== 'CANCELADO' && selectedProject.status !== 'CONCLUIDO' && (
+                  <ActionButton title="Editar" icon={<EditIcon />} color="primary" onClick={() => handleOpenEdit(selectedProject)} />
+                )}
                 {selectedProject.status === 'ABERTO' && canTransitionProjeto(selectedProject) && (
-                  <ActionButton title="Iniciar execução do projeto" icon={<PlayArrowIcon />} color="success" onClick={() => handleOpenTransition('INICIAR')} />
+                  <ActionButton title="Iniciar Projeto" icon={<PlayArrowIcon />} color="success" onClick={() => handleOpenTransition('INICIAR')} />
                 )}
                 {selectedProject.status === 'EM_ANDAMENTO' && canTransitionProjeto(selectedProject) && (
-                  <ActionButton title="Concluir execução do projeto" icon={<CheckIcon />} color="primary" onClick={() => handleOpenTransition('CONCLUIR')} />
+                  <ActionButton title="Concluir Projeto" icon={<CheckIcon />} color="primary" onClick={() => handleOpenTransition('CONCLUIR')} />
                 )}
                 {(selectedProject.status === 'ABERTO' || selectedProject.status === 'EM_ANDAMENTO') && canTransitionProjeto(selectedProject) && (
-                  <ActionButton title="Cancelar projeto" icon={<CancelIcon />} color="error" onClick={() => handleOpenTransition('CANCELAR')} />
+                  <ActionButton title="Cancelar Projeto" icon={<CancelIcon />} color="error" onClick={() => handleOpenTransition('CANCELAR')} />
                 )}
               </Box>
-              <ActionButton title="Fechar painel" icon={<CloseIcon />} color="secondary" onClick={() => setSelectedProject(null)} />
+              <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={() => setSelectedProject(null)} />
             </Box>
           </Box>
         )}
@@ -738,10 +747,11 @@ const Projects = () => {
         fullWidth
         sx={{ '& .MuiDialog-paper': {  } }}
       >
-        <DialogTitle>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {transitionType === 'INICIAR' && 'Iniciar Projeto'}
           {transitionType === 'CONCLUIR' && 'Concluir Projeto'}
           {transitionType === 'CANCELAR' && 'Cancelar Projeto'}
+          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setTransitionDialogOpen(false)} disabled={isTransitioning} />
         </DialogTitle>
         <DialogContent>
           <Typography variant="body2" sx={{ mb: transitionType === 'CANCELAR' ? 2 : 0 }}>
@@ -765,15 +775,15 @@ const Projects = () => {
         </DialogContent>
         <DialogActions>
           <ActionButton
-            title="Manter status atual"
+            title="Cancelar"
             icon={<CloseIcon />}
             onClick={() => setTransitionDialogOpen(false)}
             color="secondary"
             disabled={isTransitioning}
           />
           <ActionButton
-            title="Confirmar alteração de status"
-            icon={isTransitioning ? <CircularProgress size={24} /> : <CheckIcon />}
+            title={transitionType === 'CANCELAR' ? 'Confirmar Cancelamento' : transitionType === 'INICIAR' ? 'Iniciar Projeto' : 'Concluir Projeto'}
+            icon={isTransitioning ? <CircularProgress size={20} color="inherit" /> : <CheckIcon />}
             onClick={handleTransitionSubmit}
             color={transitionType === 'CANCELAR' ? 'error' : 'primary'}
             disabled={isTransitioning}

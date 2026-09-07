@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, IconButton, Tooltip, type ButtonProps, type SxProps, type Theme } from '@mui/material';
+import { Button, type ButtonProps, type SxProps, type Theme } from '@mui/material';
 
 interface ActionButtonProps {
   title: string;
   icon: React.ReactElement;
+  /** Texto perceptível do botão. `title` mantém compatibilidade durante a migração. */
   label?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit';
@@ -19,34 +20,23 @@ interface ActionButtonProps {
   ariaLabel?: string;
 }
 
-/** Botão com ícone + tooltip obrigatórios — padrão único de ação no app. */
+/** Botão de ação sempre textual; controles compactos usam IconActionButton. */
 const ActionButton: React.FC<ActionButtonProps> = ({
   title, icon, label, onClick, type = 'button', color = 'primary', variant = 'outlined',
-  size = 'medium', disabled, fullWidth, component, sx, children, ariaLabel,
+  size = 'small', disabled, fullWidth, component, sx, children, ariaLabel,
 }) => {
-  const buttonEl = label ? (
+  const buttonEl = (
     <Button
       type={type} color={color} variant={variant} size={size} onClick={onClick}
       startIcon={icon} disabled={disabled} fullWidth={fullWidth}
       sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
     >
-      {label}
-    </Button>
-  ) : (
-    <IconButton
-      type={type} color={color} size={size} onClick={onClick} disabled={disabled}
-      sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
-    >
-      {icon}
+      {label ?? title}
       {children}
-    </IconButton>
+    </Button>
   );
 
-  return (
-    <Tooltip title={title}>
-      {disabled ? <span>{buttonEl}</span> : buttonEl}
-    </Tooltip>
-  );
+  return buttonEl;
 };
 
 export default ActionButton;

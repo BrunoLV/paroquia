@@ -3,6 +3,7 @@ import {
     canApprove,
     canManageAnoParoquial,
     canManageEvento,
+    canManageCadastroFieis,
     canManageLocais,
     canManageOrganizacoes,
     canManageProjetos,
@@ -18,6 +19,33 @@ import {
     isUnlinkedUser,
     User
 } from './permissions';
+
+// ─── canManageCadastroFieis ────────────────────────────────────────────────
+
+describe('canManageCadastroFieis', () => {
+  it('permite Secretaria Paroquial administrar cadastros', () => {
+    const secretaria: User = {
+      id: '1', username: 'secretaria', name: 'Secretaria',
+      roles: ['GLOBAL_SECRETARIA_PAROQUIAL']
+    };
+
+    expect(canManageCadastroFieis(secretaria)).toBe(true);
+  });
+
+  it('permite Administrador e Pároco administrar cadastros', () => {
+    expect(canManageCadastroFieis({ id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'] })).toBe(true);
+    expect(canManageCadastroFieis({ id: '2', username: 'paroco', name: 'Pároco', roles: ['GLOBAL_PAROCO'] })).toBe(true);
+  });
+
+  it('nega gestão cadastral ao coordenador pastoral', () => {
+    const coordenador: User = {
+      id: '1', username: 'coordenador', name: 'Coordenador',
+      roles: ['COORDENADOR_PASTORAL']
+    };
+
+    expect(canManageCadastroFieis(coordenador)).toBe(false);
+  });
+});
 
 // ─── isParoco ────────────────────────────────────────────────────────────────
 

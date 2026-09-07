@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Chip, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, Skeleton, Typography } from '@mui/material';
 import { Inventory as InventoryIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
 import { getAlocacoesPorEvento } from '../api/ativos';
 import { AtivoAlocacaoResponse } from '../api/types';
@@ -23,7 +23,6 @@ const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId 
         if (active) setAlocacoes(data || []);
       })
       .catch((err) => {
-        console.error('Erro ao buscar ativos alocados ao evento:', err);
       })
       .finally(() => {
         if (active) setIsLoading(false);
@@ -59,15 +58,7 @@ const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId 
               </Typography>
               <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
               {alocacao.impactadaPorAtraso && (
-                <Tooltip title="Risco de atraso na devolução">
-                  <Chip
-                    label="Pode atrasar"
-                    color="warning"
-                    icon={<WarningAmberIcon />}
-                    size="small"
-                    variant="outlined"
-                  />
-                </Tooltip>
+                <Chip label="Pode atrasar" color="warning" icon={<WarningAmberIcon />} size="small" variant="outlined" />
               )}
             </Box>
           ))}

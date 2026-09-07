@@ -46,7 +46,7 @@ public class MembroMapper {
             if (fiel != null) {
                 fielNome = fiel.getNome();
                 fielEmail = fiel.getEmail();
-                fielTelefone = fiel.getTelefone();
+                fielTelefone = fiel.getCelular();
             }
         }
 

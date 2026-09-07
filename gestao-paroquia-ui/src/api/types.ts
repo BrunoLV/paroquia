@@ -1,26 +1,33 @@
 export type TipoOrganismoParoquial =
-  | 'MATRIZ'
-  | 'COMUNIDADE'
-  | 'CLERO'
-  | 'CONSELHO_PASTORAL'
-  | 'CONSELHO_ECONOMICO'
-  | 'PASTORAL'
-  | 'MOVIMENTO'
-  | 'OUTRO';
+  | "MATRIZ"
+  | "COMUNIDADE"
+  | "CLERO"
+  | "CONSELHO_PASTORAL"
+  | "CONSELHO_ECONOMICO"
+  | "PASTORAL"
+  | "MOVIMENTO"
+  | "OUTRO";
 
-export type Vocacao = 'LEIGO' | 'SACERDOTE' | 'DIACONO' | 'RELIGIOSO';
+export type Vocacao = "LEIGO" | "SACERDOTE" | "DIACONO" | "RELIGIOSO";
 
 export const VOCACAO_LABELS: Record<Vocacao, string> = {
-  LEIGO: 'Leigo(a)',
-  SACERDOTE: 'Sacerdote',
-  DIACONO: 'Diácono',
-  RELIGIOSO: 'Religioso(a)',
+  LEIGO: "Leigo(a)",
+  SACERDOTE: "Sacerdote",
+  DIACONO: "Diácono",
+  RELIGIOSO: "Religioso(a)",
 };
 
-export type Sexo = 'MASCULINO' | 'FEMININO' | 'NAO_INFORMADO';
-export type EstadoCivil = 'SOLTEIRO' | 'CASADO_IGREJA' | 'CASADO_CIVIL' | 'VIUVO' | 'DIVORCIADO' | 'UNIAO_ESTAVEL';
-export type PreferenciaCanalComunicacao = 'WHATSAPP' | 'EMAIL' | 'SMS' | 'TELEFONE' | 'NENHUM';
-export type Parentesco = 'FILHO' | 'ENTEADO' | 'TUTELADO' | 'OUTRO';
+export type Sexo = "MASCULINO" | "FEMININO" | "NAO_INFORMADO";
+export type EstadoCivil =
+  | "SOLTEIRO"
+  | "CASADO_IGREJA"
+  | "CASADO_CIVIL"
+  | "VIUVO"
+  | "DIVORCIADO"
+  | "UNIAO_ESTAVEL";
+export type PreferenciaCanalComunicacao =
+  "WHATSAPP" | "EMAIL" | "SMS" | "TELEFONE" | "NENHUM";
+export type Parentesco = "FILHO" | "ENTEADO" | "TUTELADO" | "OUTRO";
 
 export interface Endereco {
   logradouro?: string | null;
@@ -68,6 +75,9 @@ export interface VidaSacramental {
   paroquiaMatrimonio?: string | null;
   numeroProcessoMatrimonial?: string | null;
   certidaoMatrimonio?: string | null;
+  nomePaiCertidao?: string | null;
+  nomeMaeCertidao?: string | null;
+  testemunhasMatrimonio?: string | null;
 }
 
 export interface ConsentimentoLgpd {
@@ -80,15 +90,16 @@ export interface ConsentimentoLgpd {
 }
 
 export interface Fiel {
+  fielId?: string;
   id: string;
-  nome: string;
-  cpf: string;
-  rg?: string | null;
-  dataNascimento: string;
+  nome: string | null;
   sexo?: Sexo;
+  cpf: string | null;
+  rg?: string | null;
+  dataNascimento: string | null;
   profissao?: string | null;
-  email: string;
-  telefone: string;
+  email: string | null;
+  telefone: string | null;
   telefoneFixo?: string | null;
   celularWhatsapp?: string | null;
   preferenciaCanalComunicacao?: PreferenciaCanalComunicacao;
@@ -105,24 +116,49 @@ export interface Fiel {
   dependentes?: Dependente[];
   habilidadesVoluntariado?: string | null;
   consentimentoLgpd?: ConsentimentoLgpd | null;
+  dadosIdentificacao?: {
+    cpfFormatado?: string | null;
+    rg?: string | null;
+    paisOrigem?: string | null;
+    tipoDocumentoEstrangeiro?: TipoDocumentoEstrangeiro | null;
+    documentoEstrangeiroFormatado?: string | null;
+  };
+  contato?: {
+    celularFormatado?: string | null;
+    isWhatsapp?: boolean;
+    telefoneFixoFormatado?: string | null;
+    email?: string | null;
+  };
+  igrejaFrequenta?: { id: string; nome: string; tipo: string } | null;
+  isDizimista?: boolean;
+  permitirDivulgacaoAniversario?: boolean;
+  isAtivo?: boolean;
 }
 
 export interface CreateFielPayload {
   nome: string;
-  cpf: string;
+  sexo: Sexo;
+  paisOrigem: string;
+  cpf?: string;
   rg?: string;
+  tipoDocumentoEstrangeiro?: TipoDocumentoEstrangeiro;
+  numeroDocumentoEstrangeiro?: string;
   dataNascimento: string;
-  sexo?: Sexo;
   profissao?: string;
   email: string;
-  telefone: string;
+  celular: string;
+  isWhatsapp: boolean;
+  unidadeTerritorialId: string;
+  isDizimista: boolean;
+  permitirDivulgacaoAniversario: boolean;
+  telefone?: string;
   telefoneFixo?: string;
   celularWhatsapp?: string;
   preferenciaCanalComunicacao?: PreferenciaCanalComunicacao;
   endereco?: Endereco | string;
   estadoCivil?: EstadoCivil;
   conjugeId?: string;
-  vocacao: Vocacao;
+  vocacao?: Vocacao;
   batizado?: boolean;
   primeiraComunhao?: boolean;
   crismado?: boolean;
@@ -137,10 +173,18 @@ export interface UpdateFielPayload {
   nome?: string;
   cpf?: string;
   rg?: string;
+  paisOrigem?: string;
+  tipoDocumentoEstrangeiro?: TipoDocumentoEstrangeiro;
+  numeroDocumentoEstrangeiro?: string;
   dataNascimento?: string;
   sexo?: Sexo;
   profissao?: string;
   email?: string;
+  celular?: string;
+  isWhatsapp?: boolean;
+  unidadeTerritorialId?: string;
+  isDizimista?: boolean;
+  permitirDivulgacaoAniversario?: boolean;
   telefone?: string;
   telefoneFixo?: string;
   celularWhatsapp?: string;
@@ -160,59 +204,59 @@ export interface UpdateFielPayload {
   consentimentoLgpd?: ConsentimentoLgpd;
 }
 
+export type TipoDocumentoEstrangeiro = "RNE_RNM" | "PASSAPORTE";
+
 export type SetorPastoral =
-  | 'SANTIFICACAO_LITURGIA'
-  | 'FORMACAO_ENSINAR'
-  | 'SOCIAL_CARIDADE';
+  "SANTIFICACAO_LITURGIA" | "FORMACAO_ENSINAR" | "SOCIAL_CARIDADE";
 
 export type PapelEclesial =
-  | 'ADMIN'
-  | 'BISPO_DIOCESANO'
-  | 'PAROCO'
-  | 'VIGARIO'
-  | 'DIACONO'
-  | 'PADRE'
-  | 'MESA_CPP'
-  | 'MEMBRO_CPP'
-  | 'MEMBRO_CAE'
-  | 'PRESIDENTE_CPC'
-  | 'MEMBRO_CPC'
-  | 'COORD_PASTORAL_GLOBAL'
-  | 'COORD_PASTORAL_LOCAL'
-  | 'COORD_PASTORAL'
-  | 'COORD_MOVIMENTO'
-  | 'VOLUNTARIO_PASTORAL_LOCAL'
-  | 'MEMBRO_PASTORAL'
-  | 'MEMBRO_MOVIMENTO'
-  | 'SECRETARIO';
+  | "ADMIN"
+  | "BISPO_DIOCESANO"
+  | "PAROCO"
+  | "VIGARIO"
+  | "DIACONO"
+  | "PADRE"
+  | "MESA_CPP"
+  | "MEMBRO_CPP"
+  | "MEMBRO_CAE"
+  | "PRESIDENTE_CPC"
+  | "MEMBRO_CPC"
+  | "COORD_PASTORAL_GLOBAL"
+  | "COORD_PASTORAL_LOCAL"
+  | "COORD_PASTORAL"
+  | "COORD_MOVIMENTO"
+  | "VOLUNTARIO_PASTORAL_LOCAL"
+  | "MEMBRO_PASTORAL"
+  | "MEMBRO_MOVIMENTO"
+  | "SECRETARIO";
 
 export const PAPEL_ECLESIAL_LABELS: Record<string, string> = {
-  ADMIN: 'Administrador do Sistema',
-  BISPO_DIOCESANO: 'Bispo Diocesano',
-  PAROCO: 'Pároco',
-  VIGARIO: 'Vigário Paroquial',
-  DIACONO: 'Diácono',
-  PADRE: 'Padre',
-  MESA_CPP: 'Mesa Diretora do CPP',
-  MEMBRO_CPP: 'Membro do CPP',
-  MEMBRO_CAE: 'Membro do CAE',
-  PRESIDENTE_CPC: 'Presidente do CPC',
-  MEMBRO_CPC: 'Membro do CPC',
-  COORD_PASTORAL_GLOBAL: 'Coordenador Pastoral Global',
-  COORD_PASTORAL_LOCAL: 'Coordenador Pastoral Local',
-  COORD_PASTORAL: 'Coordenador Pastoral',
-  COORD_MOVIMENTO: 'Coordenador de Movimento',
-  VOLUNTARIO_PASTORAL_LOCAL: 'Voluntário Pastoral Local',
-  MEMBRO_PASTORAL: 'Membro de Pastoral',
-  MEMBRO_MOVIMENTO: 'Membro de Movimento',
-  SECRETARIO: 'Secretário',
+  ADMIN: "Administrador do Sistema",
+  BISPO_DIOCESANO: "Bispo Diocesano",
+  PAROCO: "Pároco",
+  VIGARIO: "Vigário Paroquial",
+  DIACONO: "Diácono",
+  PADRE: "Padre",
+  MESA_CPP: "Mesa Diretora do CPP",
+  MEMBRO_CPP: "Membro do CPP",
+  MEMBRO_CAE: "Membro do CAE",
+  PRESIDENTE_CPC: "Presidente do CPC",
+  MEMBRO_CPC: "Membro do CPC",
+  COORD_PASTORAL_GLOBAL: "Coordenador Pastoral Global",
+  COORD_PASTORAL_LOCAL: "Coordenador Pastoral Local",
+  COORD_PASTORAL: "Coordenador Pastoral",
+  COORD_MOVIMENTO: "Coordenador de Movimento",
+  VOLUNTARIO_PASTORAL_LOCAL: "Voluntário Pastoral Local",
+  MEMBRO_PASTORAL: "Membro de Pastoral",
+  MEMBRO_MOVIMENTO: "Membro de Movimento",
+  SECRETARIO: "Secretário",
 
   // Aliases for stored values / legacy compatibility
-  MESA_DIRETORA_CPP: 'Mesa Diretora do CPP',
-  COORDENADOR_PASTORAL_GLOBAL: 'Coordenador Pastoral Global',
-  COORDENADOR_PASTORAL_LOCAL: 'Coordenador Pastoral Local',
-  COORDENADOR_PASTORAL: 'Coordenador Pastoral',
-  COORDENADOR_MOVIMENTO: 'Coordenador de Movimento',
+  MESA_DIRETORA_CPP: "Mesa Diretora do CPP",
+  COORDENADOR_PASTORAL_GLOBAL: "Coordenador Pastoral Global",
+  COORDENADOR_PASTORAL_LOCAL: "Coordenador Pastoral Local",
+  COORDENADOR_PASTORAL: "Coordenador Pastoral",
+  COORDENADOR_MOVIMENTO: "Coordenador de Movimento",
 };
 
 /**
@@ -242,7 +286,7 @@ export interface Organizacao {
 export interface PastoralMovimentoOficial {
   id: string;
   nome: string;
-  tipo: 'PASTORAL' | 'MOVIMENTO';
+  tipo: "PASTORAL" | "MOVIMENTO";
 }
 
 /**
@@ -287,21 +331,21 @@ export interface Projeto {
   inicio: string;
   fim: string;
   organizacaoResponsavelId: string;
-  status: 'ABERTO' | 'EM_ANDAMENTO' | 'CANCELADO' | 'CONCLUIDO';
+  status: "ABERTO" | "EM_ANDAMENTO" | "CANCELADO" | "CONCLUIDO";
   /** Flag de UI: marca que o registro acabou de ser atualizado, para destacar/realçar na lista. */
   updated?: boolean;
 }
 
 export type CategoriaEvento =
-  | 'SOLENIDADE'
-  | 'PASTORAL'
-  | 'SOCIAL'
-  | 'LITURGICO'
-  | 'ADMINISTRATIVO'
-  | 'SACRAMENTAL'
-  | 'FORMATIVO'
-  | 'ASSISTENCIAL'
-  | 'MOVIMENTO';
+  | "SOLENIDADE"
+  | "PASTORAL"
+  | "SOCIAL"
+  | "LITURGICO"
+  | "ADMINISTRATIVO"
+  | "SACRAMENTAL"
+  | "FORMATIVO"
+  | "ASSISTENCIAL"
+  | "MOVIMENTO";
 
 /**
  * Evento de calendário — a entidade mais conectada do domínio. Além dos dados básicos
@@ -400,7 +444,7 @@ export interface UpdateEventoPayload {
   organizacaoResponsavelId?: string;
   participantes?: string[];
   /** Escopo da edição quando o evento pertence a uma série recorrente: só esta ocorrência, esta e as futuras, ou toda a série. */
-  editScope?: 'THIS_EVENT' | 'THIS_AND_FUTURE' | 'ALL_EVENTS';
+  editScope?: "THIS_EVENT" | "THIS_AND_FUTURE" | "ALL_EVENTS";
   projetoId?: string | null;
   localId?: string | null;
   igrejaVinculoId?: string | null;
@@ -416,8 +460,16 @@ export interface UpdateEventoPayload {
 export interface AprovacaoResponse {
   id: string;
   eventoId: string | null;
-  tipoSolicitacao: 'CRIACAO_EVENTO' | 'EDICAO_EVENTO' | 'ALTERACAO_HORARIO' | 'CANCELAMENTO' | 'RECLASSIFICACAO' | 'ALOCACAO_ATIVO_EMPRESTIMO' | 'OUTRO' | 'UNKNOWN_LEGACY';
-  status: 'PENDENTE' | 'APROVADA' | 'REPROVADA' | 'FALHA_EXECUCAO';
+  tipoSolicitacao:
+    | "CRIACAO_EVENTO"
+    | "EDICAO_EVENTO"
+    | "ALTERACAO_HORARIO"
+    | "CANCELAMENTO"
+    | "RECLASSIFICACAO"
+    | "ALOCACAO_ATIVO_EMPRESTIMO"
+    | "OUTRO"
+    | "UNKNOWN_LEGACY";
+  status: "PENDENTE" | "APROVADA" | "REPROVADA" | "FALHA_EXECUCAO";
   /** Papel exigido para decidir esta solicitação (ex: quem pode aprovar/reprovar), ou `null` se não restrito a um papel específico. */
   aprovadorPapel: string | null;
   criadoEmUtc: string;
@@ -432,7 +484,7 @@ export interface AprovacaoResponse {
 
 /** Requisição para decidir (aprovar/reprovar) uma solicitação de aprovação pendente. */
 export interface AprovacaoDecisionRequest {
-  status: 'APROVADA' | 'REPROVADA';
+  status: "APROVADA" | "REPROVADA";
   observacao?: string;
 }
 
@@ -449,7 +501,7 @@ export interface AprovacaoDecisionResponse {
   } | null;
 }
 
-export type AnoParoquialStatus = 'EM_PLANEJAMENTO' | 'FECHADO' | 'CONCLUIDO';
+export type AnoParoquialStatus = "EM_PLANEJAMENTO" | "FECHADO" | "CONCLUIDO";
 
 /**
  * Ano paroquial — controla o ciclo de vida anual (planejamento, fechamento) que
@@ -470,8 +522,8 @@ export interface AnoParoquial {
 export interface ProjetoAprovacaoResponse {
   id: string;
   projetoId: string | null;
-  tipoSolicitacao: 'CRIACAO' | 'CANCELAMENTO';
-  status: 'PENDENTE' | 'APROVADA' | 'REPROVADA';
+  tipoSolicitacao: "CRIACAO" | "CANCELAMENTO";
+  status: "PENDENTE" | "APROVADA" | "REPROVADA";
   solicitanteId: string;
   criadoEmUtc: string;
   decididoEmUtc: string | null;
@@ -481,7 +533,7 @@ export interface ProjetoAprovacaoResponse {
 }
 
 /** Recorte temporal do filtro global do dashboard. */
-export type PeriodoDashboard = 'HOJE' | 'SEMANA' | 'MES';
+export type PeriodoDashboard = "HOJE" | "SEMANA" | "MES";
 
 /** Cartões-resumo do topo do dashboard. */
 export interface GeneralSummary {
@@ -633,7 +685,13 @@ export interface DashboardMetrics {
   eventosSemana: WeeklyEvent[];
 }
 
-export type TipoObservacao = 'NOTA' | 'JUSTIFICATIVA' | 'APROVACAO' | 'REPROVACAO' | 'CANCELAMENTO' | 'AJUSTE_HORARIO';
+export type TipoObservacao =
+  | "NOTA"
+  | "JUSTIFICATIVA"
+  | "APROVACAO"
+  | "REPROVACAO"
+  | "CANCELAMENTO"
+  | "AJUSTE_HORARIO";
 
 /**
  * Anotação de auditoria/histórico registrada em um evento (nota livre, justificativa,
@@ -656,7 +714,14 @@ export interface Observacao {
 export interface OrganogramaNode {
   id: string;
   label: string;
-  type: 'PAROQUIA' | 'ORGANIZACAO' | 'UNIDADE_TERRITORIAL' | 'GRUPO_PAROQUIAL' | 'MEMBRO' | 'GRUPO' | string;
+  type:
+    | "PAROQUIA"
+    | "ORGANIZACAO"
+    | "UNIDADE_TERRITORIAL"
+    | "GRUPO_PAROQUIAL"
+    | "MEMBRO"
+    | "GRUPO"
+    | string;
   subtype: string;
   responsavelNome: string | null;
   responsavelPapel: string | null;
@@ -666,7 +731,8 @@ export interface OrganogramaNode {
   orgChildren?: OrganogramaNode[];
 }
 
-export type StatusHomologacao = 'PENDENTE_HOMOLOGACAO' | 'HOMOLOGADO' | 'VETADO';
+export type StatusHomologacao =
+  "PENDENTE_HOMOLOGACAO" | "HOMOLOGADO" | "VETADO";
 
 /**
  * Decisão de um Conselho Pastoral Comunitário (CPC) registrada em ata, sujeita a
@@ -690,9 +756,11 @@ export interface CpcDecisao {
   decididoEmUtc?: string | null;
 }
 
-export type AtivoCategoria = 'ELETRONICO' | 'MOBILIARIO' | 'PARAMENTO' | 'INFRAESTRUTURA';
+export type AtivoCategoria =
+  "ELETRONICO" | "MOBILIARIO" | "PARAMENTO" | "INFRAESTRUTURA";
 
-export type AtivoStatus = 'DISPONIVEL' | 'EM_MANUTENCAO' | 'BAIXADO' | 'ALOCADO';
+export type AtivoStatus =
+  "DISPONIVEL" | "EM_MANUTENCAO" | "BAIXADO" | "ALOCADO";
 
 /**
  * Ativo patrimonial (equipamento, mobiliário, paramento, etc.) pertencente a uma
@@ -758,9 +826,10 @@ export interface CancelarAlocacaoPayload {
   motivoCancelamento: string;
 }
 
-export type AtivoAlocacaoTipo = 'ALOCACAO_EVENTO' | 'MANUTENCAO';
+export type AtivoAlocacaoTipo = "ALOCACAO_EVENTO" | "MANUTENCAO";
 
-export type AtivoAlocacaoStatus = 'PENDENTE_APROVACAO' | 'CONFIRMADA' | 'ATRASADA' | 'DEVOLVIDA' | 'CANCELADA';
+export type AtivoAlocacaoStatus =
+  "PENDENTE_APROVACAO" | "CONFIRMADA" | "ATRASADA" | "DEVOLVIDA" | "CANCELADA";
 
 /**
  * Registro de uma alocação (reserva/empréstimo para evento) ou período de manutenção
@@ -804,8 +873,8 @@ export interface AlocacaoAtivoAprovacaoPendenteResponse {
 
 /** Resultado discriminado de uma tentativa de alocação: aplicada de imediato ou desviada para aprovação. */
 export type AlocarAtivoResultado =
-  | { kind: 'ALOCADO'; ativo: AtivoPatrimonial }
-  | { kind: 'PENDENTE'; pendente: AlocacaoAtivoAprovacaoPendenteResponse };
+  | { kind: "ALOCADO"; ativo: AtivoPatrimonial }
+  | { kind: "PENDENTE"; pendente: AlocacaoAtivoAprovacaoPendenteResponse };
 
 /** Métricas agregadas de utilização do patrimônio, exibidas no painel de gestão de ativos. */
 export interface MetricasOciosidade {
@@ -818,4 +887,3 @@ export interface MetricasOciosidade {
   taxaOciosidade: number;
   distribuicaoPorCategoria: Record<string, number>;
 }
-

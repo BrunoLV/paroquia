@@ -93,7 +93,6 @@ describe('useOrganogramaExport', () => {
   });
 
   test('deve tratar erro de captura e restaurar isExporting = false', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(toPng).mockRejectedValue(new Error('Erro ao capturar DOM'));
 
     const { result } = renderHook(() => useOrganogramaExport());
@@ -105,6 +104,5 @@ describe('useOrganogramaExport', () => {
     });
 
     expect(result.current.isExporting).toBe(false);
-    consoleErrorSpy.mockRestore();
   });
 });

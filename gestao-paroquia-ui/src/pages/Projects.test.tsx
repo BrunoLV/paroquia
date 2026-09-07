@@ -281,5 +281,40 @@ describe('Projects Page', () => {
 
     expect(mockShowError).toHaveBeenCalledWith('O nome do projeto é obrigatório.');
   });
+
+  test('renders action buttons in details drawer and handles status transition', async () => {
+    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    await renderProjects(adminUser);
+
+    const projectRow = screen.getByText('Reforma do Salão');
+    await act(async () => {
+      projectRow.click();
+    });
+
+    // Drawer is open for proj-1 (status: EM_ANDAMENTO)
+    expect(screen.getByRole('button', { name: /^Concluir Projeto$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Cancelar Projeto$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Editar$/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /^Fechar$/i }).length).toBeGreaterThan(0);
+
+    mockedApiClient.post.mockResolvedValueOnce({ data: { ...mockProjects[0], status: 'CONCLUIDO' } });
+
+    // Open transition dialog
+    const concluirBtn = screen.getByRole('button', { name: /^Concluir Projeto$/i });
+    await act(async () => {
+      concluirBtn.click();
+    });
+
+    expect(screen.getByText(/Tem certeza de que deseja concluir este projeto\?/i)).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole('button', { name: /^Concluir Projeto$/i });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(mockedApiClient.post).toHaveBeenCalledWith('/projetos/proj-1/concluir');
+    expect(mockShowSuccess).toHaveBeenCalledWith('Projeto concluído com sucesso!');
+  });
 });
+
 

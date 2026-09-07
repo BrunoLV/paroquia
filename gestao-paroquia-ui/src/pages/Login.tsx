@@ -15,6 +15,16 @@ import ActionButton from '../components/ActionButton';
 
 import LoginIcon from '@mui/icons-material/Login';
 
+interface LoginLocationState {
+  from?: {pathname?: string};
+}
+
+const getRedirectPath = (state: unknown): string => {
+  if (typeof state !== 'object' || state === null || !('from' in state)) return '/dashboard';
+  const from = (state as LoginLocationState).from;
+  return typeof from?.pathname === 'string' ? from.pathname : '/dashboard';
+};
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +35,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
+  const from = getRedirectPath(location.state);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +73,9 @@ const Login = () => {
         justifyContent: 'center',
         alignItems: 'center',
         py: 4,
+        px: 2,
         overflowY: 'auto',
+        background: (theme) => `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.custom.surfaceMuted} 100%)`,
       }}
     >
       <Container maxWidth="xs">
@@ -74,18 +86,18 @@ const Login = () => {
             alignItems: 'center',
           }}
         >
-          <Paper elevation={3} sx={{ p: 4, width: '100%', textAlign: 'center' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Paper elevation={0} sx={(theme) => ({ p: {xs: 3, sm: 4}, width: '100%', textAlign: 'center', border: '1px solid', borderColor: 'divider', boxShadow: theme.shadows[8] })}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2.5 }}>
               <img
                 src="/logo-paroquia.png"
                 alt="Logo da Paróquia"
-                style={{ width: '130px', height: '130px', objectFit: 'contain' }}
+                style={{ width: '112px', height: '112px', objectFit: 'contain' }}
               />
             </Box>
-            <Typography component="h1" variant="h5" align="center" gutterBottom sx={{ fontWeight: 700, color: 'primary.main' }}>
+            <Typography component="h1" variant="h5" align="center" gutterBottom sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '-0.02em' }}>
               Nossa Senhora de Fátima
             </Typography>
-            <Typography component="h2" variant="h6" align="center" sx={{ mb: 3, color: 'text.secondary' }}>
+            <Typography component="h2" variant="body2" align="center" sx={{ mb: 3.5, color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Gestão Paroquial
             </Typography>
 
@@ -122,7 +134,7 @@ const Login = () => {
                 color="primary"
                 icon={isLoading ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
                 label={isLoading ? 'Entrando...' : 'Entrar'}
-                sx={{ mt: 3, mb: 2, fontWeight: 600, py: 1.2, textTransform: 'none' }}
+                sx={{ mt: 3, mb: 0.5, fontWeight: 700, py: 1.2, textTransform: 'none' }}
                 disabled={isLoading}
               />
             </Box>

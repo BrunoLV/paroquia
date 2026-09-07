@@ -118,7 +118,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await apiClient.post('/auth/logout');
     } catch (error) {
-      console.error('Logout failed', error);
     } finally {
       localStorage.removeItem('user');
       setUser(null);

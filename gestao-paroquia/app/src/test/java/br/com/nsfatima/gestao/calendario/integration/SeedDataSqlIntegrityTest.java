@@ -88,11 +88,14 @@ public class SeedDataSqlIntegrityTest {
                 "SELECT COUNT(*) FROM calendario.locais", Integer.class);
         Integer eventosCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.eventos", Integer.class);
+        Integer fieisAtivosCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.fieis WHERE ativo = TRUE", Integer.class);
 
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
         assertTrue(unidadesCount != null && unidadesCount > 0, "UnidadeTerritorial should be populated");
         assertTrue(locaisCount != null && locaisCount > 0, "Locais should be populated");
         assertTrue(eventosCount != null && eventosCount > 0, "Eventos should be populated");
+        assertTrue(fieisAtivosCount != null && fieisAtivosCount > 0,
+                "Seed deve incluir fiéis ativos");
     }
 }
-

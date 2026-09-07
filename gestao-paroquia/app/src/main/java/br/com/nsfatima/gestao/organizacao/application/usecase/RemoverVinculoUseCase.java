@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
+import br.com.nsfatima.gestao.iam.application.usecase.AvaliarAcessoPastoralUseCase;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +17,14 @@ import java.util.UUID;
 public class RemoverVinculoUseCase {
 
     private final MembroGrupoJpaRepository vinculoRepository;
+    private final AvaliarAcessoPastoralUseCase acessoPastoral;
 
-    public RemoverVinculoUseCase(MembroGrupoJpaRepository vinculoRepository) {
+    @Autowired
+    public RemoverVinculoUseCase(MembroGrupoJpaRepository vinculoRepository, AvaliarAcessoPastoralUseCase acessoPastoral) {
         this.vinculoRepository = vinculoRepository;
+        this.acessoPastoral = acessoPastoral;
     }
+    RemoverVinculoUseCase(MembroGrupoJpaRepository vinculoRepository) { this(vinculoRepository, null); }
 
     /**
      * Desativa o vínculo de um Fiel com uma organização para revogar seus acessos e responsabilidades
@@ -34,5 +40,6 @@ public class RemoverVinculoUseCase {
 
         entity.setAtivo(false);
         vinculoRepository.save(entity);
+        if (acessoPastoral != null) acessoPastoral.suspenderSemVinculo(entity.getFielId());
     }
 }

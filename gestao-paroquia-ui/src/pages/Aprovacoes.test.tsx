@@ -30,6 +30,11 @@ const mockDecideAprovacao = vi.mocked(decideAprovacao);
 const mockGetAprovacoesProjeto = vi.mocked(getAprovacoesProjeto);
 const mockDecideAprovacaoProjeto = vi.mocked(decideAprovacaoProjeto);
 
+const abrirDetalhesDaPrimeiraSolicitacao = () => {
+  fireEvent.click(screen.getAllByRole('button', { name: /^Ações$/i })[0]);
+  fireEvent.click(screen.getByRole('menuitem', { name: /Visualizar detalhes/i }));
+};
+
 const mockAprovacoes = [
   {
     id: 'app-1',
@@ -132,7 +137,7 @@ describe('Aprovacoes page', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
-      expect(screen.getAllByText('Cancelamento de Evento')).toHaveLength(1);
+      expect(screen.getAllByText('Cancelamento de Evento')).toHaveLength(2);
       expect(screen.getByText('user-1')).toBeInTheDocument();
       expect(screen.getByText('user-2')).toBeInTheDocument();
     });
@@ -185,8 +190,7 @@ describe('Aprovacoes page', () => {
     });
 
     // Find and click the 'Visualizar' button for the first row
-    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
-    fireEvent.click(viewButtons[0]);
+    abrirDetalhesDaPrimeiraSolicitacao();
 
     // Check that detail drawer is open
     expect(screen.getByText('Detalhes da Solicitação')).toBeInTheDocument();
@@ -212,8 +216,7 @@ describe('Aprovacoes page', () => {
       expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
     });
 
-    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
-    fireEvent.click(viewButtons[0]);
+    abrirDetalhesDaPrimeiraSolicitacao();
 
     const approveButton = screen.getByRole('button', { name: /Aprovar/i });
     const rejectButton = screen.getByRole('button', { name: /Rejeitar/i });
@@ -238,8 +241,7 @@ describe('Aprovacoes page', () => {
     });
 
     // Open drawer
-    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
-    fireEvent.click(viewButtons[0]);
+    abrirDetalhesDaPrimeiraSolicitacao();
 
     // Type observation
     const obsField = screen.getByLabelText(/Observações/i);
@@ -274,8 +276,7 @@ describe('Aprovacoes page', () => {
     });
 
     // Open drawer
-    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
-    fireEvent.click(viewButtons[0]);
+    abrirDetalhesDaPrimeiraSolicitacao();
 
     // Type observation
     const obsField = screen.getByLabelText(/Observações/i);
@@ -335,8 +336,7 @@ describe('Aprovacoes page', () => {
     });
 
     // Open drawer
-    const viewButtons = screen.getAllByRole('button', { name: /Visualizar/i });
-    fireEvent.click(viewButtons[0]);
+    abrirDetalhesDaPrimeiraSolicitacao();
 
     // Type observation
     const obsField = screen.getByLabelText(/Observações/i);

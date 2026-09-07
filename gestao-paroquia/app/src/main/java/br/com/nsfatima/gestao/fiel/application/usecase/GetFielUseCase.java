@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.fiel.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,13 @@ public class GetFielUseCase {
     public FielResponse execute(UUID id) {
         return fielRepository.findById(id)
                 .map(fielMapper::toResponse)
+                .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public FielContatoResponse executeContato(UUID id) {
+        return fielRepository.findById(id)
+                .map(fielMapper::toContatoResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + id));
     }
 }

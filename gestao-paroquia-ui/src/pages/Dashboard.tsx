@@ -1,20 +1,11 @@
-import React, {useState} from 'react';
-import {Alert, Box, Grid, Skeleton, Typography} from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import MetricasEstrategicasWidget from '../components/dashboard/MetricasEstrategicasWidget';
-import DashboardFilterBar from '../components/dashboard/DashboardFilterBar';
-import SecaoCritica from '../components/dashboard/sections/SecaoCritica';
-import SecaoLogistica from '../components/dashboard/sections/SecaoLogistica';
-import SecaoProjetos from '../components/dashboard/sections/SecaoProjetos';
-import SecaoComunidade from '../components/dashboard/sections/SecaoComunidade';
-import CadastroEventoModal from '../components/CadastroEventoModal';
-import PageHeader from '../components/PageHeader';
-import {DashboardFilterProvider, useDashboardFilter} from '../context/DashboardFilterContext';
-import {PeriodoDashboard} from '../api/types';
-import {useDashboardMetrics} from '../hooks/useDashboardMetrics';
-import {useDashboardLogistica} from '../hooks/useDashboardLogistica';
-import {useAniversariantes, useDashboardComunidade} from '../hooks/useDashboardComunidade';
-import {useDashboardEventoModal} from '../hooks/useDashboardEventoModal';
+import {Box, Grid, Skeleton} from '@mui/material';
+import CadastroEventoModal from '@/components/CadastroEventoModal';
+import ConteudoDashboard from '@/components/dashboard/ConteudoDashboard';
+import {DashboardFilterProvider, useDashboardFilter} from '@/context/DashboardFilterContext';
+import {useDashboardComunidade} from '@/hooks/useDashboardComunidade';
+import {useDashboardEventoModal} from '@/hooks/useDashboardEventoModal';
+import {useDashboardLogistica} from '@/hooks/useDashboardLogistica';
+import {useDashboardMetrics} from '@/hooks/useDashboardMetrics';
 
 const DashboardSkeleton = () => (
   <Box>
@@ -32,12 +23,9 @@ const DashboardSkeleton = () => (
 
 const DashboardContent = () => {
   const {periodo, grupoParoquialId} = useDashboardFilter();
-  const [janelaAniversario, setJanelaAniversario] = useState<PeriodoDashboard>('SEMANA');
-
   const {data: metrics, isLoading: isMetricsLoading, error: metricsError} =
     useDashboardMetrics(periodo, grupoParoquialId);
   const {data: logistica} = useDashboardLogistica(periodo, grupoParoquialId);
-  const {data: aniversariantes} = useAniversariantes(janelaAniversario);
   const {data: comunidade} = useDashboardComunidade(grupoParoquialId);
   const modal = useDashboardEventoModal();
 
@@ -45,42 +33,19 @@ const DashboardContent = () => {
     return <DashboardSkeleton />;
   }
 
-  const errorMsg =
-    modal.error || (metricsError ? 'Não foi possível carregar os dados do dashboard.' : '');
+  const erro = modal.error || (metricsError ? 'Não foi possível carregar os dados do dashboard.' : undefined);
 
   return (
-    <Box>
-      <PageHeader
-        icon={<DashboardIcon sx={{fontSize: 32, color: 'primary.main'}} />}
-        title="Dashboard"
-        subtitle="Visão geral e indicadores consolidados das atividades, projetos e eventos da paróquia."
-        actions={<DashboardFilterBar />}
+    <>
+      <ConteudoDashboard
+        metrics={metrics}
+        logistica={logistica}
+        comunidade={comunidade}
+        proximosEventos={modal.events}
+        carregandoEventos={modal.isLoading}
+        erro={erro}
+        onNovoEvento={modal.openModal}
       />
-
-      {errorMsg && <Alert severity="error" sx={{mb: 3}}>{errorMsg}</Alert>}
-
-      <Grid container spacing={3}>
-        <SecaoCritica metrics={metrics} />
-        <SecaoLogistica logistica={logistica} />
-
-        <Grid size={{xs: 12}}>
-          <MetricasEstrategicasWidget />
-        </Grid>
-
-        <SecaoProjetos
-          metrics={metrics}
-          proximosEventos={modal.events}
-          carregandoEventos={modal.isLoading}
-          onNovoEvento={modal.openModal}
-        />
-
-        <SecaoComunidade
-          aniversariantes={aniversariantes}
-          janelaAniversario={janelaAniversario}
-          onJanelaChange={setJanelaAniversario}
-          comunidade={comunidade}
-        />
-      </Grid>
 
       <CadastroEventoModal
         open={modal.isModalOpen}
@@ -91,7 +56,7 @@ const DashboardContent = () => {
         locais={modal.locais.filter((l) => l.ativo)}
         projetos={modal.projetos.filter((p) => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
       />
-    </Box>
+    </>
   );
 };
 

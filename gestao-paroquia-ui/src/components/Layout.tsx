@@ -2,6 +2,7 @@ import React from 'react';
 import {
     alpha,
     AppBar,
+    Avatar,
     Box,
     Container,
     Divider,
@@ -11,6 +12,7 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    ListSubheader,
     Paper,
     Toolbar,
     Tooltip,
@@ -26,16 +28,26 @@ import {
     Dashboard as DashboardIcon,
     Description as DescriptionIcon,
     FactCheck as FactCheckIcon,
+    Groups as GroupsIcon,
     Inventory as InventoryIcon,
     Logout as LogoutIcon,
+    LocationOn as LocationIcon,
     Menu as MenuIcon,
     People as PeopleIcon,
-    Settings as SettingsIcon,
+    Settings as SettingsIcon, Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { canApprove, canManageAnoParoquial, canManageLocais, isUnlinkedUser } from '../auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isUnlinkedUser } from '../auth/permissions';
 import ActionButton from './ActionButton';
+import IconActionButton from './IconActionButton';
+
+interface MenuItem {
+  label: string;
+  path: string;
+  icon: React.ReactElement;
+  section?: string;
+}
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -63,29 +75,49 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     navigate('/login');
   };
 
-  const menuItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
-    { label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
-    { label: 'Fiéis', path: '/fieis', icon: <PeopleIcon /> },
-    { label: 'Projetos', path: '/projects', icon: <WorkIcon /> },
-    { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon /> },
-    { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
-    { label: 'Ativos Patrimoniais', path: '/ativos', icon: <InventoryIcon /> },
-    { label: 'Relatórios', path: '/reports', icon: <AssessmentIcon /> },
-  ];
+  const administrativeItems: MenuItem[] = [];
 
   if (canApprove(user)) {
-    menuItems.push({ label: 'Aprovações', path: '/approvals', icon: <FactCheckIcon /> });
+    administrativeItems.push({ label: 'Aprovações', path: '/approvals', icon: <FactCheckIcon /> });
+    administrativeItems.push({ label: 'Ajustes cadastrais', path: '/ajustes-cadastrais', icon: <FactCheckIcon /> });
   }
 
-  if (canManageAnoParoquial(user) || canManageLocais(user)) {
-    menuItems.push({ label: 'Configurações', path: '/configuracoes', icon: <SettingsIcon /> });
+  if (canManageAnoParoquial(user) || canManageOrganizacoes(user)) {
+    administrativeItems.push({ label: 'Configurações', path: '/configuracoes', icon: <SettingsIcon /> });
   }
+
+  if (canManageLocais(user)) {
+    administrativeItems.push({ label: 'Locais', path: '/locais', icon: <LocationIcon /> });
+  }
+
+  administrativeItems.push(
+    { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon /> },
+    { label: 'Patrimônio', path: '/ativos', icon: <InventoryIcon /> },
+  );
+
+  const menuItems: MenuItem[] = [
+    { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
+    { section: 'Gestão pastoral', label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
+    { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
+    { label: 'Fiéis', path: '/fieis', icon: <PeopleIcon /> },
+    { label: 'Notificações', path: '/notificacoes', icon: <NotificationsIcon /> },
+  ];
+
+  if (canManageOrganizacoes(user)) {
+    menuItems.push({ label: 'Pastorais e Movimentos', path: '/organizacoes', icon: <GroupsIcon /> });
+  }
+
+  menuItems.push(
+    { label: 'Projetos', path: '/projects', icon: <WorkIcon /> },
+    { ...administrativeItems[0], section: 'Administração' },
+    ...administrativeItems.slice(1),
+    { section: 'Análises', label: 'Relatórios', path: '/reports', icon: <AssessmentIcon /> },
+  );
 
   const drawerWidth = isMdUp ? (drawerOpen ? 240 : 72) : 240;
 
   const drawerContent = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
+      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
       <Box sx={{ 
         p: 2, 
         display: 'flex', 
@@ -114,9 +146,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 </Typography>
               </Box>
             </Box>
-            <ActionButton
+            <IconActionButton
               title={drawerOpen ? "Recolher menu lateral" : "Expandir menu lateral"}
-              ariaLabel={drawerOpen ? "recolher menu" : "expandir menu"}
               icon={<MenuIcon />}
               color="primary"
               onClick={handleDrawerToggle}
@@ -124,9 +155,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             />
           </>
         ) : (
-          <ActionButton
+          <IconActionButton
             title={drawerOpen ? "Recolher menu lateral" : "Expandir menu lateral"}
-            ariaLabel={drawerOpen ? "recolher menu" : "expandir menu"}
             icon={<MenuIcon />}
             color="primary"
             onClick={handleDrawerToggle}
@@ -135,7 +165,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </Box>
       <Divider />
       
-      <List sx={{ px: 1, py: 2, flexGrow: 1 }}>
+      <List sx={{ px: 1, py: 2, flexGrow: 1 }} aria-label="Navegação principal">
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.path;
           const button = (
@@ -147,15 +177,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               selected={isSelected}
               sx={{
                 
-                mb: 1,
+                mb: 0.5,
                 justifyContent: drawerOpen || !isMdUp ? 'initial' : 'center',
                 px: 2,
                 py: 1,
                 '&.Mui-selected': {
-                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                  bgcolor: theme.custom?.navigationSelectedBg ?? alpha(theme.palette.primary.main, 0.10),
                   color: 'primary.main',
                   '&:hover': {
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+                    bgcolor: alpha(theme.palette.primary.main, 0.14),
                   },
                   '& .MuiListItemIcon-root': {
                     color: 'primary.main',
@@ -178,20 +208,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </ListItemButton>
           );
 
-          if (!drawerOpen && isMdUp) {
-            return (
-              <Tooltip key={item.path} title={item.label} placement="right">
-                <ListItem disablePadding sx={{ display: 'block' }}>
-                  {button}
-                </ListItem>
-              </Tooltip>
-            );
-          }
+          const listItem = !drawerOpen && isMdUp ? (
+            <Tooltip key={item.path} title={item.label} placement="right">
+              <ListItem disablePadding sx={{ display: 'block' }}>{button}</ListItem>
+            </Tooltip>
+          ) : <ListItem key={item.path} disablePadding sx={{ display: 'block' }}>{button}</ListItem>;
 
           return (
-            <ListItem key={item.path} disablePadding sx={{ display: 'block' }}>
-              {button}
-            </ListItem>
+            <React.Fragment key={item.path}>
+              {item.section && (drawerOpen || !isMdUp) && <ListSubheader disableSticky sx={{ bgcolor: 'transparent', color: 'text.secondary', fontSize: '0.6875rem', fontWeight: 700, lineHeight: '28px', textTransform: 'uppercase' }}>{item.section}</ListSubheader>}
+              {listItem}
+            </React.Fragment>
           );
         })}
       </List>
@@ -226,10 +253,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       {/* Main Content Area */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <AppBar position="static" color="primary" sx={{ mb: 4 }}>
-          <Toolbar>
+        <AppBar position="static" color="primary" elevation={0} sx={{ mb: 4, borderBottom: '1px solid', borderColor: 'rgba(255, 255, 255, 0.16)' }}>
+          <Toolbar sx={{ minHeight: { xs: 60, sm: 68 } }}>
             {!isMdUp && (
-              <ActionButton
+              <IconActionButton
                 title="Abrir menu de navegação"
                 ariaLabel="abrir menu"
                 icon={<MenuIcon />}
@@ -239,22 +266,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               />
             )}
             
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600, letterSpacing: '0.5px' }}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: '0.01em' }}>
               Nossa Senhora de Fátima
             </Typography>
 
             {user && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'primary.main', fontSize: '0.8rem', fontWeight: 700 }}>
+                  {user.name.slice(0, 1).toLocaleUpperCase('pt-BR')}
+                </Avatar>
                 <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500 }}>
                   Olá, {user.name}
                 </Typography>
-                <ActionButton title="Sair do sistema" icon={<LogoutIcon />} color="inherit" onClick={handleLogout} />
+                <ActionButton label="Sair" title="Sair do sistema" icon={<LogoutIcon />} color="inherit" onClick={handleLogout} />
               </Box>
             )}
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="xl" sx={{ pb: 6, flexGrow: 1 }}>
+        <Container maxWidth="xl" sx={{ pb: 6, flexGrow: 1, px: { xs: 2, sm: 3, lg: 4 } }}>
           {user && isUnlinkedUser(user) ? (
             <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
               <Paper elevation={2} sx={{ p: 4, maxWidth: 600, width: '100%', borderRadius: 2 }}>

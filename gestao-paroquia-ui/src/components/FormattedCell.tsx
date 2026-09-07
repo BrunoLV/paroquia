@@ -17,6 +17,8 @@ interface FormattedCellProps {
   sx?: object;
 }
 
+type EnderecoExibivel = Record<'logradouro' | 'numero' | 'bairro' | 'cidade' | 'estado', string | null | undefined>;
+
 export function FormattedPhone({ value, variant = 'body2', color = 'text.primary', sx }: FormattedCellProps) {
   if (!value || !String(value).trim()) {
     return <Typography variant={variant} color="text.secondary">-</Typography>;
@@ -56,7 +58,7 @@ export function FormattedAddress({ value, variant = 'caption', color = 'text.sec
 
   let text = '';
   if (typeof value === 'object' && value !== null) {
-    const end = value as any;
+    const end = value as Partial<EnderecoExibivel>;
     const parts = [
       end.logradouro ? `${end.logradouro}${end.numero ? `, ${end.numero}` : ''}` : '',
       end.bairro,
