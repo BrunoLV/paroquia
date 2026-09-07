@@ -12,6 +12,9 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Inativa ou remove logicamente notas de colaboração registradas em eventos.
+ */
 @Service
 public class DeleteObservacaoUseCase {
 

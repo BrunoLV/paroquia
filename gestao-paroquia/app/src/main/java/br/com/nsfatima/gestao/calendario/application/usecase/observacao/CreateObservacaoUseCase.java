@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Registra uma nova observação ou nota descritiva associada a um evento da agenda.
+ */
 @Service
 public class CreateObservacaoUseCase {
 

@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Calcula métricas agregadas de impacto pastoral e social das iniciativas comunitárias.
+ */
 @Service
 public class CalcularImpactoSocialUseCase {
 

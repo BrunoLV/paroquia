@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * Endpoints REST para gerenciamento de pastorais, movimentos e comissões envolvidas em eventos.
+ */
 @RestController
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Envolvidos no Evento", description = "Endpoints para gerenciar pastorais e movimentos envolvidos em um " +

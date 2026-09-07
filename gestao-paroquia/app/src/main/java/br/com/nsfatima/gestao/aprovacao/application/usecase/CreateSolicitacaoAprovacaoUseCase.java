@@ -11,13 +11,18 @@ import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Caso de uso para abertura de solicitações formais de aprovação de eventos pastorais.
+ *
+ * REGRA DE NEGÓCIO:
+ * Cria a solicitação em estado PENDENTE para posterior chancela pela autoridade eclesiástica competente.
+ */
 @Service
 public class CreateSolicitacaoAprovacaoUseCase {
 
@@ -26,7 +31,6 @@ public class CreateSolicitacaoAprovacaoUseCase {
     private final EventoAuditPublisher eventoAuditPublisher;
     private final AprovacaoMapper aprovacaoMapper;
 
-    @Autowired
     public CreateSolicitacaoAprovacaoUseCase(
             AprovacaoJpaRepository aprovacaoJpaRepository,
             EventoActorContextResolver eventoActorContextResolver,

@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Calcula a métrica de ociosidade de bens e espaços físicos da paróquia.
+ */
 @Service
 public class CalcularOciosidadePatrimonialUseCase {
 

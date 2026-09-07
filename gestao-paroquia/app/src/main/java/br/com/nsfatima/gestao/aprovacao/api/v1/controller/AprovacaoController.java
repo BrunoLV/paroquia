@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Endpoints REST do fluxo formal de aprovação e governança eclesiástica de eventos.
+ */
 @RestController
 @RequestMapping("/api/v1/aprovacoes")
 @Tag(name = "Aprovações", description = "Endpoints para gerenciamento do fluxo de aprovação de eventos")

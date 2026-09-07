@@ -36,6 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Endpoints REST para criação, consulta e transição de estado de Projetos pastorais.
+ */
 @RestController
 @RequestMapping("/api/v1/projetos")
 @Tag(name = "Projetos", description = "Endpoints para gerenciamento de projetos paroquiais")

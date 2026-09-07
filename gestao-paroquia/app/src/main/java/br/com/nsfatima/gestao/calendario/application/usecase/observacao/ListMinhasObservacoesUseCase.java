@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Lista as anotações e notas colaborativas criadas pelo operador atual em eventos.
+ */
 @Service
 public class ListMinhasObservacoesUseCase {
 

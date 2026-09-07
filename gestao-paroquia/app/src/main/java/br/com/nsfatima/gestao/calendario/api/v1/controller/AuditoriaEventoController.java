@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Endpoints REST para consulta de trilhas de auditoria e métricas de execução de eventos.
+ */
 @RestController
 @RequestMapping("/api/v1/auditoria/eventos")
 @Tag(name = "Auditoria e Métricas", description = "Endpoints para consulta de trilhas de auditoria e métricas de " +

@@ -10,6 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Lista o registro comunitário de Fiéis da paróquia.
+ *
+ * REGRA DE NEGÓCIO:
+ * Suporta filtragem por organização e vínculo pastoral, garantindo que
+ * apenas coordenadores e administradores acessem dados de contato.
+ */
 @Service
 public class ListFieisUseCase {
 

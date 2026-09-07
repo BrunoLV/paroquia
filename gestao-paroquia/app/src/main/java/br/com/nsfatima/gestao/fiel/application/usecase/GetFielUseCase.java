@@ -9,6 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Recupera os dados completos ou ficha de contato de um Fiel registrado na paróquia.
+ *
+ * REGRA DE NEGÓCIO (RN-FIE-01):
+ * Fornece a visão detalhada canônica e civil respeitando as permissões de acesso
+ * e anonimizando dados sensíveis conforme o perfil do operador.
+ */
 @Service
 public class GetFielUseCase {
 

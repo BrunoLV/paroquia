@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.UUID;
 
+/**
+ * Remove todos os vínculos de corresponsabilidade pastoral de um evento da paróquia.
+ */
 @Service
 public class ClearEventoEnvolvidosUseCase {
 

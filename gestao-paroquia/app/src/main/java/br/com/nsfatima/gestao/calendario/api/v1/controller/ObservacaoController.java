@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Endpoints REST para notas e observações colaborativas vinculadas a eventos paroquiais.
+ */
 @RestController
 @RequestMapping("/api/v1/eventos/{eventoId}/observacoes")
 @Tag(name = "Observações e Colaboração", description = "Endpoints para adicionar notas e observações em eventos")

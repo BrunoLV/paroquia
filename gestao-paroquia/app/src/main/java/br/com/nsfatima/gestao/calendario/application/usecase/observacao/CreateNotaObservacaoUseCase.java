@@ -14,6 +14,9 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Insere nota complementar em evento com validação de autoria e papéis operacionais.
+ */
 @Service
 public class CreateNotaObservacaoUseCase {
 

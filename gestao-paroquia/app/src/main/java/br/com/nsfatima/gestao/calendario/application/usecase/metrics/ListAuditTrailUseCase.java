@@ -13,6 +13,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Consulta e extrai a trilha consolidada de auditoria de eventos para conformidade.
+ */
 @Service
 public class ListAuditTrailUseCase {
 

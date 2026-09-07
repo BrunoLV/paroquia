@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Recupera notas removidas para auditoria e prestação de contas pastoral.
+ */
 @Service
 public class ListRemovedObservacoesForAuditUseCase {
 

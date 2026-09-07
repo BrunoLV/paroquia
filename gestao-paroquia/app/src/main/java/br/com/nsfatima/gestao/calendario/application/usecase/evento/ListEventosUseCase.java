@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Caso de uso para consulta e listagem paginada de eventos do calendário paroquial.
+ */
 @Service
 public class ListEventosUseCase {
 

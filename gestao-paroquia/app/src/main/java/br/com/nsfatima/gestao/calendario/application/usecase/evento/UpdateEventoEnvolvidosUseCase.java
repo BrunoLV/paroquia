@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Atualiza o rol de pastorais, movimentos e comissões corresponsáveis pelo evento.
+ */
 @Service
 public class UpdateEventoEnvolvidosUseCase {
 

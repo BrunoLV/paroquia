@@ -11,6 +11,9 @@ import java.time.Duration;
 
 import java.util.List;
 
+/**
+ * Calcula o SLA médio de despacho e aprovação pastoral de eventos.
+ */
 @Service
 public class CalcularSlaDespachoPastoralUseCase {
 

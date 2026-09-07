@@ -14,6 +14,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Verifica potenciais conflitos de data, horário ou espaço físico entre pastorais distintas.
+ */
 @Service
 public class VerificarConcorrenciaInterpastoralUseCase {
 

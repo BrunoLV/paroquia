@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Endpoints REST para gerenciamento de espaços físicos e capacidade de locais paroquiais.
+ */
 @RestController
 @RequestMapping("/api/v1/locais")
 @Tag(name = "Locais", description = "Gerenciamento de locais da paróquia")

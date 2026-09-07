@@ -20,6 +20,9 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Atualiza o status de homologação ou solicitação de ajuste em evento pendente.
+ */
 @Service
 public class UpdateEventoSolicitacaoAprovacaoUseCase {
 

@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Mede o indicador de retrabalho baseado em eventos devolvidos ou alterados após submissão.
+ */
 @Service
 public class GetIndicadorRetrabalhoUseCase {
 

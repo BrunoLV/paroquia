@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Consulta e lista os projetos pastorais ativos, planejados ou arquivados da paróquia.
+ */
 @Service
 public class ListProjetosUseCase {
 

@@ -17,6 +17,9 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Atualiza o conteúdo descritivo de uma anotação existente associada a um evento.
+ */
 @Service
 public class UpdateObservacaoUseCase {
 

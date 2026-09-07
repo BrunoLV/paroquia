@@ -23,6 +23,13 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
+/**
+ * Registra a criação de um novo Projeto pastoral ou social da paróquia.
+ *
+ * REGRA DE NEGÓCIO:
+ * Valida o escopo de liderança do usuário e provisiona a estrutura inicial
+ * com status PLANEJADO para posterior aprovação dos eventos e orçamento.
+ */
 @Service
 public class CreateProjetoUseCase {
 

@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Calcula a distribuição e sazonalidade de celebrações ao longo dos tempos litúrgicos.
+ */
 @Service
 public class CalcularSazonalidadeLiturgicaUseCase {
 

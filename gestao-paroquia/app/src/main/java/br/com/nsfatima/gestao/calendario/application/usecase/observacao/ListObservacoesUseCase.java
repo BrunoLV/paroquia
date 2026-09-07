@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Lista o histórico público e colaborativo de observações vinculadas a um evento.
+ */
 @Service
 public class ListObservacoesUseCase {
 

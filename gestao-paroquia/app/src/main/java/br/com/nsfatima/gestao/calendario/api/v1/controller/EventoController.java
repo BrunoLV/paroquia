@@ -43,6 +43,9 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Endpoints REST para criação, agendamento, alteração e cancelamento de eventos paroquiais.
+ */
 @RestController
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Eventos", description = "Endpoints para gerenciamento do calendário de eventos")

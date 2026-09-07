@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Executa regras de validação prévia de autoridade antes do despacho de aprovações.
+ */
 @Service
 public class ValidateAprovacaoUseCase {
 

@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Atualiza os dados de planejamento, metas ou escopo de um Projeto pastoral existente.
+ */
 @Service
 public class UpdateProjetoUseCase {
 

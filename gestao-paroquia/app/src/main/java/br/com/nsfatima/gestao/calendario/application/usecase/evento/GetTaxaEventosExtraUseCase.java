@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Calcula a proporção de eventos extraordinários em relação à programação ordinária.
+ */
 @Service
 public class GetTaxaEventosExtraUseCase {
 

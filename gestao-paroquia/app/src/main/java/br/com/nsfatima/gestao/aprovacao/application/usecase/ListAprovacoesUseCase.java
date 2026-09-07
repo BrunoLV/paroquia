@@ -11,6 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Consulta e lista as solicitações de aprovação pendentes ou filtradas por evento/autor.
+ *
+ * REGRA DE NEGÓCIO:
+ * Alimenta a fila de governança pastoral para párocos, vigários e administradores paroquiais.
+ */
 @Service
 public class ListAprovacoesUseCase {
 

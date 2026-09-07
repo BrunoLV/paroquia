@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * Endpoints REST para agendamento em lote de ocorrências periódicas e regras de recorrência.
+ */
 @RestController
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Recorrência de Eventos", description = "Endpoints para configuração de regras de repetição de eventos")

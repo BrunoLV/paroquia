@@ -19,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Abre solicitação formal de aprovação para evento submetido por coordenação pastoral.
+ */
 @Service
 public class CreateEventoSolicitacaoAprovacaoUseCase {
 

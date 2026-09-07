@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Calcula a taxa de conversão e realização de projetos e eventos planejados.
+ */
 @Service
 public class CalcularTaxaProjetosUseCase {
 
