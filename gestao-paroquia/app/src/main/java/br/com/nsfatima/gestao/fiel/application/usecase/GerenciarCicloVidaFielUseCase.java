@@ -27,7 +27,10 @@ public class GerenciarCicloVidaFielUseCase {
         this(fielRepository, usuarioRepository, Clock.systemUTC());
     }
 
-    GerenciarCicloVidaFielUseCase(FielJpaRepository fielRepository, UsuarioJpaRepository usuarioRepository, Clock clock) {
+    GerenciarCicloVidaFielUseCase(
+            FielJpaRepository fielRepository,
+            UsuarioJpaRepository usuarioRepository,
+            Clock clock) {
         this.fielRepository = fielRepository;
         this.usuarioRepository = usuarioRepository;
         this.clock = clock;
@@ -84,10 +87,20 @@ public class GerenciarCicloVidaFielUseCase {
     }
 
     private void anonimizar(FielEntity fiel) {
-        fiel.setNome(null); fiel.setCpf(null); fiel.setRg(null); fiel.setDocumentoEstrangeiroNumero(null);
-        fiel.setEmail(null); fiel.setCelular(null); fiel.setTelefoneFixo(null); fiel.setEnderecoLogradouro(null);
-        fiel.setEnderecoNumero(null); fiel.setEnderecoComplemento(null); fiel.setEnderecoBairro(null);
-        fiel.setEnderecoCep(null); fiel.setEnderecoCidade(null); fiel.setEnderecoEstado(null);
+        fiel.setNome(null);
+        fiel.setCpf(null);
+        fiel.setRg(null);
+        fiel.setDocumentoEstrangeiroNumero(null);
+        fiel.setEmail(null);
+        fiel.setCelular(null);
+        fiel.setTelefoneFixo(null);
+        fiel.setEnderecoLogradouro(null);
+        fiel.setEnderecoNumero(null);
+        fiel.setEnderecoComplemento(null);
+        fiel.setEnderecoBairro(null);
+        fiel.setEnderecoCep(null);
+        fiel.setEnderecoCidade(null);
+        fiel.setEnderecoEstado(null);
         fiel.setDadosCadastraisEliminados(true);
     }
 }

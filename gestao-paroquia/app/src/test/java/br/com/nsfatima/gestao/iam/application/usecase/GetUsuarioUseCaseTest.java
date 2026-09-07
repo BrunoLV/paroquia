@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
@@ -22,6 +24,7 @@ class GetUsuarioUseCaseTest {
     private UsuarioJpaRepository usuarioRepository;
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private FielJpaRepository fielRepository;
+    private ClerigoJpaRepository clerigoRepository;
     private GetUsuarioUseCase useCase;
 
     @BeforeEach
@@ -29,7 +32,8 @@ class GetUsuarioUseCaseTest {
         usuarioRepository = mock(UsuarioJpaRepository.class);
         grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
-        useCase = new GetUsuarioUseCase(usuarioRepository, grupoParoquialRepository, fielRepository);
+        clerigoRepository = mock(ClerigoJpaRepository.class);
+        useCase = new GetUsuarioUseCase(usuarioRepository, grupoParoquialRepository, fielRepository, clerigoRepository);
     }
 
     @Test
@@ -63,6 +67,32 @@ class GetUsuarioUseCaseTest {
         assertThat(response.primeiraComunhao()).isFalse();
         assertThat(response.crismado()).isFalse();
         assertThat(response.casadoIgrejaCatolica()).isFalse();
+    }
+
+    @Test
+    void deveResolverDadosCadastraisAPartirDoClerigoVinculado() {
+        UUID usuarioId = UUID.randomUUID();
+        UUID clerigoId = UUID.randomUUID();
+
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(usuarioId);
+        usuario.setUsername("padre.pedro");
+        usuario.setEnabled(true);
+        usuario.setClerigoId(clerigoId);
+
+        ClerigoEntity clerigo = new ClerigoEntity();
+        clerigo.setId(clerigoId);
+        clerigo.setNomeCivil("Pedro de Alcantara");
+        clerigo.setNomeEclesiastico("Padre Pedro");
+        clerigo.setCelular("11988887777");
+
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(clerigoRepository.findById(clerigoId)).thenReturn(Optional.of(clerigo));
+
+        UsuarioResponse response = useCase.execute(usuarioId);
+
+        assertThat(response.nome()).isEqualTo("Padre Pedro");
+        assertThat(response.telefone()).isEqualTo("11988887777");
     }
 
     @Test

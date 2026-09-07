@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
@@ -11,48 +12,49 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 /**
- * Cria uma conta de usuário pela via administrativa ({@code ROLE_ADMIN}) — único caminho de criação de
- * {@code Usuario} no sistema, já que o autocadastro público foi removido. Exige um {@code Fiel} já
- * cadastrado (o vínculo pessoa-física → login é obrigatório desde o schema). O usuário criado por este
- * caminho já nasce habilitado ({@code enabled=true}) e sem papel/vínculo organizacional atribuído — quem
- * cria decide depois os papéis e vínculos, se necessário.
+ * Cria uma conta de usuário pela via administrativa ({@code ROLE_ADMIN}). Exige vínculo exclusivo
+ * com {@code Fiel} ou {@code Clerigo}. O usuário já nasce habilitado ({@code enabled=true}).
  */
 @Service
 public class CreateUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final FielJpaRepository fielRepository;
+    private final ClerigoJpaRepository clerigoRepository;
     private final PasswordEncoder passwordEncoder;
 
     public CreateUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
             FielJpaRepository fielRepository,
+            ClerigoJpaRepository clerigoRepository,
             PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.fielRepository = fielRepository;
+        this.clerigoRepository = clerigoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Cria o usuário com a senha já criptografada, rejeitando duplicidade de username (case-insensitive) e
-     * exigindo que {@code fielId} aponte para um {@code Fiel} já cadastrado.
-     * <p>
-     * Exemplo: useCase.execute("novo.usuario", "senhaForte", fielId)
-     *
-     * @param username    nome de usuário/login desejado; deve ser único ignorando maiúsculas/minúsculas
-     * @param rawPassword senha em texto puro, a ser criptografada antes da persistência
-     * @param fielId      identificador do {@code Fiel} já cadastrado a quem este login pertence
-     * @return o id gerado para o novo usuário
-     * @throws IllegalArgumentException se já existir usuário com o mesmo username (ignorando caixa), ou se
-     *                                   não existir {@code Fiel} com o id informado
-     */
     @Transactional
     public UUID execute(String username, String rawPassword, UUID fielId) {
+        return execute(username, rawPassword, fielId, null);
+    }
+
+    @Transactional
+    public UUID execute(String username, String rawPassword, UUID fielId, UUID clerigoId) {
+        if ((fielId == null && clerigoId == null) || (fielId != null && clerigoId != null)) {
+            throw new IllegalArgumentException("Usuario deve estar vinculado exclusivamente a um Fiel ou a um Clerigo");
+        }
+
         if (usuarioRepository.findByUsernameIgnoreCase(username).isPresent()) {
             throw new IllegalArgumentException("Username ja existe: " + username);
         }
-        if (fielRepository.findById(fielId).isEmpty()) {
+
+        if (fielId != null && fielRepository.findById(fielId).isEmpty()) {
             throw new IllegalArgumentException("Fiel nao encontrado: " + fielId);
+        }
+
+        if (clerigoId != null && clerigoRepository.findById(clerigoId).isEmpty()) {
+            throw new IllegalArgumentException("Clerigo nao encontrado: " + clerigoId);
         }
 
         UsuarioEntity entity = new UsuarioEntity();
@@ -60,6 +62,7 @@ public class CreateUsuarioUseCase {
         entity.setUsername(username);
         entity.setPasswordHash(passwordEncoder.encode(rawPassword));
         entity.setFielId(fielId);
+        entity.setClerigoId(clerigoId);
         entity.setEnabled(true);
 
         String actor = resolveActor();

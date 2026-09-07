@@ -46,8 +46,12 @@ public class UsuarioEntity extends BaseVersionedEntity {
      * Referência ao {@code Fiel} (pessoa física) correspondente no Contexto Paroquial — obrigatória: todo
      * {@code Usuario} deve estar vinculado a um {@code Fiel} já existente.
      */
-    @Column(name = "fiel_id", nullable = false)
+    @Column(name = "fiel_id")
     private UUID fielId;
+
+    /** Referência exclusiva ao clérigo quando a conta pertence a ministro ordenado. */
+    @Column(name = "clerigo_id")
+    private UUID clerigoId;
 
     @Column(name = "criado_em_utc", nullable = false)
     private Instant criadoEmUtc;
@@ -115,6 +119,14 @@ public class UsuarioEntity extends BaseVersionedEntity {
 
     public void setFielId(UUID fielId) {
         this.fielId = fielId;
+    }
+
+    public UUID getClerigoId() {
+        return clerigoId;
+    }
+
+    public void setClerigoId(UUID clerigoId) {
+        this.clerigoId = clerigoId;
     }
 
     public Instant getCriadoEmUtc() {

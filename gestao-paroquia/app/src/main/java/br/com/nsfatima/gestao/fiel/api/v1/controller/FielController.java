@@ -85,7 +85,8 @@ public class FielController {
     public FielConsultaResponse get(@PathVariable UUID id) {
         var context = actorContextResolver.resolveRequired();
         if (context.organizationId() != null
-                && membroGrupoRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(id, context.organizationId()).isEmpty()) {
+                && membroGrupoRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(
+                        id, context.organizationId()).isEmpty()) {
             throw new AccessDeniedException("Coordenador só pode consultar fiéis vinculados à sua organização");
         }
         if (isCoordenador(context.role(), context.organizationId())) {

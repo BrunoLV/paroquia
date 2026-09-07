@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {Button, Snackbar} from '@mui/material';
+import {Snackbar} from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {WeeklyEvent} from '../../api/types';
 import {formatarAgendaFimDeSemana} from '../../utils/agendaFimDeSemana';
+import ActionButton from '../ActionButton';
 
 interface ExportarAgendaButtonProps {
   eventosSemana?: WeeklyEvent[];
@@ -23,9 +24,13 @@ const ExportarAgendaButton: React.FC<ExportarAgendaButtonProps> = ({eventosSeman
 
   return (
     <>
-      <Button size="small" variant="outlined" startIcon={<ContentCopyIcon />} onClick={copiar}>
-        Copiar agenda do fim de semana
-      </Button>
+      <ActionButton
+        size="small"
+        color="primary"
+        title="Copiar agenda do fim de semana"
+        icon={<ContentCopyIcon />}
+        onClick={copiar}
+      />
       <Snackbar
         open={!!aviso}
         autoHideDuration={3000}

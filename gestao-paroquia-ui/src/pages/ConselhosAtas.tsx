@@ -281,7 +281,7 @@ export const ConselhosAtas: React.FC = () => {
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[10, 20, 50, 100]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={decisoes.length}
             rowsPerPage={rowsPerPage}
@@ -291,7 +291,10 @@ export const ConselhosAtas: React.FC = () => {
               setRowsPerPage(parseInt(e.target.value, 10));
               setPage(0);
             }}
-            labelRowsPerPage="Itens por página:"
+            labelRowsPerPage="Linhas por página:"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+            }
           />
         </TableContainer>
       )}

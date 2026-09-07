@@ -18,6 +18,7 @@ const Organograma = lazy(() => import('@/pages/Organograma'));
 const Reports = lazy(() => import('@/pages/Reports'));
 const ConselhosAtas = lazy(() => import('@/pages/ConselhosAtas'));
 const Fieis = lazy(() => import('@/pages/Fieis'));
+const Clerigos = lazy(() => import('@/pages/Clerigos'));
 const Locais = lazy(() => import('@/pages/Locais'));
 const Organizacoes = lazy(() => import('@/pages/Organizacoes'));
 const Notificacoes = lazy(() => import('@/pages/Notificacoes'));
@@ -80,6 +81,7 @@ const AppRoutes = () => {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="calendar" element={<Calendar />} />
                 <Route path="fieis" element={<Fieis />} />
+                <Route path="clerigos" element={<Clerigos />} />
                 <Route path="notificacoes" element={<Notificacoes />} />
                 <Route path="ajustes-cadastrais" element={<AprovacoesRoute><AjustesCadastrais /></AprovacoesRoute>} />
                 <Route path="organograma" element={<Organograma />} />

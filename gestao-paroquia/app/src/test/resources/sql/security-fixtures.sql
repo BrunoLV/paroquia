@@ -1,3 +1,7 @@
+DELETE FROM calendario.relacionamentos_familiares;
+DELETE FROM calendario.solicitacoes_ajuste_clerical;
+DELETE FROM calendario.migracoes_clero_pendentes;
+DELETE FROM calendario.encargos_clericais;
 DELETE FROM calendario.eventos_envolvidos;
 DELETE FROM calendario.aprovacoes;
 DELETE FROM calendario.observacoes_evento;
@@ -8,6 +12,7 @@ DELETE FROM calendario.projetos_eventos;
 DELETE FROM calendario.membro_grupo;
 DELETE FROM calendario.papel_global;
 DELETE FROM calendario.usuarios;
+DELETE FROM calendario.clerigos;
 DELETE FROM calendario.fieis;
 DELETE FROM calendario.locais;
 DELETE FROM calendario.grupo_paroquial;

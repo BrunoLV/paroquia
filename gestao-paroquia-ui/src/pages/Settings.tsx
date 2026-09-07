@@ -433,7 +433,7 @@ export const Settings = () => {
               </Table>
             </TableContainer>
             <TablePagination
-              rowsPerPageOptions={[10, 20, 50, 100]}
+              rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={years.length}
               rowsPerPage={anoRowsPerPage}
@@ -443,7 +443,10 @@ export const Settings = () => {
                 setAnoRowsPerPage(parseInt(e.target.value, 10));
                 setAnoPage(0);
               }}
-              labelRowsPerPage="Itens por página:"
+              labelRowsPerPage="Linhas por página:"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+              }
             />
           </Box>
         )}
@@ -528,7 +531,7 @@ export const Settings = () => {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
+                rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={users.length}
                 rowsPerPage={usersRowsPerPage}
@@ -538,7 +541,10 @@ export const Settings = () => {
                   setUsersRowsPerPage(parseInt(e.target.value, 10));
                   setUsersPage(0);
                 }}
-                labelRowsPerPage="Itens por página:"
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                }
               />
             </Box>
           )}
@@ -608,7 +614,7 @@ export const Settings = () => {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
+                rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={pastoraisOficiais.length}
                 rowsPerPage={poRowsPerPage}
@@ -618,7 +624,10 @@ export const Settings = () => {
                   setPoRowsPerPage(parseInt(e.target.value, 10));
                   setPoPage(0);
                 }}
-                labelRowsPerPage="Itens por página:"
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                }
               />
             </Box>
           )}

@@ -887,3 +887,9 @@ export interface MetricasOciosidade {
   taxaOciosidade: number;
   distribuicaoPorCategoria: Record<string, number>;
 }
+
+export type GrauOrdem = 'DIACONO_TRANSITORIO' | 'DIACONO_PERMANENTE' | 'PADRE_DIOCESANO' | 'PADRE_RELIGIOSO' | 'BISPO';
+export type FuncaoEclesiastica = 'BISPO_DIOCESANO' | 'PAROCO' | 'ADMINISTRADOR_PAROQUIAL' | 'VIGARIO_PAROQUIAL' | 'DIACONO_AUXILIAR' | 'EMERITO';
+export interface ClerigoInstitucional { clerigoId: string; nomeEclesiastico: string; grauOrdem: GrauOrdem; funcaoAtual: FuncaoEclesiastica | null; paroquia: string; }
+export interface Clerigo extends ClerigoInstitucional { nomeCivil: string; dataNascimento: string; paisOrigem: string; cpfFormatado: string | null; rg: string | null; documentoEstrangeiro: string | null; email: string; celularFormatado: string; isWhatsapp: boolean; telefoneFixoFormatado: string | null; endereco: string | null; dioceseIncardinacao: string; dataOrdenacaoDiaconal: string | null; dataOrdenacaoPresbiteral: string | null; dataOrdenacaoEpiscopal: string | null; isAtivo: boolean; }
+export type ClerigoPayload = Omit<Clerigo, 'clerigoId' | 'cpfFormatado' | 'celularFormatado' | 'telefoneFixoFormatado' | 'paroquia' | 'isAtivo'> & { cpf?: string; celular: string; telefoneFixo?: string; };

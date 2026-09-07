@@ -1,0 +1,288 @@
+package br.com.nsfatima.gestao.clero.infrastructure.persistence.entity;
+
+import br.com.nsfatima.gestao.clero.domain.model.GrauOrdem;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
+
+/** Persistência do cadastro pessoal e canônico de um clérigo. */
+@Entity
+@Table(name = "clerigos", schema = "calendario")
+@SuppressWarnings("PMD.ExcessivePublicCount")
+public class ClerigoEntity extends BaseVersionedEntity {
+    @Id
+    private UUID id;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String nomeCivil;
+
+    @Column(nullable = false)
+    private String nomeEclesiastico;
+
+    @Convert(converter = EncryptedLocalDateConverter.class)
+    private LocalDate dataNascimento;
+
+    @Column(length = 3, nullable = false)
+    private String paisOrigem;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String cpf;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String rg;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String documentoEstrangeiro;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String email;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String celular;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String telefoneFixo;
+
+    @Column(nullable = false)
+    private boolean whatsapp;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    private String endereco;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GrauOrdem grauOrdem;
+
+    @Column(nullable = false)
+    private String dioceseIncardinacao;
+
+    private LocalDate dataOrdenacaoDiaconal;
+    private LocalDate dataOrdenacaoPresbiteral;
+    private LocalDate dataOrdenacaoEpiscopal;
+
+    @Column(nullable = false)
+    private boolean ativo = true;
+
+    private Instant deletedAt;
+
+    @Column(nullable = false)
+    private Instant criadoEmUtc;
+
+    @Column(nullable = false)
+    private Instant atualizadoEmUtc;
+
+    @Column(nullable = false)
+    private String criadoPor;
+
+    @Column(nullable = false)
+    private String atualizadoPor;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID valor) {
+        id = valor;
+    }
+
+    public String getNomeCivil() {
+        return nomeCivil;
+    }
+
+    public void setNomeCivil(String valor) {
+        nomeCivil = valor;
+    }
+
+    public String getNomeEclesiastico() {
+        return nomeEclesiastico;
+    }
+
+    public void setNomeEclesiastico(String valor) {
+        nomeEclesiastico = valor;
+    }
+
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(LocalDate valor) {
+        dataNascimento = valor;
+    }
+
+    public String getPaisOrigem() {
+        return paisOrigem;
+    }
+
+    public void setPaisOrigem(String valor) {
+        paisOrigem = valor;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String valor) {
+        cpf = digitos(valor);
+    }
+
+    public String getRg() {
+        return rg;
+    }
+
+    public void setRg(String valor) {
+        rg = digitos(valor);
+    }
+
+    public String getDocumentoEstrangeiro() {
+        return documentoEstrangeiro;
+    }
+
+    public void setDocumentoEstrangeiro(String valor) {
+        documentoEstrangeiro = digitos(valor);
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String valor) {
+        email = valor;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public void setCelular(String valor) {
+        celular = digitos(valor);
+    }
+
+    public String getTelefoneFixo() {
+        return telefoneFixo;
+    }
+
+    public void setTelefoneFixo(String valor) {
+        telefoneFixo = digitos(valor);
+    }
+
+    public boolean isWhatsapp() {
+        return whatsapp;
+    }
+
+    public void setWhatsapp(boolean valor) {
+        whatsapp = valor;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String valor) {
+        endereco = valor;
+    }
+
+    public GrauOrdem getGrauOrdem() {
+        return grauOrdem;
+    }
+
+    public void setGrauOrdem(GrauOrdem valor) {
+        grauOrdem = valor;
+    }
+
+    public String getDioceseIncardinacao() {
+        return dioceseIncardinacao;
+    }
+
+    public void setDioceseIncardinacao(String valor) {
+        dioceseIncardinacao = valor;
+    }
+
+    public LocalDate getDataOrdenacaoDiaconal() {
+        return dataOrdenacaoDiaconal;
+    }
+
+    public void setDataOrdenacaoDiaconal(LocalDate valor) {
+        dataOrdenacaoDiaconal = valor;
+    }
+
+    public LocalDate getDataOrdenacaoPresbiteral() {
+        return dataOrdenacaoPresbiteral;
+    }
+
+    public void setDataOrdenacaoPresbiteral(LocalDate valor) {
+        dataOrdenacaoPresbiteral = valor;
+    }
+
+    public LocalDate getDataOrdenacaoEpiscopal() {
+        return dataOrdenacaoEpiscopal;
+    }
+
+    public void setDataOrdenacaoEpiscopal(LocalDate valor) {
+        dataOrdenacaoEpiscopal = valor;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean valor) {
+        ativo = valor;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant valor) {
+        deletedAt = valor;
+    }
+
+    public Instant getCriadoEmUtc() {
+        return criadoEmUtc;
+    }
+
+    public void setCriadoEmUtc(Instant valor) {
+        criadoEmUtc = valor;
+    }
+
+    public Instant getAtualizadoEmUtc() {
+        return atualizadoEmUtc;
+    }
+
+    public void setAtualizadoEmUtc(Instant valor) {
+        atualizadoEmUtc = valor;
+    }
+
+    public String getCriadoPor() {
+        return criadoPor;
+    }
+
+    public void setCriadoPor(String valor) {
+        criadoPor = valor;
+    }
+
+    public String getAtualizadoPor() {
+        return atualizadoPor;
+    }
+
+    public void setAtualizadoPor(String valor) {
+        atualizadoPor = valor;
+    }
+
+    private String digitos(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        return valor.replaceAll("\\D", "");
+    }
+}

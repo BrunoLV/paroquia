@@ -604,7 +604,7 @@ const Reports: React.FC = () => {
               </TableBody>
             </Table>
             <TablePagination
-              rowsPerPageOptions={[10, 20, 50, 100]}
+              rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={filteredMetrics.eventosSemana.length}
               rowsPerPage={reportsRowsPerPage}
@@ -614,7 +614,10 @@ const Reports: React.FC = () => {
                 setReportsRowsPerPage(parseInt(e.target.value, 10));
                 setReportsPage(0);
               }}
-              labelRowsPerPage="Itens por página:"
+              labelRowsPerPage="Linhas por página:"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+              }
             />
           </TableContainer>
         ) : (

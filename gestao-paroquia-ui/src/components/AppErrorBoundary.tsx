@@ -1,6 +1,7 @@
 import {Component, type ErrorInfo, type ReactNode} from 'react';
-import {Box, Button, Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ActionButton from './ActionButton';
 
 interface Props {
   children: ReactNode;
@@ -39,9 +40,7 @@ class AppErrorBoundary extends Component<Props, State> {
           <Typography color="text.secondary" sx={{mb: 3}}>
             Atualize a página para tentar novamente.
           </Typography>
-          <Button variant="contained" color="primary" startIcon={<RefreshIcon />} onClick={this.handleReload}>
-            Atualizar página
-          </Button>
+          <ActionButton color="primary" title="Atualizar página" icon={<RefreshIcon />} onClick={this.handleReload} />
         </Box>
       </Box>
     );

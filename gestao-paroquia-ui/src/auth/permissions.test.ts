@@ -4,6 +4,7 @@ import {
     canManageAnoParoquial,
     canManageEvento,
     canManageCadastroFieis,
+    canManageClero,
     canManageLocais,
     canManageOrganizacoes,
     canManageProjetos,
@@ -44,6 +45,22 @@ describe('canManageCadastroFieis', () => {
     };
 
     expect(canManageCadastroFieis(coordenador)).toBe(false);
+  });
+});
+
+// ─── canManageClero ──────────────────────────────────────────────────────────
+
+describe('canManageClero', () => {
+  it('permite Administrador, Pároco, Secretaria e Bispo gerir o clero', () => {
+    expect(canManageClero({ id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'] })).toBe(true);
+    expect(canManageClero({ id: '2', username: 'paroco', name: 'Pároco', roles: ['GLOBAL_PAROCO'] })).toBe(true);
+    expect(canManageClero({ id: '3', username: 'sec', name: 'Secretaria', roles: ['SECRETARIA_PAROQUIAL'] })).toBe(true);
+    expect(canManageClero({ id: '4', username: 'bispo', name: 'Bispo', roles: ['ROLE_BISPO_DIOCESANO'] })).toBe(true);
+  });
+
+  it('nega gestão do clero a leigo ou coordenador pastoral', () => {
+    expect(canManageClero({ id: '5', username: 'membro', name: 'Membro', roles: ['MEMBRO'] })).toBe(false);
+    expect(canManageClero({ id: '6', username: 'coord', name: 'Coord', roles: ['COORDENADOR_PASTORAL'] })).toBe(false);
   });
 });
 

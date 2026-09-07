@@ -114,7 +114,28 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Users (Usuarios)
--- Fieis (pessoas físicas correspondentes aos Usuarios e membros de comunidades)
+-- Clérigos (Ministros Ordenados / Membros do Clero)
+INSERT INTO calendario.clerigos (
+    id, nome_civil, nome_eclesiastico, data_nascimento, pais_origem, cpf, rg, documento_estrangeiro,
+    email, celular, telefone_fixo, whatsapp, endereco, grau_ordem, diocese_incardinacao,
+    data_ordenacao_diaconal, data_ordenacao_presbiteral, data_ordenacao_episcopal,
+    ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por, version
+) VALUES
+    ('1c000000-0000-0000-0000-000000000001', 'Pedro da Silva', 'Pe. Pedro da Silva', '1980-01-01', 'BRA', '00000000001', '111111111', NULL, 'padre.pedro@example.com', '11999990001', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2009-12-08', '2010-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
+    ('1c000000-0000-0000-0000-000000000006', 'João Batista', 'Pe. João Batista', '1985-06-24', 'BRA', '00000000006', '666666666', NULL, 'padre.joao@example.com', '11999990007', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2014-12-08', '2015-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0)
+ON CONFLICT (id) DO UPDATE SET
+    grau_ordem = EXCLUDED.grau_ordem,
+    ativo = EXCLUDED.ativo;
+
+-- Encargos Clericais (Posições institucionais do Clero)
+INSERT INTO calendario.encargos_clericais (
+    id, clerigo_id, unidade_territorial_id, funcao, atual, criado_em_utc, encerrado_em_utc
+) VALUES
+    ('2c000000-0000-0000-0000-000000000001', '1c000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000100', 'PAROCO', TRUE, CURRENT_TIMESTAMP, NULL),
+    ('2c000000-0000-0000-0000-000000000006', '1c000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000100', 'VIGARIO_PAROQUIAL', TRUE, CURRENT_TIMESTAMP, NULL)
+ON CONFLICT (id) DO NOTHING;
+
+-- Fieis (pessoas físicas correspondentes aos Usuarios leigos e membros de comunidades)
 INSERT INTO calendario.fieis (
     id, nome, cpf, cpf_hash, data_nascimento, email, telefone,
     endereco_logradouro, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_cep,
@@ -124,12 +145,10 @@ INSERT INTO calendario.fieis (
 )
 VALUES
     ('1f000000-0000-0000-0000-000000000000', 'Administrador do Sistema', '00000000000', '0000000000000000000000000000000000000000000000000000000000000000', '1980-01-01', 'admin@example.com', '11999990000', 'Rua da Matriz', '1', 'Centro', 'São Paulo', 'SP', '08000-000', '000000000', 'NAO_INFORMADO', 'Administrador', '11999990000', 'EMAIL', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Administração de Sistemas', TRUE, TRUE, FALSE),
-    ('1f000000-0000-0000-0000-000000000001', 'Pedro da Silva (Padre)', '00000000001', '031f50e5e09a5f61b2da02c2f59fde68fba579de4e1ef7a5490d6425f810977e', '1980-01-01', 'padre.pedro@example.com', '11999990001', 'Rua da Matriz', '10', 'Centro', 'São Paulo', 'SP', '08000-000', '111111111', 'MASCULINO', 'Sacerdote', '11999990001', 'EMAIL', 'SOLTEIRO', 'SACERDOTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Atendimento Pastoral', TRUE, TRUE, FALSE),
     ('1f000000-0000-0000-0000-000000000002', 'Maria Oliveira', '00000000002', '83764048c38ff46c8bea9b07d9ff2d8f8ee759334e3c4040da075c6de4964ade', '1980-01-01', 'maria.catequese@example.com', '11999990002', 'Rua das Flores', '100', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '222222222', 'FEMININO', 'Professora', '11999990002', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Catequese, Canto', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000003', 'João Santos', '00000000003', '5fe5f4974dabb8ad6e16a663a5da789608363f7ef8d036e90a08a82e76725a7e', '1980-01-01', 'joao.liturgia@example.com', '11999990003', 'Rua Santo Agostinho', '25', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '333333333', 'MASCULINO', 'Engenheiro', '11999990003', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Som e Mídia, Liturgia', TRUE, FALSE, TRUE),
     ('1f000000-0000-0000-0000-000000000004', 'Pedro Junior', '00000000004', '8edd917ae34b0c41d9c5d1219601a98c5c24a6949334f89b8075cbcae32d6d14', '1980-01-01', 'pedro.liturgia@example.com', '11999990004', 'Av. São José', '50', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '444444444', 'MASCULINO', 'Estudante', '11999990004', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Juventude, Violão', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000005', 'Maria do Conselho', '00000000005', '575bb6dd332492ed89809e98c1eb300343e97898c12b09414560471242bed35a', '1980-01-01', 'maria.conselho@example.com', '11999990005', 'Rua Central', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '555555555', 'FEMININO', 'Administradora', '11999990005', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Gestão Pastoral', TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000006', 'João Batista (Vigário)', '00000000006', '471e904bc81fd079271f4add8b7b78384f30c19e557fb4a32e5f310ec4260ec6', '1980-01-01', 'padre.joao@example.com', '11999990007', 'Rua da Matriz', '10', 'Centro', 'São Paulo', 'SP', '08000-000', '666666666', 'MASCULINO', 'Sacerdote', '11999990007', 'EMAIL', 'SOLTEIRO', 'SACERDOTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Atendimento Confissões', TRUE, TRUE, FALSE),
     ('1f000000-0000-0000-0000-000000000007', 'José do Conselho', '00000000007', '6b315f73399206b7b957093bc830705cf059be0d2c0bfdcf1afe52b704c1e7a9', '1980-01-01', 'jose.conselho@example.com', '11999990008', 'Rua Central', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '777777777', 'MASCULINO', 'Contador', '11999990008', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Conselho Pastoral', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000008', 'Ana do Conselho', '00000000008', '46026a0184154dba96ac2cf6ef69aa6a57dcc07d768d8354b3ddd16008d355ea', '1980-01-01', 'ana.conselho@example.com', '11999990009', 'Rua Nova', '45', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '888888888', 'FEMININO', 'Advogada', '11999990009', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Apoio Jurídico', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000009', 'Lúcia de Oliveira', '00000000009', 'cb10f8c68fbb2772eb8c11b4e4f0ee27937db6f3347d9696f709df9e94a5c487', '1980-01-01', 'lucia.catequese@example.com', '11999990010', 'Rua das Flores', '100', 'Vila Curuçá', 'São Paulo', 'SP', '08000-001', '999999999', 'FEMININO', 'Pedagoga', '11999990010', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Catequese Infantil', TRUE, TRUE, TRUE),
@@ -161,39 +180,30 @@ VALUES
     ('95000000-0000-0000-0000-000000000003', '1f000000-0000-0000-0000-000000000007', 'Gabriel do Conselho', '2012-01-30', 'FILHO', TRUE, TRUE, TRUE, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO calendario.usuarios (id, username, password_hash, enabled, roles, igreja_id, version, fiel_id)
+INSERT INTO calendario.usuarios (id, username, password_hash, enabled, roles, igreja_id, version, fiel_id, clerigo_id)
 VALUES 
-    ('10000000-0000-0000-0000-000000000000', 'admin', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000000'),
-    ('10000000-0000-0000-0000-000000000001', 'padre.pedro', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000001'),
-    ('10000000-0000-0000-0000-000000000002', 'maria.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_GLOBAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000002'),
-    ('10000000-0000-0000-0000-000000000003', 'joao.liturgia', '{noop}senha123', TRUE, 'VOLUNTARIO_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000003'),
-    ('10000000-0000-0000-0000-000000000004', 'pedro.liturgia', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000004'),
-    ('10000000-0000-0000-0000-000000000005', 'maria.conselho', '{noop}senha123', TRUE, 'MESA_DIRETORA_CPP', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000005'),
-    ('10000000-0000-0000-0000-000000000007', 'padre.joao', '{noop}senha123', TRUE, 'VIGARIO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000006'),
-    ('10000000-0000-0000-0000-000000000008', 'jose.conselho', '{noop}senha123', TRUE, 'MEMBRO_CPP', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000007'),
-    ('10000000-0000-0000-0000-000000000009', 'ana.conselho', '{noop}senha123', TRUE, 'MEMBRO_CPP', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000008'),
-    ('10000000-0000-0000-0000-000000000010', 'lucia.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000009'),
-    ('10000000-0000-0000-0000-000000000011', 'carlos.catequese', '{noop}senha123', TRUE, 'VOLUNTARIO_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000010'),
-    ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000011'),
-    ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000012'),
-    ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000013'),
-    ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000014')
+    ('10000000-0000-0000-0000-000000000000', 'admin', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000000', NULL),
+    ('10000000-0000-0000-0000-000000000001', 'padre.pedro', '{noop}senha123', TRUE, 'ADMIN,PAROCO', '00000000-0000-0000-0000-000000000100', 0, NULL, '1c000000-0000-0000-0000-000000000001'),
+    ('10000000-0000-0000-0000-000000000002', 'maria.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_GLOBAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000002', NULL),
+    ('10000000-0000-0000-0000-000000000003', 'joao.liturgia', '{noop}senha123', TRUE, 'VOLUNTARIO_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000003', NULL),
+    ('10000000-0000-0000-0000-000000000004', 'pedro.liturgia', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000004', NULL),
+    ('10000000-0000-0000-0000-000000000005', 'maria.conselho', '{noop}senha123', TRUE, 'MESA_DIRETORA_CPP', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000005', NULL),
+    ('10000000-0000-0000-0000-000000000007', 'padre.joao', '{noop}senha123', TRUE, 'VIGARIO', '00000000-0000-0000-0000-000000000100', 0, NULL, '1c000000-0000-0000-0000-000000000006'),
+    ('10000000-0000-0000-0000-000000000008', 'jose.conselho', '{noop}senha123', TRUE, 'MEMBRO_CPP', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000007', NULL),
+    ('10000000-0000-0000-0000-000000000009', 'ana.conselho', '{noop}senha123', TRUE, 'MEMBRO_CPP', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000008', NULL),
+    ('10000000-0000-0000-0000-000000000010', 'lucia.catequese', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000009', NULL),
+    ('10000000-0000-0000-0000-000000000011', 'carlos.catequese', '{noop}senha123', TRUE, 'VOLUNTARIO_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000010', NULL),
+    ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000011', NULL),
+    ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000012', NULL),
+    ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000013', NULL),
+    ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000014', NULL)
 ON CONFLICT (username) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
     enabled = EXCLUDED.enabled,
     roles = EXCLUDED.roles,
     igreja_id = EXCLUDED.igreja_id,
-    fiel_id = EXCLUDED.fiel_id;
-
-
--- Papéis Globais (Pároco/Vigário): desde a track roles_globais_vs_escopo, acesso irrestrito não é mais
--- modelado como vínculo em membro_grupo com organização CLERO (que nem existe mais como GrupoParoquial) — é
--- um papel_global por Fiel, independente de organização.
-INSERT INTO calendario.papel_global (id, fiel_id, papel, ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por)
-VALUES
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000001', 'paroco', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
-    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000006', 'vigario', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
-ON CONFLICT DO NOTHING;
+    fiel_id = EXCLUDED.fiel_id,
+    clerigo_id = EXCLUDED.clerigo_id;
 
 -- Vínculos Fiel-GrupoParoquial (membro_grupo): chaveados por fiel_id, garantindo membros e coordenadores em TODAS as pastorais e conselhos.
 INSERT INTO calendario.membro_grupo (id, fiel_id, grupo_paroquial_id, tipo_grupo, papel, igreja_vinculo_id, ativo, criado_em_utc, atualizado_em_utc)
@@ -646,8 +656,3 @@ SET pais_origem = 'BRA', celular = regexp_replace(COALESCE(celular_whatsapp, tel
     unidade_territorial_id = '00000000-0000-0000-0000-000000000100', is_dizimista = FALSE
 WHERE pais_origem IS NULL OR unidade_territorial_id IS NULL;
 
--- Padre e diácono não integram a massa do agregado Fiel.
-DELETE FROM calendario.membro_grupo WHERE fiel_id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');
-DELETE FROM calendario.papel_global WHERE fiel_id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');
-DELETE FROM calendario.usuarios WHERE fiel_id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');
-DELETE FROM calendario.fieis WHERE id IN ('1f000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000006');

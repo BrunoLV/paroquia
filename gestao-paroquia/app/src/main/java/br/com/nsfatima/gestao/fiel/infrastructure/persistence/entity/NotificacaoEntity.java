@@ -1,9 +1,77 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
+
 /** Aviso persistente sem PII para comunicação de decisões do módulo. */
-@Entity @Table(name="notificacoes",schema="calendario") public class NotificacaoEntity {
- @Id private UUID id; @Column(name="usuario_id") private UUID usuarioId; private String tipo; private String mensagem; @Column(name="criado_em_utc") private Instant criadoEmUtc; @Column(name="lida_em_utc") private Instant lidaEmUtc;
- public UUID getId(){return id;} public void setId(UUID v){id=v;} public UUID getUsuarioId(){return usuarioId;} public void setUsuarioId(UUID v){usuarioId=v;} public String getTipo(){return tipo;} public void setTipo(String v){tipo=v;} public String getMensagem(){return mensagem;} public void setMensagem(String v){mensagem=v;} public Instant getCriadoEmUtc(){return criadoEmUtc;} public void setCriadoEmUtc(Instant v){criadoEmUtc=v;} public Instant getLidaEmUtc(){return lidaEmUtc;} public void setLidaEmUtc(Instant v){lidaEmUtc=v;}
+@Entity
+@Table(name = "notificacoes", schema = "calendario")
+public class NotificacaoEntity {
+
+    @Id
+    private UUID id;
+
+    @Column(name = "usuario_id")
+    private UUID usuarioId;
+
+    private String tipo;
+    private String mensagem;
+
+    @Column(name = "criado_em_utc")
+    private Instant criadoEmUtc;
+
+    @Column(name = "lida_em_utc")
+    private Instant lidaEmUtc;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID v) {
+        id = v;
+    }
+
+    public UUID getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(UUID v) {
+        usuarioId = v;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String v) {
+        tipo = v;
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String v) {
+        mensagem = v;
+    }
+
+    public Instant getCriadoEmUtc() {
+        return criadoEmUtc;
+    }
+
+    public void setCriadoEmUtc(Instant v) {
+        criadoEmUtc = v;
+    }
+
+    public Instant getLidaEmUtc() {
+        return lidaEmUtc;
+    }
+
+    public void setLidaEmUtc(Instant v) {
+        lidaEmUtc = v;
+    }
 }

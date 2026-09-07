@@ -329,14 +329,17 @@ const Aprovacoes = () => {
                   </Table>
                 </TableContainer>
                 <TablePagination
-                  rowsPerPageOptions={[10, 20, 50, 100]}
+                  rowsPerPageOptions={[5, 10, 25]}
                   component="div"
                   count={data.totalElements}
                   rowsPerPage={size}
                   page={page}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                  labelRowsPerPage="Itens por página:"
+                  labelRowsPerPage="Linhas por página:"
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                  }
                 />
               </>
             )
@@ -405,7 +408,7 @@ const Aprovacoes = () => {
                   </Table>
                 </TableContainer>
                 <TablePagination
-                  rowsPerPageOptions={[10, 20, 50, 100]}
+                  rowsPerPageOptions={[5, 10, 25]}
                   component="div"
                   count={projectData.length}
                   rowsPerPage={projRowsPerPage}
@@ -415,7 +418,10 @@ const Aprovacoes = () => {
                     setProjRowsPerPage(parseInt(e.target.value, 10));
                     setProjPage(0);
                   }}
-                  labelRowsPerPage="Itens por página:"
+                  labelRowsPerPage="Linhas por página:"
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                  }
                 />
               </>
             )

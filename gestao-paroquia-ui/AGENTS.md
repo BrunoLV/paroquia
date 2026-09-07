@@ -1,96 +1,101 @@
-# AGENTS.md - Frontend Engineering Standards & Guidelines
+# AGENTS.md - Frontend Engineering Standards & Guidelines (`gestao-paroquia-ui/`)
 
-Este documento define as regras Mandatórias e Invariantes de arquitetura, código, segurança e ferramentas para atuação no frontend do **Projeto Paróquia** (`gestao-paroquia-ui/`).
-
----
-
-## 1. Diretrizes de Comportamento do Agente
-
-* **Comunicação e Texto Explicativo:** Utilize a habilidade `caveman`. Respostas e explicações devem ser extremamente diretas, sem introduções, saudações ou texto conversacional.
-* **Geração e Arquitetura de Código:** Utilize a habilidade `ponytail`. O código produzido deve ser estritamente de nível de produção, fortemente tipado, seguro, modular e limpo.
-* **Separação de Papéis:** As habilidades `caveman` e `ponytail` são ferramentas de execução de estilo e qualidade, não personas operacionais.
+Este documento define as regras Mandatórias, Invariantes e Diretrizes Técnicas para qualquer agente de IA ou desenvolvedor atuando no subprojeto de frontend (`gestao-paroquia-ui/`).
 
 ---
 
-## 2. Arquitetura e Contexto do Sistema
+## 1. Diretrizes Fundamentais de Execução
 
-* **Stack Principal:** React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query (v5), Axios.
-* **Padrão Arquitetural:** Domain-Driven UI voltado a páginas (*page-oriented*).
-* **Isolamento de Lógica:** Componentes React devem conter exclusivamente lógica visual e de apresentação.
-* **Camada de Estado de Servidor:** Toda integração com API, mutação, cache e transformação de dados **DEVE** ser isolada em Custom Hooks dentro de `src/hooks/`.
-* **Regra de Co-localização:** Testes e estilos específicos de um componente **DEVEM** residir na mesma pasta do componente.
-* **Topologia Direcionada:**
-  * `src/api/`: Wrappers HTTP e contratos de requisição/resposta.
-  * `src/auth/`: Autorização, controle de acesso e regras de permissão.
-  * `src/pages/`: Containers e roteamento de páginas.
-  * `src/components/`: Componentes visuais reutilizáveis divididos por módulo/feature.
-  * `src/context/`: Contextos globais da aplicação.
-  * `src/utils/`: Funções puras utilitárias e helpers genéricos.
+* **Comunicação e Explicações:** Execute estritamente no estilo `caveman`. Respostas e explicações devem ser curtas, diretas, sem saudações, introduções ou prolixidade.
+* **Qualidade e Estilo de Código:** Execute estritamente no estilo `ponytail`. O código produzido deve ser de nível de produção sênior, declarativo, fortemente tipado, acessível e sem warnings.
+* **Código como Documentação Viva (*Living Documentation*):**
+  * Componentes de tela, modais, painéis e hooks customizados **DEVEM** conter JSDoc contextualizando a regra de negócio/canônica atendida e a decisão ergonômica de UX adotada.
+  * Justifique no código contenções de propagação (`stopPropagation`), aprisionamentos de foco (*focus traps*) e escolhas semânticas de ARIA. Comentários triviais (`// renderiza botão`, `// hook`) são proibidos.
 
 ---
 
-## 3. Integração com API e Segurança Frontend
+## 2. Matriz de Ativação de Skills do Agente (`.agents/skills/`)
 
-* **Sincronia de Contratos:** Qualquer alteração em um contrato de endpoint do backend **DEVE** ser refletida simultaneamente no wrapper em `src/api/` e nas definições em `types.ts`.
-* **Permissões Centralizadas:** Testes de autorização e checagens de perfil **NÃO DEVEM** ser feitos via renderização condicional inline com lógica própria. **DEVE-SE** consumir estritamente as abstrações em `src/auth/permissions.ts`.
+Antes de iniciar qualquer intervenção no frontend, consulte e respeite integralmente os manuais de skills correspondentes:
 
----
-
-## 4. Governança de IA e Conformidade LGPD
-
-* **Análise Prévia via Graphify:** **DEVE-SE** consultar os artefatos de AST em `../graphify-out/` antes de realizar buscas manuais no código para entender conexões e dependências.
-* **Proteção de Dados Pessoais (LGPD):**
-  * **NÃO DEVE** haver exposição de dados PII em logs de console (`console.log`), local storage ou estado local não criptografado.
-  * **DEVE-SE** cumprir rigorosamente as diretrizes contidas em `docs/ia/regras_duras_lgpd.md`.
-* **Guia de Habilidades:** Consultar o arquivo `.agents/skills/react-frontend.md` antes de efetuar qualquer refatoração estrutural.
+| Escopo da Tarefa no Frontend | Skills Mandatórias | Invariantes Críticas |
+| :--- | :--- | :--- |
+| **Componentes, Páginas, Telas & Layout** | `react-frontend.md` | • Semântica MUI 9 pura: **PROIBIDAS** tags HTML cruas (`div`, `span`, `p`) para layout/texto.<br>• Uso exclusivo do novo `<Grid2 container spacing={2}>` e `<Grid2 size={{ xs: 12, ... }}>`.<br>• Limites de linhas: componentes puros (10–60 linhas); formulários densos (máximo 120 linhas).<br>• Cantos arredondados padronizados pelo tema (`shape.borderRadius: 12`). |
+| **Formulários & Entradas de Dados** | `react-frontend.md` | • Schema Zod obrigatório em `src/schemas/<entidade>Schema.ts`.<br>• Integração mandatória via `react-hook-form` + `@hookform/resolvers/zod`.<br>• Proibida proliferação de `useState` para múltiplos inputs.<br>• Máscaras e formatadores sistemáticos (`src/utils/masks.ts`). |
+| **Server State & Integração com API** | `react-frontend.md` | • TanStack Query v5 exclusivo em hooks dedicados (`src/hooks/`).<br>• Chaves centralizadas via Query Key Factories serializáveis (`fielKeys.all`).<br>• Proibidas chamadas diretas de `fetch`/`axios` dentro do corpo de componentes.<br>• Invalidação de queries e feedback visual com notificações após mutações. |
+| **Acessibilidade (a11y) & Tabelas** | `react-frontend.md` | • Linhas de tabela clicáveis devem ter `role="button"`, `tabIndex={0}` e listeners `onKeyDown` (`Enter`/`Space`).<br>• Botões e menus de ações na linha **DEVEM** conter `event.stopPropagation()`.<br>• Paginação obrigatória em todas as listagens (`<TablePagination>`). |
+| **Segurança e Privacidade (LGPD)** | `lgpd-privacy-by-design.md` | • Paridade absoluta: dados civis de qualquer papel/clérigo isolados em modais de RH/administrativos.<br>• Proibido `console.log` com payloads ou PII exposta.<br>• Mascaramento obrigatório de dados civis (CPF, e-mail, telefone). |
+| **Testes Automatizados de Frontend** | `react-frontend.md`<br>`tdd.md` | • Vitest + React Testing Library + `@testing-library/user-event`.<br>• Proibido `fireEvent`; simule interações reais com `userEvent`.<br>• Isolamento de rede: interceptação obrigatória via Mock Service Worker (MSW). |
 
 ---
 
-## 5. Padrões de Código e Tipagem Estrita
+## 3. Padrão Visual Oficial (*Padrão Arrojado*)
 
-* **Tipagem:**
-  * O uso do tipo `any` é **ESTRITAMENTE PROIBIDO**.
-  * **NÃO DEVE** ser utilizada `string` livre para valores finitos; utilize `enum` ou uniões de literais de string (`type Status = 'ATIVO' | 'INATIVO'`).
-* **Limites de Tamanho por Arquivo:**
-  * Componentes React: Mínimo 10 linhas, Máximo 60 linhas.
-  * Custom Hooks e Funções Puras: Mínimo 4 linhas, Máximo 20 linhas.
-  * Se o limite for excedido, o arquivo **DEVE** ser decomposto.
-* **Nomenclatura:**
-  * Entidades de domínio, interfaces de dados e DTOs **DEVEM** ser nomeados em Português (ex: `UsuarioDto`, `ParoquiaResponse`).
-  * Termos técnicos e padrões de React **DEVEM** permanecer em Inglês (ex: `Props`, `Context`, `State`, `Handler`).
-  * Nomes genéricos ou vazios (`Manager`, `Helper`, `Data`, `Info`) são **PROIBIDOS**.
-* **Estrutura de Importação:**
-  * **DEVE-SE** utilizar caminhos absolutos baseados no alias `@/`.
-  * Importações **DEVEM** seguir a ordem: 1. Bibliotecas externas -> 2. Módulos absolutos do projeto -> 3. Tipos e Estilos locais.
+O módulo de **Fiéis** (`src/pages/Fieis.tsx`) estabelece o padrão canônico para todas as telas do sistema:
+
+### 3.1. Estrutura de Página e Telas
+* Contêiner raiz: `<Stack spacing={3}>`.
+* Cabeçalho de página mandatório (`src/components/PageHeader.tsx`):
+  ```tsx
+  <PageHeader
+    icon={<PersonOutlineIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+    title="Título da Página"
+    subtitle="Descrição objetiva do contexto do módulo"
+    actions={<ActionButton title="Novo Registro" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />}
+  />
+  ```
+* Barra de busca e filtros com contêiner delimitado (`<Box sx={{ maxWidth: 400 }}>`) e adorno de lupa.
+
+### 3.2. Botões e Ações (`ActionButton`)
+* **PROIBIDO** utilizar `<Button>` cru sem estilização semântica ou botões apenas com ícone sem rótulo/tooltip.
+* Utilize exclusivamente `<ActionButton title="..." icon={<Icon />} ... />` (`src/components/ActionButton.tsx`):
+  * **Ação Primária** (Salvar, Criar, Homologar): `color="primary"`, ícone `<SaveIcon />` / `<AddIcon />` / `<CheckCircleIcon />`.
+  * **Ação Secundária** (Cancelar, Fechar, Voltar): `color="secondary"`, ícone `<CloseIcon />` / `<ArrowBackIcon />`.
+  * **Ação Destrutiva** (Inativar, Excluir, Vetar): `color="error"`, ícone `<BlockIcon />` / `<CancelIcon />` / `<DeleteIcon />`.
+
+### 3.3. Tríade de Estados Assíncronos
+* **Loading:** Renderizar `<Skeleton>` estruturados com dimensões aproximadas ao conteúdo real; nunca deixar telas em branco.
+* **Empty State:** Se a busca ou tabela não contiver dados, renderizar `<EmptyState>` com ícone contextual e botão de ação primária.
+* **Error State:** Falhas na query devem renderizar alertas contextuais com opção de retry (`refetch()`).
+
+### 3.4. Indicadores Categóricos de Domínio (`StatusIcon`)
+* Tipos, categorias, classificações, sacramentos e estados de ciclo de vida **DEVEM** ser renderizados exclusivamente via `<StatusIcon {...get<Propriedade>Meta(valor)} />` (`src/components/StatusIcon.tsx`).
+* Proibido exibir enums crus com sublinhados (`_`); utilize mapeadores de rótulos amigáveis.
 
 ---
 
-## 6. Qualidade, Testes e Documentação
+## 4. Arquitetura de Componentes e Código TypeScript
 
-* **Garantia de Zero Warnings:** O código produzido **NÃO DEVE** gerar nenhum warning ou erro no ESLint, Prettier ou no compilador TypeScript (`tsc`).
-* **Documentação JSDoc:** Todo Custom Hook em `src/hooks/` **DEVE** possuir bloco JSDoc especificando:
-  * O contrato da requisição de rede.
-  * As chaves e estratégias de invalidação do TanStack Query.
-  * O motivo arquitetural ou técnico da abordagem adotada.
-* **Desenvolvimento Guiado por Testes (TDD):**
-  * O ciclo **Red-Green-Refactor** é **MANDATÓRIO** para qualquer implementação.
-  * Cobertura obrigatória para testes Unitários, de Componentes (React Testing Library + `user-event`) e E2E.
-* **Isolamento Total de Rede:** É **PROIBIDO** realizar chamadas HTTP reais durante a execução de testes. Toda a camada Axios/API **DEVE** ser mockada.
+* **Tipagem Estrita:**
+  * O uso de `any` ou `unknown` sem narrowing é **TERMINANTEMENTE PROIBIDO**.
+  * Proibido `string` livre para valores finitos; utilize `enum` ou uniões de literais (`type Status = 'ATIVO' | 'INATIVO'`).
+* **Regra de Co-localização e Organização:**
+  * Testes (`.test.tsx`), schemas (`Schema.ts`) e estilos específicos devem residir junto ao componente ou módulo funcional correspondente.
+  * Subcomponentes derivados de telas devem residir na pasta `components/` adjacente ao arquivo de página pai.
+* **Estrutura de Importações:**
+  * Utilize invariavelmente os aliases absolutos configurados: `@/components`, `@/hooks`, `@/utils`, `@/schemas`, `@/api`.
+  * Proibidas importações relativas profundas (`../../../../components`).
 
 ---
 
-## 7. Referência de Comandos e Ferramentas
+## 5. Governança de Qualidade, Linting e Execução
+
+* **Garantia de Zero Warnings:** O código produzido **NÃO DEVE** gerar nenhum warning ou erro no ESLint, Prettier ou `tsc --noEmit`.
+* **Segurança e Higiene de Console:** Proibido comitar declarações de `console.log` ou expor tokens e identificadores em rotas e formulários inseguros.
+
+---
+
+## 6. Referência de Comandos
 
 ### Graphify (Executar a partir da raiz do monorepo)
 * Consultar base de código: `graphify query "<pergunta>"`
-* Rastrear dependências entre arquivos: `graphify path "<Caminho_A>" "<Caminho_B>"`
+* Rastrear dependências entre componentes/arquivos: `graphify path "<CaminhoA>" "<CaminhoB>"`
 * Explicar conceito/módulo: `graphify explain "<conceito>"`
 * Atualizar AST após modificações: `graphify update .`
 
 ### NPM / Vitest (Executar a partir de `gestao-paroquia-ui/`)
-* Instalação: `npm install`
-* Servidor de desenvolvimento: `npm run dev`
-* Validação de tipos e Build: `npm run build`
-* Execução de testes: `npm test`
-* Testes em modo Watch: `npm run test:watch`
+* Instalar dependências: `npm install`
+* Iniciar servidor de desenvolvimento: `npm run dev`
+* Validação de tipos TypeScript e Build: `npm run build`
+* Executar testes automatizados: `npm test`
 * Executar teste específico: `npx vitest run <caminho_do_arquivo>`

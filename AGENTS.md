@@ -1,54 +1,62 @@
-# AGENTS.md - Root Architectural & Technical Overview
+# AGENTS.md - Root Architectural, Technical Overview & Skills Governance
 
-Este documento define as regras Mandatórias e Invariantes de arquitetura do monorepo, governança e roteamento de agentes para atuação no **Projeto Paróquia**.
-
----
-
-## 1. Diretrizes de Comportamento do Agente
-
-* **Comunicação e Texto Explicativo:** Utilize a habilidade `caveman`. Respostas e explicações devem ser extremamente diretas, sem introduções, saudações ou texto conversacional.
-* **Geração e Arquitetura de Código:** Utilize a habilidade `ponytail`. O código produzido deve ser estritamente de nível de produção, fortemente tipado, seguro, modular e limpo.
-* **Separação de Papéis:** As habilidades `caveman` e `ponytail` são ferramentas de execução de estilo e qualidade, não personas operacionais.
+Este documento define as regras Mandatórias, Invariantes de arquitetura do monorepo, governança de segurança e a **matriz de execução de Skills** para atuação no **Projeto Paróquia**.
 
 ---
 
-## 2. Escopo da Aplicação e Arquitetura do Monorepo
+## 1. Diretrizes Fundamentais de Execução
+
+* **Comunicação e Texto Explicativo:** Execute sob o modo `caveman`. Respostas e explicações devem ser extremamente diretas, sem saudações, introduções ou prolixidade.
+* **Geração e Arquitetura de Código:** Execute sob o modo `ponytail`. O código produzido deve ser estritamente de nível de produção, fortemente tipado, seguro, modular e limpo.
+* **Código como Documentação Viva (*Living Documentation*):** Todo código (Java, TypeScript, SQL, Gradle) deve carregar Javadoc/JSDoc conceitual ou metadados DDL (`COMMENT ON`) justificando regras de negócio e decisões de arquitetura. Comentários triviais e óbvios são expressamente proibidos.
+
+---
+
+## 2. Escopo do Monorepo e Isolamento
 
 * **Proposta do Sistema:** Sistema para gestão administrativa e pastoral paroquial.
-* **Estrutura de Módulos:** Monorepo composto por dois subprojetos estritamente isolados:
-  * **Backend (`gestao-paroquia/`):** API REST em Java 25 com Spring Boot 3, estruturada como monólito modular sob arquitetura Hexagonal e Clean Architecture.
-  * **Frontend (`gestao-paroquia-ui/`):** Aplicação Web SPA em React 19, TypeScript e Vite 5.
-* **Isolamento do Monorepo:**
-  * Backend e Frontend **DEVEM** manter dependências, ambientes de build, scripts, testes e governança técnica independentes.
-  * **NÃO DEVE** haver acoplamento direto de código ou scripts compartilhados fora das fronteiras de cada módulo.
+* **Backend (`gestao-paroquia/`):** API REST em Java 25 com Spring Boot 3, arquitetura Hexagonal (Ports & Adapters) e Clean Architecture.
+* **Frontend (`gestao-paroquia-ui/`):** SPA Web em React 19, TypeScript estrito, Vite 5 e MUI 9.
+* **Isolamento de Fronteiras:** 
+  * Backend e Frontend **DEVEM** manter dependências, ambientes de build, scripts, testes e governança técnica 100% independentes.
+  * **PROIBIDO** acoplamento direto de código ou scripts compartilhados fora das fronteiras de cada módulo.
 
 ---
 
-## 3. Governança Tecnológica, Segurança e Privacidade
+## 3. Matriz Mandatória de Governança de Skills (`.agents/skills/`)
 
-* **Análise Prévia via Graphify:** **DEVE-SE** consultar a AST e os artefatos de grafo em `../graphify-out/` antes de realizar varreduras manuais no código para mapear dependências e estrutura.
-* **Proteção de Dados Pessoais (LGPD):**
-  * **NÃO DEVE** haver exposição, log ou persistência insegura de PII em nenhum dos módulos.
-  * **DEVE-SE** aplicar rigorosamente as regras do guia `docs/ia/regras_duras_lgpd.md` em auditorias, logs e APIs.
+Antes de gerar ou refatorar qualquer arquivo, o agente **DEVE** identificar a natureza da tarefa e ativar rigorosamente os padrões, restrições e checklists das skills correspondentes localizadas em `.agents/skills/`:
+
+| Escopo / Gatilho | Skills Mandatórias | Diretrizes Críticas |
+| :--- | :--- | :--- |
+| **Manipulação de PII, Usuários, Fiéis ou Clérigos** | `lgpd-privacy-by-design.md` | • **Paridade Clérigo/Fiel:** regras idênticas de privacidade para clérigos e leigos.<br>• PII Zero em logs.<br>• Criptografia em repouso de dados civis e prevenção contra IDOR.<br>• DTOs segregados por permissão. |
+| **Modelagem de Domínio Java & Regras de Negócio** | `ddd.md`<br>`solid.md`<br>`java.md` | • Domínio em Java puro sem frameworks (zero anotações Spring/JPA em `domain/`).<br>• Identificadores fortemente tipados com `record` (ex: `FielId`).<br>• Agregados associam-se apenas por ID.<br>• Mutações de estado limitadas a 1 agregado por transação.<br>• Sealed Hierarchies com Pattern Matching sem `default` artificial. |
+| **Implementação de Código Java 25 Geral** | `java.md`<br>`solid.md` | • `record` imutável para DTOs/VOs com validação no construtor compacto.<br>• Proibido `float`/`double` para valores financeiros (use `BigDecimal`).<br>• Virtual Threads para I/O sem `synchronized` (anti-pinning).<br>• `Optional` restrito a retornos de métodos; coleções retornam vazias, nunca `null`. |
+| **Testes Unitários no Backend** | `tdd.md` | • Ciclo Red-Green-Refactor estrito.<br>• JUnit 5 + Mockito + AssertJ.<br>• Isolamento total: Proibido `@SpringBootTest` ou I/O físico em testes unitários.<br>• Zero código defensivo sem teste prévio motivador. |
+| **Scripts DDL, DML ou Consultas SQL** | `sql.md`<br>`flyway.md` | • Identificadores em `snake_case`, palavras-chave em MAIÚSCULO.<br>• Proibido `SELECT *` e junções implícitas.<br>• Sargabilidade estrita no `WHERE` (sem funções em colunas indexadas).<br>• `COMMENT ON` obrigatório em tabelas e colunas.<br>• UUIDs e `DECIMAL` para precisão monetária. |
+| **Migrações e Evolução de Esquema** | `flyway.md` | • Local: `src/main/resources/db/migration/V{NNN}__{descricao}.sql`.<br>• Padrão Expand & Contract (Zero-Downtime): novas colunas como `NULLable` ou `DEFAULT`.<br>• Imutabilidade absoluta: nunca editar scripts `V` já existentes.<br>• DMLs idempotentes (`ON CONFLICT DO NOTHING`). |
+| **Compilação, Dependências e Tarefas Gradle** | `gradle.md` | • Kotlin DSL (`.gradle.kts`) exclusivo, sem Groovy.<br>• Zero `allprojects {}` / `subprojects {}`: use Convention Plugins em `build-logic`.<br>• Dependências centralizadas exclusivamente em `gradle/libs.versions.toml`.<br>• Java 25 Toolchain fixado e Lazy API em todas as tarefas. |
+| **Desenvolvimento Frontend (React/UI)** | `react-frontend.md`<br>`lgpd-privacy-by-design.md` | • React 19 + TypeScript estrito + MUI 9.<br>• Componentes finos (10–60 linhas JSX); regras em hooks customizados.<br>• Formulários controlados via Zod + React Hook Form.<br>• Proibidas tags HTML cruas para layout (`div`, `span`, `p`); use primitivos do MUI.<br>• Server State exclusivo via TanStack Query v5.<br>• Fiel respeito ao padrão visual arrojado da página `Fieis.tsx`. |
 
 ---
 
-## 4. Roteamento de Diretrizes e Agentes (Navegação)
+## 4. Navegação e Roteamento de Agentes
 
-Atuações específicas em subprojetos **DEVEM** obrigatoriamente seguir as regras contidas em seus respectivos arquivos de diretrizes:
+Atuações específicas nos submódulos devem obedecer às regras locais complementares:
 
-* Para tarefas no **Backend**, consulte e siga: [`gestao-paroquia/AGENTS.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/AGENTS.md)
-* Para tarefas no **Frontend**, consulte e siga: [`gestao-paroquia-ui/AGENTS.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/AGENTS.md)
+* Para tarefas no **Backend**, consulte: [`gestao-paroquia/AGENTS.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia/AGENTS.md)
+* Para tarefas no **Frontend**, consulte: [`gestao-paroquia-ui/AGENTS.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/AGENTS.md)
 
-## graphify
+---
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+## 5. Diretrizes de Grafo de Conhecimento (Graphify)
 
-When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+O projeto possui um grafo de conhecimento em `../graphify-out/` mapeando dependências estruturais e relacionamentos cruzados.
 
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+* **Comando `/graphify`:** Ao receber o comando, utilize a skill `graphify` antes de qualquer outra ação.
+* **Exploração Racional:**
+  * Perguntas gerais da base: `graphify query "<pergunta>"` (requer `graphify-out/graph.json`).
+  * Relacionamentos: `graphify path "<Origem>" "<Destino>"`.
+  * Conceitos isolados: `graphify explain "<conceito>"`.
+  * Navegação ampla: priorize `graphify-out/wiki/index.md` em vez de varreduras manuais no código-fonte.
+* **Manutenção Contínua:** Após alterar código estrutural, execute `graphify update .` para atualizar a AST.

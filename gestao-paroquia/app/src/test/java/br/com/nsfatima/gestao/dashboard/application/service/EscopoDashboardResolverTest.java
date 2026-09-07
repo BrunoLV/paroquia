@@ -4,7 +4,6 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

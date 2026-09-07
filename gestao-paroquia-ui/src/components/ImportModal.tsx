@@ -250,7 +250,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 </TableBody>
               </Table>
               <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
+                rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={validationResult.itens.length}
                 rowsPerPage={importRowsPerPage}
@@ -260,7 +260,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   setImportRowsPerPage(parseInt(e.target.value, 10));
                   setImportPage(0);
                 }}
-                labelRowsPerPage="Itens por página:"
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
               />
             </TableContainer>
           </Box>

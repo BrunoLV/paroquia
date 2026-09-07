@@ -1,54 +1,471 @@
-# Skill: React Frontend Engineering (gestao-paroquia-ui)
+# Skill: React Frontend Engineering (`gestao-paroquia-ui`)
 
-## Context & Purpose
-This skill equips the agent with the precise execution patterns, architectural constraints, and quality gates required to develop, refactor, and maintain the `gestao-paroquia-ui` codebase. It ensures absolute alignment with React 19, TypeScript, Vite, Material UI (MUI 9), and Vitest.
+## 1. Visão Geral e Contexto
 
-## Production Standards & Core Practices
+Esta skill capacita o Agente de IA a projetar, refatorar e auditar código de frontend no ecossistema **`gestao-paroquia-ui`**. O agente atua como um Engenheiro Frontend Principal especializado em **React 19**, **TypeScript estrito**, **Material UI (MUI 9)**, **TanStack Query v5**, **Vite** e **Vitest**.
 
-### 1. Component Architecture & Separation of Concerns
-* **Business Logic Isolation:** Components must be thin visual layout layers. All state transitions, side effects, and data fetching MUST be encapsulated inside custom hooks (`hooks/`).
-* **MUI 9 Semantic Primitives:** Use Material UI semantic layouts (`Box`, `Stack`, `Grid2`, `Container`, `Typography`) instead of raw HTML elements (`div`, `span`, `p`). HTML markup within JSX is treated as a style violation.
-* **Component Decomposition:** Strictly adhere to the 10-60 lines constraint for JSX files. If a component exceeds 60 lines, automatically decompose it into atomic sub-components placed within a local `components/` subfolder adjacent to the parent file.
-* **Controlled Component Tree:** Favor explicit React Context for global or feature-wide shared state, and local hook state for ephemeral UI state. Global window injection or singleton state stores are forbidden.
+O objetivo é garantir interfaces declarativas com tipagem robusta, acessibilidade por teclado (a11y/WCAG), isolamento completo de regras de negócio em hooks e fidelidade absoluta aos padrões visuais e ergonômicos estabelecidos pelo módulo de referência **Fiéis** (`src/pages/Fieis.tsx`).
 
-### 2. UI Design System & Visual Consistency
-A dedicated standardization pass (2026-07) unified header, loading, dialog, and form conventions across every page. New/changed UI MUST follow these established patterns rather than reintroducing the ad-hoc styles that pass removed:
+---
 
-* **Page header:** every route-level page opens with `<PageHeader icon={<XIcon sx={{ fontSize: 32, color: 'primary.main' }} />} title="..." subtitle="..." actions={...} />` (`src/components/PageHeader.tsx`) instead of a hand-rolled icon-badge/title `Box`. Pass right-aligned buttons via `actions`.
-* **Theme tokens, never hex:** `src/theme.ts` defines `theme.custom.headerIconBg` and `theme.custom.subtlePanelBg` plus the palette (`primary.main`, `secondary.main`, `error.main`, `divider`). Do not hardcode colors like `#1a237e`, `#37474f`, `#d97706`, `#eee`/`#e0e0e0`, `#f8f9fa`/`#fafafa` in `sx` — use the palette/theme token equivalent. `theme.ts` also carries global `MuiDialog` (paper `borderRadius: 16px`), `MuiDialogTitle` (border, padding, `fontWeight: 700`), and `MuiDialogActions` (border, padding) overrides — do not re-declare these per-component; only add `sx` for something the theme default doesn't already provide (e.g. a status chip row via `display:flex, justifyContent:space-between`).
-* **Rounded, modern corners — never `borderRadius: 0`:** the design system (2026-08) moved away from sharp/square corners. `theme.ts` sets `shape.borderRadius: 12` globally plus explicit component overrides: `MuiButton`/`MuiOutlinedInput` at `10px`, `MuiChip` at `8px`, `MuiCard`/`MuiPaper`/`MuiDialog` paper at `16px`. Never add `sx={{ borderRadius: 0 }}` (or `'0px'`) to a component — let it inherit the theme default. Only set an explicit `borderRadius` in `sx` when a component needs to deviate from its type default (e.g. a fully round avatar/badge uses `'50%'`), never to flatten corners back to square.
-* **Loading state:** use MUI `Skeleton` sized to approximate the real content for page/section-level loading, not `CircularProgress` (reserve `CircularProgress` for small inline/button-level spinners only).
-* **Content sections:** use `Card` (with `CardContent` for padded content) for content panels, not bare `Paper` (Login and Drawer-internal content are the only exceptions).
-* **Dialogs/forms:**
-  - `DialogContent dividers` wrapping a single `<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>` for stacked fields; two-column rows use `Grid` (`<Grid container spacing={2}><Grid size={{ xs: 6 }}>`), not ad-hoc `Box` flex rows.
-  - Mark required fields with the `required` prop only — never append a manual `*` to the label text.
-  - Field-level errors use `error`/`helperText` on `TextField`, or `FormHelperText error` inside a `FormControl` for `Select` — never a raw `<span style={...}>`.
-  - Validation feedback channel: field-specific → inline `helperText`/`FormHelperText`; submission-level failure → toast via `useNotification().showError`; non-blocking business-rule warning → `Alert severity="warning"` in the dialog content.
-  - `maxWidth`: `xs` for 0-1 field confirmations, `sm` for forms up to ~6 fields, `md` for more complex/table-containing dialogs.
-  - Every `TextField`/`Select`/`FormControl` in a dialog gets `size="small"`.
-  - Submit button labels: "Salvar" for create, "Salvar Alterações" for edit (swap on the component's existing edit/create mode flag), "Confirmar {Ação}" for destructive confirmations; Cancel buttons use `color="secondary"` unless intentionally destructive-adjacent (then `color="error"`, e.g. a veto/cancel confirm).
-* **Server state on pages:** every page's data fetching goes through TanStack Query (`useQuery`/`useMutation`), never raw `useState`+`useEffect`+manual `axios`/`api/*` calls — this was retrofitted onto `ConselhosAtas.tsx`, which is now the reference example for this pattern next to `Approvals.tsx`.
+## 2. O Código como Documentação Viva (*Living Documentation*)
 
-### 3. Test-Driven Development (TDD) Mandate
-* **Red-Green-Refactor Protocol:** The agent will not generate production code without outputting the corresponding test specification *first*. A feature implementation is incomplete without its comprehensive testing suite.
-* **Testing Stack Isolation:**
-    - **Hooks & Utils:** Tested via Vitest using `@testing-library/react`'s `renderHook` utility.
-    - **UI & Interactivity:** Tested using React Testing Library coupled with `@testing-library/user-event` to simulate genuine browser interactions. Raw `fireEvent` calls are banned.
-- **Network Decoupling:** All network communication executed via `axios` or TanStack Query mutations must be intercepted using strict API fakes or mocking abstractions. Unit and integration suites must remain 100% deterministic and isolated from network sockets.
+O código JSX/TSX deve documentar a intenção de negócio e as decisões ergonômicas da interface, servindo como especificação funcional do módulo.
 
-### 4. Server-State Management (TanStack Query v5 & Axios)
-* **Custom Hook Customization:** Raw `axios` invocations inside React components are completely prohibited. All HTTP mutations and data fetches must be wrapped into feature-specific custom hooks exposing TanStack Query objects (`useQuery`, `useMutation`).
-* **Deterministic Query Keys:** Maintain a strict, predictable query key hierarchy passing structured arrays for cache invalidation (e.g., `['context', 'resource', { parameters }]`).
-* **Resilient Boundaries:** Every asynchronous boundary must gracefully handle errors using local React Error Boundaries or standardized fallback states to shield the user from application crashes.
+* **JSDoc de Negócio e UX Obrigatório:** Componentes de página, formulários complexos, modais e hooks customizados DEVEM conter blocos JSDoc explicando a regra de negócio e o papel do fluxo:
+```tsx
+/**
+ * Formulário de homologação e emissão de Certidão de Matrimônio.
+ *
+ * REGRA CANÔNICA (RN-MAT-04):
+ * O processo só pode ser submetido se ambos os nubentes possuírem
+ * certidões de batismo averbadas com validade inferior a 6 meses.
+ *
+ * DECISÃO DE UX (MUI 9 / Drawer):
+ * Utiliza Drawer lateral em vez de Dialog modal devido à extensão dos
+ * dados de testemunhas e impedimentos canônicos, preservando contexto.
+ */
+export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... }) => { ... };
 
-## Anti-Patterns Banned from the Codebase
+```
 
-* **No Inline Logical Conditionals in JSX:** Avoid complex inline ternary operations or short-circuit evaluations (`{condition && <Component />}`) directly in the return block if they exceed 1 level of nesting. Extract the evaluation logic into separate variable guard clauses or specialized presentational sub-components.
-* **No `any` or Loose Typings:** The use of `any` or `unknown` without immediate type guards/narrowing will break compilation gates. Every API response schema, callback function, and component prop must be explicitly typed with strict TypeScript definitions.
-* **No Primitive State Bloat:** Avoid splitting closely related state properties into individual `useState` calls (e.g., `setIsLoading`, `setIsError`, `setData`). Group related server-state primitives or use declarative status strings (`'idle' | 'loading' | 'success' | 'error'`).
-* **No Leaked Side Effects:** Side effects must be explicitly tracked inside React lifecycle boundaries (hooks/effects). Never instantiate loose listeners, micro-tasks, or state mutations outside the functional component lifecycle.
-* **No Relative Path Traversals:** Deeply nested parent relative imports (e.g., `../../../../components`) are blocked. The agent must exclusively use absolute path mapping prefixes (`@/components`, `@/hooks`, `@/utils`).
 
-## Verification & Quality Gates
-* **Compilation Integrity:** Code changes must cleanly compile via `tsc` and pass strict `ESLint` / `Prettier` syntax audits without requiring modifications to the base rule sets.
-* **Zero Technical Log Leaks:** Temporary debug code like `console.log` must be systematically removed prior to committing changes. Telemetry, client-side error outputs, and production logs must contain zero stack traces or PII data, delegating all privacy boundaries to `docs/ia/regras_duras_lgpd.md`.
+* **Comentários de Acessibilidade e Eventos:** Justifique explicitamente contenções de propagação de eventos (`stopPropagation`), armadilhas de foco (*focus traps*) e escolhas semânticas de ARIA.
+* **Proibição de Comentários Triviais:** Comentários como `// Renderiza botão` ou `// Hook de estado` são proibidos.
+
+---
+
+## 3. Arquitetura de Componentes e Separação de Responsabilidades
+
+* **Isolamento de Lógica de Negócios:** Componentes visuais devem ser camadas de renderização finas e declarativas. Todas as transições de estado complexas, efeitos colaterais e requisições HTTP DEVEM ser encapsuladas em hooks customizados (`src/hooks/`).
+* **Primitivos Semânticos do MUI 9:** É expressamente proibido o uso de elementos HTML crus (`div`, `span`, `p`) para layout ou tipografia. Utilize exclusivamente `Box`, `Stack`, `Grid2`, `Container` e `Typography`. Elementos nativos só são tolerados quando estritamente necessários para marcação inline semântica acessível.
+* **Limites de Tamanho e Decomposição Atômica:**
+* **Componentes visuais puros e atômicos:** Limite estrito de **10–60 linhas** de JSX.
+* **Formulários densos e orquestradores de tabela:** Teto expandido de **até 120 linhas** para evitar a fragmentação artificial de controles e resolvers de formulário.
+* Componentes que excederem esses limites devem ser decompostos em subcomponentes coesos dentro da pasta `components/` adjacente ao arquivo pai.
+
+
+* **Hierarquia de Estado Controlada:**
+* **Server State:** Gerenciado exclusivamente via TanStack Query v5.
+* **Shared UI State:** Utilize React Context para estados efêmeros de interface compartilhados no módulo (ex.: etapa ativa de wizard multietapas, visibilidade de gavetas).
+* Injeções no objeto global `window` ou stores singleton externas desordenadas são terminantemente proibidas.
+
+
+
+---
+
+## 4. Arquitetura de Formulários e Validação (React Hook Form + Zod)
+
+* **Validação Orientada a Esquema (Schema-Driven):** Todo formulário (criação, edição ou filtro complexo) DEVE definir e exportar um schema Zod estritamente tipado em `src/schemas/<entidade>Schema.ts`.
+* **Form Controller Centralizado:** Integrar `react-hook-form` acoplado ao `@hookform/resolvers/zod`. Formulários não devem utilizar múltiplos `useState` isolados para campos de entrada.
+* **Feedback Visual Uniforme de Erros:** O feedback de validação deve ser repassado diretamente aos componentes de input do MUI:
+```tsx
+<TextField
+  fullWidth
+  size="small"
+  label="Nome do Fiel"
+  {...register('nome')}
+  error={Boolean(errors.nome)}
+  helperText={errors.nome?.message}
+/>
+
+```
+
+
+* **Máscaras e Formatadores de Dados:** Utilitários de `src/utils/masks.ts` devem ser aplicados sistematicamente a CPF, RG, telefones, CEP, moeda (BRL via `Intl.NumberFormat`) e datas em todas as telas de entrada e edição.
+
+---
+
+## 5. Design System e Padrões Visuais Oficiais (*Padrão Arrojado*)
+
+O módulo **Fiéis** (`src/pages/Fieis.tsx`) é a referência visual e funcional mandatória para todo o sistema:
+
+### 5.1. Layout de Páginas e Cabeçalho
+
+* Contêiner raiz de rotas: `<Stack spacing="{3}">`.
+* Cabeçalho de página mandatório (`src/components/PageHeader.tsx`):
+```tsx
+<PageHeader
+  icon={<PersonOutlineIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+  title="Registro de Fiéis"
+  subtitle="Gestão canônica e cadastral dos membros da comunidade paroquial"
+  actions={<ActionButton title="Novo Fiel" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />}
+/>
+
+```
+
+
+* Barra de busca e filtros:
+```tsx
+<Box sx={{ maxWidth: 400 }}>
+  <TextField
+    fullWidth
+    size="small"
+    placeholder="Pesquisar por nome ou CPF..."
+    slotProps={{
+      input: {
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon color="action" />
+          </InputAdornment>
+        ),
+      },
+    }}
+  />
+</Box>
+
+```
+
+
+
+### 5.2. Botões e Ações Padronizadas
+
+* O uso de `<Button>` cru sem padronização visual é proibido. Utilize sempre `<ActionButton icon="{<Icon" title="..."/>} ... />` (`src/components/ActionButton.tsx`).
+* **Semântica de Cores e Ícones:**
+* **Ação Primária** (Salvar, Criar, Submeter, Homologar): `color="primary"`, ícone `<SaveIcon/>` / `<AddIcon/>` / `<CheckCircleIcon/>`.
+* **Ação Secundária / Cancelamento** (Fechar, Voltar): `color="secondary"`, ícone `<CloseIcon/>` / `<ArrowBackIcon/>`.
+* **Ação Destrutiva** (Inativar, Excluir, Vetar): `color="error"`, ícone `<BlockIcon/>` / `<CancelIcon/>` / `<DeleteIcon/>`.
+
+
+* Botões de ação compostos apenas por ícones sem rótulo ou sem `<Tooltip>` acessível são proibidos.
+
+### 5.3. Tabelas de Dados e Acessibilidade (a11y)
+
+* Contêiner estrutural: `<Card><CardContent 0 p: sx="{{" }}><TableContainer><Table>...`.
+* Cabeçalhos: `<TableHead 'action.hover' backgroundColor: sx="{{" }}>` com células configuradas com `sx={{ fontWeight: 600 }}` ou `700`.
+* **Linhas Clicáveis Acessíveis via Teclado:**
+```tsx
+<TableRow
+  hover
+  tabIndex={0}
+  role="button"
+  onClick={() => handleRowClick(row.id)}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleRowClick(row.id);
+    }
+  }}
+  sx={{ cursor: 'pointer' }}
+>
+
+```
+
+
+* **Isolamento de Ações na Linha:** Cliques em botões de ação ou menus internos da linha DEVEM chamar `event.stopPropagation()` para não acionar a navegação do `TableRow`:
+```tsx
+<TableActionMenu onClick={(e) => e.stopPropagation()} ... />
+
+```
+
+
+* **Paginação Obrigatória:** Toda tabela do sistema deve implementar `<TablePagination>` com:
+* `rowsPerPageOptions={[5, 10, 25]}`
+* `labelRowsPerPage="Linhas por página:"`
+* `labelDisplayedRows={({ from, to, count }) => `${from}–${to} de${count !== -1 ? count : `mais de ${to}`}`}`
+
+
+
+### 5.4. Tríade de Estados Assíncronos
+
+* **Loading:** Renderize `<Skeleton>` estruturados com dimensões aproximadas ao conteúdo real. Nunca renderize telas em branco.
+* **Empty State:** Se a busca ou a tabela não contiver dados, renderize:
+```tsx
+<EmptyState
+  icon={<InboxOutlinedIcon sx={{ fontSize: 48, color: 'text.secondary' }} />}
+  title="Nenhum registro encontrado"
+  description="Não encontramos nenhum fiel cadastrado com os critérios informados."
+  action={<ActionButton title="Cadastrar Primeiro Fiel" icon={<AddIcon />} color="primary" onClick={handleCreate} />}
+/>
+
+```
+
+
+* **Error State:** Falhas na query devem renderizar alerta contextual com botão de ação acionando `refetch()`.
+
+### 5.5. Diálogos (Modais) e Painéis Laterais (Drawers)
+
+* Estrutura de Diálogo: `<Dialog fullWidth maxWidth="md" onClose="{...}" open="{...}">` contendo `<DialogTitle>`, `<DialogContent 'auto' 'calc(100vh - 200px)', dividers maxHeight: overflowY: sx="{{" }}>` e `<DialogActions>`.
+* Empacotamento de conteúdo: `<Stack spacing="{2.5}">`.
+* Agrupamento visual de campos em Cards delineados:
+```tsx
+<Card variant="outlined" sx={{ borderRadius: 2 }}>
+  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+    <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+      <Icon color="primary" fontSize="small" />
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+        Identificação Canônica
+      </Typography>
+    </Stack>
+    <Grid2 container spacing={2}>
+      <Grid2 size={{ xs: 12, md: 6 }}>
+        <TextField fullWidth size="small" required {...register('nome')} />
+      </Grid2>
+    </Grid2>
+  </CardContent>
+</Card>
+
+```
+
+
+
+### 5.6. Exibição Somente Leitura e Indicadores Categóricos
+
+* Utilize o padrão `InfoField` (rótulo em `Typography variant="caption"` cinza + valor em `Typography variant="body2"` com `fontWeight: 500/600`).
+* Enums com underscores (`_`) NUNCA devem ser exibidos crus para o usuário; use dicionários descritivos (`SEXO_LABELS`, `ESTADO_CIVIL_LABELS`).
+* Categorias, tipos, sacramentos e status devem ser renderizados obrigatoriamente através de `<StatusIcon {...get<Propriedade>Meta(valor)} />` (`src/components/StatusIcon.tsx`):
+
+| Categoria do Domínio | Token Semântico MUI (`color`) | Glifos Típicos |
+| --- | --- | --- |
+| **Tipos & Classificações** (`tipo`, `localTipo`) | `primary`, `secondary`, `info` | `MeetingRoom`, `Groups`, `Church` |
+| **Categorias Funcionais** (`categoria`) | `info`, `secondary`, `warning` | `Celebration`, `VolunteerActivism` |
+| **Sacramentos** (`sacramentos`) | Tokens litúrgicos dedicados | Glifos canônicos dedicados |
+| **Ativo / Positivo** (`ATIVO`, `CONFIRMADA`) | `success` | `CheckCircle`, `PlayArrow` |
+| **Inativo / Cancelado** (`INATIVO`, `CANCELADO`) | `error` | `Block`, `Cancel`, `Delete` |
+| **Pendente / Alerta** (`PENDENTE`, `RASCUNHO`) | `warning` | `AccessTime`, `HourglassEmpty` |
+| **Neutro / Arquivado** (`CONCLUIDO`, `OUTRO`) | `default` | `Archive`, `HelpOutline` |
+
+### 5.7. Design Tokens e Estilização Global
+
+* Use exclusivamente tokens semânticos do tema: `primary.main`, `secondary.main`, `error.main`, `divider`, `theme.custom.headerIconBg`.
+* Cores hexadecimais explícitas no JSX (`#FFFFFF`, `#1976D2`) são terminantemente proibidas.
+* O tema define cantos arredondados modernos (`shape.borderRadius: 12`); nunca sobrescreva componentes para `borderRadius: 0`.
+
+---
+
+## 6. Gerenciamento de Estado de Servidor (TanStack Query v5)
+
+* **Encapsulamento Mandatório:** Chamadas diretas de bibliotecas HTTP (`axios`, `fetch`) dentro de componentes React são estritamente proibidas.
+* **Fábrica de Chaves de Consulta (Query Key Factory):** As chaves de cache devem ser centralizadas e serializáveis:
+```ts
+export const fielKeys = {
+  all: ['fieis'] as const,
+  lists: () => [...fielKeys.all, 'list'] as const,
+  list: (filters: FielFilters) => [...fielKeys.lists(), { filters }] as const,
+  details: () => [...fielKeys.all, 'detail'] as const,
+  detail: (id: string) => [...fielKeys.details(), id] as const,
+};
+
+```
+
+
+* **Tratamento de Mutações e Efeitos Colaterais:**
+```ts
+export const useSaveFielMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: saveFielRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: fielKeys.lists() });
+      showNotification({ message: 'Registro do fiel atualizado com sucesso!', severity: 'success' });
+    },
+    onError: (error: Error) => {
+      showNotification({ message: error.message || 'Erro ao persistir dados do fiel', severity: 'error' });
+    },
+  });
+};
+
+```
+
+
+
+---
+
+## 7. Blueprint Estrutural (Exemplo de Formulário Reativo e Declarativo)
+
+Exemplo canônico demonstrando o desacoplamento de lógica, tipagem Zod e componentes semânticos:
+
+```tsx
+// src/schemas/dizimoLancamentoSchema.ts
+import { z } from 'zod';
+
+export const dizimoLancamentoSchema = z.object({
+  fielId: z.string().uuid({ message: 'Selecione um fiel válido' }),
+  valor: z.number().positive({ message: 'O valor deve ser superior a zero' }),
+  competenciaMesAno: z.string().regex(/^\d{2}\/\d{4}$/, { message: 'Formato deve ser MM/AAAA' }),
+  observacoes: z.string().max(255).optional(),
+});
+
+export type DizimoLancamentoInput = z.infer<typeof dizimoLancamentoSchema>;
+
+```
+
+```tsx
+// src/pages/Dizimos/components/DizimoLancamentoDialog.tsx
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
+  Card,
+  CardContent,
+  Grid2,
+  TextField,
+  Typography,
+} from '@mui/material';
+import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined';
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
+import { ActionButton } from '@/components/ActionButton';
+import { useCreateDizimoMutation } from '@/hooks/useCreateDizimoMutation';
+import { dizimoLancamentoSchema, DizimoLancamentoInput } from '@/schemas/dizimoLancamentoSchema';
+
+interface DizimoLancamentoDialogProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+/**
+ * Diálogo transacional de lançamento de contribuição paroquial.
+ * Segue estritamente o layout arrojado em Cards e isolamento via Zod.
+ */
+export const DizimoLancamentoDialog: React.FC<DizimoLancamentoDialogProps> = ({ open, onClose }) => {
+  const { mutate, isPending } = useCreateDizimoMutation();
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<DizimoLancamentoInput>({
+    resolver: zodResolver(dizimoLancamentoSchema),
+    defaultValues: { observacoes: '' },
+  });
+
+  const onSubmit = (data: DizimoLancamentoInput) => {
+    mutate(data, {
+      onSuccess: () => {
+        reset();
+        onClose();
+      },
+    });
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Lançamento de Dízimo</DialogTitle>
+      
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <DialogContent dividers sx={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+          <Stack spacing={2.5}>
+            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                  <PaidOutlinedIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Dados da Contribuição
+                  </Typography>
+                </Stack>
+
+                <Grid2 container spacing={2}>
+                  <Grid2 size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      required
+                      label="Código de Identificação do Fiel"
+                      {...register('fielId')}
+                      error={Boolean(errors.fielId)}
+                      helperText={errors.fielId?.message}
+                    />
+                  </Grid2>
+
+                  <Grid2 size={{ xs: 12, md: 6 }}>
+                    <Controller
+                      name="valor"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          size="small"
+                          required
+                          type="number"
+                          label="Valor (R$)"
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          error={Boolean(errors.valor)}
+                          helperText={errors.valor?.message}
+                        />
+                      )}
+                    />
+                  </Grid2>
+
+                  <Grid2 size={{ xs: 12, md: 6 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      required
+                      label="Competência (MM/AAAA)"
+                      placeholder="Ex: 09/2026"
+                      {...register('competenciaMesAno')}
+                      error={Boolean(errors.competenciaMesAno)}
+                      helperText={errors.competenciaMesAno?.message}
+                    />
+                  </Grid2>
+
+                  <Grid2 size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      multiline
+                      rows={2}
+                      label="Observações"
+                      {...register('observacoes')}
+                      error={Boolean(errors.observacoes)}
+                      helperText={errors.observacoes?.message}
+                    />
+                  </Grid2>
+                </Grid2>
+              </CardContent>
+            </Card>
+          </Stack>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={onClose} disabled={isPending} />
+          <ActionButton title="Salvar Lançamento" icon={<SaveIcon />} color="primary" type="submit" loading={isPending} />
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
+};
+
+```
+
+---
+
+## 8. Testes Automatizados e Garantia de Qualidade
+
+* **Hooks e Utilitários:** Testados via Vitest utilizando `@testing-library/react` com a função `renderHook`.
+* **Interatividade e Componentes:** Testados com React Testing Library e `@testing-library/user-event` simulando interações reais de mouse e teclado. Chamadas diretas a `fireEvent` são terminantemente proibidas.
+* **Isolamento Total de Rede:** Todas as rotas de API consumidas por TanStack Query ou Axios DEVEM ser interceptadas por mocks declarativos do **MSW (Mock Service Worker)**. Nenhuma suite de teste deve executar sockets reais de rede.
+
+---
+
+## 9. Práticas Banidas e Anti-Patterns
+
+* **Condicionais Inline Complexas no JSX:** Ternários aninhados ou operadores lógicos com mais de um nível de profundidade (`{a && b ? <C/> : <D/>}`) são proibidos no bloco de retorno. Extraia para variáveis guardiãs ou subcomponentes.
+* **Uso de `any` ou Tipagens Frouxas:** O uso de `any` ou `unknown` sem narrowing imediato quebrará o pipeline de compilação. Todas as props, respostas de API e payloads devem ser tipados estritamente.
+* **Proliferação de Estados Primitivos (*Primitive Bloat*):** Proibido criar múltiplos `useState` para campos de um mesmo fluxo. Utilize `react-hook-form` ou reducers com estados unificados.
+* **Importações Relativas Profundas:** Caminhos com múltiplos níveis ascendentes (`../../../../components`) são bloqueados. Use exclusivamente os aliases de importação configurados (`@/components`, `@/hooks`, `@/utils`, `@/schemas`).
+* **Vazamento de Dados Pessoais e Logs:** Declarações de `console.log` devem ser expurgadas antes do commit. Mensagens de erro e telemetria não podem expor dados pessoais (PII), respeitando as regras estritas da LGPD.
+
+---
+
+## 10. Checklist de Qualidade Frontend para o Agente IA
+
+Antes de concluir qualquer tarefa ou submeter alterações, valide rigorosamente:
+
+1. [ ] **Documentação Viva:** Todos os componentes de tela, formulários e hooks possuem blocos JSDoc documentando a regra de negócio e as decisões ergonômicas?
+2. [ ] **Validação com Zod:** Todo formulário possui schema Zod correspondente em `src/schemas/` com mensagens de erro humanizadas?
+3. [ ] **Semântica do MUI 9:** Não existem elementos HTML brutos (`div`, `span`, `p`) soltos no JSX para fins de layout?
+4. [ ] **Grid2 Unificado:** Foi utilizado estritamente `<Grid2 container spacing="{2}">` com `<Grid2 ... 12, size="{{" xs: }}>`, sem tags legadas de Grid?
+5. [ ] **Acessibilidade em Tabelas:** As linhas navegáveis possuem `role="button"`, `tabIndex={0}`, controle de tecla `Enter`/`Space` e os menus internos contêm `event.stopPropagation()`?
+6. [ ] **Tríade de Estados Assíncronos:** A tela implementa Skeleton para loading, EmptyState visual para ausência de registros e alerta com retry para erros?
+7. [ ] **Isolamento de Server-State:** Toda comunicação com a API é intermediada por hooks de TanStack Query com query keys hierárquicas e invalidação pós-mutação?
+8. [ ] **Tokens de Design:** Não existem códigos hexadecimais manuais e o `borderRadius: 12` do tema é preservado?

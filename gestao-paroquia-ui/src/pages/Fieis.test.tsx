@@ -61,4 +61,43 @@ describe('Ficha civil de fiéis', () => {
     expect(screen.queryByRole('button', {name:/salvar alterações/i})).not.toBeInTheDocument();
     expect(screen.queryByRole('button', {name:/vincular/i})).not.toBeInTheDocument();
   });
+
+  it('aplica máscaras de CPF, RG, celular, telefone e CEP nos formulários', async () => {
+    renderPage();
+    await screen.findByText('Maria da Silva');
+    fireEvent.click(screen.getByRole('button', { name: /novo fiel/i }));
+    await screen.findByText('Dados civis');
+    
+    const cpfInput = screen.getByLabelText(/CPF/i);
+    fireEvent.change(cpfInput, { target: { value: '12345678901' } });
+    expect(cpfInput).toHaveValue('123.456.789-01');
+
+    const rgInput = screen.getByLabelText(/RG/i);
+    fireEvent.change(rgInput, { target: { value: '123456789' } });
+    expect(rgInput).toHaveValue('12.345.678-9');
+
+    const celularInput = screen.getByPlaceholderText('(00) 00000-0000');
+    fireEvent.change(celularInput, { target: { value: '11987654321' } });
+    expect(celularInput).toHaveValue('(11) 98765-4321');
+
+    const telFixoInput = screen.getByPlaceholderText('(00) 0000-0000');
+    fireEvent.change(telFixoInput, { target: { value: '1133334444' } });
+    expect(telFixoInput).toHaveValue('(11) 3333-4444');
+
+    const cepInput = screen.getByPlaceholderText('00000-000');
+    fireEvent.change(cepInput, { target: { value: '01310100' } });
+    expect(cepInput).toHaveValue('01310-100');
+  });
+
+  it('exige confirmação antes de inativar o cadastro do fiel', async () => {
+    renderPage();
+    await screen.findByText('Maria da Silva');
+    const actionBtn = screen.getByLabelText(/ações/i);
+    fireEvent.click(actionBtn);
+    const desativarOption = screen.getByText(/desativar/i);
+    fireEvent.click(desativarOption);
+
+    expect(await screen.findByText(/tem certeza que deseja inativar o cadastro de/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /inativar/i })).toBeInTheDocument();
+  });
 });

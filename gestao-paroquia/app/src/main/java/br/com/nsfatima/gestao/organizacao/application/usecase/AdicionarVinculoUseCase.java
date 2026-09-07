@@ -81,6 +81,9 @@ public class AdicionarVinculoUseCase {
         var usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario nao encontrado: " + usuarioId));
         UUID fielId = usuario.getFielId();
+        if (fielId == null) {
+            throw new IllegalArgumentException("Usuario nao possui vinculo com Fiel: " + usuarioId);
+        }
 
         if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
             if (igrejaVinculoId == null) {

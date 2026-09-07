@@ -45,6 +45,10 @@ public class ListarVinculosUseCase {
         var usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario nao encontrado: " + usuarioId));
 
+        if (usuario.getFielId() == null) {
+            return List.of();
+        }
+
         return vinculoRepository.findByFielIdAndAtivoTrue(usuario.getFielId()).stream()
                 .map(m -> {
                     String orgNome = grupoParoquialRepository.findById(m.getGrupoParoquialId())

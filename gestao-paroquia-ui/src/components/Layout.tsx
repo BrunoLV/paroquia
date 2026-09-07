@@ -100,6 +100,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { section: 'Gestão pastoral', label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
     { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
     { label: 'Fiéis', path: '/fieis', icon: <PeopleIcon /> },
+    { label: 'Clero', path: '/clerigos', icon: <AccountTreeIcon /> },
     { label: 'Notificações', path: '/notificacoes', icon: <NotificationsIcon /> },
   ];
 

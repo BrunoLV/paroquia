@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
@@ -27,15 +29,17 @@ class CreateUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
     private FielJpaRepository fielRepository;
+    private ClerigoJpaRepository clerigoRepository;
     private CreateUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
+        clerigoRepository = mock(ClerigoJpaRepository.class);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         when(passwordEncoder.encode(any())).thenReturn("encoded_pass");
-        useCase = new CreateUsuarioUseCase(usuarioRepository, fielRepository, passwordEncoder);
+        useCase = new CreateUsuarioUseCase(usuarioRepository, fielRepository, clerigoRepository, passwordEncoder);
     }
 
     @AfterEach
@@ -52,7 +56,7 @@ class CreateUsuarioUseCaseTest {
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(new FielEntity()));
         when(usuarioRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        useCase.execute("novo.usuario", "senhaForte", fielId);
+        useCase.execute("novo.usuario", "senhaForte", fielId, null);
 
         ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
         verify(usuarioRepository).save(captor.capture());
@@ -69,11 +73,27 @@ class CreateUsuarioUseCaseTest {
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(new FielEntity()));
         when(usuarioRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        useCase.execute("novo.usuario", "senhaForte", fielId);
+        useCase.execute("novo.usuario", "senhaForte", fielId, null);
 
         ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
         verify(usuarioRepository).save(captor.capture());
         assertThat(captor.getValue().getFielId()).isEqualTo(fielId);
+        assertThat(captor.getValue().getClerigoId()).isNull();
+    }
+
+    @Test
+    void deveCriarUsuarioComClerigoIdExistente() {
+        UUID clerigoId = UUID.randomUUID();
+        when(usuarioRepository.findByUsernameIgnoreCase("novo.padre")).thenReturn(Optional.empty());
+        when(clerigoRepository.findById(clerigoId)).thenReturn(Optional.of(new ClerigoEntity()));
+        when(usuarioRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute("novo.padre", "senhaForte", null, clerigoId);
+
+        ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
+        verify(usuarioRepository).save(captor.capture());
+        assertThat(captor.getValue().getClerigoId()).isEqualTo(clerigoId);
+        assertThat(captor.getValue().getFielId()).isNull();
     }
 
     @Test
@@ -82,7 +102,41 @@ class CreateUsuarioUseCaseTest {
         when(usuarioRepository.findByUsernameIgnoreCase("novo.usuario")).thenReturn(Optional.empty());
         when(fielRepository.findById(fielId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> useCase.execute("novo.usuario", "senhaForte", fielId))
+        assertThatThrownBy(() -> useCase.execute("novo.usuario", "senhaForte", fielId, null))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void deveFalharComClerigoIdInexistente() {
+        UUID clerigoId = UUID.randomUUID();
+        when(usuarioRepository.findByUsernameIgnoreCase("novo.padre")).thenReturn(Optional.empty());
+        when(clerigoRepository.findById(clerigoId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> useCase.execute("novo.padre", "senhaForte", null, clerigoId))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void deveFalharQuandoFielIdEClerigoIdInformadosJuntos() {
+        UUID fielId = UUID.randomUUID();
+        UUID clerigoId = UUID.randomUUID();
+        when(usuarioRepository.findByUsernameIgnoreCase("novo.usuario")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> useCase.execute("novo.usuario", "senhaForte", fielId, clerigoId))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void deveFalharQuandoNemFielIdNemClerigoIdInformados() {
+        when(usuarioRepository.findByUsernameIgnoreCase("novo.usuario")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> useCase.execute("novo.usuario", "senhaForte", null, null))
                 .isInstanceOf(IllegalArgumentException.class);
 
         verify(usuarioRepository, never()).save(any());

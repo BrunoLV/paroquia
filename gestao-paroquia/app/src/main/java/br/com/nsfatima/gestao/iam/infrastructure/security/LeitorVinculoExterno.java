@@ -95,8 +95,21 @@ public class LeitorVinculoExterno {
                         JOIN calendario.usuarios u ON u.fiel_id = pg.fiel_id
                         WHERE u.id = ?
                           AND pg.ativo = TRUE
+                        UNION
+                        SELECT CASE
+                            WHEN ec.funcao = 'BISPO_DIOCESANO' THEN 'bispo-diocesano'
+                            WHEN ec.funcao = 'PAROCO' THEN 'paroco'
+                            WHEN ec.funcao = 'ADMINISTRADOR_PAROQUIAL' THEN 'paroco'
+                            WHEN ec.funcao = 'VIGARIO_PAROQUIAL' THEN 'vigario'
+                            ELSE LOWER(REPLACE(ec.funcao, '_', '-'))
+                        END as papel
+                        FROM calendario.encargos_clericais ec
+                        JOIN calendario.usuarios u ON u.clerigo_id = ec.clerigo_id
+                        WHERE u.id = ?
+                          AND ec.atual = TRUE
                         """,
                 (rs, rowNum) -> rs.getString("papel"),
+                userId,
                 userId);
     }
 

@@ -1,22 +1,150 @@
 package br.com.nsfatima.gestao.fiel.application.usecase;
-import br.com.nsfatima.gestao.fiel.api.v1.dto.SolicitarAjusteCadastralRequest;
-import br.com.nsfatima.gestao.fiel.api.v1.dto.SolicitacaoAjusteCadastralResponse;
+
 import br.com.nsfatima.gestao.fiel.api.v1.dto.EnderecoDto;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.SolicitacaoAjusteCadastralResponse;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.SolicitarAjusteCadastralRequest;
+import br.com.nsfatima.gestao.fiel.infrastructure.observability.FielAuditPublisher;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.SolicitacaoAjusteCadastralEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.SolicitacaoAjusteCadastralJpaRepository;
-import br.com.nsfatima.gestao.fiel.infrastructure.observability.FielAuditPublisher;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-@Service public class GerenciarAjusteCadastralUseCase {
- private final UsuarioJpaRepository usuarios; private final FielJpaRepository fieis; private final SolicitacaoAjusteCadastralJpaRepository ajustes; private final GerenciarNotificacaoUseCase notificacoes; private final FielAuditPublisher auditoria;
- public GerenciarAjusteCadastralUseCase(UsuarioJpaRepository u,FielJpaRepository f,SolicitacaoAjusteCadastralJpaRepository a,GerenciarNotificacaoUseCase n,FielAuditPublisher p){usuarios=u;fieis=f;ajustes=a;notificacoes=n;auditoria=p;}
- @Transactional public UUID solicitar(UUID usuarioId,SolicitarAjusteCadastralRequest r){var usuario=usuarios.findById(usuarioId).orElseThrow(()->new IllegalArgumentException("Usuário não encontrado.")); var fiel=fieis.findById(usuario.getFielId()).orElseThrow(()->new IllegalArgumentException("Fiel não encontrado.")); var a=new SolicitacaoAjusteCadastralEntity(); a.setId(UUID.randomUUID());a.setUsuarioSolicitanteId(usuarioId);a.setFielId(usuario.getFielId());a.setEmail(r.email());a.setCelular(r.celular());a.setTelefoneFixo(r.telefoneFixo());a.setEnderecoLogradouro(r.endereco().logradouro());a.setEnderecoNumero(r.endereco().numero());a.setEnderecoComplemento(r.endereco().complemento());a.setEnderecoBairro(r.endereco().bairro());a.setEnderecoCep(r.endereco().cep());a.setEnderecoCidade(r.endereco().cidade());a.setEnderecoEstado(r.endereco().estado());a.setStatus("PENDENTE");a.setCriadoEmUtc(Instant.now());var salva=ajustes.save(a);auditoria.publicarSolicitacaoAjuste(salva.getId(),fiel.getId(),usuarioId,fiel.getUnidadeTerritorialId());return salva.getId();}
- @Transactional(readOnly=true) public java.util.List<SolicitacaoAjusteCadastralResponse> pendentes(){return ajustes.findByStatusOrderByCriadoEmUtcAsc("PENDENTE").stream().map(this::paraResposta).toList();}
- @Transactional(readOnly=true) public java.util.List<SolicitacaoAjusteCadastralResponse> pendentesDoFiel(UUID fielId){return ajustes.findByFielIdAndStatusOrderByCriadoEmUtcDesc(fielId,"PENDENTE").stream().map(this::paraResposta).toList();}
- private SolicitacaoAjusteCadastralResponse paraResposta(SolicitacaoAjusteCadastralEntity a){return new SolicitacaoAjusteCadastralResponse(a.getId(),a.getFielId(),a.getStatus(),a.getEmail(),a.getCelular(),a.getTelefoneFixo(),new EnderecoDto(a.getEnderecoLogradouro(),a.getEnderecoNumero(),a.getEnderecoComplemento(),a.getEnderecoBairro(),a.getEnderecoCep(),a.getEnderecoCidade(),a.getEnderecoEstado()),a.getCriadoEmUtc());}
- @Transactional public void decidir(UUID id,UUID analista,boolean aprovar,String justificativa){var a=ajustes.findById(id).orElseThrow(()->new IllegalArgumentException("Solicitação não encontrada."));if(!"PENDENTE".equals(a.getStatus()))throw new IllegalStateException("Solicitação já analisada.");var f=fieis.findById(a.getFielId()).orElseThrow(()->new IllegalArgumentException("Fiel não encontrado."));if(aprovar){f.setEmail(a.getEmail());f.setCelular(a.getCelular());f.setTelefoneFixo(a.getTelefoneFixo());f.setEnderecoLogradouro(a.getEnderecoLogradouro());f.setEnderecoNumero(a.getEnderecoNumero());f.setEnderecoComplemento(a.getEnderecoComplemento());f.setEnderecoBairro(a.getEnderecoBairro());f.setEnderecoCep(a.getEnderecoCep());f.setEnderecoCidade(a.getEnderecoCidade());f.setEnderecoEstado(a.getEnderecoEstado());fieis.save(f);}a.setStatus(aprovar?"APROVADO":"REJEITADO");a.setJustificativaAnalise(justificativa);a.setAnalisadoPorUsuarioId(analista);a.setAnalisadoEmUtc(Instant.now());ajustes.save(a);auditoria.publicarDecisaoAjuste(a.getId(),f.getId(),analista,f.getUnidadeTerritorialId(),aprovar);notificacoes.publicar(a.getUsuarioSolicitanteId(),aprovar?"Sua solicitação de ajuste cadastral foi aprovada.":"Sua solicitação de ajuste cadastral foi rejeitada.");}
+
+/** Use case para solicitação e decisão de ajustes cadastrais pelos próprios fiéis. */
+@Service
+public class GerenciarAjusteCadastralUseCase {
+
+    private static final String STATUS_PENDENTE = "PENDENTE";
+
+    private final UsuarioJpaRepository usuarios;
+    private final FielJpaRepository fieis;
+    private final SolicitacaoAjusteCadastralJpaRepository ajustes;
+    private final GerenciarNotificacaoUseCase notificacoes;
+    private final FielAuditPublisher auditoria;
+
+    public GerenciarAjusteCadastralUseCase(
+            UsuarioJpaRepository usuarios,
+            FielJpaRepository fieis,
+            SolicitacaoAjusteCadastralJpaRepository ajustes,
+            GerenciarNotificacaoUseCase notificacoes,
+            FielAuditPublisher auditoria) {
+        this.usuarios = usuarios;
+        this.fieis = fieis;
+        this.ajustes = ajustes;
+        this.notificacoes = notificacoes;
+        this.auditoria = auditoria;
+    }
+
+    @Transactional
+    public UUID solicitar(UUID usuarioId, SolicitarAjusteCadastralRequest request) {
+        var usuario = usuarios.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
+        var fiel = fieis.findById(usuario.getFielId())
+                .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado."));
+
+        var solicitacao = new SolicitacaoAjusteCadastralEntity();
+        solicitacao.setId(UUID.randomUUID());
+        solicitacao.setUsuarioSolicitanteId(usuarioId);
+        solicitacao.setFielId(usuario.getFielId());
+        solicitacao.setEmail(request.email());
+        solicitacao.setCelular(request.celular());
+        solicitacao.setTelefoneFixo(request.telefoneFixo());
+        solicitacao.setEnderecoLogradouro(request.endereco().logradouro());
+        solicitacao.setEnderecoNumero(request.endereco().numero());
+        solicitacao.setEnderecoComplemento(request.endereco().complemento());
+        solicitacao.setEnderecoBairro(request.endereco().bairro());
+        solicitacao.setEnderecoCep(request.endereco().cep());
+        solicitacao.setEnderecoCidade(request.endereco().cidade());
+        solicitacao.setEnderecoEstado(request.endereco().estado());
+        solicitacao.setStatus(STATUS_PENDENTE);
+        solicitacao.setCriadoEmUtc(Instant.now());
+
+        var salva = ajustes.save(solicitacao);
+        auditoria.publicarSolicitacaoAjuste(
+                salva.getId(),
+                fiel.getId(),
+                usuarioId,
+                fiel.getUnidadeTerritorialId());
+        return salva.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoAjusteCadastralResponse> pendentes() {
+        return ajustes.findByStatusOrderByCriadoEmUtcAsc(STATUS_PENDENTE).stream()
+                .map(this::paraResposta)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoAjusteCadastralResponse> pendentesDoFiel(UUID fielId) {
+        return ajustes.findByFielIdAndStatusOrderByCriadoEmUtcDesc(fielId, STATUS_PENDENTE).stream()
+                .map(this::paraResposta)
+                .toList();
+    }
+
+    private SolicitacaoAjusteCadastralResponse paraResposta(SolicitacaoAjusteCadastralEntity entity) {
+        return new SolicitacaoAjusteCadastralResponse(
+                entity.getId(),
+                entity.getFielId(),
+                entity.getStatus(),
+                entity.getEmail(),
+                entity.getCelular(),
+                entity.getTelefoneFixo(),
+                new EnderecoDto(
+                        entity.getEnderecoLogradouro(),
+                        entity.getEnderecoNumero(),
+                        entity.getEnderecoComplemento(),
+                        entity.getEnderecoBairro(),
+                        entity.getEnderecoCep(),
+                        entity.getEnderecoCidade(),
+                        entity.getEnderecoEstado()),
+                entity.getCriadoEmUtc());
+    }
+
+    @Transactional
+    public void decidir(UUID id, UUID analista, boolean aprovar, String justificativa) {
+        var solicitacao = ajustes.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Solicitação não encontrada."));
+        if (!STATUS_PENDENTE.equals(solicitacao.getStatus())) {
+            throw new IllegalStateException("Solicitação já analisada.");
+        }
+        var fiel = fieis.findById(solicitacao.getFielId())
+                .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado."));
+
+        if (aprovar) {
+            fiel.setEmail(solicitacao.getEmail());
+            fiel.setCelular(solicitacao.getCelular());
+            fiel.setTelefoneFixo(solicitacao.getTelefoneFixo());
+            fiel.setEnderecoLogradouro(solicitacao.getEnderecoLogradouro());
+            fiel.setEnderecoNumero(solicitacao.getEnderecoNumero());
+            fiel.setEnderecoComplemento(solicitacao.getEnderecoComplemento());
+            fiel.setEnderecoBairro(solicitacao.getEnderecoBairro());
+            fiel.setEnderecoCep(solicitacao.getEnderecoCep());
+            fiel.setEnderecoCidade(solicitacao.getEnderecoCidade());
+            fiel.setEnderecoEstado(solicitacao.getEnderecoEstado());
+            fieis.save(fiel);
+        }
+
+        solicitacao.setStatus(aprovar ? "APROVADO" : "REJEITADO");
+        solicitacao.setJustificativaAnalise(justificativa);
+        solicitacao.setAnalisadoPorUsuarioId(analista);
+        solicitacao.setAnalisadoEmUtc(Instant.now());
+        ajustes.save(solicitacao);
+
+        auditoria.publicarDecisaoAjuste(
+                solicitacao.getId(),
+                fiel.getId(),
+                analista,
+                fiel.getUnidadeTerritorialId(),
+                aprovar);
+
+        notificacoes.publicar(
+                solicitacao.getUsuarioSolicitanteId(),
+                aprovar ? "Sua solicitação de ajuste cadastral foi aprovada."
+                        : "Sua solicitação de ajuste cadastral foi rejeitada.");
+    }
 }

@@ -1,99 +1,122 @@
-# AGENTS.md - Backend Engineering Standards & Guidelines
+# AGENTS.md - Backend Engineering Standards & Guidelines (`gestao-paroquia/`)
 
-Este documento define as regras Mandatórias e Invariantes de arquitetura, código, segurança e ferramentas para atuação no backend do **Projeto Paróquia** (`gestao-paroquia/`).
-
----
-
-## 1. Diretrizes de Comportamento do Agente
-
-* **Comunicação e Texto Explicativo:** Utilize a habilidade `caveman`. Respostas e explicações devem ser extremamente diretas, sem introduções, saudações ou texto conversacional.
-* **Geração e Arquitetura de Código:** Utilize a habilidade `ponytail`. O código produzido deve ser estritamente de nível de produção, fortemente tipado, seguro, modular e limpo.
-* **Separação de Papéis:** As habilidades `caveman` e `ponytail` são ferramentas de execução de estilo e qualidade, não personas operacionais.
+Este documento define as regras Mandatórias, Invariantes e Diretrizes Técnicas para qualquer agente de IA ou desenvolvedor atuando no subprojeto de backend (`gestao-paroquia/`).
 
 ---
 
-## 2. Arquitetura e Contexto do Sistema
+## 1. Diretrizes Fundamentais de Execução
 
-* **Stack Principal:** Java 25, Spring Boot 3, Gradle Wrapper.
-* **Padrão Arquitetural:** Domain-Driven Design (DDD) e Arquitetura Hexagonal (Portas e Adaptadores).
-* **Isolamento de Domínio:** O Domínio Core **DEVE** ser estritamente isolado da Infraestrutura e frameworks.
-* **Contextos Delimitados (Bounded Contexts):** O sistema é dividido por módulos contextuais (`calendario`, `aprovacao`, `local`, `organizacao`, `membro`, `iam`, `fiel`).
-* **Isolamento entre Contextos:** É **ESTRITAMENTE PROIBIDO** o acoplamento direto de esquemas de banco de dados ou entidades de infraestrutura entre contextos distintos.
-* **Topologia Interna por Contexto:**
-  * `domain/model`: Entidades, Objetos de Valor e regras puras sem dependência de frameworks.
-  * `domain/service`: Serviços de domínio puramente de negócio.
-  * `application/usecase`: Orquestração de casos de uso e gerenciamento transacional.
-  * `infrastructure`: Controllers REST, Adapters JPA, Repositórios, DTOs e mapeadores.
+* **Comunicação e Explicações:** Execute estritamente no estilo `caveman`. Respostas e explicações técnicas devem ser curtas, assertivas, sem introduções, saudações ou texto conversacional.
+* **Qualidade e Estilo de Código:** Execute estritamente no estilo `ponytail`. O código deve ser de nível de produção sênior, com tipagem forte, imutável, limpo e com zero warnings.
+* **Documentação Viva (*Living Documentation*):**
+  * **Classes, Records e Interfaces:** Devem conter Javadoc conceitual explicando o **porquê** da regra de negócio (Linguagem Ubíqua) e as decisões de design (ex.: ADT, Strategy, OCP, LSP).
+  * **Proibição de Comentários Triviais:** É expressamente proibido inserir comentários óbvios ou mecânicos (`// construtor`, `// getter`, `// injeta dependência`).
 
 ---
 
-## 3. Padrões de Segurança, Autorização e Infraestrutura
+## 2. Governança Global de Bounded Contexts & Arquitetura Hexagonal
 
-* **Segregação de Repositórios:** Interfaces de repositórios JPA **DEVEM** ser segregadas por responsabilidade e contrato, evitando interfaces monolíticas.
-* **Autorização Centralizada:** O controle de acesso e verificação de perfil **NÃO DEVEM** ser feitos inline nos Controllers ou UseCases. **DEVE-SE** consumir estritamente os serviços dedicados em `src/main/java/.../auth/` (ex: `PapelGlobalAuthorizationService`).
-* **Segregação do IAM:** Módulos do `iam/` gerenciam estritamente credenciais e autenticação. Dados cadastrais e de domínio **DEVEM** residir exclusivamente em seus respectivos contextos.
+O backend opera sob uma arquitetura de monólito modular regido por princípios agnósticos de **Domain-Driven Design (DDD)** e **Clean/Hexagonal Architecture**:
+
+* **Autonomia Modular dos Contextos:**
+  * Cada contexto de negócio deve ser tratado como um subsistema autônomo com fronteiras explícitas.
+  * **PROIBIDO** o acoplamento direto de esquemas de persistência, modelos JPA ou tabelas compartilhadas entre contextos distintos.
+  * A comunicação entre contextos distintos **DEVE** ocorrer exclusivamente por:
+    1. **Contratos de Aplicação / Interfaces Públicas de Módulo**;
+    2. **Eventos de Domínio / Mensageria Interna Assíncrona**;
+    3. **Anti-Corruption Layer (ACL):** Qualquer dependência em modelo externo exige adaptadores e mappers traduzindo para conceitos do domínio local.
+* **Topologia Interna Canônica Obrigatória (por Módulo/Contexto):**
+  Todo e qualquer pacote de contexto delimitado deve aderir à seguinte organização estrita de camadas:
+
+```
+/
+├── domain/                     <-- CAMADA PURA DE NEGÓCIO (Livre de frameworks)
+│   ├── model/                  <-- Entidades, VOs (records), Raízes de Agregado, IDs Tipados
+│   ├── repository/             <-- Contratos puros de persistência (Portas de Saída)
+│   ├── service/                <-- Domain Services (regras stateless que cruzam entidades)
+│   ├── specification/          <-- Regras de negócio encapsuladas e reutilizáveis
+│   ├── event/                  <-- Eventos de Domínio imutáveis (records)
+│   └── exception/              <-- Exceções semânticas de negócio (DomainException)
+│
+├── application/                <-- ORQUESTRAÇÃO DE FLUXOS E CASOS DE USO
+│   ├── usecase/                <-- Input Ports / Serviços de Aplicação
+│   ├── dto/                    <-- Command, Query e Result DTOs imutáveis (records)
+│   └── saga/                   <-- Process Managers / Orquestração de múltiplos agregados
+│
+└── infrastructure/             <-- DETALHES DE TECNOLOGIA E ADAPTADORES
+    ├── configuration/          <-- @Configuration Spring (registro de Domain Services como Beans)
+    ├── db/                     <-- Entidades JPA (@Entity), Spring Data Repositories e Mappers
+    ├── acl/                    <-- Adaptadores e tradutores para outros contextos ou APIs externas
+    ├── messaging/              <-- Listeners e Dispatchers de eventos
+    └── rest/                   <-- Controllers HTTP (@RestController), DTOs de transporte e OpenAPI
+```
 
 ---
 
-## 4. Governança de IA e Conformidade LGPD
+## 3. Matriz de Ativação de Skills do Agente (`.agents/skills/`)
 
-* **Análise Prévia via Graphify:** **DEVE-SE** consultar os artefatos de AST em `../graphify-out/` antes de realizar buscas manuais no código para entender conexões e dependências.
-* **Otimização de Leitura:** É **PROIBIDA** a leitura em lote de arquivos inteiros quando a estrutura puder ser obtida via consultas ao Graphify.
-* **Proteção de Dados Pessoais (LGPD):**
-  * **NÃO DEVE** haver exposição de PII em logs, tabelas de auditoria não criptografadas ou respostas REST expostas.
-  * **DEVE-SE** cumprir rigorosamente as diretrizes contidas em `docs/ia/regras_duras_lgpd.md`.
-* **Guia de Habilidades:** Consultar os manuais em `.agents/skills/` (ex: `ddd.md`, `java.md`, `tdd.md`) antes de efetuar refatorações estruturais no backend.
+Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os manuais de skills e seus respectivos checklists:
+
+| Escopo da Tarefa | Skills Mandatórias | Invariantes Críticas |
+| :--- | :--- | :--- |
+| **Modelagem de Domínio & Casos de Uso** | `ddd.md`<br>`solid.md`<br>`java.md` | • Domínio puro (zero anotações Spring/JPA em `domain/`).<br>• Identificadores fortemente tipados com `record` (ex.: `record EntidadeId(UUID value)`).<br>• Relacionamentos entre agregados distintos exclusivamente por ID.<br>• Mutação limitada a um único agregado por transação.<br>• Modelagem via Sealed Interfaces e Pattern Matching sem `default`. |
+| **Implementação Java 25 Geral** | `java.md`<br>`solid.md` | • Imutabilidade por padrão (`record` com construtor compacto de validação).<br>• Proibido `float`/`double` para precisão decimal; use `BigDecimal` com `RoundingMode`.<br>• Virtual Threads em I/O sem `synchronized` (anti-pinning; use `ReentrantLock`).<br>• `Optional` apenas para retornos de métodos; coleções retornam vazias, nunca `null`. |
+| **Testes Unitários & TDD** | `tdd.md` | • Precedência TDD: Ciclo Red-Green-Refactor estrito.<br>• JUnit 5 + Mockito 5 (`STRICT_STUBS`) + AssertJ fluente.<br>• Isolamento: proibido `@SpringBootTest` ou I/O real em testes unitários.<br>• Zero código defensivo ou de produção sem um teste falho que o exija. |
+| **Persistência, SQL & Migrações** | `flyway.md`<br>`sql.md` | • Migrações em `src/main/resources/db/migration/V{NNN}__{descricao}.sql`.<br>• Imutabilidade de migrações commitadas.<br>• Padrão Zero-Downtime: novas colunas como `NULLable` ou com `DEFAULT`.<br>• Proibição de `SELECT *`; constraints nomeadas e `COMMENT ON` mandatório. |
+| **Segurança e Privacidade (LGPD)** | `lgpd-privacy-by-design.md` | • Regras uniformes de proteção para qualquer perfil de usuário.<br>• Zero PII em logs, exceções e rastros de pilha.<br>• Criptografia em repouso de dados civis sensíveis.<br>• DTOs segregados; proteção obrigatória contra IDOR via escopo em queries. |
+| **Build e Automação** | `gradle.md` | • Kotlin DSL (`.gradle.kts`) exclusivo.<br>• Dependências declaradas exclusivamente em `gradle/libs.versions.toml`.<br>• Java 25 Toolchain e Lazy API universal em tarefas customizadas. |
 
 ---
 
-## 5. Padrões de Código e Tipagem Estrita
+## 4. Diretrizes de Segurança, Autorização e Acesso
 
-* **Nomenclatura:**
-  * Conceitos de domínio, testes e variáveis locais **DEVEM** ser nomeados em Português.
-  * Termos técnicos e arquiteturais **DEVEM** permanecer em Inglês (ex: `UseCase`, `Repository`, `Controller`, `Adapter`).
-  * O uso de sufixos genéricos (`Data`, `Handler`, `Manager`, `Helper`, `Utility`) é **ESTRITAMENTE PROIBIDO**.
-* **Imutabilidade e Tipagem:**
-  * **DEVE-SE** utilizar Java `record` para Objetos de Valor e DTOs.
-  * **DEVE-SE** utilizar `java.util.Optional` para representar ausência de valor em retornos de métodos.
-  * **NÃO DEVE** ser utilizado tipo bruto (*raw type*) ou `String` livre para valores finitos; utilize `enum`.
+* **Segregação de Identidade e Acesso:** Mecanismos de autenticação e tokens JWT cuidam exclusivamente de identidade e credenciais. Papéis, permissões de domínio e vínculos cadastrais residem em suas respectivas fronteiras de negócio.
+* **Autorização Centralizada e Declarativa:**
+  * Proibido checar regras de autorização inline espalhadas em Controllers ou UseCases.
+  * Consuma os serviços especializados de autorização da arquitetura antes de executar a lógica de negócio.
+* **Prevenção contra IDOR:** Consultas de busca por identificador devem aplicar escopo institucional/perfil no predicado da busca (`WHERE id = :id AND tenant_id = :currentTenant`).
+
+---
+
+## 5. Padrões de Código e Tipagem Estrita (Java 25)
+
+* **Convenção de Nomenclatura:**
+  * Conceitos de domínio, regras e testes: **Português** (Linguagem Ubíqua).
+  * Termos técnicos e padrões arquiteturais: **Inglês** (`UseCase`, `Repository`, `Controller`, `Adapter`, `Factory`, `Strategy`).
+  * **PROIBIDO** o uso de termos genéricos/vagos: `Data`, `Handler`, `Manager`, `Helper`, `Utility`, bem como o sufixo artificial `*Impl` sem propósito polimórfico comprovado.
 * **Injeção de Dependências:**
-  * **DEVE-SE** utilizar injeção via construtor.
-  * O uso de `@Autowired` em atributos (*field injection*) é **ESTRITAMENTE PROIBIDO**.
-* **Limites de Tamanho por Arquivo:**
-  * Arquivos de classe/interface: Máximo 500 linhas.
-  * Métodos: Mínimo 4 linhas, Máximo 20 linhas.
-  * Arquivos ou métodos excedentes **DEVEM** ser decompostos.
+  * Exclusivamente via **construtor com propriedades `private final`**.
+  * **ESTRITAMENTE PROIBIDO** o uso de `@Autowired` em campos (*field injection*).
+* **Limites de Complexidade:**
+  * Arquivos de classe/interface: Máximo de **500 linhas**.
+  * Métodos: Máximo de **20 linhas** (decompor métodos que excederem).
 
 ---
 
-## 6. Qualidade, Testes e Documentação
+## 6. Higiene de Código, Qualidade e Governança
 
-* **Garantia de Zero Warnings:** Todo o código produzido **NÃO DEVE** gerar nenhum aviso nos portões de qualidade (PMD, SpotBugs e Checkstyle).
-* **Higiene de Código:**
-  * **É PROIBIDO** o uso de nomes totalmente qualificados inline (FQNs) no meio do código.
-  * **É PROIBIDO** o uso de importações com caracteres coringa (*star imports* / `import static ...*`).
-* **Documentação Obrigatória:**
-  * Todo pacote de contexto **DEVE** possuir um arquivo `package-info.java`.
-  * Interfaces públicas e endpoints **DEVEM** conter documentação Swagger/OpenAPI.
-  * Comentários **DEVEM** explicar a razão arquitetural/técnica (**PORQUÊ**) e **NÃO** a mecânica óbvia do código (**O QUÊ**).
-* **Desenvolvimento Guiado por Testes (TDD):**
-  * O ciclo **Red-Green-Refactor** é **MANDATÓRIO** para qualquer implementação.
-  * Cobertura obrigatória para testes Unitários, de Integração e End-to-End (E2E).
+* **Zero Warnings:** O código entregue deve compilar e passar com zero avisos nas ferramentas de verificação estática (`./gradlew check`).
+* **Higiene de Importações:**
+  * Proibido o uso de caracteres coringa (*wildcards* / `import java.util.*`).
+  * Proibido o uso de tipos totalmente qualificados (FQNs) no meio do código (importe os tipos no topo do arquivo).
+* **Documentação Estrutural:**
+  * Todo pacote de módulo/camada deve conter seu respectivo `package-info.java`.
+  * Endpoints REST devem expor contratos tipados e descritos via anotações OpenAPI (Swagger).
 
 ---
 
-## 7. Referência de Comandos e Ferramentas
+## 7. Referência de Comandos
 
 ### Graphify (Executar a partir de `gestao-paroquia/`)
 * Consultar base de código: `graphify query "<pergunta>"`
-* Rastrear dependências entre classes: `graphify path "<Símbolo_A>" "<Símbolo_B>"`
+* Rastrear dependências: `graphify path "<ClasseA>" "<ClasseB>"`
 * Explicar conceito/módulo: `graphify explain "<conceito>"`
-* Atualizar AST após modificações: `graphify update .`
+* Atualizar AST após alterar código: `graphify update .`
 
 ### Gradle Wrapper (Executar a partir de `gestao-paroquia/`)
-* Executar validações e portões de qualidade: `./gradlew check`
-* Build completo do projeto: `./gradlew build`
-* Executar todas as suítes de teste: `./gradlew test`
-* Executar teste específico: `./gradlew test --tests "NomeDaClasseTest"`
+* Validação estrita de qualidade (SpotBugs, Checkstyle, PMD): `./gradlew check`
+* Compilação completa do backend: `./gradlew build`
+* Executar suíte de testes unitários: `./gradlew test`
+* Executar teste específico: `./gradlew test --tests "br.com.nsfatima.gestao.<modulo>.<NomeTest>"`
 * Executar aplicação localmente: `./gradlew bootRun`
-* Executar bateria de testes E2E: `./demo_mvp.sh`
+* Executar esteira completa de testes E2E: `./demo_mvp.sh`

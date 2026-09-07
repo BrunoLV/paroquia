@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
@@ -10,6 +12,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -17,11 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Lista todos os usuários cadastrados no sistema para fins de auditoria e gestão administrativa global
- * (endpoint restrito a admin/clero pároco/coordenador de conselho). Resolve o nome de exibição da
- * igreja/comunidade e os dados cadastrais pastorais (via {@code Fiel} vinculado) de cada usuário, mas não
- * carrega seus vínculos organizacionais individuais — para não pagar o custo de N+1 consultas ao listar
- * todos os usuários.
+ * Lista todos os usuários cadastrados no sistema para fins de auditoria e gestão administrativa global.
  */
 @Service
 public class ListUsuariosUseCase {
@@ -29,22 +28,19 @@ public class ListUsuariosUseCase {
     private final UsuarioJpaRepository usuarioRepository;
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final FielJpaRepository fielRepository;
+    private final ClerigoJpaRepository clerigoRepository;
 
     public ListUsuariosUseCase(
             UsuarioJpaRepository usuarioRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,
-            FielJpaRepository fielRepository) {
+            FielJpaRepository fielRepository,
+            ClerigoJpaRepository clerigoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.fielRepository = fielRepository;
+        this.clerigoRepository = clerigoRepository;
     }
 
-    /**
-     * Retorna todos os usuários com seus dados cadastrais e papéis globais convertidos a partir da string
-     * persistida, sem os vínculos organizacionais (sempre {@code List.of()} na resposta).
-     *
-     * @return lista de todos os usuários cadastrados
-     */
     @Transactional(readOnly = true)
     public List<UsuarioResponse> execute() {
         var usuarios = usuarioRepository.findAll();
@@ -56,9 +52,35 @@ public class ListUsuariosUseCase {
                 .stream()
                 .collect(Collectors.toMap(FielEntity::getId, f -> f));
 
+        var clerigosPorId = clerigoRepository.findAllById(
+                        usuarios.stream()
+                                .map(UsuarioEntity::getClerigoId)
+                                .filter(Objects::nonNull)
+                                .toList())
+                .stream()
+                .collect(Collectors.toMap(ClerigoEntity::getId, c -> c));
+
         return usuarios.stream()
                 .map(u -> {
-                    FielEntity fiel = fieisPorId.get(u.getFielId());
+                    String nome = null;
+                    String telefone = null;
+                    LocalDate dataNascimento = null;
+
+                    if (u.getFielId() != null) {
+                        FielEntity fiel = fieisPorId.get(u.getFielId());
+                        if (fiel != null) {
+                            nome = fiel.getNome();
+                            telefone = fiel.getCelular();
+                            dataNascimento = fiel.getDataNascimento();
+                        }
+                    } else if (u.getClerigoId() != null) {
+                        ClerigoEntity clerigo = clerigosPorId.get(u.getClerigoId());
+                        if (clerigo != null) {
+                            nome = clerigo.getNomeEclesiastico();
+                            telefone = clerigo.getCelular();
+                            dataNascimento = clerigo.getDataNascimento();
+                        }
+                    }
 
                     UUID igrejaId = u.getIgrejaId();
                     String igrejaNome = null;
@@ -76,9 +98,9 @@ public class ListUsuariosUseCase {
                                     : Arrays.stream(u.getRoles().split(","))
                                     .map(String::trim).collect(Collectors.toList()),
                             List.of(),
-                            fiel == null ? null : fiel.getNome(),
-                            fiel == null ? null : fiel.getCelular(),
-                            fiel == null ? null : fiel.getDataNascimento(),
+                            nome,
+                            telefone,
+                            dataNascimento,
                             igrejaId,
                             igrejaNome,
                             false, false, false, false);

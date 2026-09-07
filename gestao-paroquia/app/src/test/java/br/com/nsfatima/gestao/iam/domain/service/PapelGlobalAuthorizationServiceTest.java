@@ -1,5 +1,8 @@
 package br.com.nsfatima.gestao.iam.domain.service;
 
+import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.PapelGlobalEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
@@ -20,13 +23,18 @@ class PapelGlobalAuthorizationServiceTest {
 
     private PapelGlobalJpaRepository papelGlobalRepository;
     private UsuarioJpaRepository usuarioRepository;
+    private EncargoClericalJpaRepository encargoClericalRepository;
     private PapelGlobalAuthorizationService service;
 
     @BeforeEach
     void setUp() {
         papelGlobalRepository = mock(PapelGlobalJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        service = new PapelGlobalAuthorizationService(papelGlobalRepository, usuarioRepository);
+        encargoClericalRepository = mock(EncargoClericalJpaRepository.class);
+        service = new PapelGlobalAuthorizationService(
+                papelGlobalRepository,
+                usuarioRepository,
+                encargoClericalRepository);
     }
 
     @Test
@@ -66,6 +74,35 @@ class PapelGlobalAuthorizationServiceTest {
         PapelGlobalEntity entity = new PapelGlobalEntity();
         entity.setPapel("admin");
         when(papelGlobalRepository.findByFielIdAndAtivoTrue(fielId)).thenReturn(List.of(entity));
+
+        assertThat(service.isGlobalByUsuarioId(usuarioId)).isTrue();
+    }
+
+    @Test
+    void deveResolverClerigoIdAoConsultarPorUsuarioId() {
+        UUID usuarioId = UUID.randomUUID();
+        UUID clerigoId = UUID.randomUUID();
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(usuarioId);
+        usuario.setClerigoId(clerigoId);
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+
+        EncargoClericalEntity encargo = new EncargoClericalEntity();
+        encargo.setFuncao(FuncaoEclesiastica.PAROCO);
+        when(encargoClericalRepository.findByClerigoIdAndAtualTrue(clerigoId)).thenReturn(List.of(encargo));
+
+        assertThat(service.isGlobalByUsuarioId(usuarioId)).isTrue();
+        assertThat(service.isGlobalClerigo(clerigoId)).isTrue();
+        assertThat(service.papeisGlobaisDeClerigo(clerigoId)).contains(PapelGlobal.PAROCO);
+    }
+
+    @Test
+    void deveRetornarTrueParaUsuarioComRoleAdminDireta() {
+        UUID usuarioId = UUID.randomUUID();
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(usuarioId);
+        usuario.setRoles("ADMIN");
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
 
         assertThat(service.isGlobalByUsuarioId(usuarioId)).isTrue();
     }

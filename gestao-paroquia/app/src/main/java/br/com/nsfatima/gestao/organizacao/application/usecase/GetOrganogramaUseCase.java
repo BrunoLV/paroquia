@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.PapelGlobalEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.PapelGlobalJpaRepository;
+import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
@@ -40,22 +40,22 @@ public class GetOrganogramaUseCase {
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private final ListGrupoParoquialMembrosUseCase listMembrosUseCase;
-    private final PapelGlobalJpaRepository papelGlobalRepository;
-    private final FielJpaRepository fielRepository;
+    private final EncargoClericalJpaRepository encargoClericalRepository;
+    private final ClerigoJpaRepository clerigoRepository;
     private final String paroquiaNome;
 
     public GetOrganogramaUseCase(
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
             ListGrupoParoquialMembrosUseCase listMembrosUseCase,
-            PapelGlobalJpaRepository papelGlobalRepository,
-            FielJpaRepository fielRepository,
+            EncargoClericalJpaRepository encargoClericalRepository,
+            ClerigoJpaRepository clerigoRepository,
             @Value("${app.paroquia.nome:Paróquia Nossa Senhora de Fátima}") String paroquiaNome) {
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.unidadeTerritorialRepository = unidadeTerritorialRepository;
         this.listMembrosUseCase = listMembrosUseCase;
-        this.papelGlobalRepository = papelGlobalRepository;
-        this.fielRepository = fielRepository;
+        this.encargoClericalRepository = encargoClericalRepository;
+        this.clerigoRepository = clerigoRepository;
         this.paroquiaNome = paroquiaNome;
     }
 
@@ -135,8 +135,8 @@ public class GetOrganogramaUseCase {
 
         boolean isClero = unidade.getTipo() == TipoUnidadeTerritorial.CLERO;
         String responsavelPapel = isClero ? "PÁROCO" : null;
-        String responsavelNome = isClero ? findFielNomePorPapelGlobal(PapelGlobal.PAROCO.storedValue()) : null;
-        String viceResponsavelNome = isClero ? findFielNomePorPapelGlobal(PapelGlobal.VIGARIO.storedValue()) : null;
+        String responsavelNome = isClero ? findClerigoNomePorFuncao(FuncaoEclesiastica.PAROCO) : null;
+        String viceResponsavelNome = isClero ? findClerigoNomePorFuncao(FuncaoEclesiastica.VIGARIO_PAROQUIAL) : null;
 
         return new OrganogramaNodeResponse(
                 unidade.getId().toString(),
@@ -150,18 +150,13 @@ public class GetOrganogramaUseCase {
         );
     }
 
-    /**
-     * Resolve o nome do primeiro {@code Fiel} com o papel global informado ({@code paroco}/{@code vigario}),
-     * usado para preencher Pároco/Vigário do nó Clero — papéis globais não têm vínculo com nenhuma
-     * organização/unidade territorial (ver {@link PapelGlobalEntity}), então a busca é sempre pelo papel,
-     * sem filtrar por unidade.
-     */
-    private String findFielNomePorPapelGlobal(String papel) {
-        return papelGlobalRepository.findByPapelAndAtivoTrue(papel).stream()
-                .findFirst()
-                .map(PapelGlobalEntity::getFielId)
-                .flatMap(fielRepository::findById)
-                .map(fiel -> fiel.getNome())
+    /** Resolve liderança a partir do encargo clerical atual, nunca de cadastro leigo. */
+    private String findClerigoNomePorFuncao(FuncaoEclesiastica funcao) {
+        return encargoClericalRepository.findByFuncaoAndAtualTrue(funcao).stream()
+                .findFirst().map(EncargoClericalEntity::getClerigoId)
+                .flatMap(clerigoRepository::findById)
+                .filter(clerigo -> clerigo.isAtivo())
+                .map(clerigo -> clerigo.getNomeEclesiastico())
                 .orElse(null);
     }
 

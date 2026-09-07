@@ -20,4 +20,8 @@ public interface UsuarioPerfilJpaRepository {
      * existente.
      */
     Optional<UsuarioEntity> findByFielId(UUID fielId);
+
+    /** Busca o {@code Usuario} vinculado a um {@code Clerigo}. */
+    Optional<UsuarioEntity> findByClerigoId(UUID clerigoId);
 }
+

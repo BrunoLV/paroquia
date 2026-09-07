@@ -55,11 +55,13 @@ public class ApproveUsuarioUseCase {
         usuarioRepository.save(usuario);
 
         // Activate requested vinculos
-        var vinculos = vinculoRepository.findByFielId(usuario.getFielId());
-        for (var vinculo : vinculos) {
-            if (!vinculo.isAtivo()) {
-                vinculo.setAtivo(true);
-                vinculoRepository.save(vinculo);
+        if (usuario.getFielId() != null) {
+            var vinculos = vinculoRepository.findByFielId(usuario.getFielId());
+            for (var vinculo : vinculos) {
+                if (!vinculo.isAtivo()) {
+                    vinculo.setAtivo(true);
+                    vinculoRepository.save(vinculo);
+                }
             }
         }
     }

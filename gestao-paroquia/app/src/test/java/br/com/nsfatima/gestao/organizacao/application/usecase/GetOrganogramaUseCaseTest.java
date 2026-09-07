@@ -1,10 +1,10 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.PapelGlobalEntity;
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.PapelGlobalJpaRepository;
+import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
@@ -28,8 +28,8 @@ class GetOrganogramaUseCaseTest {
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private ListGrupoParoquialMembrosUseCase listMembrosUseCase;
-    private PapelGlobalJpaRepository papelGlobalRepository;
-    private FielJpaRepository fielRepository;
+    private EncargoClericalJpaRepository encargoClericalRepository;
+    private ClerigoJpaRepository clerigoRepository;
     private GetOrganogramaUseCase getOrganogramaUseCase;
 
     @BeforeEach
@@ -37,12 +37,12 @@ class GetOrganogramaUseCaseTest {
         grupoParoquialRepository = Mockito.mock(GrupoParoquialJpaRepository.class);
         unidadeTerritorialRepository = Mockito.mock(UnidadeTerritorialJpaRepository.class);
         listMembrosUseCase = Mockito.mock(ListGrupoParoquialMembrosUseCase.class);
-        papelGlobalRepository = Mockito.mock(PapelGlobalJpaRepository.class);
-        fielRepository = Mockito.mock(FielJpaRepository.class);
-        when(papelGlobalRepository.findByPapelAndAtivoTrue(Mockito.anyString())).thenReturn(List.of());
+        encargoClericalRepository = Mockito.mock(EncargoClericalJpaRepository.class);
+        clerigoRepository = Mockito.mock(ClerigoJpaRepository.class);
+        when(encargoClericalRepository.findByFuncaoAndAtualTrue(Mockito.any())).thenReturn(List.of());
         getOrganogramaUseCase = new GetOrganogramaUseCase(
                 grupoParoquialRepository, unidadeTerritorialRepository, listMembrosUseCase,
-                papelGlobalRepository, fielRepository, "Paróquia Teste");
+                encargoClericalRepository, clerigoRepository, "Paróquia Teste");
     }
 
     @Test
@@ -137,7 +137,7 @@ class GetOrganogramaUseCaseTest {
     }
 
     @Test
-    void deveResolverParocoEVigarioDoCleroViaPapelGlobal() {
+    void deveResolverParocoEVigarioDoCleroViaEncargoClerical() {
         UUID cleroId = UUID.randomUUID();
         UnidadeTerritorialEntity clero = new UnidadeTerritorialEntity();
         clero.setId(cleroId);
@@ -149,33 +149,33 @@ class GetOrganogramaUseCaseTest {
         when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(clero));
         when(grupoParoquialRepository.findAll()).thenReturn(List.of());
 
-        UUID parocoFielId = UUID.randomUUID();
-        FielEntity parocoFiel = new FielEntity();
-        parocoFiel.setId(parocoFielId);
-        parocoFiel.setNome("Pedro da Silva");
-        PapelGlobalEntity parocoPapel = new PapelGlobalEntity();
-        parocoPapel.setFielId(parocoFielId);
-        parocoPapel.setPapel(PapelGlobal.PAROCO.storedValue());
-        when(papelGlobalRepository.findByPapelAndAtivoTrue(PapelGlobal.PAROCO.storedValue()))
-                .thenReturn(List.of(parocoPapel));
-        when(fielRepository.findById(parocoFielId)).thenReturn(Optional.of(parocoFiel));
+        UUID parocoId = UUID.randomUUID();
+        ClerigoEntity paroco = new ClerigoEntity();
+        paroco.setId(parocoId);
+        paroco.setNomeEclesiastico("Padre Pedro da Silva");
+        paroco.setAtivo(true);
+        EncargoClericalEntity encargoParoco = new EncargoClericalEntity();
+        encargoParoco.setClerigoId(parocoId);
+        when(encargoClericalRepository.findByFuncaoAndAtualTrue(FuncaoEclesiastica.PAROCO))
+                .thenReturn(List.of(encargoParoco));
+        when(clerigoRepository.findById(parocoId)).thenReturn(Optional.of(paroco));
 
-        UUID vigarioFielId = UUID.randomUUID();
-        FielEntity vigarioFiel = new FielEntity();
-        vigarioFiel.setId(vigarioFielId);
-        vigarioFiel.setNome("João Batista");
-        PapelGlobalEntity vigarioPapel = new PapelGlobalEntity();
-        vigarioPapel.setFielId(vigarioFielId);
-        vigarioPapel.setPapel(PapelGlobal.VIGARIO.storedValue());
-        when(papelGlobalRepository.findByPapelAndAtivoTrue(PapelGlobal.VIGARIO.storedValue()))
-                .thenReturn(List.of(vigarioPapel));
-        when(fielRepository.findById(vigarioFielId)).thenReturn(Optional.of(vigarioFiel));
+        UUID vigarioId = UUID.randomUUID();
+        ClerigoEntity vigario = new ClerigoEntity();
+        vigario.setId(vigarioId);
+        vigario.setNomeEclesiastico("Padre João Batista");
+        vigario.setAtivo(true);
+        EncargoClericalEntity encargoVigario = new EncargoClericalEntity();
+        encargoVigario.setClerigoId(vigarioId);
+        when(encargoClericalRepository.findByFuncaoAndAtualTrue(FuncaoEclesiastica.VIGARIO_PAROQUIAL))
+                .thenReturn(List.of(encargoVigario));
+        when(clerigoRepository.findById(vigarioId)).thenReturn(Optional.of(vigario));
 
         OrganogramaNodeResponse root = getOrganogramaUseCase.execute();
 
         assertThat(root.subtype()).isEqualTo("CLERO");
-        assertThat(root.responsavelNome()).isEqualTo("Pedro da Silva");
+        assertThat(root.responsavelNome()).isEqualTo("Padre Pedro da Silva");
         assertThat(root.responsavelPapel()).isEqualTo("PÁROCO");
-        assertThat(root.viceResponsavelNome()).isEqualTo("João Batista");
+        assertThat(root.viceResponsavelNome()).isEqualTo("Padre João Batista");
     }
 }

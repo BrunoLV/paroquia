@@ -80,6 +80,24 @@ export const canManageCadastroFieis = (user: User | null): boolean => {
   );
 };
 
+/**
+ * Papéis com permissão para gerir o cadastro canônico e pessoal do clero.
+ */
+export const canManageClero = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(
+    user,
+    'ADMIN',
+    'GLOBAL_ADMIN',
+    'PAROCO',
+    'GLOBAL_PAROCO',
+    'SECRETARIA_PAROQUIAL',
+    'GLOBAL_SECRETARIA_PAROQUIAL',
+    'BISPO_DIOCESANO',
+    'GLOBAL_BISPO_DIOCESANO'
+  );
+};
+
 /** Pároco ou Bispo: palavra deliberativa final */
 export const isParoco = (user: User | null): boolean => hasRole(user, ...PAROCO_ROLES);
 

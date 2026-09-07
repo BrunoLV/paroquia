@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
+import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
@@ -23,6 +25,7 @@ class ListUsuariosUseCaseTest {
     private UsuarioJpaRepository usuarioRepository;
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private FielJpaRepository fielRepository;
+    private ClerigoJpaRepository clerigoRepository;
     private ListUsuariosUseCase useCase;
 
     @BeforeEach
@@ -30,7 +33,12 @@ class ListUsuariosUseCaseTest {
         usuarioRepository = mock(UsuarioJpaRepository.class);
         grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
-        useCase = new ListUsuariosUseCase(usuarioRepository, grupoParoquialRepository, fielRepository);
+        clerigoRepository = mock(ClerigoJpaRepository.class);
+        useCase = new ListUsuariosUseCase(
+                usuarioRepository,
+                grupoParoquialRepository,
+                fielRepository,
+                clerigoRepository);
     }
 
     @Test
@@ -56,6 +64,7 @@ class ListUsuariosUseCaseTest {
 
         when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
         when(fielRepository.findAllById(List.of(fielId))).thenReturn(List.of(fiel));
+        when(clerigoRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<UsuarioResponse> responses = useCase.execute();
 
@@ -66,9 +75,38 @@ class ListUsuariosUseCaseTest {
     }
 
     @Test
+    void deveResolverDadosCadastraisDeClerigoVinculado() {
+        UUID usuarioId = UUID.randomUUID();
+        UUID clerigoId = UUID.randomUUID();
+
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(usuarioId);
+        usuario.setUsername("padre.pedro");
+        usuario.setEnabled(true);
+        usuario.setClerigoId(clerigoId);
+
+        ClerigoEntity clerigo = new ClerigoEntity();
+        clerigo.setId(clerigoId);
+        clerigo.setNomeCivil("Pedro de Alcantara");
+        clerigo.setNomeEclesiastico("Padre Pedro");
+        clerigo.setCelular("11988887777");
+
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
+        when(fielRepository.findAllById(List.of())).thenReturn(List.of());
+        when(clerigoRepository.findAllById(List.of(clerigoId))).thenReturn(List.of(clerigo));
+
+        List<UsuarioResponse> responses = useCase.execute();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().nome()).isEqualTo("Padre Pedro");
+        assertThat(responses.getFirst().telefone()).isEqualTo("11988887777");
+    }
+
+    @Test
     void deveRetornarListaVaziaQuandoNaoHaUsuarios() {
         when(usuarioRepository.findAll()).thenReturn(List.of());
         when(fielRepository.findAllById(List.of())).thenReturn(List.of());
+        when(clerigoRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<UsuarioResponse> responses = useCase.execute();
 
@@ -88,6 +126,7 @@ class ListUsuariosUseCaseTest {
 
         when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
         when(fielRepository.findAllById(List.of(fielId))).thenReturn(List.of());
+        when(clerigoRepository.findAllById(List.of())).thenReturn(List.of());
 
         List<UsuarioResponse> responses = useCase.execute();
 

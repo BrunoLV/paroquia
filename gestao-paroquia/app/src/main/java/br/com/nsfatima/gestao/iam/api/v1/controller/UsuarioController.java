@@ -101,7 +101,11 @@ public class UsuarioController {
       "fielId": "..." }
      */
     public UUID create(@RequestBody @Valid CreateUsuarioRequest request) {
-        return createUsuarioUseCase.execute(request.username(), request.password(), request.fielId());
+        return createUsuarioUseCase.execute(
+                request.username(),
+                request.password(),
+                request.fielId(),
+                request.clerigoId());
     }
 
     @GetMapping("/{id}")
