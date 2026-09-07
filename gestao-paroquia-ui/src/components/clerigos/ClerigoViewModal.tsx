@@ -267,7 +267,7 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
                       label="Celular"
                       value={
                         <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-                          <span>{(clerigo as Clerigo).celularFormatado}</span>
+                          <Typography variant="body2">{(clerigo as Clerigo).celularFormatado}</Typography>
                           {(clerigo as Clerigo).isWhatsapp && (
                             <WhatsAppIcon color="success" sx={{ fontSize: 16 }} />
                           )}
