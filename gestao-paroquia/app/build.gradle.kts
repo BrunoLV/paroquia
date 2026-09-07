@@ -86,11 +86,11 @@ tasks.named<Test>("test") {
     finalizedBy("jacocoTestReport")
 }
 
-tasks.getByName<Jar>("jar") {
+tasks.named<Jar>("jar") {
     enabled = false
 }
 
-tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     archiveFileName.set("app.jar")
 }
 
