@@ -416,6 +416,8 @@ export interface Evento {
   setorPastoral?: SetorPastoral | null;
   /** Permite ao Pároco ignorar conflitos de agenda eclesial */
   bypassAgendaConflict?: boolean;
+  /** IDs dos ativos patrimoniais alocados para o evento */
+  ativoIds?: string[];
 }
 
 /**
@@ -437,6 +439,8 @@ export interface CreateEventoPayload {
   igrejaVinculoId?: string | null;
   /** Permite ao ator ignorar/forçar a criação apesar de um conflito de agenda detectado (restrito a papéis com essa autoridade). */
   bypassAgendaConflict?: boolean;
+  /** IDs dos ativos patrimoniais alocados para o evento */
+  ativoIds?: string[];
 }
 
 /**
@@ -462,6 +466,8 @@ export interface UpdateEventoPayload {
   localId?: string | null;
   igrejaVinculoId?: string | null;
   bypassAgendaConflict?: boolean;
+  /** IDs dos ativos patrimoniais alocados para o evento */
+  ativoIds?: string[];
 }
 
 /**

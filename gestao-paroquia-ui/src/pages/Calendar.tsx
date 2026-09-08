@@ -57,8 +57,9 @@ import { getCategoriaEventoMeta } from '../utils/statusMeta/categoriaEventoStatu
 import theme from '../theme';
 import apiClient from '../api/client';
 import { getOrganizacoes } from '../api/organizacoes';
+import { getAtivos } from '../api/ativos';
 import { extractErrorMessage } from '../utils/errorUtils';
-import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
+import {AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import {getAnosParoquiais} from '../api/anosParoquiais';
 import {fetchSolenidadesLiturgicasAtivas} from '../api/solenidades';
 import {
@@ -125,6 +126,7 @@ const Calendar = () => {
   const [events, setEvents] = useState<Evento[]>([]);
   const [organizations, setOrganizations] = useState<Organizacao[]>([]);
   const [locais, setLocais] = useState<Local[]>([]);
+  const [ativos, setAtivos] = useState<AtivoPatrimonial[]>([]);
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [anosParoquiais, setAnosParoquiais] = useState<AnoParoquial[]>([]);
 
@@ -364,7 +366,19 @@ const Calendar = () => {
         }
       };
 
-      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), buscarAprovacoes(), fetchAnosParoquiais()]);
+      const fetchAtivos = async () => {
+        if (ativos.length === 0) {
+          try {
+            const data = await getAtivos();
+            if (Array.isArray(data)) {
+              setAtivos(data);
+            }
+          } catch (err) {
+          }
+        }
+      };
+
+      await Promise.all([fetchEvents(), fetchOrgs(), fetchLocais(), fetchProjetos(), buscarAprovacoes(), fetchAnosParoquiais(), fetchAtivos()]);
     } catch (err: unknown) {
       const errMsg = 'Não foi possível carregar as informações do calendário.';
       showError(errMsg);
@@ -451,6 +465,7 @@ const Calendar = () => {
         const { recurrence, ...eventBaseData } = data;
         const updateData = {
           ...eventBaseData,
+          ativoIds: Array.isArray(data.ativoIds) ? data.ativoIds : [],
           editScope: selectedEditScope || 'ONLY_THIS'
         };
         await apiClient.patch(`/eventos/${editingEvent.id}`, updateData);
@@ -465,6 +480,7 @@ const Calendar = () => {
           projetoId: data.projetoId || null,
           localId: data.localId || null,
           participantes: data.participantes || [],
+          ativoIds: Array.isArray(data.ativoIds) ? data.ativoIds : [],
         };
 
         // Generate a simple unique idempotency key for the request headers
@@ -1145,6 +1161,32 @@ const Calendar = () => {
                   </Box>
                 )}
 
+                {/* Ativos Patrimoniais vinculados */}
+                {selectedEvent.ativoIds && selectedEvent.ativoIds.length > 0 && (
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                    <BusinessIcon color="action" sx={{ mt: 0.3 }} />
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
+                        Bens / Ativos Patrimoniais
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selectedEvent.ativoIds.map(id => {
+                          const ativo = ativos.find(a => a.id === id);
+                          return (
+                            <Chip
+                              key={id}
+                              label={ativo ? `${ativo.nome} (${ativo.categoria})` : id}
+                              size="small"
+                              variant="outlined"
+                              color="primary"
+                            />
+                          );
+                        })}
+                      </Box>
+                    </Box>
+                  </Box>
+                )}
+
                 {/* Conflict warning: estadoConflito/motivoConflito são calculados pelo
                     backend (motor de validação de agenda) quando este evento colide
                     com outro compromisso — mesmo local, mesma organização/recurso,
@@ -1189,6 +1231,7 @@ const Calendar = () => {
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
         locais={locais.filter(l => l.ativo)}
+        ativos={ativos.filter(a => a.reservavel && a.status === 'DISPONIVEL')}
         projetos={projetos.filter(p => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
         initialDate={createInitialDate}
         initialEvent={editingEvent}

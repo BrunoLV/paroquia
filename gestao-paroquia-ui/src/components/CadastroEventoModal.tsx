@@ -22,7 +22,7 @@ import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {useAuth} from '../auth/AuthContext';
 import {isGlobalCreator} from '../auth/permissions';
 import {useNotification} from '../context/NotificationContext';
-import {AnoParoquial, Evento, Local, Organizacao, Projeto} from '../api/types';
+import {AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 import ActionButton from './ActionButton';
 
@@ -62,6 +62,7 @@ interface CadastroEventoModalProps {
   isSubmitting?: boolean;
   organizations: Organizacao[];
   locais?: Local[];
+  ativos?: AtivoPatrimonial[];
   projetos?: Projeto[];
   anosParoquiais?: AnoParoquial[];
   initialDate?: Date;
@@ -75,6 +76,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
   isSubmitting = false,
   organizations = [],
   locais = [],
+  ativos = [],
   projetos = [],
   anosParoquiais = [],
   initialDate,
@@ -88,6 +90,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
   const [orgId, setOrgId] = useState('');
   const [igrejaVinculoId, setIgrejaVinculoId] = useState('');
   const [localId, setLocalId] = useState('');
+  const [selectedAtivoIds, setSelectedAtivoIds] = useState<string[]>([]);
   const [projetoId, setProjetoId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -219,6 +222,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         setProjetoId(initialEvent.projetoId || '');
         setStartDate(formatIsoToLocal(initialEvent.inicio));
         setEndDate(formatIsoToLocal(initialEvent.fim));
+        setSelectedAtivoIds(initialEvent.ativoIds || []);
 
         if (initialEvent.fim) {
           const d = new Date(initialEvent.fim);
@@ -239,6 +243,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         setCategory('PASTORAL');
         setIgrejaVinculoId('');
         setLocalId('');
+        setSelectedAtivoIds([]);
         setProjetoId('');
         setStatus('CONFIRMADO');
         setJustification('');
@@ -340,6 +345,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
       localId: localId || null,
       projetoId: projetoId || null,
       participantes,
+      ativoIds: selectedAtivoIds,
       inicio: startDate ? new Date(startDate).toISOString() : '',
       fim: finalEndDate ? new Date(finalEndDate).toISOString() : '',
       status: isClosedYear && status !== 'RASCUNHO' ? 'ADICIONADO_EXTRA' : status,
@@ -515,6 +521,45 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
                 </FormControl>
               </Grid>
             </Grid>
+
+            {/* Ativos Patrimoniais — apenas exibido quando há ativos reserváveis disponíveis */}
+            {ativos.length > 0 && (
+              <FormControl fullWidth size="small">
+                <InputLabel id="new-ativos-label">Bens / Ativos Patrimoniais</InputLabel>
+                <Select
+                  labelId="new-ativos-label"
+                  multiple
+                  value={selectedAtivoIds}
+                  label="Bens / Ativos Patrimoniais"
+                  onChange={(e) =>
+                    setSelectedAtivoIds(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)
+                  }
+                  disabled={isSubmitting}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {(selected as string[]).map((id) => {
+                        const ativo = ativos.find(a => a.id === id);
+                        return (
+                          <Chip
+                            key={id}
+                            label={ativo ? `${ativo.nome} (${ativo.categoria})` : id}
+                            size="small"
+                          />
+                        );
+                      })}
+                    </Box>
+                  )}
+                >
+                  {ativos
+                    .filter(a => a.reservavel && a.status === 'DISPONIVEL')
+                    .map((a) => (
+                      <MenuItem key={a.id} value={a.id}>
+                        {a.nome} — {a.categoria}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            )}
 
             <FormControl fullWidth size="small">
               <InputLabel id="new-apoio-label">Organizações de Apoio</InputLabel>
