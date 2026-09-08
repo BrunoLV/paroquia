@@ -61,6 +61,7 @@ public class UpdateEventoUseCase {
     private final EventoAuditPublisher auditPublisher;
     private final PrioridadeAgendaValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
+    private final br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService;
 
     public UpdateEventoUseCase(
             EventoDomainService domainService,
@@ -77,7 +78,8 @@ public class UpdateEventoUseCase {
             UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
             EventoAuditPublisher auditPublisher,
             PrioridadeAgendaValidatorService agendaPriorityValidatorService,
-            CacheManager cacheManager) {
+            CacheManager cacheManager,
+            br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
         this.repository = repository;
         this.recurrenceRepository = recurrenceRepository;
@@ -93,6 +95,7 @@ public class UpdateEventoUseCase {
         this.auditPublisher = auditPublisher;
         this.agendaPriorityValidatorService = agendaPriorityValidatorService;
         this.cacheManager = cacheManager;
+        this.eventoReservaIntegrationService = eventoReservaIntegrationService;
     }
 
     /**
@@ -195,6 +198,19 @@ public class UpdateEventoUseCase {
             entity.getEnvolvidos().clear();
         }
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
+
+        if (eventoReservaIntegrationService != null) {
+            eventoReservaIntegrationService.atualizarReservasEvento(
+                    saved.getId(),
+                    saved.getTitulo(),
+                    saved.getLocalId(),
+                    request.ativoIds(),
+                    actorContext.usuarioId(),
+                    saved.getGrupoParoquialResponsavelId(),
+                    saved.getInicioUtc(),
+                    saved.getFimUtc()
+            );
+        }
 
         applyParticipantChanges(entity.getId(), request.participantes());
 

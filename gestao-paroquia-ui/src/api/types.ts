@@ -906,3 +906,101 @@ export type FuncaoEclesiastica = 'BISPO_DIOCESANO' | 'PAROCO' | 'ADMINISTRADOR_P
 export interface ClerigoInstitucional { clerigoId: string; nomeEclesiastico: string; grauOrdem: GrauOrdem; funcaoAtual: FuncaoEclesiastica | null; paroquia: string; }
 export interface Clerigo extends ClerigoInstitucional { nomeCivil: string; dataNascimento: string; paisOrigem: string; cpfFormatado: string | null; rg: string | null; documentoEstrangeiro: string | null; email: string; celularFormatado: string; isWhatsapp: boolean; telefoneFixoFormatado: string | null; endereco: string | null; dioceseIncardinacao: string; dataOrdenacaoDiaconal: string | null; dataOrdenacaoPresbiteral: string | null; dataOrdenacaoEpiscopal: string | null; isAtivo: boolean; }
 export type ClerigoPayload = Omit<Clerigo, 'clerigoId' | 'cpfFormatado' | 'celularFormatado' | 'telefoneFixoFormatado' | 'paroquia' | 'isAtivo'> & { cpf?: string; celular: string; telefoneFixo?: string; };
+
+export type TipoItemReserva = 'LOCAL' | 'ATIVO';
+
+export type StatusReserva =
+  | 'PENDENTE'
+  | 'CONFIRMADA'
+  | 'RETIRADO'
+  | 'FINALIZADA'
+  | 'CANCELADA'
+  | 'EXPIRADA';
+
+export interface ReservaDetalhe {
+  id: string;
+  tipoItem: TipoItemReserva;
+  itemId: string;
+  itemNome: string;
+  dataHoraInicio: string;
+  dataHoraFim: string;
+  bufferMinutos: number;
+  fimComBuffer: string;
+  descricao: string;
+  solicitanteId: string;
+  solicitanteNome: string;
+  pastoralMovimentoId: string;
+  pastoralMovimentoNome: string;
+  eventoId?: string | null;
+  eventoTitulo?: string | null;
+  grupoRecorrenciaId?: string | null;
+  status: StatusReserva;
+  aprovadorId?: string | null;
+  aprovadorNome?: string | null;
+  aprovadoEm?: string | null;
+  motivoCancelamento?: string | null;
+  canceladoPorId?: string | null;
+  canceladoPorNome?: string | null;
+  checkAvarias?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CriarReservaPayload {
+  tipoItem: TipoItemReserva;
+  itemId: string;
+  dataHoraInicio: string;
+  dataHoraFim: string;
+  bufferMinutos?: number;
+  descricao: string;
+  pastoralMovimentoId: string;
+  eventoId?: string | null;
+}
+
+export interface CriarReservaRecorrentePayload {
+  tipoItem: TipoItemReserva;
+  itemId: string;
+  dataHoraInicio: string;
+  dataHoraFim: string;
+  bufferMinutos?: number;
+  descricao: string;
+  pastoralMovimentoId: string;
+  eventoId?: string | null;
+  tipoRecorrencia: 'SEMANAL' | 'QUINZENAL' | 'MENSAL';
+  quantidadeOcorrencias: number;
+}
+
+export interface CancelarReservaPayload {
+  motivo: string;
+}
+
+export interface DevolverAtivoPayload {
+  checkAvarias: string;
+}
+
+export interface ReservaConflitoDetalhe {
+  itemId: string;
+  itemNome: string;
+  tipoItem: TipoItemReserva;
+  dataHoraInicio: string;
+  fimComBuffer: string;
+  responsavelId: string;
+  responsavelNome: string;
+  motivo: string;
+}
+
+export interface ReservaMetricas {
+  totalHoje: number;
+  totalPendentes: number;
+  totalEmUso: number;
+  totalConflitosPrevenidos: number;
+}
+
+export interface DisponibilidadeSlot {
+  inicio: string;
+  fim: string;
+  disponivel: boolean;
+  reservaId?: string | null;
+  descricao?: string | null;
+}
+

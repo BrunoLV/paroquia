@@ -35,6 +35,7 @@ import {
     Menu as MenuIcon,
     People as PeopleIcon,
     Settings as SettingsIcon, Notifications as NotificationsIcon,
+    EventAvailable as ReservasIcon,
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
@@ -98,6 +99,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const menuItems: MenuItem[] = [
     { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
     { section: 'Gestão pastoral', label: 'Calendário', path: '/calendar', icon: <CalendarIcon /> },
+    { label: 'Reservas', path: '/reservas', icon: <ReservasIcon /> },
     { label: 'Conselhos & Atas', path: '/conselhos', icon: <DescriptionIcon /> },
     { label: 'Fiéis', path: '/fieis', icon: <PeopleIcon /> },
     { label: 'Clero', path: '/clerigos', icon: <AccountTreeIcon /> },

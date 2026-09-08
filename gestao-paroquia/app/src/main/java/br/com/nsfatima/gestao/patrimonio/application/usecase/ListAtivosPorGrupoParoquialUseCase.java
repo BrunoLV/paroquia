@@ -31,4 +31,10 @@ public class ListAtivosPorGrupoParoquialUseCase {
                 .map(CreateAtivoPatrimonialUseCase::toResponse)
                 .toList();
     }
+
+    public List<AtivoPatrimonialResponse> executeAll() {
+        return repository.findAll().stream()
+                .map(CreateAtivoPatrimonialUseCase::toResponse)
+                .toList();
+    }
 }

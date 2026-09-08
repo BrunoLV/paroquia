@@ -53,6 +53,7 @@ public class CancelEventoUseCase {
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final AprovacaoAcaoPayloadMapper payloadMapper;
     private final CacheManager cacheManager;
+    private final br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService;
 
     public CancelEventoUseCase(
             EventoJpaRepository eventoJpaRepository,
@@ -63,7 +64,8 @@ public class CancelEventoUseCase {
             EventoAuditPublisher auditPublisher,
             CadastroEventoMetricsPublisher metricsPublisher,
             AprovacaoAcaoPayloadMapper payloadMapper,
-            CacheManager cacheManager) {
+            CacheManager cacheManager,
+            br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.eventoJpaRepository = eventoJpaRepository;
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
         this.actorContextResolver = actorContextResolver;
@@ -73,6 +75,7 @@ public class CancelEventoUseCase {
         this.metricsPublisher = metricsPublisher;
         this.payloadMapper = payloadMapper;
         this.cacheManager = cacheManager;
+        this.eventoReservaIntegrationService = eventoReservaIntegrationService;
     }
 
     /**
@@ -154,6 +157,10 @@ public class CancelEventoUseCase {
         evento.setStatus(EventoStatusInput.CANCELADO.name());
         evento.setCanceladoMotivo(motivo);
         EventoEntity saved = Objects.requireNonNull(eventoJpaRepository.save(evento));
+
+        if (eventoReservaIntegrationService != null) {
+            eventoReservaIntegrationService.cancelarReservasEventoEmCascata(saved.getId(), saved.getTitulo(), usuarioId);
+        }
 
         registerSystemObservacaoUseCase.execute(saved.getId(),
                 TipoObservacaoInput.CANCELAMENTO, motivo, usuarioId, actor, "cancelamento");

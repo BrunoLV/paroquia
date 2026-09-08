@@ -13,6 +13,14 @@ import {
 } from './types';
 
 /**
+ * Busca todos os ativos patrimoniais cadastrados na paróquia.
+ */
+export const getAtivos = async (): Promise<AtivoPatrimonial[]> => {
+  const response = await apiClient.get<AtivoPatrimonial[]>('/ativos');
+  return response.data;
+};
+
+/**
  * Busca os ativos patrimoniais pertencentes a uma organização (posse atual do bem).
  */
 export const getAtivosPorOrganizacao = async (organizacaoId: string): Promise<AtivoPatrimonial[]> => {

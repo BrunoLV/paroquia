@@ -16,6 +16,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { Local, Organizacao } from '@/api/types';
 import StatusIcon from '@/components/StatusIcon';
 import TableActionMenu from '@/components/TableActionMenu';
@@ -34,6 +35,7 @@ interface LocaisTableProps {
   onView: (local: Local) => void;
   onEdit: (local: Local) => void;
   onDelete: (local: Local) => void;
+  onReservar?: (local: Local) => void;
   isDeletePending?: boolean;
 }
 
@@ -49,6 +51,7 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
   onView,
   onEdit,
   onDelete,
+  onReservar,
   isDeletePending,
 }) => {
   if (isLoading) {
@@ -118,6 +121,11 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
                     <TableCell align="right">
                       <TableActionMenu
                         actions={[
+                          {
+                            label: 'Reservar',
+                            icon: <EventAvailableIcon fontSize="small" color="primary" />,
+                            onClick: () => onReservar?.(local),
+                          },
                           {
                             label: 'Visualizar',
                             icon: <VisibilityIcon fontSize="small" />,

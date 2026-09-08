@@ -102,6 +102,13 @@ public class AtivoPatrimonialController {
         return createUseCase.execute(request);
     }
 
+    @GetMapping
+    @PreAuthorize(AUTHENTICATED)
+    @Operation(summary = "Lista todos os ativos patrimoniais cadastrados na paróquia")
+    public List<AtivoPatrimonialResponse> listAll() {
+        return listUseCase.executeAll();
+    }
+
     /**
      * Lista o inventário completo de ativos patrimoniais pertencentes a uma organização.
      *

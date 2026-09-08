@@ -23,6 +23,7 @@ const Locais = lazy(() => import('@/pages/Locais'));
 const Organizacoes = lazy(() => import('@/pages/Organizacoes'));
 const Notificacoes = lazy(() => import('@/pages/Notificacoes'));
 const AjustesCadastrais = lazy(() => import('@/pages/AjustesCadastrais'));
+const Reservas = lazy(() => import('@/pages/Reservas'));
 
 const RouteFallback = () => (
   <Box sx={{p: 4}}>
@@ -96,6 +97,7 @@ const AppRoutes = () => {
                   }
                 />
                 <Route path="projects" element={<Projects />} />
+                <Route path="reservas" element={<Reservas />} />
                 <Route path="ativos" element={<Ativos />} />
                 <Route path="locais" element={<CadastroRoute tipo="locais"><Locais /></CadastroRoute>} />
                 <Route path="organizacoes" element={<CadastroRoute tipo="organizacoes"><Organizacoes /></CadastroRoute>} />

@@ -67,6 +67,8 @@ public class CreateEventoUseCase {
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
 
+    private final br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService;
+
     public CreateEventoUseCase(
             EventoDomainService domainService,
             EventoJpaRepository repository,
@@ -85,7 +87,8 @@ public class CreateEventoUseCase {
             CacheManager cacheManager,
             MotorLiturgico liturgicalEngine,
             CicloLiturgicoRepository cicloLiturgicoRepository,
-            ProvisionamentoLiturgicoService liturgicalProvisioningService) {
+            ProvisionamentoLiturgicoService liturgicalProvisioningService,
+            br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
         this.repository = repository;
         this.involvementRepository = involvementRepository;
@@ -104,6 +107,7 @@ public class CreateEventoUseCase {
         this.liturgicalEngine = liturgicalEngine;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.liturgicalProvisioningService = liturgicalProvisioningService;
+        this.eventoReservaIntegrationService = eventoReservaIntegrationService;
     }
 
     /**
@@ -215,6 +219,19 @@ public class CreateEventoUseCase {
         entity.setMotivoConflito(domainService.resolveMotivoConflito(hasOverlap));
 
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
+
+        if (eventoReservaIntegrationService != null) {
+            eventoReservaIntegrationService.criarReservasEvento(
+                    saved.getId(),
+                    saved.getTitulo(),
+                    saved.getLocalId(),
+                    request.ativoIds(),
+                    saved.getGrupoParoquialResponsavelId(),
+                    saved.getGrupoParoquialResponsavelId(),
+                    saved.getInicioUtc(),
+                    saved.getFimUtc()
+            );
+        }
 
         if (request.participantes() != null && !request.participantes().isEmpty()) {
             List<EventoEnvolvidoInput> envolvidos = request.participantes().stream()

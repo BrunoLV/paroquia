@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Checkbox,
@@ -95,6 +96,7 @@ const formatEventoOption = (evento: Evento): string => {
 const CATEGORIAS: AtivoCategoria[] = ['ELETRONICO', 'MOBILIARIO', 'PARAMENTO', 'INFRAESTRUTURA'];
 
 const Ativos = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { showError, showSuccess } = useNotification();
 
@@ -591,6 +593,17 @@ const Ativos = () => {
         open={!!actionMenu}
         onClose={() => setActionMenu(null)}
       >
+        {actionMenu && (
+          <MenuItem
+            onClick={() => {
+              navigate('/reservas', { state: { tipoItem: 'ATIVO', itemId: actionMenu.ativo.id } });
+              setActionMenu(null);
+            }}
+          >
+            <AllocateIcon fontSize="small" color="primary" sx={{ mr: 1.5 }} />
+            Reservar Bem Móvel
+          </MenuItem>
+        )}
         {actionMenu && canTransferAtivo(user, actionMenu.ativo.organizacaoId) && (
           <MenuItem
             onClick={() => {

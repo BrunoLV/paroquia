@@ -46,6 +46,7 @@ import CadastroEventoModal from '../components/CadastroEventoModal';
 import CancelarEventoDialog from '../components/CancelarEventoDialog';
 import EditScopeDialog, {EditScope} from '../components/EditScopeDialog';
 import {ExportCalendarDialog} from '../components/ExportCalendarDialog';
+import { EventoConflitoRecursoDialog } from '../components/EventoConflitoRecursoDialog';
 import ObservacoesEvento from '../components/ObservacoesEvento';
 import AtivosAlocadosSection from '../components/AtivosAlocadosSection';
 import PageHeader from '../components/PageHeader';
@@ -157,6 +158,11 @@ const Calendar = () => {
   // Export states
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isSolemnitiesOpen, setIsSolemnitiesOpen] = useState(false);
+
+  // Resource Conflict (409) states
+  const [conflitoRecursoModalOpen, setConflitoRecursoModalOpen] = useState(false);
+  const [conflitoRecursoDetalhes, setConflitoRecursoDetalhes] = useState<any[]>([]);
+  const [conflitoRecursoMensagem, setConflitoRecursoMensagem] = useState<string>('');
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -484,8 +490,14 @@ const Calendar = () => {
 
       setIsCreateOpen(false);
       fetchData();
-    } catch (err: unknown) {
-      showError(extractErrorMessage(err, 'Erro ao processar evento. Verifique as regras de negócio.'));
+    } catch (err: any) {
+      if (err.response?.status === 409 && err.response?.data?.conflitos) {
+        setConflitoRecursoDetalhes(err.response.data.conflitos);
+        setConflitoRecursoMensagem(err.response.data.message);
+        setConflitoRecursoModalOpen(true);
+      } else {
+        showError(extractErrorMessage(err, 'Erro ao processar evento. Verifique as regras de negócio.'));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -1203,6 +1215,14 @@ const Calendar = () => {
         open={isExportOpen}
         onClose={() => setIsExportOpen(false)}
         organizations={organizations}
+      />
+
+      {/* Recurso Conflict (409) Dialog */}
+      <EventoConflitoRecursoDialog
+        open={conflitoRecursoModalOpen}
+        onClose={() => setConflitoRecursoModalOpen(false)}
+        detalhes={conflitoRecursoDetalhes}
+        mensagem={conflitoRecursoMensagem}
       />
 
       {/* Solenidades & Santoral Dialog Modal */}

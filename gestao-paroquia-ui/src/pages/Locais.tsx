@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Container } from '@mui/material';
 import { Add as AddIcon, LocationOn as LocationIcon } from '@mui/icons-material';
@@ -98,6 +99,8 @@ const Locais: React.FC = () => {
     });
   }, [locais, searchTerm, tipoFilter, statusFilter, igrejaFilter]);
 
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
@@ -151,6 +154,9 @@ const Locais: React.FC = () => {
         onDelete={(local) => {
           setLocalToDelete(local);
           setDeleteDialogOpen(true);
+        }}
+        onReservar={(local) => {
+          navigate('/reservas', { state: { tipoItem: 'LOCAL', itemId: local.id } });
         }}
         isDeletePending={deleteMutation.isPending}
       />

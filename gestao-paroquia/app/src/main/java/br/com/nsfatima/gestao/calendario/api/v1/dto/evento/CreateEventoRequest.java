@@ -58,7 +58,28 @@ public record CreateEventoRequest(
         List<UUID> participantes,
 
         @Schema(description = "Flag de bypass para liberar conflito de agenda (apenas Pároco)")
-        Boolean bypassAgendaConflict) {
+        Boolean bypassAgendaConflict,
+
+        @Schema(description = "Lista de IDs dos ativos patrimoniais alocados para o evento")
+        List<UUID> ativoIds) {
+
+    public CreateEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID grupoParoquialResponsavelId,
+            UUID projetoId,
+            UUID localId,
+            UUID igrejaVinculoId,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            List<UUID> participantes,
+            Boolean bypassAgendaConflict) {
+        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, igrejaVinculoId,
+                inicio, fim, status, adicionadoExtraJustificativa, participantes, bypassAgendaConflict, List.of());
+    }
 
     /**
      * Construtor legado sem {@code igrejaVinculoId} e sem {@code bypassAgendaConflict}, mantido para
