@@ -112,7 +112,7 @@ describe('CadastroEventoModal', () => {
   });
 
   it('renders Local, Projeto and Participantes fields', () => {
-    const mockLocais = [{ id: 'loc-1', nome: 'Salão', ativo: true, tipo: 'SALAO', endereco: '', capacidade: 100, caracteristicas: '' }];
+    const mockLocais = [{ id: 'loc-1', nome: 'Salão', ativo: true, tipo: 'SALAO_PAROQUIAL', capacidadeMaxima: 100, descricao: '' }];
     const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', status: 'EM_ANDAMENTO' as const, descricao: '', inicio: '', fim: '', organizacaoResponsavelId: 'org-1' }];
     
     render(<CadastroEventoModal {...defaultProps} locais={mockLocais} projetos={mockProjetos} />);

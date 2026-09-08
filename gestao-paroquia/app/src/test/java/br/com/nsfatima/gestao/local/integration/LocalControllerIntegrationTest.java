@@ -43,12 +43,24 @@ class LocalControllerIntegrationTest {
     @Autowired
     private LocalJpaRepository localRepository;
     @Autowired
+    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
+    @Autowired
     private ObjectMapper objectMapper;
     private UUID existingLocalId;
 
     @BeforeEach
     void setUp() {
         localRepository.deleteAll();
+
+        br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity org =
+                unidadeTerritorialRepository.findById(ORG_ID)
+                        .orElseGet(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity::new);
+        org.setId(ORG_ID);
+        org.setNome("Comunidade Matriz Teste");
+        org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial.MATRIZ);
+        org.setAtivo(true);
+        unidadeTerritorialRepository.save(org);
+
         LocalEntity local = new LocalEntity();
         local.setId(UUID.randomUUID());
         local.setNome("Igreja Matriz");
@@ -93,7 +105,7 @@ class LocalControllerIntegrationTest {
             Authentication auth = getAuthForRole(role);
 
             // POST
-            LocalRequest request = new LocalRequest("Salão " + role, "SALAO", "Endereço", 200, "Wifi", true);
+            LocalRequest request = new LocalRequest("Salão " + role, "SALAO", 200, "Wifi", true);
             mockMvc.perform(post("/api/v1/locais")
                             .with(authentication(auth))
                             .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +114,7 @@ class LocalControllerIntegrationTest {
 
             // PUT
             LocalRequest updateRequest = new LocalRequest("Igreja Matriz Atualizada",
-                    "IGREJA", "Endereço", 600, "Som", true);
+                    "IGREJA", 600, "Som", true);
 
             mockMvc.perform(put("/api/v1/locais/" + existingLocalId)
                             .with(authentication(auth))
@@ -128,6 +140,35 @@ class LocalControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("Permitir criação e edição enviando organizacaoId como alias no JSON")
+    void devePermitirCriacaoEEdicaoComOrganizacaoIdNoPayload() throws Exception {
+        Authentication auth = getAuthForRole("ADMIN");
+
+        String jsonPayload = """
+                {
+                    "nome": "Salão Comunitário Teste",
+                    "tipo": "SALAO",
+                    "organizacaoId": "%s",
+                    "capacidadeMaxima": 150,
+                    "descricao": "Espaço amplo com organizacaoId",
+                    "ativo": true
+                }
+                """.formatted(ORG_ID);
+
+        mockMvc.perform(put("/api/v1/locais/" + existingLocalId)
+                        .with(authentication(auth))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nome").value("Salão Comunitário Teste"))
+                .andExpect(jsonPath("$.capacidadeMaxima").value(150))
+                .andExpect(jsonPath("$.organizacaoId").value(ORG_ID.toString()))
+                .andExpect(jsonPath("$.igrejaId").value(ORG_ID.toString()))
+                .andExpect(jsonPath("$.igrejaNome").value("Comunidade Matriz Teste"))
+                .andExpect(jsonPath("$.organizacaoNome").value("Comunidade Matriz Teste"));
+    }
+
+    @Test
     @DisplayName("Negar POST/PUT/DELETE para perfis não autorizados")
     void deveNegarMutacoesParaPerfisNaoAutorizados() throws Exception {
         String[] unauthorizedRoles = {"PASTORAL_MEMBRO", "PASTORAL_COORDENADOR", "CLERO_VIGARIO"};
@@ -136,7 +177,7 @@ class LocalControllerIntegrationTest {
             Authentication auth = getAuthForRole(role);
 
             // POST
-            LocalRequest request = new LocalRequest("Novo Local Negado", "SALAO", "Endereço", 200, "Wifi", true);
+            LocalRequest request = new LocalRequest("Novo Local Negado", "SALAO", 200, "Wifi", true);
             mockMvc.perform(post("/api/v1/locais")
                             .with(authentication(auth))
                             .contentType(MediaType.APPLICATION_JSON)

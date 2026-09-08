@@ -1,15 +1,15 @@
 package br.com.nsfatima.gestao.local.api.v1.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Payload de saída representando um Local, com dados de identificação, igreja vinculada,
- * endereço estruturado e auditoria.
+ * Payload de resposta com dados de identificação, igreja vinculada, endereço estruturado e auditoria de um Local.
  */
-@Schema(description = "Dados de resposta de um Local")
+@Schema(description = "Dados de resposta de um Local paroquial")
 public record LocalResponse(
         @Schema(description = "Identificador único")
         UUID id,
@@ -20,17 +20,8 @@ public record LocalResponse(
         @Schema(description = "Tipo do local")
         String tipo,
 
-        @Schema(description = "Endereço textual formatado do local")
-        String endereco,
-
-        @Schema(description = "Capacidade máxima legada")
-        Integer capacidade,
-
         @Schema(description = "Capacidade máxima de ocupação")
         Integer capacidadeMaxima,
-
-        @Schema(description = "Características adicionais legadas")
-        String caracteristicas,
 
         @Schema(description = "Descrição detalhada do local")
         String descricao,
@@ -38,14 +29,8 @@ public record LocalResponse(
         @Schema(description = "Indica se o local está ativo")
         boolean ativo,
 
-        @Schema(description = "ID da organização (legado)")
-        UUID grupoParoquialId,
-
         @Schema(description = "ID da Igreja/Comunidade vinculada")
         UUID igrejaId,
-
-        @Schema(description = "Nome da organização (legado)")
-        String grupoParoquialNome,
 
         @Schema(description = "Nome da Igreja/Comunidade vinculada")
         String igrejaNome,
@@ -71,6 +56,9 @@ public record LocalResponse(
         @Schema(description = "UF")
         String uf,
 
+        @Schema(description = "Endereço textual formatado do local")
+        String enderecoFormatado,
+
         @Schema(description = "Data/hora de exclusão lógica")
         Instant deletedAt,
 
@@ -80,18 +68,13 @@ public record LocalResponse(
         @Schema(description = "Data/hora da última atualização")
         Instant updatedAt
 ) {
-    public LocalResponse(UUID id, String nome, String tipo, String endereco,
-                         Integer capacidade, String caracteristicas, boolean ativo) {
-        this(id, nome, tipo, endereco, capacidade, capacidade, caracteristicas, caracteristicas,
-                ativo, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+    @JsonProperty("organizacaoId")
+    public UUID organizacaoId() {
+        return igrejaId;
     }
 
-    public LocalResponse(UUID id, String nome, String tipo, String endereco,
-                         Integer capacidade, String caracteristicas, boolean ativo,
-                         UUID grupoParoquialId, String grupoParoquialNome) {
-        this(id, nome, tipo, endereco, capacidade, capacidade, caracteristicas, caracteristicas,
-                ativo, grupoParoquialId, grupoParoquialId, grupoParoquialNome, grupoParoquialNome,
-                null, null, null, null, null, null, null, null, null, null);
+    @JsonProperty("organizacaoNome")
+    public String organizacaoNome() {
+        return igrejaNome;
     }
 }

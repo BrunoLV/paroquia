@@ -90,11 +90,11 @@ export const LocalFormModal: React.FC<LocalFormModalProps> = ({
         reset({
           nome: local.nome || '',
           tipo: local.tipo || 'SALAO_PAROQUIAL',
-          igrejaId: local.igrejaId || local.organizacaoId || (matrizComunidades[0]?.id || ''),
-          capacidadeMaxima: local.capacidadeMaxima ?? local.capacidade ?? 50,
-          descricao: local.descricao || local.caracteristicas || '',
+          igrejaId: local.igrejaId || (matrizComunidades[0]?.id || ''),
+          capacidadeMaxima: local.capacidadeMaxima ?? 50,
+          descricao: local.descricao || '',
           cep: local.cep || '',
-          logradouro: local.logradouro || local.endereco || '',
+          logradouro: local.logradouro || '',
           numero: local.numero || '',
           complemento: local.complemento || '',
           bairro: local.bairro || '',
@@ -123,23 +123,12 @@ export const LocalFormModal: React.FC<LocalFormModalProps> = ({
   }, [open, local, reset, matrizComunidades.length]);
 
   const onSubmit = (formData: LocalFormInput) => {
-    const enderecoCompleto = formData.logradouro
-      ? `${formData.logradouro}${formData.numero ? `, ${formData.numero}` : ''}${
-          formData.complemento ? ` (${formData.complemento})` : ''
-        }${formData.bairro ? ` - ${formData.bairro}` : ''}${
-          formData.cidade ? `, ${formData.cidade}` : ''
-        }${formData.uf ? `/${formData.uf}` : ''}`
-      : local?.endereco || null;
-
     const payload: Omit<Local, 'id'> = {
       nome: formData.nome.trim(),
       tipo: formData.tipo,
-      igrejaId: formData.igrejaId || local?.igrejaId || local?.organizacaoId || null,
-      organizacaoId: formData.igrejaId || local?.igrejaId || local?.organizacaoId || null,
+      igrejaId: formData.igrejaId || local?.igrejaId || null,
       capacidadeMaxima: formData.capacidadeMaxima,
-      capacidade: formData.capacidadeMaxima,
       descricao: formData.descricao?.trim() || null,
-      caracteristicas: formData.descricao?.trim() || null,
       cep: formData.cep ? formData.cep.trim() : null,
       logradouro: formData.logradouro ? formData.logradouro.trim() : null,
       numero: formData.numero ? formData.numero.trim() : null,
@@ -147,7 +136,6 @@ export const LocalFormModal: React.FC<LocalFormModalProps> = ({
       bairro: formData.bairro ? formData.bairro.trim() : null,
       cidade: formData.cidade ? formData.cidade.trim() : null,
       uf: formData.uf ? formData.uf.trim().toUpperCase() : null,
-      endereco: enderecoCompleto,
       ativo: formData.ativo,
     };
 

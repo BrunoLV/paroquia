@@ -18,11 +18,12 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import ActionButton from '@/components/ActionButton';
-import { Local } from '@/api/types';
+import { Local, Organizacao } from '@/api/types';
 
 interface LocalViewModalProps {
   open: boolean;
   local: Local | null;
+  igrejas?: Organizacao[];
   canManage: boolean;
   onClose: () => void;
   onEdit: (local: Local) => void;
@@ -35,23 +36,25 @@ interface LocalViewModalProps {
 export const LocalViewModal: React.FC<LocalViewModalProps> = ({
   open,
   local,
+  igrejas,
   canManage,
   onClose,
   onEdit,
 }) => {
   if (!local) return null;
 
-  const capacidade = local.capacidadeMaxima ?? local.capacidade ?? 0;
-  const igrejaNome = local.igrejaNome || local.organizacaoNome || 'Paróquia Geral';
-  const descricao = local.descricao || local.caracteristicas || 'Nenhuma observação ou especificação registrada.';
+  const capacidade = local.capacidadeMaxima ?? 0;
+  const igrejaEncontrada = igrejas?.find((i) => i.id === local.igrejaId);
+  const igrejaNome = local.igrejaNome || igrejaEncontrada?.nome || 'Paróquia Geral';
+  const descricao = local.descricao || 'Nenhuma observação ou especificação registrada.';
 
-  const enderecoFormatado = local.logradouro
+  const enderecoFormatado = local.enderecoFormatado || (local.logradouro
     ? `${local.logradouro}${local.numero ? `, ${local.numero}` : ''}${
         local.complemento ? ` (${local.complemento})` : ''
       }${local.bairro ? ` - ${local.bairro}` : ''}${
         local.cidade ? `, ${local.cidade}` : ''
       }${local.uf ? `/${local.uf}` : ''}${local.cep ? ` - CEP: ${local.cep}` : ''}`
-    : local.endereco || 'Endereço não informado';
+    : 'Endereço não informado');
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

@@ -21,13 +21,12 @@ describe('Locais API Client', () => {
   const mockLocal: Local = {
     id: 'uuid-1',
     nome: 'Salão Principal',
-    tipo: 'SALAO',
-    endereco: 'Rua Principal, 100',
-    capacidade: 150,
-    caracteristicas: 'Ar condicionado',
+    tipo: 'SALAO_PAROQUIAL',
+    capacidadeMaxima: 150,
+    descricao: 'Ar condicionado',
     ativo: true,
-    organizacaoId: 'org-uuid-1',
-    organizacaoNome: 'Igreja Matriz',
+    igrejaId: 'org-uuid-1',
+    igrejaNome: 'Igreja Matriz',
   };
 
   test('getLocais should fetch locations', async () => {
@@ -42,12 +41,11 @@ describe('Locais API Client', () => {
   test('createLocal should post a new location', async () => {
     const input = {
       nome: 'Salão Principal',
-      tipo: 'SALAO',
-      endereco: 'Rua Principal, 100',
-      capacidade: 150,
-      caracteristicas: 'Ar condicionado',
+      tipo: 'SALAO_PAROQUIAL',
+      capacidadeMaxima: 150,
+      descricao: 'Ar condicionado',
       ativo: true,
-      organizacaoId: 'org-uuid-1',
+      igrejaId: 'org-uuid-1',
     };
     (apiClient.post as jest.Mock).mockResolvedValue({ data: mockLocal });
 
@@ -60,10 +58,9 @@ describe('Locais API Client', () => {
   test('updateLocal should put the updated location', async () => {
     const input = {
       nome: 'Salão Principal',
-      tipo: 'SALAO',
-      endereco: 'Rua Principal, 100',
-      capacidade: 150,
-      caracteristicas: 'Ar condicionado',
+      tipo: 'SALAO_PAROQUIAL',
+      capacidadeMaxima: 150,
+      descricao: 'Ar condicionado',
       ativo: true,
     };
     (apiClient.put as jest.Mock).mockResolvedValue({ data: mockLocal });

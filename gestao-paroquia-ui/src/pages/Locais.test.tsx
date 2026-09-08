@@ -30,18 +30,18 @@ const mockLocaisData = [
     id: 'loc-1',
     nome: 'Salão Paroquial São José',
     tipo: 'SALAO_PAROQUIAL',
-    capacidade: 200,
-    organizacaoNome: 'Matriz N. S. de Fátima',
-    endereco: 'Rua das Flores, 123',
+    capacidadeMaxima: 200,
+    igrejaNome: 'Matriz N. S. de Fátima',
+    enderecoFormatado: 'Rua das Flores, 123',
     ativo: true,
   },
   {
     id: 'loc-2',
     nome: 'Capela Sagrado Coração',
     tipo: 'CAPELA',
-    capacidade: 80,
-    organizacaoNome: 'Comunidade São Pedro',
-    endereco: 'Av. Central, 456',
+    capacidadeMaxima: 80,
+    igrejaNome: 'Comunidade São Pedro',
+    enderecoFormatado: 'Av. Central, 456',
     ativo: false,
   },
 ];
@@ -106,7 +106,7 @@ describe('Locais page', () => {
       id: 'loc-3',
       nome: 'Sala 1 Catequese',
       tipo: 'SALA_REUNIAO',
-      capacidade: 30,
+      capacidadeMaxima: 30,
       ativo: true,
     } as any);
 

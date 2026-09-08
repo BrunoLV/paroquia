@@ -9,10 +9,8 @@ describe('LocalViewModal', () => {
     id: 'loc-1',
     nome: 'Salão Paroquial São José',
     tipo: 'SALAO_PAROQUIAL',
-    capacidade: 250,
     capacidadeMaxima: 250,
     descricao: 'Equipado com ar condicionado e som',
-    caracteristicas: 'Equipado com ar condicionado e som',
     ativo: true,
     igrejaNome: 'Matriz N. S. de Fátima',
     logradouro: 'Rua das Flores',
@@ -21,7 +19,7 @@ describe('LocalViewModal', () => {
     cidade: 'São Paulo',
     uf: 'SP',
     cep: '01001-000',
-    endereco: 'Rua das Flores, 123 - Centro, São Paulo/SP - CEP: 01001-000',
+    enderecoFormatado: 'Rua das Flores, 123 - Centro, São Paulo/SP - CEP: 01001-000',
   };
 
   it('não deve renderizar quando local for nulo ou open for false', () => {

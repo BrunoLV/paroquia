@@ -6,7 +6,9 @@ import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -27,22 +29,25 @@ public class LocalRepositoryImpl implements LocalRepository {
     private final LocalJpaRepository localJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
     private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
 
     /**
      * Inicializa o adaptador com os repositórios JPA necessários para persistir Locais e resolver
      * seus vínculos com Eventos (verificação de uso) e Organizações (nome para exibição).
      *
-     * @param localJpaRepository        repositório JPA de Locais
-     * @param eventoJpaRepository       repositório JPA de Eventos, usado para checar uso de um local
-     * @param grupoParoquialJpaRepository  repositório JPA de Organizações, usado para resolver o nome
-     *                                  da organização vinculada a um local
+     * @param localJpaRepository            repositório JPA de Locais
+     * @param eventoJpaRepository           repositório JPA de Eventos, usado para checar uso de um local
+     * @param grupoParoquialJpaRepository   repositório JPA de Grupos/Pastorais
+     * @param unidadeTerritorialJpaRepository repositório JPA de Matriz/Comunidades vinculadas
      */
     public LocalRepositoryImpl(LocalJpaRepository localJpaRepository,
                                 EventoJpaRepository eventoJpaRepository,
-                                GrupoParoquialJpaRepository grupoParoquialJpaRepository) {
+                                GrupoParoquialJpaRepository grupoParoquialJpaRepository,
+                                UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository) {
         this.localJpaRepository = localJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
         this.grupoParoquialJpaRepository = grupoParoquialJpaRepository;
+        this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
     }
 
     @Override
@@ -90,19 +95,18 @@ public class LocalRepositoryImpl implements LocalRepository {
         entity.setId(domain.getId());
         entity.setNome(domain.getNome());
         entity.setTipo(domain.getTipo());
-        entity.setEndereco(domain.getEndereco());
-        entity.setCapacidade(domain.getCapacidade());
         entity.setCapacidadeMaxima(domain.getCapacidadeMaxima());
-        entity.setCaracteristicas(domain.getCaracteristicas());
+        entity.setCapacidade(domain.getCapacidadeMaxima());
         entity.setDescricao(domain.getDescricao());
+        entity.setCaracteristicas(domain.getDescricao());
         entity.setAtivo(domain.isAtivo());
-        entity.setGrupoParoquialId(domain.getGrupoParoquialId());
+        entity.setGrupoParoquialId(domain.getIgrejaId());
         entity.setDeletedAt(domain.getDeletedAt());
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
 
-        if (domain.getEnderecoLocal() != null) {
-            EnderecoLocal el = domain.getEnderecoLocal();
+        EnderecoLocal el = domain.getEndereco();
+        if (el != null) {
             entity.setCep(el.cep());
             entity.setLogradouro(el.logradouro());
             entity.setNumero(el.numero());
@@ -110,21 +114,24 @@ public class LocalRepositoryImpl implements LocalRepository {
             entity.setBairro(el.bairro());
             entity.setCidade(el.cidade());
             entity.setUf(el.uf());
+            entity.setEndereco(el.formatado());
         }
         return entity;
     }
 
     private Local toDomain(LocalEntity entity) {
-        String grupoParoquialNome = null;
+        String igrejaNome = null;
         if (entity.getGrupoParoquialId() != null) {
-            grupoParoquialNome = grupoParoquialJpaRepository.findById(entity.getGrupoParoquialId())
-                    .map(GrupoParoquialEntity::getNome)
+            igrejaNome = unidadeTerritorialJpaRepository.findById(entity.getGrupoParoquialId())
+                    .map(UnidadeTerritorialEntity::getNome)
+                    .or(() -> grupoParoquialJpaRepository.findById(entity.getGrupoParoquialId())
+                            .map(GrupoParoquialEntity::getNome))
                     .orElse(null);
         }
 
         EnderecoLocal enderecoLocal = new EnderecoLocal(
                 entity.getCep(),
-                entity.getLogradouro(),
+                entity.getLogradouro() != null ? entity.getLogradouro() : entity.getEndereco(),
                 entity.getNumero(),
                 entity.getComplemento(),
                 entity.getBairro(),
@@ -132,19 +139,24 @@ public class LocalRepositoryImpl implements LocalRepository {
                 entity.getUf()
         );
 
+        Integer capacidadeMaxima = entity.getCapacidadeMaxima() != null
+                ? entity.getCapacidadeMaxima()
+                : entity.getCapacidade();
+
+        String descricao = entity.getDescricao() != null
+                ? entity.getDescricao()
+                : entity.getCaracteristicas();
+
         return new Local(
                 entity.getId(),
                 entity.getNome(),
                 entity.getTipo(),
-                entity.getEndereco(),
                 enderecoLocal,
-                entity.getCapacidade(),
-                entity.getCapacidadeMaxima(),
-                entity.getCaracteristicas(),
-                entity.getDescricao(),
+                capacidadeMaxima,
+                descricao,
                 entity.isAtivo(),
                 entity.getGrupoParoquialId(),
-                grupoParoquialNome,
+                igrejaNome,
                 entity.getDeletedAt(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()

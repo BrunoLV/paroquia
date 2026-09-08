@@ -30,63 +30,50 @@ class LocalServiceTest {
     }
 
     @Test
-    void deveCriarLocalComGrupoParoquial() {
-        UUID orgId = UUID.randomUUID();
-        Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi", orgId);
+    void deveCriarLocalComIgreja() {
+        UUID igrejaId = UUID.randomUUID();
+        EnderecoLocal endereco = new EnderecoLocal("01001-000", "Praça da Sé", "100", null, "Centro", "São Paulo", "SP");
+        Local created = localService.createLocal("Salão São Pedro", "SALAO", endereco, 100, "Salão amplo", igrejaId);
 
         assertNotNull(created.getId());
-        assertEquals("Salão", created.getNome());
-        assertEquals(orgId, created.getGrupoParoquialId());
+        assertEquals("Salão São Pedro", created.getNome());
+        assertEquals(igrejaId, created.getIgrejaId());
+        assertEquals(100, created.getCapacidadeMaxima());
         assertTrue(created.isAtivo());
         assertTrue(localRepository.findById(created.getId()).isPresent());
     }
 
     @Test
-    void deveCriarLocalCompleto() {
-        UUID igrejaId = UUID.randomUUID();
-        EnderecoLocal endereco = new EnderecoLocal(
-                "01001-000", "Praça da Sé", "100", "Sala 1", "Sé", "São Paulo", "SP");
-        Local created = localService.createLocalCompleto("Auditório Bento XVI", "AUDITORIO", "Praça da Sé, 100",
-                endereco, 250, "Projetor e ar condicionado", igrejaId);
+    void deveCriarLocalSemIgreja() {
+        EnderecoLocal endereco = new EnderecoLocal(null, "Rua das Rosas", "50", null, "Bairro", "Cidade", "SP");
+        Local created = localService.createLocal("Salão Geral", "SALAO", endereco, 80, null, null);
 
         assertNotNull(created.getId());
-        assertEquals("Auditório Bento XVI", created.getNome());
-        assertEquals(250, created.getCapacidadeMaxima());
-        assertEquals("01001-000", created.getEnderecoLocal().cep());
-        assertEquals("SP", created.getEnderecoLocal().uf());
-        assertTrue(created.isAtivo());
-        assertFalse(created.isExcluido());
-    }
-
-    @Test
-    void deveCriarLocal() {
-        Local created = localService.createLocal("Salão", "SALÃO", "Rua A", 100, "Wifi");
-
-        assertNotNull(created.getId());
-        assertEquals("Salão", created.getNome());
+        assertEquals("Salão Geral", created.getNome());
         assertTrue(created.isAtivo());
         assertTrue(localRepository.findById(created.getId()).isPresent());
     }
 
     @Test
     void deveAtualizarLocal() {
-        UUID orgId = UUID.randomUUID();
-        Local local = new Local(UUID.randomUUID(), "Velho Nome", "SALA", "End", 10, "Nada", true);
+        UUID igrejaId = UUID.randomUUID();
+        EnderecoLocal enderecoAntigo = new EnderecoLocal(null, "Rua Antiga", "10", null, null, null, null);
+        Local local = new Local(UUID.randomUUID(), "Velho Nome", "SALA", enderecoAntigo, 10, "Obs antiga", true, null);
         localRepository.save(local);
 
-        Local updated = localService.updateLocal(local.getId(), "Novo Nome", "SALÃO", "Novo End", 20, "Ar", false,
-                orgId);
+        EnderecoLocal enderecoNovo = new EnderecoLocal(null, "Rua Nova", "20", null, "Centro", "Cidade", "SP");
+        Local updated = localService.updateLocal(local.getId(), "Novo Nome", "SALAO", enderecoNovo, 30, "Obs nova", false, igrejaId);
 
         assertEquals("Novo Nome", updated.getNome());
-        assertEquals(20, updated.getCapacidade());
-        assertEquals(orgId, updated.getGrupoParoquialId());
+        assertEquals(30, updated.getCapacidadeMaxima());
+        assertEquals(igrejaId, updated.getIgrejaId());
         assertFalse(updated.isAtivo());
     }
 
     @Test
     void deveExcluirLogicamenteLocalSemEventosFuturos() {
         UUID id = UUID.randomUUID();
-        Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
+        Local local = new Local(id, "Auditório", "AUDITORIO", EnderecoLocal.vazio(), 50, "Som", true, null);
         localRepository.save(local);
         localRepository.setFutureEvents(id, false);
 
@@ -102,7 +89,7 @@ class LocalServiceTest {
     @Test
     void naoDevePermitirExcluirLocalComEventosFuturos() {
         UUID id = UUID.randomUUID();
-        Local local = new Local(id, "Salão São Pedro", "SALAO", "End", 150, "Som", true);
+        Local local = new Local(id, "Salão São Pedro", "SALAO", EnderecoLocal.vazio(), 150, "Som", true, null);
         localRepository.save(local);
         localRepository.setFutureEvents(id, true);
 
@@ -113,12 +100,12 @@ class LocalServiceTest {
     @Test
     void naoDevePermitirInativarLocalComEventosFuturos() {
         UUID id = UUID.randomUUID();
-        Local local = new Local(id, "Salão São Pedro", "SALAO", "End", 150, "Som", true);
+        Local local = new Local(id, "Salão São Pedro", "SALAO", EnderecoLocal.vazio(), 150, "Som", true, null);
         localRepository.save(local);
         localRepository.setFutureEvents(id, true);
 
         LocalBusinessException ex = assertThrows(LocalBusinessException.class,
-                () -> localService.updateLocal(id, "Salão São Pedro", "SALAO", "End", 150, "Som", false));
+                () -> localService.updateLocal(id, "Salão São Pedro", "SALAO", EnderecoLocal.vazio(), 150, "Som", false, null));
         assertTrue(ex.getMessage().contains("eventos futuros"));
     }
 

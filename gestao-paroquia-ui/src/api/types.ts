@@ -298,17 +298,9 @@ export interface Local {
   id: string;
   nome: string;
   tipo: string;
-  endereco: string | null;
-  /** Lotação máxima de pessoas; `null` quando não informada/não aplicável. */
-  capacidade: number | null;
-  capacidadeMaxima?: number | null;
-  /** Observações livres sobre o espaço (ex: recursos disponíveis, restrições de uso). */
-  caracteristicas: string | null;
+  capacidadeMaxima: number;
   descricao?: string | null;
   ativo: boolean;
-  /** Organização/Igreja vinculada ao espaço. */
-  organizacaoId?: string | null;
-  organizacaoNome?: string | null;
   igrejaId?: string | null;
   igrejaNome?: string | null;
   cep?: string | null;
@@ -318,6 +310,7 @@ export interface Local {
   bairro?: string | null;
   cidade?: string | null;
   uf?: string | null;
+  enderecoFormatado?: string | null;
   deletedAt?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
@@ -327,13 +320,9 @@ export interface Local {
 export interface LocalFormValues {
   nome: string;
   tipo: string;
-  endereco?: string;
-  capacidade?: number | null;
-  capacidadeMaxima?: number | null;
-  caracteristicas?: string;
+  capacidadeMaxima: number;
   descricao?: string;
   ativo?: boolean;
-  organizacaoId?: string | null;
   igrejaId?: string | null;
   cep?: string;
   logradouro?: string;

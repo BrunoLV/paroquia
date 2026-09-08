@@ -55,4 +55,35 @@ public record EnderecoLocal(
     public static EnderecoLocal vazio() {
         return new EnderecoLocal(null, null, null, null, null, null, null);
     }
+
+    /**
+     * Formata o endereço estruturado em representação textual unificada para relatórios ou visualização legada.
+     *
+     * @return endereço formatado ou string vazia se não informado
+     */
+    public String formatado() {
+        if (logradouro == null || logradouro.isBlank()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(logradouro);
+        if (numero != null && !numero.isBlank()) {
+            sb.append(", ").append(numero);
+        }
+        if (complemento != null && !complemento.isBlank()) {
+            sb.append(" (").append(complemento).append(")");
+        }
+        if (bairro != null && !bairro.isBlank()) {
+            sb.append(" - ").append(bairro);
+        }
+        if (cidade != null && !cidade.isBlank()) {
+            sb.append(", ").append(cidade);
+        }
+        if (uf != null && !uf.isBlank()) {
+            sb.append("/").append(uf);
+        }
+        if (cep != null && !cep.isBlank()) {
+            sb.append(" - CEP: ").append(cep);
+        }
+        return sb.toString();
+    }
 }

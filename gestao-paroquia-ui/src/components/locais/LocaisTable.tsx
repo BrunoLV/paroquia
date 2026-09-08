@@ -16,7 +16,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Local } from '@/api/types';
+import { Local, Organizacao } from '@/api/types';
 import StatusIcon from '@/components/StatusIcon';
 import TableActionMenu from '@/components/TableActionMenu';
 import { getLocalTipoMeta } from '@/utils/statusMeta/localTipoStatus';
@@ -24,6 +24,7 @@ import { getSituacaoAtivoMeta } from '@/utils/statusMeta/situacaoStatus';
 
 interface LocaisTableProps {
   locais: Local[];
+  igrejas?: Organizacao[];
   isLoading: boolean;
   page: number;
   rowsPerPage: number;
@@ -38,6 +39,7 @@ interface LocaisTableProps {
 
 export const LocaisTable: React.FC<LocaisTableProps> = ({
   locais,
+  igrejas,
   isLoading,
   page,
   rowsPerPage,
@@ -79,10 +81,20 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
           </TableHead>
           <TableBody>
             {paginatedLocais.map((local) => {
-              const capacidade = local.capacidadeMaxima ?? local.capacidade ?? null;
-              const enderecoResumido = local.logradouro
-                ? `${local.logradouro}${local.numero ? `, ${local.numero}` : ''}${local.bairro ? ` - ${local.bairro}` : ''}`
-                : local.endereco || '-';
+              const capacidade = local.capacidadeMaxima ?? null;
+
+              const partesEndereco: string[] = [];
+              const viaNumero = [local.logradouro, local.numero].filter(Boolean).join(', ');
+              if (viaNumero) partesEndereco.push(viaNumero);
+              if (local.bairro) partesEndereco.push(local.bairro);
+              const cidadeUf = [local.cidade, local.uf].filter(Boolean).join('/');
+              if (cidadeUf) partesEndereco.push(cidadeUf);
+              const enderecoResumido = local.enderecoFormatado || (partesEndereco.length > 0
+                ? partesEndereco.join(' - ')
+                : '-');
+
+              const igrejaEncontrada = igrejas?.find((i) => i.id === local.igrejaId);
+              const igrejaNome = local.igrejaNome || igrejaEncontrada?.nome || '-';
 
               return (
                 <TableRow key={local.id} hover>
@@ -93,7 +105,7 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
                   <TableCell>
                     {capacidade !== null && capacidade !== undefined ? capacidade : '-'}
                   </TableCell>
-                  <TableCell>{local.igrejaNome || local.organizacaoNome || '-'}</TableCell>
+                  <TableCell>{igrejaNome}</TableCell>
                   <TableCell>
                     <Typography variant="body2" noWrap sx={{ maxWidth: 260 }}>
                       {enderecoResumido}

@@ -83,7 +83,7 @@ const Locais: React.FC = () => {
         Boolean(local.logradouro && local.logradouro.toLowerCase().includes(term)) ||
         Boolean(local.bairro && local.bairro.toLowerCase().includes(term)) ||
         Boolean(local.cidade && local.cidade.toLowerCase().includes(term)) ||
-        Boolean(local.endereco && local.endereco.toLowerCase().includes(term));
+        Boolean(local.enderecoFormatado && local.enderecoFormatado.toLowerCase().includes(term));
 
       const matchesTipo = tipoFilter === 'TODOS' || local.tipo === tipoFilter;
       const matchesStatus =
@@ -92,9 +92,7 @@ const Locais: React.FC = () => {
         (statusFilter === 'INATIVO' && !local.ativo);
 
       const matchesIgreja =
-        igrejaFilter === 'TODOS' ||
-        local.igrejaId === igrejaFilter ||
-        local.organizacaoId === igrejaFilter;
+        igrejaFilter === 'TODOS' || local.igrejaId === igrejaFilter;
 
       return matchesSearch && matchesTipo && matchesStatus && matchesIgreja;
     });
@@ -135,6 +133,7 @@ const Locais: React.FC = () => {
 
       <LocaisTable
         locais={filteredLocais}
+        igrejas={igrejas}
         isLoading={isLoading}
         page={page}
         rowsPerPage={rowsPerPage}
@@ -159,6 +158,7 @@ const Locais: React.FC = () => {
       <LocalViewModal
         open={viewModalOpen}
         local={selectedLocal}
+        igrejas={igrejas}
         canManage={isAuthorized}
         onClose={() => {
           setViewModalOpen(false);

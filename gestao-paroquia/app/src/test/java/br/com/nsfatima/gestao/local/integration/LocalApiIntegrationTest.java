@@ -28,9 +28,8 @@ class LocalApiIntegrationTest {
                 {
                   "nome": "Sala de Reuniões",
                   "tipo": "SALA",
-                  "endereco": "2º Andar",
-                  "capacidade": 20,
-                  "caracteristicas": "Mesa redonda, 20 cadeiras",
+                  "capacidadeMaxima": 20,
+                  "descricao": "Mesa redonda, 20 cadeiras",
                   "ativo": true
                 }
                 """;
@@ -48,7 +47,7 @@ class LocalApiIntegrationTest {
         mockMvc.perform(get("/api/v1/locais/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Sala de Reuniões"))
-                .andExpect(jsonPath("$.capacidade").value(20));
+                .andExpect(jsonPath("$.capacidadeMaxima").value(20));
     }
 
     @Test
@@ -58,6 +57,7 @@ class LocalApiIntegrationTest {
                 {
                   "nome": "Tentativa",
                   "tipo": "SALA",
+                  "capacidadeMaxima": 10,
                   "ativo": true
                 }
                 """;

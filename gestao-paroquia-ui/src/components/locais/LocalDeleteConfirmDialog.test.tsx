@@ -9,9 +9,8 @@ describe('LocalDeleteConfirmDialog', () => {
     id: 'loc-1',
     nome: 'Salão Comunitário',
     tipo: 'SALAO_PAROQUIAL',
-    capacidade: 100,
-    caracteristicas: null,
-    endereco: null,
+    capacidadeMaxima: 100,
+    descricao: null,
     ativo: true,
   };
 

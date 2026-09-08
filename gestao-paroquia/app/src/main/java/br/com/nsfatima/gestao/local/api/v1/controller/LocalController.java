@@ -57,14 +57,13 @@ public class LocalController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new location", description = "Only administrators can create locations.")
     public LocalResponse create(@RequestBody @Valid LocalRequest request) {
-        Local local = localService.createLocalCompleto(
+        Local local = localService.createLocal(
                 request.nome(),
                 request.tipo(),
-                request.endereco(),
                 request.toEnderecoLocal(),
-                request.resolvedCapacidadeMaxima(),
-                request.resolvedDescricao(),
-                request.resolvedIgrejaId()
+                request.capacidadeMaxima(),
+                request.descricao(),
+                request.igrejaId()
         );
         return toResponse(local);
     }
@@ -80,16 +79,15 @@ public class LocalController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing location", description = "Only administrators can update locations.")
     public LocalResponse update(@PathVariable UUID id, @RequestBody @Valid LocalRequest request) {
-        Local local = localService.updateLocalCompleto(
+        Local local = localService.updateLocal(
                 id,
                 request.nome(),
                 request.tipo(),
-                request.endereco(),
                 request.toEnderecoLocal(),
-                request.resolvedCapacidadeMaxima(),
-                request.resolvedDescricao(),
+                request.capacidadeMaxima(),
+                request.descricao(),
                 request.ativo(),
-                request.resolvedIgrejaId()
+                request.igrejaId()
         );
         return toResponse(local);
     }
@@ -142,20 +140,15 @@ public class LocalController {
     }
 
     private LocalResponse toResponse(Local domain) {
-        EnderecoLocal el = domain.getEnderecoLocal();
+        EnderecoLocal el = domain.getEndereco();
         return new LocalResponse(
                 domain.getId(),
                 domain.getNome(),
                 domain.getTipo(),
-                domain.getEndereco(),
-                domain.getCapacidade(),
                 domain.getCapacidadeMaxima(),
-                domain.getCaracteristicas(),
                 domain.getDescricao(),
                 domain.isAtivo(),
-                domain.getGrupoParoquialId(),
                 domain.getIgrejaId(),
-                domain.getGrupoParoquialNome(),
                 domain.getIgrejaNome(),
                 el != null ? el.cep() : null,
                 el != null ? el.logradouro() : null,
@@ -164,6 +157,7 @@ public class LocalController {
                 el != null ? el.bairro() : null,
                 el != null ? el.cidade() : null,
                 el != null ? el.uf() : null,
+                el != null ? el.formatado() : null,
                 domain.getDeletedAt(),
                 domain.getCreatedAt(),
                 domain.getUpdatedAt()
