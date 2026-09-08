@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Container } from '@mui/material';
 import { Add as AddIcon, LocationOn as LocationIcon } from '@mui/icons-material';
 import { createLocal, deleteLocal, getLocais, updateLocal } from '@/api/locais';
+import { getOrganizacoes } from '@/api/organizacoes';
 import { Local } from '@/api/types';
 import { useAuth } from '@/auth/AuthContext';
 import { canManageLocais } from '@/auth/permissions';
@@ -12,7 +13,9 @@ import ActionButton from '@/components/ActionButton';
 import PageHeader from '@/components/PageHeader';
 import { LocaisFilterBar } from '@/components/locais/LocaisFilterBar';
 import { LocaisTable } from '@/components/locais/LocaisTable';
-import LocalFormModal from '@/pages/LocalFormModal';
+import { LocalFormModal } from '@/components/locais/LocalFormModal';
+import { LocalViewModal } from '@/components/locais/LocalViewModal';
+import { LocalDeleteConfirmDialog } from '@/components/locais/LocalDeleteConfirmDialog';
 
 const Locais: React.FC = () => {
   const { user } = useAuth();
@@ -23,15 +26,30 @@ const Locais: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [tipoFilter, setTipoFilter] = useState('TODOS');
   const [statusFilter, setStatusFilter] = useState('TODOS');
+  const [igrejaFilter, setIgrejaFilter] = useState('TODOS');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [modalOpen, setModalOpen] = useState(false);
+
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
+  const [localToDelete, setLocalToDelete] = useState<Local | null>(null);
 
   const { data: locais = [], isLoading } = useQuery({
     queryKey: ['locais'],
     queryFn: getLocais,
   });
+
+  const { data: orgs = [] } = useQuery({
+    queryKey: ['organizacoes'],
+    queryFn: getOrganizacoes,
+  });
+
+  const igrejas = useMemo(() => {
+    return orgs.filter((o) => (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') && o.ativo !== false);
+  }, [orgs]);
 
   const saveMutation = useMutation({
     mutationFn: (data: Omit<Local, 'id'>) =>
@@ -39,40 +57,48 @@ const Locais: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['locais'] });
       showSuccess(selectedLocal ? 'Local atualizado com sucesso!' : 'Local cadastrado com sucesso!');
-      setModalOpen(false);
+      setFormModalOpen(false);
       setSelectedLocal(null);
     },
     onError: (err) => showError(extractErrorMessage(err, 'Erro ao salvar local.')),
   });
 
-  const toggleStatusMutation = useMutation({
-    mutationFn: async (local: Local) => {
-      if (local.ativo) {
-        await deleteLocal(local.id);
-      } else {
-        await updateLocal(local.id, { ...local, ativo: true });
-      }
-    },
-    onSuccess: (_, local) => {
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteLocal(id),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['locais'] });
-      showSuccess(`Local ${local.ativo ? 'inativado' : 'ativado'} com sucesso!`);
+      showSuccess('Local excluído com sucesso!');
+      setDeleteDialogOpen(false);
+      setLocalToDelete(null);
     },
-    onError: (err) => showError(extractErrorMessage(err, 'Erro ao alterar status do local.')),
+    onError: (err) => showError(extractErrorMessage(err, 'Erro ao excluir local.')),
   });
 
   const filteredLocais = useMemo(() => {
+    const term = searchTerm.toLowerCase().trim();
     return locais.filter((local) => {
       const matchesSearch =
-        local.nome.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
-        (local.endereco && String(local.endereco).toLowerCase().includes(searchTerm.toLowerCase().trim()));
+        !term ||
+        local.nome.toLowerCase().includes(term) ||
+        Boolean(local.logradouro && local.logradouro.toLowerCase().includes(term)) ||
+        Boolean(local.bairro && local.bairro.toLowerCase().includes(term)) ||
+        Boolean(local.cidade && local.cidade.toLowerCase().includes(term)) ||
+        Boolean(local.endereco && local.endereco.toLowerCase().includes(term));
+
       const matchesTipo = tipoFilter === 'TODOS' || local.tipo === tipoFilter;
       const matchesStatus =
         statusFilter === 'TODOS' ||
         (statusFilter === 'ATIVO' && local.ativo) ||
         (statusFilter === 'INATIVO' && !local.ativo);
-      return matchesSearch && matchesTipo && matchesStatus;
+
+      const matchesIgreja =
+        igrejaFilter === 'TODOS' ||
+        local.igrejaId === igrejaFilter ||
+        local.organizacaoId === igrejaFilter;
+
+      return matchesSearch && matchesTipo && matchesStatus && matchesIgreja;
     });
-  }, [locais, searchTerm, tipoFilter, statusFilter]);
+  }, [locais, searchTerm, tipoFilter, statusFilter, igrejaFilter]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -88,7 +114,7 @@ const Locais: React.FC = () => {
               color="primary"
               onClick={() => {
                 setSelectedLocal(null);
-                setModalOpen(true);
+                setFormModalOpen(true);
               }}
             />
           )
@@ -102,6 +128,9 @@ const Locais: React.FC = () => {
         onTipoFilterChange={(val) => { setTipoFilter(val); setPage(0); }}
         statusFilter={statusFilter}
         onStatusFilterChange={(val) => { setStatusFilter(val); setPage(0); }}
+        igrejaFilter={igrejaFilter}
+        onIgrejaFilterChange={(val) => { setIgrejaFilter(val); setPage(0); }}
+        igrejas={igrejas}
       />
 
       <LocaisTable
@@ -112,17 +141,60 @@ const Locais: React.FC = () => {
         onPageChange={setPage}
         onRowsPerPageChange={setRowsPerPage}
         canManage={isAuthorized}
-        onEdit={(local) => { setSelectedLocal(local); setModalOpen(true); }}
-        onToggleStatus={(local) => toggleStatusMutation.mutate(local)}
-        isTogglePending={toggleStatusMutation.isPending}
+        onView={(local) => {
+          setSelectedLocal(local);
+          setViewModalOpen(true);
+        }}
+        onEdit={(local) => {
+          setSelectedLocal(local);
+          setFormModalOpen(true);
+        }}
+        onDelete={(local) => {
+          setLocalToDelete(local);
+          setDeleteDialogOpen(true);
+        }}
+        isDeletePending={deleteMutation.isPending}
+      />
+
+      <LocalViewModal
+        open={viewModalOpen}
+        local={selectedLocal}
+        canManage={isAuthorized}
+        onClose={() => {
+          setViewModalOpen(false);
+          setSelectedLocal(null);
+        }}
+        onEdit={(local) => {
+          setViewModalOpen(false);
+          setSelectedLocal(local);
+          setFormModalOpen(true);
+        }}
       />
 
       <LocalFormModal
-        open={modalOpen}
-        onClose={() => { setModalOpen(false); setSelectedLocal(null); }}
+        open={formModalOpen}
+        onClose={() => {
+          setFormModalOpen(false);
+          setSelectedLocal(null);
+        }}
         onSave={(data) => saveMutation.mutate(data)}
         local={selectedLocal}
         isPending={saveMutation.isPending}
+      />
+
+      <LocalDeleteConfirmDialog
+        open={deleteDialogOpen}
+        local={localToDelete}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setLocalToDelete(null);
+        }}
+        onConfirm={() => {
+          if (localToDelete) {
+            deleteMutation.mutate(localToDelete.id);
+          }
+        }}
+        isPending={deleteMutation.isPending}
       />
     </Container>
   );

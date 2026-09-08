@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.local.domain.service;
 
+import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
+import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +15,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class LocalServiceTest {
 
     private LocalService localService;
@@ -35,6 +39,23 @@ class LocalServiceTest {
         assertEquals(orgId, created.getGrupoParoquialId());
         assertTrue(created.isAtivo());
         assertTrue(localRepository.findById(created.getId()).isPresent());
+    }
+
+    @Test
+    void deveCriarLocalCompleto() {
+        UUID igrejaId = UUID.randomUUID();
+        EnderecoLocal endereco = new EnderecoLocal(
+                "01001-000", "Praça da Sé", "100", "Sala 1", "Sé", "São Paulo", "SP");
+        Local created = localService.createLocalCompleto("Auditório Bento XVI", "AUDITORIO", "Praça da Sé, 100",
+                endereco, 250, "Projetor e ar condicionado", igrejaId);
+
+        assertNotNull(created.getId());
+        assertEquals("Auditório Bento XVI", created.getNome());
+        assertEquals(250, created.getCapacidadeMaxima());
+        assertEquals("01001-000", created.getEnderecoLocal().cep());
+        assertEquals("SP", created.getEnderecoLocal().uf());
+        assertTrue(created.isAtivo());
+        assertFalse(created.isExcluido());
     }
 
     @Test
@@ -63,36 +84,48 @@ class LocalServiceTest {
     }
 
     @Test
-    void deveInativarLocalEmVezDeDeExcluindo() {
+    void deveExcluirLogicamenteLocalSemEventosFuturos() {
         UUID id = UUID.randomUUID();
         Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
         localRepository.save(local);
-        localRepository.setInUse(id, false);
+        localRepository.setFutureEvents(id, false);
 
         localService.deleteLocal(id);
 
         Optional<Local> found = localRepository.findById(id);
         assertTrue(found.isPresent());
         assertFalse(found.get().isAtivo());
+        assertTrue(found.get().isExcluido());
+        assertNotNull(found.get().getDeletedAt());
     }
 
     @Test
-    void deveInativarLocalMesmoQuandoEmUso() {
+    void naoDevePermitirExcluirLocalComEventosFuturos() {
         UUID id = UUID.randomUUID();
-        Local local = new Local(id, "Auditório", "AUDITORIO", "End", 50, "Som", true);
+        Local local = new Local(id, "Salão São Pedro", "SALAO", "End", 150, "Som", true);
         localRepository.save(local);
-        localRepository.setInUse(id, true);
+        localRepository.setFutureEvents(id, true);
 
-        localService.deleteLocal(id);
+        LocalBusinessException ex = assertThrows(LocalBusinessException.class, () -> localService.deleteLocal(id));
+        assertTrue(ex.getMessage().contains("eventos futuros"));
+    }
 
-        Optional<Local> found = localRepository.findById(id);
-        assertTrue(found.isPresent());
-        assertFalse(found.get().isAtivo());
+    @Test
+    void naoDevePermitirInativarLocalComEventosFuturos() {
+        UUID id = UUID.randomUUID();
+        Local local = new Local(id, "Salão São Pedro", "SALAO", "End", 150, "Som", true);
+        localRepository.save(local);
+        localRepository.setFutureEvents(id, true);
+
+        LocalBusinessException ex = assertThrows(LocalBusinessException.class,
+                () -> localService.updateLocal(id, "Salão São Pedro", "SALAO", "End", 150, "Som", false));
+        assertTrue(ex.getMessage().contains("eventos futuros"));
     }
 
     private static class FakeLocalRepository implements LocalRepository {
         private final List<Local> storage = new ArrayList<>();
         private final List<UUID> inUseIds = new ArrayList<>();
+        private final List<UUID> futureEventsIds = new ArrayList<>();
 
         @Override
         public void save(Local local) {
@@ -123,15 +156,20 @@ class LocalServiceTest {
         }
 
         @Override
+        public boolean hasFutureEvents(UUID id) {
+            return futureEventsIds.contains(id);
+        }
+
+        @Override
         public void delete(UUID id) {
             storage.removeIf(l -> l.getId().equals(id));
         }
 
-        public void setInUse(UUID id, boolean inUse) {
-            if (inUse) {
-                inUseIds.add(id);
+        public void setFutureEvents(UUID id, boolean hasFutureEvents) {
+            if (hasFutureEvents) {
+                futureEventsIds.add(id);
             } else {
-                inUseIds.remove(id);
+                futureEventsIds.remove(id);
             }
         }
     }

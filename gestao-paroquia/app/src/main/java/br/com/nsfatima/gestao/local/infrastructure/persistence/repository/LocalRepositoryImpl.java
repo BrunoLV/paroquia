@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.local.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
@@ -8,6 +9,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Grup
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,19 +53,19 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     @Override
     public Optional<Local> findById(UUID id) {
-        return localJpaRepository.findById(id).map(this::toDomain);
+        return localJpaRepository.findByIdAndDeletedAtIsNull(id).map(this::toDomain);
     }
 
     @Override
     public List<Local> findAll() {
-        return localJpaRepository.findAll().stream()
+        return localJpaRepository.findAllByDeletedAtIsNull().stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Local> findByGrupoParoquialId(UUID grupoParoquialId) {
-        return localJpaRepository.findByGrupoParoquialId(grupoParoquialId).stream()
+        return localJpaRepository.findByGrupoParoquialIdAndDeletedAtIsNull(grupoParoquialId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
@@ -71,6 +73,11 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public boolean isLocalInUse(UUID id) {
         return eventoJpaRepository.existsByLocalId(id);
+    }
+
+    @Override
+    public boolean hasFutureEvents(UUID id) {
+        return eventoJpaRepository.existsByLocalIdAndFimUtcGreaterThanAndStatusNot(id, Instant.now(), "CANCELADO");
     }
 
     @Override
@@ -85,9 +92,25 @@ public class LocalRepositoryImpl implements LocalRepository {
         entity.setTipo(domain.getTipo());
         entity.setEndereco(domain.getEndereco());
         entity.setCapacidade(domain.getCapacidade());
+        entity.setCapacidadeMaxima(domain.getCapacidadeMaxima());
         entity.setCaracteristicas(domain.getCaracteristicas());
+        entity.setDescricao(domain.getDescricao());
         entity.setAtivo(domain.isAtivo());
         entity.setGrupoParoquialId(domain.getGrupoParoquialId());
+        entity.setDeletedAt(domain.getDeletedAt());
+        entity.setCreatedAt(domain.getCreatedAt());
+        entity.setUpdatedAt(domain.getUpdatedAt());
+
+        if (domain.getEnderecoLocal() != null) {
+            EnderecoLocal el = domain.getEnderecoLocal();
+            entity.setCep(el.cep());
+            entity.setLogradouro(el.logradouro());
+            entity.setNumero(el.numero());
+            entity.setComplemento(el.complemento());
+            entity.setBairro(el.bairro());
+            entity.setCidade(el.cidade());
+            entity.setUf(el.uf());
+        }
         return entity;
     }
 
@@ -99,16 +122,32 @@ public class LocalRepositoryImpl implements LocalRepository {
                     .orElse(null);
         }
 
+        EnderecoLocal enderecoLocal = new EnderecoLocal(
+                entity.getCep(),
+                entity.getLogradouro(),
+                entity.getNumero(),
+                entity.getComplemento(),
+                entity.getBairro(),
+                entity.getCidade(),
+                entity.getUf()
+        );
+
         return new Local(
                 entity.getId(),
                 entity.getNome(),
                 entity.getTipo(),
                 entity.getEndereco(),
+                enderecoLocal,
                 entity.getCapacidade(),
+                entity.getCapacidadeMaxima(),
                 entity.getCaracteristicas(),
+                entity.getDescricao(),
                 entity.isAtivo(),
                 entity.getGrupoParoquialId(),
-                grupoParoquialNome
+                grupoParoquialNome,
+                entity.getDeletedAt(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
         );
     }
 }

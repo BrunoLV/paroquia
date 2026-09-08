@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Box,
+  Chip,
   Paper,
   Skeleton,
   Table,
@@ -12,9 +13,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Edit as EditIcon, ToggleOff as ToggleOffIcon, ToggleOn as ToggleOnIcon } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Local } from '@/api/types';
-import { FormattedAddress } from '@/components/FormattedCell';
 import StatusIcon from '@/components/StatusIcon';
 import TableActionMenu from '@/components/TableActionMenu';
 import { getLocalTipoMeta } from '@/utils/statusMeta/localTipoStatus';
@@ -28,9 +30,10 @@ interface LocaisTableProps {
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRows: number) => void;
   canManage: boolean;
+  onView: (local: Local) => void;
   onEdit: (local: Local) => void;
-  onToggleStatus: (local: Local) => void;
-  isTogglePending?: boolean;
+  onDelete: (local: Local) => void;
+  isDeletePending?: boolean;
 }
 
 export const LocaisTable: React.FC<LocaisTableProps> = ({
@@ -41,16 +44,17 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
   canManage,
+  onView,
   onEdit,
-  onToggleStatus,
-  isTogglePending,
+  onDelete,
+  isDeletePending,
 }) => {
   if (isLoading) {
     return (
       <Box sx={{ py: 4 }}>
         <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
         {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} variant="rectangular" height={48} sx={{ mb: 1 }} />
+          <Skeleton key={i} variant="rectangular" height={52} sx={{ mb: 1 }} />
         ))}
       </Box>
     );
@@ -74,26 +78,58 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedLocais.map((local) => (
-              <TableRow key={local.id} hover>
-                <TableCell sx={{ fontWeight: 600 }}>{local.nome}</TableCell>
-                <TableCell><StatusIcon {...getLocalTipoMeta(local.tipo)} /></TableCell>
-                <TableCell>{local.capacidade !== null && local.capacidade !== undefined ? local.capacidade : '-'}</TableCell>
-                <TableCell>{local.organizacaoNome || '-'}</TableCell>
-                <TableCell><FormattedAddress value={local.endereco} /></TableCell>
-                <TableCell><StatusIcon {...getSituacaoAtivoMeta(local.ativo)} /></TableCell>
-                {canManage && (
-                  <TableCell align="right">
-                    <TableActionMenu
-                      actions={[
-                        { label: 'Editar', icon: <EditIcon fontSize="small" />, onClick: () => onEdit(local), disabled: isTogglePending },
-                        { label: local.ativo ? 'Inativar' : 'Ativar', icon: local.ativo ? <ToggleOffIcon fontSize="small" /> : <ToggleOnIcon fontSize="small" />, onClick: () => onToggleStatus(local), disabled: isTogglePending },
-                      ]}
-                    />
+            {paginatedLocais.map((local) => {
+              const capacidade = local.capacidadeMaxima ?? local.capacidade ?? null;
+              const enderecoResumido = local.logradouro
+                ? `${local.logradouro}${local.numero ? `, ${local.numero}` : ''}${local.bairro ? ` - ${local.bairro}` : ''}`
+                : local.endereco || '-';
+
+              return (
+                <TableRow key={local.id} hover>
+                  <TableCell sx={{ fontWeight: 600 }}>{local.nome}</TableCell>
+                  <TableCell>
+                    <StatusIcon {...getLocalTipoMeta(local.tipo)} />
                   </TableCell>
-                )}
-              </TableRow>
-            ))}
+                  <TableCell>
+                    {capacidade !== null && capacidade !== undefined ? capacidade : '-'}
+                  </TableCell>
+                  <TableCell>{local.igrejaNome || local.organizacaoNome || '-'}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2" noWrap sx={{ maxWidth: 260 }}>
+                      {enderecoResumido}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
+                  </TableCell>
+                  {canManage && (
+                    <TableCell align="right">
+                      <TableActionMenu
+                        actions={[
+                          {
+                            label: 'Visualizar',
+                            icon: <VisibilityIcon fontSize="small" />,
+                            onClick: () => onView(local),
+                          },
+                          {
+                            label: 'Editar',
+                            icon: <EditIcon fontSize="small" />,
+                            onClick: () => onEdit(local),
+                            disabled: isDeletePending,
+                          },
+                          {
+                            label: 'Excluir',
+                            icon: <DeleteIcon fontSize="small" />,
+                            onClick: () => onDelete(local),
+                            disabled: isDeletePending,
+                          },
+                        ]}
+                      />
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
             {locais.length === 0 && (
               <TableRow>
                 <TableCell colSpan={canManage ? 7 : 6} align="center" sx={{ py: 3 }}>

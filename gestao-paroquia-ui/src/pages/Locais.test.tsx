@@ -157,7 +157,7 @@ describe('Locais page', () => {
     });
   });
 
-  it('allows toggling status (inactivating and activating)', async () => {
+  it('allows deleting a location via action menu and confirmation dialog', async () => {
     const deleteSpy = vi.spyOn(locaisApi, 'deleteLocal').mockResolvedValueOnce(undefined);
 
     renderPage();
@@ -169,8 +169,15 @@ describe('Locais page', () => {
     const actionButtons = screen.getAllByRole('button', { name: /Ações/i });
     fireEvent.click(actionButtons[0]);
 
-    const inativarMenuItem = await screen.findByRole('menuitem', { name: /Inativar/i });
-    fireEvent.click(inativarMenuItem);
+    const excluirMenuItem = await screen.findByRole('menuitem', { name: /Excluir/i });
+    fireEvent.click(excluirMenuItem);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Excluir Local/i })).toBeInTheDocument();
+    });
+
+    const confirmarBtn = screen.getByRole('button', { name: /^Excluir$/i });
+    fireEvent.click(confirmarBtn);
 
     await waitFor(() => {
       expect(deleteSpy).toHaveBeenCalledWith('loc-1');

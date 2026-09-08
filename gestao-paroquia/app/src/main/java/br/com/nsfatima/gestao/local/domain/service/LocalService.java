@@ -1,11 +1,13 @@
 package br.com.nsfatima.gestao.local.domain.service;
 
 import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
+import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,10 +16,13 @@ import java.util.UUID;
  * Orquestra o ciclo de vida dos Locais (espaços físicos/lógicos usados por Eventos), aplicando as regras
  * de negócio do domínio antes de persistir através do {@link LocalRepository}.
  *
- * <p>Regra de exclusão: não há remoção física de um Local por este serviço — {@link #deleteLocal(UUID)}
- * realiza uma desativação lógica (seta {@code ativo=false}), preservando o histórico de referências de
- * Eventos passados que apontam para o local. A remoção física existe apenas no {@link LocalRepository}
- * como capacidade de infraestrutura, não é acionada pelo fluxo padrão de negócio.
+ * <p>Regras de integridade referencial:
+ * <ul>
+ *   <li>Não é permitido inativar (status=false) nem excluir logicamente (soft delete) um Local que possua
+ *       eventos futuros agendados ativos/não cancelados;</li>
+ *   <li>Exclusão é sempre lógica (preenche {@code deletedAt} com o timestamp atual), preservando histórico
+ *       de referências de Eventos passados.</li>
+ * </ul>
  */
 @Service
 public class LocalService {
@@ -50,8 +55,7 @@ public class LocalService {
     }
 
     /**
-     * Cadastra um novo Local, opcionalmente vinculado a uma organização (Matriz ou Comunidade), o que
-     * restringe/escopa seu uso a essa organização para fins de autorização e listagem.
+     * Cadastra um novo Local, opcionalmente vinculado a uma organização (Matriz ou Comunidade).
      *
      * @param nome            nome do local
      * @param tipo            tipo/categoria do local
@@ -71,6 +75,48 @@ public class LocalService {
     }
 
     /**
+     * Cadastra um novo Local com dados completos e endereço estruturado.
+     *
+     * @param nome             nome do local
+     * @param tipo             tipo/categoria do local
+     * @param enderecoFormatado endereço plano formatado
+     * @param enderecoLocal    endereço estruturado (Value Object)
+     * @param capacidadeMaxima capacidade máxima de ocupação
+     * @param descricao        descrição e finalidades de uso
+     * @param igrejaId         ID da paróquia/comunidade vinculada
+     * @return o Local cadastrado
+     */
+    @Transactional
+    public Local createLocalCompleto(String nome,
+                                    String tipo,
+                                    String enderecoFormatado,
+                                    EnderecoLocal enderecoLocal,
+                                    Integer capacidadeMaxima,
+                                    String descricao,
+                                    UUID igrejaId) {
+        Instant now = Instant.now();
+        Local local = new Local(
+                UUID.randomUUID(),
+                nome,
+                tipo,
+                enderecoFormatado,
+                enderecoLocal,
+                capacidadeMaxima,
+                capacidadeMaxima,
+                descricao,
+                descricao,
+                true,
+                igrejaId,
+                null,
+                null,
+                now,
+                now
+        );
+        localRepository.save(local);
+        return local;
+    }
+
+    /**
      * Atualiza os dados de um Local existente sem alterar seu vínculo organizacional atual.
      *
      * @param id              ID do local a ser atualizado
@@ -81,13 +127,12 @@ public class LocalService {
      * @param caracteristicas novas características adicionais
      * @param ativo           novo status de ativação do local
      * @return o Local atualizado
-     * @throws LocalBusinessException se não existir Local com o ID informado
+     * @throws LocalBusinessException se não existir Local ou se possuir eventos futuros agendados ao inativar
      */
     @Transactional
     public Local updateLocal(UUID id,
                              String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
                              boolean ativo) {
-
         return updateLocal(id, nome, tipo, endereco, capacidade, caracteristicas, ativo, null);
     }
 
@@ -104,15 +149,18 @@ public class LocalService {
      * @param ativo           novo status de ativação do local
      * @param grupoParoquialId   novo ID da organização de subordinação, ou {@code null} para desvincular
      * @return o Local atualizado
-     * @throws LocalBusinessException se não existir Local com o ID informado
+     * @throws LocalBusinessException se não existir Local ou se possuir eventos futuros ao inativar
      */
     @Transactional
     public Local updateLocal(UUID id,
                              String nome, String tipo, String endereco, Integer capacidade, String caracteristicas,
                              boolean ativo, UUID grupoParoquialId) {
-
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
+
+        if (!ativo && local.isAtivo() && localRepository.hasFutureEvents(id)) {
+            throw LocalBusinessException.hasFutureEventsOnDeactivate(id);
+        }
 
         local.update(nome, tipo, endereco, capacidade, caracteristicas, ativo, grupoParoquialId);
         localRepository.save(local);
@@ -120,19 +168,47 @@ public class LocalService {
     }
 
     /**
-     * Desativa logicamente um Local (não o remove fisicamente), preservando os demais dados e o
-     * histórico de Eventos que já o referenciam.
+     * Atualização completa de um Local suportando campos estruturados de endereço e validação de integridade.
+     */
+    @Transactional
+    public Local updateLocalCompleto(UUID id,
+                                    String nome,
+                                    String tipo,
+                                    String enderecoFormatado,
+                                    EnderecoLocal enderecoLocal,
+                                    Integer capacidadeMaxima,
+                                    String descricao,
+                                    boolean ativo,
+                                    UUID igrejaId) {
+        Local local = localRepository.findById(id)
+                .orElseThrow(() -> LocalBusinessException.notFound(id));
+
+        if (!ativo && local.isAtivo() && localRepository.hasFutureEvents(id)) {
+            throw LocalBusinessException.hasFutureEventsOnDeactivate(id);
+        }
+
+        local.updateCompleto(
+                nome, tipo, enderecoFormatado, enderecoLocal, capacidadeMaxima, descricao, ativo, igrejaId);
+        localRepository.save(local);
+        return local;
+    }
+
+    /**
+     * Exclui logicamente um Local (soft delete), validando integridade referencial com eventos futuros.
      *
-     * @param id ID do local a ser desativado
-     * @throws LocalBusinessException se não existir Local com o ID informado
+     * @param id ID do local a ser excluído
+     * @throws LocalBusinessException se não existir Local ou se possuir eventos futuros agendados
      */
     @Transactional
     public void deleteLocal(UUID id) {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalBusinessException.notFound(id));
-        local.update(local.getNome(), local.getTipo(), local.getEndereco(),
-                local.getCapacidade(), local.getCaracteristicas(), false, local.getGrupoParoquialId());
 
+        if (localRepository.hasFutureEvents(id)) {
+            throw LocalBusinessException.hasFutureEventsOnDelete(id);
+        }
+
+        local.marcarExcluido();
         localRepository.save(local);
     }
 
@@ -148,7 +224,7 @@ public class LocalService {
     }
 
     /**
-     * Lista todos os Locais cadastrados, sem filtro por organização.
+     * Lista todos os Locais cadastrados ativos e não excluídos.
      *
      * @return lista de todos os Locais
      */
@@ -158,11 +234,10 @@ public class LocalService {
     }
 
     /**
-     * Lista os Locais cadastrados, opcionalmente restritos a uma organização (Matriz/Comunidade) —
-     * usado para escopar a seleção de locais ao planejar Eventos de uma organização específica.
+     * Lista os Locais cadastrados não excluídos, opcionalmente restritos a uma organização.
      *
      * @param grupoParoquialId ID da organização para filtrar, ou {@code null} para listar todos os Locais
-     * @return lista de Locais, filtrada por organização quando {@code grupoParoquialId} não for {@code null}
+     * @return lista de Locais filtrada
      */
     @Transactional(readOnly = true)
     public List<Local> listLocais(UUID grupoParoquialId) {

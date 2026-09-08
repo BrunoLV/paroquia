@@ -35,8 +35,14 @@ class LocalJpaRepositoryTest {
         local.setNome("Salão Paroquial");
         local.setTipo("SALÃO");
         local.setEndereco("Rua das Flores, 123");
-        local.setCapacidade(200);
-        local.setCaracteristicas("Possui ar condicionado e projetor");
+        local.setCep("01001-000");
+        local.setLogradouro("Rua das Flores");
+        local.setNumero("123");
+        local.setBairro("Centro");
+        local.setCidade("São Paulo");
+        local.setUf("SP");
+        local.setCapacidadeMaxima(200);
+        local.setDescricao("Possui ar condicionado e projetor");
         local.setAtivo(true);
 
         localRepository.save(local);
@@ -45,33 +51,54 @@ class LocalJpaRepositoryTest {
 
         LocalEntity found = localRepository.findById(id).orElseThrow();
         assertEquals("Salão Paroquial", found.getNome());
-        assertEquals("Rua das Flores, 123", found.getEndereco());
-        assertEquals(200, found.getCapacidade());
-        assertEquals("Possui ar condicionado e projetor", found.getCaracteristicas());
+        assertEquals("01001-000", found.getCep());
+        assertEquals("SP", found.getUf());
+        assertEquals(200, found.getCapacidadeMaxima());
+        assertEquals("Possui ar condicionado e projetor", found.getDescricao());
     }
 
     @Test
-    void deveVerificarSeLocalTemAssociadoEventos() {
+    void deveIgnorarLocaisComSoftDeleteNasConsultasAtivas() {
+        UUID id = UUID.randomUUID();
+        LocalEntity local = new LocalEntity();
+        local.setId(id);
+        local.setNome("Sala 01 Excluída");
+        local.setTipo("SALA");
+        local.setAtivo(false);
+        local.setDeletedAt(Instant.now());
+
+        localRepository.save(local);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertFalse(localRepository.findByIdAndDeletedAtIsNull(id).isPresent());
+        assertTrue(localRepository.findAllByDeletedAtIsNull().stream().noneMatch(l -> l.getId().equals(id)));
+    }
+
+    @Test
+    void deveVerificarEventosFuturosNaoCanceladosDoLocal() {
         UUID localId = UUID.randomUUID();
         LocalEntity local = new LocalEntity();
         local.setId(localId);
-        local.setNome("Capela");
+        local.setNome("Capela dos Santos");
         local.setTipo("CAPELA");
         local.setAtivo(true);
         localRepository.save(local);
 
-        assertFalse(eventoRepository.existsByLocalId(localId));
+        Instant now = Instant.now();
+        assertFalse(eventoRepository.existsByLocalIdAndFimUtcGreaterThanAndStatusNot(localId, now, "CANCELADO"));
 
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());
-        evento.setTitulo("Missa");
+        evento.setTitulo("Vigília Jovem");
         evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-        evento.setInicioUtc(Instant.now());
-        evento.setFimUtc(Instant.now().plusSeconds(3600));
+        evento.setInicioUtc(now.plusSeconds(3600));
+        evento.setFimUtc(now.plusSeconds(7200));
         evento.setStatus("CONFIRMADO");
         evento.setLocalId(localId);
         eventoRepository.save(evento);
+        entityManager.flush();
 
-        assertTrue(eventoRepository.existsByLocalId(localId));
+        assertTrue(eventoRepository.existsByLocalIdAndFimUtcGreaterThanAndStatusNot(localId, now, "CANCELADO"));
     }
 }

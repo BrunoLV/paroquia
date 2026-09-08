@@ -24,12 +24,13 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -109,17 +110,19 @@ class LocalControllerIntegrationTest {
                             .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isOk());
 
-            // DELETE (Inativação lógica)
+            // DELETE (Soft delete)
             mockMvc.perform(delete("/api/v1/locais/" + existingLocalId)
                             .with(authentication(auth)))
                     .andExpect(status().isNoContent());
 
-            // Garantir que o local ainda está lá (remoção lógica) e está inativo
+            // Garantir soft delete: inativo e com deletedAt preenchido
             LocalEntity local = localRepository.findById(existingLocalId).orElseThrow();
             assertThat(local.isAtivo()).isFalse();
+            assertThat(local.getDeletedAt()).isNotNull();
 
             // Re-ativar para a próxima iteração
             local.setAtivo(true);
+            local.setDeletedAt(null);
             localRepository.save(local);
         }
     }

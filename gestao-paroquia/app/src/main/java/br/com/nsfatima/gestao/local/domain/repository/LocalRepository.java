@@ -53,6 +53,15 @@ public interface LocalRepository {
     boolean isLocalInUse(UUID id);
 
     /**
+     * Verifica se o Local possui eventos futuros agendados (ativos/não cancelados), para bloquear
+     * inativação ou exclusão lógica conforme regra de integridade referencial.
+     *
+     * @param id ID do local
+     * @return {@code true} se houver eventos futuros agendados
+     */
+    boolean hasFutureEvents(UUID id);
+
+    /**
      * Remove fisicamente o registro de um Local. Não é usada pelo fluxo padrão de negócio (que
      * desativa logicamente via {@code LocalService.deleteLocal}) — capacidade de infraestrutura para
      * cenários administrativos/de dados que exigem remoção definitiva.

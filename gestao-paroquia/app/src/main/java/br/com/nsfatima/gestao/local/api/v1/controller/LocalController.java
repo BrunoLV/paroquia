@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.local.api.v1.controller;
 
 import br.com.nsfatima.gestao.local.api.v1.dto.LocalRequest;
 import br.com.nsfatima.gestao.local.api.v1.dto.LocalResponse;
+import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.service.LocalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Endpoints REST para gerenciamento de espaços físicos e capacidade de locais paroquiais.
+ * Endpoints REST para gerenciamento de espaços físicos e dependências paroquiais.
  */
 @RestController
 @RequestMapping("/api/v1/locais")
@@ -48,9 +49,6 @@ public class LocalController {
      * Registra um novo local físico na paróquia para possibilitar o agendamento de eventos e controle de
      * infraestrutura.
      *
-     * <p>Usage Example:
-     * {@code POST /api/v1/locais} com corpo JSON contendo nome, tipo, endereço e capacidade.
-     *
      * @param request Dados do novo local
      * @return Dados do local criado
      */
@@ -59,22 +57,20 @@ public class LocalController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new location", description = "Only administrators can create locations.")
     public LocalResponse create(@RequestBody @Valid LocalRequest request) {
-        Local local = localService.createLocal(
+        Local local = localService.createLocalCompleto(
                 request.nome(),
                 request.tipo(),
                 request.endereco(),
-                request.capacidade(),
-                request.caracteristicas(),
-                request.grupoParoquialId()
+                request.toEnderecoLocal(),
+                request.resolvedCapacidadeMaxima(),
+                request.resolvedDescricao(),
+                request.resolvedIgrejaId()
         );
         return toResponse(local);
     }
 
     /**
      * Atualiza as informações de um local existente para refletir mudanças na infraestrutura ou disponibilidade física.
-     *
-     * <p>Usage Example:
-     * {@code PUT /api/v1/locais/{uuid}} com corpo JSON completo do local atualizado.
      *
      * @param id      ID único do local
      * @param request Novos dados do local
@@ -84,25 +80,22 @@ public class LocalController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing location", description = "Only administrators can update locations.")
     public LocalResponse update(@PathVariable UUID id, @RequestBody @Valid LocalRequest request) {
-        Local local = localService.updateLocal(
+        Local local = localService.updateLocalCompleto(
                 id,
                 request.nome(),
                 request.tipo(),
                 request.endereco(),
-                request.capacidade(),
-                request.caracteristicas(),
+                request.toEnderecoLocal(),
+                request.resolvedCapacidadeMaxima(),
+                request.resolvedDescricao(),
                 request.ativo(),
-                request.grupoParoquialId()
+                request.resolvedIgrejaId()
         );
         return toResponse(local);
     }
 
     /**
-     * Remove um local do sistema para descontinuar o uso de espaços que não pertencem mais à paróquia ou estão
-     * inativos.
-     *
-     * <p>Usage Example:
-     * {@code DELETE /api/v1/locais/{uuid}}
+     * Remove logicamente (soft delete) um local do sistema, garantindo integridade com eventos futuros.
      *
      * @param id ID único do local a ser removido
      */
@@ -110,16 +103,13 @@ public class LocalController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete a location", description = "Only administrators can delete locations. Cannot delete " +
-            "locations in use.")
+            "locations with scheduled future events.")
     public void delete(@PathVariable UUID id) {
         localService.deleteLocal(id);
     }
 
     /**
      * Provê acesso aos detalhes de um local específico para consulta de sua capacidade e características técnicas.
-     *
-     * <p>Usage Example:
-     * {@code GET /api/v1/locais/{uuid}}
      *
      * @param id ID único do local
      * @return Detalhes do local ou 404 se não encontrado
@@ -134,32 +124,49 @@ public class LocalController {
     }
 
     /**
-     * Lista todos os locais disponíveis para facilitar o planejamento de eventos e a escolha de espaços adequados.
+     * Lista todos os locais disponíveis não excluídos para planejar eventos e reuniões.
      *
-     * <p>Usage Example:
-     * {@code GET /api/v1/locais}
-     *
+     * @param grupoParoquialId ID opcional de filtragem por paróquia/comunidade
+     * @param igrejaId         Alias para grupoParoquialId
      * @return Lista de locais cadastrados
      */
     @GetMapping
     @Operation(summary = "List all locations")
-    public List<LocalResponse> list(@RequestParam(required = false) UUID grupoParoquialId) {
-        return localService.listLocais(grupoParoquialId).stream()
+    public List<LocalResponse> list(
+            @RequestParam(required = false) UUID grupoParoquialId,
+            @RequestParam(required = false) UUID igrejaId) {
+        UUID idFiltro = igrejaId != null ? igrejaId : grupoParoquialId;
+        return localService.listLocais(idFiltro).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     private LocalResponse toResponse(Local domain) {
+        EnderecoLocal el = domain.getEnderecoLocal();
         return new LocalResponse(
                 domain.getId(),
                 domain.getNome(),
                 domain.getTipo(),
                 domain.getEndereco(),
                 domain.getCapacidade(),
+                domain.getCapacidadeMaxima(),
                 domain.getCaracteristicas(),
+                domain.getDescricao(),
                 domain.isAtivo(),
                 domain.getGrupoParoquialId(),
-                domain.getGrupoParoquialNome()
+                domain.getIgrejaId(),
+                domain.getGrupoParoquialNome(),
+                domain.getIgrejaNome(),
+                el != null ? el.cep() : null,
+                el != null ? el.logradouro() : null,
+                el != null ? el.numero() : null,
+                el != null ? el.complemento() : null,
+                el != null ? el.bairro() : null,
+                el != null ? el.cidade() : null,
+                el != null ? el.uf() : null,
+                domain.getDeletedAt(),
+                domain.getCreatedAt(),
+                domain.getUpdatedAt()
         );
     }
 }

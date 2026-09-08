@@ -301,23 +301,47 @@ export interface Local {
   endereco: string | null;
   /** Lotação máxima de pessoas; `null` quando não informada/não aplicável. */
   capacidade: number | null;
+  capacidadeMaxima?: number | null;
   /** Observações livres sobre o espaço (ex: recursos disponíveis, restrições de uso). */
   caracteristicas: string | null;
+  descricao?: string | null;
   ativo: boolean;
-  /** Organização "dona" do espaço, quando o local pertence a uma comunidade/organização específica. */
+  /** Organização/Igreja vinculada ao espaço. */
   organizacaoId?: string | null;
   organizacaoNome?: string | null;
+  igrejaId?: string | null;
+  igrejaNome?: string | null;
+  cep?: string | null;
+  logradouro?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  deletedAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
 
-/** Formulário de criação/edição de um {@link Local} — mesmos campos, mas todos opcionais exceto os obrigatórios de cadastro. */
+/** Formulário de criação/edição de um {@link Local}. */
 export interface LocalFormValues {
   nome: string;
   tipo: string;
   endereco?: string;
   capacidade?: number | null;
+  capacidadeMaxima?: number | null;
   caracteristicas?: string;
+  descricao?: string;
   ativo?: boolean;
   organizacaoId?: string | null;
+  igrejaId?: string | null;
+  cep?: string;
+  logradouro?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  uf?: string;
 }
 
 /**

@@ -40,6 +40,17 @@ public interface EventoValidacaoJpaRepository {
     boolean existsByLocalId(UUID localId);
 
     /**
+     * Verifica se existe algum evento futuro vinculado a um determinado local com status diferente do
+     * informado (tipicamente CANCELADO), garantindo integridade referencial ao inativar ou excluir locais.
+     *
+     * @param localId identificador do local
+     * @param fimUtc instante de corte para eventos futuros
+     * @param status status a ser desconsiderado (ex.: "CANCELADO")
+     * @return {@code true} se houver eventos futuros agendados ativos
+     */
+    boolean existsByLocalIdAndFimUtcGreaterThanAndStatusNot(UUID localId, Instant fimUtc, String status);
+
+    /**
      * Verifica se existe algum evento vinculado a uma determinada organização como responsável,
      * usado para impedir a remoção/desativação de uma organização ainda em uso.
      *

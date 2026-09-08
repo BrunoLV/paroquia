@@ -128,6 +128,13 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
+    public boolean existsByLocalIdAndFimUtcGreaterThanAndStatusNot(UUID localId, Instant fimUtc, String status) {
+        return storage.stream().anyMatch(e -> localId.equals(e.getLocalId())
+                && e.getFimUtc() != null && e.getFimUtc().isAfter(fimUtc)
+                && !status.equalsIgnoreCase(e.getStatus()));
+    }
+
+    @Override
     public boolean existsByGrupoParoquialResponsavelId(UUID grupoParoquialId) {
         return storage.stream().anyMatch(e -> grupoParoquialId.equals(e.getGrupoParoquialResponsavelId()));
     }

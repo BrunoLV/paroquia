@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * Sinaliza violações de regra de negócio do contexto {@code local} (Local não encontrado, ou Local
- * em uso não podendo ser removido fisicamente).
+ * em uso com eventos futuros agendados impedindo inativação ou exclusão lógica).
  */
 public class LocalBusinessException extends RuntimeException {
 
@@ -36,5 +36,27 @@ public class LocalBusinessException extends RuntimeException {
      */
     public static LocalBusinessException inUse(UUID id) {
         return new LocalBusinessException("Cannot delete location " + id + " because it has associated events.");
+    }
+
+    /**
+     * Cria a exceção para bloqueio de exclusão de local com eventos futuros agendados.
+     *
+     * @param id ID do local
+     * @return exceção pronta para ser lançada
+     */
+    public static LocalBusinessException hasFutureEventsOnDelete(UUID id) {
+        return new LocalBusinessException(
+                "Não é permitido excluir o local " + id + " pois existem eventos futuros agendados.");
+    }
+
+    /**
+     * Cria a exceção para bloqueio de inativação de local com eventos futuros agendados.
+     *
+     * @param id ID do local
+     * @return exceção pronta para ser lançada
+     */
+    public static LocalBusinessException hasFutureEventsOnDeactivate(UUID id) {
+        return new LocalBusinessException(
+                "Não é permitido inativar o local " + id + " pois existem eventos futuros agendados.");
     }
 }
