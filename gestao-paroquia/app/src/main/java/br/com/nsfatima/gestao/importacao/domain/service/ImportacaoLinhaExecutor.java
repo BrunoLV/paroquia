@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -210,7 +211,7 @@ public class ImportacaoLinhaExecutor {
         entity.setInicioUtc(inicio != null ? inicio : Instant.now());
         entity.setFimUtc(fim != null ? fim : entity.getInicioUtc().plusSeconds(3600));
 
-        int anoCivil = entity.getInicioUtc().atZone(java.time.ZoneOffset.UTC).getYear();
+        int anoCivil = entity.getInicioUtc().atZone(ZoneOffset.UTC).getYear();
         boolean isAnoFechado = anoParoquialJpaRepository != null &&
                 anoParoquialJpaRepository.findByAno(anoCivil)
                         .map(a -> AnoParoquialStatus.FECHADO.equals(a.getStatus()))

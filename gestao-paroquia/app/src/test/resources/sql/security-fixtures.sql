@@ -2,6 +2,7 @@ DELETE FROM calendario.relacionamentos_familiares;
 DELETE FROM calendario.solicitacoes_ajuste_clerical;
 DELETE FROM calendario.migracoes_clero_pendentes;
 DELETE FROM calendario.encargos_clericais;
+DELETE FROM calendario.reservas;
 DELETE FROM calendario.eventos_envolvidos;
 DELETE FROM calendario.aprovacoes;
 DELETE FROM calendario.observacoes_evento;

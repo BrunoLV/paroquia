@@ -9,8 +9,13 @@ import br.com.nsfatima.gestao.calendario.application.usecase.metrics.GetIndicado
 import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ListAuditTrailUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +31,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/auditoria/eventos")
 @Tag(name = "Auditoria e Métricas", description = "Endpoints para consulta de trilhas de auditoria e métricas de " +
         "desempenho")
+@PreAuthorize("isAuthenticated()")
 public class AuditoriaEventoController {
 
     private final GetTaxaEventosExtraUseCase getTaxaEventosExtraUseCase;
@@ -53,6 +59,13 @@ public class AuditoriaEventoController {
     @GetMapping("/extras")
     @Operation(summary = "Obtém taxa de eventos extras", description = "Calcula o percentual de eventos adicionados " +
             "extra-ordinariamente no período informado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Taxa de eventos extras calculada com sucesso",
+                    content = @Content(schema = @Schema(implementation = TaxaEventosExtraResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public TaxaEventosExtraResponse getTaxaExtras(
             @Parameter(description = "ID da organização") @RequestParam UUID grupoParoquialId,
             @Parameter(description = "Período de análise (ex: anual, mensal)") @RequestParam(required = false)
@@ -76,6 +89,13 @@ public class AuditoriaEventoController {
     @GetMapping("/trilha")
     @Operation(summary = "Consulta trilha de auditoria", description = "Retorna os registros de auditoria baseados " +
             "nos filtros informados.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Trilha de auditoria recuperada com sucesso",
+                    content = @Content(schema = @Schema(implementation = AuditoriaOperacaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Filtros inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public AuditoriaOperacaoResponse getTrilha(AuditoriaFiltroRequest filters) {
         return listAuditTrailUseCase.execute(
                 filters.grupoParoquialId(),
@@ -100,6 +120,13 @@ public class AuditoriaEventoController {
     @GetMapping("/retrabalho")
     @Operation(summary = "Calcula indicador de retrabalho", description = "Retorna o percentual de retrabalho baseado" +
             " em modificações e cancelamentos no período.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Indicador de retrabalho calculado com sucesso",
+                    content = @Content(schema = @Schema(implementation = IndicadorRetrabalhoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public IndicadorRetrabalhoResponse getRetrabalho(
             @Parameter(description = "ID da organização") @RequestParam UUID grupoParoquialId,
             @Parameter(description = "Granularidade temporal") @RequestParam(required = false) String granularidade,

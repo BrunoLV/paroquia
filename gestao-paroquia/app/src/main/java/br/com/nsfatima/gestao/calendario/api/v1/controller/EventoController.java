@@ -28,6 +28,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +50,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Eventos", description = "Endpoints para gerenciamento do calendário de eventos")
+@PreAuthorize("isAuthenticated()")
 public class EventoController {
 
     private final CreateEventoUseCase createEventoUseCase;
@@ -125,6 +127,11 @@ public class EventoController {
     @GetMapping
     @Operation(summary = "Lista eventos com filtros", description = "Retorna uma página de eventos baseada nos " +
             "filtros de data e organização.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Página de eventos recuperada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public Page<EventoResponse> list(EventoFiltroRequest filters, Pageable pageable) {
         long startedAt = System.nanoTime();
         Page<EventoResponse> response = listEventosUseCase.execute(filters, pageable);
@@ -216,6 +223,13 @@ public class EventoController {
     @DeleteMapping("/{eventoId}")
     @Operation(summary = "Cancela um evento (Depreciado)", description = "Utilize POST /{eventoId}/cancel para maior " +
             "resiliência.", deprecated = true)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Evento cancelado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    })
     @Deprecated
     @SuppressWarnings("null")
     public ResponseEntity<Object> cancel(

@@ -5,6 +5,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Converte o value object {@link RegraRecorrencia} (regra de recorrência de um evento
@@ -17,7 +18,7 @@ import tools.jackson.databind.ObjectMapper;
 public class RegraRecorrenciaConverter implements AttributeConverter<RegraRecorrencia, String> {
 
     private static final ObjectMapper OBJECT_MAPPER =
-            tools.jackson.databind.json.JsonMapper.builder().findAndAddModules().build();
+            JsonMapper.builder().findAndAddModules().build();
 
     /**
      * Serializa a regra de recorrência para JSON antes de persistir no banco.

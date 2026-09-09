@@ -29,6 +29,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,7 +91,7 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
                             .collect(Collectors.toList()),
                     "organizations", usuarioDetails.getVinculos().stream()
                             .map(vinculo -> {
-                                Map<String, Object> map = new java.util.HashMap<>();
+                                Map<String, Object> map = new HashMap<>();
                                 map.put("id", vinculo.organizationId().toString());
                                 map.put("nome", vinculo.organizationName());
                                 map.put("tipo", vinculo.organizationType());

@@ -4,6 +4,10 @@ import br.com.nsfatima.gestao.iam.api.v1.dto.PapelGlobalRequest;
 import br.com.nsfatima.gestao.iam.application.usecase.AtribuirPapelGlobalUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.RevogarPapelGlobalUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,6 +43,14 @@ public class PapelGlobalController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Concede um papel global a um Fiel")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Papel global concedido com sucesso",
+                    content = @Content(schema = @Schema(implementation = UUID.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Fiel ou papel não encontrado")
+    })
     public UUID atribuir(@RequestBody @Valid PapelGlobalRequest request) {
         return atribuirPapelGlobalUseCase.execute(request.fielId(), request.papel());
     }
@@ -47,6 +59,13 @@ public class PapelGlobalController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Revoga um papel global de um Fiel")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Papel global revogado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Fiel ou papel não encontrado")
+    })
     public void revogar(@RequestBody @Valid PapelGlobalRequest request) {
         revogarPapelGlobalUseCase.execute(request.fielId(), request.papel());
     }

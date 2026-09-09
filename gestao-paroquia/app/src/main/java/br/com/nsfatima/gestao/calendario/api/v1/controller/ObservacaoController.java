@@ -12,9 +12,15 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.Observacao
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +42,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/eventos/{eventoId}/observacoes")
 @Tag(name = "Observações e Colaboração", description = "Endpoints para adicionar notas e observações em eventos")
+@PreAuthorize("isAuthenticated()")
 public class ObservacaoController {
 
     private final CreateNotaObservacaoUseCase createNotaObservacaoUseCase;
@@ -76,6 +83,14 @@ public class ObservacaoController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Adiciona uma observação", description = "Cria uma nova nota ou observação vinculada ao " +
             "evento informado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Observação criada com sucesso",
+                    content = @Content(schema = @Schema(implementation = ObservacaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da observação inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    })
     @Transactional
     public ObservacaoResponse create(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
@@ -100,6 +115,13 @@ public class ObservacaoController {
     @GetMapping
     @Operation(summary = "Lista todas as observações", description = "Retorna todas as observações associadas ao " +
             "evento.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de observações recuperada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ObservacaoResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    })
     public List<ObservacaoResponse> list(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         List<ObservacaoResponse> result = listObservacoesUseCase.execute(eventoId);
@@ -122,6 +144,13 @@ public class ObservacaoController {
     @GetMapping("/minhas")
     @Operation(summary = "Lista minhas observações", description = "Retorna apenas as observações criadas pelo " +
             "usuário atual no evento.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista das próprias observações recuperada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ObservacaoResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    })
     public List<ObservacaoResponse> listMinhas(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         List<ObservacaoResponse> result = listMinhasObservacoesUseCase.execute(eventoId, context.usuarioId());
@@ -144,6 +173,14 @@ public class ObservacaoController {
     @PatchMapping("/{observacaoId}")
     @Operation(summary = "Atualiza uma observação", description = "Altera o conteúdo de uma observação existente. " +
             "Requer que o ator seja o autor.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Observação atualizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = ObservacaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da atualização inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Observação ou evento não encontrado")
+    })
     @Transactional
     public ObservacaoResponse update(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
@@ -169,6 +206,12 @@ public class ObservacaoController {
     @DeleteMapping("/{observacaoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remove uma observação", description = "Exclui permanentemente uma observação do sistema.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Observação removida com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Observação ou evento não encontrado")
+    })
     @Transactional
     public void delete(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,

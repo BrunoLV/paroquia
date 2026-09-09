@@ -2,13 +2,18 @@ package br.com.nsfatima.gestao.fiel.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
+import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Lista o registro comunitário de Fiéis da paróquia.
@@ -40,7 +45,7 @@ public class ListFieisUseCase {
 
     /** Retorna somente os fiéis com vínculo ativo na organização do coordenador. */
     @Transactional(readOnly = true)
-    public List<FielResponse> executeNoGrupo(java.util.UUID grupoId) {
+    public List<FielResponse> executeNoGrupo(UUID grupoId) {
         return fieisDoGrupo(grupoId).stream()
                 .map(fielMapper::toResponse)
                 .toList();
@@ -48,17 +53,16 @@ public class ListFieisUseCase {
 
     /** Retorna apenas os meios de contato que o coordenador pode usar no cuidado pastoral. */
     @Transactional(readOnly = true)
-    public List<FielContatoResponse> executeContatoNoGrupo(java.util.UUID grupoId) {
+    public List<FielContatoResponse> executeContatoNoGrupo(UUID grupoId) {
         return fieisDoGrupo(grupoId).stream()
                 .map(fielMapper::toContatoResponse)
                 .toList();
     }
 
-    private List<br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity> fieisDoGrupo(
-            java.util.UUID grupoId) {
-        var ids = membroGrupoRepository.findByGrupoParoquialIdAndAtivoTrue(grupoId).stream()
-                .map(br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity::getFielId)
-                .collect(java.util.stream.Collectors.toSet());
+    private List<FielEntity> fieisDoGrupo(UUID grupoId) {
+        Set<UUID> ids = membroGrupoRepository.findByGrupoParoquialIdAndAtivoTrue(grupoId).stream()
+                .map(MembroGrupoEntity::getFielId)
+                .collect(Collectors.toSet());
         return fielRepository.findByAtivoTrue().stream()
                 .filter(fiel -> ids.contains(fiel.getId()))
                 .toList();

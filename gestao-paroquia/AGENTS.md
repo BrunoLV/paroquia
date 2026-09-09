@@ -98,7 +98,7 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
 * **Zero Warnings:** O código entregue deve compilar e passar com zero avisos nas ferramentas de verificação estática (`./gradlew check`).
 * **Higiene de Importações:**
   * Proibido o uso de caracteres coringa (*wildcards* / `import java.util.*`).
-  * Proibido o uso de tipos totalmente qualificados (FQNs) no meio do código (importe os tipos no topo do arquivo).
+  * **PROIBIDO USO DE IMPORTS INLINE OU NOMES TOTALMENTE QUALIFICADOS (FQCNs):** Todo tipo utilizado no corpo da classe (atributos, parâmetros, variáveis, retornos, chamadas estáticas, casts, exceções em `catch` ou anotações como `@ExceptionHandler`) **DEVE** ser importado explicitamente no cabeçalho do arquivo via `import`. Nunca use referências como `java.util.UUID`, `java.util.stream.Collectors` ou pacotes internos inline no código.
 * **Documentação Estrutural:**
   * Todo pacote de módulo/camada deve conter seu respectivo `package-info.java`.
   * Endpoints REST devem expor contratos tipados e descritos via anotações OpenAPI (Swagger).

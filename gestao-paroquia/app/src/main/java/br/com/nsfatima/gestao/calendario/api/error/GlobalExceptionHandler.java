@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
+import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -29,9 +30,9 @@ public class GlobalExceptionHandler extends BaseExceptionHandler {
         super(auditLogPersistenceService);
     }
 
-    @ExceptionHandler(br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException.class)
+    @ExceptionHandler(ConflitoAgendaEclesialException.class)
     public ResponseEntity<ValidationErrorResponse> handleConflitoAgendaEclesial(
-            br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException ex) {
+            ConflitoAgendaEclesialException ex) {
         String msg = ex.getMessage() != null ? ex.getMessage() : "Conflito de Agenda Eclesial";
         return buildValidation(
                 HttpStatus.BAD_REQUEST,

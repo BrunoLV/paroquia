@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Lista os ativos patrimoniais alocados a um evento específico, resolvendo em lote os dados dos
@@ -41,7 +42,7 @@ public class ListAlocacoesPorEventoUseCase {
 
         List<UUID> ativoIds = ocupacoes.stream().map(AtivoAlocacaoEntity::getAtivoId).distinct().toList();
         Map<UUID, AtivoPatrimonialEntity> ativosPorId = ativoRepository.findAllById(ativoIds).stream()
-                .collect(java.util.stream.Collectors.toMap(AtivoPatrimonialEntity::getId, Function.identity()));
+                .collect(Collectors.toMap(AtivoPatrimonialEntity::getId, Function.identity()));
 
         return ocupacoes.stream()
                 .map(ocupacao -> toResponse(ocupacao, ativosPorId.get(ocupacao.getAtivoId())))

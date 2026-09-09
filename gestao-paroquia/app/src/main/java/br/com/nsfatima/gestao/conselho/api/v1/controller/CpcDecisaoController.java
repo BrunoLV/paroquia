@@ -8,6 +8,12 @@ import br.com.nsfatima.gestao.conselho.application.usecase.HomologarCpcDecisaoUs
 import br.com.nsfatima.gestao.conselho.application.usecase.ListCpcDecisoesUseCase;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -60,8 +66,16 @@ public class CpcDecisaoController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista as atas e decisões dos conselhos com filtros por comunidade ou status")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Decisões listadas com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CpcDecisaoResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<CpcDecisaoResponse> list(
+            @Parameter(description = "Filtro opcional por comunidade")
             @RequestParam(required = false) UUID comunidadeId,
+            @Parameter(description = "Filtro opcional por status de homologação")
             @RequestParam(required = false) StatusHomologacao status) {
         return listCpcDecisoesUseCase.execute(comunidadeId, status);
     }
@@ -79,6 +93,13 @@ public class CpcDecisaoController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'PRESIDENTE_CPC', 'MESA_CPP', 'MEMBRO_CPC', 'MEMBRO_CPP')")
     @Operation(summary = "Registra uma nova ata ou decisão de conselho (padrão: PENDENTE_HOMOLOGACAO)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Decisão registrada com sucesso",
+                    content = @Content(schema = @Schema(implementation = CpcDecisaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public CpcDecisaoResponse create(@RequestBody @Valid CreateCpcDecisaoRequest request) {
         return createCpcDecisaoUseCase.execute(request);
     }
@@ -95,7 +116,16 @@ public class CpcDecisaoController {
     @PatchMapping("/{id}/homologacao")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'MESA_CPP')")
     @Operation(summary = "Homologa ou veta uma ata/decisão de conselho (exclusivo para Pároco, Admin ou Mesa CPP)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Decisão homologada ou vetada com sucesso",
+                    content = @Content(schema = @Schema(implementation = CpcDecisaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida ou veto sem justificativa"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Decisão não encontrada")
+    })
     public CpcDecisaoResponse homologar(
+            @Parameter(description = "Identificador único da decisão", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid HomologarCpcDecisaoRequest request) {
         return homologarCpcDecisaoUseCase.execute(id, request);

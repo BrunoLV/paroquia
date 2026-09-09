@@ -3,6 +3,11 @@ package br.com.nsfatima.gestao.importacao.api.v1.controller;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
 import br.com.nsfatima.gestao.importacao.domain.service.ImportacaoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -53,8 +58,16 @@ public class ImportacaoController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Download import template", description = "Generates CSV or XLSX sample template for batch " +
             "import")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Arquivo de modelo gerado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Tipo de entidade ou formato inválido"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public ResponseEntity<byte[]> downloadTemplate(
+            @Parameter(description = "Tipo de entidade (MEMBRO, GRUPO_PAROQUIAL, etc.)")
             @RequestParam(defaultValue = "MEMBRO") String tipo,
+            @Parameter(description = "Formato do arquivo (CSV ou XLSX)")
             @RequestParam(defaultValue = "CSV") String formato) throws IOException {
 
         byte[] data = importacaoService.gerarTemplate(tipo, formato);
@@ -75,8 +88,17 @@ public class ImportacaoController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Validate batch file", description = "Parses and validates uploaded CSV/Excel file line by " +
             "line")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Resultado da validação do arquivo em lote",
+                    content = @Content(schema = @Schema(implementation = ImportacaoValidacaoResultadoDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Arquivo corrompido ou formato incompatível"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public ResponseEntity<ImportacaoValidacaoResultadoDTO> validar(
+            @Parameter(description = "Tipo de entidade a importar")
             @RequestParam(defaultValue = "MEMBRO") String tipo,
+            @Parameter(description = "Arquivo multipart contendo a planilha de importação", required = true)
             @RequestParam("file") MultipartFile file) throws IOException {
 
         ImportacaoValidacaoResultadoDTO resultado = importacaoService.validarArquivo(tipo, file);
@@ -86,7 +108,14 @@ public class ImportacaoController {
     @PostMapping("/confirmar")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Confirm batch import", description = "Persists validated records into the system")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Importação concluída com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para importação"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public ResponseEntity<Map<String, Object>> confirmar(
+            @Parameter(description = "Tipo de entidade a persistir")
             @RequestParam(defaultValue = "MEMBRO") String tipo,
             @RequestBody List<Map<String, String>> validItems,
             @AuthenticationPrincipal UserDetails userDetails) {

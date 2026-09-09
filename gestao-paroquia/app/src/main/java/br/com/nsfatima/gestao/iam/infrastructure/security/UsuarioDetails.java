@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -84,7 +85,7 @@ public class UsuarioDetails implements UserDetails {
 
         Stream<String> papelGlobalRoles = (papeisGlobais == null ? List.<String>of() : papeisGlobais).stream()
                 .filter(p -> p != null && !p.isBlank())
-                .map(p -> "ROLE_GLOBAL_" + p.trim().toUpperCase(java.util.Locale.ROOT).replace('-', '_'));
+                .map(p -> "ROLE_GLOBAL_" + p.trim().toUpperCase(Locale.ROOT).replace('-', '_'));
 
         this.authorities = Stream.concat(Stream.concat(globalRoles, vinculoRoles), papelGlobalRoles)
                 .distinct()

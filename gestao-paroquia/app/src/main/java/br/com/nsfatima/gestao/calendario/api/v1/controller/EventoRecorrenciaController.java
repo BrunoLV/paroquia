@@ -8,8 +8,13 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAudi
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Recorrência de Eventos", description = "Endpoints para configuração de regras de repetição de eventos")
+@PreAuthorize("isAuthenticated()")
 public class EventoRecorrenciaController {
 
     private final CreateEventoRecorrenciaUseCase createEventoRecorrenciaUseCase;
@@ -50,6 +56,14 @@ public class EventoRecorrenciaController {
      */
     @PutMapping("/{eventoId}/recorrencia")
     @Operation(summary = "Configura recorrência", description = "Define a regra de repetição para o evento informado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Recorrência configurada com sucesso",
+                    content = @Content(schema = @Schema(implementation = EventoRecorrenciaResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da regra de recorrência inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento pai não encontrado")
+    })
     public EventoRecorrenciaResponse createRecorrencia(
             @Parameter(description = "ID do evento pai") @PathVariable UUID eventoId,
             @RequestBody @Valid EventoRecorrenciaRequest payload) {

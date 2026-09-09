@@ -108,6 +108,10 @@ case Transacao(var id, BigDecimal valor) when valor.compareTo(LIMITE_ALERTA) > 0
 * **Tratamento Específico de Exceções:**
 * Capture exceções específicas; nunca declare blocos `catch (Exception e)` genéricos a menos que seja o manipulador de última instância na fronteira da aplicação.
 * Nunca engula exceções com blocos vazios. Se uma exceção não puder ser recuperada, transforme-a em uma exceção não verificada de negócio (`DomainException`) preservando a causa raiz (`throw new ProcessamentoException("Falha ao liquidar", e);`).
+* **Higiene e Proibição Absoluta de Imports Inline (FQCNs):**
+  * **Zero FQCN inline:** É estritamente proibido usar nomes de classes totalmente qualificados no corpo do código (ex.: `java.util.UUID`, `java.util.stream.Collectors`, `java.time.LocalDate`, `tools.jackson...`).
+  * **Imports Explícitos no Topo:** Todo tipo, anotação ou enum referenciado deve ser importado via declaração `import` explícita no início do arquivo.
+  * **Zero Wildcards:** Proibido `import java.util.*` ou similares; todo import deve ser pontual.
 
 
 
@@ -248,6 +252,7 @@ Antes de submeter código ou considerar uma tarefa concluída, o agente deve aud
 
 
 6. [ ] **Concorrência Segura em Virtual Threads:** Operações bloqueantes de I/O evitam blocos `synchronized` em favor de `ReentrantLock` ou estruturas de concorrência estruturada (`StructuredTaskScope`)?
+7. [ ] **Higiene de Importações:** Todos os tipos utilizados são importados explicitamente no topo do arquivo? Não existem nomes totalmente qualificados (FQCNs) nem caracteres coringa (`*`) no código?
 
 ```
 

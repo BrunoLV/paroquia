@@ -22,6 +22,12 @@ import br.com.nsfatima.gestao.patrimonio.application.usecase.ListAlocacoesPorEve
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ListAtivosPorGrupoParoquialUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.TransferirAtivoPatrimonialUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -98,6 +104,13 @@ public class AtivoPatrimonialController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Cadastra um novo ativo patrimonial (status inicial: DISPONIVEL)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Ativo patrimonial cadastrado com sucesso",
+                    content = @Content(schema = @Schema(implementation = AtivoPatrimonialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public AtivoPatrimonialResponse create(@RequestBody @Valid CreateAtivoPatrimonialRequest request) {
         return createUseCase.execute(request);
     }
@@ -105,6 +118,12 @@ public class AtivoPatrimonialController {
     @GetMapping
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista todos os ativos patrimoniais cadastrados na paróquia")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de ativos retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AtivoPatrimonialResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<AtivoPatrimonialResponse> listAll() {
         return listUseCase.executeAll();
     }
@@ -118,7 +137,15 @@ public class AtivoPatrimonialController {
     @GetMapping("/organizacao/{grupoParoquialId}")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o inventário de ativos patrimoniais de uma organização")
-    public List<AtivoPatrimonialResponse> listByGrupoParoquial(@PathVariable UUID grupoParoquialId) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Inventário retornado com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AtivoPatrimonialResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public List<AtivoPatrimonialResponse> listByGrupoParoquial(
+            @Parameter(description = "Identificador único da organização dona", required = true)
+            @PathVariable UUID grupoParoquialId) {
         return listUseCase.execute(grupoParoquialId);
     }
 
@@ -133,8 +160,18 @@ public class AtivoPatrimonialController {
     @PatchMapping("/{id}/transferir")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Transfere um ativo patrimonial para outra organização")
-    public AtivoPatrimonialResponse transferir(@PathVariable UUID id,
-                                                @RequestBody @Valid TransferirAtivoRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ativo transferido com sucesso",
+                    content = @Content(schema = @Schema(implementation = AtivoPatrimonialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Transferência inválida pelas regras de domínio"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ativo não encontrado")
+    })
+    public AtivoPatrimonialResponse transferir(
+            @Parameter(description = "Identificador único do ativo", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid TransferirAtivoRequest request) {
         return transferirUseCase.execute(id, request);
     }
 
@@ -154,7 +191,18 @@ public class AtivoPatrimonialController {
     @Operation(summary = "Aloca um ativo patrimonial a um evento, registrando a nota de uso obrigatória. "
             + "Se a organização do evento divergir da organização dona do ativo, o pedido fica pendente de "
             + "aprovação (empréstimo).")
-    public ResponseEntity<Object> alocar(@PathVariable UUID id, @RequestBody @Valid AlocarAtivoRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ativo alocado diretamente com sucesso"),
+            @ApiResponse(responseCode = "202", description = "Alocação pendente de aprovação (empréstimo)"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos ou conflito de alocação"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ativo não encontrado")
+    })
+    public ResponseEntity<Object> alocar(
+            @Parameter(description = "Identificador único do ativo", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid AlocarAtivoRequest request) {
         AtivoOperationResult result = alocarUseCase.execute(id, request);
         return ResponseEntity.status(result.status()).body(result.body());
     }
@@ -170,8 +218,18 @@ public class AtivoPatrimonialController {
     @PatchMapping("/{id}/desalocar")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Desaloca um ativo patrimonial, devolvendo-o para a organização dona")
-    public AtivoPatrimonialResponse desalocar(@PathVariable UUID id,
-                                               @RequestBody(required = false) @Valid DesalocarAtivoRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ativo desalocado com sucesso",
+                    content = @Content(schema = @Schema(implementation = AtivoPatrimonialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Ativo não está alocado"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ativo não encontrado")
+    })
+    public AtivoPatrimonialResponse desalocar(
+            @Parameter(description = "Identificador único do ativo", required = true)
+            @PathVariable UUID id,
+            @RequestBody(required = false) @Valid DesalocarAtivoRequest request) {
         return desalocarUseCase.execute(id, request);
     }
 
@@ -186,8 +244,18 @@ public class AtivoPatrimonialController {
     @PostMapping("/{id}/manutencao")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Inicia um período de manutenção de um ativo patrimonial")
-    public AtivoPatrimonialResponse iniciarManutencao(@PathVariable UUID id,
-                                                       @RequestBody @Valid IniciarManutencaoRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Manutenção iniciada com sucesso",
+                    content = @Content(schema = @Schema(implementation = AtivoPatrimonialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Ativo indisponível para manutenção"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ativo não encontrado")
+    })
+    public AtivoPatrimonialResponse iniciarManutencao(
+            @Parameter(description = "Identificador único do ativo", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid IniciarManutencaoRequest request) {
         return iniciarManutencaoUseCase.execute(id, request);
     }
 
@@ -201,7 +269,17 @@ public class AtivoPatrimonialController {
     @PatchMapping("/{id}/manutencao/finalizar")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Finaliza a manutenção corrente de um ativo, devolvendo-o para DISPONIVEL")
-    public AtivoPatrimonialResponse finalizarManutencao(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Manutenção finalizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = AtivoPatrimonialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Ativo não está em manutenção"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ativo não encontrado")
+    })
+    public AtivoPatrimonialResponse finalizarManutencao(
+            @Parameter(description = "Identificador único do ativo", required = true)
+            @PathVariable UUID id) {
         return finalizarManutencaoUseCase.execute(id);
     }
 
@@ -216,8 +294,17 @@ public class AtivoPatrimonialController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Cancela uma reserva/pedido de alocação de ativo ainda não iniciado")
-    public void cancelarAlocacao(@PathVariable UUID alocacaoId,
-                                  @RequestBody @Valid CancelarAlocacaoRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Alocação cancelada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Alocação não pode ser cancelada"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Alocação não encontrada")
+    })
+    public void cancelarAlocacao(
+            @Parameter(description = "Identificador único da alocação", required = true)
+            @PathVariable UUID alocacaoId,
+            @RequestBody @Valid CancelarAlocacaoRequest request) {
         cancelarAlocacaoUseCase.execute(alocacaoId, request);
     }
 
@@ -231,7 +318,16 @@ public class AtivoPatrimonialController {
     @GetMapping("/{id}/alocacoes")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o histórico de ocupações (alocações e manutenções) de um ativo patrimonial")
-    public List<AtivoAlocacaoResponse> listAlocacoesPorAtivo(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Histórico de alocações retornado com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AtivoAlocacaoResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ativo não encontrado")
+    })
+    public List<AtivoAlocacaoResponse> listAlocacoesPorAtivo(
+            @Parameter(description = "Identificador único do ativo", required = true)
+            @PathVariable UUID id) {
         return listAlocacoesPorAtivoUseCase.execute(id);
     }
 
@@ -244,7 +340,15 @@ public class AtivoPatrimonialController {
     @GetMapping("/evento/{eventoId}/alocacoes")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista os ativos patrimoniais alocados a um evento")
-    public List<AtivoAlocacaoResponse> listAlocacoesPorEvento(@PathVariable UUID eventoId) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ativos alocados ao evento retornados com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AtivoAlocacaoResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public List<AtivoAlocacaoResponse> listAlocacoesPorEvento(
+            @Parameter(description = "Identificador único do evento", required = true)
+            @PathVariable UUID eventoId) {
         return listAlocacoesPorEventoUseCase.execute(eventoId);
     }
 
@@ -257,6 +361,12 @@ public class AtivoPatrimonialController {
     @GetMapping("/metricas/ociosidade")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Métricas de ociosidade/alocação de ativos patrimoniais")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Métricas agregadas retornadas com sucesso",
+                    content = @Content(schema = @Schema(implementation = MetricasOciosidadeResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public MetricasOciosidadeResponse metricasOciosidade() {
         return metricasOciosidadeUseCase.execute();
     }

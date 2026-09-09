@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.support.infrastructure.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 @SecurityScheme(
         name = "cookieAuth",
         type = SecuritySchemeType.APIKEY,
-        in = io.swagger.v3.oas.annotations.enums.SecuritySchemeIn.COOKIE,
+        in = SecuritySchemeIn.COOKIE,
         paramName = "JSESSIONID"
 )
 public class OpenApiConfig {

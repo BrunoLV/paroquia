@@ -12,6 +12,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAudi
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +22,7 @@ import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,11 +71,15 @@ public class AprovacaoController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Cria uma solicitação de aprovação", description = "Registra uma nova solicitação de " +
             "aprovação para um evento.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Solicitação criada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+            @ApiResponse(responseCode = "201", description = "Solicitação criada com sucesso",
+                    content = @Content(schema = @Schema(implementation = AprovacaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public AprovacaoResponse create(@RequestBody @Valid AprovacaoCreateRequest request) {
         return createSolicitacaoAprovacaoUseCase.create(
@@ -90,8 +97,14 @@ public class AprovacaoController {
      * }
      */
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista solicitações de aprovação", description = "Retorna uma página de solicitações de " +
             "aprovação com filtros opcionais.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Solicitações listadas com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public Page<AprovacaoResponse> list(AprovacaoFiltroRequest filters, Pageable pageable) {
         return listAprovacoesUseCase.execute(filters.eventoId(), filters.status(), pageable);
     }
@@ -108,15 +121,19 @@ public class AprovacaoController {
      * }
      */
     @PatchMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Decide sobre uma solicitação", description = "Aprova ou rejeita uma solicitação de " +
             "aprovação existente.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Decisão registrada com sucesso"),
+            @ApiResponse(responseCode = "200", description = "Decisão registrada com sucesso",
+                    content = @Content(schema = @Schema(implementation = AprovacaoDecisionResponse.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
     })
     public AprovacaoDecisionResponse decide(
-            @Parameter(description = "ID único da aprovação") @PathVariable UUID id,
+            @Parameter(description = "ID único da aprovação", required = true) @PathVariable UUID id,
             @RequestBody @Valid AprovacaoDecisionRequest request) {
         eventoAuditPublisher.publish(
                 "system",

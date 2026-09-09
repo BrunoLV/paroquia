@@ -6,7 +6,12 @@ import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +42,12 @@ public class AuthController {
      * @return o perfil completo do usuário logado, ou {@code null} se não houver sessão autenticada
      */
     @GetMapping("/me")
+    @PreAuthorize("permitAll()")
     @Operation(summary = "Obtém o perfil do usuário logado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil do usuário ou null se anônimo",
+                    content = @Content(schema = @Schema(implementation = UsuarioResponse.class)))
+    })
     public UsuarioResponse me(@AuthenticationPrincipal UsuarioDetails userDetails) {
         if (userDetails == null) {
             return null;

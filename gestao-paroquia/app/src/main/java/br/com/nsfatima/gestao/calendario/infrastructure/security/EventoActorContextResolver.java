@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Deriva o {@link EventoActorContext} do ator autenticado atual a partir do
@@ -119,7 +120,7 @@ public class EventoActorContextResolver {
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(),
                 TipoGrupo.PASTORAL.name(),
                 null,
-                java.util.UUID.fromString("00000000-0000-0000-0000-000000000001"),
+                UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 null);
     }
 }

@@ -11,11 +11,18 @@ import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialRolloverServ
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -76,7 +83,14 @@ public class AnoParoquialController {
      * @return Lista de anos paroquiais registrados
      */
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista todos os anos paroquiais registrados")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de anos paroquiais retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AnoParoquialResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @Cacheable(value = CacheConfig.ANO_PAROQUIAL_CACHE)
     public List<AnoParoquialResponse> list() {
         return repository.findAll().stream()
@@ -95,9 +109,19 @@ public class AnoParoquialController {
      * @return Dados do ano solicitado ou 404 se não encontrado
      */
     @GetMapping("/{ano}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Consulta o estado de um ano específico")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ano paroquial retornado com sucesso",
+                    content = @Content(schema = @Schema(implementation = AnoParoquialResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Ano paroquial não encontrado")
+    })
     @Cacheable(value = CacheConfig.ANO_PAROQUIAL_CACHE, key = "#ano")
-    public ResponseEntity<AnoParoquialResponse> get(@PathVariable Integer ano) {
+    public ResponseEntity<AnoParoquialResponse> get(
+            @Parameter(description = "Ano paroquial (ex: 2026)", required = true)
+            @PathVariable Integer ano) {
         return repository.findByAno(ano)
                 .map(entity -> ResponseEntity.ok(toResponse(entity)))
                 .orElse(ResponseEntity.notFound().build());
@@ -116,10 +140,19 @@ public class AnoParoquialController {
      * @throws SecurityException se o ator não tiver privilégios de coordenação
      */
     @PatchMapping("/{ano}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Altera o status de um ano (Trava/Destrava)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Status do ano atualizado com sucesso",
+                    content = @Content(schema = @Schema(implementation = AnoParoquialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida ou transição ilegal"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @Transactional
     @CacheEvict(value = CacheConfig.ANO_PAROQUIAL_CACHE, allEntries = true)
     public ResponseEntity<AnoParoquialResponse> update(
+            @Parameter(description = "Ano paroquial a ser atualizado", required = true)
             @PathVariable Integer ano,
             @Valid @RequestBody UpdateAnoParoquialRequest request) {
 

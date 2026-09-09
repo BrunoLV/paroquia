@@ -13,6 +13,12 @@ import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.domain.service.GrupoParoquialService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -73,6 +79,13 @@ public class GrupoParoquialController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new organization", description = "Only administrators can create organizations.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Organização criada com sucesso",
+                    content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public GrupoParoquialResponse create(@RequestBody @Valid GrupoParoquialRequest request) {
         GrupoParoquial org = grupoParoquialService.createOrganization(
                 request.nome(),
@@ -99,7 +112,18 @@ public class GrupoParoquialController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing organization", description = "Only administrators can update " +
             "organizations.")
-    public GrupoParoquialResponse update(@PathVariable UUID id, @RequestBody @Valid GrupoParoquialRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Organização atualizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Organização não encontrada")
+    })
+    public GrupoParoquialResponse update(
+            @Parameter(description = "Identificador único da organização", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid GrupoParoquialRequest request) {
         GrupoParoquial org = grupoParoquialService.updateOrganization(
                 id,
                 request.nome(),
@@ -183,7 +207,16 @@ public class GrupoParoquialController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. " +
             "Cannot delete organizations with active dependencies.")
-    public void delete(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Organização excluída com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Não é possível excluir organização com dependências ativas"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Organização não encontrada")
+    })
+    public void delete(
+            @Parameter(description = "Identificador único da organização", required = true)
+            @PathVariable UUID id) {
         grupoParoquialService.deleteOrganization(id);
     }
 
@@ -195,8 +228,18 @@ public class GrupoParoquialController {
      * @return a organização encontrada com status 200, ou 404 se não existir
      */
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get organization details")
-    public ResponseEntity<GrupoParoquialResponse> get(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Organização encontrada com sucesso",
+                    content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Organização não encontrada")
+    })
+    public ResponseEntity<GrupoParoquialResponse> get(
+            @Parameter(description = "Identificador único da organização", required = true)
+            @PathVariable UUID id) {
         return grupoParoquialService.getOrganization(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
@@ -210,7 +253,14 @@ public class GrupoParoquialController {
      * @return lista de todas as organizações cadastradas
      */
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "List all organizations")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de organizações retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = GrupoParoquialResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<GrupoParoquialResponse> list() {
         return grupoParoquialService.listOrganizations().stream()
                 .map(this::toResponse)
@@ -225,8 +275,18 @@ public class GrupoParoquialController {
      * @return lista de membros efetivos da organização
      */
     @GetMapping("/{id}/membros")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista os membros de uma organização")
-    public List<GrupoParoquialMembroResponse> listMembros(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de membros retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = GrupoParoquialMembroResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Organização não encontrada")
+    })
+    public List<GrupoParoquialMembroResponse> listMembros(
+            @Parameter(description = "Identificador único da organização", required = true)
+            @PathVariable UUID id) {
         return listGrupoParoquialMembrosUseCase.execute(id);
     }
 
@@ -236,7 +296,14 @@ public class GrupoParoquialController {
      * @return o nó raiz da árvore do organograma
      */
     @GetMapping("/organograma")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Obtém a árvore do organograma paroquial")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Organograma retornado com sucesso",
+                    content = @Content(schema = @Schema(implementation = OrganogramaNodeResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public OrganogramaNodeResponse getOrganograma() {
         return getOrganogramaUseCase.execute();
     }

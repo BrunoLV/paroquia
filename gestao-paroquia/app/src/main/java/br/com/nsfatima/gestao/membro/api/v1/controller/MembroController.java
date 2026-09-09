@@ -11,6 +11,12 @@ import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.PromoverACoordenadorUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.UpdateMembroUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -78,6 +84,13 @@ public class MembroController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Cadastra um novo membro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Membro vinculado com sucesso",
+                    content = @Content(schema = @Schema(implementation = MembroResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados do membro inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public MembroResponse create(@RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
         return adicionarMembroUseCase.execute(request, context.actor());
@@ -96,10 +109,15 @@ public class MembroController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lista membros com filtros e paginação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Página de membros recuperada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public Page<MembroResponse> list(
-            @RequestParam(required = false) UUID grupoParoquialId,
-            @RequestParam(required = false) UUID fielId,
-            @RequestParam(required = false) Boolean ativo,
+            @Parameter(description = "ID do grupo paroquial") @RequestParam(required = false) UUID grupoParoquialId,
+            @Parameter(description = "ID do fiel") @RequestParam(required = false) UUID fielId,
+            @Parameter(description = "Status ativo do vínculo") @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 20) Pageable pageable) {
         return listMembrosUseCase.execute(grupoParoquialId, fielId, ativo, pageable);
     }
@@ -114,7 +132,15 @@ public class MembroController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtém detalhes de um membro")
-    public MembroResponse get(@PathVariable UUID id) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membro recuperado com sucesso",
+                    content = @Content(schema = @Schema(implementation = MembroResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Membro não encontrado")
+    })
+    public MembroResponse get(
+            @Parameter(description = "Identificador único do membro") @PathVariable UUID id) {
         return getMembroUseCase.execute(id);
     }
 
@@ -131,8 +157,16 @@ public class MembroController {
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualiza dados de um membro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membro atualizado com sucesso",
+                    content = @Content(schema = @Schema(implementation = MembroResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Membro não encontrado")
+    })
     public MembroResponse update(
-            @PathVariable UUID id,
+            @Parameter(description = "Identificador único do membro") @PathVariable UUID id,
             @RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
         return updateMembroUseCase.execute(id, request, context.actor());
@@ -149,9 +183,15 @@ public class MembroController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Ativa ou desativa um membro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Status do membro alterado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Membro não encontrado")
+    })
     public void toggleStatus(
-            @PathVariable UUID id,
-            @RequestParam boolean ativo) {
+            @Parameter(description = "Identificador único do membro") @PathVariable UUID id,
+            @Parameter(description = "Novo status de ativação") @RequestParam boolean ativo) {
         var context = actorContextResolver.resolveRequired();
         updateMembroUseCase.toggleAtivo(id, ativo, context.actor());
     }
@@ -168,6 +208,13 @@ public class MembroController {
             + " or hasRole('GLOBAL_ADMIN') or hasRole('GLOBAL_PAROCO')"
             + " or hasRole('GLOBAL_VIGARIO') or hasRole('GLOBAL_SECRETARIA_PAROQUIAL') or hasRole('CPP_MESA_CPP')")
     @Operation(summary = "Promove um Fiel membro a coordenador, criando login se necessário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membro promovido a coordenador com sucesso",
+                    content = @Content(schema = @Schema(implementation = PromoverACoordenadorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da promoção inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public PromoverACoordenadorResponse promoverACoordenador(@RequestBody @Valid PromoverACoordenadorRequest request) {
         return promoverACoordenadorUseCase.execute(request);
     }

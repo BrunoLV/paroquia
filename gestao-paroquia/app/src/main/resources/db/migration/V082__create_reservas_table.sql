@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS calendario.reservas (
     CONSTRAINT chk_reservas_tipo_item CHECK (tipo_item IN ('LOCAL', 'ATIVO')),
     CONSTRAINT chk_reservas_status CHECK (status IN ('PENDENTE', 'CONFIRMADA', 'RETIRADO', 'FINALIZADA', 'CANCELADA', 'EXPIRADA')),
     CONSTRAINT fk_reservas_solicitante FOREIGN KEY (solicitante_id) REFERENCES calendario.usuarios (id),
-    CONSTRAINT fk_reservas_pastoral FOREIGN KEY (pastoral_movimento_id) REFERENCES calendario.organizacoes (id),
+    CONSTRAINT fk_reservas_pastoral FOREIGN KEY (pastoral_movimento_id) REFERENCES calendario.grupo_paroquial (id),
     CONSTRAINT fk_reservas_evento FOREIGN KEY (evento_id) REFERENCES calendario.eventos (id)
 );
 
@@ -35,8 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_reservas_concorrencia
     ON calendario.reservas (tipo_item, item_id, status, data_hora_inicio, data_hora_fim);
 
 CREATE INDEX IF NOT EXISTS idx_reservas_expiracao 
-    ON calendario.reservas (status, data_hora_inicio) 
-    WHERE status = 'PENDENTE' AND deleted_at IS NULL;
+    ON calendario.reservas (status, data_hora_inicio);
 
 CREATE INDEX IF NOT EXISTS idx_reservas_evento_id 
     ON calendario.reservas (evento_id);

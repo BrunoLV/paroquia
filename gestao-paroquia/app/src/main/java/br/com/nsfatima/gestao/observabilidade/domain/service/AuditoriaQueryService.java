@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
@@ -90,7 +91,7 @@ public class AuditoriaQueryService {
     private Map<String, Object> deserializeDetails(String json) {
         try {
             return json == null || json.isBlank() ? Map.of() : objectMapper.readValue(json, MAP_TYPE);
-        } catch (tools.jackson.core.JacksonException ex) {
+        } catch (JacksonException ex) {
             return Map.of("raw", json == null ? "" : json);
         }
     }

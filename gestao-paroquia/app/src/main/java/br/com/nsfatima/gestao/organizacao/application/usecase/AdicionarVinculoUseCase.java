@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -152,7 +153,7 @@ public class AdicionarVinculoUseCase {
                 || papel == PapelOrganizacional.PRESIDENTE_CPC;
 
         if (isPapelCoordenador) {
-            java.util.Optional<MembroGrupoEntity> existing;
+            Optional<MembroGrupoEntity> existing;
             if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
                 existing = vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(
                         grupoParoquialId, papel.name(), igrejaVinculoId);

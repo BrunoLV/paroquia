@@ -5,6 +5,9 @@ import br.com.nsfatima.gestao.iam.api.v1.dto.RolesUpdateRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioStatusRequest;
 import br.com.nsfatima.gestao.iam.domain.service.UsuarioAdminService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -53,7 +56,17 @@ public class UsuarioAdminController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
     @Operation(summary = "Enable or disable a user", description = "Global administrators or Organization " +
             "Coordinators can toggle user status.")
-    public void toggleStatus(@PathVariable UUID id, @RequestBody @Valid UsuarioStatusRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Status do usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public void toggleStatus(
+            @Parameter(description = "Identificador único do usuário", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid UsuarioStatusRequest request) {
         usuarioAdminService.toggleActiveStatus(id, request.enabled());
     }
 
@@ -72,7 +85,17 @@ public class UsuarioAdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update user global roles", description = "Only global administrators can update roles.")
-    public void updateRoles(@PathVariable UUID id, @RequestBody @Valid RolesUpdateRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Papéis globais atualizados com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public void updateRoles(
+            @Parameter(description = "Identificador único do usuário", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid RolesUpdateRequest request) {
         usuarioAdminService.updateGlobalRoles(id, request.roles());
     }
 
@@ -93,7 +116,17 @@ public class UsuarioAdminController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
     @Operation(summary = "Reset user password", description = "Global administrators or Organization Coordinators can" +
             " reset passwords.")
-    public void resetPassword(@PathVariable UUID id, @RequestBody @Valid PasswordResetRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public void resetPassword(
+            @Parameter(description = "Identificador único do usuário", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid PasswordResetRequest request) {
         usuarioAdminService.resetPassword(id, request.newPassword());
     }
 }

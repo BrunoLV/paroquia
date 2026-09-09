@@ -2,16 +2,23 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ExportacaoCalendarioUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,28 +38,35 @@ public class ExportacaoCalendarioController {
     }
 
     /**
-     * Gera e retorna o arquivo de exportação do calendário no formato solicitado, aplicando o filtro
-     * de período (ano, mês ou intervalo customizado) e, opcionalmente, restringindo por categorias e
-     * organizações responsáveis. O nome do arquivo é derivado da opção de filtragem para facilitar a
-     * identificação do conteúdo exportado.
+     * Gera e devolve um arquivo (PDF, Excel ou CSV) com os eventos que atendem aos filtros informados.
+     * O arquivo é enviado diretamente no corpo da resposta com o header {@code Content-Disposition}
+     * para download.
      *
-     * @param formato formato de saída: PDF, EXCEL ou CSV (case-insensitive)
-     * @param opcao modo de filtragem por período: ANO, MES ou PERIODO
-     * @param ano ano de referência, obrigatório quando {@code opcao} é ANO ou MES
-     * @param mes mês de referência (1-12), obrigatório quando {@code opcao} é MES
-     * @param dataInicio início do intervalo customizado, usado quando {@code opcao} é PERIODO
-     * @param dataFim fim do intervalo customizado, usado quando {@code opcao} é PERIODO
-     * @param categorias categorias de evento para restringir a exportação; se omitido, inclui todas
-     * @param grupoParoquialIds organizações responsáveis para restringir a exportação; se omitido, inclui todas
-     * @return o arquivo exportado com os cabeçalhos de content-type e content-disposition apropriados,
-     *     ou {@code 400 Bad Request} caso o formato informado não seja reconhecido
+     * @param formato formato de saída (PDF, EXCEL ou CSV); padrão PDF
+     * @param opcao recorte temporal (MES, ANO ou CUSTOMIZADO); padrão MES
+     * @param ano ano de referência para recortes MES e ANO
+     * @param mes mês de referência (1-12) para recorte MES
+     * @param dataInicio início do período para recorte CUSTOMIZADO (ISO-8601)
+     * @param dataFim fim do período para recorte CUSTOMIZADO (ISO-8601)
+     * @param categorias lista opcional de categorias para filtrar
+     * @param grupoParoquialIds lista opcional de organizações para filtrar
+     * @return arquivo gerado para download
      */
     @GetMapping("/exportar")
-    @Operation(summary = "Exportar calendário", description = "Exporta os eventos do calendário nos formatos PDF, " +
-            "Excel ou CSV com base em filtros de período.")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Exporta o calendário de eventos em arquivo (PDF, Excel ou CSV)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Arquivo exportado com sucesso",
+                    content = @Content(schema = @Schema(type = "string", format = "binary"))),
+            @ApiResponse(responseCode = "400", description = "Parâmetros de exportação inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public ResponseEntity<byte[]> exportar(
-            @Parameter(description = "Formato de exportação: PDF, EXCEL, CSV") @RequestParam String formato,
-            @Parameter(description = "Opção de filtragem: ANO, MES, PERIODO") @RequestParam String opcao,
+            @Parameter(description = "Formato do arquivo (PDF, EXCEL ou CSV)") @RequestParam(defaultValue = "PDF")
+            String formato,
+            @Parameter(description = "Tipo de período (MES, ANO ou CUSTOMIZADO)") @RequestParam(defaultValue = "MES")
+            String opcao,
             @Parameter(description = "Ano para exportação (ex: 2026)") @RequestParam(required = false) Integer ano,
             @Parameter(description = "Mês para exportação (1-12)") @RequestParam(required = false) Integer mes,
             @Parameter(description = "Data inicial para período customizado (ISO-8601)") @RequestParam(required = false)
@@ -60,9 +74,9 @@ public class ExportacaoCalendarioController {
             @Parameter(description = "Data final para período customizado (ISO-8601)") @RequestParam(required = false)
             Instant dataFim,
             @Parameter(description = "Filtrar por múltiplas categorias") @RequestParam(required = false)
-            java.util.List<String> categorias,
+            List<String> categorias,
             @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false)
-            java.util.List<UUID> grupoParoquialIds) {
+            List<UUID> grupoParoquialIds) {
 
         byte[] content = exportUseCase.execute(formato,
                 opcao, ano, mes, dataInicio, dataFim, categorias, grupoParoquialIds);

@@ -14,7 +14,13 @@ import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularSla
 import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularTaxaProjetosUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.metrics.VerificarConcorrenciaInterpastoralUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +38,7 @@ import java.util.List;
 @Tag(
         name = "Métricas Estratégicas e Preditivas",
         description = "Endpoints para consulta de inteligência pastoral e governança paroquial (Clero, CPP e CAE)")
+@PreAuthorize("isAuthenticated()")
 public class MetricaEstrategicaController {
 
     private final CalcularSazonalidadeLiturgicaUseCase calcularSazonalidadeLiturgicaUseCase;
@@ -64,6 +71,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/painel")
     @Operation(summary = "Obtém painel consolidado com as 6 métricas estratégicas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Painel consolidado retornado com sucesso",
+                    content = @Content(schema = @Schema(implementation = MetricasEstrategicasPainelResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public MetricasEstrategicasPainelResponse getPainelConsolidado() {
         return new MetricasEstrategicasPainelResponse(
                 calcularSazonalidadeLiturgicaUseCase.execute(),
@@ -83,6 +96,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/sazonalidade-liturgica")
     @Operation(summary = "Índice de Sazonalidade Litúrgica e Preditividade Pastoral")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Índice de sazonalidade retornado com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SazonalidadeLiturgicaResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<SazonalidadeLiturgicaResponse> getSazonalidadeLiturgica() {
         return calcularSazonalidadeLiturgicaUseCase.execute();
     }
@@ -95,6 +114,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/taxa-projetos")
     @Operation(summary = "Taxa de Conclusão e Abandono de Projetos (CPP/CAE)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Taxa de projetos retornada com sucesso",
+                    content = @Content(schema = @Schema(implementation = TaxaConclusaoProjetosResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public TaxaConclusaoProjetosResponse getTaxaProjetos() {
         return calcularTaxaProjetosUseCase.execute();
     }
@@ -107,6 +132,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/sla-despacho")
     @Operation(summary = "SLA de Despacho Pastoral (Tempo Médio de Homologação)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SLA de despacho pastoral retornado com sucesso",
+                    content = @Content(schema = @Schema(implementation = SlaDespachoPastoralResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public SlaDespachoPastoralResponse getSlaDespacho() {
         return calcularSlaDespachoPastoralUseCase.execute();
     }
@@ -119,6 +150,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/impacto-social")
     @Operation(summary = "Coeficiente de Impacto Social (Pastoral em Saída)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Coeficiente de impacto social retornado com sucesso",
+                    content = @Content(schema = @Schema(implementation = CoeficienteImpactoSocialResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public CoeficienteImpactoSocialResponse getImpactoSocial() {
         return calcularImpactoSocialUseCase.execute();
     }
@@ -132,6 +169,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/concorrencia-interpastoral")
     @Operation(summary = "Alerta de Concorrência Interpastoral (Overlap Conflict)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Concorrência interpastoral avaliada com sucesso",
+                    content = @Content(schema = @Schema(implementation = ConcorrenciaInterpastoralResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public ConcorrenciaInterpastoralResponse getConcorrenciaInterpastoral() {
         return verificarConcorrenciaInterpastoralUseCase.execute();
     }
@@ -144,6 +187,12 @@ public class MetricaEstrategicaController {
      */
     @GetMapping("/ociosidade-patrimonial")
     @Operation(summary = "Índice de Ociosidade Patrimonial de Espaços e Salas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Índice de ociosidade patrimonial retornado com sucesso",
+                    content = @Content(schema = @Schema(implementation = OciosidadePatrimonialResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public OciosidadePatrimonialResponse getOciosidadePatrimonial() {
         return calcularOciosidadePatrimonialUseCase.execute();
     }

@@ -6,6 +6,12 @@ import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.service.LocalService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -56,6 +62,13 @@ public class LocalController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new location", description = "Only administrators can create locations.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Local criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = LocalResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public LocalResponse create(@RequestBody @Valid LocalRequest request) {
         Local local = localService.createLocal(
                 request.nome(),
@@ -78,7 +91,18 @@ public class LocalController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing location", description = "Only administrators can update locations.")
-    public LocalResponse update(@PathVariable UUID id, @RequestBody @Valid LocalRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Local atualizado com sucesso",
+                    content = @Content(schema = @Schema(implementation = LocalResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Local não encontrado")
+    })
+    public LocalResponse update(
+            @Parameter(description = "Identificador único do local", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid LocalRequest request) {
         Local local = localService.updateLocal(
                 id,
                 request.nome(),
@@ -102,7 +126,16 @@ public class LocalController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete a location", description = "Only administrators can delete locations. Cannot delete " +
             "locations with scheduled future events.")
-    public void delete(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Local excluído com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Não é possível excluir local com eventos futuros"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Local não encontrado")
+    })
+    public void delete(
+            @Parameter(description = "Identificador único do local", required = true)
+            @PathVariable UUID id) {
         localService.deleteLocal(id);
     }
 
@@ -113,8 +146,18 @@ public class LocalController {
      * @return Detalhes do local ou 404 se não encontrado
      */
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get location details")
-    public ResponseEntity<LocalResponse> get(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Local encontrado com sucesso",
+                    content = @Content(schema = @Schema(implementation = LocalResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Local não encontrado")
+    })
+    public ResponseEntity<LocalResponse> get(
+            @Parameter(description = "Identificador único do local", required = true)
+            @PathVariable UUID id) {
         return localService.getLocal(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
@@ -129,9 +172,18 @@ public class LocalController {
      * @return Lista de locais cadastrados
      */
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "List all locations")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de locais retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocalResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<LocalResponse> list(
+            @Parameter(description = "Filtro opcional por organização/grupo paroquial")
             @RequestParam(required = false) UUID grupoParoquialId,
+            @Parameter(description = "Alias para grupoParoquialId")
             @RequestParam(required = false) UUID igrejaId) {
         UUID idFiltro = igrejaId != null ? igrejaId : grupoParoquialId;
         return localService.listLocais(idFiltro).stream()

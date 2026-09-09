@@ -6,8 +6,10 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Paroq
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -75,7 +77,7 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
             if (logoBytes != null && logoBytes.length > 0) {
                 try {
                     int pictureIdx = workbook.addPicture(logoBytes, Workbook.PICTURE_TYPE_PNG);
-                    org.apache.poi.ss.usermodel.CreationHelper helper = workbook.getCreationHelper();
+                    CreationHelper helper = workbook.getCreationHelper();
                     Drawing<?> drawing = sheet.createDrawingPatriarch();
                     ClientAnchor anchor = helper.createClientAnchor();
                     anchor.setCol1(0);
@@ -90,7 +92,7 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
 
             // Título e Subtítulo ao lado do Logo
             CellStyle titleStyle = workbook.createCellStyle();
-            org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+            Font titleFont = workbook.createFont();
             titleFont.setBold(true);
             titleFont.setFontHeightInPoints((short) 14);
             titleStyle.setFont(titleFont);
@@ -101,7 +103,7 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
             cellTitle.setCellStyle(titleStyle);
 
             CellStyle periodStyle = workbook.createCellStyle();
-            org.apache.poi.ss.usermodel.Font periodFont = workbook.createFont();
+            Font periodFont = workbook.createFont();
             periodFont.setItalic(true);
             periodFont.setFontHeightInPoints((short) 10);
             periodStyle.setFont(periodFont);
@@ -115,7 +117,7 @@ public class ExcelCalendarioExporter implements CalendarioExporter {
             CellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+            Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 

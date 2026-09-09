@@ -8,8 +8,13 @@ import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAudi
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +31,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/eventos")
 @Tag(name = "Envolvidos no Evento", description = "Endpoints para gerenciar pastorais e movimentos envolvidos em um " +
         "evento")
+@PreAuthorize("isAuthenticated()")
 public class EventoEnvolvidoController {
 
     private final UpdateEventoEnvolvidosUseCase updateEventoEnvolvidosUseCase;
@@ -55,6 +61,14 @@ public class EventoEnvolvidoController {
      */
     @PutMapping("/{eventoId}/envolvidos")
     @Operation(summary = "Atualiza envolvidos", description = "Substitui a lista de organizações envolvidas no evento.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de envolvidos atualizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = EventoEnvolvidosResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    })
     public EventoEnvolvidosResponse putEnvolvidos(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
             @RequestBody @Valid EventoEnvolvidosRequest payload) {
@@ -78,6 +92,13 @@ public class EventoEnvolvidoController {
     @DeleteMapping("/{eventoId}/envolvidos")
     @Operation(summary = "Remove todos os envolvidos", description = "Limpa a lista de organizações envolvidas no " +
             "evento.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Envolvidos removidos com sucesso",
+                    content = @Content(schema = @Schema(implementation = EventoEnvolvidosResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    })
     public EventoEnvolvidosResponse clearEnvolvidos(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();

@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class ListGrupoParoquialMembrosUseCase {
     @Transactional(readOnly = true)
     public List<GrupoParoquialMembroResponse> execute(UUID grupoParoquialId) {
         var vinculosBrutos =
-                new java.util.ArrayList<>(vinculoRepository.findByGrupoParoquialIdAndAtivoTrue(grupoParoquialId));
+                new ArrayList<>(vinculoRepository.findByGrupoParoquialIdAndAtivoTrue(grupoParoquialId));
         var membrosIgreja = vinculoRepository.findByIgrejaVinculoIdAndAtivoTrue(grupoParoquialId);
         for (var cm : membrosIgreja) {
             if (vinculosBrutos.stream().noneMatch(m -> m.getFielId().equals(cm.getFielId()))) {
@@ -63,7 +64,7 @@ public class ListGrupoParoquialMembrosUseCase {
                         m.isAtivo()))
                 .toList();
 
-        List<GrupoParoquialMembroResponse> membros = new java.util.ArrayList<>(membrosBanco);
+        List<GrupoParoquialMembroResponse> membros = new ArrayList<>(membrosBanco);
 
         var orgOpt = grupoParoquialRepository.findById(grupoParoquialId);
         if (orgOpt.isPresent()) {

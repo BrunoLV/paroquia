@@ -5,6 +5,12 @@ import br.com.nsfatima.gestao.organizacao.api.v1.dto.UnidadeTerritorialResponse;
 import br.com.nsfatima.gestao.organizacao.domain.service.UnidadeTerritorialService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,7 +45,14 @@ public class UnidadeTerritorialController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "List all territorial units")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de unidades territoriais retornada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UnidadeTerritorialResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<UnidadeTerritorialResponse> list() {
         return service.listAll().stream()
                 .map(this::toResponse)
@@ -47,8 +60,18 @@ public class UnidadeTerritorialController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get territorial unit details")
-    public ResponseEntity<UnidadeTerritorialResponse> get(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Unidade territorial encontrada com sucesso",
+                    content = @Content(schema = @Schema(implementation = UnidadeTerritorialResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Unidade territorial não encontrada")
+    })
+    public ResponseEntity<UnidadeTerritorialResponse> get(
+            @Parameter(description = "Identificador único da unidade territorial", required = true)
+            @PathVariable UUID id) {
         return service.findById(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
@@ -59,6 +82,13 @@ public class UnidadeTerritorialController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Create a new territorial unit")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Unidade territorial criada com sucesso",
+                    content = @Content(schema = @Schema(implementation = UnidadeTerritorialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public UnidadeTerritorialResponse create(@RequestBody @Valid UnidadeTerritorialRequest request) {
         UnidadeTerritorialEntity entity = service.create(
                 request.nome(),
@@ -73,8 +103,18 @@ public class UnidadeTerritorialController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Update an existing territorial unit")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Unidade territorial atualizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = UnidadeTerritorialResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Unidade territorial não encontrada")
+    })
     public UnidadeTerritorialResponse update(
-            @PathVariable UUID id, @RequestBody @Valid UnidadeTerritorialRequest request) {
+            @Parameter(description = "Identificador único da unidade territorial", required = true)
+            @PathVariable UUID id,
+            @RequestBody @Valid UnidadeTerritorialRequest request) {
         UnidadeTerritorialEntity entity = service.update(
                 id,
                 request.nome(),
@@ -90,7 +130,15 @@ public class UnidadeTerritorialController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
     @Operation(summary = "Delete a territorial unit")
-    public void delete(@PathVariable UUID id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Unidade territorial excluída com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Unidade territorial não encontrada")
+    })
+    public void delete(
+            @Parameter(description = "Identificador único da unidade territorial", required = true)
+            @PathVariable UUID id) {
         service.delete(id);
     }
 

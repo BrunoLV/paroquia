@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.projeto.domain.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -55,5 +56,5 @@ public interface ProjetoEventoProvider {
      * @param projetoId ID do projeto.
      * @return lista de nomes de organizações envolvidas, sem duplicatas.
      */
-    java.util.List<String> findInvolvedOrganizationNames(UUID projetoId);
+    List<String> findInvolvedOrganizationNames(UUID projetoId);
 }

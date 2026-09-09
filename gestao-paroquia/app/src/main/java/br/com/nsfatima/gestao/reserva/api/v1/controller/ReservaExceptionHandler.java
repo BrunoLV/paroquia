@@ -87,8 +87,8 @@ public class ReservaExceptionHandler extends BaseExceptionHandler {
     /**
      * Trata transições ou argumentos de negócio inválidos no ciclo de vida da reserva.
      */
-    @ExceptionHandler({ReservaOperacaoInvalidaException.class, IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<ValidationErrorResponse> handleOperacaoInvalida(RuntimeException ex) {
+    @ExceptionHandler(ReservaOperacaoInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleOperacaoInvalida(ReservaOperacaoInvalidaException ex) {
         return buildValidation(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.DOMAIN_RULE_VIOLATION,

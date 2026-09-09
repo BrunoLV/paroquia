@@ -12,6 +12,7 @@ import br.com.nsfatima.gestao.calendario.domain.service.PrioridadeAgendaValidato
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
@@ -27,6 +28,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,7 +63,7 @@ public class UpdateEventoUseCase {
     private final EventoAuditPublisher auditPublisher;
     private final PrioridadeAgendaValidatorService agendaPriorityValidatorService;
     private final CacheManager cacheManager;
-    private final br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService;
+    private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
     public UpdateEventoUseCase(
             EventoDomainService domainService,
@@ -79,7 +81,7 @@ public class UpdateEventoUseCase {
             EventoAuditPublisher auditPublisher,
             PrioridadeAgendaValidatorService agendaPriorityValidatorService,
             CacheManager cacheManager,
-            br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService) {
+            EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
         this.repository = repository;
         this.recurrenceRepository = recurrenceRepository;
@@ -320,7 +322,7 @@ public class UpdateEventoUseCase {
             projetoVincularPolicy.validateLink(projetoId, inicio, fim);
         }
 
-        br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento cat = request.categoria() != null
+        CategoriaEvento cat = request.categoria() != null
                 ? request.categoria()
                 : entity.getCategoria();
         UUID local = request.localId() != null ? request.localId() : entity.getLocalId();

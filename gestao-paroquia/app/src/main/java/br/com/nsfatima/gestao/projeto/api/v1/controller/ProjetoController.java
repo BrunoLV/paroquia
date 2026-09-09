@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,11 +102,14 @@ public class ProjetoController {
      * @return Dados do projeto criado ou da solicitação de aprovação
      */
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Cria um novo projeto", description = "Registra um novo projeto no sistema.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Projeto criado com sucesso"),
             @ApiResponse(responseCode = "202", description = "Solicitação de criação encaminhada para aprovação"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public ResponseEntity<?> create(@RequestBody @Valid ProjetoCreateRequest request) {
         var context = actorContextResolver.resolveRequired();
@@ -130,7 +134,13 @@ public class ProjetoController {
      * @return Lista de todos os projetos cadastrados
      */
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista todos os projetos", description = "Retorna uma lista de todos os projetos cadastrados.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Projetos listados com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<ProjetoResponse> list() {
         return listProjetosUseCase.execute();
     }
@@ -147,9 +157,13 @@ public class ProjetoController {
      * @return Dados atualizados do projeto
      */
     @PatchMapping("/{projetoId}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Atualiza um projeto", description = "Atualiza parcialmente os dados de um projeto existente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Projeto atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
     })
     public ProjetoResponse patch(
@@ -172,10 +186,13 @@ public class ProjetoController {
      * @return Resumo consolidado de indicadores do projeto
      */
     @GetMapping("/{projetoId}/resumo")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Obtém resumo do projeto", description = "Retorna dados agregados de execução, colaboração e" +
             " saúde temporal do projeto.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Resumo retornado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
     })
     public ProjetoResumoDTO getResumo(
@@ -184,23 +201,53 @@ public class ProjetoController {
     }
 
     @PostMapping("/{projetoId}/iniciar")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Inicia um projeto", description = "Altera o status de um projeto de ABERTO para " +
             "EM_ANDAMENTO.")
-    public ProjetoResponse iniciar(@PathVariable UUID projetoId) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Projeto iniciado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Transição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
+    })
+    public ProjetoResponse iniciar(
+            @Parameter(description = "ID único do projeto", required = true)
+            @PathVariable UUID projetoId) {
         return transitionProjetoUseCase.iniciar(projetoId);
     }
 
     @PostMapping("/{projetoId}/concluir")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Conclui um projeto", description = "Altera o status de um projeto de EM_ANDAMENTO para " +
             "CONCLUIDO.")
-    public ProjetoResponse concluir(@PathVariable UUID projetoId) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Projeto concluído com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Transição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
+    })
+    public ProjetoResponse concluir(
+            @Parameter(description = "ID único do projeto", required = true)
+            @PathVariable UUID projetoId) {
         return transitionProjetoUseCase.concluir(projetoId);
     }
 
     @PostMapping("/{projetoId}/cancelar")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Cancela um projeto", description = "Cancela um projeto e atualiza o status de seus eventos " +
             "conforme a opção selecionada.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Projeto cancelado diretamente com sucesso"),
+            @ApiResponse(responseCode = "202", description = "Solicitação de cancelamento encaminhada para aprovação"),
+            @ApiResponse(responseCode = "400", description = "Transição inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
+    })
     public ResponseEntity<?> cancelar(
+            @Parameter(description = "ID único do projeto", required = true)
             @PathVariable UUID projetoId,
             @RequestBody CancelarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
@@ -216,9 +263,18 @@ public class ProjetoController {
     }
 
     @PostMapping("/solicitacoes/{solicitacaoId}/decisao")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Decide sobre uma solicitação", description = "Aprova ou rejeita uma solicitação de criação " +
             "ou cancelamento de projeto.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Decisão registrada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Decisão inválida"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
+    })
     public ResponseEntity<?> decidir(
+            @Parameter(description = "ID único da solicitação", required = true)
             @PathVariable UUID solicitacaoId,
             @RequestBody @Valid ProjetoDecisaoRequest request) {
         var response = transitionProjetoUseCase.decidir(solicitacaoId, request.aprovado(), request.observacao());
@@ -226,9 +282,16 @@ public class ProjetoController {
     }
 
     @GetMapping("/solicitacoes")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista solicitações de aprovação de projetos", description = "Retorna uma lista de " +
             "solicitações de criação ou cancelamento de projetos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Solicitações listadas com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<ProjetoAprovacaoResponse> listSolicitacoes(
+            @Parameter(description = "Filtro opcional por status da solicitação")
             @RequestParam(required = false) String status) {
         var solicitacoes = status != null ?
                 aprovacaoRepository.findByStatus(AprovacaoStatus.fromJson(status)) :

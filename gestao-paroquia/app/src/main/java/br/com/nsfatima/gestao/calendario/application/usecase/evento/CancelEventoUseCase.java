@@ -26,6 +26,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public class CancelEventoUseCase {
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final AprovacaoAcaoPayloadMapper payloadMapper;
     private final CacheManager cacheManager;
-    private final br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService;
+    private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
     public CancelEventoUseCase(
             EventoJpaRepository eventoJpaRepository,
@@ -65,7 +66,7 @@ public class CancelEventoUseCase {
             CadastroEventoMetricsPublisher metricsPublisher,
             AprovacaoAcaoPayloadMapper payloadMapper,
             CacheManager cacheManager,
-            br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService) {
+            EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.eventoJpaRepository = eventoJpaRepository;
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
         this.actorContextResolver = actorContextResolver;

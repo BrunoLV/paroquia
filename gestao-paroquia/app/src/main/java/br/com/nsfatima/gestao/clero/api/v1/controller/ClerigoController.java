@@ -15,6 +15,12 @@ import br.com.nsfatima.gestao.fiel.api.v1.dto.CriarRelacionamentoFamiliarRequest
 import br.com.nsfatima.gestao.fiel.api.v1.dto.RelacionamentoFamiliarResponse;
 import br.com.nsfatima.gestao.fiel.application.usecase.GerenciarRelacionamentoFamiliarUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -56,6 +62,12 @@ public class ClerigoController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Lista clérigos ativos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de clérigos recuperada com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClerigoResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<ClerigoResponse> listar() {
         return useCase.listar();
     }
@@ -63,6 +75,11 @@ public class ClerigoController {
     @GetMapping("/institucional")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista o diretório institucional sem PII")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Diretório institucional recuperado com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClerigoInstitucionalResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado")
+    })
     public List<ClerigoInstitucionalResponse> diretorio() {
         return useCase.diretorio();
     }
@@ -70,6 +87,12 @@ public class ClerigoController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Obtém perfil do clérigo autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil próprio recuperado com sucesso",
+                    content = @Content(schema = @Schema(implementation = ClerigoResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo não vinculado ao usuário")
+    })
     public ClerigoResponse perfilProprio() {
         return useCase.obterPorUsuario(actor.resolveRequired().usuarioId());
     }
@@ -77,7 +100,15 @@ public class ClerigoController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Obtém cadastro clerical")
-    public ClerigoResponse obter(@PathVariable UUID id) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cadastro clerical recuperado com sucesso",
+                    content = @Content(schema = @Schema(implementation = ClerigoResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")
+    })
+    public ClerigoResponse obter(
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID id) {
         return useCase.obter(id);
     }
 
@@ -85,6 +116,13 @@ public class ClerigoController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Cadastra clérigo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Clérigo cadastrado com sucesso",
+                    content = @Content(schema = @Schema(implementation = ClerigoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados cadastrais inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public ClerigoResponse criar(@RequestBody @Valid ClerigoRequest request) {
         return useCase.criar(request, actor.resolveRequired().actor());
     }
@@ -92,7 +130,17 @@ public class ClerigoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Atualiza clérigo")
-    public ClerigoResponse atualizar(@PathVariable UUID id, @RequestBody @Valid ClerigoRequest request) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clérigo atualizado com sucesso",
+                    content = @Content(schema = @Schema(implementation = ClerigoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")
+    })
+    public ClerigoResponse atualizar(
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID id,
+            @RequestBody @Valid ClerigoRequest request) {
         return useCase.atualizar(id, request, actor.resolveRequired().actor());
     }
 
@@ -100,7 +148,14 @@ public class ClerigoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Inativa logicamente clérigo")
-    public void inativar(@PathVariable UUID id) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Clérigo inativado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")
+    })
+    public void inativar(
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID id) {
         var context = actor.resolveRequired();
         useCase.inativar(id, context.actor(), context.usuarioId());
     }
@@ -108,13 +163,27 @@ public class ClerigoController {
     @GetMapping("/{id}/historico-encargos")
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Lista histórico de encargos e provisões do clérigo")
-    public List<EncargoClericalResponse> listarEncargos(@PathVariable UUID id) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Histórico de encargos recuperado com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = EncargoClericalResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")
+    })
+    public List<EncargoClericalResponse> listarEncargos(
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID id) {
         return useCase.listarEncargos(id);
     }
 
     @GetMapping("/solicitacoes-ajuste")
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Lista solicitações de ajuste cadastral pendentes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Solicitações pendentes recuperadas com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SolicitacaoAjusteClericalResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<SolicitacaoAjusteClericalResponse> listarSolicitacoesAjuste() {
         return ajusteUseCase.listarPendentes();
     }
@@ -123,6 +192,12 @@ public class ClerigoController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Submete solicitação de ajuste cadastral pelo próprio clérigo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Solicitação de ajuste criada com sucesso",
+                    content = @Content(schema = @Schema(implementation = UUID.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da solicitação inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado")
+    })
     public UUID solicitarAjuste(@RequestBody @Valid SolicitarAjusteClericalRequest request) {
         return ajusteUseCase.solicitar(actor.resolveRequired().usuarioId(), request);
     }
@@ -131,14 +206,31 @@ public class ClerigoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Aprova ou rejeita solicitação de ajuste clerical")
-    public void decidirAjuste(@PathVariable UUID id, @RequestBody @Valid DecidirAjusteClericalRequest request) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Decisão registrada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados da decisão inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
+    })
+    public void decidirAjuste(
+            @Parameter(description = "Identificador único da solicitação") @PathVariable UUID id,
+            @RequestBody @Valid DecidirAjusteClericalRequest request) {
         ajusteUseCase.decidir(id, actor.resolveRequired().usuarioId(), request.aprovar(), request.justificativa());
     }
 
     @GetMapping("/{clerigoId}/familiares")
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Lista vínculos familiares do clérigo")
-    public List<RelacionamentoFamiliarResponse> listarFamiliares(@PathVariable UUID clerigoId) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vínculos familiares recuperados com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = RelacionamentoFamiliarResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")
+    })
+    public List<RelacionamentoFamiliarResponse> listarFamiliares(
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID clerigoId) {
         return familiaUseCase.listar(clerigoId, TipoPessoaFamiliar.CLERIGO);
     }
 
@@ -146,8 +238,16 @@ public class ClerigoController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Adiciona vínculo familiar para o clérigo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Vínculo familiar criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = UUID.class))),
+            @ApiResponse(responseCode = "400", description = "Dados da relação inválidos"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Clérigo ou parente não encontrado")
+    })
     public UUID adicionarFamiliar(
-            @PathVariable UUID clerigoId,
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID clerigoId,
             @RequestBody @Valid CriarRelacionamentoFamiliarRequest request) {
         return familiaUseCase.criar(
                 clerigoId,
@@ -162,7 +262,15 @@ public class ClerigoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
     @Operation(summary = "Remove vínculo familiar do clérigo")
-    public void removerFamiliar(@PathVariable UUID clerigoId, @PathVariable UUID relacaoId) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Vínculo familiar removido com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Vínculo familiar não encontrado")
+    })
+    public void removerFamiliar(
+            @Parameter(description = "Identificador único do clérigo") @PathVariable UUID clerigoId,
+            @Parameter(description = "Identificador único da relação familiar") @PathVariable UUID relacaoId) {
         familiaUseCase.remover(relacaoId, actor.resolveRequired().usuarioId());
     }
 }

@@ -30,6 +30,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class CreateEventoUseCase {
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
 
-    private final br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService;
+    private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
     public CreateEventoUseCase(
             EventoDomainService domainService,
@@ -88,7 +89,7 @@ public class CreateEventoUseCase {
             MotorLiturgico liturgicalEngine,
             CicloLiturgicoRepository cicloLiturgicoRepository,
             ProvisionamentoLiturgicoService liturgicalProvisioningService,
-            br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService eventoReservaIntegrationService) {
+            EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
         this.repository = repository;
         this.involvementRepository = involvementRepository;

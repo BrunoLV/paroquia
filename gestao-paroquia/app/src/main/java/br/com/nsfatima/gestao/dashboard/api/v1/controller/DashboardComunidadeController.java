@@ -8,6 +8,11 @@ import br.com.nsfatima.gestao.dashboard.application.usecase.ListarAniversariante
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +58,12 @@ public class DashboardComunidadeController {
     @Operation(summary = "Lista os aniversariantes do período",
             description = "Retorna primeiro nome e dia/mês dos fiéis ativos que autorizaram a divulgação do "
                     + "aniversário e cujo dia/mês cai na janela informada.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Aniversariantes listados com sucesso",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AniversarianteDTO.class)))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public List<AniversarianteDTO> getAniversariantes(
             @Parameter(description = "Recorte temporal (HOJE, SEMANA ou MES)")
             @RequestParam(defaultValue = "SEMANA") PeriodoDashboard janela) {
@@ -67,8 +78,15 @@ public class DashboardComunidadeController {
      * @return índice de retenção de pastorais
      */
     @GetMapping("/comunidade")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Índice de retenção de pastorais",
             description = "Pastorais/movimentos/ministérios com número crítico de voluntários ou sem coordenador.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Métricas de comunidade retornadas com sucesso",
+                    content = @Content(schema = @Schema(implementation = DashboardComunidadeDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public DashboardComunidadeDTO getComunidade(
             @Parameter(description = "Organização a filtrar; ausente usa o escopo do ator")
             @RequestParam(required = false) UUID grupoParoquialId) {

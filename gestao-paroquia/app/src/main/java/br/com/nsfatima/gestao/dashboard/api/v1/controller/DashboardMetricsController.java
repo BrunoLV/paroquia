@@ -6,7 +6,12 @@ import br.com.nsfatima.gestao.dashboard.application.usecase.GetDashboardMetricsU
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,9 +50,16 @@ public class DashboardMetricsController {
      * @return métricas consolidadas do dashboard
      */
     @GetMapping("/metrics")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Obtém as métricas do dashboard",
             description = "Resumo geral, distribuição por organização e status, projetos ativos, eventos órfãos e "
                     + "agenda da semana, no recorte temporal e organização selecionados.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Métricas consolidadas retornadas com sucesso",
+                    content = @Content(schema = @Schema(implementation = DashboardMetricsDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     public DashboardMetricsDTO getMetrics(
             @Parameter(description = "Recorte temporal do filtro global")
             @RequestParam(defaultValue = "SEMANA") PeriodoDashboard periodo,
