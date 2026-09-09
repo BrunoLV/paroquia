@@ -190,35 +190,35 @@ public class ReservaController {
         return ReservaResponse.de(dto);
     }
 
-    @PostMapping("/{id}/aprovar")
+    @RequestMapping(value = "/{id}/aprovar", method = {org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.PATCH})
     public ReservaResponse aprovar(@PathVariable UUID id) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva aprovada = aprovarReservaUseCase.executar(id, ator);
         return ReservaResponse.de(enricherService.enriquecer(aprovada));
     }
 
-    @PostMapping("/{id}/rejeitar")
+    @RequestMapping(value = "/{id}/rejeitar", method = {org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.PATCH})
     public ReservaResponse rejeitar(@PathVariable UUID id, @RequestBody @Valid RejeitarReservaRequest request) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva rejeitada = rejeitarReservaUseCase.executar(id, request.motivo(), ator);
         return ReservaResponse.de(enricherService.enriquecer(rejeitada));
     }
 
-    @PostMapping("/{id}/cancelar")
+    @RequestMapping(value = "/{id}/cancelar", method = {org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.PATCH})
     public ReservaResponse cancelar(@PathVariable UUID id, @RequestBody @Valid CancelarReservaRequest request) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva cancelada = cancelarReservaUseCase.executar(id, request.motivo(), request.itemNome(), ator);
         return ReservaResponse.de(enricherService.enriquecer(cancelada));
     }
 
-    @PostMapping("/{id}/retirar")
+    @RequestMapping(value = "/{id}/retirar", method = {org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.PATCH})
     public ReservaResponse registrarRetirada(@PathVariable UUID id) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva retirada = registrarRetiradaAtivoUseCase.executar(id, ator);
         return ReservaResponse.de(enricherService.enriquecer(retirada));
     }
 
-    @PostMapping("/{id}/devolver")
+    @RequestMapping(value = "/{id}/devolver", method = {org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.PATCH})
     public ReservaResponse registrarDevolucao(@PathVariable UUID id, @RequestBody @Valid RegistrarDevolucaoRequest request) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva devolvida = registrarDevolucaoAtivoUseCase.executar(id, request.checkAvarias(), ator);
