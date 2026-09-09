@@ -3415,8 +3415,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/support/api/v1/error/ErrorCodes.java": {
-    "mtime": 1786036367.2949533,
-    "ast_hash": "fde8588fa2d03d817bff9bb623c1e417",
+    "mtime": 1788915218.3211505,
+    "ast_hash": "c2baf75700194ce4f355e9a95b35fd1d",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/support/api/v1/error/ValidationErrorItem.java": {
@@ -6055,8 +6055,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaController.java": {
-    "mtime": 1788914701.421146,
-    "ast_hash": "a64c31d3b11f80ebb355fc7fe41212d3",
+    "mtime": 1788915254.2061508,
+    "ast_hash": "458d7d2560dc3d980eb56cdf4eb4ad81",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/dto/CancelarReservaRequest.java": {
@@ -6307,6 +6307,11 @@
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/domain/service/ReservaConflitoServiceTest.java": {
     "mtime": 1788878774.223943,
     "ast_hash": "6ca317a9a6dec08d6a482c3b259e5f77",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaExceptionHandler.java": {
+    "mtime": 1788915231.0231504,
+    "ast_hash": "560a7e7ca0f59df3248237ade01cac04",
     "semantic_hash": ""
   }
 }
