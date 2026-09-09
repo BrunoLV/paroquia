@@ -105,7 +105,22 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
 
 ---
 
-## 7. Referência de Comandos
+## 7. Padrões de Controllers REST e Exception Handling
+
+* **Controllers REST:**
+  * **Anotações OpenAPI Obrigatórias:** `@Tag(name = ..., description = ...)` no nível da classe; `@Operation(summary = ..., description = ...)`, `@ApiResponses` com `@ApiResponse` para cada código HTTP e `@Parameter` para parâmetros de rota/query.
+  * **Segurança Declarativa:** Obrigatório `@PreAuthorize` no nível da classe ou método (ex.: `@PreAuthorize("isAuthenticated()")`).
+  * **Verbos HTTP Semânticos:** Proibido `@RequestMapping(method = ...)` genérico; use mapeamentos explícitos (`@GetMapping`, `@PostMapping`, `@PutMapping`, `@PatchMapping`, `@DeleteMapping`).
+  * **Zero `@ExceptionHandler` Inline:** É terminantemente proibido declarar métodos `@ExceptionHandler` dentro de classes `@RestController`.
+* **Exception Handling por Bounded Context:**
+  * **Um `@RestControllerAdvice` por Bounded Context:** Todo módulo deve possuir seu próprio advice (ex.: `PatrimonioExceptionHandler`, `ReservaExceptionHandler`, `AprovacaoExceptionHandler`) localizado em `infrastructure/rest/`.
+  * **Herança Mandatória:** Todo advice de módulo **DEVE** herdar de `BaseExceptionHandler` e anotar-se com `@Order(2)` (ou prioridade mais específica `@Order(3)`).
+  * **Formato de Resposta Unificado:** Exceções capturadas devem retornar `ResponseEntity<ValidationErrorResponse>` consumindo o catálogo `ErrorCodes`.
+  * **Handlers Globais:** O `GlobalDomainExceptionHandler` em `support` é reservado apenas como fallback para módulos transversais legados sem advice dedicado. Nunca sobrecarregue o global com regras de Bounded Contexts estruturados.
+
+---
+
+## 8. Referência de Comandos
 
 ### Graphify (Executar a partir de `gestao-paroquia/`)
 * Consultar base de código: `graphify query "<pergunta>"`
