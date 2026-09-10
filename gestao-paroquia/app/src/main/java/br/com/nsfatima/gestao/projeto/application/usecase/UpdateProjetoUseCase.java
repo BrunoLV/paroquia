@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
 import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
+import br.com.nsfatima.gestao.projeto.application.service.ProjetoAuthorizationService;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;

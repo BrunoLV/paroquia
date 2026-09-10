@@ -1,6 +1,7 @@
-package br.com.nsfatima.gestao.calendario.domain.service;
+package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException;
+import br.com.nsfatima.gestao.calendario.domain.policy.HierarquiaPrioridadeAgendaPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -21,15 +22,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 
-class AgendaPriorityValidatorServiceTest {
+class ValidadorPrioridadeAgendaTest {
 
     private EventoJpaRepository eventoJpaRepository;
-    private PrioridadeAgendaValidatorService validatorService;
+    private ValidadorPrioridadeAgenda validatorService;
 
     @BeforeEach
     void setUp() {
         eventoJpaRepository = mock(EventoJpaRepository.class);
-        validatorService = new PrioridadeAgendaValidatorService(eventoJpaRepository);
+        validatorService = new ValidadorPrioridadeAgenda(eventoJpaRepository, new HierarquiaPrioridadeAgendaPolicy());
     }
 
     @Test
@@ -51,7 +52,7 @@ class AgendaPriorityValidatorServiceTest {
                 .thenReturn(List.of(eventoExistente));
 
         assertThrows(ConflitoAgendaEclesialException.class, () ->
-                validatorService.validatePriorityAndConflicts(
+                validatorService.validarPrioridadeEConflitos(
                         CategoriaEvento.MOVIMENTO,
                         inicio,
                         fim,
@@ -73,7 +74,7 @@ class AgendaPriorityValidatorServiceTest {
                 .thenReturn(List.of());
 
         assertDoesNotThrow(() ->
-                validatorService.validatePriorityAndConflicts(
+                validatorService.validarPrioridadeEConflitos(
                         CategoriaEvento.PASTORAL,
                         inicio,
                         fim,
@@ -99,13 +100,13 @@ class AgendaPriorityValidatorServiceTest {
         when(eventoJpaRepository.findOverlappingEvents(any(), any(), any()))
                 .thenReturn(List.of(eventoNivel3));
 
-        List<EventoEntity> cancelados = validatorService.validatePriorityAndConflicts(
+        List<EventoEntity> cancelados = validatorService.validarPrioridadeEConflitos(
                 CategoriaEvento.SOLENIDADE, inicio, fim, null, null, null, false
         );
 
         assertEquals(1, cancelados.size());
 
-        validatorService.processAutoCancellation(cancelados, "Cancelamento automático por Solenidade Global");
+        validatorService.processarCancelamentosAutomaticos(cancelados, "Cancelamento automático por Solenidade Global");
         assertEquals("CANCELADO", eventoNivel3.getStatus());
         assertEquals("Cancelamento automático por Solenidade Global", eventoNivel3.getCanceladoMotivo());
         verify(eventoJpaRepository).saveAll(cancelados);

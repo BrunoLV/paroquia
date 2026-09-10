@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
@@ -11,7 +10,6 @@ import java.time.Instant;
  * ambos informados) e traduz a detecção de sobreposição de agenda (calculada fora
  * desta classe) para o estado/motivo de conflito expostos ao restante do domínio.
  */
-@Component
 public class IntegridadeCalendarioPolicy {
 
     /**

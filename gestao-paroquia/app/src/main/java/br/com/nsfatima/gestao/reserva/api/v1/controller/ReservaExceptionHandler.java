@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.reserva.api.v1.controller;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.reserva.api.v1.dto.ConflitoDetalheResponse;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;

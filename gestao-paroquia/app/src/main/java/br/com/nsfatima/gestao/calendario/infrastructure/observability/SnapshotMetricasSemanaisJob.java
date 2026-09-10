@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
 import br.com.nsfatima.gestao.calendario.application.service.CalculadoraTaxaRetrabalho;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,7 @@ public class SnapshotMetricasSemanaisJob {
         snapshot.put("status", "ok");
         snapshot.put("cadastroEvento", cadastroMetrics);
         snapshot.put("administrativeRework", Map.of(
-                "periodo", periodo.toResponse(),
+                "periodo", new PeriodoOperacionalResponse(periodo.granularidade(), periodo.inicio(), periodo.fim()),
                 "taxaRetrabalho", reworkMetrics.taxaRetrabalho(),
                 "numeradorOcorrenciasElegiveis", reworkMetrics.numeradorOcorrenciasElegiveis(),
                 "denominadorEventosAfetados", reworkMetrics.denominadorEventosAfetados()));

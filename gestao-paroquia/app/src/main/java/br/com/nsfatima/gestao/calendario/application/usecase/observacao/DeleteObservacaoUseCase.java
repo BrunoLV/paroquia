@@ -1,7 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
-import br.com.nsfatima.gestao.calendario.domain.service.ObservacaoMutationPolicyService;
+import br.com.nsfatima.gestao.calendario.domain.policy.MutacaoObservacaoPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.ObservacaoRegistrada;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
@@ -19,15 +20,15 @@ import java.util.UUID;
 public class DeleteObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
-    private final ObservacaoMutationPolicyService observacaoMutationPolicyService;
+    private final MutacaoObservacaoPolicy mutacaoObservacaoPolicy;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
     public DeleteObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
-            ObservacaoMutationPolicyService observacaoMutationPolicyService,
+            MutacaoObservacaoPolicy mutacaoObservacaoPolicy,
             ObservacaoAuditPublisher observacaoAuditPublisher) {
         this.observacaoEventoJpaRepository = observacaoEventoJpaRepository;
-        this.observacaoMutationPolicyService = observacaoMutationPolicyService;
+        this.mutacaoObservacaoPolicy = mutacaoObservacaoPolicy;
         this.observacaoAuditPublisher = observacaoAuditPublisher;
     }
 
@@ -46,7 +47,8 @@ public class DeleteObservacaoUseCase {
                 .findByIdAndEventoId(observacaoId, eventoId)
                 .orElseThrow(() -> new ObservacaoNaoEncontradaException("Observation not found"));
 
-        observacaoMutationPolicyService.assertCanEditOrDelete(observacao, usuarioId);
+        mutacaoObservacaoPolicy.assertEdicaoOuExclusaoPermitida(
+                new ObservacaoRegistrada(observacao.getTipo(), observacao.isRemovida(), observacao.getUsuarioId()), usuarioId);
 
         observacao.setRemovida(true);
         observacao.setRemovidaEmUtc(Instant.now());

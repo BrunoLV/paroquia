@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.security;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;

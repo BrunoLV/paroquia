@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.GetUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.domain.service.UsuarioAuthorizationService;
+import br.com.nsfatima.gestao.iam.application.service.UsuarioAuthorizationService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.AdicionarVinculoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.VinculoResponse;
 import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;

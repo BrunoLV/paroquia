@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;

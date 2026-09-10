@@ -8,10 +8,10 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.UpdateEventoSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.service.PrioridadeAgendaValidatorService;
+import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
+import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService.CreateRequestMode;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
@@ -27,7 +27,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
 import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
@@ -57,11 +57,11 @@ public class UpdateEventoUseCase {
     private final EventoActorContextResolver actorContextResolver;
     private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
     private final ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase;
-    private final ProjetoVincularPolicy projetoVincularPolicy;
+    private final ValidadorVinculoProjeto validadorVinculoProjeto;
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
     private final EventoAuditPublisher auditPublisher;
-    private final PrioridadeAgendaValidatorService agendaPriorityValidatorService;
+    private final ValidadorPrioridadeAgenda agendaPriorityValidatorService;
     private final CacheManager cacheManager;
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
@@ -75,11 +75,11 @@ public class UpdateEventoUseCase {
             EventoActorContextResolver actorContextResolver,
             UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
             ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase,
-            ProjetoVincularPolicy projetoVincularPolicy,
+            ValidadorVinculoProjeto validadorVinculoProjeto,
             CadastroEventoMetricsPublisher metricsPublisher,
             UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
             EventoAuditPublisher auditPublisher,
-            PrioridadeAgendaValidatorService agendaPriorityValidatorService,
+            ValidadorPrioridadeAgenda agendaPriorityValidatorService,
             CacheManager cacheManager,
             EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
@@ -91,7 +91,7 @@ public class UpdateEventoUseCase {
         this.actorContextResolver = actorContextResolver;
         this.updateEnvolvidosUseCase = updateEnvolvidosUseCase;
         this.clearEnvolvidosUseCase = clearEnvolvidosUseCase;
-        this.projetoVincularPolicy = projetoVincularPolicy;
+        this.validadorVinculoProjeto = validadorVinculoProjeto;
         this.metricsPublisher = metricsPublisher;
         this.aprovacaoRequestUseCase = aprovacaoRequestUseCase;
         this.auditPublisher = auditPublisher;
@@ -312,9 +312,9 @@ public class UpdateEventoUseCase {
         if (isRecurring && entity.getRecorrenciaId() != null) {
             EventoRecorrenciaEntity recurrence = recurrenceRepository.findById(entity.getRecorrenciaId())
                     .orElseThrow(() -> new IllegalStateException("Recurrence not found: " + entity.getRecorrenciaId()));
-            projetoVincularPolicy.validateRecurrence(projetoId, inicio, fim, recurrence.getRegra());
+            validadorVinculoProjeto.validarRecorrencia(projetoId, inicio, fim, recurrence.getRegra());
         } else {
-            projetoVincularPolicy.validateLink(projetoId, inicio, fim);
+            validadorVinculoProjeto.validarEvento(projetoId, inicio, fim);
         }
 
         CategoriaEvento cat = request.categoria() != null
@@ -323,7 +323,7 @@ public class UpdateEventoUseCase {
         UUID local = request.localId() != null ? request.localId() : entity.getLocalId();
         UUID igreja = request.igrejaVinculoId() != null ? request.igrejaVinculoId() : entity.getIgrejaVinculoId();
 
-        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validatePriorityAndConflicts(
+        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validarPrioridadeEConflitos(
                 cat,
                 inicio,
                 fim,
@@ -331,7 +331,7 @@ public class UpdateEventoUseCase {
                 igreja,
                 entity.getId(),
                 request.isBypassAgendaConflict());
-        agendaPriorityValidatorService.processAutoCancellation(
+        agendaPriorityValidatorService.processarCancelamentosAutomaticos(
                 autoCancel,
                 "Cancelado automaticamente devido a agendamento"
                 + " de Solenidade Global / Evento de Maior Prioridade");

@@ -8,13 +8,13 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CreateEventoSolicitacaoAprovacaoUseCase;
-import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioCalendarioPolicy;
-import br.com.nsfatima.gestao.calendario.domain.service.PrioridadeAgendaValidatorService;
+import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
+import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoPatchAuthorizationService.CreateRequestMode;
-import br.com.nsfatima.gestao.calendario.domain.service.MotorLiturgico;
-import br.com.nsfatima.gestao.calendario.domain.service.ProvisionamentoLiturgicoService;
+import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
+import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.application.service.MotorLiturgico;
+import br.com.nsfatima.gestao.calendario.application.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
@@ -27,9 +27,11 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
 import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,9 +63,10 @@ public class CreateEventoUseCase {
     private final EventoActorContextResolver actorContextResolver;
     private final CreateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
     private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
-    private final ProjetoVincularPolicy projetoVincularPolicy;
-    private final BloqueioCalendarioPolicy calendarLockPolicy;
-    private final PrioridadeAgendaValidatorService agendaPriorityValidatorService;
+    private final ValidadorVinculoProjeto validadorVinculoProjeto;
+    private final BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy;
+    private final AnoParoquialJpaRepository anoParoquialRepository;
+    private final ValidadorPrioridadeAgenda agendaPriorityValidatorService;
     private final CacheManager cacheManager;
     private final MotorLiturgico liturgicalEngine;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
@@ -82,9 +86,10 @@ public class CreateEventoUseCase {
             EventoActorContextResolver actorContextResolver,
             CreateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
             UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
-            ProjetoVincularPolicy projetoVincularPolicy,
-            BloqueioCalendarioPolicy calendarLockPolicy,
-            PrioridadeAgendaValidatorService agendaPriorityValidatorService,
+            ValidadorVinculoProjeto validadorVinculoProjeto,
+            BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy,
+            AnoParoquialJpaRepository anoParoquialRepository,
+            ValidadorPrioridadeAgenda agendaPriorityValidatorService,
             CacheManager cacheManager,
             MotorLiturgico liturgicalEngine,
             CicloLiturgicoRepository cicloLiturgicoRepository,
@@ -101,8 +106,9 @@ public class CreateEventoUseCase {
         this.actorContextResolver = actorContextResolver;
         this.aprovacaoRequestUseCase = aprovacaoRequestUseCase;
         this.updateEnvolvidosUseCase = updateEnvolvidosUseCase;
-        this.projetoVincularPolicy = projetoVincularPolicy;
-        this.calendarLockPolicy = calendarLockPolicy;
+        this.validadorVinculoProjeto = validadorVinculoProjeto;
+        this.bloqueioAnoParoquialPolicy = bloqueioAnoParoquialPolicy;
+        this.anoParoquialRepository = anoParoquialRepository;
         this.agendaPriorityValidatorService = agendaPriorityValidatorService;
         this.cacheManager = cacheManager;
         this.liturgicalEngine = liturgicalEngine;
@@ -158,12 +164,12 @@ public class CreateEventoUseCase {
     private void validateCreationRequest(CreateEventoRequest request) {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
-        calendarLockPolicy.checkLock(request.inicio(), status);
+        validarBloqueioAnoParoquial(request.inicio(), status);
         domainService.validateGrupoParoquialParticipantes(
                 request.grupoParoquialResponsavelId(), request.participantes());
-        projetoVincularPolicy.validateLink(request.projetoId(), request.inicio(), request.fim());
+        validadorVinculoProjeto.validarEvento(request.projetoId(), request.inicio(), request.fim());
 
-        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validatePriorityAndConflicts(
+        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validarPrioridadeEConflitos(
                 request.categoria(),
                 request.inicio(),
                 request.fim(),
@@ -171,10 +177,18 @@ public class CreateEventoUseCase {
                 request.igrejaVinculoId(),
                 null,
                 request.isBypassAgendaConflict());
-        agendaPriorityValidatorService.processAutoCancellation(
+        agendaPriorityValidatorService.processarCancelamentosAutomaticos(
                 autoCancel,
                 "Cancelado automaticamente devido a agendamento"
                 + " de Solenidade Global / Evento de Maior Prioridade");
+    }
+
+    private void validarBloqueioAnoParoquial(Instant inicio, EventoStatusInput statusEvento) {
+        AnoParoquialStatus statusAno = inicio == null ? null : anoParoquialRepository
+                .findByAno(inicio.atZone(ZoneOffset.UTC).getYear())
+                .map(ano -> ano.getStatus())
+                .orElse(null);
+        bloqueioAnoParoquialPolicy.assertPermitido(inicio, statusAno, statusEvento);
     }
 
     private EventoResponse createImmediate(String idempotencyKey, CreateEventoRequest request, String actor) {

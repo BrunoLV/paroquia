@@ -13,7 +13,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.model.CodigoTombamento;
 import br.com.nsfatima.gestao.patrimonio.domain.model.PeriodoManutencao;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoManutencaoRepository;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
-import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
+import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

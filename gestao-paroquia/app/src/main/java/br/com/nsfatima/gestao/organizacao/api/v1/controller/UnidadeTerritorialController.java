@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.UnidadeTerritorialRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.UnidadeTerritorialResponse;
-import br.com.nsfatima.gestao.organizacao.domain.service.UnidadeTerritorialService;
+import br.com.nsfatima.gestao.organizacao.application.service.UnidadeTerritorialService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

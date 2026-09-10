@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 

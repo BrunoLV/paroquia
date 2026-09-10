@@ -8,9 +8,11 @@ import br.com.nsfatima.gestao.governanca.api.v1.dto.UpdateAnoParoquialRequest;
 import br.com.nsfatima.gestao.governanca.application.usecase.AlterarStatusAnoParoquialUseCase;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquial;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
-import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialAuthorizationService;
+import br.com.nsfatima.gestao.governanca.domain.policy.AutorizacaoAnoParoquialPolicy;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
  * Expõe a governança do Ano Paroquial: consulta do histórico/estado de anos e a transição controlada de status
  * ({@code EM_PLANEJAMENTO} -&gt; {@code FECHADO} -&gt; {@code CONCLUIDO}) que trava ou libera o planejamento anual do
  * calendário para a Matriz e as Comunidades. Apenas o Pároco/Admin ou coordenadores do Conselho podem acionar
- * transições de status (ver {@link AnoParoquialAuthorizationService}); ao concluir um ano, delega ao
+ * transições de status (ver {@link AutorizacaoAnoParoquialPolicy}); ao concluir um ano, delega ao
  * {@link AnoParoquialRolloverService} o provisionamento automático do ano seguinte.
  */
 @RestController
@@ -48,7 +50,7 @@ import java.util.stream.Collectors;
 public class AnoParoquialController {
 
     private final AnoParoquialJpaRepository repository;
-    private final AnoParoquialAuthorizationService authorizationService;
+    private final AutorizacaoAnoParoquialPolicy autorizacaoPolicy;
     private final EventoActorContextResolver actorContextResolver;
     private final AlterarStatusAnoParoquialUseCase alterarStatusUseCase;
 
@@ -57,17 +59,17 @@ public class AnoParoquialController {
      * transição de ano.
      *
      * @param repository           Repositório JPA para consulta do histórico de anos paroquiais
-     * @param authorizationService Serviço para validação de privilégios administrativos
+     * @param autorizacaoPolicy Policy para validação da autoridade canônica do ator
      * @param actorContextResolver Resolvedor de contexto do ator da requisição
      * @param alterarStatusUseCase Caso de uso que aplica as transições de status do ano paroquial
      */
     public AnoParoquialController(
             AnoParoquialJpaRepository repository,
-            AnoParoquialAuthorizationService authorizationService,
+            AutorizacaoAnoParoquialPolicy autorizacaoPolicy,
             EventoActorContextResolver actorContextResolver,
             AlterarStatusAnoParoquialUseCase alterarStatusUseCase) {
         this.repository = repository;
-        this.authorizationService = authorizationService;
+        this.autorizacaoPolicy = autorizacaoPolicy;
         this.actorContextResolver = actorContextResolver;
         this.alterarStatusUseCase = alterarStatusUseCase;
     }
@@ -156,7 +158,9 @@ public class AnoParoquialController {
             @Valid @RequestBody UpdateAnoParoquialRequest request) {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanManage(actorContext);
+        autorizacaoPolicy.assertPodeGerir(
+                PapelOrganizacional.fromStoredValue(actorContext.role()),
+                TipoGrupo.fromStoredValue(actorContext.organizationType()));
 
         AnoParoquialStatus alvo = AnoParoquialStatus.fromJson(request.status());
         AnoParoquial anoParoquial = alterarStatusUseCase.alterarStatus(ano, alvo);

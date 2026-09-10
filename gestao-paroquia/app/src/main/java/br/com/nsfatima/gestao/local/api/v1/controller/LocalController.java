@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.local.api.v1.dto.LocalRequest;
 import br.com.nsfatima.gestao.local.api.v1.dto.LocalResponse;
 import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
-import br.com.nsfatima.gestao.local.domain.service.LocalService;
+import br.com.nsfatima.gestao.local.application.service.LocalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.importacao.api.v1.controller;
 
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
-import br.com.nsfatima.gestao.importacao.domain.service.ImportacaoService;
+import br.com.nsfatima.gestao.importacao.application.service.ImportacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

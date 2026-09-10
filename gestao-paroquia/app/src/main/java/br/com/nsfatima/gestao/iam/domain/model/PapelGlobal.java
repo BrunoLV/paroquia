@@ -7,7 +7,7 @@ import java.util.Locale;
  * específica — diferente de {@link br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional},
  * que sempre pressupõe um escopo (organização/comunidade). Persistidos em {@code calendario.papel_global}
  * (par {@code fielId}+{@code papel}, sem {@code grupoParoquialId}), consultados via
- * {@link br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService}.
+ * {@link br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService}.
  */
 public enum PapelGlobal {
     BISPO_DIOCESANO("bispo-diocesano"),

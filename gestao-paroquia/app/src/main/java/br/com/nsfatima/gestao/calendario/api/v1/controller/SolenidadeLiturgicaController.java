@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaRequestDTO;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaResponseDTO;
-import br.com.nsfatima.gestao.calendario.domain.service.SolenidadeLiturgicaService;
+import br.com.nsfatima.gestao.calendario.application.service.SolenidadeLiturgicaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

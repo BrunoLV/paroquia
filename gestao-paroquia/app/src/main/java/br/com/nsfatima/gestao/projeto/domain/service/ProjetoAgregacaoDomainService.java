@@ -1,17 +1,27 @@
 package br.com.nsfatima.gestao.projeto.domain.service;
 
-import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Serviço de domínio para cálculos relacionados à agregação de projetos.
  */
-@Service
 public class ProjetoAgregacaoDomainService {
 
-    private static final double RISCO_PERCENTUAL_THRESHOLD = 80.0;
+    private static final BigDecimal RISCO_PERCENTUAL_THRESHOLD = new BigDecimal("80.00");
+
+    /** Calcula o avanço contra uma referência explícita para manter a regra reproduzível. */
+    public BigDecimal calcularPercentualTempoDecorrido(Instant inicio, Instant fim, Instant referencia) {
+        if (inicio == null || fim == null || referencia == null || !fim.isAfter(inicio)) return BigDecimal.ZERO;
+        if (referencia.isBefore(inicio)) return BigDecimal.ZERO;
+        if (referencia.isAfter(fim)) return BigDecimal.valueOf(100);
+        return BigDecimal.valueOf(Duration.between(inicio, referencia).toMillis())
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(Duration.between(inicio, fim).toMillis()), 2, RoundingMode.HALF_UP);
+    }
 
     /**
      * Calcula o percentual de tempo decorrido do projeto.
@@ -53,6 +63,6 @@ public class ProjetoAgregacaoDomainService {
         }
 
         double percentual = calcularPercentualTempoDecorrido(inicio, fim);
-        return percentual > RISCO_PERCENTUAL_THRESHOLD;
+        return BigDecimal.valueOf(percentual).compareTo(RISCO_PERCENTUAL_THRESHOLD) > 0;
     }
 }

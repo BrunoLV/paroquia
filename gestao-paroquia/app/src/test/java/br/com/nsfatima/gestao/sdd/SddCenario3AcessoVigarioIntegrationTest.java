@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.sdd;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.domain.service.EscopoUsuarioAuthorizationService;
+import br.com.nsfatima.gestao.organizacao.application.service.EscopoUsuarioAuthorizationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

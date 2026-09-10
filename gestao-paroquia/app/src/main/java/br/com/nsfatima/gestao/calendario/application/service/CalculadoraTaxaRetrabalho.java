@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
@@ -71,7 +72,7 @@ public class CalculadoraTaxaRetrabalho {
         double taxa = denominador == 0L ? 0.0 : numerador / (double) denominador;
         return new IndicadorRetrabalhoResponse(
                 grupoParoquialId,
-                periodo.toResponse(),
+                new PeriodoOperacionalResponse(periodo.granularidade(), periodo.inicio(), periodo.fim()),
                 taxa,
                 numerador,
                 denominador);
