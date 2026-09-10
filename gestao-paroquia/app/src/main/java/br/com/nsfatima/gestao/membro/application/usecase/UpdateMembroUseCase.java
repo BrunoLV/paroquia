@@ -4,8 +4,10 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
+import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
 import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPublisher;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -28,6 +30,7 @@ public class UpdateMembroUseCase {
     private final FielJpaRepository fielRepository;
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final MembroMapper mapper;
+    private final MembroGrupoMapper membroGrupoMapper;
     private final MembroAuditPublisher auditPublisher;
 
     public UpdateMembroUseCase(
@@ -35,11 +38,13 @@ public class UpdateMembroUseCase {
             FielJpaRepository fielRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,
             MembroMapper mapper,
+            MembroGrupoMapper membroGrupoMapper,
             MembroAuditPublisher auditPublisher) {
         this.repository = repository;
         this.fielRepository = fielRepository;
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.mapper = mapper;
+        this.membroGrupoMapper = membroGrupoMapper;
         this.auditPublisher = auditPublisher;
     }
 
@@ -70,7 +75,6 @@ public class UpdateMembroUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
-        PapelGlobalValidation.rejectIfGlobal(papel);
 
         repository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(request.fielId(), request.grupoParoquialId())
                 .ifPresent(existing -> {
@@ -80,17 +84,17 @@ public class UpdateMembroUseCase {
                     }
                 });
 
-        entity.setFielId(request.fielId());
-        entity.setGrupoParoquialId(request.grupoParoquialId());
-        entity.setTipoGrupo(grupoParoquial.getTipo());
-        entity.setPapel(papel.storedValue());
-        if (request.dataEntrada() != null) {
-            entity.setDataEntrada(request.dataEntrada());
-        }
+        MembroGrupo membro = membroGrupoMapper.toDomain(entity);
+        membro.alterarVinculo(request.fielId(), request.grupoParoquialId(), grupoParoquial.getTipo(),
+                papel, request.igrejaId(), request.dataEntrada());
         if (request.ativo() != null) {
-            entity.setAtivo(request.ativo());
+            if (request.ativo()) {
+                membro.ativar();
+            } else {
+                membro.desativar();
+            }
         }
-        entity.setIgrejaVinculoId(request.igrejaId());
+        membroGrupoMapper.aplicar(membro, entity);
 
         MembroGrupoEntity saved = repository.save(entity);
 
@@ -113,7 +117,13 @@ public class UpdateMembroUseCase {
     public void toggleAtivo(UUID id, boolean ativo, String actor) {
         MembroGrupoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado: " + id));
-        entity.setAtivo(ativo);
+        MembroGrupo membro = membroGrupoMapper.toDomain(entity);
+        if (ativo) {
+            membro.ativar();
+        } else {
+            membro.desativar();
+        }
+        membroGrupoMapper.aplicar(membro, entity);
         repository.save(entity);
         auditPublisher.publish(actor, ativo ? "ativar" : "desativar", id.toString(), "sucesso");
     }

@@ -5,9 +5,10 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.api.v1.dto.AnoParoquialResponse;
 import br.com.nsfatima.gestao.governanca.api.v1.dto.UpdateAnoParoquialRequest;
+import br.com.nsfatima.gestao.governanca.application.usecase.AlterarStatusAnoParoquialUseCase;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquial;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialAuthorizationService;
-import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialRolloverService;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,26 +50,26 @@ public class AnoParoquialController {
     private final AnoParoquialJpaRepository repository;
     private final AnoParoquialAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
-    private final AnoParoquialRolloverService rolloverService;
+    private final AlterarStatusAnoParoquialUseCase alterarStatusUseCase;
 
     /**
      * Inicializa o controller de governança anual com as dependências para controle de acesso, persistência e
      * transição de ano.
      *
-     * @param repository           Repositório JPA para gestão de anos paroquiais
+     * @param repository           Repositório JPA para consulta do histórico de anos paroquiais
      * @param authorizationService Serviço para validação de privilégios administrativos
      * @param actorContextResolver Resolvedor de contexto do ator da requisição
-     * @param rolloverService      Serviço para rollover de ano paroquial
+     * @param alterarStatusUseCase Caso de uso que aplica as transições de status do ano paroquial
      */
     public AnoParoquialController(
             AnoParoquialJpaRepository repository,
             AnoParoquialAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
-            AnoParoquialRolloverService rolloverService) {
+            AlterarStatusAnoParoquialUseCase alterarStatusUseCase) {
         this.repository = repository;
         this.authorizationService = authorizationService;
         this.actorContextResolver = actorContextResolver;
-        this.rolloverService = rolloverService;
+        this.alterarStatusUseCase = alterarStatusUseCase;
     }
 
     /**
@@ -159,53 +158,10 @@ public class AnoParoquialController {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanManage(actorContext);
 
-        AnoParoquialEntity entity = repository.findByAno(ano)
-                .orElseGet(() -> {
-                    AnoParoquialEntity newEntity = new AnoParoquialEntity();
-                    newEntity.setAno(ano);
-                    return newEntity;
-                });
+        AnoParoquialStatus alvo = AnoParoquialStatus.fromJson(request.status());
+        AnoParoquial anoParoquial = alterarStatusUseCase.alterarStatus(ano, alvo);
 
-        AnoParoquialStatus newStatus = AnoParoquialStatus.fromJson(request.status());
-
-        AnoParoquialStatus currentStatus = entity.getStatus();
-
-        // 1. Concluded years are immutable
-        if (currentStatus == AnoParoquialStatus.CONCLUIDO) {
-            throw new IllegalArgumentException("Um ano concluído não pode ser modificado.");
-        }
-        // 2. Succession Rule: N can only transition to FECHADO or CONCLUIDO if all prior years are CONCLUIDO
-        if (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO) {
-            if (repository.existsByAnoLessThanAndStatusNot(ano, AnoParoquialStatus.CONCLUIDO)) {
-                throw new IllegalArgumentException(
-                        "O ano anterior precisa estar concluído antes que este ano possa ser fechado ou concluído.");
-            }
-        }
-
-        // 3. Temporal Enforcement: can only transition out of EM_PLANEJAMENTO during corresponding calendar year
-        if ((currentStatus == null || currentStatus == AnoParoquialStatus.EM_PLANEJAMENTO)
-                && (newStatus == AnoParoquialStatus.FECHADO || newStatus == AnoParoquialStatus.CONCLUIDO)) {
-            int currentCivilYear = LocalDate.now().getYear();
-            if (ano != currentCivilYear) {
-                throw new IllegalArgumentException("Apenas o ano corrente pode ser fechado ou concluído.");
-            }
-        }
-
-        if (newStatus == AnoParoquialStatus.CONCLUIDO) {
-            rolloverService.concludeYear(ano);
-            entity = repository.findByAno(ano).orElse(entity);
-        } else {
-            entity.setStatus(newStatus);
-
-            if (newStatus == AnoParoquialStatus.FECHADO && entity.getDataFechamentoUtc() == null) {
-                entity.setDataFechamentoUtc(Instant.now());
-            } else if (newStatus == AnoParoquialStatus.EM_PLANEJAMENTO) {
-                entity.setDataFechamentoUtc(null);
-            }
-            entity = repository.save(entity);
-        }
-
-        return ResponseEntity.ok(toResponse(entity));
+        return ResponseEntity.ok(toResponse(anoParoquial));
     }
 
     private AnoParoquialResponse toResponse(AnoParoquialEntity entity) {
@@ -214,5 +170,13 @@ public class AnoParoquialController {
                 entity.getStatus().name(),
                 entity.getDataFechamentoUtc(),
                 entity.getUpdatedAt());
+    }
+
+    private AnoParoquialResponse toResponse(AnoParoquial anoParoquial) {
+        return new AnoParoquialResponse(
+                anoParoquial.getAno(),
+                anoParoquial.getStatus().name(),
+                anoParoquial.getDataFechamento(),
+                anoParoquial.getAtualizadoEm());
     }
 }

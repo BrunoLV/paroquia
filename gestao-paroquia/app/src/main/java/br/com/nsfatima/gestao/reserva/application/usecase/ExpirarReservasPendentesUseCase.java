@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.application.usecase.GerenciarNotificacaoUseCase;
+import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,18 @@ public class ExpirarReservasPendentesUseCase {
 
     private final ReservaRepository reservaRepository;
     private final GerenciarNotificacaoUseCase notificacaoUseCase;
+    private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     public ExpirarReservasPendentesUseCase(
             ReservaRepository reservaRepository,
-            GerenciarNotificacaoUseCase notificacaoUseCase
+            GerenciarNotificacaoUseCase notificacaoUseCase,
+            PublicadorReservaDeAtivo publicadorReservaDeAtivo
     ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.notificacaoUseCase = Objects.requireNonNull(notificacaoUseCase, "GerenciarNotificacaoUseCase é obrigatório.");
+        this.notificacaoUseCase = Objects.requireNonNull(notificacaoUseCase,
+                "GerenciarNotificacaoUseCase é obrigatório.");
+        this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
+                "PublicadorReservaDeAtivo é obrigatório.");
     }
 
     @Transactional
@@ -44,7 +50,8 @@ public class ExpirarReservasPendentesUseCase {
         List<Reserva> pendentes = reservaRepository.findPendentesExpiracao(limite);
         for (Reserva r : pendentes) {
             r.expirar(agora);
-            reservaRepository.save(r);
+            Reserva salva = reservaRepository.save(r);
+            publicadorReservaDeAtivo.publicarSeForAtivo(salva);
 
             String dataFormatada = FORMATTER.format(r.getIntervalo().dataHoraInicio());
             String mensagem = String.format(

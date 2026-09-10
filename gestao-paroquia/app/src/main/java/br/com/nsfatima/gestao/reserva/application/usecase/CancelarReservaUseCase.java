@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.reserva.application.usecase;
 
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegisterSystemObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
+import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -26,15 +27,21 @@ public class CancelarReservaUseCase {
     private final ReservaRepository reservaRepository;
     private final ReservaAuthorizationService authorizationService;
     private final RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase;
+    private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     public CancelarReservaUseCase(
             ReservaRepository reservaRepository,
             ReservaAuthorizationService authorizationService,
-            RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase
+            RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase,
+            PublicadorReservaDeAtivo publicadorReservaDeAtivo
     ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.authorizationService = Objects.requireNonNull(authorizationService, "ReservaAuthorizationService é obrigatório.");
-        this.registerSystemObservacaoUseCase = Objects.requireNonNull(registerSystemObservacaoUseCase, "RegisterSystemObservacaoUseCase é obrigatório.");
+        this.authorizationService = Objects.requireNonNull(authorizationService,
+                "ReservaAuthorizationService é obrigatório.");
+        this.registerSystemObservacaoUseCase = Objects.requireNonNull(registerSystemObservacaoUseCase,
+                "RegisterSystemObservacaoUseCase é obrigatório.");
+        this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
+                "PublicadorReservaDeAtivo é obrigatório.");
     }
 
     @Transactional
@@ -51,6 +58,7 @@ public class CancelarReservaUseCase {
         boolean isAdmin = operador.isAdminOuParoco();
         reserva.cancelar(operador.id(), motivo, isAdmin, agora);
         Reserva salva = reservaRepository.save(reserva);
+        publicadorReservaDeAtivo.publicarSeForAtivo(salva);
 
         // Regra 4.4: Se vinculado a evento, injetar observação no evento-pai
         if (reserva.getEventoId() != null) {

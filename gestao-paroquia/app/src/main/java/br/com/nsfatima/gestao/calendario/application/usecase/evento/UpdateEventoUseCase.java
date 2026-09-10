@@ -196,8 +196,8 @@ public class UpdateEventoUseCase {
         }
 
         mapper.applyPatch(entity, request, status);
-        if (request.participantes() != null && entity.getEnvolvidos() != null) {
-            entity.getEnvolvidos().clear();
+        if (request.participantes() != null) {
+            entity.definirEnvolvidosCarregados(List.of());
         }
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
@@ -219,12 +219,7 @@ public class UpdateEventoUseCase {
         // Busca manualmente o envolvimento para garantir resposta completa
         // (especialmente para consistência de carregamento EAGER)
         List<EventoEnvolvidoEntity> involvement = involvementRepository.findByEventoId(saved.getId());
-        if (saved.getEnvolvidos() != null) {
-            saved.getEnvolvidos().clear();
-            saved.getEnvolvidos().addAll(involvement);
-        } else {
-            saved.setEnvolvidos(involvement);
-        }
+        saved.definirEnvolvidosCarregados(involvement);
 
         publishMetrics(entity, request);
         publishAudit(saved, request, actorContext, auditResult, isAprovacaoFlow);

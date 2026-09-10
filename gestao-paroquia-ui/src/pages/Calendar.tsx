@@ -1231,7 +1231,7 @@ const Calendar = () => {
         isSubmitting={isSubmitting}
         organizations={organizations.filter(org => org.ativo)}
         locais={locais.filter(l => l.ativo)}
-        ativos={ativos.filter(a => a.reservavel && a.status === 'DISPONIVEL')}
+        ativos={ativos.filter(a => a.isReservavel && a.status === 'DISPONIVEL')}
         projetos={projetos.filter(p => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
         initialDate={createInitialDate}
         initialEvent={editingEvent}

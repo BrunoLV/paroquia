@@ -28,18 +28,9 @@ final class LiderancaSyncSupport {
      */
     static void sync(GrupoParoquialJpaRepository grupoParoquialRepository,
                       PapelOrganizacional papel, String nome, GrupoParoquialEntity grupoParoquial) {
-        if (isPapelCoordenador(papel)) {
+        if (papel.isCoordenacao()) {
             grupoParoquial.setCoordenador(nome);
             grupoParoquialRepository.save(grupoParoquial);
         }
-    }
-
-    static boolean isPapelCoordenador(PapelOrganizacional papel) {
-        return papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                || papel == PapelOrganizacional.COORD_PASTORAL
-                || papel == PapelOrganizacional.COORD_MOVIMENTO
-                || papel == PapelOrganizacional.PRESIDENTE_CPC
-                || papel == PapelOrganizacional.MESA_CPP;
     }
 }

@@ -19,7 +19,7 @@ class PatrimonioAuthorizationServiceTest {
         EventoActorContext actor = new EventoActorContext("joao", "membro-pastoral", "PASTORAL",
                 grupoParoquialId, UUID.randomUUID(), null);
 
-        assertThatThrownBy(() -> service.assertCanCreate(actor, grupoParoquialId))
+        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 
@@ -29,7 +29,7 @@ class PatrimonioAuthorizationServiceTest {
                 grupoParoquialId, UUID.randomUUID(), null);
         UUID outraGrupoParoquialId = UUID.randomUUID();
 
-        assertThatThrownBy(() -> service.assertCanCreate(actor, outraGrupoParoquialId))
+        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, outraGrupoParoquialId))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 
@@ -38,7 +38,7 @@ class PatrimonioAuthorizationServiceTest {
         EventoActorContext actor = new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
                 grupoParoquialId, UUID.randomUUID(), null);
 
-        assertThatCode(() -> service.assertCanCreate(actor, grupoParoquialId)).doesNotThrowAnyException();
+        assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId)).doesNotThrowAnyException();
     }
 
     @Test
@@ -46,7 +46,7 @@ class PatrimonioAuthorizationServiceTest {
         EventoActorContext actor = new EventoActorContext("admin", "admin", "CLERO",
                 null, UUID.randomUUID(), null);
 
-        assertThatCode(() -> service.assertCanCreate(actor, UUID.randomUUID())).doesNotThrowAnyException();
+        assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, UUID.randomUUID())).doesNotThrowAnyException();
     }
 
     @Test
@@ -54,6 +54,6 @@ class PatrimonioAuthorizationServiceTest {
         EventoActorContext actor = new EventoActorContext("paroco", "paroco", "CLERO",
                 UUID.randomUUID(), UUID.randomUUID(), null);
 
-        assertThatCode(() -> service.assertCanTransfer(actor, UUID.randomUUID())).doesNotThrowAnyException();
+        assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, UUID.randomUUID())).doesNotThrowAnyException();
     }
 }

@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper;
 
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
+import br.com.nsfatima.gestao.aprovacao.domain.model.Aprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
@@ -46,5 +47,61 @@ public class AprovacaoMapper {
                 entity.getAprovadorId(),
                 entity.getMensagemErroExecucao(),
                 entity.getActionPayloadJson());
+    }
+
+    /**
+     * Reconstitui o agregado de domínio {@link Aprovacao} a partir da entidade persistida.
+     */
+    public Aprovacao toDomain(AprovacaoEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new Aprovacao(
+                entity.getId(),
+                entity.getEventoId(),
+                entity.getTipoSolicitacao(),
+                entity.getAprovadorPapel(),
+                entity.getStatus(),
+                entity.getCriadoEmUtc(),
+                entity.getDecididoEmUtc(),
+                entity.getExecutadoEmUtc(),
+                entity.getSolicitanteId(),
+                entity.getAprovadorId(),
+                entity.getDecisionObservacao(),
+                entity.getActionPayloadJson(),
+                entity.getCorrelationId(),
+                entity.getMensagemErroExecucao());
+    }
+
+    /**
+     * Aplica o estado corrente do agregado sobre a entidade JPA gerenciada, preservando a identidade
+     * da instância (necessário para que a transação persista a mesma linha).
+     */
+    public void aplicar(Aprovacao dominio, AprovacaoEntity entity) {
+        entity.setStatus(dominio.getStatus());
+        entity.setAprovadorPapel(dominio.getAprovadorPapel());
+        entity.setAprovadorId(dominio.getAprovadorId());
+        entity.setDecisionObservacao(dominio.getDecisionObservacao());
+        entity.setDecididoEmUtc(dominio.getDecididoEmUtc());
+        entity.setExecutadoEmUtc(dominio.getExecutadoEmUtc());
+        entity.setMensagemErroExecucao(dominio.getMensagemErroExecucao());
+    }
+
+    /**
+     * Cria uma nova entidade JPA a partir de um agregado recém-aberto (fluxo de criação).
+     */
+    public AprovacaoEntity toEntity(Aprovacao dominio) {
+        AprovacaoEntity entity = new AprovacaoEntity();
+        entity.setId(dominio.getId());
+        entity.setEventoId(dominio.getEventoId());
+        entity.setTipoSolicitacao(dominio.getTipoSolicitacao());
+        entity.setAprovadorPapel(dominio.getAprovadorPapel());
+        entity.setStatus(dominio.getStatus());
+        entity.setCriadoEmUtc(dominio.getCriadoEmUtc());
+        entity.setDecididoEmUtc(dominio.getDecididoEmUtc());
+        entity.setSolicitanteId(dominio.getSolicitanteId());
+        entity.setActionPayloadJson(dominio.getActionPayloadJson());
+        entity.setCorrelationId(dominio.getCorrelationId());
+        return entity;
     }
 }

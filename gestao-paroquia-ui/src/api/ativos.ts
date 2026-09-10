@@ -1,123 +1,83 @@
 import apiClient from './client';
 import {
+  AtivoManutencao,
   AtivoPatrimonial,
-  AlocarAtivoPayload,
-  AlocarAtivoResultado,
-  AtivoAlocacaoResponse,
-  CancelarAlocacaoPayload,
-  CreateAtivoPayload,
-  DesalocarAtivoPayload,
-  IniciarManutencaoPayload,
+  CadastrarAtivoPayload,
+  EditarDescricaoAtivoPayload,
+  EnviarManutencaoPayload,
   MetricasOciosidade,
-  TransferirAtivoPayload,
+  ReservaImpeditiva,
 } from './types';
 
-/**
- * Busca todos os ativos patrimoniais cadastrados na paróquia.
- */
+/** Lista todos os ativos patrimoniais não excluídos da paróquia. */
 export const getAtivos = async (): Promise<AtivoPatrimonial[]> => {
   const response = await apiClient.get<AtivoPatrimonial[]>('/ativos');
   return response.data;
 };
 
-/**
- * Busca os ativos patrimoniais pertencentes a uma organização (posse atual do bem).
- */
-export const getAtivosPorOrganizacao = async (organizacaoId: string): Promise<AtivoPatrimonial[]> => {
-  const response = await apiClient.get<AtivoPatrimonial[]>(`/ativos/organizacao/${organizacaoId}`);
+/** Lista o inventário de ativos de uma unidade territorial (posse fixa do bem). */
+export const getAtivosPorOrganizacao = async (grupoParoquialId: string): Promise<AtivoPatrimonial[]> => {
+  const response = await apiClient.get<AtivoPatrimonial[]>(`/ativos/organizacao/${grupoParoquialId}`);
   return response.data;
 };
 
-/**
- * Cadastra um novo ativo patrimonial, vinculado desde a criação a uma organização
- * (dona/possuidora do bem) e com status inicial `DISPONIVEL`.
- */
-export const createAtivo = async (payload: CreateAtivoPayload): Promise<AtivoPatrimonial> => {
+/** Detalhe de um ativo. */
+export const getAtivo = async (id: string): Promise<AtivoPatrimonial> => {
+  const response = await apiClient.get<AtivoPatrimonial>(`/ativos/${id}`);
+  return response.data;
+};
+
+/** Cadastra um novo ativo (status inicial DISPONIVEL, código de tombamento gerado pelo sistema). */
+export const cadastrarAtivo = async (payload: CadastrarAtivoPayload): Promise<AtivoPatrimonial> => {
   const response = await apiClient.post<AtivoPatrimonial>('/ativos', payload);
   return response.data;
 };
 
-/**
- * Transfere a posse de um ativo para outra organização, exigindo justificativa
- * para fins de rastreabilidade patrimonial.
- */
-export const transferirAtivo = async (id: string, payload: TransferirAtivoPayload): Promise<AtivoPatrimonial> => {
-  const response = await apiClient.patch<AtivoPatrimonial>(`/ativos/${id}/transferir`, payload);
+/** Edita o ativo — apenas a descrição é aceita (imutabilidade estrutural). */
+export const editarDescricaoAtivo = async (
+  id: string,
+  payload: EditarDescricaoAtivoPayload,
+): Promise<AtivoPatrimonial> => {
+  const response = await apiClient.patch<AtivoPatrimonial>(`/ativos/${id}`, payload);
   return response.data;
 };
 
-/**
- * Aloca (reserva) um ativo para uso em um período/evento, informando justificativa
- * e datas de início/fim. A alocação pode ser confirmada de imediato ou depender de
- * aprovação (ex.: empréstimo entre organizações): o backend responde com HTTP 202
- * quando fica pendente, e o retorno reflete essa bifurcação via `kind`.
- * @returns `{ kind: 'ALOCADO', ativo }` quando a alocação é confirmada de imediato,
- * ou `{ kind: 'PENDENTE', pendente }` quando depende de uma solicitação de aprovação.
- */
-export const alocarAtivo = async (id: string, payload: AlocarAtivoPayload): Promise<AlocarAtivoResultado> => {
-  const response = await apiClient.post(`/ativos/${id}/alocar`, payload);
-  if (response.status === 202) {
-    return { kind: 'PENDENTE', pendente: response.data };
-  }
-  return { kind: 'ALOCADO', ativo: response.data };
+/** Exclusão lógica (soft delete) do ativo — desincorporação patrimonial. */
+export const excluirAtivo = async (id: string): Promise<void> => {
+  await apiClient.delete(`/ativos/${id}`);
 };
 
-/**
- * Desaloca (libera) um ativo, retornando-o para o status `DISPONIVEL`. A observação
- * é opcional e serve apenas de registro (ex.: motivo da devolução antecipada).
- */
-export const desalocarAtivo = async (id: string, payload?: DesalocarAtivoPayload): Promise<AtivoPatrimonial> => {
-  const response = await apiClient.patch<AtivoPatrimonial>(`/ativos/${id}/desalocar`, payload || {});
+/** Envia o ativo (DISPONIVEL) para manutenção por um período determinado. */
+export const enviarParaManutencao = async (
+  id: string,
+  payload: EnviarManutencaoPayload,
+): Promise<AtivoManutencao> => {
+  const response = await apiClient.post<AtivoManutencao>(`/ativos/${id}/manutencoes`, payload);
   return response.data;
 };
 
-/**
- * Coloca um ativo em manutenção por um período determinado, bloqueando novas
- * alocações enquanto o status permanecer `EM_MANUTENCAO`.
- */
-export const iniciarManutencao = async (id: string, payload: IniciarManutencaoPayload): Promise<AtivoPatrimonial> => {
-  const response = await apiClient.post<AtivoPatrimonial>(`/ativos/${id}/manutencao`, payload);
+/** Pré-checa reservas que impediriam a manutenção no intervalo informado. */
+export const verificarConflitoManutencao = async (
+  id: string,
+  params: { dataInicio: string; dataFimPrevista: string },
+): Promise<ReservaImpeditiva[]> => {
+  const response = await apiClient.get<ReservaImpeditiva[]>(`/ativos/${id}/manutencoes/conflitos`, { params });
   return response.data;
 };
 
-/**
- * Encerra a manutenção em andamento de um ativo, retornando-o ao status `DISPONIVEL`.
- */
-export const finalizarManutencao = async (id: string): Promise<AtivoPatrimonial> => {
-  const response = await apiClient.patch<AtivoPatrimonial>(`/ativos/${id}/manutencao/finalizar`);
+/** Conclui a manutenção em aberto, devolvendo o ativo para DISPONIVEL. */
+export const concluirManutencao = async (id: string): Promise<AtivoPatrimonial> => {
+  const response = await apiClient.patch<AtivoPatrimonial>(`/ativos/${id}/manutencoes/atual/concluir`);
   return response.data;
 };
 
-/**
- * Cancela uma alocação (reserva/empréstimo) já existente de um ativo, exigindo o
- * motivo do cancelamento. Transiciona a alocação para o status `CANCELADA`.
- */
-export const cancelarAlocacao = async (alocacaoId: string, payload: CancelarAlocacaoPayload): Promise<void> => {
-  await apiClient.patch(`/ativos/alocacoes/${alocacaoId}/cancelar`, payload);
-};
-
-/**
- * Busca o histórico/agenda de alocações (reservas, empréstimos, manutenções) de um ativo específico.
- */
-export const getAlocacoesPorAtivo = async (ativoId: string): Promise<AtivoAlocacaoResponse[]> => {
-  const response = await apiClient.get<AtivoAlocacaoResponse[]>(`/ativos/${ativoId}/alocacoes`);
+/** Linha do tempo de manutenções do ativo (mais recente primeiro). */
+export const getHistoricoManutencao = async (id: string): Promise<AtivoManutencao[]> => {
+  const response = await apiClient.get<AtivoManutencao[]>(`/ativos/${id}/manutencoes`);
   return response.data;
 };
 
-/**
- * Busca as alocações de ativos patrimoniais vinculadas a um evento específico —
- * usado para listar quais bens estão reservados para aquele evento.
- */
-export const getAlocacoesPorEvento = async (eventoId: string): Promise<AtivoAlocacaoResponse[]> => {
-  const response = await apiClient.get<AtivoAlocacaoResponse[]>(`/ativos/evento/${eventoId}/alocacoes`);
-  return response.data;
-};
-
-/**
- * Busca métricas agregadas de ociosidade do patrimônio: totais por status
- * (disponível, alocado, em manutenção, baixado), taxa de ociosidade geral e
- * distribuição de ativos por categoria — usado em dashboards/relatórios.
- */
+/** Métricas de ociosidade do acervo. */
 export const getMetricasOciosidade = async (): Promise<MetricasOciosidade> => {
   const response = await apiClient.get<MetricasOciosidade>('/ativos/metricas/ociosidade');
   return response.data;

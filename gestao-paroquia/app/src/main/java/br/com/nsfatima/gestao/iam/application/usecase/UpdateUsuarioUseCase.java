@@ -41,10 +41,14 @@ public class UpdateUsuarioUseCase {
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
 
         if (username != null) {
-            entity.setUsername(username);
+            entity.alterarUsername(username);
         }
         if (enabled != null) {
-            entity.setEnabled(enabled);
+            if (enabled) {
+                entity.ativar();
+            } else {
+                entity.desativar();
+            }
         }
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         entity.setAtualizadoPor(authentication != null ? authentication.getName() : null);

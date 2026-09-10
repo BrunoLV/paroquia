@@ -1,7 +1,9 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
 import br.com.nsfatima.gestao.reserva.application.dto.DisponibilidadeFaixaDto;
+import br.com.nsfatima.gestao.reserva.application.port.out.ConsultaManutencaoAtivoPort;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
+import br.com.nsfatima.gestao.reserva.domain.model.StatusReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaFiltro;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,9 +22,13 @@ import java.util.UUID;
 public class ObterDisponibilidadeItemUseCase {
 
     private final ReservaRepository reservaRepository;
+    private final ConsultaManutencaoAtivoPort consultaManutencaoPort;
 
-    public ObterDisponibilidadeItemUseCase(ReservaRepository reservaRepository) {
+    public ObterDisponibilidadeItemUseCase(ReservaRepository reservaRepository,
+                                           ConsultaManutencaoAtivoPort consultaManutencaoPort) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
+        this.consultaManutencaoPort = Objects.requireNonNull(consultaManutencaoPort,
+                "ConsultaManutencaoAtivoPort é obrigatório.");
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +54,7 @@ public class ObterDisponibilidadeItemUseCase {
 
         List<Reserva> reservas = reservaRepository.findAll(filtro);
 
-        return reservas.stream()
+        List<DisponibilidadeFaixaDto> faixas = new ArrayList<>(reservas.stream()
                 .filter(r -> r.getStatus().ocupaAgenda())
                 .map(r -> new DisponibilidadeFaixaDto(
                         r.getId().value(),
@@ -59,6 +66,18 @@ public class ObterDisponibilidadeItemUseCase {
                         "Reservado",
                         r.getDescricao()
                 ))
-                .toList();
+                .toList());
+
+        // Bem em manutenção também bloqueia o calendário no intervalo da janela.
+        if (tipoItem == TipoItemReserva.ATIVO) {
+            for (ConsultaManutencaoAtivoPort.JanelaIndisponivel janela
+                    : consultaManutencaoPort.janelasDeManutencao(itemId, inicioDia, fimDia)) {
+                faixas.add(new DisponibilidadeFaixaDto(
+                        null, janela.inicio(), janela.fim(), janela.fim(), 0,
+                        StatusReserva.CONFIRMADA, "Em manutenção", "Ativo em manutenção"));
+            }
+        }
+
+        return faixas;
     }
 }

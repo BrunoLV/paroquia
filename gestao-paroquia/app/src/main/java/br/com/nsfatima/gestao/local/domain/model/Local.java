@@ -56,7 +56,7 @@ public class Local {
         this.nome = nome;
         this.tipo = tipo;
         this.endereco = endereco != null ? endereco : EnderecoLocal.vazio();
-        this.capacidadeMaxima = capacidadeMaxima;
+        this.capacidadeMaxima = exigirCapacidadePositiva(capacidadeMaxima);
         this.descricao = descricao;
         this.ativo = ativo;
         this.igrejaId = igrejaId;
@@ -148,20 +148,30 @@ public class Local {
         this.updatedAt = Instant.now();
     }
 
-    public void update(String nome,
-                       String tipo,
-                       EnderecoLocal endereco,
-                       Integer capacidadeMaxima,
-                       String descricao,
-                       boolean ativo,
-                       UUID igrejaId) {
+    /**
+     * Altera os dados cadastrais do local (nome, tipo, endereço, capacidade, descrição e igreja de
+     * vínculo). Não mexe no ciclo de vida ({@code ativo}/exclusão) — para isso use
+     * {@link #ativar()} / {@link #inativar()} / {@link #marcarExcluido()}.
+     */
+    public void alterarCadastro(String nome,
+                                String tipo,
+                                EnderecoLocal endereco,
+                                Integer capacidadeMaxima,
+                                String descricao,
+                                UUID igrejaId) {
         this.nome = nome;
         this.tipo = tipo;
         this.endereco = endereco != null ? endereco : EnderecoLocal.vazio();
-        this.capacidadeMaxima = capacidadeMaxima;
+        this.capacidadeMaxima = exigirCapacidadePositiva(capacidadeMaxima);
         this.descricao = descricao;
-        this.ativo = ativo;
         this.igrejaId = igrejaId;
         this.updatedAt = Instant.now();
+    }
+
+    private static Integer exigirCapacidadePositiva(Integer capacidadeMaxima) {
+        if (capacidadeMaxima != null && capacidadeMaxima <= 0) {
+            throw new IllegalArgumentException("A capacidade máxima do local deve ser um número positivo.");
+        }
+        return capacidadeMaxima;
     }
 }

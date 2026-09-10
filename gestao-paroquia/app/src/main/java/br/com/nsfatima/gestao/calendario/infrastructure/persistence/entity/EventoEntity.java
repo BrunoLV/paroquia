@@ -15,6 +15,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -275,12 +277,19 @@ public class EventoEntity extends BaseVersionedEntity {
         this.localId = localId;
     }
 
+    /**
+     * Organizações envolvidas no evento. Retorna uma <em>view</em> imutável — a associação é
+     * mapeada como somente leitura ({@code insertable=false, updatable=false}); a manutenção real
+     * dos vínculos é feita via {@code EventoEnvolvidoEntity}. Para (re)carregar a representação
+     * usada na resposta, use {@link #definirEnvolvidosCarregados(List)}.
+     */
     public List<EventoEnvolvidoEntity> getEnvolvidos() {
-        return envolvidos;
+        return envolvidos == null ? List.of() : Collections.unmodifiableList(envolvidos);
     }
 
-    public void setEnvolvidos(List<EventoEnvolvidoEntity> envolvidos) {
-        this.envolvidos = envolvidos;
+    /** Substitui a coleção de envolvidos carregada para montagem da resposta (não persiste). */
+    public void definirEnvolvidosCarregados(List<EventoEnvolvidoEntity> envolvidos) {
+        this.envolvidos = envolvidos == null ? new ArrayList<>() : new ArrayList<>(envolvidos);
     }
 
     public UUID getIgrejaVinculoId() {

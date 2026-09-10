@@ -70,11 +70,10 @@ class ProjetoIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.nome == 'Projeto Lifecycle')]").exists());
 
-        // Patch
+        // Patch (dados cadastrais — não muda status)
         String patchPayload = """
                 {
-                  "nome": "Projeto Lifecycle Atualizado",
-                  "status": "CONCLUIDO"
+                  "nome": "Projeto Lifecycle Atualizado"
                 }
                 """;
 
@@ -86,8 +85,23 @@ class ProjetoIntegrationTest {
                         .content(patchPayload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Projeto Lifecycle Atualizado"))
-                .andExpect(jsonPath("$.status").value("CONCLUIDO"))
+                .andExpect(jsonPath("$.status").value("ABERTO"))
                 .andExpect(jsonPath("$.updated").value(true));
+
+        // Transições via endpoints dedicados: ABERTO -> EM_ANDAMENTO -> CONCLUIDO
+        mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", projectId)
+                        .header("X-Actor-Role", "presidente-cpc")
+                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Org-Id", orgId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("EM_ANDAMENTO"));
+
+        mockMvc.perform(post("/api/v1/projetos/{id}/concluir", projectId)
+                        .header("X-Actor-Role", "presidente-cpc")
+                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Org-Id", orgId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CONCLUIDO"));
     }
 
     @Test

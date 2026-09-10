@@ -39,11 +39,7 @@ public class GerenciarCicloVidaFielUseCase {
     @Transactional
     public void desativar(UUID fielId, String actor) {
         FielEntity fiel = obter(fielId);
-        Instant agora = Instant.now(clock);
-        fiel.setAtivo(false);
-        fiel.setDesativadoEmUtc(agora);
-        fiel.setAtualizadoEmUtc(agora);
-        fiel.setAtualizadoPor(actor);
+        fiel.desativar(Instant.now(clock), actor);
         usuarioRepository.findByFielId(fielId).ifPresent(usuario -> {
             usuario.setEnabled(false);
             usuarioRepository.save(usuario);
@@ -54,14 +50,7 @@ public class GerenciarCicloVidaFielUseCase {
     @Transactional
     public void reativar(UUID fielId, String actor) {
         FielEntity fiel = obter(fielId);
-        if (fiel.isDadosCadastraisEliminados()) {
-            throw new IllegalStateException("Cadastro anonimizado não pode ser reativado.");
-        }
-        Instant agora = Instant.now(clock);
-        fiel.setAtivo(true);
-        fiel.setDesativadoEmUtc(null);
-        fiel.setAtualizadoEmUtc(agora);
-        fiel.setAtualizadoPor(actor);
+        fiel.reativar(Instant.now(clock), actor);
         usuarioRepository.findByFielId(fielId).ifPresent(usuario -> {
             usuario.setEnabled(true);
             usuarioRepository.save(usuario);
@@ -74,9 +63,7 @@ public class GerenciarCicloVidaFielUseCase {
         Instant limite = Instant.now(clock).atZone(ZoneOffset.UTC).minusYears(5).toInstant();
         for (FielEntity fiel : fielRepository
                 .findByAtivoFalseAndDadosCadastraisEliminadosFalseAndDesativadoEmUtcBefore(limite)) {
-            anonimizar(fiel);
-            fiel.setAtualizadoEmUtc(Instant.now(clock));
-            fiel.setAtualizadoPor(ATOR_SISTEMA);
+            fiel.anonimizar(Instant.now(clock), ATOR_SISTEMA);
             fielRepository.save(fiel);
         }
     }
@@ -84,23 +71,5 @@ public class GerenciarCicloVidaFielUseCase {
     private FielEntity obter(UUID fielId) {
         return fielRepository.findById(fielId)
                 .orElseThrow(() -> new EntityNotFoundException("Fiel não encontrado."));
-    }
-
-    private void anonimizar(FielEntity fiel) {
-        fiel.setNome(null);
-        fiel.setCpf(null);
-        fiel.setRg(null);
-        fiel.setDocumentoEstrangeiroNumero(null);
-        fiel.setEmail(null);
-        fiel.setCelular(null);
-        fiel.setTelefoneFixo(null);
-        fiel.setEnderecoLogradouro(null);
-        fiel.setEnderecoNumero(null);
-        fiel.setEnderecoComplemento(null);
-        fiel.setEnderecoBairro(null);
-        fiel.setEnderecoCep(null);
-        fiel.setEnderecoCidade(null);
-        fiel.setEnderecoEstado(null);
-        fiel.setDadosCadastraisEliminados(true);
     }
 }

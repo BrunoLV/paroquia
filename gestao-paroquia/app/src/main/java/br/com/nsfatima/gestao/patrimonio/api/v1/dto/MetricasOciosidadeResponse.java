@@ -1,19 +1,14 @@
 package br.com.nsfatima.gestao.patrimonio.api.v1.dto;
 
-import java.util.Map;
-
 /**
- * Métricas agregadas de ociosidade do patrimônio: quantos ativos existem em cada status
- * (disponível, alocado, em manutenção, baixado) e {@code taxaOciosidade} — a proporção de ativos
- * disponíveis/reserváveis que permanecem sem uso, indicando subutilização do acervo.
+ * Métricas agregadas de ociosidade do acervo: contagem de ativos por status e
+ * {@code taxaOciosidade} — proporção de bens {@code DISPONIVEL} (sem uso) sobre o total incorporado.
  */
 public record MetricasOciosidadeResponse(
         long totalAtivos,
         long totalDisponiveis,
-        long totalAlocados,
+        long totalReservados,
         long totalEmManutencao,
-        long totalBaixados,
-        double taxaOciosidade,
-        Map<String, Long> distribuicaoPorCategoria
+        double taxaOciosidade
 ) {
 }

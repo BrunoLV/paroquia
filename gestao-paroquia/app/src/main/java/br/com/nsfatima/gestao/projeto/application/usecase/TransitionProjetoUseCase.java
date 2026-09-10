@@ -13,6 +13,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -96,11 +97,9 @@ public class TransitionProjetoUseCase {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanStartOrConclude(actorContext, projeto.getGrupoParoquialResponsavelId());
 
-        if (projeto.getStatus() != ProjetoStatus.ABERTO) {
-            throw new IllegalStateException("Somente projetos ABERTO podem ser iniciados");
-        }
-
-        projeto.setStatus(ProjetoStatus.EM_ANDAMENTO);
+        Projeto agregado = mapper.toDomain(projeto);
+        agregado.iniciar();
+        mapper.aplicar(agregado, projeto);
         ProjetoEventoEntity saved = repository.save(projeto);
         return mapper.toResponse(saved);
     }
@@ -123,11 +122,9 @@ public class TransitionProjetoUseCase {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanStartOrConclude(actorContext, projeto.getGrupoParoquialResponsavelId());
 
-        if (projeto.getStatus() != ProjetoStatus.EM_ANDAMENTO) {
-            throw new IllegalStateException("Somente projetos EM_ANDAMENTO podem ser concluídos");
-        }
-
-        projeto.setStatus(ProjetoStatus.CONCLUIDO);
+        Projeto agregado = mapper.toDomain(projeto);
+        agregado.concluir();
+        mapper.aplicar(agregado, projeto);
         ProjetoEventoEntity saved = repository.save(projeto);
         return mapper.toResponse(saved);
     }
@@ -171,7 +168,9 @@ public class TransitionProjetoUseCase {
 
         if (authorizationService.isHighLevelActor(actorContext)) {
             // Cancelar imediatamente
-            projeto.setStatus(ProjetoStatus.CANCELADO);
+            Projeto agregado = mapper.toDomain(projeto);
+            agregado.cancelar();
+            mapper.aplicar(agregado, projeto);
             ProjetoEventoEntity projetoSalvo = repository.save(projeto);
 
             // Tratar eventos vinculados
@@ -257,16 +256,15 @@ public class TransitionProjetoUseCase {
                     ProjetoCreateRequest payloadCriacao = objectMapper.readValue(
                             req.getActionPayloadJson(), ProjetoCreateRequest.class);
 
-                    ProjetoEventoEntity projeto = new ProjetoEventoEntity();
-                    projeto.setId(UUID.randomUUID());
-                    projeto.setNome(payloadCriacao.nome());
-                    projeto.setDescricao(payloadCriacao.descricao());
-                    projeto.setGrupoParoquialResponsavelId(payloadCriacao.grupoParoquialResponsavelId());
-                    projeto.setInicioUtc(payloadCriacao.inicio());
-                    projeto.setFimUtc(payloadCriacao.fim());
-                    projeto.setStatus(ProjetoStatus.ABERTO);
+                    Projeto novoProjeto = Projeto.abrir(
+                            UUID.randomUUID(),
+                            payloadCriacao.nome(),
+                            payloadCriacao.descricao(),
+                            payloadCriacao.grupoParoquialResponsavelId(),
+                            payloadCriacao.inicio(),
+                            payloadCriacao.fim());
 
-                    ProjetoEventoEntity saved = repository.save(projeto);
+                    ProjetoEventoEntity saved = repository.save(mapper.toEntity(novoProjeto));
                     req.setProjetoId(saved.getId());
                 } catch (Exception e) {
                     throw new RuntimeException("Falha ao processar a criação de projeto aprovada", e);
@@ -277,7 +275,9 @@ public class TransitionProjetoUseCase {
                 ProjetoEventoEntity projeto = repository.findById(req.getProjetoId())
                         .orElseThrow(() -> new ProjetoNotFoundException(req.getProjetoId()));
 
-                projeto.setStatus(ProjetoStatus.CANCELADO);
+                Projeto agregado = mapper.toDomain(projeto);
+                agregado.cancelar();
+                mapper.aplicar(agregado, projeto);
                 repository.save(projeto);
 
                 List<EventoEntity> eventosVinculados = eventoRepository.findByProjetoId(projeto.getId());

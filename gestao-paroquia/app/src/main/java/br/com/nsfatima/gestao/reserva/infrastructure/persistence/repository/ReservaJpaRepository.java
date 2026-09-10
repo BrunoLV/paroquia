@@ -67,4 +67,49 @@ public interface ReservaJpaRepository extends JpaRepository<ReservaEntity, UUID>
           AND r.dataHoraFim <= :fimHoje
     """)
     long countDevolucoesPendentesHoje(@Param("fimHoje") Instant fimHoje);
+
+    /**
+     * Existe reserva de ativo com uso em vigor no instante informado (confirmada ou já retirada)?
+     * Define o status {@code RESERVADO} do bem no contexto de patrimônio.
+     */
+    @Query("""
+        SELECT (COUNT(r) > 0) FROM ReservaEntity r
+        WHERE r.tipoItem = 'ATIVO'
+          AND r.itemId = :ativoId
+          AND r.deletedAt IS NULL
+          AND r.status IN ('CONFIRMADA', 'RETIRADO')
+          AND r.dataHoraInicio <= :agora
+          AND r.dataHoraFim > :agora
+    """)
+    boolean existeReservaAtivaNoInstante(@Param("ativoId") UUID ativoId, @Param("agora") Instant agora);
+
+    /**
+     * Reservas PENDENTE/CONFIRMADA de um ativo que se sobrepõem à janela informada — impedem o
+     * envio do bem para manutenção nesse período.
+     */
+    @Query("""
+        SELECT r FROM ReservaEntity r
+        WHERE r.tipoItem = 'ATIVO'
+          AND r.itemId = :ativoId
+          AND r.deletedAt IS NULL
+          AND r.status IN ('PENDENTE', 'CONFIRMADA')
+          AND r.dataHoraInicio < :fim
+          AND r.dataHoraFim > :inicio
+        ORDER BY r.dataHoraInicio ASC
+    """)
+    List<ReservaEntity> findImpeditivasParaManutencao(
+            @Param("ativoId") UUID ativoId,
+            @Param("inicio") Instant inicio,
+            @Param("fim") Instant fim);
+
+    /** Existe reserva PENDENTE/CONFIRMADA de um ativo com início no futuro? Impede a exclusão do bem. */
+    @Query("""
+        SELECT (COUNT(r) > 0) FROM ReservaEntity r
+        WHERE r.tipoItem = 'ATIVO'
+          AND r.itemId = :ativoId
+          AND r.deletedAt IS NULL
+          AND r.status IN ('PENDENTE', 'CONFIRMADA')
+          AND r.dataHoraInicio > :agora
+    """)
+    boolean existeReservaFuturaImpeditiva(@Param("ativoId") UUID ativoId, @Param("agora") Instant agora);
 }

@@ -244,7 +244,7 @@ public class CreateEventoUseCase {
         // Manually fetch involvement to ensure response is complete
         List<EventoEnvolvidoEntity> involvement =
                 involvementRepository.findByEventoId(saved.getId());
-        saved.setEnvolvidos(involvement);
+        saved.definirEnvolvidosCarregados(involvement);
 
         return mapper.toResponse(saved);
     }

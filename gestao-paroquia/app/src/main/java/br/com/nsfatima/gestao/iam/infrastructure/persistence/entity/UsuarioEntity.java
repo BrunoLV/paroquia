@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.iam.domain.model.Papeis;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -167,6 +168,42 @@ public class UsuarioEntity extends BaseVersionedEntity {
      * fixtures de teste, seeds) passa pelos casos de uso que populam auditoria de forma consciente
      * (ver {@code CreateUsuarioUseCase}, {@code UpdateUsuarioUseCase}).
      */
+    /** Papéis globais como Value Object. */
+    public Papeis papeis() {
+        return Papeis.deCsv(roles);
+    }
+
+    public void substituirPapeis(Papeis papeis) {
+        this.roles = papeis.paraCsv();
+    }
+
+    /**
+     * Aprova um usuário pendente: habilita o login, garante o papel padrão {@code ROLE_USER} (sem
+     * duplicar) e registra o ator. A ativação dos vínculos organizacionais é orquestrada à parte.
+     */
+    public void aprovar(String actor) {
+        this.enabled = true;
+        this.roles = papeis().adicionar("ROLE_USER").paraCsv();
+        this.atualizadoPor = actor;
+    }
+
+    public void ativar() {
+        this.enabled = true;
+    }
+
+    public void desativar() {
+        this.enabled = false;
+    }
+
+    public void alterarUsername(String novoUsername) {
+        this.username = novoUsername;
+    }
+
+    /** Recebe o hash já produzido pelo {@code PasswordEncoder} (a cifragem é responsabilidade da app). */
+    public void redefinirSenhaHash(String hash) {
+        this.passwordHash = hash;
+    }
+
     @PrePersist
     void preencherAuditoriaNaCriacao() {
         Instant agora = Instant.now();

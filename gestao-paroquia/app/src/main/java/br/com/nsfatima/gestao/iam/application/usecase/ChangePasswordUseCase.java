@@ -40,7 +40,7 @@ public class ChangePasswordUseCase {
         UsuarioEntity entity = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
 
-        entity.setPasswordHash(passwordEncoder.encode(newRawPassword));
+        entity.redefinirSenhaHash(passwordEncoder.encode(newRawPassword));
         usuarioRepository.save(entity);
     }
 }

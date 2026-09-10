@@ -405,17 +405,17 @@ VALUES
 -- únicas elegíveis a possuir ativos.
 
 INSERT INTO calendario.ativos_patrimoniais (
-    id, nome, numero_tombamento, categoria, status, reservavel, grupo_paroquial_id,
-    data_aquisicao, valor_estimado, criado_em_utc, version
+    id, nome, codigo_tombamento, descricao, categoria, status, is_reservavel, grupo_paroquial_id,
+    data_aquisicao, valor_aquisicao, cadastrado_por_id, criado_em_utc, updated_at, deleted_at, version
 ) VALUES
-    ('80000000-0000-0000-0000-000000000001', 'Projetor Multimídia Epson', 'PAT-2026-0001', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000100', '2024-03-10', 3500.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000002', 'Caixa de Som Amplificada', 'PAT-2026-0002', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000200', '2024-06-15', 1800.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000003', 'Kit 100 Cadeiras Plásticas', 'PAT-2026-0003', 'MOBILIARIO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2023-11-20', 4200.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000004', 'Notebook Dell Administrativo', 'PAT-2026-0004', 'ELETRONICO', 'ALOCADO', FALSE, '00000000-0000-0000-0000-000000000100', '2025-02-01', 3200.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000005', 'Kit Som Portátil Comunitário', 'PAT-2026-0005', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2024-09-05', 1500.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000006', 'Retroprojetor Antigo', 'PAT-2026-0006', 'ELETRONICO', 'EM_MANUTENCAO', FALSE, '00000000-0000-0000-0000-000000000100', '2018-04-12', 200.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000007', 'Som Amplificado Comunitário', 'PAT-2026-0007', 'ELETRONICO', 'ALOCADO', TRUE, '00000000-0000-0000-0000-000000000200', '2024-02-20', 1600.00, '2026-01-01T00:00:00Z', 0),
-    ('80000000-0000-0000-0000-000000000008', 'Armário Antigo (Fora de Uso)', 'PAT-2026-0008', 'MOBILIARIO', 'BAIXADO', FALSE, '00000000-0000-0000-0000-000000000100', '2015-01-01', 0.00, '2026-01-01T00:00:00Z', 0)
+    ('80000000-0000-0000-0000-000000000001', 'Projetor Multimídia Epson', 'PAT-2026-0001', 'Full HD, 3500 lumens', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000100', '2024-03-10', 3500.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000002', 'Caixa de Som Amplificada', 'PAT-2026-0002', NULL, 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000200', '2024-06-15', 1800.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000003', 'Kit 100 Cadeiras Plásticas', 'PAT-2026-0003', NULL, 'MOBILIARIO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2023-11-20', 4200.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000004', 'Notebook Dell Administrativo', 'PAT-2026-0004', 'Uso restrito à secretaria', 'ELETRONICO', 'DISPONIVEL', FALSE, '00000000-0000-0000-0000-000000000100', '2025-02-01', 3200.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000005', 'Kit Som Portátil Comunitário', 'PAT-2026-0005', NULL, 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2024-09-05', 1500.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000006', 'Retroprojetor Antigo', 'PAT-2026-0006', 'Lâmpada e lente em reparo', 'ELETRONICO', 'EM_MANUTENCAO', FALSE, '00000000-0000-0000-0000-000000000100', '2018-04-12', 200.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000007', 'Som Amplificado Comunitário', 'PAT-2026-0007', NULL, 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000200', '2024-02-20', 1600.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000008', 'Armário Antigo (Fora de Uso)', 'PAT-2026-0008', 'Desincorporado do patrimônio', 'MOBILIARIO', 'DISPONIVEL', FALSE, '00000000-0000-0000-0000-000000000100', '2015-01-01', 0.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', '2026-01-05T00:00:00Z', 0)
 ON CONFLICT (id) DO NOTHING;
 
 -- Mantém o contador de tombamento de 2026 à frente dos 8 números usados acima,
@@ -424,36 +424,15 @@ INSERT INTO calendario.patrimonio_numeracao_anual (ano, ultimo_numero, version)
 VALUES (2026, 8, 0)
 ON CONFLICT (ano) DO NOTHING;
 
--- Solicitação de aprovação para o empréstimo pendente (ativo 0005 → evento 0203, Retiro Paroquial)
-INSERT INTO calendario.aprovacoes (
-    id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc,
-    decidido_em_utc, solicitante_id, solicitante_papel, solicitante_tipo_grupo_paroquial,
-    aprovador_id, decision_observacao, action_payload_json, correlation_id,
-    mensagem_erro_execucao, version
+-- Manutenção em andamento do retroprojetor antigo (Matriz) — mantém o ativo 0006 em EM_MANUTENCAO.
+INSERT INTO calendario.ativo_manutencoes (
+    id, ativo_id, descricao_reparo, data_inicio, data_fim_prevista, data_fim_real,
+    registrado_por_id, created_at, updated_at, version
 ) VALUES (
-    '60000000-0000-0000-0000-000000000007', '40000000-0000-0000-0000-000000000203', 'ALOCACAO_ATIVO_EMPRESTIMO', 'conselho-coordenador', 'PENDENTE', '2026-08-01T09:00:00Z',
-    NULL, '10000000-0000-0000-0000-000000000003', 'voluntario-pastoral-local', 'PASTORAL',
-    NULL, NULL, '{"eventoId": "40000000-0000-0000-0000-000000000203", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-000000000300", "motivo": "Empréstimo do kit de som para uso no retiro paroquial de agosto", "localId": "00000000-0000-0000-0000-000000000001", "ativoId": "80000000-0000-0000-0000-000000000005", "ativoNome": "Kit Som Portátil Comunitário"}', '81000000-0000-0000-0000-000000000002',
-    NULL, 0
+    '82000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000006',
+    'Reparo da lâmpada e da lente do retroprojetor.', '2026-07-28T08:00:00Z', '2026-08-10T18:00:00Z', NULL,
+    '10000000-0000-0000-0000-000000000001', '2026-07-28T08:00:00Z', '2026-07-28T08:00:00Z', 0
 ) ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO calendario.alocacoes_ativos (
-    id, ativo_id, tipo, evento_id, grupo_paroquial_origem_id, grupo_paroquial_destino_id,
-    emprestimo, data_inicio, data_fim, status, solicitante_id, justificativa,
-    aprovacao_id, impactada_por_atraso, alerta_atraso_emitido_em, motivo_cancelamento,
-    criado_em_utc, devolvido_em_utc, version
-) VALUES
-    -- Alocação direta confirmada: notebook (Matriz) usado na Missa da Família (local da Matriz)
-    ('81000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000004', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000016', '00000000-0000-0000-0000-000000000100', '00000000-0000-0000-0000-000000000100', FALSE, '2026-08-02', '2026-08-02', 'CONFIRMADA', NULL, 'Uso administrativo durante a missa da família', NULL, FALSE, NULL, NULL, '2026-07-30T10:00:00Z', NULL, 0),
-    -- Empréstimo pendente de aprovação: kit de som (Santo Agostinho) emprestado para o Retiro Paroquial (local da Matriz)
-    ('81000000-0000-0000-0000-000000000002', '80000000-0000-0000-0000-000000000005', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000203', '00000000-0000-0000-0000-000000000300', '00000000-0000-0000-0000-000000000100', TRUE, '2026-08-20', '2026-08-20', 'PENDENTE_APROVACAO', '10000000-0000-0000-0000-000000000003', 'Empréstimo do kit de som para uso no retiro paroquial de agosto', '60000000-0000-0000-0000-000000000007', FALSE, NULL, NULL, '2026-08-01T09:00:00Z', NULL, 0),
-    -- Manutenção em andamento do retroprojetor antigo (Matriz)
-    ('81000000-0000-0000-0000-000000000003', '80000000-0000-0000-0000-000000000006', 'MANUTENCAO', NULL, '00000000-0000-0000-0000-000000000100', NULL, FALSE, '2026-07-28', '2026-08-10', 'CONFIRMADA', NULL, 'Reparo da lâmpada e da lente', NULL, FALSE, NULL, NULL, '2026-07-28T08:00:00Z', NULL, 0),
-    -- Devolução atrasada: som amplificado (São José) usado na Festa Junina, ainda não devolvido
-    ('81000000-0000-0000-0000-000000000004', '80000000-0000-0000-0000-000000000007', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000201', '00000000-0000-0000-0000-000000000200', '00000000-0000-0000-0000-000000000200', FALSE, '2026-07-10', '2026-07-15', 'ATRASADA', NULL, 'Uso na festa junina comunitária', NULL, FALSE, '2026-07-18T00:00:00Z', NULL, '2026-07-08T10:00:00Z', NULL, 0),
-    -- Reserva futura do mesmo ativo, impactada pelo atraso acima (usado para testar o alerta em cascata)
-    ('81000000-0000-0000-0000-000000000005', '80000000-0000-0000-0000-000000000007', 'ALOCACAO_EVENTO', '40000000-0000-0000-0000-000000000204', '00000000-0000-0000-0000-000000000200', '00000000-0000-0000-0000-000000000200', FALSE, '2026-08-25', '2026-08-26', 'CONFIRMADA', NULL, 'Uso no encontro comunitário de agosto', NULL, TRUE, NULL, NULL, '2026-08-01T10:00:00Z', NULL, 0)
-ON CONFLICT (id) DO NOTHING;
 
 -- Seed 10 Anos Litúrgicos (2026 - 2035)
 INSERT INTO calendario.anos_liturgicos (ano, ciclo_letra, data_inicio_advento, data_fim_comum, atualizado_em_utc)

@@ -29,7 +29,7 @@ interface ReservaFormDrawerProps {
   onSubmit: (data: ReservaFormData) => void;
   isLoading?: boolean;
   locais: Array<{ id: string; nome: string; bufferPadraoMinutos?: number }>;
-  ativos: Array<{ id: string; nome: string; numeroTombamento?: string }>;
+  ativos: Array<{ id: string; nome: string; codigoTombamento?: string }>;
   pastorais: Array<{ id: string; nome: string }>;
   eventos?: Array<{ id: string; titulo: string }>;
   preselectedTipo?: TipoItemReserva;
@@ -157,7 +157,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                           ))
                         : ativos.map((a) => (
                             <MenuItem key={a.id} value={a.id}>
-                              {a.nome} {a.numeroTombamento ? `(Nº ${a.numeroTombamento})` : ''}
+                              {a.nome} {a.codigoTombamento ? `(Nº ${a.codigoTombamento})` : ''}
                             </MenuItem>
                           ))}
                     </Select>

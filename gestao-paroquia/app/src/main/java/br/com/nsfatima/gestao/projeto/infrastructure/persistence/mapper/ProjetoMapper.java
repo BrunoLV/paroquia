@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper;
 
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
+import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,39 @@ public class ProjetoMapper {
                 entity.getStatus(),
                 updated
         );
+    }
+
+    /** Reconstitui o agregado de domínio {@link Projeto} a partir da entidade persistida. */
+    public Projeto toDomain(ProjetoEventoEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new Projeto(
+                entity.getId(),
+                entity.getNome(),
+                entity.getDescricao(),
+                entity.getGrupoParoquialResponsavelId(),
+                entity.getInicioUtc(),
+                entity.getFimUtc(),
+                entity.getStatus());
+    }
+
+    /** Nova entidade a partir de um agregado recém-aberto. */
+    public ProjetoEventoEntity toEntity(Projeto projeto) {
+        ProjetoEventoEntity entity = new ProjetoEventoEntity();
+        entity.setId(projeto.getId());
+        aplicar(projeto, entity);
+        return entity;
+    }
+
+    /** Aplica o estado do agregado sobre a entidade JPA gerenciada. */
+    public void aplicar(Projeto projeto, ProjetoEventoEntity entity) {
+        entity.setNome(projeto.getNome());
+        entity.setDescricao(projeto.getDescricao());
+        entity.setGrupoParoquialResponsavelId(projeto.getGrupoParoquialResponsavelId());
+        entity.setInicioUtc(projeto.getInicio());
+        entity.setFimUtc(projeto.getFim());
+        entity.setStatus(projeto.getStatus());
     }
 
     /**

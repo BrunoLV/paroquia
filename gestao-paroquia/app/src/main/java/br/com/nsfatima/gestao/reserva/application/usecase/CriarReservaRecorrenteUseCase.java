@@ -35,7 +35,8 @@ public class CriarReservaRecorrenteUseCase {
     ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
         this.conflitoService = Objects.requireNonNull(conflitoService, "ReservaConflitoService é obrigatório.");
-        this.authorizationService = Objects.requireNonNull(authorizationService, "ReservaAuthorizationService é obrigatório.");
+        this.authorizationService = Objects.requireNonNull(authorizationService,
+                "ReservaAuthorizationService é obrigatório.");
     }
 
     public record OcorrenciaHorario(

@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.fiel.application.usecase;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.UpdateFielRequest;
 import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
+import br.com.nsfatima.gestao.fiel.domain.service.ValidacaoDocumentoCivil;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
@@ -21,14 +22,17 @@ public class UpdateFielUseCase {
     private final FielJpaRepository repository;
     private final FielMapper mapper;
     private final UnidadeTerritorialJpaRepository unidades;
+    private final ValidacaoDocumentoCivil validacaoDocumento;
 
     public UpdateFielUseCase(
             FielJpaRepository repository,
             FielMapper mapper,
-            UnidadeTerritorialJpaRepository unidades) {
+            UnidadeTerritorialJpaRepository unidades,
+            ValidacaoDocumentoCivil validacaoDocumento) {
         this.repository = repository;
         this.mapper = mapper;
         this.unidades = unidades;
+        this.validacaoDocumento = validacaoDocumento;
     }
 
     @Transactional
@@ -96,8 +100,8 @@ public class UpdateFielUseCase {
             fiel.setEnderecoEstado(r.endereco().estado());
         }
 
-        CreateFielUseCase.validarPais(fiel.getPaisOrigem());
-        CreateFielUseCase.validarDocumento(
+        validacaoDocumento.validarPais(fiel.getPaisOrigem());
+        validacaoDocumento.validarDocumento(
                 fiel.getPaisOrigem(),
                 fiel.getCpf(),
                 fiel.getDocumentoEstrangeiroTipo(),

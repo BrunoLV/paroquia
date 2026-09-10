@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
 import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
-import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
+import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -114,16 +114,15 @@ public class CreateProjetoUseCase {
             return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedAprovacao));
         }
 
-        ProjetoEventoEntity entity = new ProjetoEventoEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setNome(request.nome());
-        entity.setDescricao(request.descricao());
-        entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
-        entity.setInicioUtc(request.inicio());
-        entity.setFimUtc(request.fim());
-        entity.setStatus(ProjetoStatus.ABERTO);
+        Projeto projeto = Projeto.abrir(
+                UUID.randomUUID(),
+                request.nome(),
+                request.descricao(),
+                request.grupoParoquialResponsavelId(),
+                request.inicio(),
+                request.fim());
 
-        ProjetoEventoEntity saved = repository.save(entity);
+        ProjetoEventoEntity saved = repository.save(mapper.toEntity(projeto));
 
         auditPublisher.publishCreateSuccess(actorContext.actor(), saved.getId().toString());
 

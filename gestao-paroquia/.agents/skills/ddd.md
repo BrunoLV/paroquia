@@ -109,6 +109,10 @@ public record Endereco(String logradouro, String numero, Cep cep, Cidade cidade)
 * **Mutabilidade Controlada (Métodos de Negócio):** Proibição absoluta de *setters* genéricos (`setStatus`, `setNome`). O estado só é alterado por métodos que descrevem eventos ou comandos de negócio (`registrarCrisma()`, `transferirComunidade()`).
 * **Relacionamento Entre Agregados Exclusivamente por ID:** Um agregado NUNCA deve conter uma referência direta de objeto para outro agregado. Mantenha apenas o identificador tipado correspondente (ex.: `ParoquiaId paroquiaOrigemId`), garantindo baixo acoplamento e consistência modular.
 * **Regra Fundamental de Transacionalidade:** Em uma única transação de banco de dados, modifique **apenas UM Agregado**. A consistência entre múltiplos agregados deve ser orquestrada de forma **eventual**.
+* **Encapsulamento de Coleções:** getters de agregado devolvem `List.copyOf(...)`, `Collections.unmodifiableList(...)` ou um VO-coleção — nunca a referência interna mutável (Java não tem `ReadonlyArray`). A coleção interna só muda por métodos da raiz (`adicionarItem`, `removerItem`).
+* **Anti-padrão "enum-como-domínio":** `domain/model/` contendo **apenas um enum** é sintoma de anemia — o agregado de fato virou a `@Entity` JPA. Enums de domínio **nunca** importam Jackson, DTOs de `api/` ou qualquer framework.
+* **Tell, Don't Ask:** o orquestrador não lê o estado para decidir a mutação.
+  `if (aprovacao.getStatus() == PENDENTE) aprovacao.setStatus(APROVADA)` → `aprovacao.aprovar(decisor, obs, agora)`. A guarda de transição e a exceção de estado ilegal moram no agregado.
 
 ### 3.4. Fábricas do Domínio (*Domain Factories*)
 
@@ -148,23 +152,8 @@ public class PadrinhoElegivelSpecification implements DomainSpecification<Fiel> 
 ### 3.7. Eventos de Domínio (*Domain Events*)
 
 * Representam fatos consumados relevantes para o negócio (`BatismoCelebrado`, `FielInativado`).
-* **Padrão de Coleta Interna:** A Raiz do Agregado armazena internamente os eventos gerados durante a execução dos métodos de negócio. A camada de aplicação extrai e despacha esses eventos após a persistência bem-sucedida da transação:
-```java
-public abstract class AggregateRoot<ID> {
-    private final List<DomainEvent> domainEvents = new ArrayList<>();
-
-    protected void registerEvent(DomainEvent event) {
-        this.domainEvents.add(event);
-    }
-
-    public List<DomainEvent> pullDomainEvents() {
-        List<DomainEvent> events = List.copyOf(this.domainEvents);
-        this.domainEvents.clear();
-        return events;
-    }
-}
-
-```
+* **Padrão de Coleta Interna:** A Raiz do Agregado armazena internamente os eventos gerados durante a execução dos métodos de negócio. A camada de aplicação extrai e despacha esses eventos após a persistência bem-sucedida da transação.
+* **Implementação canônica (não é mais aspiracional):** use `br.com.nsfatima.gestao.support.domain.AggregateRoot<ID>` — `registrarEvento(DomainEvent)` (protegido) e `extrairEventos()` (drena e limpa). `DomainEvent` expõe `Instant ocorridoEm()`. Após `repository.save(agregado)`, o caso de uso chama `publicadorEventosDominio.publicar(agregado)` (`support.infrastructure.messaging.PublicadorEventosDominio`) — substitui chamadas diretas e espalhadas a `ApplicationEventPublisher`.
 
 
 

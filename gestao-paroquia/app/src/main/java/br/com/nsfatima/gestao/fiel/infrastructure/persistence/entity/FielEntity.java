@@ -409,6 +409,52 @@ public class FielEntity extends BaseVersionedEntity {
         atualizadoPor = value;
     }
 
+    /** Desativação reversível do cadastro (LGPD). */
+    public void desativar(Instant agora, String actor) {
+        this.ativo = false;
+        this.desativadoEmUtc = agora;
+        marcarAtualizado(agora, actor);
+    }
+
+    /** Reativa um cadastro desativado; rejeita se os dados civis já foram anonimizados. */
+    public void reativar(Instant agora, String actor) {
+        if (dadosCadastraisEliminados) {
+            throw new IllegalStateException("Cadastro anonimizado não pode ser reativado.");
+        }
+        this.ativo = true;
+        this.desativadoEmUtc = null;
+        marcarAtualizado(agora, actor);
+    }
+
+    /**
+     * Anonimização definitiva (LGPD): elimina, num único ponto, todos os dados pessoais identificáveis
+     * do cadastro. Antes esta lista vivia como sequência de {@code setX(null)} em
+     * {@code GerenciarCicloVidaFielUseCase}.
+     */
+    public void anonimizar(Instant agora, String actor) {
+        setNome(null);
+        setCpf(null);
+        setRg(null);
+        setDocumentoEstrangeiroNumero(null);
+        setEmail(null);
+        setCelular(null);
+        setTelefoneFixo(null);
+        setEnderecoLogradouro(null);
+        setEnderecoNumero(null);
+        setEnderecoComplemento(null);
+        setEnderecoBairro(null);
+        setEnderecoCep(null);
+        setEnderecoCidade(null);
+        setEnderecoEstado(null);
+        this.dadosCadastraisEliminados = true;
+        marcarAtualizado(agora, actor);
+    }
+
+    private void marcarAtualizado(Instant agora, String actor) {
+        this.atualizadoEmUtc = agora;
+        this.atualizadoPor = actor;
+    }
+
     private String digitos(String value) {
         if (value == null) {
             return null;
