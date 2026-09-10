@@ -42,16 +42,8 @@ public class ApproveUsuarioUseCase {
         UsuarioEntity usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new UsuarioNotFoundException(userId));
 
-        usuario.setEnabled(true);
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        usuario.setAtualizadoPor(authentication != null ? authentication.getName() : null);
-        if (usuario.getRoles() == null || !usuario.getRoles().contains("ROLE_USER")) {
-            if (usuario.getRoles() == null || usuario.getRoles().isBlank()) {
-                usuario.setRoles("ROLE_USER");
-            } else {
-                usuario.setRoles(usuario.getRoles() + ",ROLE_USER");
-            }
-        }
+        usuario.aprovar(authentication != null ? authentication.getName() : null);
         usuarioRepository.save(usuario);
 
         // Activate requested vinculos

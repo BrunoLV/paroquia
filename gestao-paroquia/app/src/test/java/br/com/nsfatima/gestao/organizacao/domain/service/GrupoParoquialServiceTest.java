@@ -47,8 +47,9 @@ class GrupoParoquialServiceTest {
         unidadeTerritorialRepository = mock(UnidadeTerritorialJpaRepository.class);
         auditLogService = mock(AuditoriaPersistenceService.class);
         PastoralMovimentoOficialRepository pastoralOficialRepository = mock(PastoralMovimentoOficialRepository.class);
-        service = new GrupoParoquialService(repository, auditLogService, pastoralOficialRepository,
-                unidadeTerritorialRepository);
+        service = new GrupoParoquialService(repository, auditLogService,
+                new HierarquiaOrganizacionalPolicy(repository, pastoralOficialRepository,
+                        unidadeTerritorialRepository));
 
         // Setup mock unidades territoriais (Clero/Matriz não são mais GrupoParoquial, track
         // linguagem_ubiqua_dominio)

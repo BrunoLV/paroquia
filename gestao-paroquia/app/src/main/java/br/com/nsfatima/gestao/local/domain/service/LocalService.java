@@ -105,7 +105,12 @@ public class LocalService {
             throw LocalBusinessException.hasFutureEventsOnDeactivate(id);
         }
 
-        local.update(nome, tipo, enderecoLocal, capacidadeMaxima, descricao, ativo, igrejaId);
+        local.alterarCadastro(nome, tipo, enderecoLocal, capacidadeMaxima, descricao, igrejaId);
+        if (ativo) {
+            local.ativar();
+        } else {
+            local.inativar();
+        }
         localRepository.save(local);
         return localRepository.findById(local.getId()).orElse(local);
     }

@@ -86,10 +86,9 @@ public class GrupoParoquial {
     }
 
     /**
-     * Substitui todos os atributos mutáveis desta organização, incluindo reatribuição de organização-mãe e
-     * vínculo com Pastoral/Movimento Oficial. Não valida a nova hierarquia — a validação de compatibilidade
-     * entre tipo e organização-mãe é responsabilidade de {@code GrupoParoquialService.validateHierarchy}, que
-     * deve ser chamado antes de invocar este método.
+     * Substitui os atributos cadastrais desta organização (fluxo de PUT), incluindo reatribuição de
+     * organização-mãe e vínculo com Pastoral/Movimento Oficial. A compatibilidade da hierarquia é
+     * responsabilidade de {@code HierarquiaOrganizacionalPolicy}, invocada antes deste método.
      *
      * @param nome novo nome da organização
      * @param tipo novo tipo organizacional
@@ -100,7 +99,7 @@ public class GrupoParoquial {
      * @param parentId novo identificador da organização-mãe, ou {@code null} se não houver
      * @param pastoralOficialId novo vínculo com o catálogo oficial de Pastorais/Movimentos, quando aplicável
      */
-    public void update(String nome,
+    public void alterarCadastro(String nome,
                        TipoGrupo tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
                        UUID parentId, UUID pastoralOficialId) {
 

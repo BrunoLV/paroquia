@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.config;
 
-import br.com.nsfatima.gestao.patrimonio.infrastructure.scheduling.AtivoAlocacaoAgendaJob;
+import br.com.nsfatima.gestao.patrimonio.infrastructure.scheduling.SincronizarStatusReservadoJob;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -10,40 +10,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Agenda no Quartz a execução diária do job que atualiza o status das ocupações de ativos
- * patrimoniais (ex.: marcar como atrasadas as que ultrapassaram a data de fim), disparado
- * diariamente de madrugada.
+ * Agenda no Quartz a varredura diária de reconciliação do status {@code RESERVADO} dos ativos
+ * patrimoniais (madrugada). O listener de eventos cobre as transições imediatas de reserva; este
+ * job cobre o simples decorrer do tempo — início e fim de período de uma reserva confirmada, que
+ * não têm transição de estado disparando evento.
  */
 @Configuration
 public class PatrimonioQuartzConfig {
 
-    private static final String CRON_DIARIO_MADRUGADA = "0 10 0 * * ?";
+    private static final String CRON_DIARIO_MADRUGADA = "0 15 3 * * ?";
 
-    /**
-     * Define o job do Quartz que executa {@link AtivoAlocacaoAgendaJob}, marcado como durável
-     * para poder existir sem um trigger associado no momento do registro.
-     *
-     * @return o detalhe do job registrado no scheduler
-     */
     @Bean
-    public JobDetail ativoAlocacaoAgendaJobDetail() {
-        return JobBuilder.newJob(AtivoAlocacaoAgendaJob.class)
-                .withIdentity("ativoAlocacaoAgendaJob")
+    public JobDetail sincronizarStatusReservadoJobDetail() {
+        return JobBuilder.newJob(SincronizarStatusReservadoJob.class)
+                .withIdentity("sincronizarStatusReservadoJob")
                 .storeDurably()
                 .build();
     }
 
-    /**
-     * Define o gatilho cron que dispara o job diariamente de madrugada.
-     *
-     * @param ativoAlocacaoAgendaJobDetail job a ser disparado
-     * @return o trigger registrado no scheduler
-     */
     @Bean
-    public Trigger ativoAlocacaoAgendaJobTrigger(JobDetail ativoAlocacaoAgendaJobDetail) {
+    public Trigger sincronizarStatusReservadoJobTrigger(JobDetail sincronizarStatusReservadoJobDetail) {
         return TriggerBuilder.newTrigger()
-                .forJob(ativoAlocacaoAgendaJobDetail)
-                .withIdentity("ativoAlocacaoAgendaJobTrigger")
+                .forJob(sincronizarStatusReservadoJobDetail)
+                .withIdentity("sincronizarStatusReservadoJobTrigger")
                 .withSchedule(CronScheduleBuilder.cronSchedule(CRON_DIARIO_MADRUGADA))
                 .build();
     }

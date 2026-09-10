@@ -37,44 +37,26 @@ public class PatrimonioAuditPublisher {
     }
 
     /**
-     * Registra a auditoria de transferência de organização dona de um ativo patrimonial.
+     * Registra a auditoria de envio de um ativo para manutenção.
      *
-     * @param actor                ator responsável pela ação
-     * @param ativoId              ativo transferido
-     * @param grupoParoquialOrigemId organização dona antes da transferência
-     * @param grupoParoquialDestinoId organização dona depois da transferência
+     * @param actor           ator responsável pela ação
+     * @param ativoId         ativo enviado para manutenção
+     * @param grupoParoquialId unidade territorial dona do ativo
      */
-    public void publishTransfer(String actor, UUID ativoId, UUID grupoParoquialOrigemId, UUID grupoParoquialDestinoId) {
-        auditLogPersistenceService.log(actor, "transferir", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, grupoParoquialDestinoId, Map.of(
-                        "grupoParoquialOrigemId", grupoParoquialOrigemId.toString(),
-                        "grupoParoquialDestinoId", grupoParoquialDestinoId.toString())));
+    public void publishManutencao(String actor, UUID ativoId, UUID grupoParoquialId) {
+        auditLogPersistenceService.log(actor, "enviar-manutencao", ativoId.toString(), RESULT_SUCCESS,
+                withDefaults(ativoId, grupoParoquialId, Map.of()));
     }
 
     /**
-     * Registra a auditoria de alocação de um ativo patrimonial, incluindo o evento vinculado
-     * quando houver.
+     * Registra a auditoria de exclusão lógica de um ativo patrimonial.
      *
-     * @param actor         ator responsável pela ação
-     * @param ativoId       ativo alocado
-     * @param grupoParoquialId organização dona do ativo
-     * @param eventoId      evento de destino da alocação, ou {@code null}
+     * @param actor           ator responsável pela ação
+     * @param ativoId         ativo excluído
+     * @param grupoParoquialId unidade territorial dona do ativo
      */
-    public void publishAlocacao(String actor, UUID ativoId, UUID grupoParoquialId, UUID eventoId) {
-        Map<String, Object> metadata = eventoId == null ? Map.of() : Map.of("eventoId", eventoId.toString());
-        auditLogPersistenceService.log(actor, "alocar", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, grupoParoquialId, metadata));
-    }
-
-    /**
-     * Registra a auditoria de desalocação (devolução) de um ativo patrimonial.
-     *
-     * @param actor         ator responsável pela ação
-     * @param ativoId       ativo desalocado
-     * @param grupoParoquialId organização dona do ativo
-     */
-    public void publishDesalocacao(String actor, UUID ativoId, UUID grupoParoquialId) {
-        auditLogPersistenceService.log(actor, "desalocar", ativoId.toString(), RESULT_SUCCESS,
+    public void publishExclusao(String actor, UUID ativoId, UUID grupoParoquialId) {
+        auditLogPersistenceService.log(actor, "excluir", ativoId.toString(), RESULT_SUCCESS,
                 withDefaults(ativoId, grupoParoquialId, Map.of()));
     }
 

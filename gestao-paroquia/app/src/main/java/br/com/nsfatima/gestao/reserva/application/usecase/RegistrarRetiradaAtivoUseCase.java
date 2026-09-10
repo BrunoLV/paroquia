@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
+import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -17,9 +17,13 @@ import java.util.UUID;
 public class RegistrarRetiradaAtivoUseCase {
 
     private final ReservaRepository reservaRepository;
+    private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
-    public RegistrarRetiradaAtivoUseCase(ReservaRepository reservaRepository) {
+    public RegistrarRetiradaAtivoUseCase(ReservaRepository reservaRepository,
+                                        PublicadorReservaDeAtivo publicadorReservaDeAtivo) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
+        this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
+                "PublicadorReservaDeAtivo é obrigatório.");
     }
 
     @Transactional
@@ -27,15 +31,12 @@ public class RegistrarRetiradaAtivoUseCase {
         Objects.requireNonNull(reservaId, "ID da reserva é obrigatório.");
         Objects.requireNonNull(operador, "Operador é obrigatório.");
 
-        // Secretaria, sacristia, admin ou coordenador da pastoral dona
-        if (!operador.isAdminOuParoco()) {
-            // Se for coordenador pode registrar a retirada do bem sob sua custódia
-        }
-
         Reserva reserva = reservaRepository.findById(new ReservaId(reservaId))
                 .orElseThrow(() -> new ReservaNotFoundException(reservaId));
 
         reserva.registrarRetirada(operador.id(), Instant.now());
-        return reservaRepository.save(reserva);
+        Reserva salva = reservaRepository.save(reserva);
+        publicadorReservaDeAtivo.publicarSeForAtivo(salva);
+        return salva;
     }
 }

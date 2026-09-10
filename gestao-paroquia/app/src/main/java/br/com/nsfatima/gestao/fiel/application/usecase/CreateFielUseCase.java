@@ -3,17 +3,14 @@ package br.com.nsfatima.gestao.fiel.application.usecase;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
+import br.com.nsfatima.gestao.fiel.domain.service.ValidacaoDocumentoCivil;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,27 +19,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateFielUseCase {
 
     private static final String ACTOR_SYSTEM = "system";
-    private static final Set<String> PAISES_ISO3 = Arrays.stream(Locale.getISOCountries())
-            .map(c -> new Locale.Builder().setRegion(c).build().getISO3Country())
-            .collect(Collectors.toUnmodifiableSet());
 
     private final FielJpaRepository repository;
     private final FielMapper mapper;
     private final UnidadeTerritorialJpaRepository unidades;
+    private final ValidacaoDocumentoCivil validacaoDocumento;
 
     public CreateFielUseCase(
             FielJpaRepository repository,
             FielMapper mapper,
-            UnidadeTerritorialJpaRepository unidades) {
+            UnidadeTerritorialJpaRepository unidades,
+            ValidacaoDocumentoCivil validacaoDocumento) {
         this.repository = repository;
         this.mapper = mapper;
         this.unidades = unidades;
+        this.validacaoDocumento = validacaoDocumento;
     }
 
     @Transactional
     public FielResponse execute(CreateFielRequest request, String actor) {
-        validarPais(request.paisOrigem());
-        validarDocumento(
+        validacaoDocumento.validarPais(request.paisOrigem());
+        validacaoDocumento.validarDocumento(
                 request.paisOrigem(),
                 request.cpf(),
                 request.tipoDocumentoEstrangeiro(),
@@ -90,42 +87,6 @@ public class CreateFielUseCase {
         fiel.setEnderecoCep(r.endereco().cep());
         fiel.setEnderecoCidade(r.endereco().cidade());
         fiel.setEnderecoEstado(r.endereco().estado());
-    }
-
-    static void validarDocumento(String pais, String cpf, String tipo, String numero) {
-        boolean brasil = "BRA".equalsIgnoreCase(pais);
-        boolean cpfPresente = cpf != null && cpf.replaceAll("\\D", "").length() == 11;
-        if (brasil && (!cpfPresente || !cpfValido(cpf.replaceAll("\\D", "")))) {
-            throw new IllegalArgumentException("CPF brasileiro é obrigatório e deve ser válido.");
-        }
-        if (!brasil && (tipo == null || numero == null || numero.isBlank())) {
-            throw new IllegalArgumentException("RNE/RNM ou passaporte é obrigatório para estrangeiros.");
-        }
-        if (!brasil && !"RNE_RNM".equals(tipo) && !"PASSAPORTE".equals(tipo)) {
-            throw new IllegalArgumentException("Documento estrangeiro deve ser RNE_RNM ou PASSAPORTE.");
-        }
-    }
-
-    static void validarPais(String pais) {
-        if (pais == null || !PAISES_ISO3.contains(pais.toUpperCase(Locale.ROOT))) {
-            throw new IllegalArgumentException("País de origem deve usar ISO-3166 alpha-3.");
-        }
-    }
-
-    private static boolean cpfValido(String cpf) {
-        if (cpf.chars().distinct().count() == 1) {
-            return false;
-        }
-        return digito(cpf, 9) == cpf.charAt(9) - '0' && digito(cpf, 10) == cpf.charAt(10) - '0';
-    }
-
-    private static int digito(String cpf, int limite) {
-        int soma = 0;
-        for (int i = 0; i < limite; i++) {
-            soma += (cpf.charAt(i) - '0') * (limite + 1 - i);
-        }
-        int resto = soma % 11;
-        return resto < 2 ? 0 : 11 - resto;
     }
 
     private void validarUnidade(UUID id) {

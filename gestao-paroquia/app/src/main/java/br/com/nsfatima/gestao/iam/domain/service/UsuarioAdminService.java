@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.iam.domain.service;
 
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.iam.domain.model.Papeis;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
@@ -62,7 +63,11 @@ public class UsuarioAdminService {
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
-        usuario.setEnabled(enabled);
+        if (enabled) {
+            usuario.ativar();
+        } else {
+            usuario.desativar();
+        }
         usuarioRepository.save(usuario);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
@@ -89,7 +94,7 @@ public class UsuarioAdminService {
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
-        usuario.setPasswordHash(passwordEncoder.encode(newRawPassword));
+        usuario.redefinirSenhaHash(passwordEncoder.encode(newRawPassword));
         usuarioRepository.save(usuario);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
@@ -117,7 +122,7 @@ public class UsuarioAdminService {
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException(id));
-        usuario.setRoles(roles);
+        usuario.substituirPapeis(Papeis.deCsv(roles));
         usuarioRepository.save(usuario);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(

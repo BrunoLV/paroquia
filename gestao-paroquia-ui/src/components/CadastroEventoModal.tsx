@@ -551,7 +551,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
                   )}
                 >
                   {ativos
-                    .filter(a => a.reservavel && a.status === 'DISPONIVEL')
+                    .filter(a => a.isReservavel && a.status === 'DISPONIVEL')
                     .map((a) => (
                       <MenuItem key={a.id} value={a.id}>
                         {a.nome} — {a.categoria}

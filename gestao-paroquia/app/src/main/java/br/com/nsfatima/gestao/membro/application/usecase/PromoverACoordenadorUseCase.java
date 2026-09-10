@@ -8,7 +8,9 @@ import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
+import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
@@ -37,6 +39,7 @@ public class PromoverACoordenadorUseCase {
     private final UsuarioJpaRepository usuarioRepository;
     private final CreateUsuarioUseCase createUsuarioUseCase;
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
+    private final MembroGrupoMapper membroGrupoMapper;
 
     public PromoverACoordenadorUseCase(
             MembroGrupoJpaRepository membroRepository,
@@ -44,13 +47,15 @@ public class PromoverACoordenadorUseCase {
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UsuarioJpaRepository usuarioRepository,
             CreateUsuarioUseCase createUsuarioUseCase,
-            PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
+            PapelGlobalAuthorizationService papelGlobalAuthorizationService,
+            MembroGrupoMapper membroGrupoMapper) {
         this.membroRepository = membroRepository;
         this.fielRepository = fielRepository;
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.usuarioRepository = usuarioRepository;
         this.createUsuarioUseCase = createUsuarioUseCase;
         this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
+        this.membroGrupoMapper = membroGrupoMapper;
     }
 
     /**
@@ -79,14 +84,15 @@ public class PromoverACoordenadorUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
-        PapelGlobalValidation.rejectIfGlobal(papel);
 
         MembroGrupoEntity membro = membroRepository
                 .findByFielIdAndGrupoParoquialIdAndAtivoTrue(request.fielId(), request.grupoParoquialId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Fiel não é membro ativo desta organização: " + request.fielId()));
 
-        membro.setPapel(papel.storedValue());
+        MembroGrupo membroAgregado = membroGrupoMapper.toDomain(membro);
+        membroAgregado.atribuirPapel(papel);
+        membroGrupoMapper.aplicar(membroAgregado, membro);
         membroRepository.save(membro);
 
         LiderancaSyncSupport.sync(grupoParoquialRepository, papel, fiel.getNome(), grupoParoquial);

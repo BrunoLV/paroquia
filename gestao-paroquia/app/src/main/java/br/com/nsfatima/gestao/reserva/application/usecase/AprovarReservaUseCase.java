@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -20,15 +21,20 @@ public class AprovarReservaUseCase {
     private final ReservaRepository reservaRepository;
     private final ReservaAuthorizationService authorizationService;
     private final ReservaConflitoService conflitoService;
+    private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     public AprovarReservaUseCase(
             ReservaRepository reservaRepository,
             ReservaAuthorizationService authorizationService,
-            ReservaConflitoService conflitoService
+            ReservaConflitoService conflitoService,
+            PublicadorReservaDeAtivo publicadorReservaDeAtivo
     ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.authorizationService = Objects.requireNonNull(authorizationService, "ReservaAuthorizationService é obrigatório.");
+        this.authorizationService = Objects.requireNonNull(authorizationService,
+                "ReservaAuthorizationService é obrigatório.");
         this.conflitoService = Objects.requireNonNull(conflitoService, "ReservaConflitoService é obrigatório.");
+        this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
+                "PublicadorReservaDeAtivo é obrigatório.");
     }
 
     @Transactional
@@ -51,6 +57,8 @@ public class AprovarReservaUseCase {
         );
 
         reserva.aprovar(operador.id(), Instant.now());
-        return reservaRepository.save(reserva);
+        Reserva salva = reservaRepository.save(reserva);
+        publicadorReservaDeAtivo.publicarSeForAtivo(salva);
+        return salva;
     }
 }

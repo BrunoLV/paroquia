@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -16,9 +17,13 @@ import java.util.UUID;
 public class RegistrarDevolucaoAtivoUseCase {
 
     private final ReservaRepository reservaRepository;
+    private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
-    public RegistrarDevolucaoAtivoUseCase(ReservaRepository reservaRepository) {
+    public RegistrarDevolucaoAtivoUseCase(ReservaRepository reservaRepository,
+                                          PublicadorReservaDeAtivo publicadorReservaDeAtivo) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
+        this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
+                "PublicadorReservaDeAtivo é obrigatório.");
     }
 
     @Transactional

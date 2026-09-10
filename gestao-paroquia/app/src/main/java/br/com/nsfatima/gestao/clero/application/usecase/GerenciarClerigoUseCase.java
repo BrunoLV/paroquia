@@ -4,6 +4,8 @@ import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoInstitucionalResponse;
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoRequest;
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoResponse;
 import br.com.nsfatima.gestao.clero.api.v1.dto.EncargoClericalResponse;
+import br.com.nsfatima.gestao.clero.domain.model.Clerigo;
+import br.com.nsfatima.gestao.clero.domain.model.DadosCadastraisClerigo;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.observability.ClerigoAuditPublisher;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
@@ -51,9 +53,8 @@ public class GerenciarClerigoUseCase {
 
     @Transactional
     public ClerigoResponse criar(ClerigoRequest request, String actor) {
-        ClerigoEntity clerigo = new ClerigoEntity();
-        clerigo.setId(UUID.randomUUID());
-        aplicar(clerigo, request, actor, true);
+        Clerigo agregado = Clerigo.cadastrar(UUID.randomUUID(), dados(request), actor, Instant.now());
+        ClerigoEntity clerigo = mapper.toEntity(agregado);
         clerigos.save(clerigo);
         atualizarEncargo(clerigo.getId(), request.funcaoAtual());
         return resposta(clerigo);
@@ -84,7 +85,9 @@ public class GerenciarClerigoUseCase {
     @Transactional
     public ClerigoResponse atualizar(UUID id, ClerigoRequest request, String actor) {
         ClerigoEntity clerigo = encontrar(id);
-        aplicar(clerigo, request, actor, false);
+        Clerigo agregado = mapper.toDomain(clerigo);
+        agregado.atualizarCadastro(dados(request), actor, Instant.now());
+        mapper.aplicar(agregado, clerigo);
         atualizarEncargo(id, request.funcaoAtual());
         return resposta(clerigo);
     }
@@ -93,10 +96,9 @@ public class GerenciarClerigoUseCase {
     public void inativar(UUID id, String actor, UUID actorUsuarioId) {
         ClerigoEntity clerigo = encontrar(id);
         Instant agora = Instant.now();
-        clerigo.setAtivo(false);
-        clerigo.setDeletedAt(agora);
-        clerigo.setAtualizadoPor(actor == null ? ACTOR_SYSTEM : actor);
-        clerigo.setAtualizadoEmUtc(agora);
+        Clerigo agregado = mapper.toDomain(clerigo);
+        agregado.inativar(actor, agora);
+        mapper.aplicar(agregado, clerigo);
 
         encargos.findByClerigoIdAndAtualTrue(id).forEach(e -> {
             e.setAtual(false);
@@ -160,35 +162,12 @@ public class GerenciarClerigoUseCase {
                 .orElse(null);
     }
 
-    private void aplicar(ClerigoEntity c, ClerigoRequest r, String actor, boolean novo) {
-        r.grauOrdem().validarOrdenacoes(
-                r.dataOrdenacaoDiaconal(),
-                r.dataOrdenacaoPresbiteral(),
-                r.dataOrdenacaoEpiscopal());
-        c.setNomeCivil(r.nomeCivil());
-        c.setNomeEclesiastico(r.nomeEclesiastico());
-        c.setDataNascimento(r.dataNascimento());
-        c.setPaisOrigem(r.paisOrigem().toUpperCase());
-        c.setCpf(r.cpf());
-        c.setRg(r.rg());
-        c.setDocumentoEstrangeiro(r.documentoEstrangeiro());
-        c.setEmail(r.email());
-        c.setCelular(r.celular());
-        c.setWhatsapp(r.isWhatsapp());
-        c.setTelefoneFixo(r.telefoneFixo());
-        c.setEndereco(r.endereco());
-        c.setGrauOrdem(r.grauOrdem());
-        c.setDioceseIncardinacao(r.dioceseIncardinacao());
-        c.setDataOrdenacaoDiaconal(r.dataOrdenacaoDiaconal());
-        c.setDataOrdenacaoPresbiteral(r.dataOrdenacaoPresbiteral());
-        c.setDataOrdenacaoEpiscopal(r.dataOrdenacaoEpiscopal());
-        Instant agora = Instant.now();
-        c.setAtualizadoEmUtc(agora);
-        c.setAtualizadoPor(actor == null ? ACTOR_SYSTEM : actor);
-        if (novo) {
-            c.setCriadoEmUtc(agora);
-            c.setCriadoPor(c.getAtualizadoPor());
-        }
+    private static DadosCadastraisClerigo dados(ClerigoRequest r) {
+        return new DadosCadastraisClerigo(
+                r.nomeCivil(), r.nomeEclesiastico(), r.dataNascimento(), r.paisOrigem(),
+                r.cpf(), r.rg(), r.documentoEstrangeiro(), r.email(), r.celular(), r.isWhatsapp(),
+                r.telefoneFixo(), r.endereco(), r.grauOrdem(), r.dioceseIncardinacao(),
+                r.dataOrdenacaoDiaconal(), r.dataOrdenacaoPresbiteral(), r.dataOrdenacaoEpiscopal());
     }
 
     private void atualizarEncargo(UUID clerigoId, FuncaoEclesiastica funcao) {

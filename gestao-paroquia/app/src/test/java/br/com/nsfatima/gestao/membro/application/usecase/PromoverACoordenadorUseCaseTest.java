@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
@@ -55,7 +56,7 @@ class PromoverACoordenadorUseCaseTest {
         createUsuarioUseCase = mock(CreateUsuarioUseCase.class);
         papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
         useCase = new PromoverACoordenadorUseCase(membroRepository, fielRepository, grupoParoquialRepository,
-                usuarioRepository, createUsuarioUseCase, papelGlobalAuthorizationService);
+                usuarioRepository, createUsuarioUseCase, papelGlobalAuthorizationService, new MembroGrupoMapper());
 
         fielId = UUID.randomUUID();
         grupoParoquialId = UUID.randomUUID();
@@ -75,6 +76,7 @@ class PromoverACoordenadorUseCaseTest {
         membro.setId(UUID.randomUUID());
         membro.setFielId(fielId);
         membro.setGrupoParoquialId(grupoParoquialId);
+        membro.setTipoGrupo(TipoGrupo.PASTORAL);
         membro.setPapel("VOLUNTARIO_PASTORAL_LOCAL");
         membro.setAtivo(true);
         when(membroRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(fielId, grupoParoquialId))

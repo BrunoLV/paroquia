@@ -1,6 +1,9 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
+import br.com.nsfatima.gestao.reserva.application.port.out.ConsultaManutencaoAtivoPort;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaOperacaoInvalidaException;
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -23,15 +26,24 @@ public class CriarReservaUseCase {
     private final ReservaRepository reservaRepository;
     private final ReservaConflitoService conflitoService;
     private final ReservaAuthorizationService authorizationService;
+    private final ConsultaManutencaoAtivoPort consultaManutencaoPort;
+    private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     public CriarReservaUseCase(
             ReservaRepository reservaRepository,
             ReservaConflitoService conflitoService,
-            ReservaAuthorizationService authorizationService
+            ReservaAuthorizationService authorizationService,
+            ConsultaManutencaoAtivoPort consultaManutencaoPort,
+            PublicadorReservaDeAtivo publicadorReservaDeAtivo
     ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
         this.conflitoService = Objects.requireNonNull(conflitoService, "ReservaConflitoService é obrigatório.");
-        this.authorizationService = Objects.requireNonNull(authorizationService, "ReservaAuthorizationService é obrigatório.");
+        this.authorizationService = Objects.requireNonNull(authorizationService,
+                "ReservaAuthorizationService é obrigatório.");
+        this.consultaManutencaoPort = Objects.requireNonNull(consultaManutencaoPort,
+                "ConsultaManutencaoAtivoPort é obrigatório.");
+        this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
+                "PublicadorReservaDeAtivo é obrigatório.");
     }
 
     public record ComandoCriarReserva(
@@ -69,6 +81,14 @@ public class CriarReservaUseCase {
                 null
         );
 
+        // Bem em manutenção bloqueia o calendário de reservas no intervalo da janela.
+        if (comando.tipoItem() == TipoItemReserva.ATIVO
+                && !consultaManutencaoPort.janelasDeManutencao(
+                        comando.itemId(), comando.dataHoraInicio(), comando.dataHoraFim()).isEmpty()) {
+            throw new ReservaOperacaoInvalidaException(
+                    "O ativo está em manutenção (ou com manutenção prevista) no período solicitado.");
+        }
+
         // Status inicial: se for criado via Evento oficial ou solicitante for Admin/Coord -> CONFIRMADA, senão PENDENTE
         StatusReserva statusInicial = comando.eventoId() != null
                 ? StatusReserva.CONFIRMADA
@@ -89,6 +109,10 @@ public class CriarReservaUseCase {
                 agora
         );
 
-        return reservaRepository.save(reserva);
+        Reserva salva = reservaRepository.save(reserva);
+        if (salva.getStatus() == StatusReserva.CONFIRMADA) {
+            publicadorReservaDeAtivo.publicarSeForAtivo(salva);
+        }
+        return salva;
     }
 }

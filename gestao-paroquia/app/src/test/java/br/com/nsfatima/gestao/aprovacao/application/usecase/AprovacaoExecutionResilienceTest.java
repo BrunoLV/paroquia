@@ -8,7 +8,9 @@ import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaE
 import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoExecucaoFalhouException;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
@@ -56,8 +58,11 @@ class AprovacaoExecutionResilienceTest {
 
         strategies = List.of(createStrategy, updateStrategy, cancelStrategy);
 
+        AprovacaoMapper aprovacaoMapper = new AprovacaoMapper(mock(LegacyEnumInconsistencyPublisher.class));
+
         decideUseCase = new DecideSolicitacaoAprovacaoUseCase(
                 repository,
+                aprovacaoMapper,
                 actorContextResolver,
                 validateAprovacaoUseCase,
                 payloadMapper,

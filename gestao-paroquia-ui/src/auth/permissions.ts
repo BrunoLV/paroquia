@@ -178,27 +178,22 @@ export const canManageAtivos = (user: User | null): boolean => {
 };
 
 /**
- * Quem pode transferir a posse de um ativo patrimonial entre organizações: papéis com
- * autoridade global (`isGlobalCreator`) podem transferir qualquer ativo; um coordenador de
- * pastoral/movimento só pode transferir ativos que já pertencem à(s) organização(ões) às
- * quais está vinculado (`ativoOrgId` deve casar com `user.organizations`), evitando que
- * um coordenador movimente patrimônio de outra pastoral sem vínculo.
+ * Quem pode gerir (manutenção, exclusão) um ativo pertencente a uma unidade territorial:
+ * papéis com autoridade global (`isGlobalCreator`) podem gerir qualquer ativo; um coordenador
+ * de pastoral/movimento só pode gerir ativos da(s) unidade(s) à(s) qual(is) está vinculado.
  */
-export const canTransferAtivo = (user: User | null, ativoOrgId: string): boolean => {
+export const canManageManutencaoAtivo = (user: User | null, grupoParoquialId: string): boolean => {
   if (!user) return false;
   if (isGlobalCreator(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
-    return user.organizations.some((org: Organization) => org.id === ativoOrgId);
+    return user.organizations.some((org: Organization) => org.id === grupoParoquialId);
   }
   return false;
 };
 
-/** Alocar um ativo a um evento segue a mesma regra de escopo organizacional de `canTransferAtivo` */
-export const canAlocarAtivo = canTransferAtivo;
-
-/** Registrar/gerir manutenção de um ativo segue a mesma regra de escopo organizacional de `canTransferAtivo` */
-export const canManageManutencaoAtivo = canTransferAtivo;
+/** Excluir (soft delete) um ativo segue a mesma regra de escopo de `canManageManutencaoAtivo`. */
+export const canExcluirAtivo = canManageManutencaoAtivo;
 
 /**
  * Quem pode decidir (aprovar/rejeitar) uma solicitação de aprovação pendente: admin, pároco/bispo,

@@ -4,6 +4,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoPatchRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
+import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAuthorizationService;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -12,6 +14,7 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -70,34 +73,42 @@ public class UpdateProjetoUseCase {
         var actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanEdit(actorContext, entity.getGrupoParoquialResponsavelId());
 
+        Projeto projeto = mapper.toDomain(entity);
+
         if (request.nome() != null) {
-            entity.setNome(request.nome());
+            projeto.renomear(request.nome());
         }
         if (request.descricao() != null) {
-            entity.setDescricao(request.descricao());
+            projeto.alterarDescricao(request.descricao());
         }
         if (request.grupoParoquialResponsavelId() != null) {
-            entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
+            projeto.transferirResponsavel(request.grupoParoquialResponsavelId());
         }
-        if (request.inicio() != null) {
-            entity.setInicioUtc(request.inicio());
+        if (request.inicio() != null || request.fim() != null) {
+            Instant novoInicio = request.inicio() != null ? request.inicio() : projeto.getInicio();
+            Instant novoFim = request.fim() != null ? request.fim() : projeto.getFim();
+            projeto.redefinirPeriodo(novoInicio, novoFim);
         }
-        if (request.fim() != null) {
-            entity.setFimUtc(request.fim());
-        }
-        if (request.status() != null) {
-            entity.setStatus(request.status());
-        }
+        aplicarTransicaoStatus(projeto, request.status());
 
-        if (entity.getFimUtc() != null && entity.getInicioUtc() != null
-                && entity.getFimUtc().isBefore(entity.getInicioUtc())) {
-            throw new IllegalArgumentException("Data de fim do projeto não pode ser anterior à data de início");
-        }
-
+        mapper.aplicar(projeto, entity);
         ProjetoEventoEntity saved = repository.save(entity);
 
         auditPublisher.publishPatchSuccess(actorContext.actor(), saved.getId().toString());
 
         return mapper.toResponse(saved, true);
+    }
+
+    private void aplicarTransicaoStatus(Projeto projeto, ProjetoStatus alvo) {
+        if (alvo == null || alvo == projeto.getStatus()) {
+            return;
+        }
+        switch (alvo) {
+            case EM_ANDAMENTO -> projeto.iniciar();
+            case CONCLUIDO -> projeto.concluir();
+            case ABERTO, CANCELADO -> throw new IllegalArgumentException(
+                    "Transição para " + alvo + " via PATCH não é suportada; use os endpoints de transição do projeto.");
+            default -> throw new IllegalArgumentException("Status de projeto não suportado: " + alvo);
+        }
     }
 }

@@ -59,7 +59,7 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
 
 | Escopo da Tarefa | Skills Mandatórias | Invariantes Críticas |
 | :--- | :--- | :--- |
-| **Modelagem de Domínio & Casos de Uso** | `ddd.md`<br>`solid.md`<br>`java.md` | • Domínio puro (zero anotações Spring/JPA em `domain/`).<br>• Identificadores fortemente tipados com `record` (ex.: `record EntidadeId(UUID value)`).<br>• Relacionamentos entre agregados distintos exclusivamente por ID.<br>• Mutação limitada a um único agregado por transação.<br>• Modelagem via Sealed Interfaces e Pattern Matching sem `default`. |
+| **Modelagem de Domínio & Casos de Uso** | `ddd.md`<br>`solid.md`<br>`java.md` | • Domínio puro (zero anotações Spring/JPA em `domain/`).<br>• Identificadores fortemente tipados com `record` (ex.: `record EntidadeId(UUID value)`).<br>• Relacionamentos entre agregados distintos exclusivamente por ID.<br>• Mutação limitada a um único agregado por transação.<br>• Modelagem via Sealed Interfaces e Pattern Matching sem `default`.<br>• **Proibição absoluta de Modelo Anêmico:** zero setters públicos em Agregados/Entidades de domínio; o estado muda apenas por métodos da Linguagem Ubíqua. `domain/model/` nunca contém apenas enums. Ver §5.1. |
 | **Implementação Java 25 Geral** | `java.md`<br>`solid.md` | • Imutabilidade por padrão (`record` com construtor compacto de validação).<br>• Proibido `float`/`double` para precisão decimal; use `BigDecimal` com `RoundingMode`.<br>• Virtual Threads em I/O sem `synchronized` (anti-pinning; use `ReentrantLock`).<br>• `Optional` apenas para retornos de métodos; coleções retornam vazias, nunca `null`. |
 | **Testes Unitários & TDD** | `tdd.md` | • Precedência TDD: Ciclo Red-Green-Refactor estrito.<br>• JUnit 5 + Mockito 5 (`STRICT_STUBS`) + AssertJ fluente.<br>• Isolamento: proibido `@SpringBootTest` ou I/O real em testes unitários.<br>• Zero código defensivo ou de produção sem um teste falho que o exija. |
 | **Persistência, SQL & Migrações** | `flyway.md`<br>`sql.md` | • Migrações em `src/main/resources/db/migration/V{NNN}__{descricao}.sql`.<br>• Imutabilidade de migrações commitadas.<br>• Padrão Zero-Downtime: novas colunas como `NULLable` ou com `DEFAULT`.<br>• Proibição de `SELECT *`; constraints nomeadas e `COMMENT ON` mandatório. |
@@ -90,6 +90,30 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
 * **Limites de Complexidade:**
   * Arquivos de classe/interface: Máximo de **500 linhas**.
   * Métodos: Máximo de **20 linhas** (decompor métodos que excederem).
+
+### 5.1. REGRAS TÁTICAS DE MODELAGEM: MODELO DE DOMÍNIO RICO (DDD)
+
+* **Erradicação de Anemia:** É PROIBIDO expor setters públicos ou construtores de cópia
+  cega (`update(campo1, ..., campoN)`) em Agregados, Raízes de Agregado e Entidades de
+  domínio. Toda transição de estado ocorre por um método nomeado na Linguagem Ubíqua
+  (`aprovar`, `fechar`, `inativar`), que valida as invariantes internamente antes de mutar.
+  Invariante declarada em Javadoc mas enforçada só em Bean Validation de DTO ou em `if` de
+  UseCase/Controller é anemia — a regra volta para o domínio.
+* **Tell, Don't Ask:** O orquestrador (UseCase/Controller) não lê o estado do agregado para
+  decidir a mutação. `if (a.getStatus()==PENDENTE) a.setStatus(APROVADA)` vira `a.aprovar(...)`.
+  A guarda de estado e a exceção de transição ilegal pertencem ao agregado.
+* **Always-Valid Entity:** O construtor/fábrica rejeita qualquer instância que viole uma
+  invariante. Não existe agregado em estado inconsistente esperando validação externa.
+* **Obsessão por Primitivos:** `String`/`UUID`/`LocalDate`/`int` que carregam regra viram
+  Value Object imutável (`record` com construtor compacto de validação): `Email`, `Cpf`,
+  `Cep`, `Endereco`, `IntervaloTemporal`, `Money`. Referência a outro agregado é ID tipado,
+  nunca `UUID` cru.
+* **Encapsulamento de Coleções:** getters de agregado retornam `List.copyOf(...)` /
+  `Collections.unmodifiableList(...)` ou um VO-coleção; nunca a referência interna mutável.
+  A coleção só muda por métodos da raiz (`adicionarItem`, `removerItem`).
+* **Raiz de Agregado:** Agregados com ciclo de vida e eventos estendem
+  `support.domain.AggregateRoot<ID>`, registram `DomainEvent` internamente e são drenados
+  pela camada de aplicação via `PublicadorEventosDominio.publicar(raiz)` após o `save`.
 
 ---
 

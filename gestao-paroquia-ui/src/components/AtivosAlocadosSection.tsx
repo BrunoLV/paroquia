@@ -1,42 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Chip, Skeleton, Typography } from '@mui/material';
-import { Inventory as InventoryIcon, WarningAmber as WarningAmberIcon } from '@mui/icons-material';
-import { getAlocacoesPorEvento } from '../api/ativos';
-import { AtivoAlocacaoResponse } from '../api/types';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Box, Skeleton, Typography } from '@mui/material';
+import { Inventory as InventoryIcon } from '@mui/icons-material';
+import { listarReservas } from '../api/reservas';
 import StatusIcon from './StatusIcon';
-import { getAtivoAlocacaoStatusMeta } from '../utils/statusMeta/ativoAlocacaoStatus';
+import { getReservaStatusMeta } from '../utils/statusMeta/reservaStatus';
 import { formatDateBr } from '../utils/masks';
 
 interface AtivosAlocadosSectionProps {
   eventoId: string;
 }
 
+/**
+ * Lista os ativos patrimoniais reservados para um evento (via módulo de Reservas). Substitui a
+ * antiga listagem de alocações de ativo, descontinuada.
+ */
 const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId }) => {
-  const [alocacoes, setAlocacoes] = useState<AtivoAlocacaoResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    setIsLoading(true);
-    getAlocacoesPorEvento(eventoId)
-      .then((data) => {
-        if (active) setAlocacoes(data || []);
-      })
-      .catch((err) => {
-      })
-      .finally(() => {
-        if (active) setIsLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [eventoId]);
+  const { data: reservas = [], isLoading } = useQuery({
+    queryKey: ['reservas', 'evento-ativos', eventoId],
+    queryFn: () => listarReservas({ eventoId, tipoItem: 'ATIVO' }),
+    enabled: Boolean(eventoId),
+  });
 
   if (isLoading) {
     return <Skeleton variant="rounded" height={60} />;
   }
-
-  if (alocacoes.length === 0) {
+  if (reservas.length === 0) {
     return null;
   }
 
@@ -45,21 +34,18 @@ const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId 
       <InventoryIcon color="action" sx={{ mt: 0.3 }} />
       <Box sx={{ width: '100%' }}>
         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
-          Ativos Alocados
+          Ativos Reservados
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {alocacoes.map((alocacao) => (
-            <Box key={alocacao.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+          {reservas.map((reserva) => (
+            <Box key={reserva.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                {alocacao.ativoNome || alocacao.ativoId}
+                {reserva.itemNome || reserva.itemId}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {formatDateBr(alocacao.dataInicio)} — {formatDateBr(alocacao.dataFim)}
+                {formatDateBr(reserva.dataHoraInicio)} — {formatDateBr(reserva.dataHoraFim)}
               </Typography>
-              <StatusIcon {...getAtivoAlocacaoStatusMeta(alocacao.status)} />
-              {alocacao.impactadaPorAtraso && (
-                <Chip label="Pode atrasar" color="warning" icon={<WarningAmberIcon />} size="small" variant="outlined" />
-              )}
+              <StatusIcon {...getReservaStatusMeta(reserva.status)} />
             </Box>
           ))}
         </Box>

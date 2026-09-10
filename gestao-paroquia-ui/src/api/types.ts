@@ -778,133 +778,87 @@ export interface CpcDecisao {
 export type AtivoCategoria =
   "ELETRONICO" | "MOBILIARIO" | "PARAMENTO" | "INFRAESTRUTURA";
 
-export type AtivoStatus =
-  "DISPONIVEL" | "EM_MANUTENCAO" | "BAIXADO" | "ALOCADO";
+export type AtivoStatus = "DISPONIVEL" | "RESERVADO" | "EM_MANUTENCAO";
 
 /**
- * Ativo patrimonial (equipamento, mobiliário, paramento, etc.) pertencente a uma
- * organização, que pode ser reservado/emprestado para eventos ou colocado em manutenção.
+ * Bem patrimonial móvel da paróquia, pertencente de forma fixa a uma unidade territorial.
+ * Após o cadastro, apenas `descricao` é editável (imutabilidade estrutural). O uso temporário
+ * do bem é feito pelo módulo de Reservas; o descarte é exclusão lógica (`deletedAt`).
  */
 export interface AtivoPatrimonial {
   id: string;
   nome: string;
-  /** Número de tombamento patrimonial — identificador físico único do ativo, distinto do `id` interno. */
-  numeroTombamento: string;
+  /** Código de tombamento patrimonial gerado pelo sistema (padrão PAT-AAAA-NNNN); imutável. */
+  codigoTombamento: string;
+  descricao?: string | null;
+  /** Tipo do bem: eletrônico, mobiliário, paramento litúrgico ou infraestrutura. */
   categoria: AtivoCategoria;
   status: AtivoStatus;
-  /** Indica se este ativo pode ser reservado/alocado para eventos (alguns ativos existem só para controle patrimonial). */
-  reservavel: boolean;
-  /** Organização que atualmente possui/detém o ativo (posse pode mudar via transferência). */
-  organizacaoId: string;
-  dataAquisicao?: string | null;
-  valorEstimado?: number | null;
+  /** Elegível para reserva no módulo de Reservas; imutável após o cadastro. */
+  isReservavel: boolean;
+  grupoParoquialId: string;
+  dataAquisicao: string;
+  valorAquisicao: number;
+  cadastradoPorId?: string | null;
   criadoEmUtc: string;
+  atualizadoEmUtc: string;
 }
 
 /** Payload de cadastro de um novo {@link AtivoPatrimonial}. */
-export interface CreateAtivoPayload {
+export interface CadastrarAtivoPayload {
   nome: string;
+  descricao?: string | null;
   categoria: AtivoCategoria;
-  organizacaoId: string;
-  reservavel: boolean;
-  dataAquisicao?: string | null;
-  valorEstimado?: number | null;
+  grupoParoquialId: string;
+  isReservavel: boolean;
+  dataAquisicao: string;
+  valorAquisicao: number;
 }
 
-/** Payload para transferir a posse de um ativo para outra organização, exigindo justificativa. */
-export interface TransferirAtivoPayload {
-  novaOrganizacaoId: string;
-  justificativa: string;
+/** Edição do ativo — apenas a descrição é mutável. */
+export interface EditarDescricaoAtivoPayload {
+  descricao?: string | null;
 }
 
-/**
- * Payload para reservar/alocar um ativo por um período — a um evento específico
- * (`eventoId`) ou apenas a um intervalo de datas (empréstimo sem evento vinculado).
- */
-export interface AlocarAtivoPayload {
-  eventoId?: string | null;
-  justificativaAlocacao: string;
+/** Envio de um ativo para manutenção por um período determinado. */
+export interface EnviarManutencaoPayload {
+  descricaoReparo: string;
+  /** ISO-8601 (datetime). */
   dataInicio: string;
-  dataFim: string;
+  /** ISO-8601 (datetime). */
+  dataFimPrevista: string;
 }
 
-/** Payload para liberar (devolver) um ativo alocado antes ou ao fim do período reservado. */
-export interface DesalocarAtivoPayload {
-  observacao?: string | null;
-}
-
-/** Payload para colocar um ativo em manutenção por um período, tornando-o indisponível para alocação. */
-export interface IniciarManutencaoPayload {
-  dataInicio: string;
-  dataFim: string;
-  motivo: string;
-}
-
-/** Payload para cancelar uma alocação de ativo já confirmada, exigindo motivo. */
-export interface CancelarAlocacaoPayload {
-  motivoCancelamento: string;
-}
-
-export type AtivoAlocacaoTipo = "ALOCACAO_EVENTO" | "MANUTENCAO";
-
-export type AtivoAlocacaoStatus =
-  "PENDENTE_APROVACAO" | "CONFIRMADA" | "ATRASADA" | "DEVOLVIDA" | "CANCELADA";
-
-/**
- * Registro de uma alocação (reserva/empréstimo para evento) ou período de manutenção
- * de um {@link AtivoPatrimonial} — o histórico de "quem usou o ativo e quando".
- */
-export interface AtivoAlocacaoResponse {
+/** Registro de manutenção de um ativo. `dataFimReal` nula = manutenção em aberto. */
+export interface AtivoManutencao {
   id: string;
   ativoId: string;
-  ativoNome: string | null;
-  numeroTombamento: string | null;
-  tipo: AtivoAlocacaoTipo;
-  eventoId: string | null;
-  /** Organização dona do ativo no momento da alocação. */
-  organizacaoOrigemId: string;
-  /** Organização para a qual o ativo foi emprestado, quando `emprestimo` é `true`; `null` para alocação sem empréstimo (uso pela própria organização de origem). */
-  organizacaoDestinoId: string | null;
-  /** `true` quando o ativo está sendo emprestado a outra organização (`organizacaoDestinoId`), não apenas reservado para uso interno. */
-  emprestimo: boolean;
+  descricaoReparo: string;
   dataInicio: string;
-  dataFim: string;
-  status: AtivoAlocacaoStatus;
-  /** `true` quando esta alocação foi empurrada/afetada pelo atraso de devolução de uma alocação anterior do mesmo ativo. */
-  impactadaPorAtraso: boolean;
+  dataFimPrevista: string;
+  dataFimReal?: string | null;
+  registradoPorId: string;
   criadoEmUtc: string;
-  /** Data/hora em que o ativo foi efetivamente devolvido; `null` enquanto ainda está alocado. */
-  devolvidoEmUtc: string | null;
 }
 
-/**
- * Resposta retornada quando uma solicitação de alocação de ativo foi desviada para o
- * fluxo de aprovação em vez de ser aplicada de imediato (análogo a
- * `EventoAprovacaoPendenteResponse` no domínio de eventos).
- */
-export interface AlocacaoAtivoAprovacaoPendenteResponse {
-  solicitacaoAprovacaoId: string;
+/** Reserva que impede o envio de um ativo para manutenção no período consultado. */
+export interface ReservaImpeditiva {
+  reservaId: string;
+  descricao: string;
+  inicio: string;
+  fim: string;
   status: string;
-  ativoId: string;
-  eventoId: string;
-  mensagem: string;
+  solicitanteNome: string;
 }
 
-/** Resultado discriminado de uma tentativa de alocação: aplicada de imediato ou desviada para aprovação. */
-export type AlocarAtivoResultado =
-  | { kind: "ALOCADO"; ativo: AtivoPatrimonial }
-  | { kind: "PENDENTE"; pendente: AlocacaoAtivoAprovacaoPendenteResponse };
-
-/** Métricas agregadas de utilização do patrimônio, exibidas no painel de gestão de ativos. */
+/** Métricas agregadas de ociosidade do acervo patrimonial. */
 export interface MetricasOciosidade {
   totalAtivos: number;
   totalDisponiveis: number;
-  totalAlocados: number;
+  totalReservados: number;
   totalEmManutencao: number;
-  totalBaixados: number;
-  /** Percentual de ativos reserváveis atualmente ociosos (disponíveis e não alocados). */
+  /** Proporção de bens DISPONIVEL (sem uso) sobre o total incorporado. */
   taxaOciosidade: number;
-  distribuicaoPorCategoria: Record<string, number>;
 }
 
 export type GrauOrdem = 'DIACONO_TRANSITORIO' | 'DIACONO_PERMANENTE' | 'PADRE_DIOCESANO' | 'PADRE_RELIGIOSO' | 'BISPO';

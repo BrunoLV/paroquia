@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
-import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.domain.model.Aprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -57,16 +57,16 @@ public class CreateSolicitacaoAprovacaoUseCase {
                 actorContext.organizationType());
 
 
-        AprovacaoEntity entity = new AprovacaoEntity();
-        entity.setId(UUID.randomUUID());
-        entity.setEventoId(eventoId);
-        entity.setTipoSolicitacao(tipoSolicitacao.name());
-        entity.setAprovadorPapel(aprovadorPapel);
-        entity.setStatus(AprovacaoStatus.PENDENTE);
-        entity.setCriadoEmUtc(Instant.now());
-        entity.setDecididoEmUtc(null);
+        Aprovacao aprovacao = Aprovacao.solicitar(
+                UUID.randomUUID(),
+                eventoId,
+                tipoSolicitacao.name(),
+                aprovadorPapel.storedValue(),
+                actorContext.usuarioId().toString(),
+                null,
+                Instant.now());
 
-        entity.setSolicitanteId(actorContext.usuarioId().toString());
+        AprovacaoEntity entity = aprovacaoMapper.toEntity(aprovacao);
         entity.setSolicitantePapel(actorContext.role());
         entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
 

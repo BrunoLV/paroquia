@@ -100,4 +100,25 @@ public enum PapelOrganizacional {
     public String getDescricao() {
         return descricao;
     }
+
+    /**
+     * Papel de coordenação/liderança único por organização (contexto de igreja). Usado para
+     * sincronizar o campo de liderança da {@code GrupoParoquial} e para rebaixar o coordenador
+     * anterior. Consolida a lista antes duplicada em {@code LiderancaSyncSupport}.
+     */
+    public boolean isCoordenacao() {
+        return switch (this) {
+            case COORD_PASTORAL_GLOBAL, COORD_PASTORAL_LOCAL, COORD_PASTORAL, COORD_MOVIMENTO,
+                 PRESIDENTE_CPC, MESA_CPP -> true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Papel global (concedido só via {@code AtribuirPapelGlobalUseCase}, nunca como vínculo de
+     * {@code MembroGrupo}).
+     */
+    public boolean isGlobal() {
+        return this == PAROCO || this == VIGARIO || this == ADMIN;
+    }
 }
