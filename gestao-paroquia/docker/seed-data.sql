@@ -103,15 +103,30 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Locations (Locais) — sempre vinculadas a uma UnidadeTerritorial (Matriz/Comunidade)
-INSERT INTO calendario.locais (id, nome, tipo, capacidade, ativo, grupo_paroquial_id, version)
-VALUES
-    ('00000000-0000-0000-0000-000000000001', 'Igreja Principal', 'IGREJA', 500, TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000002', 'Salão Paroquial', 'SALAO', 300, TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000003', 'Sala de Catequese 1', 'SALA', 30, TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 10, TRUE, '00000000-0000-0000-0000-000000000100', 0),
-    ('00000000-0000-0000-0000-000000000005', 'Salão Comunidade São José Allamano', 'SALAO', 150, TRUE, '00000000-0000-0000-0000-000000000200', 0),
-    ('00000000-0000-0000-0000-000000000006', 'Salão Comunidade Santo Agostinho', 'SALAO', 150, TRUE, '00000000-0000-0000-0000-000000000300', 0)
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO calendario.locais (
+    id, nome, tipo, capacidade, capacidade_maxima, cep, logradouro, numero, complemento, bairro, cidade, uf, descricao, ativo, grupo_paroquial_id, version
+) VALUES
+    ('00000000-0000-0000-0000-000000000001', 'Igreja Principal', 'IGREJA', 500, 500, '08000-000', 'Praça da Matriz', '100', NULL, 'Centro', 'São Paulo', 'SP', 'Nave principal climatizada com sistema de som e transmissão.', TRUE, '00000000-0000-0000-0000-000000000100', 0),
+    ('00000000-0000-0000-0000-000000000002', 'Salão Paroquial', 'SALAO', 300, 300, '08000-000', 'Rua da Matriz', '120', NULL, 'Centro', 'São Paulo', 'SP', 'Salão de festas paroquiais com palco e mesas.', TRUE, '00000000-0000-0000-0000-000000000100', 0),
+    ('00000000-0000-0000-0000-000000000003', 'Sala de Catequese 1', 'SALA', 30, 30, '08000-000', 'Rua da Matriz', '120', 'Sala 1', 'Centro', 'São Paulo', 'SP', 'Sala com lousa, carteiras e projetor fixo.', TRUE, '00000000-0000-0000-0000-000000000100', 0),
+    ('00000000-0000-0000-0000-000000000004', 'Cozinha Paroquial', 'SALA', 15, 15, '08000-000', 'Rua da Matriz', '120', 'Anexo Salão', 'Centro', 'São Paulo', 'SP', 'Cozinha industrial equipada para quermesses e eventos.', TRUE, '00000000-0000-0000-0000-000000000100', 0),
+    ('00000000-0000-0000-0000-000000000005', 'Salão Comunidade São José Allamano', 'SALAO', 150, 150, '08000-003', 'Av. São José', '50', NULL, 'São José Allamano', 'São Paulo', 'SP', 'Espaço comunitário com ventiladores e som portátil.', TRUE, '00000000-0000-0000-0000-000000000200', 0),
+    ('00000000-0000-0000-0000-000000000006', 'Salão Comunidade Santo Agostinho', 'SALAO', 150, 150, '08000-002', 'Rua Santo Agostinho', '25', NULL, 'Santo Agostinho', 'São Paulo', 'SP', 'Salão para encontros e celebrações da comunidade.', TRUE, '00000000-0000-0000-0000-000000000300', 0),
+    ('00000000-0000-0000-0000-000000000007', 'Capela Menino Jesus (Desativada)', 'CAPELA', 40, 40, '08000-004', 'Rua dos Anjos', '77', NULL, 'Vila Curuçá', 'São Paulo', 'SP', 'Capela histórica temporariamente desativada para restauro.', FALSE, '00000000-0000-0000-0000-000000000100', 0)
+ON CONFLICT (id) DO UPDATE SET
+    nome = EXCLUDED.nome,
+    tipo = EXCLUDED.tipo,
+    capacidade = EXCLUDED.capacidade,
+    capacidade_maxima = EXCLUDED.capacidade_maxima,
+    cep = EXCLUDED.cep,
+    logradouro = EXCLUDED.logradouro,
+    numero = EXCLUDED.numero,
+    complemento = EXCLUDED.complemento,
+    bairro = EXCLUDED.bairro,
+    cidade = EXCLUDED.cidade,
+    uf = EXCLUDED.uf,
+    descricao = EXCLUDED.descricao,
+    ativo = EXCLUDED.ativo;
 
 -- Users (Usuarios)
 -- Clérigos (Ministros Ordenados / Membros do Clero)
@@ -122,7 +137,9 @@ INSERT INTO calendario.clerigos (
     ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por, version
 ) VALUES
     ('1c000000-0000-0000-0000-000000000001', 'Pedro da Silva', 'Pe. Pedro da Silva', '1980-01-01', 'BRA', '00000000001', '111111111', NULL, 'padre.pedro@example.com', '11999990001', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2009-12-08', '2010-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
-    ('1c000000-0000-0000-0000-000000000006', 'João Batista', 'Pe. João Batista', '1985-06-24', 'BRA', '00000000006', '666666666', NULL, 'padre.joao@example.com', '11999990007', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2014-12-08', '2015-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0)
+    ('1c000000-0000-0000-0000-000000000006', 'João Batista', 'Pe. João Batista', '1985-06-24', 'BRA', '00000000006', '666666666', NULL, 'padre.joao@example.com', '11999990007', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2014-12-08', '2015-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
+    ('1c000000-0000-0000-0000-000000000007', 'Francisco de Assis Costa', 'Diác. Francisco de Assis', '1976-10-04', 'BRA', '00000000026', '262626262', NULL, 'diacono.francisco@example.com', '11999990026', '1133332211', TRUE, 'Av. São José, 180, São José Allamano, São Paulo - SP', 'DIACONO_PERMANENTE', 'Diocese de Campo Limpo', '2018-05-13', NULL, NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
+    ('1c000000-0000-0000-0000-000000000008', 'Antônio Bento de Souza', 'Pe. Emérito Antônio Bento', '1945-02-15', 'BRA', '00000000027', '272727272', NULL, 'padre.antonio.emerito@example.com', '11999990027', NULL, FALSE, 'Rua da Paz, 50, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '1970-12-08', '1971-12-08', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0)
 ON CONFLICT (id) DO UPDATE SET
     grau_ordem = EXCLUDED.grau_ordem,
     ativo = EXCLUDED.ativo;
@@ -132,7 +149,9 @@ INSERT INTO calendario.encargos_clericais (
     id, clerigo_id, unidade_territorial_id, funcao, atual, criado_em_utc, encerrado_em_utc
 ) VALUES
     ('2c000000-0000-0000-0000-000000000001', '1c000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000100', 'PAROCO', TRUE, CURRENT_TIMESTAMP, NULL),
-    ('2c000000-0000-0000-0000-000000000006', '1c000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000100', 'VIGARIO_PAROQUIAL', TRUE, CURRENT_TIMESTAMP, NULL)
+    ('2c000000-0000-0000-0000-000000000006', '1c000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000100', 'VIGARIO_PAROQUIAL', TRUE, CURRENT_TIMESTAMP, NULL),
+    ('2c000000-0000-0000-0000-000000000007', '1c000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000200', 'DIACONO_PAROQUIAL', TRUE, CURRENT_TIMESTAMP, NULL),
+    ('2c000000-0000-0000-0000-000000000008', '1c000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000100', 'PAROCO', FALSE, '2005-01-01T00:00:00Z', '2020-12-31T23:59:59Z')
 ON CONFLICT (id) DO NOTHING;
 
 -- Fieis (pessoas físicas correspondentes aos Usuarios leigos e membros de comunidades)
@@ -169,7 +188,8 @@ VALUES
     ('1f000000-0000-0000-0000-000000000022', 'Paulo Dízimo São José', '00000000022', 'f22hash000000000000000000000000000000000000000000000000000000008', '1978-12-02', 'paulo.dizimo@example.com', '11988880022', 'Av. São José', '210', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '222222223', 'MASCULINO', 'Vendedor', '11988880022', 'WHATSAPP', 'CASADO_IGREJA', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Conscientização do Dízimo', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000023', 'Teresa Social Santo Agostinho', '00000000023', 'f23hash000000000000000000000000000000000000000000000000000000009', '1981-08-30', 'teresa.social@example.com', '11988880023', 'Rua Santo Agostinho', '215', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '232323234', 'FEMININO', 'Assistente Social', '11988880023', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Cestas Básicas e Vicentinos', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000024', 'Lucas Fiel São José', '00000000024', 'f24hash000000000000000000000000000000000000000000000000000000010', '1995-10-10', 'lucas.saojose@example.com', '11988880024', 'Av. São José', '300', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '242424245', 'MASCULINO', 'Técnico em TI', '11988880024', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Vicentinos, Acolhida', TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000025', 'Clara Fiel Santo Agostinho', '00000000025', 'f25hash000000000000000000000000000000000000000000000000000000011', '1993-05-14', 'clara.santoagostinho@example.com', '11988880025', 'Rua Santo Agostinho', '310', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '252525256', 'FEMININO', 'Bióloga', '11988880025', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Decoração e Liturgia', TRUE, TRUE, TRUE)
+    ('1f000000-0000-0000-0000-000000000025', 'Clara Fiel Santo Agostinho', '00000000025', 'f25hash000000000000000000000000000000000000000000000000000000011', '1993-05-14', 'clara.santoagostinho@example.com', '11988880025', 'Rua Santo Agostinho', '310', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '252525256', 'FEMININO', 'Bióloga', '11988880025', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Decoração e Liturgia', TRUE, TRUE, TRUE),
+    ('1f000000-0000-0000-0000-000000000026', 'Joaquim Falecido da Silva', '00000000028', 'f26hash000000000000000000000000000000000000000000000000000000012', '1935-08-10', 'joaquim.falecido@example.com', '11988880028', 'Rua da Paz', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '282828282', 'MASCULINO', 'Aposentado', '11988880028', 'EMAIL', 'VIUVO', 'LEIGO', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Oração', TRUE, FALSE, FALSE)
 ON CONFLICT (id) DO NOTHING;
 
 -- Tabela de Dependentes / Filhos do Fiel
@@ -196,7 +216,8 @@ VALUES
     ('10000000-0000-0000-0000-000000000012', 'lucas.juventude', '{noop}senha123', TRUE, 'COORDENADOR_PASTORAL_LOCAL', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000011', NULL),
     ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000012', NULL),
     ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000013', NULL),
-    ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000014', NULL)
+    ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000014', NULL),
+    ('10000000-0000-0000-0000-000000000026', 'diacono.francisco', '{noop}senha123', TRUE, 'ROLE_CLERO_DIACONO', '00000000-0000-0000-0000-000000000200', 0, NULL, '1c000000-0000-0000-0000-000000000007')
 ON CONFLICT (username) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
     enabled = EXCLUDED.enabled,
@@ -270,7 +291,10 @@ INSERT INTO calendario.projetos_eventos (id, nome, descricao, status, grupo_paro
 VALUES 
     ('30000000-0000-0000-0000-000000000001', 'Catequese 2026', 'Ano letivo da catequese infantil', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000ee', '2026-02-01T00:00:00Z', '2026-12-15T23:59:59Z', 0),
     ('30000000-0000-0000-0000-000000000002', 'Festividades de Maio', 'Mês de Nossa Senhora', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000dd', '2026-05-01T00:00:00Z', '2026-05-31T23:59:59Z', 0),
-    ('30000000-0000-0000-0000-000000000003', 'Reforma da Matriz', 'Reforma e pintura da Igreja Principal', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000dd', '2026-01-01T00:00:00Z', '2026-06-20T23:59:59Z', 0);
+    ('30000000-0000-0000-0000-000000000003', 'Reforma da Matriz', 'Reforma e pintura da Igreja Principal', 'EM_ANDAMENTO', '00000000-0000-0000-0000-0000000000dd', '2026-01-01T00:00:00Z', '2026-06-20T23:59:59Z', 0),
+    ('30000000-0000-0000-0000-000000000004', 'Acampamento Juvenil 2026', 'Retiro de férias da juventude', 'PLANEJADO', '00000000-0000-0000-0000-0000000000bb', '2026-10-10T00:00:00Z', '2026-10-12T23:59:59Z', 0),
+    ('30000000-0000-0000-0000-000000000005', 'Campanha da Fraternidade 2025', 'Projeto pastoral concluído', 'CONCLUIDO', '00000000-0000-0000-0000-0000000000cc', '2025-02-15T00:00:00Z', '2025-04-20T23:59:59Z', 0),
+    ('30000000-0000-0000-0000-000000000006', 'Show de Prêmios Beneficente (Cancelado)', 'Evento cancelado por deliberação do conselho', 'CANCELADO', '00000000-0000-0000-0000-000000000099', '2026-03-01T00:00:00Z', '2026-03-02T23:59:59Z', 0);
 
 -- Events (Eventos)
 INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version)
@@ -387,6 +411,12 @@ INSERT INTO calendario.projeto_solicitacoes_aprovacao (
         'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Catequese 2026", "descricao": "Ano letivo da catequese infantil", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "inicio": "2026-02-01T00:00:00Z", "fim": "2026-12-15T23:59:59Z"}', 
         FALSE, '2026-01-10T10:00:00Z', '2026-01-11T09:00:00Z', 'padre.pedro', 
         'Aprovado para início em ano aberto', 0
+    ),
+    (
+        '70000000-0000-0000-0000-000000000004', NULL, 'CRIACAO', 'REPROVADA', 'pedro.liturgia', 
+        'COORDENADOR_PASTORAL', 'PASTORAL', '{"nome": "Festival de Bandas Católicas", "descricao": "Evento sem verba prevista", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb", "inicio": "2026-11-01T00:00:00Z", "fim": "2026-11-02T23:59:59Z"}', 
+        FALSE, '2026-03-01T10:00:00Z', '2026-03-03T14:00:00Z', 'padre.pedro', 
+        'Orçamento incompatível com o caixa pastoral deste exercício.', 0
     );
 
 -- Audit Trail
@@ -415,24 +445,33 @@ INSERT INTO calendario.ativos_patrimoniais (
     ('80000000-0000-0000-0000-000000000005', 'Kit Som Portátil Comunitário', 'PAT-2026-0005', NULL, 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000300', '2024-09-05', 1500.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
     ('80000000-0000-0000-0000-000000000006', 'Retroprojetor Antigo', 'PAT-2026-0006', 'Lâmpada e lente em reparo', 'ELETRONICO', 'EM_MANUTENCAO', FALSE, '00000000-0000-0000-0000-000000000100', '2018-04-12', 200.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
     ('80000000-0000-0000-0000-000000000007', 'Som Amplificado Comunitário', 'PAT-2026-0007', NULL, 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000200', '2024-02-20', 1600.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
-    ('80000000-0000-0000-0000-000000000008', 'Armário Antigo (Fora de Uso)', 'PAT-2026-0008', 'Desincorporado do patrimônio', 'MOBILIARIO', 'DISPONIVEL', FALSE, '00000000-0000-0000-0000-000000000100', '2015-01-01', 0.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', '2026-01-05T00:00:00Z', 0)
+    ('80000000-0000-0000-0000-000000000008', 'Armário Antigo (Fora de Uso)', 'PAT-2026-0008', 'Desincorporado do patrimônio', 'MOBILIARIO', 'DISPONIVEL', FALSE, '00000000-0000-0000-0000-000000000100', '2015-01-01', 0.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', '2026-01-05T00:00:00Z', 0),
+    ('80000000-0000-0000-0000-000000000009', 'Tenda Sanfonada 3x3m', 'PAT-2026-0009', 'Tenda para eventos externos e quermesses', 'OUTROS', 'RESERVADO', TRUE, '00000000-0000-0000-0000-000000000100', '2025-05-10', 1200.00, '10000000-0000-0000-0000-000000000001', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
+    ('80000000-0000-0000-0000-000000000010', 'Microfone Sem Fio Duplo', 'PAT-2026-0010', 'Receptor UHF com 2 microfones bastão', 'ELETRONICO', 'RESERVADO', TRUE, '00000000-0000-0000-0000-000000000100', '2025-08-20', 850.00, '10000000-0000-0000-0000-000000000001', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0)
 ON CONFLICT (id) DO NOTHING;
 
--- Mantém o contador de tombamento de 2026 à frente dos 8 números usados acima,
--- para que o próximo ativo criado pela aplicação gere PAT-2026-0009 sem colidir.
+-- Mantém o contador de tombamento de 2026 à frente dos 10 números usados acima,
+-- para que o próximo ativo criado pela aplicação gere PAT-2026-0011 sem colidir.
 INSERT INTO calendario.patrimonio_numeracao_anual (ano, ultimo_numero, version)
-VALUES (2026, 8, 0)
+VALUES (2026, 10, 0)
 ON CONFLICT (ano) DO NOTHING;
 
 -- Manutenção em andamento do retroprojetor antigo (Matriz) — mantém o ativo 0006 em EM_MANUTENCAO.
 INSERT INTO calendario.ativo_manutencoes (
     id, ativo_id, descricao_reparo, data_inicio, data_fim_prevista, data_fim_real,
     registrado_por_id, created_at, updated_at, version
-) VALUES (
-    '82000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000006',
-    'Reparo da lâmpada e da lente do retroprojetor.', '2026-07-28T08:00:00Z', '2026-08-10T18:00:00Z', NULL,
-    '10000000-0000-0000-0000-000000000001', '2026-07-28T08:00:00Z', '2026-07-28T08:00:00Z', 0
-) ON CONFLICT (id) DO NOTHING;
+) VALUES 
+    (
+        '82000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000006',
+        'Reparo da lâmpada e da lente do retroprojetor.', '2026-07-28T08:00:00Z', '2026-08-10T18:00:00Z', NULL,
+        '10000000-0000-0000-0000-000000000001', '2026-07-28T08:00:00Z', '2026-07-28T08:00:00Z', 0
+    ),
+    (
+        '82000000-0000-0000-0000-000000000002', '80000000-0000-0000-0000-000000000002',
+        'Troca de potenciômetro e conector XLR.', '2026-05-01T08:00:00Z', '2026-05-05T18:00:00Z', '2026-05-04T16:00:00Z',
+        '10000000-0000-0000-0000-000000000001', '2026-05-01T08:00:00Z', '2026-05-04T16:00:00Z', 0
+    )
+ON CONFLICT (id) DO NOTHING;
 
 -- Seed 10 Anos Litúrgicos (2026 - 2035)
 INSERT INTO calendario.anos_liturgicos (ano, ciclo_letra, data_inicio_advento, data_fim_comum, atualizado_em_utc)
@@ -634,4 +673,306 @@ SET pais_origem = 'BRA', celular = regexp_replace(COALESCE(celular_whatsapp, tel
     is_whatsapp = COALESCE(celular_whatsapp IS NOT NULL, FALSE),
     unidade_territorial_id = '00000000-0000-0000-0000-000000000100', is_dizimista = FALSE
 WHERE pais_origem IS NULL OR unidade_territorial_id IS NULL;
+
+-- ============================================================================
+-- 3. CONFIGURAÇÃO DA PARÓQUIA & PAPÉIS GLOBAIS
+-- ============================================================================
+INSERT INTO calendario.paroquia_configuracao (
+    id, nome, diocese, endereco, logo_bytes, cor_primaria_hex, cor_secundaria_hex, version
+) VALUES (
+    '00000000-0000-0000-0000-000000000001',
+    'Paróquia Nossa Senhora de Fátima',
+    'Diocese de Campo Limpo',
+    'Praça da Matriz, 100, Centro, São Paulo - SP, CEP 08000-000',
+    NULL,
+    '#1976D2',
+    '#DC004E',
+    0
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.papel_global (
+    id, fiel_id, papel, ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    ('61000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000002', 'COORDENADOR_PASTORAL_GLOBAL', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
+    ('61000000-0000-0000-0000-000000000002', '1f000000-0000-0000-0000-000000000005', 'MESA_DIRETORA_CPP', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- 4. RESERVAS (Locais e Ativos Patrimoniais)
+-- ============================================================================
+INSERT INTO calendario.reservas (
+    id, tipo_item, item_id, data_hora_inicio, data_hora_fim, buffer_minutos,
+    descricao, solicitante_id, pastoral_movimento_id, evento_id, grupo_recorrencia_id,
+    status, aprovador_id, aprovado_em, motivo_cancelamento, cancelado_por_id,
+    check_avarias, created_at, updated_at, deleted_at, version
+) VALUES
+    -- 1. Reserva LOCAL confirmada vinculada a evento
+    (
+        '83000000-0000-0000-0000-000000000001', 'LOCAL', '00000000-0000-0000-0000-000000000002',
+        '2026-09-15T08:00:00Z', '2026-09-15T18:00:00Z', 30,
+        'Reserva do Salão Paroquial para Retiro de Catequistas',
+        '10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee',
+        '40000000-0000-0000-0000-000000000003', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-06-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 2. Reserva LOCAL pendente de aprovação (avulsa)
+    (
+        '83000000-0000-0000-0000-000000000002', 'LOCAL', '00000000-0000-0000-0000-000000000003',
+        '2026-09-20T19:00:00Z', '2026-09-20T21:00:00Z', 15,
+        'Reunião com pais de catequizandos',
+        '10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee',
+        NULL, NULL,
+        'PENDENTE', NULL, NULL,
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 3. Reserva LOCAL cancelada
+    (
+        '83000000-0000-0000-0000-000000000003', 'LOCAL', '00000000-0000-0000-0000-000000000004',
+        '2026-08-01T14:00:00Z', '2026-08-01T17:00:00Z', 30,
+        'Oficina culinária beneficente',
+        '10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb',
+        NULL, NULL,
+        'CANCELADA', NULL, NULL,
+        'Cancelado a pedido do coordenador devido a choque com cronograma escolar.',
+        '10000000-0000-0000-0000-000000000004', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 4. Reserva ATIVO retirado (em uso corrente)
+    (
+        '83000000-0000-0000-0000-000000000004', 'ATIVO', '80000000-0000-0000-0000-000000000009',
+        '2026-09-01T08:00:00Z', '2026-09-30T18:00:00Z', 60,
+        'Tenda para apoio à feira de artesanato paroquial',
+        '10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-0000000000bb',
+        NULL, NULL,
+        'RETIRADO', '10000000-0000-0000-0000-000000000001', '2026-08-25T14:00:00Z',
+        NULL, NULL, 'Retirada em perfeito estado pela equipe de jovens.',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 5. Reserva ATIVO confirmada aguardando retirada
+    (
+        '83000000-0000-0000-0000-000000000005', 'ATIVO', '80000000-0000-0000-0000-000000000010',
+        '2026-09-12T08:00:00Z', '2026-09-12T12:00:00Z', 30,
+        'Microfone sem fio para missa campal',
+        '10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000000aa',
+        NULL, NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-09-01T09:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 6. Reserva ATIVO finalizada com devolução e check de avarias
+    (
+        '83000000-0000-0000-0000-000000000006', 'ATIVO', '80000000-0000-0000-0000-000000000001',
+        '2026-07-10T18:00:00Z', '2026-07-10T22:00:00Z', 30,
+        'Projetor para exibição de filme bíblico',
+        '10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000000ee',
+        NULL, NULL,
+        'FINALIZADA', '10000000-0000-0000-0000-000000000001', '2026-07-05T11:00:00Z',
+        NULL, NULL, 'Devolvido sem avarias, cabos completos e funcionais.',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- 5. AJUSTES CADASTRAIS (LGPD / Fiéis)
+-- ============================================================================
+INSERT INTO calendario.solicitacoes_ajuste_cadastral (
+    id, fiel_id, usuario_solicitante_id, email, celular, telefone_fixo,
+    endereco_logradouro, endereco_numero, endereco_complemento, endereco_bairro,
+    endereco_cep, endereco_cidade, endereco_estado, status, justificativa_analise,
+    analisado_por_usuario_id, analisado_em_utc, criado_em_utc
+) VALUES
+    -- 1. PENDENTE
+    (
+        '84000000-0000-0000-0000-000000000001',
+        '1f000000-0000-0000-0000-000000000003',
+        '10000000-0000-0000-0000-000000000003',
+        'joao.santos.novo@example.com',
+        '11988887766',
+        '1133334455',
+        'Rua Santo Agostinho',
+        '125',
+        'Apto 42',
+        'Santo Agostinho',
+        '08000-002',
+        'São Paulo',
+        'SP',
+        'PENDENTE',
+        NULL,
+        NULL,
+        NULL,
+        CURRENT_TIMESTAMP
+    ),
+    -- 2. APROVADA
+    (
+        '84000000-0000-0000-0000-000000000002',
+        '1f000000-0000-0000-0000-000000000002',
+        '10000000-0000-0000-0000-000000000002',
+        'maria.oliveira.atualizada@example.com',
+        '11999990002',
+        NULL,
+        'Rua das Flores',
+        '102',
+        'Casa B',
+        'Vila Curuçá',
+        '08000-001',
+        'São Paulo',
+        'SP',
+        'APROVADA',
+        'Comprovante de residência conferido e validado pela secretaria.',
+        '10000000-0000-0000-0000-000000000001',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    -- 3. REJEITADA
+    (
+        '84000000-0000-0000-0000-000000000003',
+        '1f000000-0000-0000-0000-000000000004',
+        '10000000-0000-0000-0000-000000000004',
+        'pedro.invalido@example.com',
+        '11000000000',
+        NULL,
+        'Rua Desconhecida',
+        'S/N',
+        NULL,
+        'Bairro Inexistente',
+        '00000-000',
+        'São Paulo',
+        'SP',
+        'REJEITADA',
+        'Dados de contato inconsistentes e CEP não localizado.',
+        '10000000-0000-0000-0000-000000000001',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- 6. AJUSTES CLERICAIS (Clero)
+-- ============================================================================
+INSERT INTO calendario.solicitacoes_ajuste_clerical (
+    id, usuario_solicitante_id, clerigo_id, email, celular, telefone_fixo,
+    endereco, status, justificativa_analise, analisado_por_usuario_id,
+    analisado_em_utc, criado_em_utc
+) VALUES
+    -- 1. PENDENTE
+    (
+        '85000000-0000-0000-0000-000000000001',
+        '10000000-0000-0000-0000-000000000007',
+        '1c000000-0000-0000-0000-000000000006',
+        'padre.joao.novo@example.com',
+        '11999998877',
+        '1133338877',
+        'Casa Paroquial, Rua da Matriz, 12, Centro, São Paulo - SP',
+        'PENDENTE',
+        NULL,
+        NULL,
+        NULL,
+        CURRENT_TIMESTAMP
+    ),
+    -- 2. APROVADA
+    (
+        '85000000-0000-0000-0000-000000000002',
+        '10000000-0000-0000-0000-000000000026',
+        '1c000000-0000-0000-0000-000000000007',
+        'diacono.francisco.atualizado@example.com',
+        '11999990026',
+        '1133332211',
+        'Av. São José, 190, São José Allamano, São Paulo - SP',
+        'APROVADA',
+        'Atualização de domicílio confirmada com a Cúria Diocesana.',
+        '10000000-0000-0000-0000-000000000001',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- 7. RELACIONAMENTOS FAMILIARES (Polimórficos Fiel / Clérigo)
+-- ============================================================================
+INSERT INTO calendario.relacionamentos_familiares (
+    id, par_id, pessoa_origem_id, tipo_pessoa_origem,
+    pessoa_destino_id, tipo_pessoa_destino, tipo_relacao,
+    criado_em_utc, deleted_at
+) VALUES
+    -- Par 1: Cônjuges (Maria do Conselho <-> José do Conselho)
+    (
+        '87000000-0000-0000-0000-000000000001',
+        '87000000-0000-0000-0000-000000000002',
+        '1f000000-0000-0000-0000-000000000005', 'FIEL',
+        '1f000000-0000-0000-0000-000000000007', 'FIEL',
+        'CONJUGE', CURRENT_TIMESTAMP, NULL
+    ),
+    (
+        '87000000-0000-0000-0000-000000000002',
+        '87000000-0000-0000-0000-000000000001',
+        '1f000000-0000-0000-0000-000000000007', 'FIEL',
+        '1f000000-0000-0000-0000-000000000005', 'FIEL',
+        'CONJUGE', CURRENT_TIMESTAMP, NULL
+    ),
+    -- Par 2: Irmãos (Maria Oliveira <-> Lúcia de Oliveira)
+    (
+        '87000000-0000-0000-0000-000000000003',
+        '87000000-0000-0000-0000-000000000004',
+        '1f000000-0000-0000-0000-000000000002', 'FIEL',
+        '1f000000-0000-0000-0000-000000000009', 'FIEL',
+        'IRMAO', CURRENT_TIMESTAMP, NULL
+    ),
+    (
+        '87000000-0000-0000-0000-000000000004',
+        '87000000-0000-0000-0000-000000000003',
+        '1f000000-0000-0000-0000-000000000009', 'FIEL',
+        '1f000000-0000-0000-0000-000000000002', 'FIEL',
+        'IRMAO', CURRENT_TIMESTAMP, NULL
+    ),
+    -- Par 3: Relacionamento Fiel <-> Clérigo (Pedro Junior [fiel] filho do Pe. Pedro da Silva [clérigo])
+    (
+        '87000000-0000-0000-0000-000000000005',
+        '87000000-0000-0000-0000-000000000006',
+        '1f000000-0000-0000-0000-000000000004', 'FIEL',
+        '1c000000-0000-0000-0000-000000000001', 'CLERIGO',
+        'FILHO', CURRENT_TIMESTAMP, NULL
+    ),
+    (
+        '87000000-0000-0000-0000-000000000006',
+        '87000000-0000-0000-0000-000000000005',
+        '1c000000-0000-0000-0000-000000000001', 'CLERIGO',
+        '1f000000-0000-0000-0000-000000000004', 'FIEL',
+        'GENITOR', CURRENT_TIMESTAMP, NULL
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- 8. NOTIFICAÇÕES (Central de Notificações)
+-- ============================================================================
+INSERT INTO calendario.notificacoes (
+    id, usuario_id, tipo, mensagem, criado_em_utc, lida_em_utc
+) VALUES
+    -- 1. Notificação não lida (Aprovação pendente)
+    (
+        '88000000-0000-0000-0000-000000000001',
+        '10000000-0000-0000-0000-000000000001',
+        'SOLICITACAO_RESERVA',
+        'Nova solicitação de reserva pendente para o Salão Paroquial.',
+        CURRENT_TIMESTAMP,
+        NULL
+    ),
+    -- 2. Notificação não lida (Ajuste cadastral)
+    (
+        '88000000-0000-0000-0000-000000000002',
+        '10000000-0000-0000-0000-000000000001',
+        'AJUSTE_CADASTRAL',
+        'O fiel João Santos solicitou alteração cadastral.',
+        CURRENT_TIMESTAMP,
+        NULL
+    ),
+    -- 3. Notificação lida (Confirmação de evento)
+    (
+        '88000000-0000-0000-0000-000000000003',
+        '10000000-0000-0000-0000-000000000002',
+        'EVENTO_APROVADO',
+        'Seu evento "Missa de Abertura da Catequese" foi aprovado pelo Pároco.',
+        '2026-01-16T09:05:00Z',
+        '2026-01-16T10:30:00Z'
+    )
+ON CONFLICT (id) DO NOTHING;
+
 
