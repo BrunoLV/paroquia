@@ -28,7 +28,6 @@ interface AtivosTableProps {
   rowsPerPage: number;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRows: number) => void;
-  onView: (ativo: AtivoPatrimonial) => void;
   rowActions: (ativo: AtivoPatrimonial) => TableAction[];
 }
 
@@ -41,7 +40,6 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  onView,
   rowActions,
 }) => {
   if (isLoading) {
@@ -74,20 +72,7 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
           </TableHead>
           <TableBody>
             {paginados.map((ativo) => (
-              <TableRow
-                key={ativo.id}
-                hover
-                tabIndex={0}
-                role="button"
-                onClick={() => onView(ativo)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onView(ativo);
-                  }
-                }}
-                sx={{ cursor: 'pointer' }}
-              >
+              <TableRow key={ativo.id} hover>
                 <TableCell sx={{ fontWeight: 600 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {ativo.nome}
@@ -106,7 +91,7 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
                 <TableCell align="right">
                   <FormattedCurrency value={ativo.valorAquisicao} />
                 </TableCell>
-                <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                <TableCell align="right">
                   <TableActionMenu actions={rowActions(ativo)} />
                 </TableCell>
               </TableRow>

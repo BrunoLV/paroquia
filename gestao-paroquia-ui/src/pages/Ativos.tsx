@@ -10,6 +10,7 @@ import {
   Edit as EditIcon,
   EventAvailable as ReservarIcon,
   Inventory as InventoryIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 import { canExcluirAtivo, canManageAtivos, canManageManutencaoAtivo, isGlobalCreator } from '../auth/permissions';
@@ -182,6 +183,11 @@ const Ativos = () => {
         onClick: () => navigate('/reservas', { state: { tipoItem: 'ATIVO', itemId: ativo.id } }),
       });
     }
+    actions.push({
+      label: 'Visualizar',
+      icon: <VisibilityIcon fontSize="small" />,
+      onClick: () => setViewAtivo(ativo),
+    });
     if (podeGerir && ativo.status === 'DISPONIVEL') {
       actions.push({
         label: 'Enviar para Manutenção',
@@ -258,7 +264,6 @@ const Ativos = () => {
         rowsPerPage={rowsPerPage}
         onPageChange={setPage}
         onRowsPerPageChange={setRowsPerPage}
-        onView={setViewAtivo}
         rowActions={buildRowActions}
       />
 

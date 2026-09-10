@@ -170,14 +170,36 @@ describe('Ativos Page', () => {
     expect(screen.queryByRole('menuitem', { name: /^Reservar$/i })).not.toBeInTheDocument();
   });
 
-  test('menu da linha oferece Editar e Excluir', async () => {
+  test('menu da linha oferece Visualizar, Editar e Excluir', async () => {
     await renderAtivos(adminUser);
     await selecionarOrg();
     await act(async () => {
       screen.getAllByLabelText('Ações')[0].click();
     });
+    expect(screen.getByRole('menuitem', { name: /^Visualizar$/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /^Editar$/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /^Excluir$/i })).toBeInTheDocument();
+  });
+
+  test('abre o modal de detalhes ao clicar na ação Visualizar e não ao clicar na linha da tabela', async () => {
+    await renderAtivos(adminUser);
+    await selecionarOrg();
+
+    // Clicar na linha não deve abrir o modal
+    await act(async () => {
+      fireEvent.click(screen.getByText('TV 55 polegadas'));
+    });
+    expect(screen.queryByText('Dados do ativo')).not.toBeInTheDocument();
+
+    // Clicar na ação "Visualizar" deve abrir o modal de detalhes
+    await act(async () => {
+      screen.getAllByLabelText('Ações')[0].click();
+    });
+    await act(async () => {
+      screen.getByRole('menuitem', { name: /^Visualizar$/i }).click();
+    });
+    expect(screen.getByText('Dados do ativo')).toBeInTheDocument();
+    expect(screen.getByText('Tombamento: PAT-2026-0001')).toBeInTheDocument();
   });
 
   test('diálogo de cadastro oferece unidades MATRIZ/COMUNIDADE como dona', async () => {
