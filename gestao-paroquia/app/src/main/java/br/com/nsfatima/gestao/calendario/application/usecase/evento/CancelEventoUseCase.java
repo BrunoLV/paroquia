@@ -13,8 +13,8 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegisterSystemObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
 import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoCancelamentoAuthorizationService;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoCancelamentoAuthorizationService.CancelamentoRequestMode;
+import br.com.nsfatima.gestao.calendario.application.service.EventoCancelamentoAuthorizationService;
+import br.com.nsfatima.gestao.calendario.domain.policy.CancelamentoRequestMode;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;

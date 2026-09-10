@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioCalendarioPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
@@ -10,7 +10,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.GeradorRecorrenciaAnualJob;
-import br.com.nsfatima.gestao.projeto.domain.policy.ProjetoVincularPolicy;
+import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
+import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,20 +32,23 @@ public class CreateEventoRecorrenciaUseCase {
     private final EventoRecorrenciaJpaRepository recurrenceRepository;
     private final EventoJpaRepository eventRepository;
     private final GeradorRecorrenciaAnualJob generationJob;
-    private final BloqueioCalendarioPolicy calendarLockPolicy;
-    private final ProjetoVincularPolicy projetoVincularPolicy;
+    private final BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy;
+    private final AnoParoquialJpaRepository anoParoquialRepository;
+    private final ValidadorVinculoProjeto validadorVinculoProjeto;
 
     public CreateEventoRecorrenciaUseCase(
             EventoRecorrenciaJpaRepository recurrenceRepository,
             EventoJpaRepository eventRepository,
             GeradorRecorrenciaAnualJob generationJob,
-            BloqueioCalendarioPolicy calendarLockPolicy,
-            ProjetoVincularPolicy projetoVincularPolicy) {
+            BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy,
+            AnoParoquialJpaRepository anoParoquialRepository,
+            ValidadorVinculoProjeto validadorVinculoProjeto) {
         this.recurrenceRepository = recurrenceRepository;
         this.eventRepository = eventRepository;
         this.generationJob = generationJob;
-        this.calendarLockPolicy = calendarLockPolicy;
-        this.projetoVincularPolicy = projetoVincularPolicy;
+        this.bloqueioAnoParoquialPolicy = bloqueioAnoParoquialPolicy;
+        this.anoParoquialRepository = anoParoquialRepository;
+        this.validadorVinculoProjeto = validadorVinculoProjeto;
     }
 
     /**
@@ -58,13 +63,18 @@ public class CreateEventoRecorrenciaUseCase {
     @Transactional
     public EventoRecorrenciaResponse execute(UUID eventoId, RegraRecorrencia regra) {
         EventoEntity baseEvent = validateEvent(eventoId);
-        calendarLockPolicy.checkLock(baseEvent.getInicioUtc(), EventoStatusInput.valueOf(baseEvent.getStatus()));
+        AnoParoquialStatus statusAno = anoParoquialRepository.findByAno(
+                        baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).getYear())
+                .map(ano -> ano.getStatus())
+                .orElse(null);
+        bloqueioAnoParoquialPolicy.assertPermitido(
+                baseEvent.getInicioUtc(), statusAno, EventoStatusInput.valueOf(baseEvent.getStatus()));
 
         // Adjust base event to the first valid occurrence of the rule
         adjustBaseEventToFirstOccurrence(baseEvent, regra);
 
         if (baseEvent.getProjetoId() != null) {
-            projetoVincularPolicy.validateRecurrence(baseEvent.getProjetoId(),
+            validadorVinculoProjeto.validarRecorrencia(baseEvent.getProjetoId(),
                     baseEvent.getInicioUtc(), baseEvent.getFimUtc(), regra);
 
         }
@@ -116,4 +126,3 @@ public class CreateEventoRecorrenciaUseCase {
                 .orElseThrow(() -> new EventoNotFoundException(eventoId));
     }
 }
-

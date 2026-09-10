@@ -12,7 +12,7 @@ import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelEvento
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.CreateEventoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListEventosUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.UpdateEventoUseCase;
-import br.com.nsfatima.gestao.calendario.domain.service.EventoService;
+import br.com.nsfatima.gestao.calendario.application.service.EventoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;

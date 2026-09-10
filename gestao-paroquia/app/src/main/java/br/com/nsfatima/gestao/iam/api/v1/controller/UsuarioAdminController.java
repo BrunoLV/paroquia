@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.iam.api.v1.controller;
 import br.com.nsfatima.gestao.iam.api.v1.dto.PasswordResetRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.RolesUpdateRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioStatusRequest;
-import br.com.nsfatima.gestao.iam.domain.service.UsuarioAdminService;
+import br.com.nsfatima.gestao.iam.application.service.UsuarioAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

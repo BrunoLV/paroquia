@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
-import br.com.nsfatima.gestao.calendario.domain.service.ObservacaoSystemAuthorPolicyService;
+import br.com.nsfatima.gestao.calendario.domain.policy.AutorObservacaoSistemaPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
@@ -19,15 +19,15 @@ import java.util.UUID;
 public class RegisterSystemObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
-    private final ObservacaoSystemAuthorPolicyService observacaoSystemAuthorPolicyService;
+    private final AutorObservacaoSistemaPolicy autorObservacaoSistemaPolicy;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
     public RegisterSystemObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
-            ObservacaoSystemAuthorPolicyService observacaoSystemAuthorPolicyService,
+            AutorObservacaoSistemaPolicy autorObservacaoSistemaPolicy,
             ObservacaoAuditPublisher observacaoAuditPublisher) {
         this.observacaoEventoJpaRepository = observacaoEventoJpaRepository;
-        this.observacaoSystemAuthorPolicyService = observacaoSystemAuthorPolicyService;
+        this.autorObservacaoSistemaPolicy = autorObservacaoSistemaPolicy;
         this.observacaoAuditPublisher = observacaoAuditPublisher;
     }
 
@@ -48,7 +48,7 @@ public class RegisterSystemObservacaoUseCase {
             UUID actorUserId,
             String actor,
             String originFlow) {
-        UUID autorFinal = observacaoSystemAuthorPolicyService.resolveAuthorId(actorUserId);
+        UUID autorFinal = autorObservacaoSistemaPolicy.resolve(actorUserId);
 
         ObservacaoEventoEntity observacao = new ObservacaoEventoEntity();
         observacao.setId(UUID.randomUUID());

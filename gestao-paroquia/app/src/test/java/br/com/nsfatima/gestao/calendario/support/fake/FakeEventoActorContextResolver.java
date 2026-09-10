@@ -4,13 +4,14 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 
 import java.util.UUID;
+import java.util.List;
 
 public class FakeEventoActorContextResolver extends EventoActorContextResolver {
 
     private EventoActorContext context;
 
     public FakeEventoActorContextResolver() {
-        super(null, null);
+        super(List.of(), null);
         this.context = new EventoActorContext(
                 "fake-actor",
                 "tester",

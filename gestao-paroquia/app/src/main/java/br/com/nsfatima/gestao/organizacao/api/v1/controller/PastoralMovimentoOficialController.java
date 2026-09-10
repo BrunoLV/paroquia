@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.organizacao.api.v1.dto.PastoralMovimentoOficialReq
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.PastoralMovimentoOficialResponse;
 import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialBusinessException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.service.PastoralMovimentoOficialService;
+import br.com.nsfatima.gestao.organizacao.application.service.PastoralMovimentoOficialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

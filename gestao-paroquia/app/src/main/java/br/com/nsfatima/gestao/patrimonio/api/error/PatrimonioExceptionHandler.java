@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.api.error;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoExclusaoBloqueadaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoConflitanteException;

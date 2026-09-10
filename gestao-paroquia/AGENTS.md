@@ -119,6 +119,12 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
 
 ## 6. Higiene de Código, Qualidade e Governança
 
+### 6.1. Policies versus Services
+
+* **Policies:** Toda variação de cálculo, autorização, seleção ou decisão por tipo/perfil/contexto deve ser uma interface `*Policy` pura, stateless e sem I/O em `domain/policy/` ou `domain/<aggregate>/policy/`.
+* **Services:** `*Service` não contém Strategy disfarçada por `if/else` ou `switch/case`; Application Services orquestram portas e Domain Services apenas coordenam conceitos de domínio sem variação algorítmica.
+* **Tell, Don't Ask:** Policy retorna uma decisão/VO; a entidade ou agregado executa sua própria mutação por método da Linguagem Ubíqua. Policies não recebem JPA entities, repositórios, DTOs REST, `SecurityContext` ou anotações Spring.
+
 * **Zero Warnings:** O código entregue deve compilar e passar com zero avisos nas ferramentas de verificação estática (`./gradlew check`).
 * **Higiene de Importações:**
   * Proibido o uso de caracteres coringa (*wildcards* / `import java.util.*`).

@@ -8,9 +8,12 @@ import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
 import br.com.nsfatima.gestao.patrimonio.domain.model.CodigoTombamento;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
-import br.com.nsfatima.gestao.patrimonio.domain.service.AtivoGrupoParoquialPolicy;
-import br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator;
-import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.policy.PropriedadeUnidadeTerritorialPolicy;
+import br.com.nsfatima.gestao.patrimonio.application.service.NumeroTombamentoGenerator;
+import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,20 +32,23 @@ public class CadastrarAtivoPatrimonialUseCase {
     private final AtivoPatrimonialRepository repository;
     private final EventoActorContextResolver actorContextResolver;
     private final PatrimonioAuthorizationService authorizationService;
-    private final AtivoGrupoParoquialPolicy grupoParoquialPolicy;
+    private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
+    private final PropriedadeUnidadeTerritorialPolicy propriedadeUnidadeTerritorialPolicy;
     private final NumeroTombamentoGenerator numeroTombamentoGenerator;
     private final PatrimonioAuditPublisher auditPublisher;
 
     public CadastrarAtivoPatrimonialUseCase(AtivoPatrimonialRepository repository,
                                             EventoActorContextResolver actorContextResolver,
                                             PatrimonioAuthorizationService authorizationService,
-                                            AtivoGrupoParoquialPolicy grupoParoquialPolicy,
+                                            UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
+                                            PropriedadeUnidadeTerritorialPolicy propriedadeUnidadeTerritorialPolicy,
                                             NumeroTombamentoGenerator numeroTombamentoGenerator,
                                             PatrimonioAuditPublisher auditPublisher) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
-        this.grupoParoquialPolicy = grupoParoquialPolicy;
+        this.unidadeTerritorialRepository = unidadeTerritorialRepository;
+        this.propriedadeUnidadeTerritorialPolicy = propriedadeUnidadeTerritorialPolicy;
         this.numeroTombamentoGenerator = numeroTombamentoGenerator;
         this.auditPublisher = auditPublisher;
     }
@@ -51,7 +57,10 @@ public class CadastrarAtivoPatrimonialUseCase {
     public AtivoPatrimonialResponse execute(CadastrarAtivoPatrimonialRequest request) {
         EventoActorContext actor = actorContextResolver.resolveRequired();
         authorizationService.assertPodeGerirPatrimonio(actor, request.grupoParoquialId());
-        grupoParoquialPolicy.assertGrupoParoquialProprietariaPermitida(request.grupoParoquialId());
+        UnidadeTerritorialEntity proprietaria = unidadeTerritorialRepository.findById(request.grupoParoquialId())
+                .orElseThrow(() -> new AtivoGrupoParoquialInvalidaException(
+                        "Unidade territorial não encontrada: " + request.grupoParoquialId()));
+        propriedadeUnidadeTerritorialPolicy.assertPermitida(proprietaria.getTipo());
 
         Instant agora = Instant.now();
         CodigoTombamento codigo = new CodigoTombamento(

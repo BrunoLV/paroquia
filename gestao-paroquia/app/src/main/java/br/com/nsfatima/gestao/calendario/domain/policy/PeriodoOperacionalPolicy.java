@@ -1,9 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.PeriodoOperacionalInvalidoException;
 import br.com.nsfatima.gestao.calendario.domain.type.Granularidade;
-import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.DayOfWeek;
@@ -22,7 +20,6 @@ import java.util.Objects;
  * um intervalo explícito de {@code inicio}/{@code fim}. As duas formas não podem ser
  * combinadas nem omitidas simultaneamente.
  */
-@Component
 public class PeriodoOperacionalPolicy {
 
     private final Clock clock;
@@ -145,13 +142,5 @@ public class PeriodoOperacionalPolicy {
             Instant inicio,
             Instant fim) {
 
-        /**
-         * Converte o período resolvido para o DTO de resposta da API.
-         *
-         * @return resposta de período operacional para exposição via API
-         */
-        public PeriodoOperacionalResponse toResponse() {
-            return new PeriodoOperacionalResponse(granularidade, inicio, fim);
-        }
     }
 }

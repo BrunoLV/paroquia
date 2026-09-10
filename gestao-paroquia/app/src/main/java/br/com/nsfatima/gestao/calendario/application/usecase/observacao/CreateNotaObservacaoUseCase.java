@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
-import br.com.nsfatima.gestao.calendario.domain.service.ObservacaoMutationPolicyService;
+import br.com.nsfatima.gestao.calendario.domain.policy.MutacaoObservacaoPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
@@ -21,15 +21,15 @@ import java.util.UUID;
 public class CreateNotaObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
-    private final ObservacaoMutationPolicyService observacaoMutationPolicyService;
+    private final MutacaoObservacaoPolicy mutacaoObservacaoPolicy;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
     public CreateNotaObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
-            ObservacaoMutationPolicyService observacaoMutationPolicyService,
+            MutacaoObservacaoPolicy mutacaoObservacaoPolicy,
             ObservacaoAuditPublisher observacaoAuditPublisher) {
         this.observacaoEventoJpaRepository = observacaoEventoJpaRepository;
-        this.observacaoMutationPolicyService = observacaoMutationPolicyService;
+        this.mutacaoObservacaoPolicy = mutacaoObservacaoPolicy;
         this.observacaoAuditPublisher = observacaoAuditPublisher;
     }
 
@@ -49,7 +49,7 @@ public class CreateNotaObservacaoUseCase {
             String actor,
             TipoObservacaoInput tipo,
             String conteudo) {
-        observacaoMutationPolicyService.assertManualCreationAllowed(tipo);
+        mutacaoObservacaoPolicy.assertCriacaoManualPermitida(tipo);
 
         ObservacaoEventoEntity entity = new ObservacaoEventoEntity();
         entity.setId(UUID.randomUUID());

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.governanca;
 
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
-import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialSeeder;
+import br.com.nsfatima.gestao.governanca.application.service.AnoParoquialSeeder;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import org.junit.jupiter.api.Test;

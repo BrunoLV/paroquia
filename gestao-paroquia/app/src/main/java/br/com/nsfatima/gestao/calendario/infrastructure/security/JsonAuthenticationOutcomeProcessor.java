@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.observabilidade.domain.service.CorrelationIdFilter;
+import br.com.nsfatima.gestao.observabilidade.infrastructure.filter.CorrelationIdFilter;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;

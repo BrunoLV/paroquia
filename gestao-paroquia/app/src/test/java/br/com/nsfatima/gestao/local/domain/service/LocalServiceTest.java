@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.local.domain.service;
 
+import br.com.nsfatima.gestao.local.application.service.LocalService;
 import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
 import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;

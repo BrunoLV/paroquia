@@ -9,7 +9,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalid
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;

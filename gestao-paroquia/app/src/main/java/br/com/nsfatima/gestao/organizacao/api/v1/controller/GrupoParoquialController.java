@@ -11,7 +11,7 @@ import br.com.nsfatima.gestao.organizacao.application.usecase.ListGrupoParoquial
 import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.domain.service.GrupoParoquialService;
+import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

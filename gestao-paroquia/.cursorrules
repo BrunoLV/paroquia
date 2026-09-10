@@ -6,3 +6,14 @@ Todas as instruções e diretrizes de governança arquitetural (DDD, Clean Archi
 Antes de explorar código, sugerir refatorações ou implementar qualquer requisito no backend, você DEVE ABSOLUTAMENTE ler o arquivo `AGENTS.md` localizado na raiz deste diretório (`gestao-paroquia/`). Ele contém todas as limitações de domínio e comandos técnicos necessários para sua atuação.
 
 👉 **Leia `AGENTS.md` agora para carregar seu contexto operacional.**
+
+### REGRAS TÁTICAS DE ARQUITETURA: POLICIES VS SERVICES (DDD)
+
+1. PROIBIÇÃO DE REGRAS VARIÁVEIS EM SERVICES:
+   - NUNCA crie ou expanda `*Service` com `if/else` ou `switch/case` para variações de decisão de negócio.
+   - Variações por tipo, perfil, campanha ou contexto são interfaces `*Policy` e Strategies concretas em `domain/policy/`.
+2. ISOLAMENTO DE POLICIES NO DOMÍNIO:
+   - Policy é STATELESS, ZERO I/O e sem Spring/JPA/infrastructure.
+   - UseCases carregam dados e passam somente Value Objects, agregados ou snapshots em memória.
+3. TELL, DON'T ASK & ANEMIA:
+   - Policies calculam e devolvem decisões; agregados aplicam a mutação por métodos semânticos, nunca setters externos.

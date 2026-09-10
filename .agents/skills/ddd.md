@@ -145,6 +145,13 @@ public class PadrinhoElegivelSpecification implements DomainSpecification<Fiel> 
 * Operações de negócio complexas que envolvem múltiplos agregados ou dependem de regras que não pertencem conceitualmente a uma única entidade pertencem a um *Domain Service*.
 * Devem ser *stateless* e localizados em `domain/service/`.
 
+### 3.6.1. Policies versus Services
+
+* **Variação é Policy:** regras de cálculo, autorização, seleção ou decisão que variam por tipo, perfil, campanha ou contexto são contratos `*Policy` (Strategy), localizados em `domain/policy/` ou `domain/<aggregate>/policy/`; é proibido escondê-las em cadeias `if/else` ou `switch/case` de `*Service`.
+* **Policy pura:** uma Policy é stateless e zero-I/O. Não recebe nem injeta repositórios, clientes HTTP, cache, DTO REST, entidades JPA, `SecurityContext` ou anotações de framework. O Application Service busca os fatos necessários e entrega agregados, Value Objects ou snapshots imutáveis em memória.
+* **Tell, Don't Ask:** a Policy calcula e devolve uma decisão ou Value Object. Ela nunca altera uma entidade/agregado por setter; a mutação pertence ao método semântico do agregado, como `aplicarRegra(policy)`.
+* **Uso legítimo de Service:** Application Services orquestram portas, transações, mensageria e I/O. Domain Services coordenam conceitos entre agregados sem variação algorítmica. Nenhum dos dois substitui uma Strategy de domínio.
+
 ### 3.7. Eventos de Domínio (*Domain Events*)
 
 * Representam fatos consumados relevantes para o negócio (`BatismoCelebrado`, `FielInativado`).

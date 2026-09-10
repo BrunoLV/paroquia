@@ -10,7 +10,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
 import br.com.nsfatima.gestao.patrimonio.domain.model.CodigoTombamento;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
-import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
+import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

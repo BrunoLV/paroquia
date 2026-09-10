@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.governanca.infrastructure.config;
 
 import br.com.nsfatima.gestao.governanca.domain.repository.AnoParoquialRepository;
+import br.com.nsfatima.gestao.governanca.domain.policy.AutorizacaoAnoParoquialPolicy;
+import br.com.nsfatima.gestao.governanca.domain.policy.ConselhoOuParocoAutorizacaoAnoParoquialPolicy;
 import br.com.nsfatima.gestao.governanca.domain.service.SucessaoAnoParoquialService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class GovernancaDomainConfig {
+
+    /** Expõe a regra canônica pura sem acoplar o domínio ao container Spring. */
+    @Bean
+    public AutorizacaoAnoParoquialPolicy autorizacaoAnoParoquialPolicy() {
+        return new ConselhoOuParocoAutorizacaoAnoParoquialPolicy();
+    }
 
     @Bean
     public SucessaoAnoParoquialService sucessaoAnoParoquialService(AnoParoquialRepository repository) {

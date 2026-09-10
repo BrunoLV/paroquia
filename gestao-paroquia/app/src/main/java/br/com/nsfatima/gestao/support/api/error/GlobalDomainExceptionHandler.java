@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.support.api.error;
 
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
 import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.domain.exception.GrupoParoquialNegocioException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;

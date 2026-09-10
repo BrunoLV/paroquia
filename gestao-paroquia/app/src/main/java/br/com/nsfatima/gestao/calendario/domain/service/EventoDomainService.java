@@ -3,7 +3,6 @@ package br.com.nsfatima.gestao.calendario.domain.service;
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.domain.policy.IntegridadeCalendarioPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
-import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import java.util.UUID;
  * relação à organização responsável. Também expõe a tradução de sobreposição de
  * agenda detectada para o estado/motivo de conflito correspondentes.
  */
-@Service
 public class EventoDomainService {
 
     private final IntegridadeCalendarioPolicy calendarIntegrityPolicy;

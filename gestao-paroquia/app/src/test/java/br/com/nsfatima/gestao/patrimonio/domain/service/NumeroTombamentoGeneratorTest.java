@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.patrimonio.domain.service;
 
+import br.com.nsfatima.gestao.patrimonio.application.service.NumeroTombamentoGenerator;
+import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioNumeracaoAnualSeeder;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.PatrimonioNumeracaoAnualEntity;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.PatrimonioNumeracaoAnualJpaRepository;
 import org.junit.jupiter.api.BeforeEach;

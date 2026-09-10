@@ -1,9 +1,10 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.metrics;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaQueryService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaQueryService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,7 +61,8 @@ public class ListAuditTrailUseCase {
                 resultado,
                 correlationId);
 
-        return new AuditoriaOperacaoResponse(grupoParoquialId, periodo.toResponse(), items);
+        return new AuditoriaOperacaoResponse(grupoParoquialId,
+                new PeriodoOperacionalResponse(periodo.granularidade(), periodo.inicio(), periodo.fim()), items);
     }
 
     private void assertAccessToOrganization(UUID grupoParoquialId) {

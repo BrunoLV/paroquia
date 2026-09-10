@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
-import br.com.nsfatima.gestao.calendario.domain.policy.AuthorizationPolicy;
-import br.com.nsfatima.gestao.iam.domain.service.PapelGlobalAuthorizationService;
+import br.com.nsfatima.gestao.calendario.domain.policy.CompatibilidadePapelOrganizacionalPolicy;
+import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,12 +28,12 @@ import java.util.UUID;
 @Component
 public class EventoActorContextResolver {
 
-    private final AuthorizationPolicy authorizationPolicy;
+    private final List<CompatibilidadePapelOrganizacionalPolicy> compatibilidadePolicies;
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
 
-    public EventoActorContextResolver(AuthorizationPolicy authorizationPolicy,
+    public EventoActorContextResolver(List<CompatibilidadePapelOrganizacionalPolicy> compatibilidadePolicies,
                                        PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
-        this.authorizationPolicy = authorizationPolicy;
+        this.compatibilidadePolicies = List.copyOf(compatibilidadePolicies);
         this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
     }
 
@@ -83,7 +84,7 @@ public class EventoActorContextResolver {
             }
 
             LeitorVinculoExterno.Vinculo vinculo = usuarioDetails.getVinculos().stream()
-                    .filter(m -> authorizationPolicy.isRoleAllowed(m.organizationType(), m.role()))
+                    .filter(m -> aceitaPapel(m.organizationType(), m.role()))
                     .findFirst()
                     .orElseThrow(() -> new PapelEscopoInvalidoException(
                             "Papel incompatível com o tipo de organização"));
@@ -110,7 +111,7 @@ public class EventoActorContextResolver {
 
             String organizationType = parts[0].toUpperCase(Locale.ROOT);
             String role = parts[1].toLowerCase(Locale.ROOT).replace('_', '-');
-            if (authorizationPolicy.isRoleAllowed(organizationType, role)) {
+            if (aceitaPapel(organizationType, role)) {
                 return new EventoActorContext(authentication.getName(), role, organizationType, null, null, null);
             }
         }
@@ -122,5 +123,13 @@ public class EventoActorContextResolver {
                 null,
                 UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 null);
+    }
+
+    private boolean aceitaPapel(String tipoOrganizacao, String papelBruto) {
+        PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(papelBruto);
+        TipoGrupo tipoGrupo = TipoGrupo.fromStoredValue(tipoOrganizacao);
+        String tipoNormalizado = tipoGrupo == null ? tipoOrganizacao : tipoGrupo.name();
+        return papel != null && compatibilidadePolicies.stream()
+                .anyMatch(policy -> policy.aceita(tipoNormalizado, papel));
     }
 }

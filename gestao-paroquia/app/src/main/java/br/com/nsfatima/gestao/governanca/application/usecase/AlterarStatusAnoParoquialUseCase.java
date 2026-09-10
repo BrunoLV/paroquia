@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.governanca.application.usecase;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquial;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.domain.repository.AnoParoquialRepository;
-import br.com.nsfatima.gestao.governanca.domain.service.AnoParoquialRolloverService;
+import br.com.nsfatima.gestao.governanca.application.service.AnoParoquialRolloverService;
 import br.com.nsfatima.gestao.governanca.domain.service.SucessaoAnoParoquialService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

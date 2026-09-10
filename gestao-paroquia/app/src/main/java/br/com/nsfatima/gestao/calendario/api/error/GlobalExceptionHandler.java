@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoAgendaEclesialException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.clero.infrastructure.observability;
 
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

@@ -52,6 +52,18 @@ Atuações específicas nos submódulos devem obedecer às regras locais complem
 
 ## 5. Diretrizes de Grafo de Conhecimento (Graphify)
 
+## 4.1. REGRAS TÁTICAS DE ARQUITETURA: POLICIES VS SERVICES (DDD)
+
+1. **PROIBIÇÃO DE REGRAS VARIÁVEIS EM SERVICES**
+   - NUNCA crie ou expanda classes `*Service` com encadeamentos de `if/else` ou `switch/case` para variações de cálculo, taxa, desconto, juros, autorização ou decisão de negócio.
+   - Se a regra variar por tipo, perfil, campanha ou contexto, modele uma interface `*Policy` e Strategies concretas em `domain/policy/` ou `domain/<aggregate>/policy/`.
+2. **ISOLAMENTO DE POLICIES NO DOMÍNIO**
+   - Toda Policy é estritamente stateless e zero-I/O: não pode injetar repositórios, APIs, banco, cache nem carregar anotações de framework.
+   - O UseCase carrega os dados e entrega à Policy apenas Value Objects, agregados ou snapshots imutáveis em memória.
+3. **TELL, DON'T ASK E ANEMIA**
+   - A Policy devolve uma decisão ou Value Object; nunca altera entidade/agregado por setters.
+   - A mutação é comandada pelo próprio agregado por método semântico, como `aggregate.applyRule(policy)`.
+
 O projeto possui um grafo de conhecimento em `../graphify-out/` mapeando dependências estruturais e relacionamentos cruzados.
 
 * **Comando `/graphify`:** Ao receber o comando, utilize a skill `graphify` antes de qualquer outra ação.

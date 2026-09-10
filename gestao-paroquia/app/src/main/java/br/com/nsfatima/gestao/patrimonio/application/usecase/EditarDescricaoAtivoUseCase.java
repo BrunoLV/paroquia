@@ -8,7 +8,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFou
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
-import br.com.nsfatima.gestao.patrimonio.domain.service.PatrimonioAuthorizationService;
+import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

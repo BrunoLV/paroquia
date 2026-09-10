@@ -2,7 +2,6 @@ package br.com.nsfatima.gestao.dashboard.domain.service;
 
 import br.com.nsfatima.gestao.dashboard.domain.model.JanelaTemporal;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
-import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -16,7 +15,6 @@ import java.time.temporal.TemporalAdjusters;
  * para que todos os cálculos de métrica compartilhem exatamente a mesma definição de janela e
  * para permitir testar as bordas (virada de dia/mês) isoladamente.
  */
-@Service
 public class JanelaTemporalResolver {
 
     /**

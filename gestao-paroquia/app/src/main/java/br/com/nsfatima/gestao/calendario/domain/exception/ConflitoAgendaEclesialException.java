@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.exception;
 
 /**
- * Lançada por {@code PrioridadeAgendaValidatorService} quando um novo evento
+ * Lançada pela {@code PrioridadeAgendaPolicy} quando um novo evento
  * sobrepõe (mesmo espaço/comunidade e período) outro evento de prioridade igual ou
  * maior na hierarquia eclesial — solenidade global (Nível 1), evento litúrgico
  * (Nível 2), atividade paroquial (Nível 3) ou de movimento (Nível 4). A regra

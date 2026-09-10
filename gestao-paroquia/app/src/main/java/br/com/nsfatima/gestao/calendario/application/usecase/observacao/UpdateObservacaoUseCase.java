@@ -2,7 +2,8 @@ package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
-import br.com.nsfatima.gestao.calendario.domain.service.ObservacaoMutationPolicyService;
+import br.com.nsfatima.gestao.calendario.domain.policy.MutacaoObservacaoPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.ObservacaoRegistrada;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
@@ -25,19 +26,19 @@ public class UpdateObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
     private final ObservacaoNotaRevisaoJpaRepository observacaoNotaRevisaoJpaRepository;
-    private final ObservacaoMutationPolicyService observacaoMutationPolicyService;
+    private final MutacaoObservacaoPolicy mutacaoObservacaoPolicy;
     private final LegacyEnumInconsistencyPublisher legacyEnumInconsistencyPublisher;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
     public UpdateObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
             ObservacaoNotaRevisaoJpaRepository observacaoNotaRevisaoJpaRepository,
-            ObservacaoMutationPolicyService observacaoMutationPolicyService,
+            MutacaoObservacaoPolicy mutacaoObservacaoPolicy,
             LegacyEnumInconsistencyPublisher legacyEnumInconsistencyPublisher,
             ObservacaoAuditPublisher observacaoAuditPublisher) {
         this.observacaoEventoJpaRepository = observacaoEventoJpaRepository;
         this.observacaoNotaRevisaoJpaRepository = observacaoNotaRevisaoJpaRepository;
-        this.observacaoMutationPolicyService = observacaoMutationPolicyService;
+        this.mutacaoObservacaoPolicy = mutacaoObservacaoPolicy;
         this.legacyEnumInconsistencyPublisher = legacyEnumInconsistencyPublisher;
         this.observacaoAuditPublisher = observacaoAuditPublisher;
     }
@@ -58,7 +59,8 @@ public class UpdateObservacaoUseCase {
                 .findByIdAndEventoId(observacaoId, eventoId)
                 .orElseThrow(() -> new ObservacaoNaoEncontradaException("Observation not found"));
 
-        observacaoMutationPolicyService.assertCanEditOrDelete(observacao, usuarioId);
+        mutacaoObservacaoPolicy.assertEdicaoOuExclusaoPermitida(
+                new ObservacaoRegistrada(observacao.getTipo(), observacao.isRemovida(), observacao.getUsuarioId()), usuarioId);
 
         ObservacaoNotaRevisaoEntity revisao = new ObservacaoNotaRevisaoEntity();
         revisao.setId(UUID.randomUUID());

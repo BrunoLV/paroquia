@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoJaDecididaExce
 import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoExecucaoFalhouException;
 import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.AprovacaoObrigatoriaException;
-import br.com.nsfatima.gestao.observabilidade.domain.service.AuditoriaPersistenceService;
+import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
