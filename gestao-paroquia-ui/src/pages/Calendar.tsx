@@ -62,6 +62,7 @@ import { getEventoStatusMeta } from '../utils/statusMeta/eventoStatus';
 import { getCategoriaEventoMeta } from '../utils/statusMeta/categoriaEventoStatus';
 import theme from '../theme';
 import apiClient from '../api/client';
+import { getRecorrencia } from '../api/eventos';
 import { getOrganizacoes } from '../api/organizacoes';
 import { getAtivos } from '../api/ativos';
 import { extractErrorMessage } from '../utils/errorUtils';
@@ -204,6 +205,14 @@ const Calendar = () => {
   // Modal details states
   const [selectedEvent, setSelectedEvent] = useState<Evento | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  // Evento.recorrencia nunca vem preenchido pelo GET /eventos (só o recorrenciaId) — a regra
+  // completa (frequência, dias, limite) só existe em GET /eventos/{id}/recorrencia.
+  const selectedEventRecorrenciaQuery = useQuery({
+    queryKey: ['evento-recorrencia', selectedEvent?.id],
+    queryFn: () => getRecorrencia(selectedEvent!.id),
+    enabled: isDetailsOpen && Boolean(selectedEvent?.id) && Boolean(selectedEvent?.recorrenciaId),
+  });
 
   // Modal creation/editing states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -1266,7 +1275,7 @@ const Calendar = () => {
                           value={selectedEvent.setorPastoral ? SETOR_PASTORAL_LABELS[selectedEvent.setorPastoral] : '-'}
                         />
                       </Grid>
-                      <Grid size={{ xs: 12, sm: 6 }}>
+                      <Grid size={{ xs: 12 }}>
                         <InfoField
                           label="Autorizado pelo CPP"
                           value={
@@ -1279,25 +1288,12 @@ const Calendar = () => {
                           }
                         />
                       </Grid>
-                      <Grid size={{ xs: 12, sm: 6 }}>
-                        <InfoField
-                          label="Bypass de conflito (Pároco)"
-                          value={
-                            <StatusIcon
-                              label={selectedEvent.bypassAgendaConflict ? 'Sim' : 'Não'}
-                              color={selectedEvent.bypassAgendaConflict ? 'warning' : 'default'}
-                              icon={selectedEvent.bypassAgendaConflict ? <CheckCircleIcon /> : <CancelIcon />}
-                              tooltip="Pároco ignorou conflito de agenda detectado ao criar/editar o evento"
-                            />
-                          }
-                        />
-                      </Grid>
                     </Grid>
                   </CardContent>
                 </Card>
 
                 {/* Recorrência — só aparece quando o evento pertence a uma série */}
-                {selectedEvent.recorrenciaId && selectedEvent.recorrencia && (
+                {selectedEvent.recorrenciaId && (
                   <Card variant="outlined" sx={{ borderRadius: 2 }}>
                     <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                       <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1.5 }}>
@@ -1307,7 +1303,9 @@ const Calendar = () => {
                         </Typography>
                       </Stack>
                       <Typography variant="body2" color="text.secondary">
-                        {formatRecurrenceSummary(selectedEvent.recorrencia as unknown as RecurrenceRule)}
+                        {selectedEventRecorrenciaQuery.data
+                          ? formatRecurrenceSummary(selectedEventRecorrenciaQuery.data)
+                          : 'Carregando regra de recorrência...'}
                       </Typography>
                     </CardContent>
                   </Card>

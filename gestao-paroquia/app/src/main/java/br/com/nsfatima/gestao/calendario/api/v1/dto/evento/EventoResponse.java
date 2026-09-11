@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 
 import java.time.Instant;
 import java.util.List;
@@ -39,5 +40,9 @@ public record EventoResponse(
         List<UUID> participantes,
         UUID recorrenciaId,
         String estadoConflito,
-        String motivoConflito) {
+        String motivoConflito,
+        String adicionadoExtraJustificativa,
+        Integer nivelPrioridade,
+        Boolean autorizadoPeloCpp,
+        SetorPastoral setorPastoral) {
 }

@@ -382,9 +382,12 @@ export interface Evento {
   status: string;
   /** IDs dos membros/participantes convidados/vinculados ao evento. */
   participantes?: string[];
-  /** ID da série de recorrência à qual este evento pertence, ou `null`/ausente se não foi gerado por uma regra de recorrência. */
+  /**
+   * ID da série de recorrência à qual este evento pertence, ou `null`/ausente se não foi gerado
+   * por uma regra de recorrência. A regra completa (frequência, dias, limite) não vem aqui —
+   * busque separadamente via `getRecorrencia(eventoId)` (`GET /eventos/{id}/recorrencia`).
+   */
   recorrenciaId?: string | null;
-  recorrencia?: Record<string, unknown> | null;
   /**
    * Nome de `EstadoConflitoAgenda` — hoje o único valor possível é `"PENDENTE"` — quando a
    * política de integridade do calendário detecta sobreposição de agenda no mesmo
@@ -414,8 +417,6 @@ export interface Evento {
   /** Liberado pelo Conselho Pastoral Paroquial (CPP) para conflitos de agenda */
   autorizadoPeloCpp?: boolean;
   setorPastoral?: SetorPastoral | null;
-  /** Permite ao Pároco ignorar conflitos de agenda eclesial */
-  bypassAgendaConflict?: boolean;
   /** IDs dos ativos patrimoniais alocados para o evento */
   ativoIds?: string[];
 }

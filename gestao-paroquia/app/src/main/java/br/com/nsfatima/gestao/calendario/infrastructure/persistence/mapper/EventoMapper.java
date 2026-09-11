@@ -110,7 +110,11 @@ public class EventoMapper {
                 participantes,
                 entity.getRecorrenciaId(),
                 entity.getEstadoConflito() == null ? null : entity.getEstadoConflito().name(),
-                entity.getMotivoConflito());
+                entity.getMotivoConflito(),
+                entity.getAdicionadoExtraJustificativa(),
+                entity.getNivelPrioridade(),
+                entity.getAutorizadoPeloCpp(),
+                entity.getSetorPastoral());
     }
 
     /**

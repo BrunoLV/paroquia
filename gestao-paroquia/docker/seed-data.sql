@@ -333,7 +333,7 @@ VALUES
 -- Recurring Event stub (now can reference '40000000-0000-0000-0000-000000000101' as evento_base_id)
 INSERT INTO calendario.eventos_recorrencia (id, evento_base_id, frequencia, intervalo, regra_json, data_fim_utc, version)
 VALUES 
-    ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000101', 'SEMANAL', 1, '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"]}', '2026-11-28T23:59:59Z', 0);
+    ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000101', 'SEMANAL', 1, '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"], "dataLimite": "2026-11-28"}', '2026-11-28T23:59:59Z', 0);
 
 -- Update base event instance to link to its recurrence
 UPDATE calendario.eventos 

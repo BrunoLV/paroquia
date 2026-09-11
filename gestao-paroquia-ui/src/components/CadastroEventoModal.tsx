@@ -35,6 +35,7 @@ import {useAuth} from '../auth/AuthContext';
 import {isGlobalCreator} from '../auth/permissions';
 import {useNotification} from '../context/NotificationContext';
 import {listarReservas} from '../api/reservas';
+import {getRecorrencia} from '../api/eventos';
 import {AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 import ActionButton from './ActionButton';
@@ -153,6 +154,14 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
     queryKey: ['reservas', 'evento-ativos', initialEvent?.id],
     queryFn: () => listarReservas({ eventoId: initialEvent!.id, tipoItem: 'ATIVO' }),
     enabled: open && Boolean(initialEvent?.id),
+  });
+
+  // `Evento.recorrencia` também nunca vinha preenchido pelo GET /eventos (só o recorrenciaId);
+  // a regra completa (frequência, dias, limite) só existe em GET /eventos/{id}/recorrencia.
+  const recorrenciaQuery = useQuery({
+    queryKey: ['evento-recorrencia', initialEvent?.id],
+    queryFn: () => getRecorrencia(initialEvent!.id),
+    enabled: open && Boolean(initialEvent?.id) && Boolean(initialEvent?.recorrenciaId),
   });
 
   // grupoParoquialResponsavelId só aceita Grupo Paroquial (Pastoral/Movimento/Conselho/Ministério);
@@ -280,10 +289,8 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         setJustification(initialEvent.adicionadoExtraJustificativa || '');
         setParticipantes(initialEvent.participantes || []);
         setIsRecurring(!!initialEvent.recorrenciaId);
-        
-        if (initialEvent.recorrencia) {
-          setRecurrenceRule(initialEvent.recorrencia as unknown as RecurrenceRule);
-        }
+        // regra completa vem de recorrenciaQuery (efeito abaixo) — initialEvent.recorrencia
+        // nunca é preenchido pelo GET /eventos, só o recorrenciaId.
       } else {
         setTitle('');
         setDescription('');
@@ -344,6 +351,13 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
       .map(r => r.itemId);
     setSelectedAtivoIds(idsAtivos);
   }, [open, initialEvent, ativosAlocadosQuery.data]);
+
+  // Hidrata a regra de recorrência ao editar um evento gerado por série — ver comentário de
+  // recorrenciaQuery acima.
+  useEffect(() => {
+    if (!open || !initialEvent || !recorrenciaQuery.data) return;
+    setRecurrenceRule(recorrenciaQuery.data);
+  }, [open, initialEvent, recorrenciaQuery.data]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();

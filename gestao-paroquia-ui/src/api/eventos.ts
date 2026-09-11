@@ -1,5 +1,6 @@
 import apiClient from './client';
 import { Evento } from './types';
+import { RecurrenceRule } from '../components/RecurrenceForm';
 
 export interface ListEventosParams {
   dataInicio: string;
@@ -36,4 +37,14 @@ export const listEventos = async (params: ListEventosParams): Promise<Evento[]> 
     return response.data;
   }
   return [];
+};
+
+/**
+ * Busca a regra de recorrência completa de um evento (frequência, dias, limites). O backend
+ * devolve `204 No Content` (corpo vazio) quando o evento não pertence a nenhuma série — nesse
+ * caso resolve para `null` em vez de deixar o `axios` estourar em cima de um corpo vazio.
+ */
+export const getRecorrencia = async (eventoId: string): Promise<RecurrenceRule | null> => {
+  const response = await apiClient.get<RecurrenceRule | ''>(`/eventos/${eventoId}/recorrencia`);
+  return response.data ? (response.data as RecurrenceRule) : null;
 };
