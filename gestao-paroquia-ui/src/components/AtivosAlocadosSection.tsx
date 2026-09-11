@@ -1,19 +1,19 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Skeleton, Typography } from '@mui/material';
+import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import { Inventory as InventoryIcon } from '@mui/icons-material';
 import { listarReservas } from '../api/reservas';
-import StatusIcon from './StatusIcon';
 import { getReservaStatusMeta } from '../utils/statusMeta/reservaStatus';
-import { formatDateBr } from '../utils/masks';
+import StatusIcon from './StatusIcon';
 
 interface AtivosAlocadosSectionProps {
   eventoId: string;
 }
 
 /**
- * Lista os ativos patrimoniais reservados para um evento (via módulo de Reservas). Substitui a
- * antiga listagem de alocações de ativo, descontinuada.
+ * Lista os ativos patrimoniais reservados para um evento (via módulo de Reservas) — fonte real
+ * da alocação, já que `Evento.ativoIds` é write-only na API (só existe no payload de criação/
+ * edição, nunca é devolvido pelo backend). Substitui a antiga listagem baseada nesse campo.
  */
 const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId }) => {
   const { data: reservas = [], isLoading } = useQuery({
@@ -22,35 +22,30 @@ const AtivosAlocadosSection: React.FC<AtivosAlocadosSectionProps> = ({ eventoId 
     enabled: Boolean(eventoId),
   });
 
-  if (isLoading) {
-    return <Skeleton variant="rounded" height={60} />;
-  }
-  if (reservas.length === 0) {
-    return null;
-  }
-
   return (
-    <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-      <InventoryIcon color="action" sx={{ mt: 0.3 }} />
-      <Box sx={{ width: '100%' }}>
-        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
-          Ativos Reservados
+    <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 1.5 }}>
+      <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', mb: 1 }}>
+        <InventoryIcon fontSize="small" sx={{ color: 'primary.main' }} />
+        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+          Bens / ativos patrimoniais
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      </Stack>
+      {isLoading ? (
+        <Skeleton variant="rounded" height={32} />
+      ) : reservas.length === 0 ? (
+        <Typography variant="body2" color="text.secondary">Nenhum bem/ativo alocado.</Typography>
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
           {reservas.map((reserva) => (
-            <Box key={reserva.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                {reserva.itemNome || reserva.itemId}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {formatDateBr(reserva.dataHoraInicio)} — {formatDateBr(reserva.dataHoraFim)}
-              </Typography>
-              <StatusIcon {...getReservaStatusMeta(reserva.status)} />
-            </Box>
+            <StatusIcon
+              key={reserva.id}
+              {...getReservaStatusMeta(reserva.status)}
+              label={`${reserva.itemNome || reserva.itemId} · ${getReservaStatusMeta(reserva.status).label}`}
+            />
           ))}
         </Box>
-      </Box>
-    </Box>
+      )}
+    </Paper>
   );
 };
 

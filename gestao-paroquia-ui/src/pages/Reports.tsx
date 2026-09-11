@@ -5,7 +5,6 @@ import {
     Box,
     Card,
     CardContent,
-    Chip,
     Grid,
     LinearProgress,
     Paper,
@@ -29,6 +28,7 @@ import {
     AutoGraph as AutoGraphIcon,
     Event as EventIcon,
     FilterList as FilterIcon,
+    FormatListBulleted as ListIcon,
     PendingActions as PendingIcon,
     Warning as WarningIcon,
 } from '@mui/icons-material';
@@ -449,12 +449,12 @@ const Reports: React.FC = () => {
               {projectStatusBreakdown.length > 0 && (
                 <Stack direction="row" spacing={1}>
                   {projectStatusBreakdown.map((b, i) => (
-                    <Chip
+                    <StatusIcon
                       key={i}
                       label={`${b.status}: ${b.count}`}
-                      size="small"
                       color="primary"
-                      variant="outlined"
+                      icon={<ListIcon />}
+                      tooltip={`${b.count} projeto(s) com status ${b.status}`}
                       sx={{ fontWeight: 600 }}
                     />
                   ))}
@@ -494,12 +494,11 @@ const Reports: React.FC = () => {
                         </Typography>
                         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                           {proj.emRisco && (
-                            <Chip
-                              icon={<WarningIcon sx={{ fontSize: 14 }} />}
+                            <StatusIcon
+                              icon={<WarningIcon />}
                               label="Em Risco"
                               color="error"
-                              size="small"
-                              sx={{ height: 22, fontSize: '0.7rem' }}
+                              tooltip="Projeto com prazo ou entrega em risco"
                             />
                           )}
                           <StatusIcon {...getProjetoStatusMeta(proj.status as ProjetoStatus)} size="small" sx={{ height: 22, fontSize: '0.7rem' }} />
@@ -533,7 +532,7 @@ const Reports: React.FC = () => {
                             Envolvidos:
                           </Typography>
                           {proj.envolvidos.map((env, eIdx) => (
-                            <Chip key={eIdx} label={env} size="small" variant="outlined" sx={{ height: 18, fontSize: '0.65rem' }} />
+                            <StatusIcon key={eIdx} color="default" icon={<ListIcon />} label={env} tooltip="Envolvido no projeto" />
                           ))}
                         </Box>
                       )}

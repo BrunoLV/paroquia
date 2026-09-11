@@ -410,7 +410,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500 }}>
                   Olá, {user.name}
                 </Typography>
-                <ActionButton label="Sair" title="Sair do sistema" icon={<LogoutIcon />} color="inherit" onClick={handleLogout} />
+                <ActionButton
+                  label="Sair"
+                  title="Sair do sistema"
+                  icon={<LogoutIcon />}
+                  onClick={handleLogout}
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.16)',
+                    color: '#FFFFFF',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.28)' },
+                  }}
+                />
               </Box>
             )}
           </Toolbar>

@@ -171,9 +171,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit} noValidate>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <DialogTitle>
           {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
-          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={onClose} disabled={isPending} />
         </DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>

@@ -121,6 +121,11 @@ const theme = createTheme({
   },
   components: {
     MuiButton: {
+      // Fundo sólido por padrão em todo o sistema — cobre também os poucos lugares
+      // (ex.: módulo de Reservas) que usam <Button> do MUI direto em vez de ActionButton.
+      defaultProps: {
+        variant: 'contained',
+      },
       styleOverrides: {
         root: {
           textTransform: 'none',
@@ -136,7 +141,10 @@ const theme = createTheme({
             outlineOffset: 2,
           },
         },
-        contained: { boxShadow: '0 4px 12px rgba(26, 35, 126, 0.18)' },
+        // Força texto/ícone brancos no botão sólido — o cálculo automático de contraste do
+        // MUI escolhe preto para cores claras (ex.: o dourado do secondary), o que a
+        // diretriz visual do sistema não quer.
+        contained: { boxShadow: '0 4px 12px rgba(26, 35, 126, 0.18)', color: '#FFFFFF' },
       },
     },
     MuiIconButton: {
@@ -196,6 +204,13 @@ const theme = createTheme({
       },
     },
     MuiChip: {
+      // Chip é etiqueta/rótulo informativo (status, categoria, tag), não botão — o padrão do
+      // MUI é "filled" (fundo sólido), que agora se confundiria com o estilo dos botões
+      // reais do sistema. Default outlined; quem precisar de destaque sólido passa
+      // variant="filled" explicitamente.
+      defaultProps: {
+        variant: 'outlined',
+      },
       styleOverrides: {
         root: {
           borderRadius: '8px',

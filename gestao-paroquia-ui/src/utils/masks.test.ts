@@ -73,5 +73,8 @@ describe('masks utility', () => {
     it('formats YYYY-MM-DD to DD/MM/YYYY', () => {
       expect(formatDateBr('1990-05-20')).toBe('20/05/1990');
     });
+    it('formats ISO datetime to DD/MM/YYYY', () => {
+      expect(formatDateBr('2026-09-10T14:30:00')).toBe('10/09/2026');
+    });
   });
 });

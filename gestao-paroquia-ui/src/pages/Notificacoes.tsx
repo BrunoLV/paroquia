@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
   MarkEmailRead as LidaIcon,
+  MarkEmailUnread as NovaIcon,
   Notifications as NotificacaoIcon,
 } from '@mui/icons-material';
 import {
   Card,
   CardContent,
-  Chip,
   Skeleton,
   Stack,
   Table,
@@ -22,6 +22,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { listarNotificacoes, marcarNotificacaoLida } from '@/api/notificacoes';
 import PageHeader from '@/components/PageHeader';
 import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
 import { useNotification } from '@/context/NotificationContext';
 
 const Notificacoes = () => {
@@ -104,11 +105,11 @@ const Notificacoes = () => {
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Chip
-                              size="small"
+                            <StatusIcon
                               label={lida ? 'Lida' : 'Nova'}
                               color={lida ? 'default' : 'primary'}
-                              variant={lida ? 'outlined' : 'filled'}
+                              icon={lida ? <LidaIcon /> : <NovaIcon />}
+                              tooltip={lida ? 'Notificação já lida' : 'Notificação ainda não lida'}
                             />
                           </TableCell>
                           <TableCell align="right">

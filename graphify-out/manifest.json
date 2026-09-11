@@ -800,8 +800,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/masks.ts": {
-    "mtime": 1788807798.3156073,
-    "ast_hash": "0f84d085b7264fc5fadf24277ec36ccc",
+    "mtime": 1789052760.7178679,
+    "ast_hash": "0d53a74a084302df6a32d73f620d563a",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/phoneUtils.test.ts": {
@@ -4675,8 +4675,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1789025147.0417528,
-    "ast_hash": "5c8fc1236db8f605c20d2e9c17465a55",
+    "mtime": 1789061202.3243585,
+    "ast_hash": "2ed640115604e9d6ce31d5ce411bc0c2",
     "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
@@ -5350,8 +5350,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/masks.test.ts": {
-    "mtime": 1788807577.5566154,
-    "ast_hash": "0623b47fa57c39c534b6c16ca6a35e7c",
+    "mtime": 1789052766.4498487,
+    "ast_hash": "29784130f24fc4c83261017692d9dedc",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/statusMeta/cleroStatus.ts": {

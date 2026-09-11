@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   Button,
-  Chip,
   Divider,
   Drawer,
   Grid,
@@ -17,6 +16,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { ReservaDetalhe } from '@/api/types';
+import StatusIcon from '@/components/StatusIcon';
 import { getReservaStatusMeta } from '@/utils/statusMeta/reservaStatus';
 
 interface ReservaDetalhesDrawerProps {
@@ -85,12 +85,7 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
         </Stack>
 
         <Box>
-          <Chip
-            label={statusMeta.label}
-            color={statusMeta.color}
-            icon={statusMeta.icon}
-            sx={{ fontWeight: 600 }}
-          />
+          <StatusIcon {...statusMeta} size="medium" />
         </Box>
 
         <Divider />

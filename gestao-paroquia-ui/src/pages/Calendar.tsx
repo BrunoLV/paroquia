@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import {
     Alert,
     alpha,
+    Avatar,
     Box,
     Card,
     CardContent,
-    Chip,
     CircularProgress,
     Dialog,
     DialogActions,
@@ -18,6 +18,7 @@ import {
     MenuItem,
     Paper,
     Select,
+    Stack,
     Typography,
 } from '@mui/material';
 import {
@@ -25,6 +26,9 @@ import {
     Block as BlockIcon,
     Business as BusinessIcon,
     CalendarMonth as CalendarIcon,
+    Cancel as CancelIcon,
+    CheckCircle as CheckCircleIcon,
+    Circle as CircleIcon,
     ChevronLeft,
     ChevronRight,
     Close as CloseIcon,
@@ -35,7 +39,9 @@ import {
     FormatListBulleted as ListIcon,
     Groups as PeopleIcon,
     LocationOn as LocationIcon,
+    PriorityHigh as PriorityHighIcon,
     Refresh as RefreshIcon,
+    Repeat as RepeatIcon,
     Schedule as ScheduleIcon,
     Today as TodayIcon,
 } from '@mui/icons-material';
@@ -59,7 +65,8 @@ import apiClient from '../api/client';
 import { getOrganizacoes } from '../api/organizacoes';
 import { getAtivos } from '../api/ativos';
 import { extractErrorMessage } from '../utils/errorUtils';
-import {AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto} from '../api/types';
+import {AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto, SetorPastoral} from '../api/types';
+import {DAYS_OF_WEEK, RecurrenceRule} from '../components/RecurrenceForm';
 import {getAnosParoquiais} from '../api/anosParoquiais';
 import {fetchSolenidadesLiturgicasAtivas} from '../api/solenidades';
 import {
@@ -107,6 +114,62 @@ const getCategoryColor = (category: string) => {
       return { bg: '#f5f5f5', text: '#616161', border: '#9e9e9e' };
   }
 };
+
+/** 1=Solenidade, 2=Preceito, 3=Pastoral, 4=Movimento — ver `Evento.nivelPrioridade` em api/types.ts. */
+const NIVEL_PRIORIDADE_LABELS: Record<number, string> = {
+  1: 'Nível 1 — Solenidade',
+  2: 'Nível 2 — Preceito',
+  3: 'Nível 3 — Pastoral',
+  4: 'Nível 4 — Movimento',
+};
+
+const SETOR_PASTORAL_LABELS: Record<SetorPastoral, string> = {
+  SANTIFICACAO_LITURGIA: 'Santificação / Liturgia',
+  FORMACAO_ENSINAR: 'Formação / Ensino',
+  SOCIAL_CARIDADE: 'Social / Caridade',
+};
+
+/** Resumo textual de uma regra de recorrência (mesmos campos editados em `RecurrenceForm`). */
+const formatRecurrenceSummary = (rule: RecurrenceRule): string => {
+  const freqLabel = rule.frequencia === 'DIARIA' ? 'dia(s)' : rule.frequencia === 'SEMANAL' ? 'semana(s)' : 'mês(es)';
+  const partes = [`A cada ${rule.intervalo} ${freqLabel}`];
+
+  if (rule.diasDaSemana?.length) {
+    const dias = rule.diasDaSemana
+      .map((d) => DAYS_OF_WEEK.find((dw) => dw.value === d)?.label || d)
+      .join(', ');
+    const posicaoLabels: Record<string, string> = { PRIMEIRO: '1ª', SEGUNDO: '2ª', TERCEIRO: '3ª', QUARTO: '4ª', ULTIMO: 'última' };
+    partes.push(rule.posicaoNoMes ? `${posicaoLabels[rule.posicaoNoMes] || rule.posicaoNoMes} ${dias}` : `nas: ${dias}`);
+  }
+  if (rule.dataLimite) {
+    partes.push(`até ${new Date(rule.dataLimite + 'T00:00:00').toLocaleDateString('pt-BR')}`);
+  } else if (rule.numeroOcorrencias) {
+    partes.push(`por ${rule.numeroOcorrencias} ocorrência(s)`);
+  }
+  return partes.join(' · ');
+};
+
+/**
+ * Campo de exibição rotulado usado na ficha de detalhes do evento — mesmo padrão visual
+ * de `InfoField` em `fieis/fielConstants.tsx` (label + ícone + valor em Paper outlined),
+ * seguindo o conceito visual de referência da página Fiéis.
+ */
+const InfoField = ({ label, value, icon }: { label: string; value?: React.ReactNode; icon?: React.ReactNode }) => (
+  <Paper
+    variant="outlined"
+    sx={{ p: 1.5, borderRadius: 1.5, bgcolor: 'background.paper', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+  >
+    <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', mb: 0.5 }}>
+      {icon && <Box sx={{ color: 'primary.main', display: 'flex', fontSize: 16 }}>{icon}</Box>}
+      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+        {label}
+      </Typography>
+    </Stack>
+    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+      {value ?? '-'}
+    </Typography>
+  </Paper>
+);
 
 const isSameDay = (d1: Date, d2: Date) => {
   return (
@@ -197,7 +260,7 @@ const Calendar = () => {
     if (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN')) return true;
     
     // Member can edit if they belong to the organization responsible
-    return user.organizations.some(org => org.id === event.organizacaoResponsavelId);
+    return user.organizations.some(org => org.id === event.grupoParoquialResponsavelId);
   };
 
   // Generate calendar days for monthly grid
@@ -560,7 +623,7 @@ const Calendar = () => {
             titulo: payload.titulo || 'Novo Evento (Pendente)',
             descricao: payload.descricao || '',
             categoria: payload.categoria || 'PASTORAL',
-            organizacaoResponsavelId: payload.organizacaoResponsavelId || '',
+            grupoParoquialResponsavelId: payload.grupoParoquialResponsavelId || '',
             projetoId: payload.projetoId || null,
             nomeProjeto: null,
             localId: payload.localId || null,
@@ -709,20 +772,9 @@ const Calendar = () => {
               </Typography>
               <ActionButton label="Próximo" title="Próximo mês" icon={<ChevronRight />} onClick={handleNextMonth} color="primary" />
               <ActionButton label="Hoje" title="Ir para Mês Atual" icon={<TodayIcon />} onClick={handleToday} color="primary" />
-              <Chip
-                label={`Ano Litúrgico: ${liturgicalInfo.cycle}`}
-                color="primary"
-                variant="outlined"
-                size="small"
-                sx={{ fontWeight: 700 }}
-              />
+              <StatusIcon label={`Ano Litúrgico: ${liturgicalInfo.cycle}`} color="primary" icon={<CalendarIcon />} tooltip="Ciclo litúrgico corrente" />
               {liturgicalInfo.isClosed && (
-                <Chip
-                  label="ANO FECHADO"
-                  color="error"
-                  size="small"
-                  sx={{ fontWeight: 700 }}
-                />
+                <StatusIcon label="ANO FECHADO" color="error" icon={<BlockIcon />} tooltip="Ano paroquial fechado para auditoria" />
               )}
             </Grid>
 
@@ -733,7 +785,8 @@ const Calendar = () => {
                   title="Visualização em grade"
                   ariaLabel="Mês"
                   icon={<CalendarIcon />}
-                  color={viewMode === 'month' ? 'primary' : undefined}
+                  color="primary"
+                  variant="text"
                   onClick={() => setViewMode('month')}
                   sx={{ border: 'none', bgcolor: viewMode === 'month' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
                 />
@@ -741,7 +794,8 @@ const Calendar = () => {
                   label="Agenda"
                   title="Visualização em agenda"
                   icon={<ListIcon />}
-                  color={viewMode === 'agenda' ? 'primary' : undefined}
+                  color="primary"
+                  variant="text"
                   onClick={() => setViewMode('agenda')}
                   sx={{ border: 'none', bgcolor: viewMode === 'agenda' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
                 />
@@ -1018,7 +1072,12 @@ const Calendar = () => {
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                       <StatusIcon {...getCategoriaEventoMeta(evt.categoria)} />
-                      <Chip size="small" variant="outlined" label={getOrgName(evt.organizacaoResponsavelId, evt.igrejaVinculoId)} icon={<BusinessIcon sx={{ fontSize: '0.9rem' }} />} />
+                      <StatusIcon
+                        label={getOrgName(evt.grupoParoquialResponsavelId, evt.igrejaVinculoId)}
+                        color="default"
+                        icon={<BusinessIcon />}
+                        tooltip="Organização responsável pelo evento"
+                      />
                       <StatusIcon {...getEventoStatusMeta(evt.status)} />
                     </Box>
                   </Box>
@@ -1042,17 +1101,16 @@ const Calendar = () => {
        <Dialog open={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} maxWidth="sm" fullWidth>
         {selectedEvent && (
           <>
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
-                  Detalhes do Evento
+            <DialogTitle>
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h6" component="div">
+                  Detalhes do evento
                 </Typography>
-                <StatusIcon {...getEventoStatusMeta(selectedEvent.status)} sx={{ fontWeight: 600 }} />
-              </Box>
-              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsDetailsOpen(false)} />
+                <StatusIcon {...getEventoStatusMeta(selectedEvent.status)} />
+              </Stack>
             </DialogTitle>
-            <DialogContent dividers sx={{py: 2, maxHeight: 'calc(100vh - 220px)'}}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <DialogContent dividers sx={{ maxHeight: 'calc(100vh - 220px)' }}>
+              <Stack spacing={2.5}>
                 {/* Quando este evento tem uma solicitação de aprovação em aberto
                     (ver merge em combinedEvents), avisamos qual tipo de mudança está
                     pendente — o conteúdo abaixo ainda reflete o estado atual/salvo do
@@ -1068,143 +1126,211 @@ const Calendar = () => {
                       : 'Solicitação Pendente'}
                   </Alert>
                 )}
-                {/* Title */}
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
-                    {selectedEvent.titulo}
-                  </Typography>
-                  <StatusIcon {...getCategoriaEventoMeta(selectedEvent.categoria)} />
-                </Box>
 
-                {/* Date & Time */}
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  <ScheduleIcon color="action" />
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      Horário
+                {selectedEvent.motivoConflito && (
+                  <Alert severity="warning">Conflito detectado: {selectedEvent.motivoConflito}</Alert>
+                )}
+
+                {/* Header com Avatar e Título — mesmo padrão do cabeçalho da Ficha do Fiel */}
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 2,
+                    bgcolor: 'background.default',
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: 2,
+                  }}
+                >
+                  <Avatar sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', width: 56, height: 56 }}>
+                    <EventIcon />
+                  </Avatar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', lineHeight: 1.2 }}>
+                      {selectedEvent.titulo}
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                      {new Date(selectedEvent.inicio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} às{' '}
-                      {new Date(selectedEvent.fim).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {getOrgName(selectedEvent.grupoParoquialResponsavelId, selectedEvent.igrejaVinculoId)}
                     </Typography>
+                    <Stack direction="row" spacing={1.5} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
+                      <StatusIcon {...getCategoriaEventoMeta(selectedEvent.categoria)} />
+                      {selectedEvent.recorrenciaId && (
+                        <StatusIcon
+                          label="Recorrente"
+                          color="info"
+                          icon={<RepeatIcon />}
+                          tooltip="Este evento pertence a uma série recorrente"
+                        />
+                      )}
+                    </Stack>
                   </Box>
-                </Box>
+                </Paper>
 
-                {/* Organization */}
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  <BusinessIcon color="action" />
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      Organização Responsável
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                      {getOrgName(selectedEvent.organizacaoResponsavelId, selectedEvent.igrejaVinculoId)}
-                    </Typography>
-                  </Box>
-                </Box>
+                {/* Agenda */}
+                <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                      <ScheduleIcon color="primary" fontSize="small" />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        Agenda
+                      </Typography>
+                    </Stack>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <InfoField
+                          label="Horário"
+                          icon={<ScheduleIcon fontSize="inherit" />}
+                          value={`${new Date(selectedEvent.inicio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} às ${new Date(selectedEvent.fim).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <InfoField
+                          label="Local"
+                          icon={<LocationIcon fontSize="inherit" />}
+                          value={getLocalName(selectedEvent.localId) || 'Não especificado'}
+                        />
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
 
-                {/* Description */}
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                  <DescriptionIcon color="action" sx={{ mt: 0.3 }} />
-                  <Box sx={{ width: '100%' }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
-                      Descrição
-                    </Typography>
-                     <Typography variant="body1" sx={{ color: 'text.secondary', whiteSpace: 'pre-wrap', bgcolor: theme.custom.subtlePanelBg, p: 1.5, border: '1px solid', borderColor: 'divider' }}>
+                {/* Organização e vínculos */}
+                <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                      <BusinessIcon color="primary" fontSize="small" />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        Organização e vínculos
+                      </Typography>
+                    </Stack>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, sm: selectedEvent.nomeProjeto ? 6 : 12 }}>
+                        <InfoField
+                          label="Organização responsável"
+                          icon={<BusinessIcon fontSize="inherit" />}
+                          value={getOrgName(selectedEvent.grupoParoquialResponsavelId, selectedEvent.igrejaVinculoId)}
+                        />
+                      </Grid>
+                      {selectedEvent.nomeProjeto && (
+                        <Grid size={{ xs: 12, sm: 6 }}>
+                          <InfoField label="Projeto" icon={<BusinessIcon fontSize="inherit" />} value={selectedEvent.nomeProjeto} />
+                        </Grid>
+                      )}
+                      <Grid size={{ xs: 12 }}>
+                        <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 1.5 }}>
+                          <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', mb: 1 }}>
+                            <PeopleIcon fontSize="small" sx={{ color: 'primary.main' }} />
+                            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+                              Organizações de apoio
+                            </Typography>
+                          </Stack>
+                          {selectedEvent.participantes && selectedEvent.participantes.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                              {selectedEvent.participantes.map(id => (
+                                <StatusIcon key={id} color="default" icon={<BusinessIcon />} label={getOrgName(id)} tooltip="Organização de apoio" />
+                              ))}
+                            </Box>
+                          ) : (
+                            <Typography variant="body2" color="text.secondary">Nenhuma organização de apoio vinculada.</Typography>
+                          )}
+                        </Paper>
+                      </Grid>
+                      <Grid size={{ xs: 12 }}>
+                        <AtivosAlocadosSection eventoId={selectedEvent.id} />
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+
+                {/* Classificação e prioridade */}
+                <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                      <PriorityHighIcon color="primary" fontSize="small" />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        Classificação e prioridade
+                      </Typography>
+                    </Stack>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <InfoField
+                          label="Prioridade da agenda"
+                          value={selectedEvent.nivelPrioridade ? NIVEL_PRIORIDADE_LABELS[selectedEvent.nivelPrioridade] : '-'}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <InfoField
+                          label="Setor pastoral"
+                          value={selectedEvent.setorPastoral ? SETOR_PASTORAL_LABELS[selectedEvent.setorPastoral] : '-'}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <InfoField
+                          label="Autorizado pelo CPP"
+                          value={
+                            <StatusIcon
+                              label={selectedEvent.autorizadoPeloCpp ? 'Sim' : 'Não'}
+                              color={selectedEvent.autorizadoPeloCpp ? 'success' : 'default'}
+                              icon={selectedEvent.autorizadoPeloCpp ? <CheckCircleIcon /> : <CancelIcon />}
+                              tooltip="Liberação do Conselho Pastoral Paroquial para conflito de agenda"
+                            />
+                          }
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <InfoField
+                          label="Bypass de conflito (Pároco)"
+                          value={
+                            <StatusIcon
+                              label={selectedEvent.bypassAgendaConflict ? 'Sim' : 'Não'}
+                              color={selectedEvent.bypassAgendaConflict ? 'warning' : 'default'}
+                              icon={selectedEvent.bypassAgendaConflict ? <CheckCircleIcon /> : <CancelIcon />}
+                              tooltip="Pároco ignorou conflito de agenda detectado ao criar/editar o evento"
+                            />
+                          }
+                        />
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+
+                {/* Recorrência — só aparece quando o evento pertence a uma série */}
+                {selectedEvent.recorrenciaId && selectedEvent.recorrencia && (
+                  <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1.5 }}>
+                        <RepeatIcon color="primary" fontSize="small" />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                          Recorrência
+                        </Typography>
+                      </Stack>
+                      <Typography variant="body2" color="text.secondary">
+                        {formatRecurrenceSummary(selectedEvent.recorrencia as unknown as RecurrenceRule)}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Descrição */}
+                <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1.5 }}>
+                      <DescriptionIcon color="primary" fontSize="small" />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        Descrição
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
                       {selectedEvent.descricao || 'Nenhuma descrição fornecida.'}
                     </Typography>
-                  </Box>
-                </Box>
-
-                {/* Local */}
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  <LocationIcon color="action" />
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      Local
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                      {getLocalName(selectedEvent.localId) || 'Não especificado'}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* Project */}
-                {selectedEvent.nomeProjeto && (
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <BusinessIcon color="action" /> {/* Using BusinessIcon for project as well or another if available */}
-                    <Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                        Projeto
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                        {selectedEvent.nomeProjeto}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-
-                {/* Supporting Organizations */}
-                {selectedEvent.participantes && selectedEvent.participantes.length > 0 && (
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                    <PeopleIcon color="action" sx={{ mt: 0.3 }} />
-                    <Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
-                        Organizações de Apoio
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selectedEvent.participantes.map(id => (
-                          <Chip key={id} label={getOrgName(id)} size="small" variant="outlined" />
-                        ))}
-                      </Box>
-                    </Box>
-                  </Box>
-                )}
-
-                {/* Ativos Patrimoniais vinculados */}
-                {selectedEvent.ativoIds && selectedEvent.ativoIds.length > 0 && (
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                    <BusinessIcon color="action" sx={{ mt: 0.3 }} />
-                    <Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 0.5 }}>
-                        Bens / Ativos Patrimoniais
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selectedEvent.ativoIds.map(id => {
-                          const ativo = ativos.find(a => a.id === id);
-                          return (
-                            <Chip
-                              key={id}
-                              label={ativo ? `${ativo.nome} (${ativo.categoria})` : id}
-                              size="small"
-                              variant="outlined"
-                              color="primary"
-                            />
-                          );
-                        })}
-                      </Box>
-                    </Box>
-                  </Box>
-                )}
-
-                {/* Conflict warning: estadoConflito/motivoConflito são calculados pelo
-                    backend (motor de validação de agenda) quando este evento colide
-                    com outro compromisso — mesmo local, mesma organização/recurso,
-                    ou regra de prioridade da agenda paroquial violada. O evento ainda
-                    é salvo/exibido normalmente; o conflito é apenas um alerta para o
-                    responsável avaliar manualmente, não um bloqueio automático. */}
-                {selectedEvent.motivoConflito && (
-                  <Alert severity="warning">
-                    Conflito detectado: {selectedEvent.motivoConflito}
-                  </Alert>
-                )}
-
-                {/* Allocated Assets */}
-                <AtivosAlocadosSection eventoId={selectedEvent.id} />
+                  </CardContent>
+                </Card>
 
                 {/* Event Observations */}
                 <ObservacoesEvento eventoId={selectedEvent.id} />
-              </Box>
+              </Stack>
             </DialogContent>
             <DialogActions sx={{flexWrap: 'wrap', gap: 1}}>
               <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsDetailsOpen(false)} color="secondary" />
@@ -1223,16 +1349,19 @@ const Calendar = () => {
         )}
       </Dialog>
 
-      {/* Create/Edit Dialog Modal Component */}
+      {/* Create/Edit Dialog Modal Component.
+          Listas completas (sem filtrar ativo/status/DISPONIVEL): o modal já inclui o valor
+          atual do evento mesmo fora do subconjunto "ativo/aberto", senão o Select aparenta
+          vazio ao editar um evento vinculado a algo desativado/concluído. */}
       <CadastroEventoModal
         open={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={handleEventSubmit}
         isSubmitting={isSubmitting}
-        organizations={organizations.filter(org => org.ativo)}
-        locais={locais.filter(l => l.ativo)}
-        ativos={ativos.filter(a => a.isReservavel && a.status === 'DISPONIVEL')}
-        projetos={projetos.filter(p => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO')}
+        organizations={organizations}
+        locais={locais}
+        ativos={ativos}
+        projetos={projetos}
         initialDate={createInitialDate}
         initialEvent={editingEvent}
       />
@@ -1275,11 +1404,10 @@ const Calendar = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'primary.main' }}>
+        <DialogTitle sx={{ color: 'primary.main' }}>
           <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
             Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalInfo.cycle})
           </Typography>
-          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setIsSolemnitiesOpen(false)} />
         </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -1304,31 +1432,23 @@ const Calendar = () => {
                     </td>
                     <td style={{ padding: '8px 12px' }}>{sol.nome}</td>
                     <td style={{ padding: '8px 12px' }}>
-                      <Chip
+                      <StatusIcon
                         label={sol.tipo === 'FIXA' ? 'Santoral (Fixa)' : 'Móvel'}
-                        size="small"
                         color={sol.tipo === 'FIXA' ? 'info' : 'secondary'}
-                        variant="outlined"
-                        sx={{ fontSize: '0.75rem', height: 20 }}
+                        icon={<EventIcon />}
+                        tooltip={sol.tipo === 'FIXA' ? 'Data fixa no calendário' : 'Data móvel, calculada a partir da Páscoa'}
                       />
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <Chip
+                      <StatusIcon
                         label={sol.corLiturgica}
-                        size="small"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 20,
-                          backgroundColor:
-                            sol.corLiturgica === 'ROXO' ? '#f3e5f5' :
-                            sol.corLiturgica === 'VERMELHO' ? '#ffebee' :
-                            sol.corLiturgica === 'VERDE' ? '#e8f5e9' : '#fff9c4',
-                          color:
-                            sol.corLiturgica === 'ROXO' ? '#7b1fa2' :
-                            sol.corLiturgica === 'VERMELHO' ? '#c62828' :
-                            sol.corLiturgica === 'VERDE' ? '#2e7d32' : '#f57f17',
-                          fontWeight: 700,
-                        }}
+                        color={
+                          sol.corLiturgica === 'ROXO' ? 'secondary' :
+                          sol.corLiturgica === 'VERMELHO' ? 'error' :
+                          sol.corLiturgica === 'VERDE' ? 'success' : 'warning'
+                        }
+                        icon={<CircleIcon />}
+                        tooltip="Cor litúrgica do dia"
                       />
                     </td>
                     <td style={{ padding: '8px 12px', fontWeight: 600 }}>

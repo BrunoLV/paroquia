@@ -242,6 +242,12 @@ public class UpdateEventoUseCase {
                     mapper.applyPatch(eventoBase, templateRequest, status);
                     repository.save(eventoBase);
                     applyParticipantChanges(eventoBase.getId(), request.participantes());
+                    // applyParticipantChanges apaga/recria as linhas de eventos_envolvidos por fora
+                    // deste agregado (via EventoEnvolvidoJpaRepository); o campo envolvidos eager
+                    // desta instância em memória fica com referências obsoletas para o Hibernate,
+                    // que o valida (e rejeita como transiente) em qualquer flush posterior na mesma
+                    // transação — mesma causa já tratada no fluxo principal, ver linha ~199.
+                    eventoBase.definirEnvolvidosCarregados(List.of());
                 });
 
         // 2. Atualizar todas as instâncias existentes
@@ -257,6 +263,7 @@ public class UpdateEventoUseCase {
             mapper.applyPatch(instancia, siblingRequest, status);
             repository.save(instancia);
             applyParticipantChanges(instancia.getId(), request.participantes());
+            instancia.definirEnvolvidosCarregados(List.of());
         }
     }
 

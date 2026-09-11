@@ -490,7 +490,7 @@ const Aprovacoes = () => {
                     <strong>Ativo:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.ativoNome || 'Não informado'}
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Organização dona:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.organizacaoResponsavelId || 'Não informado'}
+                    <strong>Organização dona:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.grupoParoquialResponsavelId || 'Não informado'}
                   </Typography>
                   <Typography variant="body2">
                     <strong>Justificativa:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.motivo || 'Não informado'}

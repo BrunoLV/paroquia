@@ -343,7 +343,7 @@ export interface Projeto {
   descricao: string | null;
   inicio: string;
   fim: string;
-  organizacaoResponsavelId: string;
+  grupoParoquialResponsavelId: string;
   status: "ABERTO" | "EM_ANDAMENTO" | "CANCELADO" | "CONCLUIDO";
   /** Flag de UI: marca que o registro acabou de ser atualizado, para destacar/realçar na lista. */
   updated?: boolean;
@@ -372,7 +372,7 @@ export interface Evento {
   titulo: string;
   descricao: string;
   categoria: CategoriaEvento | string;
-  organizacaoResponsavelId: string;
+  grupoParoquialResponsavelId: string;
   /** Projeto ao qual este evento pertence, ou `null` se for um evento avulso. */
   projetoId: string | null;
   nomeProjeto: string | null;
@@ -428,7 +428,7 @@ export interface CreateEventoPayload {
   titulo: string;
   descricao?: string;
   categoria: string;
-  organizacaoResponsavelId: string;
+  grupoParoquialResponsavelId: string;
   projetoId?: string | null;
   localId?: string | null;
   inicio: string;
@@ -458,7 +458,7 @@ export interface UpdateEventoPayload {
   adicionadoExtraJustificativa?: string | null;
   /** Motivo textual exigido ao transicionar `status` para cancelado. */
   canceladoMotivo?: string | null;
-  organizacaoResponsavelId?: string;
+  grupoParoquialResponsavelId?: string;
   participantes?: string[];
   /** Escopo da edição quando o evento pertence a uma série recorrente: só esta ocorrência, esta e as futuras, ou toda a série. */
   editScope?: "THIS_EVENT" | "THIS_AND_FUTURE" | "ALL_EVENTS";

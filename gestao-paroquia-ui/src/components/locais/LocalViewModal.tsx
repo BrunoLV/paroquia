@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Card,
   CardContent,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -18,6 +17,8 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
+import { getSituacaoAtivoMeta } from '@/utils/statusMeta/situacaoStatus';
 import { Local, Organizacao } from '@/api/types';
 
 interface LocalViewModalProps {
@@ -66,12 +67,7 @@ export const LocalViewModal: React.FC<LocalViewModalProps> = ({
               {local.nome}
             </Typography>
           </Stack>
-          <Chip
-            size="small"
-            label={local.ativo ? 'Ativo' : 'Inativo'}
-            color={local.ativo ? 'success' : 'default'}
-            variant="outlined"
-          />
+          <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
         </Stack>
       </DialogTitle>
 
