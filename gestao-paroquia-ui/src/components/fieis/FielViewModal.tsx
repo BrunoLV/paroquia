@@ -5,7 +5,6 @@ import {
   Box,
   Card,
   CardContent,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -34,6 +33,8 @@ import PublicIcon from '@mui/icons-material/Public';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
+import { getSituacaoAtivoMeta } from '@/utils/statusMeta/situacaoStatus';
 import { Fiel } from '@/api/types';
 import { RelacionamentoFamiliar } from '@/api/familiares';
 import { AjusteCadastral } from '@/api/ajustesCadastrais';
@@ -92,12 +93,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
           <Typography variant="h6" component="div">
             Ficha do fiel
           </Typography>
-          <Chip
-            size="small"
-            label={isAtivo ? 'Ativo' : 'Inativo'}
-            color={isAtivo ? 'success' : 'default'}
-            variant="outlined"
-          />
+          <StatusIcon {...getSituacaoAtivoMeta(isAtivo)} />
         </Stack>
       </DialogTitle>
       <DialogContent dividers>
@@ -140,28 +136,21 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                 · {dados.igrejaFrequenta?.nome ?? 'Comunidade não informada'}
               </Typography>
               <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
-                <Chip
-                  size="small"
-                  icon={<ChurchIcon fontSize="small" />}
+                <StatusIcon
+                  icon={<ChurchIcon />}
+                  color="default"
                   label={dados.igrejaFrequenta?.nome ?? 'Sem vínculo'}
-                  variant="outlined"
+                  tooltip="Igreja/comunidade que o fiel frequenta"
                 />
                 {dados.isDizimista && (
-                  <Chip
-                    size="small"
-                    color="primary"
-                    icon={<VolunteerActivismIcon fontSize="small" />}
-                    label="Dizimista"
-                    variant="outlined"
-                  />
+                  <StatusIcon icon={<VolunteerActivismIcon />} color="primary" label="Dizimista" tooltip="Fiel dizimista" />
                 )}
                 {dados.permitirDivulgacaoAniversario && (
-                  <Chip
-                    size="small"
+                  <StatusIcon
+                    icon={<CelebrationIcon />}
                     color="info"
-                    icon={<CelebrationIcon fontSize="small" />}
                     label="Aniversário divulgável"
-                    variant="outlined"
+                    tooltip="Autoriza divulgar dia e mês do aniversário"
                   />
                 )}
               </Stack>
@@ -349,11 +338,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                             {r.nome}
                           </Typography>
                         </Stack>
-                        <Chip
-                          size="small"
-                          label={TIPO_RELACAO_LABELS[r.relacao] ?? r.relacao}
-                          variant="outlined"
-                        />
+                        <StatusIcon color="default" icon={<Diversity3Icon />} label={TIPO_RELACAO_LABELS[r.relacao] ?? r.relacao} tooltip="Tipo de relação familiar" />
                       </Paper>
                     </Grid>
                   ))}

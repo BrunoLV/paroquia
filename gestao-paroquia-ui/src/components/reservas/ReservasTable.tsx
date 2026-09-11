@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Chip,
   IconButton,
   Menu,
   MenuItem,
@@ -14,7 +13,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -28,6 +26,7 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import BuildIcon from '@mui/icons-material/Build';
 import { ReservaDetalhe } from '@/api/types';
 import { getReservaStatusMeta } from '@/utils/statusMeta/reservaStatus';
+import StatusIcon from '@/components/StatusIcon';
 
 interface ReservasTableProps {
   reservas: ReservaDetalhe[];
@@ -160,14 +159,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Tooltip title={statusMeta.tooltip}>
-                        <Chip
-                          size="small"
-                          label={statusMeta.label}
-                          color={statusMeta.color}
-                          icon={statusMeta.icon}
-                        />
-                      </Tooltip>
+                      <StatusIcon {...statusMeta} />
                     </TableCell>
                     <TableCell align="right">
                       <IconButton size="small" onClick={(e) => handleOpenMenu(e, r)}>

@@ -236,12 +236,13 @@ public class CreateEventoUseCase {
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
         if (eventoReservaIntegrationService != null) {
+            UUID solicitanteId = actorContextResolver.resolveRequired().usuarioId();
             eventoReservaIntegrationService.criarReservasEvento(
                     saved.getId(),
                     saved.getTitulo(),
                     saved.getLocalId(),
                     request.ativoIds(),
-                    saved.getGrupoParoquialResponsavelId(),
+                    solicitanteId,
                     saved.getGrupoParoquialResponsavelId(),
                     saved.getInicioUtc(),
                     saved.getFimUtc()

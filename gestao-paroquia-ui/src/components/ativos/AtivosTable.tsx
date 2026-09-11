@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Chip,
   Paper,
   Skeleton,
   Table,
@@ -13,6 +12,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { FormattedCurrency } from '@/components/FormattedCell';
 import StatusIcon from '@/components/StatusIcon';
 import TableActionMenu, { TableAction } from '@/components/TableActionMenu';
@@ -77,7 +77,7 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {ativo.nome}
                     {ativo.isReservavel && (
-                      <Chip size="small" label="Reservável" color="primary" variant="outlined" />
+                      <StatusIcon label="Reservável" color="primary" icon={<BookmarkIcon />} tooltip="Este bem pode ser reservado para eventos" />
                     )}
                   </Box>
                 </TableCell>

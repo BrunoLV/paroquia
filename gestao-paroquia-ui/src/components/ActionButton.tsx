@@ -22,7 +22,7 @@ interface ActionButtonProps {
 
 /** Botão de ação sempre textual; controles compactos usam IconActionButton. */
 const ActionButton: React.FC<ActionButtonProps> = ({
-  title, icon, label, onClick, type = 'button', color = 'primary', variant = 'outlined',
+  title, icon, label, onClick, type = 'button', color = 'primary', variant = 'contained',
   size = 'small', disabled, fullWidth, component, sx, children, ariaLabel,
 }) => {
   const buttonEl = (

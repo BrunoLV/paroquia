@@ -126,21 +126,19 @@ const ActiveProjectsProgressList: React.FC<ActiveProjectsProgressListProps> = ({
 
                 <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 0.5, alignItems: 'center' }}>
                   {project.proximoMarco && (
-                    <Chip
+                    <StatusIcon
                       icon={<FlagIcon />}
-                      size="small"
                       color="info"
-                      variant="outlined"
                       label={`Próximo marco: ${project.proximoMarco.titulo} · ${new Date(project.proximoMarco.inicio).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`}
+                      tooltip="Próximo marco do projeto"
                     />
                   )}
                   {project.eventosPendentesAprovacao > 0 && (
-                    <Chip
+                    <StatusIcon
                       icon={<PendingIcon />}
-                      size="small"
                       color="warning"
-                      variant="outlined"
                       label={`${project.eventosPendentesAprovacao} evento(s) pendente(s) de aprovação`}
+                      tooltip="Eventos deste projeto aguardando aprovação"
                     />
                   )}
                 </Box>

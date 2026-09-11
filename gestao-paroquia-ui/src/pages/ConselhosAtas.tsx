@@ -204,7 +204,7 @@ export const ConselhosAtas: React.FC = () => {
               icon={<FilterAltOffIcon fontSize="small" />}
               size="small"
               onClick={handleClearFilters}
-              color="inherit"
+              color="secondary"
             />
           )}
         </Stack>

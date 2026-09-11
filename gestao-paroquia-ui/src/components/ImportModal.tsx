@@ -149,9 +149,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   return (
     <Dialog open={open} onClose={handleCloseModal} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <DialogTitle>
         Importação de Registros em Lote
-        <ActionButton title="Fechar" icon={<CloseIcon />} onClick={handleCloseModal} disabled={isValidating || isConfirming} />
       </DialogTitle>
 
       <DialogContent dividers>

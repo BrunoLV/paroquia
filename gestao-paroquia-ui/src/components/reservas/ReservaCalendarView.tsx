@@ -7,7 +7,6 @@ import {
   Stack,
   Tooltip,
   Typography,
-  Chip,
   Dialog,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';

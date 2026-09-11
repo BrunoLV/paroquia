@@ -34,7 +34,7 @@ const mockEvents = [
     titulo: 'Missa Paroquial',
     descricao: 'Missa de Domingo',
     categoria: 'LITURGICO',
-    organizacaoResponsavelId: 'org-1',
+    grupoParoquialResponsavelId: 'org-1',
     projetoId: null,
     nomeProjeto: null,
     inicio: new Date().toISOString(),
@@ -252,7 +252,7 @@ test('opens and submits event creation form', async () => {
     expect.objectContaining({
       titulo: 'Novo Evento Teste',
       categoria: 'PASTORAL',
-      organizacaoResponsavelId: 'org-1',
+      grupoParoquialResponsavelId: 'org-1',
       status: 'CONFIRMADO',
     }),
     expect.objectContaining({
@@ -305,7 +305,7 @@ test('parses and renders transient events from pending creation requests', async
         categoria: 'LITURGICO',
         inicio: new Date().toISOString(),
         fim: new Date(Date.now() + 3600000).toISOString(),
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
         localId: null,
         status: 'CONFIRMADO'
       })

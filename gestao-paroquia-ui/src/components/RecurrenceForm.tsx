@@ -50,7 +50,7 @@ interface RecurrenceFormProps {
   disabled?: boolean;
 }
 
-const DAYS_OF_WEEK = [
+export const DAYS_OF_WEEK = [
   { label: 'Dom', value: 'SUNDAY' },
   { label: 'Seg', value: 'MONDAY' },
   { label: 'Ter', value: 'TUESDAY' },

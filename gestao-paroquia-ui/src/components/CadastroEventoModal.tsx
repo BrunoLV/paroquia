@@ -2,6 +2,8 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {
     Alert,
     Box,
+    Card,
+    CardContent,
     Chip,
     Collapse,
     Dialog,
@@ -15,13 +17,24 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     Switch,
     TextField,
+    Typography,
 } from '@mui/material';
-import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
+import {
+    Close as CloseIcon,
+    Event as EventIcon,
+    Groups as GroupsIcon,
+    LocationOn as LocationOnIcon,
+    Repeat as RepeatIcon,
+    Save as SaveIcon,
+} from '@mui/icons-material';
+import {useQuery} from '@tanstack/react-query';
 import {useAuth} from '../auth/AuthContext';
 import {isGlobalCreator} from '../auth/permissions';
 import {useNotification} from '../context/NotificationContext';
+import {listarReservas} from '../api/reservas';
 import {AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto} from '../api/types';
 import RecurrenceForm, {RecurrenceRule} from './RecurrenceForm';
 import ActionButton from './ActionButton';
@@ -123,17 +136,50 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
     return user.roles?.some(r => r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO' || r === 'ADMIN' || r === 'ROLE_ADMIN') || false;
   }, [user]);
 
+  // Inclui a igreja/organização/local/projeto já vinculados ao evento mesmo que tenham sido
+  // desativados/concluídos depois — senão o Select some da lista de opções e aparenta vazio ao
+  // editar, embora o valor esteja salvo corretamente (mesma causa do bug já corrigido em
+  // ativos: opções filtradas por "ativo" escondendo o valor atual do registro).
   const churches = useMemo(() => {
-    return organizations.filter(o => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'));
-  }, [organizations]);
+    return organizations.filter(o => (o.ativo || o.id === igrejaVinculoId) && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'));
+  }, [organizations, igrejaVinculoId]);
+
+  // `Evento.ativoIds` nunca é populado pelo backend (EventoResponse não carrega esse campo —
+  // é write-only, usado só na criação/edição para gerar Reservas). A alocação real vive na
+  // tabela reservas, então ao editar buscamos as reservas ATIVO ainda ocupando agenda para
+  // pré-selecionar os ativos já vinculados; sem isso o campo abria vazio e salvar cancelaria
+  // silenciosamente as reservas existentes.
+  const ativosAlocadosQuery = useQuery({
+    queryKey: ['reservas', 'evento-ativos', initialEvent?.id],
+    queryFn: () => listarReservas({ eventoId: initialEvent!.id, tipoItem: 'ATIVO' }),
+    enabled: open && Boolean(initialEvent?.id),
+  });
+
+  // grupoParoquialResponsavelId só aceita Grupo Paroquial (Pastoral/Movimento/Conselho/Ministério);
+  // Matriz/Comunidade/Clero são Unidade Territorial, tabela separada desde a migração V064/V066.
+  // Mantém inativa também se for o valor já vinculado ao evento (ver comentário de `churches`).
+  const grupoParoquialOptions = useMemo(() => {
+    return organizations.filter(o =>
+      (o.ativo || o.id === orgId) && o.tipo !== 'MATRIZ' && o.tipo !== 'COMUNIDADE' && o.tipo !== 'CLERO');
+  }, [organizations, orgId]);
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
-    if (isGlobalCreator(user)) return organizations;
-    
+    if (isGlobalCreator(user)) return grupoParoquialOptions;
+
     const userOrgIds = Array.isArray(user.organizations) ? user.organizations.map((org: { id: string }) => org.id) : [];
-    return organizations.filter(org => userOrgIds.includes(org.id));
-  }, [user, organizations]);
+    return grupoParoquialOptions.filter(org => userOrgIds.includes(org.id) || org.id === orgId);
+  }, [user, grupoParoquialOptions, orgId]);
+
+  // Local/projeto: só oferece os ativos/abertos, mas mantém o já vinculado ao evento mesmo
+  // desativado/concluído (mesmo motivo de `churches`/`grupoParoquialOptions` acima).
+  const localOptions = useMemo(() => {
+    return locais.filter(l => l.ativo || l.id === localId);
+  }, [locais, localId]);
+
+  const projetoOptions = useMemo(() => {
+    return projetos.filter(p => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO' || p.id === projetoId);
+  }, [projetos, projetoId]);
 
   const selectedProject = useMemo(() => {
     if (!projetoId) return null;
@@ -216,13 +262,14 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         setTitle(initialEvent.titulo || '');
         setDescription(initialEvent.descricao || '');
         setCategory(initialEvent.categoria || 'PASTORAL');
-        setOrgId(initialEvent.organizacaoResponsavelId || '');
+        setOrgId(initialEvent.grupoParoquialResponsavelId || '');
         setIgrejaVinculoId(initialEvent.igrejaVinculoId || '');
         setLocalId(initialEvent.localId || '');
         setProjetoId(initialEvent.projetoId || '');
         setStartDate(formatIsoToLocal(initialEvent.inicio));
         setEndDate(formatIsoToLocal(initialEvent.fim));
-        setSelectedAtivoIds(initialEvent.ativoIds || []);
+        // ativoIds real vem de ativosAlocadosQuery (efeito abaixo) — o backend não devolve
+        // esse campo em Evento, só aceita no payload de create/update.
 
         if (initialEvent.fim) {
           const d = new Date(initialEvent.fim);
@@ -264,16 +311,39 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
         setEndTime('10:00');
       }
 
-      if (!initialEvent) {
-        if (filteredOrganizations.length > 0 && !orgId) {
-          setOrgId(filteredOrganizations[0].id);
-        }
-        if (churches.length > 0 && !igrejaVinculoId) {
-          setIgrejaVinculoId(churches[0].id);
-        }
-      }
     }
-  }, [open, initialDate, initialEvent, filteredOrganizations, churches]);
+    // Não inclui filteredOrganizations/churches nas deps: esses arrays são recriados a
+    // cada render do pai (Calendar.tsx faz `.filter()` inline, sem memo), e reagir a eles
+    // aqui reexecutaria o reset acima a cada re-render — apagando o formulário, por
+    // exemplo, assim que um erro de validação disparasse um setState no componente pai.
+  }, [open, initialDate, initialEvent]);
+
+  // Seleciona organização/igreja padrão só quando a lista chega e o campo ainda está
+  // vazio; roda isolado do reset acima para não ser afetado pela recriação de array.
+  useEffect(() => {
+    if (!open || initialEvent) return;
+    if (filteredOrganizations.length > 0 && !orgId) {
+      setOrgId(filteredOrganizations[0].id);
+    }
+    if (churches.length > 0 && !igrejaVinculoId) {
+      setIgrejaVinculoId(churches[0].id);
+    }
+  }, [open, initialEvent, filteredOrganizations, churches, orgId, igrejaVinculoId]);
+
+  // Hidrata os ativos já alocados ao editar, a partir das reservas ainda ocupando agenda
+  // (PENDENTE/CONFIRMADA/RETIRADO) — ver comentário de ativosAlocadosQuery acima.
+  useEffect(() => {
+    if (!open) return;
+    if (!initialEvent) {
+      setSelectedAtivoIds([]);
+      return;
+    }
+    if (!ativosAlocadosQuery.data) return;
+    const idsAtivos = ativosAlocadosQuery.data
+      .filter(r => ['PENDENTE', 'CONFIRMADA', 'RETIRADO'].includes(r.status))
+      .map(r => r.itemId);
+    setSelectedAtivoIds(idsAtivos);
+  }, [open, initialEvent, ativosAlocadosQuery.data]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -340,7 +410,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
       titulo: title,
       descricao: description,
       categoria: category,
-      organizacaoResponsavelId: orgId,
+      grupoParoquialResponsavelId: orgId,
       igrejaVinculoId: igrejaVinculoId || null,
       localId: localId || null,
       projetoId: projetoId || null,
@@ -359,330 +429,392 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
     <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="md" fullWidth>
       <form onSubmit={handleFormSubmit} noValidate>
         <DialogTitle>
-          {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
+          {initialEvent ? 'Editar evento' : 'Novo evento'}
         </DialogTitle>
         <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+          <Stack spacing={2.5} sx={{ mt: 0.5 }}>
             {isClosedYear && (
               <Alert severity="warning">
                 <strong>Ano Paroquial Fechado ({selectedYear}):</strong> Este ano administrativo está travado para auditoria. Inclusões serão registradas como <strong>ADICIONADO_EXTRA</strong> (requer justificativa obrigatória abaixo).
               </Alert>
             )}
-            <TextField
-              label="Título do Evento"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              fullWidth
-              disabled={isSubmitting}
-              size="small"
-              slotProps={{ htmlInput: { maxLength: 160 } }}
-            />
 
-            <TextField
-              label="Descrição"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              multiline
-              rows={3}
-              fullWidth
-              disabled={isSubmitting}
-              size="small"
-              slotProps={{ htmlInput: { maxLength: 4000 } }}
-            />
-
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small">
-                  <InputLabel id="new-cat-label">Categoria</InputLabel>
-                  <Select
-                    labelId="new-cat-label"
-                    value={category}
-                    label="Categoria"
-                    onChange={(e) => setCategory(e.target.value)}
-                    disabled={isSubmitting}
-                  >
-                    {CATEGORIES.map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small">
-                  <InputLabel id="new-status-label">Status</InputLabel>
-                  <Select
-                    labelId="new-status-label"
-                    value={status}
-                    label="Status"
-                    onChange={(e) => setStatus(e.target.value)}
-                    disabled={isSubmitting}
-                  >
-                    {STATUSES.map((st) => (
-                      <MenuItem key={st} value={st}>
-                        {st}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            <FormControl fullWidth size="small" required>
-              <InputLabel id="new-org-label">Organização Responsável</InputLabel>
-              <Select
-                labelId="new-org-label"
-                value={orgId}
-                label="Organização Responsável"
-                onChange={(e) => setOrgId(e.target.value)}
-                disabled={isSubmitting}
-              >
-                {filteredOrganizations.map((org) => (
-                  <MenuItem key={org.id} value={org.id}>
-                    {org.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth size="small" required error={!igrejaVinculoId}>
-              <InputLabel id="new-igreja-vinculo-label">Comunidade / Igreja de Atuação</InputLabel>
-              <Select
-                labelId="new-igreja-vinculo-label"
-                value={igrejaVinculoId}
-                label="Comunidade / Igreja de Atuação"
-                onChange={(e) => setIgrejaVinculoId(e.target.value)}
-                disabled={isSubmitting}
-                data-testid="event-church-select"
-              >
-                <MenuItem value="" disabled>
-                  <em>Selecione a Comunidade / Igreja</em>
-                </MenuItem>
-                {churches.map((ch) => (
-                  <MenuItem key={ch.id} value={ch.id}>
-                    {ch.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small">
-                  <InputLabel id="new-local-label">Local</InputLabel>
-                  <Select
-                    labelId="new-local-label"
-                    value={localId}
-                    label="Local"
-                    onChange={(e) => setLocalId(e.target.value)}
-                    disabled={isSubmitting}
-                  >
-                    <MenuItem value="">
-                      <em>Nenhum</em>
-                    </MenuItem>
-                    {locais.map((l) => (
-                      <MenuItem key={l.id} value={l.id}>
-                        {l.nome}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small" error={!!projectValidationError}>
-                  <InputLabel id="new-projeto-label">Projeto</InputLabel>
-                  <Select
-                    labelId="new-projeto-label"
-                    value={projetoId}
-                    label="Projeto"
-                    onChange={(e) => setProjetoId(e.target.value)}
-                    disabled={isSubmitting}
-                  >
-                    <MenuItem value="">
-                      <em>Nenhum</em>
-                    </MenuItem>
-                    {projetos.map((p) => (
-                      <MenuItem key={p.id} value={p.id}>
-                        {p.nome}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {projectValidationError ? (
-                    <FormHelperText error>
-                      {projectValidationError}
-                    </FormHelperText>
-                  ) : selectedProjectInfo ? (
-                    <FormHelperText>
-                      Período: {selectedProjectInfo}
-                    </FormHelperText>
-                  ) : null}
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            {/* Ativos Patrimoniais — apenas exibido quando há ativos reserváveis disponíveis */}
-            {ativos.length > 0 && (
-              <FormControl fullWidth size="small">
-                <InputLabel id="new-ativos-label">Bens / Ativos Patrimoniais</InputLabel>
-                <Select
-                  labelId="new-ativos-label"
-                  multiple
-                  value={selectedAtivoIds}
-                  label="Bens / Ativos Patrimoniais"
-                  onChange={(e) =>
-                    setSelectedAtivoIds(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)
-                  }
-                  disabled={isSubmitting}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as string[]).map((id) => {
-                        const ativo = ativos.find(a => a.id === id);
-                        return (
-                          <Chip
-                            key={id}
-                            label={ativo ? `${ativo.nome} (${ativo.categoria})` : id}
-                            size="small"
-                          />
-                        );
-                      })}
-                    </Box>
-                  )}
-                >
-                  {ativos
-                    .filter(a => a.isReservavel && a.status === 'DISPONIVEL')
-                    .map((a) => (
-                      <MenuItem key={a.id} value={a.id}>
-                        {a.nome} — {a.categoria}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            )}
-
-            <FormControl fullWidth size="small">
-              <InputLabel id="new-apoio-label">Organizações de Apoio</InputLabel>
-              <Select
-                labelId="new-apoio-label"
-                multiple
-                value={participantes}
-                label="Organizações de Apoio"
-                onChange={(e) => setParticipantes(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-                disabled={isSubmitting}
-                renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {(selected as string[]).map((id) => (
-                      <Chip key={id} label={organizations.find(o => o.id === id)?.nome || id} size="small" />
-                    ))}
-                  </Box>
-                )}
-              >
-                {organizations
-                  .filter(org => org.id !== orgId)
-                  .map((org) => (
-                    <MenuItem key={org.id} value={org.id}>
-                      {org.nome}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
-                <TextField
-                  label="Data e Hora de Início"
-                  type="datetime-local"
-                  required
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  slotProps={{ inputLabel: { shrink: true } }}
-                  fullWidth
-                  disabled={isSubmitting}
-                  size="small"
-                />
-              </Grid>
-              <Grid size={{ xs: 6 }}>
-                {isRecurring ? (
-                  <TextField
-                    label="Hora de Término"
-                    type="time"
-                    required
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    fullWidth
-                    disabled={isSubmitting}
-                    size="small"
-                  />
-                ) : (
-                  <TextField
-                    label="Data e Hora de Término"
-                    type="datetime-local"
-                    required
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    fullWidth
-                    disabled={isSubmitting}
-                    size="small"
-                  />
-                )}
-              </Grid>
-            </Grid>
-
-            {!initialEvent && (
-              <>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={isRecurring}
-                      onChange={(e) => setIsRecurring(e.target.checked)}
+            {/* Dados do evento */}
+            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <EventIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Dados do evento
+                  </Typography>
+                </Stack>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      label="Título do evento"
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      fullWidth
                       disabled={isSubmitting}
+                      size="small"
+                      slotProps={{ htmlInput: { maxLength: 160 } }}
                     />
-                  }
-                  label="Evento Recorrente"
-                />
-
-                <Collapse in={isRecurring}>
-                  <Box sx={{ mb: 1 }}>
-                    <RecurrenceForm
-                      rule={recurrenceRule}
-                      onChange={setRecurrenceRule}
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      label="Descrição"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      multiline
+                      rows={3}
+                      fullWidth
                       disabled={isSubmitting}
+                      size="small"
+                      slotProps={{ htmlInput: { maxLength: 4000 } }}
                     />
-                  </Box>
-                </Collapse>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="new-cat-label">Categoria</InputLabel>
+                      <Select
+                        labelId="new-cat-label"
+                        value={category}
+                        label="Categoria"
+                        onChange={(e) => setCategory(e.target.value)}
+                        disabled={isSubmitting}
+                      >
+                        {CATEGORIES.map((cat) => (
+                          <MenuItem key={cat} value={cat}>
+                            {cat}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="new-status-label">Status</InputLabel>
+                      <Select
+                        labelId="new-status-label"
+                        value={status}
+                        label="Status"
+                        onChange={(e) => setStatus(e.target.value)}
+                        disabled={isSubmitting}
+                      >
+                        {STATUSES.map((st) => (
+                          <MenuItem key={st} value={st}>
+                            {st}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
-                {isParoco && (
-                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed', borderColor: 'divider' }}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={bypassAgendaConflict}
-                          onChange={(e) => setBypassAgendaConflict(e.target.checked)}
-                          color="warning"
+            {/* Organização e vínculos */}
+            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <GroupsIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Organização e vínculos
+                  </Typography>
+                </Stack>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12 }}>
+                    <FormControl fullWidth size="small" required>
+                      <InputLabel id="new-org-label">Organização Responsável</InputLabel>
+                      <Select
+                        labelId="new-org-label"
+                        value={orgId}
+                        label="Organização Responsável"
+                        onChange={(e) => setOrgId(e.target.value)}
+                        disabled={isSubmitting}
+                      >
+                        {filteredOrganizations.map((org) => (
+                          <MenuItem key={org.id} value={org.id}>
+                            {org.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <FormControl fullWidth size="small" required error={!igrejaVinculoId}>
+                      <InputLabel id="new-igreja-vinculo-label">Comunidade / Igreja de Atuação</InputLabel>
+                      <Select
+                        labelId="new-igreja-vinculo-label"
+                        value={igrejaVinculoId}
+                        label="Comunidade / Igreja de Atuação"
+                        onChange={(e) => setIgrejaVinculoId(e.target.value)}
+                        disabled={isSubmitting}
+                        data-testid="event-church-select"
+                      >
+                        <MenuItem value="" disabled>
+                          <em>Selecione a Comunidade / Igreja</em>
+                        </MenuItem>
+                        {churches.map((ch) => (
+                          <MenuItem key={ch.id} value={ch.id}>
+                            {ch.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="new-projeto-label">Projeto</InputLabel>
+                      <Select
+                        labelId="new-projeto-label"
+                        value={projetoId}
+                        label="Projeto"
+                        onChange={(e) => setProjetoId(e.target.value)}
+                        disabled={isSubmitting}
+                        error={!!projectValidationError}
+                      >
+                        <MenuItem value="">
+                          <em>Nenhum</em>
+                        </MenuItem>
+                        {projetoOptions.map((p) => (
+                          <MenuItem key={p.id} value={p.id}>
+                            {p.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {projectValidationError ? (
+                        <FormHelperText error>
+                          {projectValidationError}
+                        </FormHelperText>
+                      ) : selectedProjectInfo ? (
+                        <FormHelperText>
+                          Período: {selectedProjectInfo}
+                        </FormHelperText>
+                      ) : null}
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="new-apoio-label">Organizações de Apoio</InputLabel>
+                      <Select
+                        labelId="new-apoio-label"
+                        multiple
+                        value={participantes}
+                        label="Organizações de Apoio"
+                        onChange={(e) => setParticipantes(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                        disabled={isSubmitting}
+                        renderValue={(selected) => (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {(selected as string[]).map((id) => (
+                              <Chip key={id} label={organizations.find(o => o.id === id)?.nome || id} size="small" />
+                            ))}
+                          </Box>
+                        )}
+                      >
+                        {organizations
+                          .filter(org => org.id !== orgId && (org.ativo || participantes.includes(org.id)))
+                          .map((org) => (
+                            <MenuItem key={org.id} value={org.id}>
+                              {org.nome}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+
+            {/* Local e recursos */}
+            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <LocationOnIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Local e recursos
+                  </Typography>
+                </Stack>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id="new-local-label">Local</InputLabel>
+                      <Select
+                        labelId="new-local-label"
+                        value={localId}
+                        label="Local"
+                        onChange={(e) => setLocalId(e.target.value)}
+                        disabled={isSubmitting}
+                      >
+                        <MenuItem value="">
+                          <em>Nenhum</em>
+                        </MenuItem>
+                        {localOptions.map((l) => (
+                          <MenuItem key={l.id} value={l.id}>
+                            {l.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  {/* Ativos Patrimoniais — apenas exibido quando há ativos reserváveis disponíveis */}
+                  {ativos.length > 0 && (
+                    <Grid size={{ xs: 12 }}>
+                      <FormControl fullWidth size="small">
+                        <InputLabel id="new-ativos-label">Bens / Ativos Patrimoniais</InputLabel>
+                        <Select
+                          labelId="new-ativos-label"
+                          multiple
+                          value={selectedAtivoIds}
+                          label="Bens / Ativos Patrimoniais"
+                          onChange={(e) =>
+                            setSelectedAtivoIds(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)
+                          }
                           disabled={isSubmitting}
-                        />
-                      }
-                      label="Ignorar Conflitos de Agenda Eclesial (Bypass Pároco)"
-                    />
-                  </Box>
-                )}
-              </>
-            )}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {(selected as string[]).map((id) => {
+                                const ativo = ativos.find(a => a.id === id);
+                                return (
+                                  <Chip
+                                    key={id}
+                                    label={ativo ? `${ativo.nome} (${ativo.categoria})` : id}
+                                    size="small"
+                                  />
+                                );
+                              })}
+                            </Box>
+                          )}
+                        >
+                          {/* Inclui também os já alocados a este evento (status RESERVADO),
+                              senão sumiriam das opções ao editar mesmo estando selecionados. */}
+                          {ativos
+                            .filter(a => (a.isReservavel && a.status === 'DISPONIVEL') || selectedAtivoIds.includes(a.id))
+                            .map((a) => (
+                              <MenuItem key={a.id} value={a.id}>
+                                {a.nome} — {a.categoria}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  )}
+                </Grid>
+              </CardContent>
+            </Card>
 
-            <TextField
-              label="Justificativa Extra (Opcional)"
-              value={justification}
-              onChange={(e) => setJustification(e.target.value)}
-              placeholder="Preencha caso seja um agendamento extraordinário"
-              fullWidth
-              disabled={isSubmitting}
-              size="small"
-              slotProps={{ htmlInput: { maxLength: 4000 } }}
-            />
-          </Box>
+            {/* Data e recorrência */}
+            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <RepeatIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Data e recorrência
+                  </Typography>
+                </Stack>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 6 }}>
+                    <TextField
+                      label="Data e Hora de Início"
+                      type="datetime-local"
+                      required
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      slotProps={{ inputLabel: { shrink: true } }}
+                      fullWidth
+                      disabled={isSubmitting}
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    {isRecurring ? (
+                      <TextField
+                        label="Hora de Término"
+                        type="time"
+                        required
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        fullWidth
+                        disabled={isSubmitting}
+                        size="small"
+                      />
+                    ) : (
+                      <TextField
+                        label="Data e Hora de Término"
+                        type="datetime-local"
+                        required
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        fullWidth
+                        disabled={isSubmitting}
+                        size="small"
+                      />
+                    )}
+                  </Grid>
+
+                  {!initialEvent && (
+                    <>
+                      <Grid size={{ xs: 12 }}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={isRecurring}
+                              onChange={(e) => setIsRecurring(e.target.checked)}
+                              disabled={isSubmitting}
+                            />
+                          }
+                          label="Evento Recorrente"
+                        />
+                        <Collapse in={isRecurring}>
+                          <Box sx={{ mb: 1, mt: 1 }}>
+                            <RecurrenceForm
+                              rule={recurrenceRule}
+                              onChange={setRecurrenceRule}
+                              disabled={isSubmitting}
+                            />
+                          </Box>
+                        </Collapse>
+                      </Grid>
+
+                      {isParoco && (
+                        <Grid size={{ xs: 12 }}>
+                          <Box sx={{ pt: 1, borderTop: '1px dashed', borderColor: 'divider' }}>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={bypassAgendaConflict}
+                                  onChange={(e) => setBypassAgendaConflict(e.target.checked)}
+                                  color="warning"
+                                  disabled={isSubmitting}
+                                />
+                              }
+                              label="Ignorar Conflitos de Agenda Eclesial (Bypass Pároco)"
+                            />
+                          </Box>
+                        </Grid>
+                      )}
+                    </>
+                  )}
+
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      label="Justificativa Extra (Opcional)"
+                      value={justification}
+                      onChange={(e) => setJustification(e.target.value)}
+                      placeholder="Preencha caso seja um agendamento extraordinário"
+                      fullWidth
+                      disabled={isSubmitting}
+                      size="small"
+                      slotProps={{ htmlInput: { maxLength: 4000 } }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <ActionButton

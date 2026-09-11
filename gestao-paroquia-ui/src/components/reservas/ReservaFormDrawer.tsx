@@ -335,7 +335,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
 
         <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-end' }}>
-            <Button variant="outlined" onClick={onClose} disabled={isLoading}>
+            <Button variant="contained" color="secondary" onClick={onClose} disabled={isLoading}>
               Cancelar
             </Button>
             <Button

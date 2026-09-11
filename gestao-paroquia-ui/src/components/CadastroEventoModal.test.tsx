@@ -94,7 +94,7 @@ describe('CadastroEventoModal', () => {
       titulo: 'Evento Existente',
       descricao: 'Descrição Existente',
       categoria: 'SOCIAL',
-      organizacaoResponsavelId: 'org-1',
+      grupoParoquialResponsavelId: 'org-1',
       projetoId: 'proj-1',
       nomeProjeto: 'Projeto 1',
       localId: 'loc-1',
@@ -113,7 +113,7 @@ describe('CadastroEventoModal', () => {
 
   it('renders Local, Projeto and Participantes fields', () => {
     const mockLocais = [{ id: 'loc-1', nome: 'Salão', ativo: true, tipo: 'SALAO_PAROQUIAL', capacidadeMaxima: 100, descricao: '' }];
-    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', status: 'EM_ANDAMENTO' as const, descricao: '', inicio: '', fim: '', organizacaoResponsavelId: 'org-1' }];
+    const mockProjetos = [{ id: 'proj-1', nome: 'Projeto A', status: 'EM_ANDAMENTO' as const, descricao: '', inicio: '', fim: '', grupoParoquialResponsavelId: 'org-1' }];
     
     render(<CadastroEventoModal {...defaultProps} locais={mockLocais} projetos={mockProjetos} />);
 
@@ -128,7 +128,7 @@ describe('CadastroEventoModal', () => {
       titulo: 'Evento com Apoio',
       descricao: '',
       categoria: 'PASTORAL',
-      organizacaoResponsavelId: 'org-1',
+      grupoParoquialResponsavelId: 'org-1',
       participantes: ['org-2'],
       inicio: '2026-05-20T10:00:00Z',
       fim: '2026-05-20T12:00:00Z',
@@ -233,7 +233,7 @@ describe('CadastroEventoModal', () => {
         descricao: '',
         inicio: '2026-05-10T00:00:00Z',
         fim: '2026-05-20T23:59:59Z',
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
       },
       {
         id: 'proj-2',
@@ -242,7 +242,7 @@ describe('CadastroEventoModal', () => {
         descricao: '',
         inicio: '',
         fim: '',
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
       }
     ];
 
@@ -252,7 +252,7 @@ describe('CadastroEventoModal', () => {
         titulo: 'Evento Mismatched',
         descricao: '',
         categoria: 'PASTORAL',
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
         projetoId: 'proj-1',
         nomeProjeto: 'Projeto A',
         localId: null,
@@ -282,7 +282,7 @@ describe('CadastroEventoModal', () => {
         titulo: 'Evento Mismatched',
         descricao: '',
         categoria: 'PASTORAL',
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
         projetoId: 'proj-1',
         nomeProjeto: 'Projeto A',
         localId: null,
@@ -312,7 +312,7 @@ describe('CadastroEventoModal', () => {
         titulo: 'Evento Matched',
         descricao: '',
         categoria: 'PASTORAL',
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
         projetoId: 'proj-1',
         nomeProjeto: 'Projeto A',
         localId: null,
@@ -342,7 +342,7 @@ describe('CadastroEventoModal', () => {
         titulo: 'Evento Sem Limites',
         descricao: '',
         categoria: 'PASTORAL',
-        organizacaoResponsavelId: 'org-1',
+        grupoParoquialResponsavelId: 'org-1',
         projetoId: 'proj-2',
         nomeProjeto: 'Projeto B',
         localId: null,

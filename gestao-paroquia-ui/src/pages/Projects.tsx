@@ -4,7 +4,6 @@ import {
     Box,
     Card,
     Checkbox,
-    Chip,
     CircularProgress,
     Container,
     Dialog,
@@ -129,7 +128,7 @@ const Projects = () => {
   };
 
   const canTransitionProjeto = (project: Projeto) => {
-    return userCanTransitionProjeto(user, project.organizacaoResponsavelId);
+    return userCanTransitionProjeto(user, project.grupoParoquialResponsavelId);
   };
 
   // Determine which organizations are selectable in the form
@@ -231,7 +230,7 @@ const Projects = () => {
     setFormId(project.id);
     setFormNome(project.nome);
     setFormDescricao(project.descricao || '');
-    setFormOrgId(project.organizacaoResponsavelId);
+    setFormOrgId(project.grupoParoquialResponsavelId);
     
     // Format dates to YYYY-MM-DD
     setFormInicio(project.inicio ? project.inicio.split('T')[0] : '');
@@ -269,7 +268,7 @@ const Projects = () => {
     const payload: Record<string, unknown> = {
       nome: formNome,
       descricao: formDescricao || null,
-      organizacaoResponsavelId: formOrgId,
+      grupoParoquialResponsavelId: formOrgId,
       inicio: new Date(formInicio).toISOString(),
       fim: new Date(formFim).toISOString(),
     };
@@ -403,7 +402,7 @@ const Projects = () => {
                       sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
-                      <TableCell>{getOrgName(project.organizacaoResponsavelId)}</TableCell>
+                      <TableCell>{getOrgName(project.grupoParoquialResponsavelId)}</TableCell>
                       <TableCell>{formatDate(project.inicio)}</TableCell>
                       <TableCell>{formatDate(project.fim)}</TableCell>
                       <TableCell>
@@ -446,9 +445,8 @@ const Projects = () => {
       {/* CREATE & EDIT DIALOG */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth sx={{ '& .MuiDialog-paper': {  } }}>
         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
-          <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <DialogTitle>
             {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
-            <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setDialogOpen(false)} />
           </DialogTitle>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
@@ -613,7 +611,7 @@ const Projects = () => {
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <BusinessIcon fontSize="small" color="action" sx={{ fontSize: '1rem' }} />
-                    <Typography variant="body2">{getOrgName(selectedProject.organizacaoResponsavelId)}</Typography>
+                    <Typography variant="body2">{getOrgName(selectedProject.grupoParoquialResponsavelId)}</Typography>
                   </Box>
                 </Box>
                 <Box>
@@ -702,14 +700,7 @@ const Projects = () => {
                         </Typography>
                       ) : (
                         resumo.mapaColaboracao.envolvidos.map((env) => (
-                          <Chip
-                            key={env}
-                            label={env}
-                            size="small"
-                            variant="outlined"
-                            icon={<InfoIcon sx={{ fontSize: '0.8rem' }} />}
-                           
-                          />
+                          <StatusIcon key={env} color="default" icon={<InfoIcon />} label={env} tooltip="Pastoral/grupo envolvido no projeto" />
                         ))
                       )}
                     </Box>
@@ -750,11 +741,10 @@ const Projects = () => {
         fullWidth
         sx={{ '& .MuiDialog-paper': {  } }}
       >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <DialogTitle>
           {transitionType === 'INICIAR' && 'Iniciar Projeto'}
           {transitionType === 'CONCLUIR' && 'Concluir Projeto'}
           {transitionType === 'CANCELAR' && 'Cancelar Projeto'}
-          <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setTransitionDialogOpen(false)} disabled={isTransitioning} />
         </DialogTitle>
         <DialogContent>
           <Typography variant="body2" sx={{ mb: transitionType === 'CANCELAR' ? 2 : 0 }}>

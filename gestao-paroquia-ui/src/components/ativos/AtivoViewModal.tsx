@@ -5,7 +5,6 @@ import {
   Box,
   Card,
   CardContent,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BuildIcon from '@mui/icons-material/Build';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
@@ -23,6 +23,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import EventIcon from '@mui/icons-material/Event';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
 import { InfoField } from '@/components/fieis/fielConstants';
 import { getAtivoStatusMeta } from '@/utils/statusMeta/ativoStatus';
 import { getCategoriaAtivoMeta } from '@/utils/statusMeta/categoriaAtivoStatus';
@@ -74,7 +75,7 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
               {ativo.nome}
             </Typography>
           </Stack>
-          <Chip size="small" variant="outlined" color={statusMeta.color} label={statusMeta.label} />
+          <StatusIcon {...statusMeta} />
         </Stack>
       </DialogTitle>
 
@@ -113,9 +114,9 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
                   Tombamento: {ativo.codigoTombamento}
                 </Typography>
                 <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
-                  <Chip size="small" variant="outlined" color={categoriaMeta.color} label={categoriaMeta.label} />
+                  <StatusIcon {...categoriaMeta} />
                   {ativo.isReservavel && (
-                    <Chip size="small" variant="outlined" color="primary" label="Reservável" />
+                    <StatusIcon label="Reservável" color="primary" icon={<BookmarkIcon />} tooltip="Este bem pode ser reservado para eventos" />
                   )}
                 </Stack>
               </Box>
