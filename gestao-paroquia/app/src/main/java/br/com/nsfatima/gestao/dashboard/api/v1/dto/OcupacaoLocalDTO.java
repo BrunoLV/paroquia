@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.dashboard.api.v1.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.math.BigDecimal;
+
 /**
  * Ocupação estimada de um ambiente específico na semana. É uma estimativa: considera apenas
  * eventos com local vinculado e uma janela operacional fixa.
@@ -13,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Ocupação estimada de um ambiente na semana")
 public record OcupacaoLocalDTO(
         String localNome,
-        double taxaSemanaPercentual,
+        BigDecimal taxaSemanaPercentual,
         long horasOcupadasSemana
 ) {
 }

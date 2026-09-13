@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ class ProjetoAgregacaoControllerTest {
         ProjetoResumoDTO resumo = new ProjetoResumoDTO(
                 new StatusExecucaoDTO(10, 6, 4),
                 new MapaColaboracaoDTO(List.of("Org 1")),
-                new SaudeTemporalDTO(50.0, false)
+                new SaudeTemporalDTO(BigDecimal.valueOf(50.0), false)
         );
 
         when(aggregationService.obterResumo(projetoId)).thenReturn(resumo);

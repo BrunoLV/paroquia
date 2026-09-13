@@ -27,8 +27,8 @@ export const decideAprovacaoProjeto = async (
   id: string,
   aprovado: boolean,
   observacao: string
-): Promise<any> => {
-  const response = await apiClient.post(`/projetos/solicitacoes/${id}/decisao`, {
+): Promise<ProjetoAprovacaoResponse> => {
+  const response = await apiClient.post<ProjetoAprovacaoResponse>(`/projetos/solicitacoes/${id}/decisao`, {
     aprovado,
     observacao,
   });
@@ -62,8 +62,8 @@ export const concluirProjeto = async (id: string): Promise<Projeto> => {
 export const cancelarProjeto = async (
   id: string,
   cancelarEventosVinculados: boolean
-): Promise<any> => {
-  const response = await apiClient.post(`/projetos/${id}/cancelar`, {
+): Promise<ProjetoAprovacaoResponse | Projeto> => {
+  const response = await apiClient.post<ProjetoAprovacaoResponse | Projeto>(`/projetos/${id}/cancelar`, {
     cancelarEventosVinculados,
   });
   return response.data;

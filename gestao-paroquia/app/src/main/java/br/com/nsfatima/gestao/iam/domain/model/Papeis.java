@@ -14,10 +14,10 @@ import java.util.Set;
  */
 public final class Papeis {
 
-    private final Set<String> valores;
+    private final Set<String> itens;
 
     private Papeis(Set<String> valores) {
-        this.valores = valores;
+        this.itens = valores;
     }
 
     public static Papeis vazio() {
@@ -37,28 +37,28 @@ public final class Papeis {
     }
 
     public boolean contem(String papel) {
-        return valores.contains(papel);
+        return itens.contains(papel);
     }
 
     public Papeis adicionar(String papel) {
         Objects.requireNonNull(papel, "Papel é obrigatório.");
-        Set<String> novo = new LinkedHashSet<>(valores);
+        Set<String> novo = new LinkedHashSet<>(itens);
         novo.add(papel.trim());
         return new Papeis(novo);
     }
 
     public Papeis remover(String papel) {
-        Set<String> novo = new LinkedHashSet<>(valores);
+        Set<String> novo = new LinkedHashSet<>(itens);
         novo.remove(papel);
         return new Papeis(novo);
     }
 
     /** Representação CSV para persistência; {@code null} quando não há nenhum papel. */
     public String paraCsv() {
-        return valores.isEmpty() ? null : String.join(",", valores);
+        return itens.isEmpty() ? null : String.join(",", itens);
     }
 
     public Set<String> valores() {
-        return Set.copyOf(valores);
+        return Set.copyOf(itens);
     }
 }

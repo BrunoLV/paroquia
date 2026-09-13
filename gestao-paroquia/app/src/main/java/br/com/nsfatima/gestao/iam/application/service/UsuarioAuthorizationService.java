@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.service;
 
+import br.com.nsfatima.gestao.iam.domain.policy.UsuarioGerenciamentoAutorizacaoPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
@@ -25,13 +26,16 @@ public class UsuarioAuthorizationService {
     private final MembroGrupoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
+    private final UsuarioGerenciamentoAutorizacaoPolicy policy;
 
     public UsuarioAuthorizationService(MembroGrupoJpaRepository vinculoRepository,
                                         UsuarioJpaRepository usuarioRepository,
-                                        PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
+                                        PapelGlobalAuthorizationService papelGlobalAuthorizationService,
+                                        UsuarioGerenciamentoAutorizacaoPolicy policy) {
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
+        this.policy = policy;
     }
 
     /**
@@ -66,22 +70,15 @@ public class UsuarioAuthorizationService {
         List<MembroGrupoEntity> actorVinculos = actorFielId == null
                 ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(actorFielId);
         List<UUID> coordinatorOrgIds = actorVinculos.stream()
-                .filter(m -> isCoordinatorRole(m.getPapel()))
+                .filter(m -> policy.isCoordinatorRole(m.getPapel()))
                 .map(MembroGrupoEntity::getGrupoParoquialId)
                 .toList();
 
-        if (coordinatorOrgIds.isEmpty()) {
-            throw new AccessDeniedException("Ator não é um coordenador");
-        }
-
         List<MembroGrupoEntity> targetVinculos = targetFielId == null
                 ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(targetFielId);
-        boolean sharesOrg = targetVinculos.stream()
-                .anyMatch(m -> coordinatorOrgIds.contains(m.getGrupoParoquialId()));
+        List<UUID> targetOrgIds = targetVinculos.stream().map(MembroGrupoEntity::getGrupoParoquialId).toList();
 
-        if (!sharesOrg) {
-            throw new AccessDeniedException("Coordenador só pode gerenciar membros da própria organização");
-        }
+        policy.assertPodeGerenciarAlvo(coordinatorOrgIds, targetOrgIds);
     }
 
     /**
@@ -114,21 +111,9 @@ public class UsuarioAuthorizationService {
         boolean isCoordinator = actorFielId != null && vinculoRepository.findByFielIdAndAtivoTrue(actorFielId)
                 .stream()
                 .filter(m -> organizationId.equals(m.getGrupoParoquialId()))
-                .anyMatch(m -> isCoordinatorRole(m.getPapel()));
+                .anyMatch(m -> policy.isCoordinatorRole(m.getPapel()));
 
-        if (!isCoordinator) {
-            throw new AccessDeniedException("Apenas Admin ou Coordenador de Organização pode executar esta ação");
-        }
-    }
-
-    private boolean isCoordinatorRole(String role) {
-        if (role == null) {
-            return false;
-        }
-        String normalized = role.trim().toLowerCase().replace("_", "-");
-        return normalized.contains("coordenador")
-                || normalized.contains("presidente")
-                || normalized.contains("mesa-diretora");
+        policy.assertECoordenadorDaOrganizacao(isCoordinator);
     }
 
     private boolean isAdmin(Authentication auth) {

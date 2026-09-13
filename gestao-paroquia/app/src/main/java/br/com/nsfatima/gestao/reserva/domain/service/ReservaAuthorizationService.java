@@ -1,17 +1,17 @@
 package br.com.nsfatima.gestao.reserva.domain.service;
 
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.StatusReserva;
+import br.com.nsfatima.gestao.reserva.domain.policy.ReservaAutorizacaoPolicy;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Serviço de domínio responsável pela matriz de permissões e alçadas de aprovação do módulo de Reservas.
+ * Serviço de domínio responsável por orquestrar a matriz de permissões e alçadas de aprovação do
+ * módulo de Reservas: monta o {@link UsuarioActor} e delega a decisão à {@link ReservaAutorizacaoPolicy}.
  */
 public class ReservaAuthorizationService {
 
@@ -26,6 +26,12 @@ public class ReservaAuthorizationService {
             "COORD_PASTORAL", "COORD_PASTORAL_GLOBAL", "COORD_PASTORAL_LOCAL", "COORD_MOVIMENTO"
     );
 
+    private final ReservaAutorizacaoPolicy policy;
+
+    public ReservaAuthorizationService(ReservaAutorizacaoPolicy policy) {
+        this.policy = policy;
+    }
+
     public record UsuarioActor(
             UUID id,
             String nome,
@@ -34,19 +40,29 @@ public class ReservaAuthorizationService {
             List<UUID> organizacaoIdsOndeEMembro
     ) {
         public boolean isAdminOuParoco() {
-            if (roles == null) return false;
+            if (roles == null) {
+                return false;
+            }
             return roles.stream().anyMatch(ROLES_ADMINISTRATIVAS::contains);
         }
 
         public boolean isCoordenadorDaOrganizacao(UUID orgId) {
-            if (isAdminOuParoco()) return true;
-            if (orgId == null || organizacaoIdsOndeECoordenador == null) return false;
+            if (isAdminOuParoco()) {
+                return true;
+            }
+            if (orgId == null || organizacaoIdsOndeECoordenador == null) {
+                return false;
+            }
             return organizacaoIdsOndeECoordenador.contains(orgId);
         }
 
         public boolean isMembroDaOrganizacao(UUID orgId) {
-            if (isAdminOuParoco()) return true;
-            if (orgId == null) return false;
+            if (isAdminOuParoco()) {
+                return true;
+            }
+            if (orgId == null) {
+                return false;
+            }
             boolean coord = organizacaoIdsOndeECoordenador != null && organizacaoIdsOndeECoordenador.contains(orgId);
             boolean membro = organizacaoIdsOndeEMembro != null && organizacaoIdsOndeEMembro.contains(orgId);
             return coord || membro;
@@ -57,29 +73,14 @@ public class ReservaAuthorizationService {
      * Determina se a reserva nasce com status CONFIRMADA ou PENDENTE com base no perfil do solicitante.
      */
     public StatusReserva determinarStatusInicial(UsuarioActor solicitante, UUID pastoralMovimentoId) {
-        Objects.requireNonNull(solicitante, "Solicitante é obrigatório.");
-        if (solicitante.isAdminOuParoco() || solicitante.isCoordenadorDaOrganizacao(pastoralMovimentoId)) {
-            return StatusReserva.CONFIRMADA;
-        }
-        return StatusReserva.PENDENTE;
+        return policy.resolveStatusInicial(solicitante, pastoralMovimentoId);
     }
 
     /**
      * Valida se o usuário tem autorização para aprovar/rejeitar a solicitação pendente.
      */
     public void validarAutorizacaoAprovacao(UsuarioActor operador, Reserva reserva) {
-        Objects.requireNonNull(operador, "Operador é obrigatório.");
-        Objects.requireNonNull(reserva, "Reserva é obrigatória.");
-
-        if (operador.isAdminOuParoco()) {
-            return;
-        }
-
-        if (operador.isCoordenadorDaOrganizacao(reserva.getPastoralMovimentoId())) {
-            return;
-        }
-
-        throw new ReservaNaoAutorizadaException("Apenas administradores, o pároco ou o coordenador da respectiva pastoral podem aprovar/recusar esta reserva.");
+        policy.assertAutorizacaoAprovacao(operador, reserva);
     }
 
     /**
@@ -89,25 +90,6 @@ public class ReservaAuthorizationService {
      * - Fiel/Solicitante: cancela apenas suas próprias reservas que ainda estejam com data futura.
      */
     public void validarAutorizacaoCancelamento(UsuarioActor operador, Reserva reserva, Instant agora) {
-        Objects.requireNonNull(operador, "Operador é obrigatório.");
-        Objects.requireNonNull(reserva, "Reserva é obrigatória.");
-
-        if (operador.isAdminOuParoco()) {
-            return;
-        }
-
-        if (operador.isCoordenadorDaOrganizacao(reserva.getPastoralMovimentoId())) {
-            return;
-        }
-
-        // Se for o próprio solicitante
-        if (Objects.equals(operador.id(), reserva.getSolicitanteId())) {
-            if (reserva.getIntervalo().dataHoraInicio().isBefore(agora)) {
-                throw new ReservaNaoAutorizadaException("O solicitante só pode cancelar reservas com data futura.");
-            }
-            return;
-        }
-
-        throw new ReservaNaoAutorizadaException("Você não possui permissão para cancelar esta reserva.");
+        policy.assertAutorizacaoCancelamento(operador, reserva, agora);
     }
 }

@@ -49,7 +49,8 @@ public class UnidadeTerritorialController {
     @Operation(summary = "List all territorial units")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de unidades territoriais retornada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UnidadeTerritorialResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = UnidadeTerritorialResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

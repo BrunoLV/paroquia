@@ -110,7 +110,7 @@ describe('OrganizacaoFormModal', () => {
     expect(screen.queryByRole('option', { name: 'Conselho Inativo' })).not.toBeInTheDocument();
   });
 
-  test('submits parentId correctly on save', () => {
+  test('submits parentId correctly on save', async () => {
     renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
@@ -127,14 +127,14 @@ describe('OrganizacaoFormModal', () => {
 
     fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
-    expect(mockOnSave).toHaveBeenCalledWith(
+    await waitFor(() => expect(mockOnSave).toHaveBeenCalledWith(
       expect.objectContaining({
         nome: 'Nova Pastoral',
         tipo: 'PASTORAL',
         parentId: 'org-conselho',
         pastoralOficialId: 'po-pastoral-1',
       })
-    );
+    ));
   });
 
   test('displays official type dropdown only for PASTORAL or MOVIMENTO and filters options accordingly', () => {
@@ -176,14 +176,14 @@ describe('OrganizacaoFormModal', () => {
     expect(screen.queryAllByLabelText(/Tipo Oficial \/ Movimento/i).length).toBe(0);
   });
 
-  test('requires pastoralOficialId to submit successfully', () => {
+  test('requires pastoralOficialId to submit successfully', async () => {
     renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
     fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
     // Should show validation error and NOT call onSave
-    expect(screen.getByText('A associação oficial é obrigatória')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('A associação oficial é obrigatória')).toBeInTheDocument());
     expect(mockOnSave).not.toHaveBeenCalled();
 
     // Select official type
@@ -193,13 +193,13 @@ describe('OrganizacaoFormModal', () => {
     // Submit again
     fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
-    expect(mockOnSave).toHaveBeenCalledWith(
+    await waitFor(() => expect(mockOnSave).toHaveBeenCalledWith(
       expect.objectContaining({
         nome: 'Nova Pastoral',
         tipo: 'PASTORAL',
         pastoralOficialId: 'po-pastoral-1'
       })
-    );
+    ));
   });
 
   test('renders coordinator select dropdown and calls getOrganizacaoMembros when parent organization resolves to a church', async () => {

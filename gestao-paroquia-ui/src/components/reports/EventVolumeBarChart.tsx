@@ -44,13 +44,14 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
     );
   }
 
+  // Reaproveita as 6 cores semânticas do tema para diferenciar as barras por organização.
   const palette = [
-    '#1a237e', // Indigo
-    '#00897b', // Teal
-    '#8e24aa', // Purple
-    '#fb8c00', // Amber
-    '#d81b60', // Rose
-    '#039be5', // Cyan
+    theme.palette.primary.main,
+    theme.palette.info.main,
+    theme.palette.secondary.main,
+    theme.palette.warning.main,
+    theme.palette.error.main,
+    theme.palette.success.main,
   ];
 
   return (

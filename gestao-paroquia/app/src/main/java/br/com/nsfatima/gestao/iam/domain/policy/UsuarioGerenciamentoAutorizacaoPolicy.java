@@ -1,0 +1,39 @@
+package br.com.nsfatima.gestao.iam.domain.policy;
+
+import org.springframework.security.access.AccessDeniedException;
+
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Contrato puro de política para autorização administrativa de gerenciamento de usuários:
+ * decide se um ator coordenador pode agir sobre um usuário-alvo ou sobre uma organização,
+ * a partir dos vínculos já carregados pelo orquestrador.
+ */
+public interface UsuarioGerenciamentoAutorizacaoPolicy {
+
+    /**
+     * {@code true} se o papel (normalizado) conferir autoridade de coordenação.
+     *
+     * @param papel papel do vínculo, em formato livre (ex.: {@code "coordenador_pastoral"})
+     */
+    boolean isCoordinatorRole(String papel);
+
+    /**
+     * Garante que um ator coordenador (não admin) só gerencia usuários com quem compartilha
+     * ao menos uma organização onde atua como coordenador.
+     *
+     * @param organizacaoIdsOndeAtorECoordenador organizações onde o ator é coordenador ativo
+     * @param organizacaoIdsDoAlvo organizações onde o usuário-alvo possui vínculo ativo
+     * @throws AccessDeniedException se o ator não for coordenador em nenhuma organização, ou se
+     *     não compartilhar organização com o alvo
+     */
+    void assertPodeGerenciarAlvo(List<UUID> organizacaoIdsOndeAtorECoordenador, List<UUID> organizacaoIdsDoAlvo);
+
+    /**
+     * Garante que um ator coordenador (não admin) atua como coordenador ativo na organização informada.
+     *
+     * @throws AccessDeniedException se o ator não for coordenador ativo daquela organização
+     */
+    void assertECoordenadorDaOrganizacao(boolean atorECoordenadorNaOrganizacao);
+}

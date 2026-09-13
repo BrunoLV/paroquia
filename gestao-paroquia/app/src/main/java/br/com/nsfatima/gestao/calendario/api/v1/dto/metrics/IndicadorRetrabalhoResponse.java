@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.metrics;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -23,7 +24,7 @@ public record IndicadorRetrabalhoResponse(
         PeriodoOperacionalResponse periodo,
 
         @Schema(description = "Percentual de retrabalho calculado", example = "5.2")
-        double taxaRetrabalho,
+        BigDecimal taxaRetrabalho,
 
         @Schema(description = "Número de ocorrências que caracterizam retrabalho", example = "10")
         long numeradorOcorrenciasElegiveis,

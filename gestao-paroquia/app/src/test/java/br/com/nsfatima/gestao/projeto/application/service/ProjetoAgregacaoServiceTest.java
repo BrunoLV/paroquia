@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -61,7 +62,7 @@ class ProjetoAgregacaoServiceTest {
         when(eventProvider.countByProjetoIdAndFimUtcGreaterThanEqual(eq(projetoId), any(Instant.class))).thenReturn(4L);
         when(eventProvider.findInvolvedOrganizationNames(projetoId)).thenReturn(List.of("Org 1", "Org 2"));
 
-        when(domainService.calcularPercentualTempoDecorrido(any(), any())).thenReturn(50.0);
+        when(domainService.calcularPercentualTempoDecorrido(any(), any())).thenReturn(BigDecimal.valueOf(50.0));
         when(domainService.verificarSeEstaEmRisco(any(), any(), anyInt())).thenReturn(false);
 
         ProjetoResumoDTO resumo = service.obterResumo(projetoId);
@@ -71,7 +72,7 @@ class ProjetoAgregacaoServiceTest {
         assertEquals(6, resumo.statusExecucao().eventosRealizados());
         assertEquals(4, resumo.statusExecucao().eventosPendentes());
         assertThat(resumo.mapaColaboracao().envolvidos()).containsExactlyInAnyOrder("Org 1", "Org 2");
-        assertEquals(50.0, resumo.saudeTemporal().percentualTempoDecorrido());
+        assertEquals(BigDecimal.valueOf(50.0), resumo.saudeTemporal().percentualTempoDecorrido());
         assertFalse(resumo.saudeTemporal().emRisco());
     }
 

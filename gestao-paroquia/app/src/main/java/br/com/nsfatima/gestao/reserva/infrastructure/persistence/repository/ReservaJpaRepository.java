@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ReservaJpaRepository extends JpaRepository<ReservaEntity, UUID>, JpaSpecificationExecutor<ReservaEntity> {
+public interface ReservaJpaRepository
+        extends JpaRepository<ReservaEntity, UUID>, JpaSpecificationExecutor<ReservaEntity> {
 
     /**
      * Consulta pessimista com trava de escrita (PESSIMISTIC_WRITE) para serializar tentativas concorrentes

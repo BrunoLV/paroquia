@@ -21,6 +21,8 @@ import java.util.UUID;
 @Service
 public class ObterDisponibilidadeItemUseCase {
 
+    private static final ZoneId ZONA_PADRAO = ZoneId.of("America/Sao_Paulo");
+
     private final ReservaRepository reservaRepository;
     private final ConsultaManutencaoAtivoPort consultaManutencaoPort;
 
@@ -35,10 +37,10 @@ public class ObterDisponibilidadeItemUseCase {
     public List<DisponibilidadeFaixaDto> executar(TipoItemReserva tipoItem, UUID itemId, LocalDate data) {
         Objects.requireNonNull(tipoItem, "Tipo de item é obrigatório.");
         Objects.requireNonNull(itemId, "ID do item é obrigatório.");
-        LocalDate dia = data != null ? data : LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+        LocalDate dia = data != null ? data : LocalDate.now(ZONA_PADRAO);
 
-        Instant inicioDia = dia.atStartOfDay(ZoneId.of("America/Sao_Paulo")).toInstant();
-        Instant fimDia = dia.plusDays(1).atStartOfDay(ZoneId.of("America/Sao_Paulo")).toInstant();
+        Instant inicioDia = dia.atStartOfDay(ZONA_PADRAO).toInstant();
+        Instant fimDia = dia.plusDays(1).atStartOfDay(ZONA_PADRAO).toInstant();
 
         ReservaFiltro filtro = new ReservaFiltro(
                 tipoItem,

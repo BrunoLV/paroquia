@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.dashboard.api.v1.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -26,10 +27,10 @@ import java.util.List;
 public record DetalheProjetoDTO(
         String nome,
         String status,
-        double percentualTempoDecorrido,
+        BigDecimal percentualTempoDecorrido,
         int totalEventos,
         int eventosRealizados,
-        double percentualExecucao,
+        BigDecimal percentualExecucao,
         int eventosPendentesAprovacao,
         boolean emRisco,
         ProximoMarcoDTO proximoMarco,

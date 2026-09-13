@@ -7,6 +7,8 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -14,6 +16,10 @@ import java.util.List;
  */
 @Service
 public class CalcularTaxaProjetosUseCase {
+
+    private static final int PERCENTUAL_SCALE = 1;
+    private static final BigDecimal LIMIAR_CRITICO = BigDecimal.valueOf(30);
+    private static final BigDecimal LIMIAR_ALERTA = BigDecimal.valueOf(15);
 
     private final ProjetoEventoJpaRepository projetoEventoJpaRepository;
 
@@ -41,13 +47,15 @@ public class CalcularTaxaProjetosUseCase {
                 .filter(p -> isStatus(p, ProjetoStatus.CANCELADO))
                 .count();
 
-        double taxaConclusao = total > 0 ? (concluidos * 100.0) / total : 100.0;
-        double taxaAbandono = total > 0 ? (cancelados * 100.0) / total : 0.0;
+        BigDecimal taxaConclusao = total > 0
+                ? calcularPercentual(concluidos, total)
+                : BigDecimal.valueOf(100).setScale(PERCENTUAL_SCALE, RoundingMode.HALF_UP);
+        BigDecimal taxaAbandono = total > 0 ? calcularPercentual(cancelados, total) : BigDecimal.ZERO;
 
         String avaliacao;
-        if (taxaAbandono >= 30.0) {
+        if (taxaAbandono.compareTo(LIMIAR_CRITICO) >= 0) {
             avaliacao = "CRITICO";
-        } else if (taxaAbandono >= 15.0) {
+        } else if (taxaAbandono.compareTo(LIMIAR_ALERTA) >= 0) {
             avaliacao = "ALERTA";
         } else {
             avaliacao = "SAUDAVEL";
@@ -58,10 +66,19 @@ public class CalcularTaxaProjetosUseCase {
                 concluidos,
                 emAndamento,
                 cancelados,
-                Math.round(taxaConclusao * 10.0) / 10.0,
-                Math.round(taxaAbandono * 10.0) / 10.0,
+                taxaConclusao,
+                taxaAbandono,
                 avaliacao
         );
+    }
+
+    /** Percentual numerador/denominador com precisão decimal exata; {@code ZERO} se não houver denominador. */
+    private BigDecimal calcularPercentual(long numerador, long denominador) {
+        return denominador == 0L
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(numerador)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(denominador), PERCENTUAL_SCALE, RoundingMode.HALF_UP);
     }
 
     private boolean isStatus(ProjetoEventoEntity projeto, ProjetoStatus targetStatus) {

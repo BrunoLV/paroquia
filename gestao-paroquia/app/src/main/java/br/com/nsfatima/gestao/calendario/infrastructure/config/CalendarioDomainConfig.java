@@ -18,6 +18,8 @@ import br.com.nsfatima.gestao.calendario.domain.policy.HierarquiaPrioridadeAgend
 import br.com.nsfatima.gestao.calendario.domain.policy.PrioridadeAgendaPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.AutorizacaoCancelamentoEventoPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.PadraoAutorizacaoCancelamentoEventoPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.EventoPatchAuthorizationPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.PadraoEventoPatchAuthorizationPolicy;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.springframework.context.annotation.Bean;
@@ -88,6 +90,11 @@ public class CalendarioDomainConfig {
     @Bean
     public AutorizacaoCancelamentoEventoPolicy autorizacaoCancelamentoEventoPolicy() {
         return new PadraoAutorizacaoCancelamentoEventoPolicy();
+    }
+
+    @Bean
+    public EventoPatchAuthorizationPolicy eventoPatchAuthorizationPolicy() {
+        return new PadraoEventoPatchAuthorizationPolicy();
     }
 
     @Bean

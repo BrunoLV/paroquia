@@ -43,7 +43,8 @@ class LocalControllerIntegrationTest {
     @Autowired
     private LocalJpaRepository localRepository;
     @Autowired
-    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
+    private br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository
+            .UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     @Autowired
     private ObjectMapper objectMapper;
     private UUID existingLocalId;
@@ -54,7 +55,8 @@ class LocalControllerIntegrationTest {
 
         br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity org =
                 unidadeTerritorialRepository.findById(ORG_ID)
-                        .orElseGet(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity::new);
+                        .orElseGet(br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity
+                                .UnidadeTerritorialEntity::new);
         org.setId(ORG_ID);
         org.setNome("Comunidade Matriz Teste");
         org.setTipo(br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial.MATRIZ);

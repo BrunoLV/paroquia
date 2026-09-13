@@ -131,66 +131,171 @@ public class ReservaEntity {
     }
 
     // Getters and Setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getTipoItem() { return tipoItem; }
-    public void setTipoItem(String tipoItem) { this.tipoItem = tipoItem; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public UUID getItemId() { return itemId; }
-    public void setItemId(UUID itemId) { this.itemId = itemId; }
+    public String getTipoItem() {
+        return tipoItem;
+    }
 
-    public Instant getDataHoraInicio() { return dataHoraInicio; }
-    public void setDataHoraInicio(Instant dataHoraInicio) { this.dataHoraInicio = dataHoraInicio; }
+    public void setTipoItem(String tipoItem) {
+        this.tipoItem = tipoItem;
+    }
 
-    public Instant getDataHoraFim() { return dataHoraFim; }
-    public void setDataHoraFim(Instant dataHoraFim) { this.dataHoraFim = dataHoraFim; }
+    public UUID getItemId() {
+        return itemId;
+    }
 
-    public int getBufferMinutos() { return bufferMinutos; }
-    public void setBufferMinutos(int bufferMinutos) { this.bufferMinutos = bufferMinutos; }
+    public void setItemId(UUID itemId) {
+        this.itemId = itemId;
+    }
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public Instant getDataHoraInicio() {
+        return dataHoraInicio;
+    }
 
-    public UUID getSolicitanteId() { return solicitanteId; }
-    public void setSolicitanteId(UUID solicitanteId) { this.solicitanteId = solicitanteId; }
+    public void setDataHoraInicio(Instant dataHoraInicio) {
+        this.dataHoraInicio = dataHoraInicio;
+    }
 
-    public UUID getPastoralMovimentoId() { return pastoralMovimentoId; }
-    public void setPastoralMovimentoId(UUID pastoralMovimentoId) { this.pastoralMovimentoId = pastoralMovimentoId; }
+    public Instant getDataHoraFim() {
+        return dataHoraFim;
+    }
 
-    public UUID getEventoId() { return eventoId; }
-    public void setEventoId(UUID eventoId) { this.eventoId = eventoId; }
+    public void setDataHoraFim(Instant dataHoraFim) {
+        this.dataHoraFim = dataHoraFim;
+    }
 
-    public UUID getGrupoRecorrenciaId() { return grupoRecorrenciaId; }
-    public void setGrupoRecorrenciaId(UUID grupoRecorrenciaId) { this.grupoRecorrenciaId = grupoRecorrenciaId; }
+    public int getBufferMinutos() {
+        return bufferMinutos;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setBufferMinutos(int bufferMinutos) {
+        this.bufferMinutos = bufferMinutos;
+    }
 
-    public UUID getAprovadorId() { return aprovadorId; }
-    public void setAprovadorId(UUID aprovadorId) { this.aprovadorId = aprovadorId; }
+    public String getDescricao() {
+        return descricao;
+    }
 
-    public Instant getAprovadoEm() { return aprovadoEm; }
-    public void setAprovadoEm(Instant aprovadoEm) { this.aprovadoEm = aprovadoEm; }
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-    public String getMotivoCancelamento() { return motivoCancelamento; }
-    public void setMotivoCancelamento(String motivoCancelamento) { this.motivoCancelamento = motivoCancelamento; }
+    public UUID getSolicitanteId() {
+        return solicitanteId;
+    }
 
-    public UUID getCanceladoPorId() { return canceladoPorId; }
-    public void setCanceladoPorId(UUID canceladoPorId) { this.canceladoPorId = canceladoPorId; }
+    public void setSolicitanteId(UUID solicitanteId) {
+        this.solicitanteId = solicitanteId;
+    }
 
-    public String getCheckAvarias() { return checkAvarias; }
-    public void setCheckAvarias(String checkAvarias) { this.checkAvarias = checkAvarias; }
+    public UUID getPastoralMovimentoId() {
+        return pastoralMovimentoId;
+    }
 
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public void setPastoralMovimentoId(UUID pastoralMovimentoId) {
+        this.pastoralMovimentoId = pastoralMovimentoId;
+    }
 
-    public Instant getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public UUID getEventoId() {
+        return eventoId;
+    }
 
-    public Instant getDeletedAt() { return deletedAt; }
-    public void setDeletedAt(Instant deletedAt) { this.deletedAt = deletedAt; }
+    public void setEventoId(UUID eventoId) {
+        this.eventoId = eventoId;
+    }
 
-    public long getVersion() { return version; }
-    public void setVersion(long version) { this.version = version; }
+    public UUID getGrupoRecorrenciaId() {
+        return grupoRecorrenciaId;
+    }
+
+    public void setGrupoRecorrenciaId(UUID grupoRecorrenciaId) {
+        this.grupoRecorrenciaId = grupoRecorrenciaId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public UUID getAprovadorId() {
+        return aprovadorId;
+    }
+
+    public void setAprovadorId(UUID aprovadorId) {
+        this.aprovadorId = aprovadorId;
+    }
+
+    public Instant getAprovadoEm() {
+        return aprovadoEm;
+    }
+
+    public void setAprovadoEm(Instant aprovadoEm) {
+        this.aprovadoEm = aprovadoEm;
+    }
+
+    public String getMotivoCancelamento() {
+        return motivoCancelamento;
+    }
+
+    public void setMotivoCancelamento(String motivoCancelamento) {
+        this.motivoCancelamento = motivoCancelamento;
+    }
+
+    public UUID getCanceladoPorId() {
+        return canceladoPorId;
+    }
+
+    public void setCanceladoPorId(UUID canceladoPorId) {
+        this.canceladoPorId = canceladoPorId;
+    }
+
+    public String getCheckAvarias() {
+        return checkAvarias;
+    }
+
+    public void setCheckAvarias(String checkAvarias) {
+        this.checkAvarias = checkAvarias;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
 }

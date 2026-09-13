@@ -77,7 +77,8 @@ public record LocalRequest(
         this(nome, tipo, capacidadeMaxima, descricao, ativo, null, null, null, null, null, null, null, null);
     }
 
-    public LocalRequest(String nome, String tipo, Integer capacidadeMaxima, String descricao, boolean ativo, UUID igrejaId) {
+    public LocalRequest(
+            String nome, String tipo, Integer capacidadeMaxima, String descricao, boolean ativo, UUID igrejaId) {
         this(nome, tipo, capacidadeMaxima, descricao, ativo, igrejaId, null, null, null, null, null, null, null);
     }
 

@@ -1,52 +1,37 @@
 import { z } from 'zod';
 
 /**
- * Schema de validação formal para cadastro e edição de Clérigo.
- * Assegura conformidade canônica com graus da ordem e normas de privacidade
- * equiparadas às de fiéis leigos sob a LGPD.
+ * Schema de validação formal para cadastro e edição de Clérigo — espelha
+ * `ClerigoPayload`. Campos obrigatórios seguem os marcadores `required`
+ * já presentes na UI original (`ClerigoFormModal`), antes apenas visuais
+ * e não bloqueantes; agora efetivamente exigidos.
  */
 export const clerigoSchema = z.object({
-  nome: z
-    .string()
-    .min(3, { message: 'Nome deve conter ao menos 3 caracteres' })
-    .max(150, { message: 'Nome não pode exceder 150 caracteres' }),
-  nomeReligioso: z.string().max(150).optional().or(z.literal('')),
-  grauOrdenacao: z.enum(['DIACONO', 'PADRE', 'BISPO'], {
-    message: 'Grau de ordenação é obrigatório',
-  }),
-  cpf: z
-    .string()
-    .max(14, { message: 'CPF inválido' })
-    .optional()
-    .or(z.literal('')),
-  rg: z.string().max(20).optional().or(z.literal('')),
-  dataNascimento: z.string().optional().or(z.literal('')),
-  dataOrdenacaoDiaconal: z.string().optional().or(z.literal('')),
-  dataOrdenacaoPresbiteral: z.string().optional().or(z.literal('')),
-  dataOrdenacaoEpiscopal: z.string().optional().or(z.literal('')),
-  bispoOrdenante: z.string().max(150).optional().or(z.literal('')),
-  dioceseOrigem: z.string().max(150).optional().or(z.literal('')),
-  situacaoCanonica: z
-    .enum(['ATIVO', 'AFASTADO', 'APOSENTADO', 'EMERITO', 'FALECIDO'])
-    .default('ATIVO'),
-  email: z
-    .string()
-    .email({ message: 'E-mail em formato inválido' })
-    .optional()
-    .or(z.literal('')),
-  telefone: z.string().max(20).optional().or(z.literal('')),
-  celularWhatsapp: z.string().max(20).optional().or(z.literal('')),
-  endereco: z
-    .object({
-      logradouro: z.string().max(150).optional().or(z.literal('')),
-      numero: z.string().max(20).optional().or(z.literal('')),
-      complemento: z.string().max(100).optional().or(z.literal('')),
-      bairro: z.string().max(100).optional().or(z.literal('')),
-      cep: z.string().max(10).optional().or(z.literal('')),
-      cidade: z.string().max(100).optional().or(z.literal('')),
-      estado: z.string().max(2).optional().or(z.literal('')),
-    })
-    .default({}),
+  nomeEclesiastico: z.string().trim().min(1, 'Nome eclesiástico é obrigatório'),
+  nomeCivil: z.string().optional(),
+  grauOrdem: z.enum(['DIACONO_TRANSITORIO', 'DIACONO_PERMANENTE', 'PADRE_DIOCESANO', 'PADRE_RELIGIOSO', 'BISPO']),
+  funcaoAtual: z.enum([
+    'BISPO_DIOCESANO',
+    'PAROCO',
+    'ADMINISTRADOR_PAROQUIAL',
+    'VIGARIO_PAROQUIAL',
+    'DIACONO_AUXILIAR',
+    'EMERITO',
+  ]),
+  dioceseIncardinacao: z.string().trim().min(1, 'Diocese de incardinação é obrigatória'),
+  cpf: z.string().optional(),
+  rg: z.string().optional(),
+  dataNascimento: z.string().optional(),
+  paisOrigem: z.string().optional(),
+  documentoEstrangeiro: z.string().optional(),
+  dataOrdenacaoDiaconal: z.string().nullable().optional(),
+  dataOrdenacaoPresbiteral: z.string().nullable().optional(),
+  dataOrdenacaoEpiscopal: z.string().nullable().optional(),
+  email: z.string().trim().min(1, 'E-mail é obrigatório'),
+  celular: z.string().trim().min(1, 'Celular é obrigatório'),
+  telefoneFixo: z.string().optional(),
+  endereco: z.string().optional(),
+  isWhatsapp: z.boolean(),
 });
 
 export type ClerigoFormInput = z.infer<typeof clerigoSchema>;

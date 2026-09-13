@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
+import br.com.nsfatima.gestao.iam.domain.policy.PadraoPapelGlobalMappingPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.PapelGlobalEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.PapelGlobalJpaRepository;
@@ -34,7 +35,8 @@ class PapelGlobalAuthorizationServiceTest {
         service = new PapelGlobalAuthorizationService(
                 papelGlobalRepository,
                 usuarioRepository,
-                encargoClericalRepository);
+                encargoClericalRepository,
+                new PadraoPapelGlobalMappingPolicy());
     }
 
     @Test

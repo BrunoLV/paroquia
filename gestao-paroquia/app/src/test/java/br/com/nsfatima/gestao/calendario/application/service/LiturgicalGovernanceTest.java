@@ -3,16 +3,32 @@ package br.com.nsfatima.gestao.calendario.application.service;
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleException;
 import br.com.nsfatima.gestao.calendario.domain.model.TipoCicloLiturgico;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.AnoLiturgicoRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
+/**
+ * Cobre apenas as regras puras (sem I/O) do serviço: pesos de precedência e direitos de
+ * mutação manual. Os repositórios são mocks porque o construtor exige colaboradores não-nulos,
+ * mas nenhum deles é exercitado pelos métodos testados aqui.
+ */
 class LiturgicalGovernanceTest {
 
-    private final ProvisionamentoLiturgicoService service = new ProvisionamentoLiturgicoService(null, null,
-            new MotorLiturgico());
+    private final ProvisionamentoLiturgicoService service = new ProvisionamentoLiturgicoService(
+            mock(AnoLiturgicoRepository.class),
+            mock(CicloLiturgicoRepository.class),
+            new MotorLiturgico(),
+            mock(EventoJpaRepository.class),
+            mock(UnidadeTerritorialJpaRepository.class),
+            mock(SolenidadeLiturgicaJpaRepository.class));
 
     @Test
     @DisplayName("Deve permitir edição manual apenas para perfis PAROCO e VIGARIO")

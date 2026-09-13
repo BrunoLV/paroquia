@@ -1,8 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
-import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
-import br.com.nsfatima.gestao.organizacao.application.service.ValidadorHierarquiaOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.exception.GrupoParoquialNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;

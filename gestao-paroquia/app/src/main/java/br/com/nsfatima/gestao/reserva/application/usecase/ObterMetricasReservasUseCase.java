@@ -38,7 +38,8 @@ public class ObterMetricasReservasUseCase {
         long pendentes = reservaRepository.countPendentesAprovacao(pastoralId);
         long devolucoesPendentes = reservaRepository.countDevolucoesPendentesHoje(inicioHoje, fimHoje);
 
-        ReservaFiltro filtroHoje = new ReservaFiltro(null, null, null, pastoralId, null, null, inicioHoje, fimHoje, null);
+        ReservaFiltro filtroHoje = new ReservaFiltro(
+                null, null, null, pastoralId, null, null, inicioHoje, fimHoje, null);
         List<Reserva> reservasHoje = reservaRepository.findAll(filtroHoje);
         long ativasHoje = reservasHoje.stream().filter(r -> r.getStatus().ocupaAgenda()).count();
 

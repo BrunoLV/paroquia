@@ -66,7 +66,8 @@ public class CriarReservaUseCase {
 
         // Validação de vínculo de pastoral
         if (!solicitante.isMembroDaOrganizacao(comando.pastoralMovimentoId())) {
-            throw new ReservaNaoAutorizadaException("O solicitante deve obrigatoriamente ter vínculo ativo com a pastoral/movimento selecionado.");
+            throw new ReservaNaoAutorizadaException(
+                    "O solicitante deve obrigatoriamente ter vínculo ativo com a pastoral/movimento selecionado.");
         }
 
         int buffer = comando.bufferMinutos() != null ? comando.bufferMinutos() : IntervaloReserva.BUFFER_PADRAO_MINUTOS;

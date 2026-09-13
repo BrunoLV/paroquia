@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {
     Alert,
     Box,
@@ -90,14 +91,24 @@ const Projects = () => {
   const { user } = useAuth();
   const { showError, showSuccess } = useNotification();
   
-  const [projects, setProjects] = useState<Projeto[]>([]);
-  const [organizations, setOrganizations] = useState<Organizacao[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
+  const projetosQuery = useQuery({
+    queryKey: ['projetos'],
+    queryFn: async () => (await apiClient.get<Projeto[]>('/projetos')).data ?? [],
+  });
+  const organizacoesQuery = useQuery({ queryKey: ['organizacoes'], queryFn: getOrganizacoes });
+  const projects = projetosQuery.data ?? [];
+  const organizations = organizacoesQuery.data ?? [];
+  const isLoading = projetosQuery.isLoading || organizacoesQuery.isLoading;
+
   // Drawer states (Project Details & Summary)
   const [selectedProject, setSelectedProject] = useState<Projeto | null>(null);
-  const [resumo, setResumo] = useState<ProjetoResumo | null>(null);
-  const [isLoadingResumo, setIsLoadingResumo] = useState(false);
+  const resumoQuery = useQuery({
+    queryKey: ['projeto-resumo', selectedProject?.id],
+    queryFn: async () => (await apiClient.get<ProjetoResumo>(`/projetos/${selectedProject!.id}/resumo`)).data,
+    enabled: Boolean(selectedProject?.id),
+  });
+  const resumo = resumoQuery.data ?? null;
+  const isLoadingResumo = resumoQuery.isFetching;
 
   // Dialog states (Create / Edit Form)
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -146,45 +157,12 @@ const Projects = () => {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
-  // 2. Fetch Initial Data
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      const [projRes, orgsData] = await Promise.all([
-        apiClient.get<Projeto[]>('/projetos'),
-        getOrganizacoes()
-      ]);
-      setProjects(projRes.data || []);
-      setOrganizations(orgsData || []);
-    } catch (err) {
-      showError('Não foi possível carregar os projetos e organizações.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // 3. Resumo Fetching
-  const fetchResumo = async (projectId: string) => {
-    setIsLoadingResumo(true);
-    try {
-      const res = await apiClient.get<ProjetoResumo>(`/projetos/${projectId}/resumo`);
-      setResumo(res.data);
-    } catch (err) {
-      showError('Não foi possível carregar o resumo do projeto.');
-      setResumo(null);
-    } finally {
-      setIsLoadingResumo(false);
-    }
-  };
+  // Refetch manual dos projetos (ex.: após criar/editar/transicionar status) — o resumo
+  // do projeto selecionado já refaz sozinho via `queryKey` quando `selectedProject` muda.
+  const refetchProjetos = () => projetosQuery.refetch();
 
   const handleRowClick = (project: Projeto) => {
     setSelectedProject(project);
-    fetchResumo(project.id);
   };
 
   // 4. Form Actions
@@ -243,6 +221,11 @@ const Projects = () => {
     setDialogOpen(true);
   };
 
+  const saveProjetoMutation = useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      isEditMode ? apiClient.patch(`/projetos/${formId}`, payload) : apiClient.post('/projetos', payload),
+  });
+
   const handleSave = async () => {
     if (!formNome.trim()) {
       showError('O nome do projeto é obrigatório.');
@@ -279,10 +262,10 @@ const Projects = () => {
 
     try {
       if (isEditMode) {
-        await apiClient.patch(`/projetos/${formId}`, payload);
+        await saveProjetoMutation.mutateAsync(payload);
         showSuccess('Projeto atualizado com sucesso!');
       } else {
-        const response = await apiClient.post('/projetos', payload);
+        const response = await saveProjetoMutation.mutateAsync(payload);
         if (response.status === 202) {
           showSuccess('Solicitação de criação de projeto encaminhada para aprovação (Ano Paroquial bloqueado).');
         } else {
@@ -290,7 +273,7 @@ const Projects = () => {
         }
       }
       setDialogOpen(false);
-      loadData();
+      refetchProjetos();
     } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao salvar projeto.'));
     }
@@ -316,7 +299,7 @@ const Projects = () => {
         setSelectedProject(updated);
       } else if (transitionType === 'CANCELAR') {
         const res = await cancelarProjeto(selectedProject.id, cancelarEventos);
-        if (res.status === 'PENDENTE' || res.tipoSolicitacao === 'CANCELAMENTO') {
+        if (res.status === 'PENDENTE' || ('tipoSolicitacao' in res && res.tipoSolicitacao === 'CANCELAMENTO')) {
           showSuccess('Solicitação de cancelamento encaminhada para aprovação.');
         } else {
           showSuccess('Projeto cancelado com sucesso!');
@@ -324,7 +307,7 @@ const Projects = () => {
         setSelectedProject(null);
       }
       setTransitionDialogOpen(false);
-      loadData();
+      refetchProjetos();
     } catch (err: unknown) {
       showError(extractErrorMessage(err, 'Erro ao processar transição de status.'));
     } finally {

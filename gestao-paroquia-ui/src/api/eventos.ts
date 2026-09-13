@@ -25,12 +25,15 @@ export interface ListEventosParams {
  * esta função normaliza ambos os formatos, retornando `[]` se nenhum for reconhecido.
  * @param params Intervalo (`dataInicio`/`dataFim`) e organizações a filtrar.
  */
+/** Formato paginado do Spring Data (`Page<T>`), ou array puro — `listEventos` aceita ambos. */
+type PagedOrArray<T> = { content: T[] } | T[];
+
 export const listEventos = async (params: ListEventosParams): Promise<Evento[]> => {
-  const response = await apiClient.get<any>('/eventos', {
+  const response = await apiClient.get<PagedOrArray<Evento>>('/eventos', {
     params: { ...params, size: 200 },
     paramsSerializer: { indexes: null },
   });
-  if (response.data && Array.isArray(response.data.content)) {
+  if (response.data && !Array.isArray(response.data) && Array.isArray(response.data.content)) {
     return response.data.content;
   }
   if (Array.isArray(response.data)) {

@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/api/eventos.ts": {
-    "mtime": 1786036367.2734835,
-    "ast_hash": "b5f564b76e3d6af45b370fa5fbbb1bbd",
+    "mtime": 1789229641.959043,
+    "ast_hash": "1aa39f18c5481f9712a634549aaa67f1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/api/fieis.test.ts": {
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/api/projects.ts": {
-    "mtime": 1786036367.2734835,
-    "ast_hash": "c003709edfeec2f122626cd07e5f0d6f",
+    "mtime": 1789229641.959043,
+    "ast_hash": "f489f5f43371a1be10a4fc5c58f9b7f9",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/api/solenidades.ts": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/api/types.ts": {
-    "mtime": 1789105015.9820836,
-    "ast_hash": "606ea5342e2dd137098bbb3f9119e123",
+    "mtime": 1789105676.365985,
+    "ast_hash": "08cbc5b4a7bd2fb797f86599a3dd7b3b",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/api/unidadesTerritoriais.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/auth/AuthContext.tsx": {
-    "mtime": 1788660453.7900808,
-    "ast_hash": "2fa3bc4b9dfc79e3610202d25592beaf",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "7b36a57f8ddb16576d4bd1158ff13462",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/auth/ProtectedRoute.test.tsx": {
@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/auth/ProtectedRoute.tsx": {
-    "mtime": 1786036367.27424,
-    "ast_hash": "2d19a01e6b822342ec8dfd7b9652ecf6",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "ef50e981c18d92673c53ff4931d65e43",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/auth/permissions.test.ts": {
@@ -235,8 +235,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/CadastroEventoModal.tsx": {
-    "mtime": 1789105015.9826496,
-    "ast_hash": "7a9c48bd6d49dbf6ccd4f48b3e996a73",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "ee34af1992c7a038fed23b2f9b76eb0e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/CancelarEventoDialog.test.tsx": {
@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/Layout.tsx": {
-    "mtime": 1789105015.9829762,
-    "ast_hash": "08f5cfba6f6b6bb104329a357cf48b14",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "2c12fbcbc5f614fa38dadf09e0603ee1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/ObservacoesEvento.test.tsx": {
@@ -495,8 +495,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/EventVolumeBarChart.tsx": {
-    "mtime": 1788396942.9529178,
-    "ast_hash": "ef0ffef6fc3664749da753fcbe8aa906",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "25f88200563d87e47b841b99e211d738",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/reports/MetricasEstrategicasTab.tsx": {
@@ -605,8 +605,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Calendar.tsx": {
-    "mtime": 1789105015.9851139,
-    "ast_hash": "87f19280b0f360f2aeb540843d84bb1a",
+    "mtime": 1789229757.8626792,
+    "ast_hash": "3bf54f9336bdbc373ff49d7dacb4ffd0",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/ConselhosAtas.test.tsx": {
@@ -615,7 +615,7 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/ConselhosAtas.tsx": {
-    "mtime": 1789105015.9852555,
+    "mtime": 1789229921.7693584,
     "ast_hash": "cca2b02017c464cc6b35ce15575281f1",
     "semantic_hash": ""
   },
@@ -660,13 +660,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/OrganizacaoFormModal.test.tsx": {
-    "mtime": 1786036367.2767024,
-    "ast_hash": "5e947595509649acb906f54192b761e7",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "59009f0157b9c2c70516ed235e12cc87",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/OrganizacaoFormModal.tsx": {
-    "mtime": 1789105015.985483,
-    "ast_hash": "6cc4cdd4efb2a18e885ea82ea017fa9b",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "4361111286c5947b2a3b429b993dfc6d",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Organograma.test.tsx": {
@@ -675,18 +675,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Organograma.tsx": {
-    "mtime": 1788663033.6457343,
-    "ast_hash": "09acf80a62a8995f5afad77c6a54c1ee",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "af2a2811fecb8e3e5650b86afc01e34c",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Projects.test.tsx": {
-    "mtime": 1789105015.9856005,
-    "ast_hash": "cf93618388af1fb18072a3bbf644f73f",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "4accdb7482b5442d45345b50950f7baa",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Projects.tsx": {
-    "mtime": 1789105015.9858134,
-    "ast_hash": "91e6929e2e7578b1ca2b1a950170b166",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "1f6581865717e8fddde711d3bcf56761",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Reports.test.tsx": {
@@ -705,7 +705,7 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Settings.tsx": {
-    "mtime": 1788808452.012014,
+    "mtime": 1789229921.7693584,
     "ast_hash": "90c15852a26f1c3227b1a0f5a719c163",
     "semantic_hash": ""
   },
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/statusMeta/sacramentos.ts": {
-    "mtime": 1788721328.1296904,
-    "ast_hash": "22e3a2dcdd3951336921abc8072ac739",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "ca0e2e78d71db9f8457eca4efb80e060",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/utils/statusMeta/situacaoStatus.ts": {
@@ -915,8 +915,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/build.gradle.kts": {
-    "mtime": 1788822470.0844183,
-    "ast_hash": "2b2972f87cbee919e85ccffdbf253432",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "a6f515915c7a9d877066913740c5c22e",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/GestaoParoquiaApplication.java": {
@@ -1080,28 +1080,28 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/EventoRecorrenciaController.java": {
-    "mtime": 1788916060.1581576,
-    "ast_hash": "6ff2045de6ca677338e84595a700cdc3",
+    "mtime": 1789105424.967045,
+    "ast_hash": "edc6696f534c1f0ee4eae984b4549891",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/ExportacaoCalendarioController.java": {
-    "mtime": 1788917587.4981709,
-    "ast_hash": "937476d26046d560e48aba0d3df7b4e1",
+    "mtime": 1789325193.9272046,
+    "ast_hash": "372c6cc22ca259085d4d79c6be9fddd1",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/MetricaEstrategicaController.java": {
-    "mtime": 1788916114.164158,
-    "ast_hash": "2dae6cb288a6ff7dcf8875e8e421e391",
+    "mtime": 1789325207.3362222,
+    "ast_hash": "3d751e197fb23035fc8d38f2732e50af",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/ObservacaoController.java": {
-    "mtime": 1788916071.555158,
-    "ast_hash": "88647c160bdaf5bd24913758309c1ff9",
+    "mtime": 1789325220.343239,
+    "ast_hash": "b126a81ca29f269dd5ed60ca9422c093",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/SolenidadeLiturgicaController.java": {
-    "mtime": 1789023657.7759116,
-    "ast_hash": "e1f7a4f51efb783598052a9e2fc7f1dd",
+    "mtime": 1789325214.0222309,
+    "ast_hash": "f5d15ffec75b432065cc1f90c9da5cd3",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/SolenidadeLiturgicaRequestDTO.java": {
@@ -1185,13 +1185,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/evento/EventoResponse.java": {
-    "mtime": 1786036367.281269,
-    "ast_hash": "eba5188a0d91f63057436f8574d9a2f0",
+    "mtime": 1789105307.8600054,
+    "ast_hash": "00e7d7444388f87d353b2573b8b1a8ff",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/evento/UpdateEventoRequest.java": {
-    "mtime": 1788878620.4594562,
-    "ast_hash": "93cf876eb1c2dad3e4a3ed3d32bdcb98",
+    "mtime": 1789325222.9422424,
+    "ast_hash": "308dd3b40e97df6604c61a2b2afaec82",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/AuditoriaFiltroRequest.java": {
@@ -1205,8 +1205,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/CoeficienteImpactoSocialResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "a44ef37125e0d5888e4bebcd0f0a04f0",
+    "mtime": 1789230097.31677,
+    "ast_hash": "4141a36fd44198c3eeeda31f8d02fb9c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/ConcorrenciaInterpastoralResponse.java": {
@@ -1220,8 +1220,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/IndicadorRetrabalhoResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "6aed1fc2e251a7468517bf7494336eca",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "dcd7115383a6212743c6148fbb06d830",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/MetricasEstrategicasPainelResponse.java": {
@@ -1230,8 +1230,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/OciosidadePatrimonialResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "188654d7a3631ad9c07405f2a2e5e88b",
+    "mtime": 1789230203.7555652,
+    "ast_hash": "991100d9a2e14f66c034eb85753cac9d",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/PeriodoOperacionalResponse.java": {
@@ -1240,23 +1240,23 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/SazonalidadeLiturgicaResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "a2205d5c2412ef7355e1b9f920691699",
+    "mtime": 1789230252.5639296,
+    "ast_hash": "51eab9c9ac631c37035a51b6da245694",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/SlaDespachoPastoralResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "a65001033a6bd2c22f9f3708754dcbe3",
+    "mtime": 1789230331.0315156,
+    "ast_hash": "cb587271d837a79b081622fba7e0e316",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/TaxaConclusaoProjetosResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "83220dcfe2d66da469e5240951bdfcca",
+    "mtime": 1789230367.152559,
+    "ast_hash": "88300d37dbf11065e7be25850e119be6",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/metrics/TaxaEventosExtraResponse.java": {
-    "mtime": 1786036367.2816591,
-    "ast_hash": "05653c98d32a8d0f2a019ca26dbe473c",
+    "mtime": 1789230058.3355896,
+    "ast_hash": "cd31348f53660a947a374a950139fe87",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/observacao/ObservacaoCreateRequest.java": {
@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/CalculadoraTaxaRetrabalho.java": {
-    "mtime": 1789023657.7759116,
-    "ast_hash": "fe9e7d5ce39548c9c7d71078f26a8d93",
+    "mtime": 1789325188.2611973,
+    "ast_hash": "31a224010edc0d462d964b4b307ca4cd",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/EventoIdempotencyService.java": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/CancelEventoUseCase.java": {
-    "mtime": 1789023657.7765665,
-    "ast_hash": "853753adf38eabd9af7f986111985e9d",
+    "mtime": 1789325183.532191,
+    "ast_hash": "7847694e1e30e5e0cc4c1ba22f14f8d4",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/ClearEventoEnvolvidosUseCase.java": {
@@ -1345,8 +1345,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/CreateEventoUseCase.java": {
-    "mtime": 1789105015.9864945,
-    "ast_hash": "79b1a1840816253f862609083b0b7bfe",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "098346f69eeab1e8263c0848e3120ba8",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/ExportacaoCalendarioUseCase.java": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/GetTaxaEventosExtraUseCase.java": {
-    "mtime": 1788823736.551638,
-    "ast_hash": "0471a95cf3967f20f3250b2632014174",
+    "mtime": 1789230064.6226,
+    "ast_hash": "d9cbdf8e3d11da112833dd807e9a573b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/ListEventosUseCase.java": {
@@ -1370,33 +1370,33 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/UpdateEventoUseCase.java": {
-    "mtime": 1789105015.9866529,
-    "ast_hash": "08a274a6c3d71ecfe40ca5d9522dfcbc",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "a9629735d860ef6eeb13033a21b42fc3",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularImpactoSocialUseCase.java": {
-    "mtime": 1788823736.5489228,
-    "ast_hash": "bd819ccc892993b0955c28303c35444f",
+    "mtime": 1789230106.4138381,
+    "ast_hash": "beed0b7a7a896614ca4696dd4095e030",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularOciosidadePatrimonialUseCase.java": {
-    "mtime": 1788823736.548815,
-    "ast_hash": "7df26d02e383233b36a22c72805dc46d",
+    "mtime": 1789325176.570182,
+    "ast_hash": "8fafae19054a6cf17e7fab8e8499a81a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularSazonalidadeLiturgicaUseCase.java": {
-    "mtime": 1788823736.5490363,
-    "ast_hash": "33a46925b9a0a534b995f9f289d42717",
+    "mtime": 1789230266.4530332,
+    "ast_hash": "a2f21450fefdc848cc23fda10e9d3ed6",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularSlaDespachoPastoralUseCase.java": {
-    "mtime": 1788823736.5468345,
-    "ast_hash": "376d5a77317dd954363d17863076f908",
+    "mtime": 1789230327.3134878,
+    "ast_hash": "63ef16b6b9eda833274919c48e6c8959",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularTaxaProjetosUseCase.java": {
-    "mtime": 1788823736.5475738,
-    "ast_hash": "355d3703e5e50336e576ddb2b5edfba1",
+    "mtime": 1789230363.42456,
+    "ast_hash": "58d3fc7d61d9109a9d533cd9f3702e3c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/GetIndicadorRetrabalhoUseCase.java": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/observacao/DeleteObservacaoUseCase.java": {
-    "mtime": 1789023657.7765665,
-    "ast_hash": "d3579237d9859032efad98c75fb61455",
+    "mtime": 1789325178.9891853,
+    "ast_hash": "65edb7115cd43609177dfa8e22af2661",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/observacao/ListMinhasObservacoesUseCase.java": {
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/observacao/UpdateObservacaoUseCase.java": {
-    "mtime": 1789023657.7765665,
-    "ast_hash": "c92a6ee270357fed13e52f8955a9140d",
+    "mtime": 1789325181.4881885,
+    "ast_hash": "e09e2f25736806def02b4a85dc97b58a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/exception/AprovacaoObrigatoriaException.java": {
@@ -1525,8 +1525,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/model/CicloLiturgico.java": {
-    "mtime": 1786036367.2835057,
-    "ast_hash": "7a91769bfb321f62b7f3ba4f997e5d91",
+    "mtime": 1789230248.3888984,
+    "ast_hash": "df61abfaf0b5032bad32bc5d94f1620b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/model/CorLiturgica.java": {
@@ -1765,8 +1765,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/mapper/EventoMapper.java": {
-    "mtime": 1786036367.2852492,
-    "ast_hash": "3f139d706da1ad16f1721644d3d6dabd",
+    "mtime": 1789105314.0290074,
+    "ast_hash": "87a45e7460168585bae5cf4665635239",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/repository/AnoLiturgicoRepository.java": {
@@ -1880,8 +1880,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/conselho/api/v1/controller/CpcDecisaoController.java": {
-    "mtime": 1788916848.7721646,
-    "ast_hash": "fa8bd3a72ba27d8f1185f13bc21a5e66",
+    "mtime": 1789325224.937245,
+    "ast_hash": "b6576714e9e19d25b4ece25e03949af2",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/conselho/api/v1/dto/CpcDecisaoResponse.java": {
@@ -1940,8 +1940,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/controller/DashboardComunidadeController.java": {
-    "mtime": 1788916666.091163,
-    "ast_hash": "031962150d2f34c7ea54efd8f9a96fd0",
+    "mtime": 1789325323.0903277,
+    "ast_hash": "2cbefb2af9ff3b712e648027ada29cc2",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/controller/DashboardLogisticaController.java": {
@@ -1980,8 +1980,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/dto/DetalheProjetoDTO.java": {
-    "mtime": 1788396942.9539177,
-    "ast_hash": "43093dfe4cccb71be6b0a5fa408f5700",
+    "mtime": 1789230476.1702092,
+    "ast_hash": "427f9d931c82f6f5a2d13e9ddca2d18c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/dto/DistribuicaoEventosDTO.java": {
@@ -2005,13 +2005,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/dto/OcupacaoAmbientesDTO.java": {
-    "mtime": 1788396942.9539177,
-    "ast_hash": "e2bacfcb7cd78444757455912b66f4df",
+    "mtime": 1789230480.4095974,
+    "ast_hash": "4861cc82b4133b472c8b46e7bfe12ce5",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/dto/OcupacaoLocalDTO.java": {
-    "mtime": 1788396942.9539177,
-    "ast_hash": "3d8f74f76298287ed8b00caaaa96aa5a",
+    "mtime": 1789230484.1445467,
+    "ast_hash": "8cf7174158c4bd05fde073ba32874be3",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/api/v1/dto/PendenciaHomologacaoDTO.java": {
@@ -2050,13 +2050,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/application/usecase/GetDashboardLogisticaUseCase.java": {
-    "mtime": 1788396942.955404,
-    "ast_hash": "e964d4e5c442aacb23008945f07191a3",
+    "mtime": 1789230501.22605,
+    "ast_hash": "24c88badd42f507cdc8434d58b619d6e",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/application/usecase/GetDashboardMetricsUseCase.java": {
-    "mtime": 1788396942.955404,
-    "ast_hash": "dd3340af233da6c8fa60fae2027b72d2",
+    "mtime": 1789230512.4734023,
+    "ast_hash": "2ff0dc8b86282813452425fda9adf3bf",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/application/usecase/GetRetencaoPastoraisUseCase.java": {
@@ -2095,8 +2095,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/controller/FielController.java": {
-    "mtime": 1788917795.8791726,
-    "ast_hash": "6344b197e572e8ea858a4f8c8367eaa4",
+    "mtime": 1789325319.2633262,
+    "ast_hash": "f892d26a00761a6104feac9b422e1dbe",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/ConsentimentoLgpdDto.java": {
@@ -2225,8 +2225,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/governanca/api/v1/controller/AnoParoquialController.java": {
-    "mtime": 1789023657.7789793,
-    "ast_hash": "878068f3d3e56a23a8d07c71d76408aa",
+    "mtime": 1789325172.2621765,
+    "ast_hash": "eb4f52c02f68d11df61a36dc878cfe56",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/governanca/api/v1/dto/AnoParoquialResponse.java": {
@@ -2440,8 +2440,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/local/api/v1/dto/LocalRequest.java": {
-    "mtime": 1788874695.6770332,
-    "ast_hash": "3a52e9ab33525bbced06977268ae8556",
+    "mtime": 1789325283.0383108,
+    "ast_hash": "3578ee4c1a9580ec86e2844d61bb55ad",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/local/api/v1/dto/LocalResponse.java": {
@@ -2455,8 +2455,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/local/domain/model/Local.java": {
-    "mtime": 1789014244.4415512,
-    "ast_hash": "d92d5bf0203b7dec849d626a9e06947a",
+    "mtime": 1789325281.14431,
+    "ast_hash": "0ae90b04b537e4095dd80516f77c8c2c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/local/domain/repository/LocalRepository.java": {
@@ -2485,8 +2485,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/membro/api/v1/controller/MembroController.java": {
-    "mtime": 1788916488.7551613,
-    "ast_hash": "c1747f161debea8a2cd42e6360f210ae",
+    "mtime": 1789325226.8652475,
+    "ast_hash": "242f29e56f01852dcab501a5431b014a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/membro/api/v1/dto/MembroRequest.java": {
@@ -2595,18 +2595,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/api/v1/controller/GrupoParoquialController.java": {
-    "mtime": 1789023657.7803266,
-    "ast_hash": "2c6cc7d325bf59b75db558912337033b",
+    "mtime": 1789325295.455316,
+    "ast_hash": "f7fc4f3a1bd337e0bd9fa32df798c9f1",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/api/v1/controller/PastoralMovimentoOficialController.java": {
-    "mtime": 1789023657.7803266,
-    "ast_hash": "07f127d1979a3812a92b894bdf97174e",
+    "mtime": 1789325289.5373135,
+    "ast_hash": "6d80d8c4e011a30bfdaf6ff97068532b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/api/v1/controller/UnidadeTerritorialController.java": {
-    "mtime": 1789023657.7803266,
-    "ast_hash": "2046b38f21f3c5bfe45f66a555edd4e0",
+    "mtime": 1789325291.4513142,
+    "ast_hash": "cdd9beb7ef768ea86e357d6de90212cc",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/organizacao/api/v1/dto/AdicionarVinculoRequest.java": {
@@ -2810,13 +2810,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/patrimonio/api/v1/dto/MetricasOciosidadeResponse.java": {
-    "mtime": 1789014244.4429562,
-    "ast_hash": "bc0fc7a451ea756ee59074bc78dff4b7",
+    "mtime": 1789230556.841606,
+    "ast_hash": "3d6da5c300e390cc9dc28e068e7cece5",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/patrimonio/application/usecase/GetMetricasOciosidadeUseCase.java": {
-    "mtime": 1789014244.4444041,
-    "ast_hash": "48d385b3121d257795a63c94859fef27",
+    "mtime": 1789325170.1971738,
+    "ast_hash": "665b96467f922fe049422eb4688b0c86",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/patrimonio/application/usecase/observacao/CreateNotaAtivoPatrimonialUseCase.java": {
@@ -2940,8 +2940,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/api/v1/dto/SaudeTemporalDTO.java": {
-    "mtime": 1786036367.293963,
-    "ast_hash": "13acf49201119b3113a92723eb48e55c",
+    "mtime": 1789230472.6035373,
+    "ast_hash": "d7f0f3bdfc31dd7a928208f13a162dff",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/api/v1/dto/StatusExecucaoDTO.java": {
@@ -2955,8 +2955,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/application/service/ProjetoAgregacaoService.java": {
-    "mtime": 1786036367.2941067,
-    "ast_hash": "fba2f3fa73415cdac94393bb2d9e0ae1",
+    "mtime": 1789325239.1852634,
+    "ast_hash": "23fe9742141c9138fbee8283da398b22",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/application/usecase/CreateProjetoUseCase.java": {
@@ -2995,8 +2995,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/service/ProjetoAgregacaoDomainService.java": {
-    "mtime": 1789023657.7814634,
-    "ast_hash": "38f5433f27d3a75414f51ff5d331d116",
+    "mtime": 1789325058.790923,
+    "ast_hash": "1139240620663696c8f7e4329b35da83",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/service/ProjetoEventoProvider.java": {
@@ -3495,33 +3495,33 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/api/v1/controller/MetricaEstrategicaControllerTest.java": {
-    "mtime": 1786036367.2986252,
-    "ast_hash": "c88d768c7b73afc50b89ca3206027fd3",
+    "mtime": 1789325415.686366,
+    "ast_hash": "aff61a86de130ccc6e22ba6db51698a9",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/api/v1/controller/ProjetoAgregacaoControllerTest.java": {
-    "mtime": 1786036367.2986252,
-    "ast_hash": "e2072b616dd0a0a24a4c7f2f53ef4889",
+    "mtime": 1789230525.9487834,
+    "ast_hash": "a4292189d92bcedf4393aa8280322d7f",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularImpactoSocialUseCaseTest.java": {
-    "mtime": 1786036367.2988107,
-    "ast_hash": "533ce7eafa2a85b3ec70487b697b5654",
+    "mtime": 1789230132.7520347,
+    "ast_hash": "4bb971f75a6dd83ffdac27d5ebcaf457",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularOciosidadePatrimonialUseCaseTest.java": {
-    "mtime": 1786036367.2988622,
-    "ast_hash": "bfc2e65f3fae810e2dbdb2182e0e67aa",
+    "mtime": 1789230209.6886094,
+    "ast_hash": "ab8a7a9e21c0fd7cea2582a1b905bad1",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularSazonalidadeLiturgicaUseCaseTest.java": {
-    "mtime": 1786036367.2988622,
-    "ast_hash": "58fdef4e6784ccbeb6a3fed91062d3bb",
+    "mtime": 1789230279.3181293,
+    "ast_hash": "12d7a4e48a919497e7b3cfba953f4f30",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularSlaDespachoPastoralUseCaseTest.java": {
-    "mtime": 1786036367.2988622,
-    "ast_hash": "baa46ce4f94a2818b54f813bcdb1eee6",
+    "mtime": 1789230336.170554,
+    "ast_hash": "8a160411a1e75d1282d908a3968e35b6",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/usecase/metrics/CalcularTaxaProjetosUseCaseTest.java": {
@@ -4180,8 +4180,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/metrics/TaxaEventosExtraIntegrationTest.java": {
-    "mtime": 1786036367.3026164,
-    "ast_hash": "da63ad42aa7ce5389bb2c4d5bc07e854",
+    "mtime": 1789230079.0156333,
+    "ast_hash": "b1fc3262cb4ff00b14f845c1dd55c63c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/metrics/WeeklyMetricsSnapshotHistoryIntegrationTest.java": {
@@ -4505,8 +4505,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/local/domain/service/LocalServiceTest.java": {
-    "mtime": 1789023657.7830696,
-    "ast_hash": "8cc57fb7191b223e82df6b462ca48ed0",
+    "mtime": 1789325432.0103958,
+    "ast_hash": "2440d30999b86e0cfdbb8ee996999be2",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/local/infrastructure/persistence/repository/LocalJpaRepositoryTest.java": {
@@ -4520,8 +4520,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/local/integration/LocalControllerIntegrationTest.java": {
-    "mtime": 1788874793.532343,
-    "ast_hash": "bd1f607d93aab6842c94cc28f51c5ddb",
+    "mtime": 1789325436.3764038,
+    "ast_hash": "bbb00c77fa0a8c5dc56b21439de6cf56",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/membro/application/usecase/MembroUseCaseTest.java": {
@@ -4610,13 +4610,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/projeto/application/service/ProjetoAgregacaoServiceTest.java": {
-    "mtime": 1786036367.3064835,
-    "ast_hash": "7f80bd65b627a9d000491d4b93da6516",
+    "mtime": 1789230522.8435783,
+    "ast_hash": "41f9ffc8e3949e90fe7cee4ef7463da5",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/projeto/domain/service/ProjetoAgregacaoDomainServiceTest.java": {
-    "mtime": 1786036367.3065202,
-    "ast_hash": "0f7f9fb6798685c86c9cdb265628baae",
+    "mtime": 1789230517.761574,
+    "ast_hash": "a614fce78c26ad613fa938793a8b8cb5",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/projeto/infrastructure/persistence/repository/ProjetoAgregacaoRepositoryTest.java": {
@@ -4675,8 +4675,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1789105015.9871767,
-    "ast_hash": "caae0e70e255f14d3368e31e8fc2e0e0",
+    "mtime": 1789105809.2611759,
+    "ast_hash": "b144c8fac9738033d577dd55ef07f8a8",
     "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
@@ -5015,8 +5015,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/controller/AjusteCadastralController.java": {
-    "mtime": 1788916416.6301608,
-    "ast_hash": "94c97d4912bce7db9d98f7eb5b3292e9",
+    "mtime": 1789325321.230327,
+    "ast_hash": "94d13a436196c62d22e32b574f66af25",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/DecidirAjusteCadastralRequest.java": {
@@ -5050,8 +5050,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/controller/RelacionamentoFamiliarController.java": {
-    "mtime": 1788916455.578161,
-    "ast_hash": "5d809c05a57f080d6ac0928eee0842d5",
+    "mtime": 1789325315.6073246,
+    "ast_hash": "43c5faf23f6b133c0809f0197e96d458",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/CriarRelacionamentoFamiliarRequest.java": {
@@ -5085,8 +5085,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/controller/NotificacaoController.java": {
-    "mtime": 1788916429.1851609,
-    "ast_hash": "d95a015b15b531b0eaab21bda2a9bdce",
+    "mtime": 1789325317.4483254,
+    "ast_hash": "0c999e566cf930877b518d58de82684a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/NotificacaoResponse.java": {
@@ -5200,8 +5200,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/clero/api/v1/controller/ClerigoController.java": {
-    "mtime": 1788916474.2081614,
-    "ast_hash": "a878d03f4a404d47bec9628e25c73796",
+    "mtime": 1789325303.5423195,
+    "ast_hash": "a37a3b46fa06469b893810befc950450",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/clero/api/v1/dto/ClerigoInstitucionalResponse.java": {
@@ -5365,8 +5365,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/clerigos/ClerigoFormModal.tsx": {
-    "mtime": 1788821616.102938,
-    "ast_hash": "a32d05ad9b413a432a9917075ca5b951",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "0fdc7866e20c8fc470837ec62ba4621e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/clerigos/ClerigoInativarDialog.tsx": {
@@ -5385,13 +5385,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/fieis/FielCreateModal.tsx": {
-    "mtime": 1788822048.4096873,
-    "ast_hash": "9e03e875367ddd7a375a698ec457cff8",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "6c6135938e9f829a2927cd582b92a868",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/fieis/FielEditModal.tsx": {
-    "mtime": 1788822065.8207176,
-    "ast_hash": "ef061df12617431a53b1cfe6c4b0f02b",
+    "mtime": 1789229641.9600432,
+    "ast_hash": "d011b68fd8535859200584f0c9102fc4",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/fieis/FielInativarConfirmDialog.tsx": {
@@ -5415,13 +5415,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/schemas/clerigoSchema.ts": {
-    "mtime": 1788821477.2086973,
-    "ast_hash": "cba923d2024bb61025543f5293c93c4f",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "03d3d0ec951961a1a2b2eb98e56e486e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/schemas/fielSchema.ts": {
-    "mtime": 1788821477.2136972,
-    "ast_hash": "a05e42c2a6653b23a50600ff7f2cc10c",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "920f35b4ca5e9a7a3763a061f21223ac",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/schemas/index.ts": {
@@ -5550,8 +5550,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/pages/Reservas.tsx": {
-    "mtime": 1788879424.1070817,
-    "ast_hash": "4755fc1fe95e4c7ab781b43842549065",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "8444631cc0ab7a37a3ce58e92119ef57",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/schemas/reservaSchema.ts": {
@@ -5565,8 +5565,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaController.java": {
-    "mtime": 1788915254.2061508,
-    "ast_hash": "458d7d2560dc3d980eb56cdf4eb4ad81",
+    "mtime": 1789325143.4781392,
+    "ast_hash": "5461102405f866475d86db11f69b1183",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/dto/CancelarReservaRequest.java": {
@@ -5615,8 +5615,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/dto/ReservaResponse.java": {
-    "mtime": 1788878280.8483813,
-    "ast_hash": "9cefbe8736d55e50d48496256074df2f",
+    "mtime": 1789325066.3419158,
+    "ast_hash": "40b1c7311e57dcbf106ec5bf86ebf54e",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/dto/DisponibilidadeFaixaDto.java": {
@@ -5650,13 +5650,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/CriarReservaRecorrenteUseCase.java": {
-    "mtime": 1789014244.4483345,
-    "ast_hash": "83aad88c254ed2978a9f732ed27d6c20",
+    "mtime": 1789325108.0250173,
+    "ast_hash": "4f6218e538767c907936d9bb06d2654a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/CriarReservaUseCase.java": {
-    "mtime": 1789014244.4483345,
-    "ast_hash": "f35fd69debc101eac88bc31d5ce65000",
+    "mtime": 1789325115.0240421,
+    "ast_hash": "f5b99d2c8764ee59c1ecd616e6306327",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/EventoReservaIntegrationService.java": {
@@ -5665,8 +5665,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/ExpirarReservasPendentesUseCase.java": {
-    "mtime": 1789014244.4483345,
-    "ast_hash": "ff86ae610ed0a455aa245c42e62c29b9",
+    "mtime": 1789325112.6140337,
+    "ast_hash": "dba78d666ffbd66d928be93f291e4c79",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/ListarReservasUseCase.java": {
@@ -5675,13 +5675,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/ObterDisponibilidadeItemUseCase.java": {
-    "mtime": 1789014244.4483345,
-    "ast_hash": "4419f360ad394adce07454fd8fa0b53e",
+    "mtime": 1789325120.616062,
+    "ast_hash": "2b33873936d4337e1f014f6d587fb0b4",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/ObterMetricasReservasUseCase.java": {
-    "mtime": 1788878262.3123226,
-    "ast_hash": "2fb33d552120d4fc99018b486854d259",
+    "mtime": 1789325110.3400254,
+    "ast_hash": "b231308651fcc992d5c0377a2b79e616",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/RegistrarDevolucaoAtivoUseCase.java": {
@@ -5700,8 +5700,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/application/usecase/ReservaEnricherService.java": {
-    "mtime": 1788878675.8866317,
-    "ast_hash": "384bdca9316c5a9dc29e75b0ceb28629",
+    "mtime": 1789325055.8119261,
+    "ast_hash": "e75c0ee8d7b5311780c25c1f32ce10c4",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/exception/ReservaConflitoException.java": {
@@ -5725,13 +5725,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/model/IntervaloReserva.java": {
-    "mtime": 1788878014.2915375,
-    "ast_hash": "7e7aa0e455d45ef2b24289b524010f7a",
+    "mtime": 1789325127.362086,
+    "ast_hash": "38dd1b866b2a36d12a7c623304db6695",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/model/Reserva.java": {
-    "mtime": 1788878027.6415799,
-    "ast_hash": "ed56d0e52b626957f6878bf25e5b7c8a",
+    "mtime": 1789325033.7150228,
+    "ast_hash": "595ccdfbb15e7e8782d830ec42407cff",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/model/ReservaId.java": {
@@ -5755,38 +5755,38 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/repository/ReservaRepository.java": {
-    "mtime": 1788878038.3706138,
-    "ast_hash": "d18aac208c5ea7d446acc2309b737d28",
+    "mtime": 1789325136.661119,
+    "ast_hash": "7dddb5fbef314d757eca791db7b1a532",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/service/ReservaAuthorizationService.java": {
-    "mtime": 1788878055.6596687,
-    "ast_hash": "9c3cf848c12996a7f9490d52e61bf51c",
+    "mtime": 1789325070.7039118,
+    "ast_hash": "30f03ec39514b1bbceb6dab00ac32dfd",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/service/ReservaConflitoService.java": {
-    "mtime": 1788878055.6556685,
-    "ast_hash": "6a34e0d3209ac309b7e72a627dbbb37c",
+    "mtime": 1789325132.1141028,
+    "ast_hash": "017954a23205ad7c54c96e2bc066a284",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/infrastructure/config/ReservaDomainConfig.java": {
-    "mtime": 1788878107.6908333,
-    "ast_hash": "3121e03a1f94a06a3d2649f0ef9afc4e",
+    "mtime": 1789229641.962043,
+    "ast_hash": "221134ff4f01d73811f85e4d8aa343f8",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/infrastructure/persistence/entity/ReservaEntity.java": {
-    "mtime": 1788878069.403712,
-    "ast_hash": "6c5bacb8ceff2065fcb97a67e2340528",
+    "mtime": 1789324994.8751564,
+    "ast_hash": "ddd250a1ef0d4233ba0f32cde9fc473e",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/infrastructure/persistence/mapper/ReservaMapper.java": {
-    "mtime": 1788878082.8667548,
-    "ast_hash": "f86716d222ee6a0200bf68dde62df472",
+    "mtime": 1789325062.7949193,
+    "ast_hash": "999cdfd6f8c91e8e0139506c1bb8479d",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/infrastructure/persistence/repository/ReservaJpaRepository.java": {
-    "mtime": 1789014244.4485512,
-    "ast_hash": "1aa6e068406efd6459db500959201be8",
+    "mtime": 1789325145.5361416,
+    "ast_hash": "dcb98675475587f45358fdc4c2b34890",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/infrastructure/persistence/repository/ReservaRepositoryImpl.java": {
@@ -5810,18 +5810,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/domain/model/ReservaTest.java": {
-    "mtime": 1788878770.2669306,
-    "ast_hash": "9908a27512b9ec2e683fa62522ed6119",
+    "mtime": 1789326937.4499967,
+    "ast_hash": "a153347657c5e61014b0b785155cec97",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/domain/service/ReservaConflitoServiceTest.java": {
-    "mtime": 1788878774.223943,
-    "ast_hash": "6ca317a9a6dec08d6a482c3b259e5f77",
+    "mtime": 1789325458.2854435,
+    "ast_hash": "7060d92b9f8b9b8c7a61569221644b38",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaExceptionHandler.java": {
-    "mtime": 1789023657.7814634,
-    "ast_hash": "dbf8e31f78fb1aff07ca7b47d1edb242",
+    "mtime": 1789325141.3501358,
+    "ast_hash": "10cf30281ab95ed2bcb06ec4a45f6f2d",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/components/ativos/AtivoViewModal.tsx": {
@@ -6120,8 +6120,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/ConcluirManutencaoAtivoUseCaseTest.java": {
-    "mtime": 1789023657.7834463,
-    "ast_hash": "100df6a6906cbe429b744a88359e8c80",
+    "mtime": 1789325379.6323378,
+    "ast_hash": "36ac72761063b1e11cd993cfd73cd89a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/EditarDescricaoAtivoUseCaseTest.java": {
@@ -6130,13 +6130,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/ExcluirAtivoPatrimonialUseCaseTest.java": {
-    "mtime": 1789023657.7834463,
-    "ast_hash": "1ae5cc9413e382490fd7c13ada03f28d",
+    "mtime": 1789325381.668338,
+    "ast_hash": "a4d7c9d911ec2c7453689cf28c505a2a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/SincronizarStatusReservadoAtivoUseCaseTest.java": {
-    "mtime": 1789014244.4523554,
-    "ast_hash": "df1be5b690656581b0025d349d405e9b",
+    "mtime": 1789325377.3923376,
+    "ast_hash": "aa9852f0058b779d8ad65704d99ea98b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/service/ConsultaReservaDeAtivoServiceTest.java": {
@@ -6260,8 +6260,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/membro/domain/model/MembroGrupo.java": {
-    "mtime": 1789014244.4429562,
-    "ast_hash": "3c110e98afa74f8f06b0a316fb48f27c",
+    "mtime": 1789325360.6473358,
+    "ast_hash": "7ecaa3e3927bbd408c885fb386850dfc",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/membro/infrastructure/persistence/mapper/MembroGrupoMapper.java": {
@@ -6315,13 +6315,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/domain/model/Papeis.java": {
-    "mtime": 1789014244.4411788,
-    "ast_hash": "6383dcd2e94ce4d332bcf140ae31278d",
+    "mtime": 1789325359.3333356,
+    "ast_hash": "a096ce3fdce95d1458d46e1a58657f1f",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/iam/domain/model/PapeisTest.java": {
-    "mtime": 1789014244.4512157,
-    "ast_hash": "f73e5d68812f256c7237a54534638d8b",
+    "mtime": 1789325386.3093383,
+    "ast_hash": "fd42203f5b03306df3d4a7b661380bce",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/EventoCancelamentoAuthorizationService.java": {
@@ -6330,8 +6330,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/EventoPatchAuthorizationService.java": {
-    "mtime": 1789023657.7759116,
-    "ast_hash": "ad448c2262ad0996ef9490d802043226",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "24de2ee28f937c93e3b93ba59726ae53",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/EventoService.java": {
@@ -6345,8 +6345,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/ProvisionamentoLiturgicoService.java": {
-    "mtime": 1789023657.7759116,
-    "ast_hash": "27cde9c5fa4d31c90725f8fe18de43ba",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "e29f4db39ddf271250455cf9d4c89ad5",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/SolenidadeLiturgicaService.java": {
@@ -6355,8 +6355,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/service/ValidadorPrioridadeAgenda.java": {
-    "mtime": 1789023657.7765665,
-    "ast_hash": "8b759b690cec2b90f1fdc5b0149f909b",
+    "mtime": 1789325186.0741944,
+    "ast_hash": "edbdc8da41b4ba875980c9ac2bd84f5c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/AnoParoquialFechadoPolicy.java": {
@@ -6405,8 +6405,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/HierarquiaPrioridadeAgendaPolicy.java": {
-    "mtime": 1789023657.7765665,
-    "ast_hash": "319421c4f495c849bf77bba33c6c646f",
+    "mtime": 1789325192.0292022,
+    "ast_hash": "f24949edcec63ca7a50ee89266f13905",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/MovimentoCompatibilidadePapelPolicy.java": {
@@ -6430,8 +6430,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/PadraoAutorizacaoCancelamentoEventoPolicy.java": {
-    "mtime": 1789023657.7775667,
-    "ast_hash": "fcabc56db22d89dedea83947231269cb",
+    "mtime": 1789325190.0321996,
+    "ast_hash": "aab02ed0fc217d4fdfdee6c3b55d848a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/PastoralCompatibilidadePapelPolicy.java": {
@@ -6445,8 +6445,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/config/CalendarioDomainConfig.java": {
-    "mtime": 1789023657.7775667,
-    "ast_hash": "d07ccc53054a9c0b46c6704a0ba3b1e5",
+    "mtime": 1789229641.9610431,
+    "ast_hash": "9ba2a043cf3c957b351c1d4c6822e063",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/dashboard/infrastructure/config/DashboardDomainConfig.java": {
@@ -6480,8 +6480,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/application/service/PapelGlobalAuthorizationService.java": {
-    "mtime": 1789023657.7793515,
-    "ast_hash": "54d6f03f12ef36f9d6c73482c72d9300",
+    "mtime": 1789229641.962043,
+    "ast_hash": "ed82c36913ba435bb8fab0dd696c0b8b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/application/service/UsuarioAdminService.java": {
@@ -6490,8 +6490,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/application/service/UsuarioAuthorizationService.java": {
-    "mtime": 1789023657.7795963,
-    "ast_hash": "55b59cbe1cb24ec69734cd7da51fcc57",
+    "mtime": 1789229641.962043,
+    "ast_hash": "d545699c5a477b50b4f129de5c038b6e",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/importacao/application/service/ImportacaoFileParser.java": {
@@ -6500,8 +6500,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/importacao/application/service/ImportacaoLinhaExecutor.java": {
-    "mtime": 1789023657.7798793,
-    "ast_hash": "baf1e7e9926d0092dabaa78c81ed338f",
+    "mtime": 1789325285.5663118,
+    "ast_hash": "f6445d062602fe19e7f5d502fafc2623",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/importacao/application/service/ImportacaoService.java": {
@@ -6605,8 +6605,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/application/service/ProjetoAuthorizationService.java": {
-    "mtime": 1789023657.7814634,
-    "ast_hash": "7b2389261e40029e6dba0dfb7ca87258",
+    "mtime": 1789325247.7672746,
+    "ast_hash": "bf3706f008bd0280cf8dd96759739baa",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/application/service/ValidadorVinculoProjeto.java": {
@@ -6615,18 +6615,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/policy/AutorizacaoProjetoPolicy.java": {
-    "mtime": 1789023657.7814634,
-    "ast_hash": "37c845ea0aff8694cfe8f4188c970304",
+    "mtime": 1789325251.95228,
+    "ast_hash": "e61d127ce732de80872d470a8bb014b9",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/policy/PadraoAutorizacaoProjetoPolicy.java": {
-    "mtime": 1789023657.7814634,
-    "ast_hash": "1ef6d8c518ba5eebca20ccc6f4504a7f",
+    "mtime": 1789325258.767289,
+    "ast_hash": "427e2afb17ce240e5f52f1aec9527949",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/policy/PeriodoProjetoVincularPolicy.java": {
-    "mtime": 1789023657.7814634,
-    "ast_hash": "a3089746a29cae40f8e5a7f20a5e6678",
+    "mtime": 1789325346.1173344,
+    "ast_hash": "eea366dbba0e5066759cdc510c17d534",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/projeto/domain/policy/ProjetoVinculo.java": {
@@ -6640,13 +6640,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/service/EventoPatchAuthorizationServiceTest.java": {
-    "mtime": 1789023657.7815666,
-    "ast_hash": "6e4275d796ca2cacf46ce2299df490ef",
+    "mtime": 1789229641.962043,
+    "ast_hash": "1e060b204dc0e2d203278b38c5f9abfc",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/service/LiturgicalGovernanceTest.java": {
-    "mtime": 1789023657.7823532,
-    "ast_hash": "bd0055a0d0880b07033936fa14b1bd3b",
+    "mtime": 1789229641.962043,
+    "ast_hash": "a142cbbe8c5ecd85c8617d34ab4c8e68",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/application/service/MotorLiturgicoTest.java": {
@@ -6680,8 +6680,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/domain/policy/PadraoAutorizacaoCancelamentoEventoPolicyTest.java": {
-    "mtime": 1789023657.7825525,
-    "ast_hash": "ad3b2f53f74f25f98eb63ddb7207424d",
+    "mtime": 1789325395.9903395,
+    "ast_hash": "0d27a868f6b74561e3ed2359c0ae0f89",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/governanca/domain/policy/ConselhoOuParocoAutorizacaoAnoParoquialPolicyTest.java": {
@@ -6690,8 +6690,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/iam/application/service/PapelGlobalAuthorizationServiceTest.java": {
-    "mtime": 1789023657.7825525,
-    "ast_hash": "f603f89340d730f74779f9fb754fa5b8",
+    "mtime": 1789229641.962043,
+    "ast_hash": "3d496608ce41c4d99076c9ddc4779a6b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/iam/application/service/UsuarioAdminServiceTest.java": {
@@ -6705,18 +6705,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/organizacao/application/service/GrupoParoquialServiceTest.java": {
-    "mtime": 1789023657.7834463,
-    "ast_hash": "993cd3056b405737f0429dddbfa45c83",
+    "mtime": 1789325439.3354092,
+    "ast_hash": "07e1249791f8a1facfc9b1724af330e9",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/organizacao/application/service/ValidadorHierarquiaOrganizacionalTest.java": {
-    "mtime": 1789023657.7834463,
-    "ast_hash": "e48d6830be0fc302a764dc4e78be11fc",
+    "mtime": 1789325441.1894124,
+    "ast_hash": "ebd3832581bf1a9fdf8025af54bfe9f8",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/organizacao/domain/policy/PadraoAutorizacaoEscopoUsuarioPolicyTest.java": {
-    "mtime": 1789023657.7834463,
-    "ast_hash": "da67c02e8f3884ccbad1a7f76d1259d0",
+    "mtime": 1789325449.778428,
+    "ast_hash": "b45575ac0c32102704cf7b5d72fccb81",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/service/PatrimonioAuthorizationServiceTest.java": {
@@ -6730,18 +6730,243 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/domain/policy/PadraoAutorizacaoPatrimonioPolicyTest.java": {
-    "mtime": 1789023657.7842035,
-    "ast_hash": "1b581d52a493d720d37bdc3ebd493fce",
+    "mtime": 1789325383.8533382,
+    "ast_hash": "fe4fdaf2c492b2021b1c037741840d60",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/projeto/domain/policy/PadraoAutorizacaoProjetoPolicyTest.java": {
-    "mtime": 1789023657.7842035,
-    "ast_hash": "0af41c27ced46f110764085ea65a9b61",
+    "mtime": 1789325425.1413834,
+    "ast_hash": "3df2e220db68443d9961973cde46e960",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/projeto/domain/policy/PeriodoProjetoVincularPolicyTest.java": {
     "mtime": 1789023657.7843978,
     "ast_hash": "509aaafed22537fc5aaf2946b52068b1",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/dto/evento/EventoRecorrenciaDetalheResponse.java": {
+    "mtime": 1789105356.809525,
+    "ast_hash": "6c5d307dfd3d8bf520461f0c7fca7355",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/GetEventoRecorrenciaUseCase.java": {
+    "mtime": 1789105393.6800344,
+    "ast_hash": "f2ce3fe59ec1ce9e2a3bf77735230fa0",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/domain/policy/PadraoPapelGlobalMappingPolicy.java": {
+    "mtime": 1789228292.2274373,
+    "ast_hash": "1412f5d906889c4c46ee1b938d269e1b",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/domain/policy/PapelGlobalMappingPolicy.java": {
+    "mtime": 1789228285.7334447,
+    "ast_hash": "13128b6851a4407c785f03b6dac91548",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/infrastructure/config/IamDomainConfig.java": {
+    "mtime": 1789228591.802125,
+    "ast_hash": "f6c209124ed2db0aeef292e085fb3edd",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V086__adiciona_comentarios_documentacao_tabelas_principais.sql": {
+    "mtime": 1789228268.0414667,
+    "ast_hash": "c5a59aa0bc5427bb1fa9f025a384b6b0",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/CreateRequestMode.java": {
+    "mtime": 1789228385.825329,
+    "ast_hash": "51f487bc4e1445d40ac968d278c49128",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/EventoPatchAuthorizationPolicy.java": {
+    "mtime": 1789228443.3722703,
+    "ast_hash": "68e0886082fdccffaeae1eb4b044fa37",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/PadraoEventoPatchAuthorizationPolicy.java": {
+    "mtime": 1789228455.2992587,
+    "ast_hash": "fc043f913653fa10402ac57af0e96d8e",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/domain/policy/PadraoUsuarioGerenciamentoAutorizacaoPolicy.java": {
+    "mtime": 1789325174.3421793,
+    "ast_hash": "b4d4eac9976e0e39f2d148335999220c",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/iam/domain/policy/UsuarioGerenciamentoAutorizacaoPolicy.java": {
+    "mtime": 1789228554.982161,
+    "ast_hash": "ca68f341c6afbb155ddd8fb1dadead2d",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/policy/PadraoReservaAutorizacaoPolicy.java": {
+    "mtime": 1789325129.9810953,
+    "ast_hash": "93679a81e93d963a98e30c05486520c6",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/domain/policy/ReservaAutorizacaoPolicy.java": {
+    "mtime": 1789228350.7333696,
+    "ast_hash": "728b43ca04f277f98e31a96b73ddaae7",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/calendar/CalendarAgendaList.tsx": {
+    "mtime": 1789229473.0688941,
+    "ast_hash": "fd3b28e2b519cff8f2c27fb6b18aec57",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/calendar/CalendarMonthGrid.tsx": {
+    "mtime": 1789229458.0598907,
+    "ast_hash": "721f4318c33f7fc091151ad46ed8f18a",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/calendar/CalendarToolbar.tsx": {
+    "mtime": 1789229440.3348868,
+    "ast_hash": "f070f018442c4ecfd54de88a037edc36",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/calendar/EventoDetailsDialog.tsx": {
+    "mtime": 1789229518.6519043,
+    "ast_hash": "b7ba4b505b585c213f4d01f9c77d320f",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/calendar/SolenidadesDialog.tsx": {
+    "mtime": 1789229530.942907,
+    "ast_hash": "3f15d55ed99ddd7b2c385d72cc6cc6a7",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/eventos/EventoApoioSelect.tsx": {
+    "mtime": 1789229472.3068938,
+    "ast_hash": "116010ae2c97c313646e8042c3d8b154",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/eventos/EventoDadosCard.tsx": {
+    "mtime": 1789229405.0318327,
+    "ast_hash": "7b9ca1fd6aafb714ac708539f4a6e516",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/eventos/EventoDataRecorrenciaCard.tsx": {
+    "mtime": 1789229444.9738877,
+    "ast_hash": "b59e8267b866f2586d953751efbbb640",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/eventos/EventoLocalCard.tsx": {
+    "mtime": 1789229432.0938802,
+    "ast_hash": "a15141a0057cdb55ac3cf03b5c8671df",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/components/eventos/EventoOrganizacaoCard.tsx": {
+    "mtime": 1789229485.832897,
+    "ast_hash": "d473e2290b00ca2c1caf858f871efcaa",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/hooks/useCadastroEventoForm.ts": {
+    "mtime": 1789229388.3738034,
+    "ast_hash": "a2e7d8d1f08c4024255004492515810d",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/hooks/useCalendarData.ts": {
+    "mtime": 1789230055.0225842,
+    "ast_hash": "909e253e823ae96ae78efd54b0737043",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/hooks/useCalendarFilterState.ts": {
+    "mtime": 1789229360.4527545,
+    "ast_hash": "c29813a21caacae423e75ca58e77a04c",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/hooks/useCalendarGrid.ts": {
+    "mtime": 1789229356.8687482,
+    "ast_hash": "34cb3fb9b0fa3293a2bb07e42a3ef484",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/hooks/useEventoCrud.ts": {
+    "mtime": 1789229416.7928534,
+    "ast_hash": "b45fe34103cb56d250895c9bd67b604e",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/schemas/eventoSchema.ts": {
+    "mtime": 1789229509.8979023,
+    "ast_hash": "d352f40ba2680e6a6b63faf712e31d68",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/schemas/organizacaoSchema.ts": {
+    "mtime": 1789229292.5526357,
+    "ast_hash": "68bd5c1234f4acb11f036cff894041f2",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/utils/calendarHelpers.ts": {
+    "mtime": 1789229348.115733,
+    "ast_hash": "9b9ab6b86d4d75a3e77303ee7ded9348",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaControllerTest.java": {
+    "mtime": 1789326815.3439922,
+    "ast_hash": "ab4c092c3abae68255aa2b75cd93be62",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaExceptionHandlerTest.java": {
+    "mtime": 1789326665.265987,
+    "ast_hash": "571a5f74eff9489402e1d8cc63558131",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/api/v1/dto/ReservaResponseTest.java": {
+    "mtime": 1789326350.5840967,
+    "ast_hash": "0f3b0ad8946a04b8b89bb33a65b74ee2",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/CancelarReservaUseCaseTest.java": {
+    "mtime": 1789326547.0130217,
+    "ast_hash": "e4dcde704ce3015f8faa70ea2ae1b472",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/CriarReservaRecorrenteUseCaseTest.java": {
+    "mtime": 1789327223.3384438,
+    "ast_hash": "83b8de7afa95fb91cf2c9e0a12751fb2",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/CriarReservaUseCaseTest.java": {
+    "mtime": 1789326614.2769933,
+    "ast_hash": "b0109f4321ee9a780d4ad30136e8d0d4",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/EventoReservaIntegrationServiceTest.java": {
+    "mtime": 1789327215.3540158,
+    "ast_hash": "9564873c7398136cc46ec618b14e712e",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/ObterDisponibilidadeItemUseCaseTest.java": {
+    "mtime": 1789326589.9500034,
+    "ast_hash": "913a2cb068def8d29aa10a740ecb4fe4",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/ObterMetricasReservasUseCaseTest.java": {
+    "mtime": 1789326687.1519876,
+    "ast_hash": "c5dcff7b1afd53045c8fe6187ab24fdf",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/application/usecase/ReservaEnricherServiceTest.java": {
+    "mtime": 1789327209.765015,
+    "ast_hash": "c38b9f7875dd3625951d11be67a94bbf",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/domain/service/UsuarioActorTest.java": {
+    "mtime": 1789326395.3020937,
+    "ast_hash": "01b778db352172767c8fb473bc99fdee",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/infrastructure/persistence/entity/ReservaEntityTest.java": {
+    "mtime": 1789326909.9979956,
+    "ast_hash": "a9173a729a1a9bd145573249cb21c679",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/infrastructure/persistence/repository/ReservaRepositoryImplTest.java": {
+    "mtime": 1789327117.3180032,
+    "ast_hash": "103ae10cc231d89353def1ff6e888a4e",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/infrastructure/security/ReservaSecurityAdapterTest.java": {
+    "mtime": 1789326379.2461019,
+    "ast_hash": "0f85dbe528d3963241a4f6b1a3999819",
     "semantic_hash": ""
   }
 }

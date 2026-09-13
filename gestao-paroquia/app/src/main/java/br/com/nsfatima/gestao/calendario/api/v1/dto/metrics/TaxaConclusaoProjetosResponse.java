@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.metrics;
 
+import java.math.BigDecimal;
+
 /**
  * DTO representativo da Taxa de Conclusão e Abandono de Projetos (CPP/CAE).
  */
@@ -8,8 +10,8 @@ public record TaxaConclusaoProjetosResponse(
         Long projetosConcluidos,
         Long projetosEmAndamento,
         Long projetosCancelados,
-        Double taxaConclusaoPercentual,
-        Double taxaAbandonoPercentual,
+        BigDecimal taxaConclusaoPercentual,
+        BigDecimal taxaAbandonoPercentual,
         String avaliacaoExecutiva
 ) {
 }

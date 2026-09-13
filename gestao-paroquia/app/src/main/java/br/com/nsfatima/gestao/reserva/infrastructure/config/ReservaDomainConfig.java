@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.reserva.infrastructure.config;
 
+import br.com.nsfatima.gestao.reserva.domain.policy.PadraoReservaAutorizacaoPolicy;
+import br.com.nsfatima.gestao.reserva.domain.policy.ReservaAutorizacaoPolicy;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaConflitoService;
@@ -19,7 +21,12 @@ public class ReservaDomainConfig {
     }
 
     @Bean
-    public ReservaAuthorizationService reservaAuthorizationService() {
-        return new ReservaAuthorizationService();
+    public ReservaAuthorizationService reservaAuthorizationService(ReservaAutorizacaoPolicy reservaAutorizacaoPolicy) {
+        return new ReservaAuthorizationService(reservaAutorizacaoPolicy);
+    }
+
+    @Bean
+    public ReservaAutorizacaoPolicy reservaAutorizacaoPolicy() {
+        return new PadraoReservaAutorizacaoPolicy();
     }
 }

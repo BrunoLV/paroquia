@@ -24,6 +24,27 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+/** Payload de `GET /auth/me` — dados do usuário autenticado na sessão atual. */
+interface AuthMeResponse {
+  id?: string;
+  usuarioId?: string;
+  username?: string;
+  name?: string;
+  roles?: string[];
+  organizations?: Organization[];
+}
+
+/** Payload de `POST /auth/login` — o backend responde tanto aninhado em `user` quanto nos campos raiz. */
+interface LoginResponse {
+  user?: AuthMeResponse & { organizations?: Organization[] };
+  id?: string;
+  usuarioId?: string;
+  username?: string;
+  name?: string;
+  roles?: string[];
+  organizations?: Organization[];
+}
+
 /**
  * Contexto de sessão/autenticação da aplicação. A fonte da verdade da sessão é o backend
  * (cookie de sessão via `apiClient`, `withCredentials: true`); `localStorage['user']` é
@@ -58,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verifySession = async () => {
       try {
-        const response = await apiClient.get<any>('/auth/me');
+        const response = await apiClient.get<AuthMeResponse>('/auth/me');
         if (response.data) {
           const data = response.data;
           const currentUser: User = {
@@ -84,7 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await apiClient.post<any>('/auth/login', {
+      const response = await apiClient.post<LoginResponse>('/auth/login', {
         username,
         password,
       });
@@ -93,9 +114,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       let newUser: User;
 
       if (responseData && responseData.user) {
+        const u = responseData.user;
         newUser = {
-          ...responseData.user,
-          organizations: responseData.user.organizations || []
+          id: u.id || u.usuarioId || '',
+          username: u.username || '',
+          name: u.name || u.username || '',
+          roles: u.roles || [],
+          organizations: u.organizations || []
         };
       } else {
         newUser = {

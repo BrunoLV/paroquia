@@ -1,13 +1,12 @@
 package br.com.nsfatima.gestao.iam.application.service;
 
-import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
+import br.com.nsfatima.gestao.iam.domain.policy.PapelGlobalMappingPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.PapelGlobalJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,14 +20,17 @@ public class PapelGlobalAuthorizationService {
     private final PapelGlobalJpaRepository papelGlobalRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final EncargoClericalJpaRepository encargoClericalRepository;
+    private final PapelGlobalMappingPolicy papelGlobalMappingPolicy;
 
     public PapelGlobalAuthorizationService(
             PapelGlobalJpaRepository papelGlobalRepository,
             UsuarioJpaRepository usuarioRepository,
-            EncargoClericalJpaRepository encargoClericalRepository) {
+            EncargoClericalJpaRepository encargoClericalRepository,
+            PapelGlobalMappingPolicy papelGlobalMappingPolicy) {
         this.papelGlobalRepository = papelGlobalRepository;
         this.usuarioRepository = usuarioRepository;
         this.encargoClericalRepository = encargoClericalRepository;
+        this.papelGlobalMappingPolicy = papelGlobalMappingPolicy;
     }
 
     /**
@@ -61,7 +63,7 @@ public class PapelGlobalAuthorizationService {
         }
         Set<PapelGlobal> papeis = EnumSet.noneOf(PapelGlobal.class);
         for (var encargo : encargoClericalRepository.findByClerigoIdAndAtualTrue(clerigoId)) {
-            PapelGlobal papel = mapFuncaoToPapelGlobal(encargo.getFuncao());
+            PapelGlobal papel = papelGlobalMappingPolicy.mapFuncaoToPapelGlobal(encargo.getFuncao());
             if (papel != null) {
                 papeis.add(papel);
             }
@@ -104,36 +106,8 @@ public class PapelGlobalAuthorizationService {
                     if (u.getClerigoId() != null && isGlobalClerigo(u.getClerigoId())) {
                         return true;
                     }
-                    return hasGlobalRole(u.getRoles());
+                    return papelGlobalMappingPolicy.hasGlobalRole(u.getRoles());
                 })
                 .orElse(false);
-    }
-
-    private PapelGlobal mapFuncaoToPapelGlobal(FuncaoEclesiastica funcao) {
-        if (funcao == null) {
-            return null;
-        }
-        return switch (funcao) {
-            case BISPO_DIOCESANO -> PapelGlobal.BISPO_DIOCESANO;
-            case PAROCO, ADMINISTRADOR_PAROQUIAL -> PapelGlobal.PAROCO;
-            case VIGARIO_PAROQUIAL -> PapelGlobal.VIGARIO;
-            default -> null;
-        };
-    }
-
-    private boolean hasGlobalRole(String roles) {
-        if (roles == null || roles.isBlank()) {
-            return false;
-        }
-        return Arrays.stream(roles.split(","))
-                .map(String::trim)
-                .anyMatch(r -> r.equalsIgnoreCase("ADMIN")
-                        || r.equalsIgnoreCase("PAROCO")
-                        || r.equalsIgnoreCase("VIGARIO")
-                        || r.equalsIgnoreCase("BISPO_DIOCESANO")
-                        || r.equalsIgnoreCase("ROLE_ADMIN")
-                        || r.equalsIgnoreCase("ROLE_PAROCO")
-                        || r.equalsIgnoreCase("ROLE_VIGARIO")
-                        || r.equalsIgnoreCase("ROLE_BISPO_DIOCESANO"));
     }
 }

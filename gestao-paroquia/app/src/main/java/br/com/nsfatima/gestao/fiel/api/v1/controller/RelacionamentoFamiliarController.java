@@ -48,7 +48,8 @@ public class RelacionamentoFamiliarController {
     @Operation(summary = "Lista familiares ativos do fiel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de familiares recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = RelacionamentoFamiliarResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = RelacionamentoFamiliarResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Fiel não encontrado")

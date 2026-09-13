@@ -60,7 +60,8 @@ public class UpdateObservacaoUseCase {
                 .orElseThrow(() -> new ObservacaoNaoEncontradaException("Observation not found"));
 
         mutacaoObservacaoPolicy.assertEdicaoOuExclusaoPermitida(
-                new ObservacaoRegistrada(observacao.getTipo(), observacao.isRemovida(), observacao.getUsuarioId()), usuarioId);
+                new ObservacaoRegistrada(observacao.getTipo(), observacao.isRemovida(), observacao.getUsuarioId()),
+                usuarioId);
 
         ObservacaoNotaRevisaoEntity revisao = new ObservacaoNotaRevisaoEntity();
         revisao.setId(UUID.randomUUID());

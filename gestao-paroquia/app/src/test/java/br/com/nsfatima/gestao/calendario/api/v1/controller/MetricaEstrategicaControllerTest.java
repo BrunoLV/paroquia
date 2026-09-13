@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -57,13 +58,16 @@ class MetricaEstrategicaControllerTest {
     @DisplayName("Deve retornar 200 e o painel consolidado com as 6 métricas estratégicas")
     void deveRetornarPainelConsolidado() throws Exception {
         SazonalidadeLiturgicaResponse saz = new SazonalidadeLiturgicaResponse("Quaresma", TipoCicloLiturgico.QUARESMA,
-                2.5, 25L, 62L, 2.5, "PICO_OPERACIONAL");
-        TaxaConclusaoProjetosResponse proj = new TaxaConclusaoProjetosResponse(10L, 8L, 2L, 0L, 80.0, 0.0, "SAUDAVEL");
-        SlaDespachoPastoralResponse sla = new SlaDespachoPastoralResponse(5L, 5L, 0L, 12.0, 48.0, 100.0, "EXCELENTE");
-        CoeficienteImpactoSocialResponse soc = new CoeficienteImpactoSocialResponse(20L, 12L, 8L, 60.0,
-                "MISSIONARIA_EM_SAIDA");
+                BigDecimal.valueOf(2.5), 25L, 62L, BigDecimal.valueOf(2.5), "PICO_OPERACIONAL");
+        TaxaConclusaoProjetosResponse proj = new TaxaConclusaoProjetosResponse(10L, 8L, 2L, 0L,
+                BigDecimal.valueOf(80.0), BigDecimal.valueOf(0.0), "SAUDAVEL");
+        SlaDespachoPastoralResponse sla = new SlaDespachoPastoralResponse(5L, 5L, 0L, BigDecimal.valueOf(12.0),
+                BigDecimal.valueOf(48.0), BigDecimal.valueOf(100.0), "EXCELENTE");
+        CoeficienteImpactoSocialResponse soc = new CoeficienteImpactoSocialResponse(
+                20L, 12L, 8L, BigDecimal.valueOf(60.0), "MISSIONARIA_EM_SAIDA");
         ConcorrenciaInterpastoralResponse conc = new ConcorrenciaInterpastoralResponse(0, List.of(), "BAIXO");
-        OciosidadePatrimonialResponse oci = new OciosidadePatrimonialResponse(5L, 200.0, 50.0, 150.0, 75.0,
+        OciosidadePatrimonialResponse oci = new OciosidadePatrimonialResponse(5L, BigDecimal.valueOf(200.0),
+                BigDecimal.valueOf(50.0), BigDecimal.valueOf(150.0), BigDecimal.valueOf(75.0),
                 "OPORTUNIDADE_DE_NOVAS_FRENTES");
 
         when(calcularSazonalidadeLiturgicaUseCase.execute()).thenReturn(List.of(saz));

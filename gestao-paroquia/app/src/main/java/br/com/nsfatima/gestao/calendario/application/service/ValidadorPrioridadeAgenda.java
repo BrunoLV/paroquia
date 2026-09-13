@@ -49,8 +49,8 @@ public class ValidadorPrioridadeAgenda {
         List<EventoEntity> sobrepostos = eventoJpaRepository.findOverlappingEvents(inicioUtc, fimUtc, eventoAtualId);
         Map<UUID, EventoEntity> porId = sobrepostos.stream()
                 .collect(Collectors.toMap(EventoEntity::getId, evento -> evento));
-        PrioridadeAgendaPolicy.EventoSobreposto novoEvento =
-                new PrioridadeAgendaPolicy.EventoSobreposto(null, categoria.getNivelPrioridade(), localId, igrejaVinculoId);
+        PrioridadeAgendaPolicy.EventoSobreposto novoEvento = new PrioridadeAgendaPolicy.EventoSobreposto(
+                null, categoria.getNivelPrioridade(), localId, igrejaVinculoId);
         return prioridadeAgendaPolicy.resolver(novoEvento, sobrepostos.stream().map(this::paraFato).toList()).stream()
                 .map(decisao -> porId.get(decisao.id()))
                 .toList();

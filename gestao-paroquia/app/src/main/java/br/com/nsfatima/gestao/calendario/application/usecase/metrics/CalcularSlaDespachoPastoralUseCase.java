@@ -7,6 +7,8 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.SlaDespachoPastoralR
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 
 import java.util.List;
@@ -17,7 +19,11 @@ import java.util.List;
 @Service
 public class CalcularSlaDespachoPastoralUseCase {
 
-    private static final double SLA_META_HORAS_PADRAO = 48.0;
+    private static final BigDecimal SLA_META_HORAS_PADRAO = BigDecimal.valueOf(48).setScale(1, RoundingMode.HALF_UP);
+    private static final BigDecimal LIMIAR_EXCELENTE = BigDecimal.valueOf(24);
+    private static final BigDecimal MINUTOS_POR_HORA = BigDecimal.valueOf(60);
+    private static final BigDecimal CEM_PORCENTO = BigDecimal.valueOf(100).setScale(1, RoundingMode.HALF_UP);
+    private static final int HORAS_SCALE = 1;
 
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
 
@@ -42,25 +48,30 @@ public class CalcularSlaDespachoPastoralUseCase {
                 .filter(a -> a.getStatus() == AprovacaoStatus.REPROVADA)
                 .count();
 
-        List<Double> duracoesHoras = aprovacoes.stream()
+        List<BigDecimal> duracoesHoras = aprovacoes.stream()
                 .filter(a -> a.getCriadoEmUtc() != null && a.getDecididoEmUtc() != null)
-                .map(a -> (double) Duration.between(a.getCriadoEmUtc(), a.getDecididoEmUtc()).toMinutes() / 60.0)
+                .map(a -> BigDecimal.valueOf(Duration.between(a.getCriadoEmUtc(), a.getDecididoEmUtc()).toMinutes())
+                        .divide(MINUTOS_POR_HORA, HORAS_SCALE, RoundingMode.HALF_UP))
                 .toList();
 
-        double tempoMedio = duracoesHoras.isEmpty() ? 0.0 :
-                duracoesHoras.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        BigDecimal tempoMedio = duracoesHoras.isEmpty()
+                ? BigDecimal.ZERO.setScale(HORAS_SCALE, RoundingMode.HALF_UP)
+                : duracoesHoras.stream().reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(BigDecimal.valueOf(duracoesHoras.size()), HORAS_SCALE, RoundingMode.HALF_UP);
 
         long dentroSlaCount = duracoesHoras.stream()
-                .filter(d -> d <= SLA_META_HORAS_PADRAO)
+                .filter(d -> d.compareTo(SLA_META_HORAS_PADRAO) <= 0)
                 .count();
 
-        double percentualDentroSla = duracoesHoras.isEmpty() ? 100.0 :
-                (dentroSlaCount * 100.0) / duracoesHoras.size();
+        BigDecimal percentualDentroSla = duracoesHoras.isEmpty()
+                ? CEM_PORCENTO
+                : BigDecimal.valueOf(dentroSlaCount).multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(duracoesHoras.size()), HORAS_SCALE, RoundingMode.HALF_UP);
 
         String statusSla;
-        if (tempoMedio <= 24.0) {
+        if (tempoMedio.compareTo(LIMIAR_EXCELENTE) <= 0) {
             statusSla = "EXCELENTE";
-        } else if (tempoMedio <= SLA_META_HORAS_PADRAO) {
+        } else if (tempoMedio.compareTo(SLA_META_HORAS_PADRAO) <= 0) {
             statusSla = "DENTRO_DO_ESPERADO";
         } else {
             statusSla = "GARGALO_BUROCRATICO";
@@ -70,9 +81,9 @@ public class CalcularSlaDespachoPastoralUseCase {
                 total,
                 aprovadas,
                 rejeitadas,
-                Math.round(tempoMedio * 10.0) / 10.0,
+                tempoMedio,
                 SLA_META_HORAS_PADRAO,
-                Math.round(percentualDentroSla * 10.0) / 10.0,
+                percentualDentroSla,
                 statusSla
         );
     }

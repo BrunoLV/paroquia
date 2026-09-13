@@ -257,7 +257,8 @@ public class GrupoParoquialController {
     @Operation(summary = "List all organizations")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de organizações retornada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = GrupoParoquialResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = GrupoParoquialResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
@@ -279,7 +280,8 @@ public class GrupoParoquialController {
     @Operation(summary = "Lista os membros de uma organização")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de membros retornada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = GrupoParoquialMembroResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = GrupoParoquialMembroResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")

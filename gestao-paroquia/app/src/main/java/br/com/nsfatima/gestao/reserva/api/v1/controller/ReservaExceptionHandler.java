@@ -80,7 +80,8 @@ public class ReservaExceptionHandler extends BaseExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 ErrorCodes.RESOURCE_NOT_FOUND,
                 ex.getMessage(),
-                List.of(new ValidationErrorItem(ErrorCodes.RESOURCE_NOT_FOUND.name(), "reservaId", ex.getMessage(), null))
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.RESOURCE_NOT_FOUND.name(), "reservaId", ex.getMessage(), null))
         );
     }
 
@@ -93,7 +94,8 @@ public class ReservaExceptionHandler extends BaseExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.DOMAIN_RULE_VIOLATION,
                 ex.getMessage(),
-                List.of(new ValidationErrorItem(ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "operacao", ex.getMessage(), null))
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "operacao", ex.getMessage(), null))
         );
     }
 }

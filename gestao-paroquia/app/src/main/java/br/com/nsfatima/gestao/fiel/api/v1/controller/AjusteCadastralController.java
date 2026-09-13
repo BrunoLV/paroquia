@@ -87,7 +87,8 @@ public class AjusteCadastralController {
     @Operation(summary = "Lista solicitações de ajuste pendentes")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pendências recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SolicitacaoAjusteCadastralResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = SolicitacaoAjusteCadastralResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
@@ -100,7 +101,8 @@ public class AjusteCadastralController {
     @Operation(summary = "Lista solicitações pendentes de um fiel específico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pendências do fiel recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SolicitacaoAjusteCadastralResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = SolicitacaoAjusteCadastralResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

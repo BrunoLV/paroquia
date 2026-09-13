@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
+import br.com.nsfatima.gestao.calendario.domain.policy.PadraoEventoPatchAuthorizationPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno.Vinculo;
@@ -29,7 +30,8 @@ class EventoPatchAuthorizationServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new EventoPatchAuthorizationService(mock(PapelGlobalAuthorizationService.class));
+        service = new EventoPatchAuthorizationService(
+                mock(PapelGlobalAuthorizationService.class), new PadraoEventoPatchAuthorizationPolicy());
         originalContext = SecurityContextHolder.getContext();
     }
 

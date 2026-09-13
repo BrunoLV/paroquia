@@ -32,7 +32,8 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
     @DisplayName("Permite gestão para alto nível mesmo em unidade distinta")
     void devePermitirGestaoParaAltoNivelEmQualquerUnidade() {
         UUID outraUnidade = UUID.randomUUID();
-        assertThatCode(() -> policy.assertPodeGerirPatrimonio(PapelOrganizacional.PAROCO, outraUnidade, unidadeProprietaria))
+        assertThatCode(() -> policy.assertPodeGerirPatrimonio(
+                PapelOrganizacional.PAROCO, outraUnidade, unidadeProprietaria))
                 .doesNotThrowAnyException();
         assertThatCode(() -> policy.assertPodeGerirPatrimonio(PapelOrganizacional.ADMIN, null, unidadeProprietaria))
                 .doesNotThrowAnyException();

@@ -22,6 +22,8 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -30,7 +32,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -48,6 +49,10 @@ public class GetDashboardLogisticaUseCase {
     // ponytail: janela operacional fixa de 14h (06h-20h); extrair para configuração por paróquia
     // se as casas passarem a operar horários muito distintos.
     private static final int HORAS_OPERACIONAIS_DIA = 14;
+    private static final int PERCENTUAL_SCALE = 1;
+    private static final BigDecimal CEM = BigDecimal.valueOf(100);
+    private static final BigDecimal ZERO_SCALED = BigDecimal.ZERO.setScale(PERCENTUAL_SCALE, RoundingMode.HALF_UP);
+    private static final BigDecimal CEM_SCALED = CEM.setScale(PERCENTUAL_SCALE, RoundingMode.HALF_UP);
 
     private final EventoJpaRepository eventoRepository;
     private final LocalJpaRepository localRepository;
@@ -89,7 +94,7 @@ public class GetDashboardLogisticaUseCase {
             EventoActorContext actorContext, PeriodoDashboard periodo, UUID grupoParoquialIdSolicitado) {
         Instant agora = Instant.now();
         JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
-        Optional<UUID> escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado);
+        UUID escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado).orElse(null);
 
         List<LocalEntity> locais = locaisNoEscopo(escopo);
         Map<UUID, String> nomesLocais = locais.stream()
@@ -134,30 +139,32 @@ public class GetDashboardLogisticaUseCase {
     }
 
     private List<OcupacaoLocalDTO> porLocal(List<LocalEntity> locais, Map<UUID, Long> minutosSemana) {
-        double capacidadeMinutos = HORAS_OPERACIONAIS_DIA * 60.0 * 7;
+        BigDecimal capacidadeMinutos = BigDecimal.valueOf(HORAS_OPERACIONAIS_DIA * 60L * 7);
         return locais.stream()
                 .map(l -> {
                     long minutos = minutosSemana.getOrDefault(l.getId(), 0L);
-                    return new OcupacaoLocalDTO(l.getNome(),
-                            clamp(minutos * 100.0 / capacidadeMinutos), minutos / 60);
+                    BigDecimal taxaLocal = clamp(BigDecimal.valueOf(minutos).multiply(CEM)
+                            .divide(capacidadeMinutos, PERCENTUAL_SCALE, RoundingMode.HALF_UP));
+                    return new OcupacaoLocalDTO(l.getNome(), taxaLocal, minutos / 60);
                 })
-                .sorted(Comparator.comparingDouble(OcupacaoLocalDTO::taxaSemanaPercentual).reversed())
+                .sorted(Comparator.comparing(OcupacaoLocalDTO::taxaSemanaPercentual).reversed())
                 .toList();
     }
 
-    private double taxa(long minutosOcupados, int quantidadeLocais, int dias) {
+    private BigDecimal taxa(long minutosOcupados, int quantidadeLocais, int dias) {
         if (quantidadeLocais == 0) {
-            return 0.0;
+            return ZERO_SCALED;
         }
-        double capacidade = quantidadeLocais * HORAS_OPERACIONAIS_DIA * 60.0 * dias;
-        return clamp(minutosOcupados * 100.0 / capacidade);
+        BigDecimal capacidade = BigDecimal.valueOf((long) quantidadeLocais * HORAS_OPERACIONAIS_DIA * 60L * dias);
+        return clamp(BigDecimal.valueOf(minutosOcupados).multiply(CEM)
+                .divide(capacidade, PERCENTUAL_SCALE, RoundingMode.HALF_UP));
     }
 
-    private List<EventosPorResponsavelDTO> eventosPorResponsavel(JanelaTemporal janela, Optional<UUID> escopo) {
+    private List<EventosPorResponsavelDTO> eventosPorResponsavel(JanelaTemporal janela, UUID escopo) {
         Map<UUID, String> nomes = new HashMap<>();
         grupoParoquialRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
         return eventoRepository.contarPorResponsavelNoPeriodo(janela.inicio(), janela.fim()).stream()
-                .filter(linha -> escopo.isEmpty() || escopo.get().equals(linha[0]))
+                .filter(linha -> escopo == null || escopo.equals(linha[0]))
                 .map(linha -> new EventosPorResponsavelDTO(
                         nomes.getOrDefault((UUID) linha[0], "Organização Desconhecida"),
                         ((Number) linha[1]).longValue()))
@@ -177,9 +184,9 @@ public class GetDashboardLogisticaUseCase {
                 .toList();
     }
 
-    private List<LocalEntity> locaisNoEscopo(Optional<UUID> escopo) {
+    private List<LocalEntity> locaisNoEscopo(UUID escopo) {
         return localRepository.findByAtivoTrue().stream()
-                .filter(l -> escopo.isEmpty() || escopo.get().equals(l.getGrupoParoquialId()))
+                .filter(l -> escopo == null || escopo.equals(l.getGrupoParoquialId()))
                 .toList();
     }
 
@@ -187,7 +194,7 @@ public class GetDashboardLogisticaUseCase {
         return minutos.values().stream().mapToLong(Long::longValue).sum();
     }
 
-    private double clamp(double percentual) {
-        return Math.max(0.0, Math.min(100.0, percentual));
+    private BigDecimal clamp(BigDecimal percentual) {
+        return percentual.max(ZERO_SCALED).min(CEM_SCALED);
     }
 }

@@ -44,7 +44,8 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
                 throw new ForbiddenOperationException("Usuário não pode cancelar eventos sem um escopo de organização");
             }
             if (eventoOrgId == null || !Objects.equals(eventoOrgId, atorOrgId)) {
-                throw new ForbiddenOperationException("User cannot cancel events outside the responsible organization scope");
+                throw new ForbiddenOperationException(
+                        "User cannot cancel events outside the responsible organization scope");
             }
             return CancelamentoRequestMode.REQUIRES_APROVACAO;
         }

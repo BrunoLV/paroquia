@@ -32,6 +32,8 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -64,6 +66,7 @@ import java.util.stream.Collectors;
 public class GetDashboardMetricsUseCase {
 
     private static final String STATUS_EVENTO_PENDENTE = "RASCUNHO";
+    private static final int PERCENTUAL_SCALE = 1;
     private static final Set<ProjetoStatus> STATUS_ATIVOS =
             EnumSet.of(ProjetoStatus.ABERTO, ProjetoStatus.EM_ANDAMENTO);
     private static final Set<TipoGrupo> TIPOS_ENGAJAMENTO = EnumSet.of(TipoGrupo.PASTORAL, TipoGrupo.MOVIMENTO);
@@ -123,7 +126,7 @@ public class GetDashboardMetricsUseCase {
             EventoActorContext actorContext, PeriodoDashboard periodo, UUID grupoParoquialIdSolicitado) {
         Instant agora = Instant.now();
         JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
-        Optional<UUID> escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado);
+        UUID escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado).orElse(null);
 
         List<EventoEntity> eventosPeriodo = comEscopo(eventoRepository.findAllInPeriod(janela.inicio(), janela.fim()),
                 escopo);
@@ -141,7 +144,7 @@ public class GetDashboardMetricsUseCase {
     }
 
     private ResumoGeralDTO resumoGeral(List<EventoEntity> eventosPeriodo, List<ProjetoEventoEntity> projetosAtivos,
-                                       Instant agora, Optional<UUID> escopo) {
+                                       Instant agora, UUID escopo) {
         long engajados = membroRepository.contarFieisDistintosEngajados(TIPOS_ENGAJAMENTO);
         long ativos = fielRepository.countByAtivoTrue();
         return new ResumoGeralDTO(
@@ -154,16 +157,15 @@ public class GetDashboardMetricsUseCase {
                 Math.max(0, ativos - engajados));
     }
 
-    private int contarAprovacoesPendentes(Optional<UUID> escopo) {
+    private int contarAprovacoesPendentes(UUID escopo) {
         List<AprovacaoEntity> aprovacoesEvento =
                 aprovacaoRepository.findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE);
         List<ProjetoSolicitacaoAprovacaoEntity> aprovacoesProjeto =
                 projetoAprovacaoRepository.findByStatus(AprovacaoStatus.PENDENTE);
-        if (escopo.isEmpty()) {
+        if (escopo == null) {
             return aprovacoesEvento.size() + aprovacoesProjeto.size();
         }
-        UUID orgId = escopo.get();
-        return contarNoEscopoEvento(aprovacoesEvento, orgId) + contarNoEscopoProjeto(aprovacoesProjeto, orgId);
+        return contarNoEscopoEvento(aprovacoesEvento, escopo) + contarNoEscopoProjeto(aprovacoesProjeto, escopo);
     }
 
     private int contarNoEscopoEvento(List<AprovacaoEntity> aprovacoes, UUID orgId) {
@@ -185,10 +187,10 @@ public class GetDashboardMetricsUseCase {
         return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getProjetoId())).count();
     }
 
-    private ProjetosPorStatusDTO projetosPorStatus(List<ProjetoEventoEntity> projetos, Optional<UUID> escopo,
+    private ProjetosPorStatusDTO projetosPorStatus(List<ProjetoEventoEntity> projetos, UUID escopo,
                                                    Instant agora) {
         List<ProjetoEventoEntity> visiveis = projetos.stream()
-                .filter(p -> escopo.isEmpty() || escopo.get().equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> escopo == null || escopo.equals(p.getGrupoParoquialResponsavelId()))
                 .toList();
         int atrasados = (int) visiveis.stream().filter(p -> estaAtrasado(p, agora)).count();
         return new ProjetosPorStatusDTO(
@@ -224,11 +226,20 @@ public class GetDashboardMetricsUseCase {
                 projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(), p.getFimUtc()),
                 totalEventos,
                 realizados,
-                totalEventos == 0 ? 0.0 : realizados * 100.0 / totalEventos,
+                calcularPercentualExecucao(realizados, totalEventos),
                 pendentesAprovacao,
                 projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(), pendentes),
                 proximoMarco(p.getId(), agora),
                 eventoRepository.findInvolvedOrganizationNames(p.getId()));
+    }
+
+    /** Percentual de eventos realizados sobre o total; {@code ZERO} se não houver eventos. */
+    private BigDecimal calcularPercentualExecucao(int realizados, int totalEventos) {
+        return totalEventos == 0
+                ? BigDecimal.ZERO.setScale(PERCENTUAL_SCALE, RoundingMode.HALF_UP)
+                : BigDecimal.valueOf(realizados)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(totalEventos), PERCENTUAL_SCALE, RoundingMode.HALF_UP);
     }
 
     private ProximoMarcoDTO proximoMarco(UUID projetoId, Instant agora) {
@@ -240,7 +251,7 @@ public class GetDashboardMetricsUseCase {
                 .orElse(null);
     }
 
-    private List<EventoOrfaoDTO> eventosOrfaos(JanelaTemporal janela, Optional<UUID> escopo,
+    private List<EventoOrfaoDTO> eventosOrfaos(JanelaTemporal janela, UUID escopo,
                                                List<ProjetoEventoEntity> projetosAtivos) {
         return comEscopo(eventoRepository.findOrfaosNoPeriodo(janela.inicio(), janela.fim()), escopo).stream()
                 .map(e -> {
@@ -275,7 +286,7 @@ public class GetDashboardMetricsUseCase {
                 .toList();
     }
 
-    private List<EventoSemanalDTO> eventosSemana(Instant agora, Optional<UUID> escopo, Map<UUID, String> nomesOrg) {
+    private List<EventoSemanalDTO> eventosSemana(Instant agora, UUID escopo, Map<UUID, String> nomesOrg) {
         ZonedDateTime nowZoned = agora.atZone(ZoneOffset.UTC);
         Instant inicio = nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .truncatedTo(ChronoUnit.DAYS).toInstant();
@@ -291,17 +302,18 @@ public class GetDashboardMetricsUseCase {
                 .toList();
     }
 
-    private List<ProjetoEventoEntity> filtrarProjetosAtivos(List<ProjetoEventoEntity> projetos, Optional<UUID> escopo) {
+    private List<ProjetoEventoEntity> filtrarProjetosAtivos(List<ProjetoEventoEntity> projetos, UUID escopo) {
         return projetos.stream()
                 .filter(p -> STATUS_ATIVOS.contains(p.getStatus()))
-                .filter(p -> escopo.isEmpty() || escopo.get().equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> escopo == null || escopo.equals(p.getGrupoParoquialResponsavelId()))
                 .toList();
     }
 
-    private List<EventoEntity> comEscopo(List<EventoEntity> eventos, Optional<UUID> escopo) {
-        return escopo.map(orgId -> eventos.stream()
-                        .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId())).toList())
-                .orElse(eventos);
+    private List<EventoEntity> comEscopo(List<EventoEntity> eventos, UUID escopo) {
+        if (escopo == null) {
+            return eventos;
+        }
+        return eventos.stream().filter(e -> escopo.equals(e.getGrupoParoquialResponsavelId())).toList();
     }
 
     private Map<UUID, String> carregarNomesOrganizacoes() {

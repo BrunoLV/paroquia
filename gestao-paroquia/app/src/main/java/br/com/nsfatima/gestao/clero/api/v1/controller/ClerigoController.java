@@ -77,7 +77,8 @@ public class ClerigoController {
     @Operation(summary = "Lista o diretório institucional sem PII")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Diretório institucional recuperado com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClerigoInstitucionalResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = ClerigoInstitucionalResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
     public List<ClerigoInstitucionalResponse> diretorio() {
@@ -165,7 +166,8 @@ public class ClerigoController {
     @Operation(summary = "Lista histórico de encargos e provisões do clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Histórico de encargos recuperado com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = EncargoClericalResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = EncargoClericalResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")
@@ -180,7 +182,8 @@ public class ClerigoController {
     @Operation(summary = "Lista solicitações de ajuste cadastral pendentes")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Solicitações pendentes recuperadas com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SolicitacaoAjusteClericalResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = SolicitacaoAjusteClericalResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
@@ -224,7 +227,8 @@ public class ClerigoController {
     @Operation(summary = "Lista vínculos familiares do clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vínculos familiares recuperados com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = RelacionamentoFamiliarResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = RelacionamentoFamiliarResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Clérigo não encontrado")

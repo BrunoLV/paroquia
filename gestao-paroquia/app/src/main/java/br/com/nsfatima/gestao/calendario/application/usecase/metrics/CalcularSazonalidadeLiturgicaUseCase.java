@@ -6,6 +6,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.C
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -13,6 +15,10 @@ import java.util.List;
  */
 @Service
 public class CalcularSazonalidadeLiturgicaUseCase {
+
+    private static final BigDecimal LIMIAR_PICO = BigDecimal.valueOf(2.5);
+    private static final BigDecimal LIMIAR_ALTA = BigDecimal.valueOf(1.8);
+    private static final BigDecimal LIMIAR_NORMAL = BigDecimal.valueOf(1.2);
 
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
 
@@ -35,16 +41,20 @@ public class CalcularSazonalidadeLiturgicaUseCase {
     }
 
     private SazonalidadeLiturgicaResponse mapearSazonalidade(CicloLiturgicoEntity ciclo) {
-        double fator = ciclo.getFatorDemanda() != null ? ciclo.getFatorDemanda() : 1.0;
-        long eventosHistoricosBase = Math.round(10 * fator);
-        long eventosPrevistos = Math.round(eventosHistoricosBase * fator);
+        BigDecimal fator = ciclo.getFatorDemanda() != null
+                ? BigDecimal.valueOf(ciclo.getFatorDemanda())
+                : BigDecimal.ONE;
+        long eventosHistoricosBase = BigDecimal.TEN.multiply(fator)
+                .setScale(0, RoundingMode.HALF_UP).longValue();
+        long eventosPrevistos = BigDecimal.valueOf(eventosHistoricosBase).multiply(fator)
+                .setScale(0, RoundingMode.HALF_UP).longValue();
 
         String nivel;
-        if (fator >= 2.5) {
+        if (fator.compareTo(LIMIAR_PICO) >= 0) {
             nivel = "PICO_OPERACIONAL";
-        } else if (fator >= 1.8) {
+        } else if (fator.compareTo(LIMIAR_ALTA) >= 0) {
             nivel = "ALTA";
-        } else if (fator >= 1.2) {
+        } else if (fator.compareTo(LIMIAR_NORMAL) >= 0) {
             nivel = "NORMAL";
         } else {
             nivel = "BAIXA";

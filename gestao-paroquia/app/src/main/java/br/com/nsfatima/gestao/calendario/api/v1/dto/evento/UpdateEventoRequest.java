@@ -85,7 +85,8 @@ public record UpdateEventoRequest(
             UUID igrejaVinculoId,
             Boolean bypassAgendaConflict) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, editScope, projetoId, localId, igrejaVinculoId, bypassAgendaConflict, null);
+                grupoParoquialResponsavelId, participantes, editScope, projetoId, localId, igrejaVinculoId,
+                bypassAgendaConflict, null);
     }
 
     /**

@@ -21,7 +21,8 @@ public record IntervaloReserva(
         Objects.requireNonNull(dataHoraInicio, "Data/hora de início da reserva é obrigatória.");
         Objects.requireNonNull(dataHoraFim, "Data/hora de término da reserva é obrigatória.");
         if (!dataHoraFim.isAfter(dataHoraInicio)) {
-            throw new IllegalArgumentException("A data/hora de término deve ser estritamente posterior ao início da reserva.");
+            throw new IllegalArgumentException(
+                    "A data/hora de término deve ser estritamente posterior ao início da reserva.");
         }
         if (bufferMinutos < 0) {
             throw new IllegalArgumentException("O buffer de minutos não pode ser negativo.");
@@ -40,11 +41,12 @@ public record IntervaloReserva(
     }
 
     /**
-     * Regra matemática formal de conflito de agenda considerando buffers:
-     * NovoInicio < (ExistenteFim + BufferExistente) AND (NovoFim + BufferNovo) > ExistenteInicio
+     * Regra matemática formal de conflito de agenda considerando buffers.
+     * NovoInicio &lt; (ExistenteFim + BufferExistente) AND (NovoFim + BufferNovo) &gt; ExistenteInicio
      */
     public boolean colideCom(IntervaloReserva outro) {
         Objects.requireNonNull(outro, "O intervalo para comparação de colisão não pode ser nulo.");
-        return this.dataHoraInicio.isBefore(outro.fimComBuffer()) && this.fimComBuffer().isAfter(outro.dataHoraInicio());
+        return this.dataHoraInicio.isBefore(outro.fimComBuffer())
+                && this.fimComBuffer().isAfter(outro.dataHoraInicio());
     }
 }

@@ -88,7 +88,8 @@ public class AnoParoquialController {
     @Operation(summary = "Lista todos os anos paroquiais registrados")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de anos paroquiais retornada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AnoParoquialResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = AnoParoquialResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

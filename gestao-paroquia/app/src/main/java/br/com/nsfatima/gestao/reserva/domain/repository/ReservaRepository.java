@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.reserva.domain.repository;
 
-import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
@@ -24,7 +23,8 @@ public interface ReservaRepository {
     /**
      * Busca com bloqueio pessimista reservas existentes ativas para o mesmo item que possam colidir com a janela informada.
      */
-    List<Reserva> findConflitosPotenciaisComLock(TipoItemReserva tipoItem, UUID itemId, Instant inicioLimite, Instant fimLimite, UUID ignorarReservaId);
+    List<Reserva> findConflitosPotenciaisComLock(
+            TipoItemReserva tipoItem, UUID itemId, Instant inicioLimite, Instant fimLimite, UUID ignorarReservaId);
 
     List<Reserva> findPendentesExpiracao(Instant limiteDataHoraInicio);
 

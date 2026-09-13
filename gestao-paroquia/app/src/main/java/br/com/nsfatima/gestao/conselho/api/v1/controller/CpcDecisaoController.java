@@ -68,7 +68,8 @@ public class CpcDecisaoController {
     @Operation(summary = "Lista as atas e decisões dos conselhos com filtros por comunidade ou status")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Decisões listadas com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CpcDecisaoResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = CpcDecisaoResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

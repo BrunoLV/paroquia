@@ -6,6 +6,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -13,6 +15,10 @@ import java.util.List;
  */
 @Service
 public class CalcularImpactoSocialUseCase {
+
+    private static final int PERCENTUAL_SCALE = 1;
+    private static final BigDecimal LIMIAR_MISSIONARIA = BigDecimal.valueOf(60);
+    private static final BigDecimal LIMIAR_EQUILIBRADA = BigDecimal.valueOf(30);
 
     private final EventoJpaRepository eventoJpaRepository;
 
@@ -38,12 +44,12 @@ public class CalcularImpactoSocialUseCase {
                 .filter(this::isReuniaoInterna)
                 .count();
 
-        double percentualSocial = total > 0 ? (sociais * 100.0) / total : 0.0;
+        BigDecimal percentualSocial = calcularPercentual(sociais, total);
 
         String diagnostico;
-        if (percentualSocial >= 60.0) {
+        if (percentualSocial.compareTo(LIMIAR_MISSIONARIA) >= 0) {
             diagnostico = "MISSIONARIA_EM_SAIDA";
-        } else if (percentualSocial >= 30.0) {
+        } else if (percentualSocial.compareTo(LIMIAR_EQUILIBRADA) >= 0) {
             diagnostico = "EQUILIBRADA";
         } else {
             diagnostico = "EXCESSIVAMENTE_BUROCRATICA";
@@ -53,9 +59,18 @@ public class CalcularImpactoSocialUseCase {
                 total,
                 sociais,
                 internas,
-                Math.round(percentualSocial * 10.0) / 10.0,
+                percentualSocial,
                 diagnostico
         );
+    }
+
+    /** Percentual numerador/denominador com precisão decimal exata; {@code ZERO} se não houver denominador. */
+    private BigDecimal calcularPercentual(long numerador, long denominador) {
+        return denominador == 0L
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(numerador)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(denominador), PERCENTUAL_SCALE, RoundingMode.HALF_UP);
     }
 
     private boolean isEventoSocialOuCaridade(EventoEntity e) {

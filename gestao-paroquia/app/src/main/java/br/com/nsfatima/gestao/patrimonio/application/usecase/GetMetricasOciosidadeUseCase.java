@@ -6,12 +6,17 @@ import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepos
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Métricas de ociosidade do acervo: contagem de bens não excluídos por status e taxa de
  * ociosidade (proporção de {@code DISPONIVEL} sobre o total incorporado).
  */
 @Service
 public class GetMetricasOciosidadeUseCase {
+
+    private static final int TAXA_SCALE = 4;
 
     private final AtivoPatrimonialRepository repository;
 
@@ -25,7 +30,15 @@ public class GetMetricasOciosidadeUseCase {
         long reservados = repository.contarPorStatus(AtivoStatus.RESERVADO);
         long emManutencao = repository.contarPorStatus(AtivoStatus.EM_MANUTENCAO);
         long total = disponiveis + reservados + emManutencao;
-        double taxaOciosidade = total == 0 ? 0.0 : (double) disponiveis / total;
+        BigDecimal taxaOciosidade = calcularTaxa(disponiveis, total);
         return new MetricasOciosidadeResponse(total, disponiveis, reservados, emManutencao, taxaOciosidade);
+    }
+
+    /** Quociente numerador/denominador com precisão decimal exata; {@code ZERO} se não houver denominador. */
+    private BigDecimal calcularTaxa(long numerador, long denominador) {
+        return denominador == 0L
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(numerador)
+                        .divide(BigDecimal.valueOf(denominador), TAXA_SCALE, RoundingMode.HALF_UP);
     }
 }

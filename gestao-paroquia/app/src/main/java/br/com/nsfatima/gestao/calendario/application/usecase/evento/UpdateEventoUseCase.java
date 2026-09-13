@@ -11,7 +11,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundExceptio
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
-import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.CreateRequestMode;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;

@@ -37,7 +37,9 @@ public record ReservaResponse(
         Instant updatedAt
 ) {
     public static ReservaResponse de(ReservaDetalheDto dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
         return new ReservaResponse(
                 dto.id(),
                 dto.tipoItem(),
@@ -69,7 +71,9 @@ public record ReservaResponse(
     }
 
     public static ReservaResponse de(Reserva r) {
-        if (r == null) return null;
+        if (r == null) {
+            return null;
+        }
         return new ReservaResponse(
                 r.getId().value(),
                 r.getTipoItem(),

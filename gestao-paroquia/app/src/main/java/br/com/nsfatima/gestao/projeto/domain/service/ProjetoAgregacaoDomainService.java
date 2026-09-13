@@ -15,38 +15,30 @@ public class ProjetoAgregacaoDomainService {
 
     /** Calcula o avanço contra uma referência explícita para manter a regra reproduzível. */
     public BigDecimal calcularPercentualTempoDecorrido(Instant inicio, Instant fim, Instant referencia) {
-        if (inicio == null || fim == null || referencia == null || !fim.isAfter(inicio)) return BigDecimal.ZERO;
-        if (referencia.isBefore(inicio)) return BigDecimal.ZERO;
-        if (referencia.isAfter(fim)) return BigDecimal.valueOf(100);
+        if (inicio == null || fim == null || referencia == null || !fim.isAfter(inicio)) {
+            return BigDecimal.ZERO;
+        }
+        if (referencia.isBefore(inicio)) {
+            return BigDecimal.ZERO;
+        }
+        if (referencia.isAfter(fim)) {
+            return BigDecimal.valueOf(100);
+        }
         return BigDecimal.valueOf(Duration.between(inicio, referencia).toMillis())
                 .multiply(BigDecimal.valueOf(100))
                 .divide(BigDecimal.valueOf(Duration.between(inicio, fim).toMillis()), 2, RoundingMode.HALF_UP);
     }
 
     /**
-     * Calcula o percentual de tempo decorrido do projeto.
+     * Calcula o percentual de tempo decorrido do projeto até agora. Delega para a sobrecarga com
+     * referência explícita usando {@link Instant#now()}.
      *
      * @param inicio Data de início do projeto
      * @param fim    Data de término do projeto
      * @return Percentual (0-100) de tempo decorrido
      */
-    public double calcularPercentualTempoDecorrido(Instant inicio, Instant fim) {
-        if (inicio == null || fim == null || !fim.isAfter(inicio)) {
-            return 0.0;
-        }
-
-        Instant agora = Instant.now();
-        if (agora.isBefore(inicio)) {
-            return 0.0;
-        }
-        if (agora.isAfter(fim)) {
-            return 100.0;
-        }
-
-        long totalDuration = Duration.between(inicio, fim).toMillis();
-        long elapsedDuration = Duration.between(inicio, agora).toMillis();
-
-        return (elapsedDuration * 100.0) / totalDuration;
+    public BigDecimal calcularPercentualTempoDecorrido(Instant inicio, Instant fim) {
+        return calcularPercentualTempoDecorrido(inicio, fim, Instant.now());
     }
 
     /**
@@ -62,7 +54,7 @@ public class ProjetoAgregacaoDomainService {
             return false;
         }
 
-        double percentual = calcularPercentualTempoDecorrido(inicio, fim);
-        return BigDecimal.valueOf(percentual).compareTo(RISCO_PERCENTUAL_THRESHOLD) > 0;
+        BigDecimal percentual = calcularPercentualTempoDecorrido(inicio, fim);
+        return percentual.compareTo(RISCO_PERCENTUAL_THRESHOLD) > 0;
     }
 }

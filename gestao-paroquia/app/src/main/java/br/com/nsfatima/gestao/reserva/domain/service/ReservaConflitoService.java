@@ -51,7 +51,8 @@ public class ReservaConflitoService {
                         existente.getDescricao()
                 ));
             }
-            throw new ReservaConflitoException("Conflito de agenda ou margem de buffer detectado para o recurso.", detalhes);
+            throw new ReservaConflitoException(
+                    "Conflito de agenda ou margem de buffer detectado para o recurso.", detalhes);
         }
     }
 

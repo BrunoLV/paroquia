@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -57,9 +58,9 @@ class CalcularOciosidadePatrimonialUseCaseTest {
 
         assertNotNull(response);
         assertEquals(1L, response.totalLocais());
-        assertEquals(40.0, response.totalHorasUteisSemana());
-        assertEquals(4.0, response.horasOcupadasSemana());
-        assertEquals(36.0, response.horasOciosasSemana());
-        assertEquals(90.0, response.indiceOciosidadePercentual());
+        assertEquals(BigDecimal.valueOf(40.0), response.totalHorasUteisSemana());
+        assertEquals(BigDecimal.valueOf(4.0), response.horasOcupadasSemana());
+        assertEquals(BigDecimal.valueOf(36.0), response.horasOciosasSemana());
+        assertEquals(BigDecimal.valueOf(90.0), response.indiceOciosidadePercentual());
     }
 }

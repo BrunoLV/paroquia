@@ -8,6 +8,8 @@ import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJ
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.List;
 
@@ -17,7 +19,11 @@ import java.util.List;
 @Service
 public class CalcularOciosidadePatrimonialUseCase {
 
-    private static final double HORAS_UTEIS_POR_LOCAL_SEMANA = 40.0;
+    private static final BigDecimal HORAS_UTEIS_POR_LOCAL_SEMANA = BigDecimal.valueOf(40);
+    private static final BigDecimal MINUTOS_POR_HORA = BigDecimal.valueOf(60);
+    private static final int HORAS_SCALE = 1;
+    private static final BigDecimal LIMIAR_OPORTUNIDADE = BigDecimal.valueOf(75);
+    private static final BigDecimal LIMIAR_EXCELENTE = BigDecimal.valueOf(40);
 
     private final LocalJpaRepository localJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
@@ -40,20 +46,27 @@ public class CalcularOciosidadePatrimonialUseCase {
         List<EventoEntity> eventos = eventoJpaRepository.findAll();
 
         long totalLocais = locais.isEmpty() ? 1 : locais.size();
-        double totalHorasCapacidade = totalLocais * HORAS_UTEIS_POR_LOCAL_SEMANA;
+        BigDecimal totalHorasCapacidade = BigDecimal.valueOf(totalLocais)
+                .multiply(HORAS_UTEIS_POR_LOCAL_SEMANA)
+                .setScale(HORAS_SCALE, RoundingMode.HALF_UP);
 
-        double horasOcupadas = eventos.stream()
+        long totalMinutosOcupados = eventos.stream()
                 .filter(e -> e.getInicioUtc() != null && e.getFimUtc() != null)
-                .mapToDouble(e -> (double) Duration.between(e.getInicioUtc(), e.getFimUtc()).toMinutes() / 60.0)
+                .mapToLong(e -> Duration.between(e.getInicioUtc(), e.getFimUtc()).toMinutes())
                 .sum();
+        BigDecimal horasOcupadas = BigDecimal.valueOf(totalMinutosOcupados)
+                .divide(MINUTOS_POR_HORA, HORAS_SCALE, RoundingMode.HALF_UP);
 
-        double horasOciosas = Math.max(0.0, totalHorasCapacidade - horasOcupadas);
-        double indiceOciosidade = totalHorasCapacidade > 0 ? (horasOciosas * 100.0) / totalHorasCapacidade : 0.0;
+        BigDecimal horasOciosas = totalHorasCapacidade.subtract(horasOcupadas).max(BigDecimal.ZERO);
+        BigDecimal indiceOciosidade = totalHorasCapacidade.compareTo(BigDecimal.ZERO) > 0
+                ? horasOciosas.multiply(BigDecimal.valueOf(100))
+                        .divide(totalHorasCapacidade, HORAS_SCALE, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
 
         String recomendacaoCae;
-        if (indiceOciosidade >= 75.0) {
+        if (indiceOciosidade.compareTo(LIMIAR_OPORTUNIDADE) >= 0) {
             recomendacaoCae = "OPORTUNIDADE_DE_NOVAS_FRENTES";
-        } else if (indiceOciosidade >= 40.0) {
+        } else if (indiceOciosidade.compareTo(LIMIAR_EXCELENTE) >= 0) {
             recomendacaoCae = "EXCELENTE_APROVEITAMENTO";
         } else {
             recomendacaoCae = "SUBAPROVEITAMENTO_CRITICO";
@@ -62,9 +75,9 @@ public class CalcularOciosidadePatrimonialUseCase {
         return new OciosidadePatrimonialResponse(
                 totalLocais,
                 totalHorasCapacidade,
-                Math.round(horasOcupadas * 10.0) / 10.0,
-                Math.round(horasOciosas * 10.0) / 10.0,
-                Math.round(indiceOciosidade * 10.0) / 10.0,
+                horasOcupadas,
+                horasOciosas,
+                indiceOciosidade,
                 recomendacaoCae
         );
     }

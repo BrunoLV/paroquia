@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ class CalcularImpactoSocialUseCaseTest {
         assertEquals(2L, response.totalEventos());
         assertEquals(1L, response.eventosSociaisCaridade());
         assertEquals(1L, response.reunioesInternas());
-        assertEquals(50.0, response.coeficienteImpactoSocialPercentual());
+        assertEquals(BigDecimal.valueOf(50.0), response.coeficienteImpactoSocialPercentual());
         assertEquals("EQUILIBRADA", response.diagnosticoPastoral());
     }
 }

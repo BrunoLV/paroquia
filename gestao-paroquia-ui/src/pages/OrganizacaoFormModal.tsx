@@ -1,4 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {zodResolver} from '@hookform/resolvers/zod';
 import {
     Box,
     Dialog,
@@ -19,6 +21,7 @@ import {Organizacao, PastoralMovimentoOficial} from '../api/types';
 import {Usuario} from '../api/usuarios';
 import {getOrganizacaoMembros} from '../api/organizacoes';
 import ActionButton from '../components/ActionButton';
+import {organizacaoSchema, OrganizacaoFormInput} from '../schemas/organizacaoSchema';
 
 interface OrganizacaoFormModalProps {
   open: boolean;
@@ -32,6 +35,22 @@ interface OrganizacaoFormModalProps {
   pastoraisOficiais?: PastoralMovimentoOficial[];
 }
 
+const defaultValues: OrganizacaoFormInput = {
+  nome: '',
+  tipo: 'PASTORAL',
+  contato: '',
+  coordenador: '',
+  viceCoordenador: '',
+  parentId: '',
+  pastoralOficialId: '',
+};
+
+/**
+ * Modal de cadastro/edição de organismos paroquiais (Pastoral, Movimento,
+ * Clero, Matriz, Comunidade, Conselhos). Validação formal via Zod +
+ * React Hook Form, espelhando `organizacaoSchema` (mesmas regras antes
+ * aplicadas manualmente em `handleSubmit`).
+ */
 const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   open,
   onClose,
@@ -43,35 +62,36 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   organizacoes = [],
   pastoraisOficiais = [],
 }) => {
-  const [nome, setNome] = useState('');
-  const [tipo, setTipo] = useState('PASTORAL');
-  const [contato, setContato] = useState('');
-  const [coordenador, setCoordenador] = useState('');
-  const [viceCoordenador, setViceCoordenador] = useState('');
-  const [parentId, setParentId] = useState('');
-  const [pastoralOficialId, setPastoralOficialId] = useState('');
-  const [errors, setErrors] = useState<{ nome?: string; pastoralOficialId?: string }>({});
+  const {
+    control,
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<OrganizacaoFormInput>({
+    resolver: zodResolver(organizacaoSchema),
+    defaultValues,
+  });
 
   useEffect(() => {
     if (organizacao) {
-      setNome(organizacao.nome);
-      setTipo(organizacao.tipo || 'PASTORAL');
-      setContato(organizacao.contato || '');
-      setCoordenador(organizacao.coordenador || '');
-      setViceCoordenador(organizacao.viceCoordenador || '');
-      setParentId(organizacao.parentId || '');
-      setPastoralOficialId(organizacao.pastoralOficialId || '');
+      reset({
+        nome: organizacao.nome,
+        tipo: (organizacao.tipo || 'PASTORAL') as OrganizacaoFormInput['tipo'],
+        contato: organizacao.contato || '',
+        coordenador: organizacao.coordenador || '',
+        viceCoordenador: organizacao.viceCoordenador || '',
+        parentId: organizacao.parentId || '',
+        pastoralOficialId: organizacao.pastoralOficialId || '',
+      });
     } else {
-      setNome('');
-      setTipo('PASTORAL');
-      setContato('');
-      setCoordenador('');
-      setViceCoordenador('');
-      setParentId('');
-      setPastoralOficialId('');
+      reset(defaultValues);
     }
-    setErrors({});
-  }, [organizacao, open]);
+  }, [organizacao, open, reset]);
+
+  const tipo = watch('tipo');
+  const parentId = watch('parentId');
 
   const getSelectedChurchId = () => {
     if (!parentId) return null;
@@ -119,31 +139,16 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
 
   const coordinatorOptions = getCoordinatorOptions();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const newErrors: { nome?: string; pastoralOficialId?: string } = {};
-    if (!nome.trim()) {
-      newErrors.nome = 'O nome é obrigatório';
-    }
-    if ((tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && !pastoralOficialId) {
-      newErrors.pastoralOficialId = 'A associação oficial é obrigatória';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+  const onSubmit = (data: OrganizacaoFormInput) => {
     onSave({
-      nome: nome.trim(),
-      tipo,
-      contato: contato.trim() || null,
-      coordenador: coordenador.trim() || null,
-      viceCoordenador: viceCoordenador.trim() || null,
+      nome: data.nome.trim(),
+      tipo: data.tipo,
+      contato: data.contato?.trim() || null,
+      coordenador: data.coordenador?.trim() || null,
+      viceCoordenador: data.viceCoordenador?.trim() || null,
       ativo: organizacao ? organizacao.ativo : true,
-      parentId: (tipo === 'CLERO') ? null : (parentId || null),
-      pastoralOficialId: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? pastoralOficialId : null,
+      parentId: (data.tipo === 'CLERO') ? null : (data.parentId || null),
+      pastoralOficialId: (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO') ? data.pastoralOficialId || null : null,
     });
   };
 
@@ -170,7 +175,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       fullWidth
       maxWidth="sm"
     >
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>
           {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
         </DialogTitle>
@@ -182,36 +187,37 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               fullWidth
               required
               size="small"
-              value={nome}
-              onChange={(e) => {
-                setNome(e.target.value);
-                if (e.target.value.trim()) setErrors({});
-              }}
               error={!!errors.nome}
-              helperText={errors.nome}
+              helperText={errors.nome?.message}
               disabled={isPending}
+              {...register('nome')}
             />
 
             <Grid container spacing={2}>
               <Grid size={{ xs: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? 6 : 12 }}>
                 <FormControl fullWidth required size="small">
                   <InputLabel id="tipo-org-label">Tipo</InputLabel>
-                  <Select
-                    labelId="tipo-org-label"
-                    label="Tipo"
-                    value={tipo}
-                    onChange={(e) => setTipo(e.target.value as string)}
-                    disabled={isPending}
-                  >
-                    <MenuItem value="PASTORAL">Pastoral</MenuItem>
-                    <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-                    <MenuItem value="CLERO">Clero</MenuItem>
-                    <MenuItem value="MATRIZ">Matriz</MenuItem>
-                    <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
-                    <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
-                    <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
-                    <MenuItem value="OUTRO">Outro</MenuItem>
-                  </Select>
+                  <Controller
+                    name="tipo"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        labelId="tipo-org-label"
+                        label="Tipo"
+                        disabled={isPending}
+                        {...field}
+                      >
+                        <MenuItem value="PASTORAL">Pastoral</MenuItem>
+                        <MenuItem value="MOVIMENTO">Movimento</MenuItem>
+                        <MenuItem value="CLERO">Clero</MenuItem>
+                        <MenuItem value="MATRIZ">Matriz</MenuItem>
+                        <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
+                        <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
+                        <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
+                        <MenuItem value="OUTRO">Outro</MenuItem>
+                      </Select>
+                    )}
+                  />
                 </FormControl>
               </Grid>
 
@@ -219,26 +225,29 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                 <Grid size={{ xs: 6 }}>
                   <FormControl fullWidth required size="small" error={!!errors.pastoralOficialId}>
                     <InputLabel id="pastoral-oficial-label">Tipo Oficial / Movimento</InputLabel>
-                    <Select
-                      labelId="pastoral-oficial-label"
-                      label="Tipo Oficial / Movimento"
-                      value={pastoralOficialId}
-                      onChange={(e) => {
-                        setPastoralOficialId(e.target.value as string);
-                        setErrors(prev => ({ ...prev, pastoralOficialId: undefined }));
-                      }}
-                      disabled={isPending}
-                    >
-                      <MenuItem value=""><em>Selecione...</em></MenuItem>
-                      {pastoraisOficiais
-                        .filter(po => po.tipo === tipo)
-                        .map(po => (
-                          <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
-                        ))}
-                    </Select>
+                    <Controller
+                      name="pastoralOficialId"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          labelId="pastoral-oficial-label"
+                          label="Tipo Oficial / Movimento"
+                          disabled={isPending}
+                          {...field}
+                          value={field.value ?? ''}
+                        >
+                          <MenuItem value=""><em>Selecione...</em></MenuItem>
+                          {pastoraisOficiais
+                            .filter(po => po.tipo === tipo)
+                            .map(po => (
+                              <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
+                            ))}
+                        </Select>
+                      )}
+                    />
                     {errors.pastoralOficialId && (
                       <FormHelperText error>
-                        {errors.pastoralOficialId}
+                        {errors.pastoralOficialId.message}
                       </FormHelperText>
                     )}
                   </FormControl>
@@ -249,18 +258,24 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             {tipo !== 'CLERO' && (
               <FormControl fullWidth size="small">
                 <InputLabel id="parent-org-label">Organização Pai</InputLabel>
-                <Select
-                  labelId="parent-org-label"
-                  label="Organização Pai"
-                  value={parentId}
-                  onChange={(e) => setParentId(e.target.value as string)}
-                  disabled={isPending}
-                >
-                  <MenuItem value=""><em>Nenhuma</em></MenuItem>
-                  {parentOptions.map(org => (
-                    <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  name="parentId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      labelId="parent-org-label"
+                      label="Organização Pai"
+                      disabled={isPending}
+                      {...field}
+                      value={field.value ?? ''}
+                    >
+                      <MenuItem value=""><em>Nenhuma</em></MenuItem>
+                      {parentOptions.map(org => (
+                        <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
               </FormControl>
             )}
 
@@ -269,45 +284,56 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               variant="outlined"
               fullWidth
               size="small"
-              value={contato}
-              onChange={(e) => setContato(e.target.value)}
               disabled={isPending}
+              {...register('contato')}
             />
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
-                  <Select
-                    labelId="coordenador-select-label"
-                    label="Coordenador"
-                    value={coordenador}
-                    onChange={(e) => setCoordenador(e.target.value as string)}
-                    disabled={isPending}
-                  >
-                    <MenuItem value=""><em>Nenhum</em></MenuItem>
-                    {coordinatorOptions.map(opt => (
-                      <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
-                    ))}
-                  </Select>
+                  <Controller
+                    name="coordenador"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        labelId="coordenador-select-label"
+                        label="Coordenador"
+                        disabled={isPending}
+                        {...field}
+                        value={field.value ?? ''}
+                      >
+                        <MenuItem value=""><em>Nenhum</em></MenuItem>
+                        {coordinatorOptions.map(opt => (
+                          <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
                 </FormControl>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
-                  <Select
-                    labelId="vice-coordenador-select-label"
-                    label="Vice-Coordenador"
-                    value={viceCoordenador}
-                    onChange={(e) => setViceCoordenador(e.target.value as string)}
-                    disabled={isPending}
-                  >
-                    <MenuItem value=""><em>Nenhum</em></MenuItem>
-                    {coordinatorOptions.map(opt => (
-                      <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
-                    ))}
-                  </Select>
+                  <Controller
+                    name="viceCoordenador"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        labelId="vice-coordenador-select-label"
+                        label="Vice-Coordenador"
+                        disabled={isPending}
+                        {...field}
+                        value={field.value ?? ''}
+                      >
+                        <MenuItem value=""><em>Nenhum</em></MenuItem>
+                        {coordinatorOptions.map(opt => (
+                          <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
                 </FormControl>
               </Grid>
             </Grid>

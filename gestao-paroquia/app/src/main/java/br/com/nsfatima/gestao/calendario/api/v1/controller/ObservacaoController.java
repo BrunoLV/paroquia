@@ -117,7 +117,8 @@ public class ObservacaoController {
             "evento.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de observações recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ObservacaoResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = ObservacaoResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
@@ -146,7 +147,8 @@ public class ObservacaoController {
             "usuário atual no evento.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista das próprias observações recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ObservacaoResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = ObservacaoResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")

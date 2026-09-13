@@ -10,13 +10,13 @@ plugins {
 }
 
 checkstyle {
-    toolVersion = "13.8.0"
+    toolVersion = libs.versions.checkstyle.tool.get()
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
     isIgnoreFailures = false
 }
 
 pmd {
-    toolVersion = "7.16.0"
+    toolVersion = libs.versions.pmd.tool.get()
     isConsoleOutput = true
     isIgnoreFailures = false
     ruleSetFiles = files("${rootDir}/config/pmd/pmd.xml")
@@ -33,29 +33,29 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.validation)
+    implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.cache)
     implementation(libs.caffeine)
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation(libs.spring.boot.starter.actuator)
     implementation(libs.springdoc.openapi)
-    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation(libs.spring.boot.starter.flyway)
     implementation("org.springframework.boot:spring-boot-starter-quartz")
-    implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("org.postgresql:postgresql")
+    implementation(libs.flyway.database.postgresql)
+    implementation(libs.postgresql)
     implementation(libs.apache.poi)
     implementation(libs.openpdf)
 
     testImplementation(libs.junit.jupiter)
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("com.h2database:h2")
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    testImplementation(libs.spring.boot.starter.data.jpa.test)
+    testImplementation(libs.spring.security.test)
+    testImplementation(libs.h2)
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 java {

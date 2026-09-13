@@ -41,7 +41,8 @@ public class NotificacaoController {
     @Operation(summary = "Lista notificações do usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de notificações recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = NotificacaoResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = NotificacaoResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
     public List<NotificacaoResponse> listar() {

@@ -10,7 +10,8 @@ class PapeisTest {
     void deCsvToleraNuloEBrancos() {
         assertThat(Papeis.deCsv(null).paraCsv()).isNull();
         assertThat(Papeis.deCsv("  ").paraCsv()).isNull();
-        assertThat(Papeis.deCsv("ROLE_ADMIN, ROLE_USER ,").valores()).containsExactlyInAnyOrder("ROLE_ADMIN", "ROLE_USER");
+        assertThat(Papeis.deCsv("ROLE_ADMIN, ROLE_USER ,").valores())
+                .containsExactlyInAnyOrder("ROLE_ADMIN", "ROLE_USER");
     }
 
     @Test

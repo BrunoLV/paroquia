@@ -55,7 +55,8 @@ public class ExpirarReservasPendentesUseCase {
 
             String dataFormatada = FORMATTER.format(r.getIntervalo().dataHoraInicio());
             String mensagem = String.format(
-                    "Sua solicitação de reserva para %s (%s) expirou automaticamente por não ter sido avaliada até 48h antes.",
+                    "Sua solicitação de reserva para %s (%s) expirou automaticamente por não ter sido avaliada "
+                            + "até 48h antes.",
                     r.getTipoItem().name(),
                     dataFormatada
             );

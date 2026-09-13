@@ -54,7 +54,8 @@ class ExcluirAtivoPatrimonialUseCaseTest {
                 actorContextResolver, authorizationService, auditPublisher, eventPublisher);
         AtivoPatrimonial ativo = new AtivoPatrimonial(new AtivoPatrimonialId(ativoId), "Projetor",
                 CodigoTombamento.de(2026, 1), null, AtivoCategoria.ELETRONICO, LocalDate.now(), BigDecimal.TEN,
-                UUID.randomUUID(), true, AtivoStatus.DISPONIVEL, UUID.randomUUID(), Instant.now(), Instant.now(), null, 0L);
+                UUID.randomUUID(), true, AtivoStatus.DISPONIVEL, UUID.randomUUID(), Instant.now(), Instant.now(),
+                null, 0L);
         when(ativoRepository.findById(new AtivoPatrimonialId(ativoId))).thenReturn(Optional.of(ativo));
         lenient().when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("a", "admin", "CLERO", null, UUID.randomUUID(), null));

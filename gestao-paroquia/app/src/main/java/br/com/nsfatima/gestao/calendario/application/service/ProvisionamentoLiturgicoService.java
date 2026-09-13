@@ -18,7 +18,6 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.S
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,19 +43,10 @@ public class ProvisionamentoLiturgicoService {
 
     public ProvisionamentoLiturgicoService(AnoLiturgicoRepository anoLiturgicoRepository,
                                         CicloLiturgicoRepository cicloLiturgicoRepository,
-                                        MotorLiturgico liturgicalEngine) {
-        this(anoLiturgicoRepository, cicloLiturgicoRepository, liturgicalEngine, null, null, null);
-    }
-
-    @Autowired
-    public ProvisionamentoLiturgicoService(AnoLiturgicoRepository anoLiturgicoRepository,
-                                        CicloLiturgicoRepository cicloLiturgicoRepository,
                                         MotorLiturgico liturgicalEngine,
-                                        @Autowired(required = false) EventoJpaRepository eventoJpaRepository,
-                                        @Autowired(required = false)
-            UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
-                                        @Autowired(required = false)
-            SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
+                                        EventoJpaRepository eventoJpaRepository,
+                                        UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
+                                        SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
         this.anoLiturgicoRepository = anoLiturgicoRepository;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.liturgicalEngine = liturgicalEngine;
@@ -89,9 +79,7 @@ public class ProvisionamentoLiturgicoService {
      * Eventos do tipo SOLENIDADE/LITURGICO na Matriz e Comunidades na base de dados.
      */
     private AnoLiturgicoEntity provisionNewLiturgicalYear(int year) {
-        List<SolenidadeLiturgicaEntity> solenidadesDoBanco = solenidadeLiturgicaJpaRepository != null
-                ? solenidadeLiturgicaJpaRepository.findByAtivoTrue()
-                : List.of();
+        List<SolenidadeLiturgicaEntity> solenidadesDoBanco = solenidadeLiturgicaJpaRepository.findByAtivoTrue();
 
         SaidaLiturgica output = liturgicalEngine.calculateLiturgicalYear(year, solenidadesDoBanco);
 
@@ -159,18 +147,11 @@ public class ProvisionamentoLiturgicoService {
      * para a Matriz e todas as Comunidades da Paróquia.
      */
     private void provisionSolemnityEvents(int year, Map<String, MarcoLiturgico> marcos) {
-        if (eventoJpaRepository == null) {
-            return;
-        }
-
-        List<UnidadeTerritorialEntity> igrejasAlvo = new ArrayList<>();
-        if (unidadeTerritorialJpaRepository != null) {
-            igrejasAlvo = unidadeTerritorialJpaRepository.findAll().stream()
-                    .filter(UnidadeTerritorialEntity::isAtivo)
-                    .filter(o -> o.getTipo() == TipoUnidadeTerritorial.MATRIZ
-                            || o.getTipo() == TipoUnidadeTerritorial.COMUNIDADE)
-                    .toList();
-        }
+        List<UnidadeTerritorialEntity> igrejasAlvo = unidadeTerritorialJpaRepository.findAll().stream()
+                .filter(UnidadeTerritorialEntity::isAtivo)
+                .filter(o -> o.getTipo() == TipoUnidadeTerritorial.MATRIZ
+                        || o.getTipo() == TipoUnidadeTerritorial.COMUNIDADE)
+                .toList();
 
         if (igrejasAlvo.isEmpty()) {
             UnidadeTerritorialEntity matrizPadrao = new UnidadeTerritorialEntity();

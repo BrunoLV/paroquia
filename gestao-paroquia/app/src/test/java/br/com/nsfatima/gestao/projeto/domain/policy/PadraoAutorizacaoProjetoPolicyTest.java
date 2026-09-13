@@ -44,14 +44,17 @@ class PadraoAutorizacaoProjetoPolicyTest {
         UUID atorOrg = UUID.randomUUID();
         UUID outraOrg = UUID.randomUUID();
 
-        assertThatCode(() -> policy.assertCanCreate(PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, atorOrg))
+        assertThatCode(() -> policy.assertCanCreate(
+                PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, atorOrg))
                 .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> policy.assertCanCreate(PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
+        assertThatThrownBy(() -> policy.assertCanCreate(
+                PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
                 .isInstanceOf(ForbiddenOperationException.class)
                 .hasMessageContaining("outra organização");
 
-        assertThatThrownBy(() -> policy.assertCanEdit(PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
+        assertThatThrownBy(() -> policy.assertCanEdit(
+                PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
                 .isInstanceOf(ForbiddenOperationException.class)
                 .hasMessageContaining("outra organização");
     }
@@ -64,12 +67,15 @@ class PadraoAutorizacaoProjetoPolicyTest {
 
         assertThatCode(() -> policy.assertCanStartOrConclude(PapelOrganizacional.PAROCO, null, atorOrg, outraOrg))
                 .doesNotThrowAnyException();
-        assertThatCode(() -> policy.assertCanStartOrConclude(PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
+        assertThatCode(() -> policy.assertCanStartOrConclude(
+                PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
                 .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> policy.assertCanStartOrConclude(PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, outraOrg))
+        assertThatThrownBy(() -> policy.assertCanStartOrConclude(
+                PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, outraOrg))
                 .isInstanceOf(ForbiddenOperationException.class);
-        assertThatThrownBy(() -> policy.assertCanStartOrConclude(PapelOrganizacional.MEMBRO_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
+        assertThatThrownBy(() -> policy.assertCanStartOrConclude(
+                PapelOrganizacional.MEMBRO_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 }

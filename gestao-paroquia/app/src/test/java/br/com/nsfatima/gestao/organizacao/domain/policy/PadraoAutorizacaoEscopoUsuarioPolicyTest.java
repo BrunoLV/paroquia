@@ -18,9 +18,12 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
     @Test
     @DisplayName("Admin, Pároco e Vigário possuem acesso amplo de gestão")
     void devePermitirAcessoAmploParaCleroEAdmin() {
-        assertThat(policy.canManageOrganizationData(PapelOrganizacional.ADMIN, TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
-        assertThat(policy.canManageOrganizationData(PapelOrganizacional.PAROCO, TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
-        assertThat(policy.canManageOrganizationData(PapelOrganizacional.VIGARIO, TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
+        assertThat(policy.canManageOrganizationData(
+                PapelOrganizacional.ADMIN, TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
+        assertThat(policy.canManageOrganizationData(
+                PapelOrganizacional.PAROCO, TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
+        assertThat(policy.canManageOrganizationData(
+                PapelOrganizacional.VIGARIO, TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
         assertThat(policy.canApproveEvents(PapelOrganizacional.PAROCO, TipoGrupo.CONSELHO, null, matrizId)).isTrue();
     }
@@ -31,8 +34,10 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
         UUID orgId = UUID.randomUUID();
         UUID outraOrgId = UUID.randomUUID();
 
-        assertThat(policy.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, orgId, orgId, matrizId)).isTrue();
-        assertThat(policy.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, orgId, outraOrgId, matrizId)).isFalse();
+        assertThat(policy.canManageOrganizationData(
+                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, orgId, orgId, matrizId)).isTrue();
+        assertThat(policy.canManageOrganizationData(
+                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, orgId, outraOrgId, matrizId)).isFalse();
     }
 
     @Test

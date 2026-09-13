@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.projeto.domain.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -21,9 +22,9 @@ class ProjetoAgregacaoDomainServiceTest {
         Instant fim = Instant.now().plus(2, ChronoUnit.DAYS);
         // Total duration: 10 days. 8 days passed -> 80%
 
-        double percentual = service.calcularPercentualTempoDecorrido(inicio, fim);
+        BigDecimal percentual = service.calcularPercentualTempoDecorrido(inicio, fim);
 
-        assertEquals(80.0, percentual, 0.001);
+        assertEquals(0, BigDecimal.valueOf(80.0).compareTo(percentual));
     }
 
     @Test

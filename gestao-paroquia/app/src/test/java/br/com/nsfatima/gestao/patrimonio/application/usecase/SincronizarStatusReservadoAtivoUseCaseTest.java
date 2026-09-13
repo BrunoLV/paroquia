@@ -45,7 +45,8 @@ class SincronizarStatusReservadoAtivoUseCaseTest {
 
     @Test
     void marcaReservadoQuandoHaReservaAtiva() {
-        when(repository.findById(new AtivoPatrimonialId(ativoId))).thenReturn(Optional.of(ativo(AtivoStatus.DISPONIVEL)));
+        when(repository.findById(new AtivoPatrimonialId(ativoId)))
+                .thenReturn(Optional.of(ativo(AtivoStatus.DISPONIVEL)));
         when(consultaReservaPort.temReservaAtivaAgora(ativoId)).thenReturn(true);
 
         useCase().execute(ativoId);
@@ -57,7 +58,8 @@ class SincronizarStatusReservadoAtivoUseCaseTest {
 
     @Test
     void ignoraAtivoEmManutencao() {
-        when(repository.findById(new AtivoPatrimonialId(ativoId))).thenReturn(Optional.of(ativo(AtivoStatus.EM_MANUTENCAO)));
+        when(repository.findById(new AtivoPatrimonialId(ativoId)))
+                .thenReturn(Optional.of(ativo(AtivoStatus.EM_MANUTENCAO)));
         useCase().execute(ativoId);
         verify(repository, never()).save(any());
     }

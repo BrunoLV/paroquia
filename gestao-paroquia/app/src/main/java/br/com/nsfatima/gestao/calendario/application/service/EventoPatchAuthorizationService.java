@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.policy.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.EventoPatchAuthorizationPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -15,47 +17,23 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Serviço de domínio que concentra as regras de autorização para criação, edição,
- * gestão de participantes e mudança de organização responsável de um evento de
- * calendário. A autorização combina papel organizacional (conjuntos fechados de
- * papéis habilitados a criar/editar) com escopo de organização/igreja: fora do
- * Pároco, o ator só pode agir dentro da própria organização/igreja vinculada, a
- * menos que possua outro vínculo válido (verificado via
- * {@link SecurityContextHolder}) que cubra o escopo do evento. Também decide se
- * uma criação de evento é aplicada imediatamente ou requer aprovação, e restringe o
- * bypass de conflito de agenda eclesial ao Pároco/Admin.
+ * Orquestra as regras de autorização para criação, edição, gestão de participantes e mudança de
+ * organização responsável de um evento de calendário: carrega os fatos de escopo (vínculos do
+ * ator autenticado via {@link SecurityContextHolder}, acesso global via
+ * {@link PapelGlobalAuthorizationService}) e delega a decisão de papel/escopo à
+ * {@link EventoPatchAuthorizationPolicy}, que é pura e não conhece I/O.
  */
 @Service
 public class EventoPatchAuthorizationService {
 
-    private static final Set<PapelOrganizacional> ORG_EDITOR_ROLES = Set.of(
-            PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_MOVIMENTO,
-            PapelOrganizacional.COORD_PASTORAL,
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.PAROCO,
-            PapelOrganizacional.VIGARIO,
-            PapelOrganizacional.PADRE);
-    private static final Set<PapelOrganizacional> ORG_CREATOR_ROLES = Set.of(
-            PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_MOVIMENTO,
-            PapelOrganizacional.COORD_PASTORAL,
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.SECRETARIO,
-            PapelOrganizacional.PAROCO,
-            PapelOrganizacional.VIGARIO,
-            PapelOrganizacional.PADRE);
-
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
+    private final EventoPatchAuthorizationPolicy policy;
 
-    public EventoPatchAuthorizationService(PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
+    public EventoPatchAuthorizationService(
+            PapelGlobalAuthorizationService papelGlobalAuthorizationService,
+            EventoPatchAuthorizationPolicy policy) {
         this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
+        this.policy = policy;
     }
 
     /**
@@ -86,16 +64,16 @@ public class EventoPatchAuthorizationService {
                 ? PapelOrganizacional.fromStoredValue(actorContext.role())
                 : null;
 
-        boolean isParoco = normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN;
+        boolean isAuthorized = policy.isBypassAllowed(normalizedRole);
 
-        if (!isParoco) {
+        if (!isAuthorized) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             UUID actorId = auth != null && auth.getPrincipal() instanceof UsuarioDetails details
                     ? details.getUsuarioId() : null;
-            isParoco = actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId);
+            isAuthorized = actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId);
         }
 
-        if (!isParoco) {
+        if (!isAuthorized) {
             throw new AccessDeniedException(
                     "Apenas o Pároco possui permissão para utilizar o bypass de conflito de agenda eclesial");
         }
@@ -120,35 +98,20 @@ public class EventoPatchAuthorizationService {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
-        if (!ORG_CREATOR_ROLES.contains(normalizedRole)) {
+        if (!policy.isCreatorRole(normalizedRole)) {
             throw new AccessDeniedException("Usuário não tem permissão para esta operação de criação");
         }
 
-        if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
-            boolean matchesOrg = actorContext.organizationId().equals(grupoParoquialResponsavelId);
-            boolean matchesChurch = (igrejaVinculoId == null) ||
-                    (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
+        boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
+                || matchesScope(actorContext, grupoParoquialResponsavelId, igrejaVinculoId)
+                || checkUserVinculo(grupoParoquialResponsavelId, igrejaVinculoId, policy.creatorRoles());
 
-            if (!matchesOrg || !matchesChurch) {
-                boolean hasOtherValidVinculo = checkUserVinculo(grupoParoquialResponsavelId,
-                        igrejaVinculoId, ORG_CREATOR_ROLES);
-
-                if (!hasOtherValidVinculo) {
-                    throw new AccessDeniedException(
-                            "Usuário não pode criar eventos fora do escopo da organização responsável");
-                }
-            }
+        if (!escopoAutorizado) {
+            throw new AccessDeniedException(
+                    "Usuário não pode criar eventos fora do escopo da organização responsável");
         }
 
-        if (normalizedRole == PapelOrganizacional.PAROCO
-                || (normalizedOrgType == TipoGrupo.CONSELHO
-                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_CPP
-                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL))) {
-            return CreateRequestMode.IMMEDIATE;
-        }
-
-        return CreateRequestMode.REQUIRES_APROVACAO;
+        return policy.resolveCreateRequestMode(normalizedRole, normalizedOrgType);
     }
 
     /**
@@ -166,24 +129,17 @@ public class EventoPatchAuthorizationService {
                                      UUID eventoGrupoParoquialResponsavelId, UUID eventIgrejaVinculoId) {
 
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (!ORG_EDITOR_ROLES.contains(normalizedRole)) {
+        if (!policy.isEditorRole(normalizedRole)) {
             throw new ForbiddenOperationException("Usuário não tem permissão para esta operação de alteração");
         }
 
-        if (normalizedRole != PapelOrganizacional.PAROCO && actorContext.organizationId() != null) {
-            boolean matchesOrg = actorContext.organizationId().equals(eventoGrupoParoquialResponsavelId);
-            boolean matchesChurch = (eventIgrejaVinculoId == null) || (actorContext.igrejaVinculoId() != null &&
-                    actorContext.igrejaVinculoId().equals(eventIgrejaVinculoId));
+        boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
+                || matchesScope(actorContext, eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId)
+                || checkUserVinculo(eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId, policy.editorRoles());
 
-            if (!matchesOrg || !matchesChurch) {
-                boolean hasOtherValidVinculo = checkUserVinculo(eventoGrupoParoquialResponsavelId,
-                        eventIgrejaVinculoId, ORG_EDITOR_ROLES);
-
-                if (!hasOtherValidVinculo) {
-                    throw new ForbiddenOperationException(
-                            "Usuário não pode editar eventos fora do escopo da organização responsável");
-                }
-            }
+        if (!escopoAutorizado) {
+            throw new ForbiddenOperationException(
+                    "Usuário não pode editar eventos fora do escopo da organização responsável");
         }
     }
 
@@ -214,16 +170,15 @@ public class EventoPatchAuthorizationService {
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
-        boolean conselhoCoordinator = normalizedOrgType == TipoGrupo.CONSELHO
-                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_CPP
-                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL);
-        boolean parroco = normalizedRole == PapelOrganizacional.PAROCO;
+        policy.assertCanChangeResponsibleOrganization(normalizedRole, normalizedOrgType);
+    }
 
-        if (!conselhoCoordinator && !parroco) {
-            throw new ForbiddenOperationException(
-                    "Apenas coordenador de conselho ou pároco pode alterar a organização responsável");
-        }
+    private boolean matchesScope(EventoActorContext actorContext,
+                                  UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
+        boolean matchesOrg = actorContext.organizationId().equals(grupoParoquialResponsavelId);
+        boolean matchesChurch = (igrejaVinculoId == null)
+                || (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
+        return matchesOrg && matchesChurch;
     }
 
     private boolean checkUserVinculo(UUID grupoParoquialResponsavelId,
@@ -244,16 +199,5 @@ public class EventoPatchAuthorizationService {
                     });
         }
         return false;
-    }
-
-    /**
-     * Modo de processamento de uma solicitação de criação de evento, definido
-     * conforme o papel/escopo do ator solicitante.
-     */
-    public enum CreateRequestMode {
-        /** O evento é criado imediatamente, sem passar pelo fluxo de aprovação. */
-        IMMEDIATE,
-        /** A criação fica pendente até ser decidida através do fluxo de aprovação. */
-        REQUIRES_APROVACAO
     }
 }

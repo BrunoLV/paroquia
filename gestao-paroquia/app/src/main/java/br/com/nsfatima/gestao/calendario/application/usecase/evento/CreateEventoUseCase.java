@@ -12,7 +12,7 @@ import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolic
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
-import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.CreateRequestMode;
 import br.com.nsfatima.gestao.calendario.application.service.MotorLiturgico;
 import br.com.nsfatima.gestao.calendario.application.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;

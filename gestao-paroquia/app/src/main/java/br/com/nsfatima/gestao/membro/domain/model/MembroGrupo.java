@@ -61,7 +61,7 @@ public class MembroGrupo {
                 dataEntrada != null ? dataEntrada : LocalDate.now(), true);
     }
 
-    public void atribuirPapel(PapelOrganizacional novoPapel) {
+    public final void atribuirPapel(PapelOrganizacional novoPapel) {
         Objects.requireNonNull(novoPapel, "Papel do vínculo é obrigatório.");
         if (novoPapel.isGlobal()) {
             throw new IllegalArgumentException(

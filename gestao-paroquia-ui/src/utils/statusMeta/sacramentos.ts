@@ -4,6 +4,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import type { SvgIconProps } from '@mui/material';
 import HostiaIcon from '../../components/icons/HostiaIcon';
+import type { VidaSacramental } from '../../api/types';
 
 interface SacramentoMeta {
   icon: React.ReactElement<SvgIconProps>;
@@ -145,7 +146,7 @@ export function hasSacramentoPendencia(fiel?: {
   primeiraComunhao?: boolean;
   crismado?: boolean;
   casadoIgrejaCatolica?: boolean;
-  vidaSacramental?: any;
+  vidaSacramental?: VidaSacramental | null;
 } | null): boolean {
   const sacramentos = getSacramentosFiel(fiel);
   return sacramentos.some((s) => !s.possuiDetalhes);

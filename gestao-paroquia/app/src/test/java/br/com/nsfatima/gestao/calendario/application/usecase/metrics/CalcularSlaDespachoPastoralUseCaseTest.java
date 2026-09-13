@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -49,7 +50,7 @@ class CalcularSlaDespachoPastoralUseCaseTest {
         assertNotNull(response);
         assertEquals(1L, response.totalSolicitacoes());
         assertEquals(1L, response.solicitacoesAprovadas());
-        assertEquals(2.0, response.tempoMedioAprovacaoHoras());
+        assertEquals(BigDecimal.valueOf(2.0), response.tempoMedioAprovacaoHoras());
         assertEquals("EXCELENTE", response.statusSla());
     }
 }

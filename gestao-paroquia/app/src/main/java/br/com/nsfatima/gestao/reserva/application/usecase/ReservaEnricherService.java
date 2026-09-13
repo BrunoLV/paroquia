@@ -66,11 +66,21 @@ public class ReservaEnricherService {
             } else if (r.getTipoItem() == TipoItemReserva.ATIVO) {
                 ativoIds.add(r.getItemId());
             }
-            if (r.getPastoralMovimentoId() != null) orgIds.add(r.getPastoralMovimentoId());
-            if (r.getSolicitanteId() != null) usuarioIds.add(r.getSolicitanteId());
-            if (r.getAprovadorId() != null) usuarioIds.add(r.getAprovadorId());
-            if (r.getCanceladoPorId() != null) usuarioIds.add(r.getCanceladoPorId());
-            if (r.getEventoId() != null) eventoIds.add(r.getEventoId());
+            if (r.getPastoralMovimentoId() != null) {
+                orgIds.add(r.getPastoralMovimentoId());
+            }
+            if (r.getSolicitanteId() != null) {
+                usuarioIds.add(r.getSolicitanteId());
+            }
+            if (r.getAprovadorId() != null) {
+                usuarioIds.add(r.getAprovadorId());
+            }
+            if (r.getCanceladoPorId() != null) {
+                usuarioIds.add(r.getCanceladoPorId());
+            }
+            if (r.getEventoId() != null) {
+                eventoIds.add(r.getEventoId());
+            }
         }
 
         Map<UUID, String> nomesLocais = new HashMap<>();
@@ -149,7 +159,9 @@ public class ReservaEnricherService {
 
     @Transactional(readOnly = true)
     public ReservaDetalheDto enriquecer(Reserva reserva) {
-        if (reserva == null) return null;
+        if (reserva == null) {
+            return null;
+        }
         List<ReservaDetalheDto> lista = enriquecer(List.of(reserva));
         return lista.isEmpty() ? null : lista.get(0);
     }

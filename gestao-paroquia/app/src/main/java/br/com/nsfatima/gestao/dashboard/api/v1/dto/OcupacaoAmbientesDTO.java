@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.dashboard.api.v1.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -15,8 +16,8 @@ import java.util.List;
  */
 @Schema(description = "Taxa de ocupação estimada dos ambientes (dia e semana)")
 public record OcupacaoAmbientesDTO(
-        double taxaDiaPercentual,
-        double taxaSemanaPercentual,
+        BigDecimal taxaDiaPercentual,
+        BigDecimal taxaSemanaPercentual,
         List<OcupacaoLocalDTO> porLocal
 ) {
 }

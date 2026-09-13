@@ -53,7 +53,8 @@ class ConcluirManutencaoAtivoUseCaseTest {
                 authorizationService, eventPublisher);
         AtivoPatrimonial ativo = new AtivoPatrimonial(new AtivoPatrimonialId(ativoId), "Projetor",
                 CodigoTombamento.de(2026, 1), null, AtivoCategoria.ELETRONICO, LocalDate.now(), BigDecimal.TEN,
-                UUID.randomUUID(), true, AtivoStatus.EM_MANUTENCAO, UUID.randomUUID(), Instant.now(), Instant.now(), null, 0L);
+                UUID.randomUUID(), true, AtivoStatus.EM_MANUTENCAO, UUID.randomUUID(), Instant.now(), Instant.now(),
+                null, 0L);
         when(ativoRepository.findById(new AtivoPatrimonialId(ativoId))).thenReturn(Optional.of(ativo));
         lenient().when(ativoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         lenient().when(actorContextResolver.resolveRequired())

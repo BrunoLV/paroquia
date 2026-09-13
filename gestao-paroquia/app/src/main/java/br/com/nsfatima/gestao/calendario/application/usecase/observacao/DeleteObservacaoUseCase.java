@@ -48,7 +48,8 @@ public class DeleteObservacaoUseCase {
                 .orElseThrow(() -> new ObservacaoNaoEncontradaException("Observation not found"));
 
         mutacaoObservacaoPolicy.assertEdicaoOuExclusaoPermitida(
-                new ObservacaoRegistrada(observacao.getTipo(), observacao.isRemovida(), observacao.getUsuarioId()), usuarioId);
+                new ObservacaoRegistrada(observacao.getTipo(), observacao.isRemovida(), observacao.getUsuarioId()),
+                usuarioId);
 
         observacao.setRemovida(true);
         observacao.setRemovidaEmUtc(Instant.now());

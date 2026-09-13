@@ -283,7 +283,8 @@ public class ReservaController {
             @ApiResponse(responseCode = "403", description = "Usuário sem permissão"),
             @ApiResponse(responseCode = "404", description = "Reserva não encontrada")
     })
-    public ReservaResponse registrarRetirada(@Parameter(description = "ID único da reserva de ativo") @PathVariable UUID id) {
+    public ReservaResponse registrarRetirada(
+            @Parameter(description = "ID único da reserva de ativo") @PathVariable UUID id) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva retirada = registrarRetiradaAtivoUseCase.executar(id, ator);
         return ReservaResponse.de(enricherService.enriquecer(retirada));

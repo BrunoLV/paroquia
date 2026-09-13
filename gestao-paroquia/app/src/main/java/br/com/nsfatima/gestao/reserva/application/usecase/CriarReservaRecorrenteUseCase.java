@@ -76,14 +76,16 @@ public class CriarReservaRecorrenteUseCase {
 
         UUID grupoId = UUID.randomUUID();
         int buffer = comando.bufferMinutos() != null ? comando.bufferMinutos() : IntervaloReserva.BUFFER_PADRAO_MINUTOS;
-        StatusReserva statusInicial = authorizationService.determinarStatusInicial(solicitante, comando.pastoralMovimentoId());
+        StatusReserva statusInicial = authorizationService.determinarStatusInicial(
+                solicitante, comando.pastoralMovimentoId());
         Instant agora = Instant.now();
 
         List<Reserva> candidatas = new ArrayList<>();
         List<ConflitoDetalhe> conflitosTotais = new ArrayList<>();
 
         for (OcorrenciaHorario ocorrencia : comando.ocorrencias()) {
-            IntervaloReserva intervalo = new IntervaloReserva(ocorrencia.dataHoraInicio(), ocorrencia.dataHoraFim(), buffer);
+            IntervaloReserva intervalo = new IntervaloReserva(
+                    ocorrencia.dataHoraInicio(), ocorrencia.dataHoraFim(), buffer);
             List<Reserva> choques = conflitoService.buscarColisoesComLock(
                     comando.tipoItem(),
                     comando.itemId(),

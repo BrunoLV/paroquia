@@ -52,10 +52,12 @@ public class SolenidadeLiturgicaController {
      * @return todas as solenidades litúrgicas cadastradas
      */
     @GetMapping
-    @Operation(summary = "Lista todas as solenidades", description = "Retorna todas as solenidades litúrgicas cadastradas, incluindo inativas.")
+    @Operation(summary = "Lista todas as solenidades",
+            description = "Retorna todas as solenidades litúrgicas cadastradas, incluindo inativas.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SolenidadeLiturgicaResponseDTO.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = SolenidadeLiturgicaResponseDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
@@ -70,10 +72,12 @@ public class SolenidadeLiturgicaController {
      * @return as solenidades litúrgicas com status ativo
      */
     @GetMapping("/ativas")
-    @Operation(summary = "Lista solenidades ativas", description = "Retorna apenas as solenidades litúrgicas com status ativo.")
+    @Operation(summary = "Lista solenidades ativas",
+            description = "Retorna apenas as solenidades litúrgicas com status ativo.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de solenidades ativas recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SolenidadeLiturgicaResponseDTO.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = SolenidadeLiturgicaResponseDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

@@ -10,6 +10,8 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class CalculadoraTaxaRetrabalho {
     private static final String RESULTADO_EXECUTADO = "executado";
     private static final String ACAO_CANCELAMENTO = "cancelar";
     private static final String ACAO_ALTERACAO = "atualizar";
+    private static final int TAXA_SCALE = 4;
 
     private final AuditoriaOperacaoJpaRepository auditoriaOperacaoJpaRepository;
     private final ObjectMapper objectMapper;
@@ -69,7 +72,7 @@ public class CalculadoraTaxaRetrabalho {
                 grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim());
-        double taxa = denominador == 0L ? 0.0 : numerador / (double) denominador;
+        BigDecimal taxa = calcularTaxa(numerador, denominador);
         return new IndicadorRetrabalhoResponse(
                 grupoParoquialId,
                 new PeriodoOperacionalResponse(periodo.granularidade(), periodo.inicio(), periodo.fim()),
@@ -109,8 +112,16 @@ public class CalculadoraTaxaRetrabalho {
         }
 
         long denominador = distinctAffectedEvents.size();
-        double taxa = denominador == 0L ? 0.0 : numerador / (double) denominador;
+        BigDecimal taxa = calcularTaxa(numerador, denominador);
         return new SnapshotReworkMetrics(taxa, numerador, denominador);
+    }
+
+    /** Quociente numerador/denominador com precisão decimal exata; {@code ZERO} se não houver denominador. */
+    private BigDecimal calcularTaxa(long numerador, long denominador) {
+        return denominador == 0L
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(numerador)
+                        .divide(BigDecimal.valueOf(denominador), TAXA_SCALE, RoundingMode.HALF_UP);
     }
 
     private boolean isEligibleAdministrativeRework(AuditoriaOperacaoEntity auditRecord) {
@@ -163,7 +174,7 @@ public class CalculadoraTaxaRetrabalho {
      *                                    qualquer operação auditada no período
      */
     public record SnapshotReworkMetrics(
-            double taxaRetrabalho,
+            BigDecimal taxaRetrabalho,
             long numeradorOcorrenciasElegiveis,
             long denominadorEventosAfetados) {
     }

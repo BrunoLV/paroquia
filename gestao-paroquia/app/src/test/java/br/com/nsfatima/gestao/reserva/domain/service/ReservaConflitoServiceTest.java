@@ -33,12 +33,14 @@ class ReservaConflitoServiceTest {
     void naoDeveLancarExcecaoSemSobreposicao() {
         UUID itemId = UUID.randomUUID();
         Instant agora = Instant.now();
-        IntervaloReserva intervalo = new IntervaloReserva(agora.plus(2, ChronoUnit.HOURS), agora.plus(4, ChronoUnit.HOURS), 15);
+        IntervaloReserva intervalo = new IntervaloReserva(
+                agora.plus(2, ChronoUnit.HOURS), agora.plus(4, ChronoUnit.HOURS), 15);
 
         when(repository.findConflitosPotenciaisComLock(eq(TipoItemReserva.LOCAL), eq(itemId), any(), any(), any()))
                 .thenReturn(Collections.emptyList());
 
-        assertThatNoException().isThrownBy(() -> service.validarDisponibilidadeComLock(TipoItemReserva.LOCAL, itemId, "Sala 1", intervalo, null));
+        assertThatNoException().isThrownBy(() -> service.validarDisponibilidadeComLock(
+                TipoItemReserva.LOCAL, itemId, "Sala 1", intervalo, null));
     }
 
     @Test
@@ -46,7 +48,8 @@ class ReservaConflitoServiceTest {
     void deveLancarExcecaoComSobreposicao() {
         UUID itemId = UUID.randomUUID();
         Instant agora = Instant.now();
-        IntervaloReserva intervalo = new IntervaloReserva(agora.plus(2, ChronoUnit.HOURS), agora.plus(4, ChronoUnit.HOURS), 15);
+        IntervaloReserva intervalo = new IntervaloReserva(
+                agora.plus(2, ChronoUnit.HOURS), agora.plus(4, ChronoUnit.HOURS), 15);
 
         Reserva existente = Reserva.criar(
                 ReservaId.generate(),
@@ -65,7 +68,8 @@ class ReservaConflitoServiceTest {
         when(repository.findConflitosPotenciaisComLock(eq(TipoItemReserva.LOCAL), eq(itemId), any(), any(), any()))
                 .thenReturn(List.of(existente));
 
-        assertThatThrownBy(() -> service.validarDisponibilidadeComLock(TipoItemReserva.LOCAL, itemId, "Sala 1", intervalo, null))
+        assertThatThrownBy(() -> service.validarDisponibilidadeComLock(
+                TipoItemReserva.LOCAL, itemId, "Sala 1", intervalo, null))
                 .isInstanceOf(ReservaConflitoException.class)
                 .hasMessageContaining("Conflito de agenda ou margem de buffer detectado");
     }

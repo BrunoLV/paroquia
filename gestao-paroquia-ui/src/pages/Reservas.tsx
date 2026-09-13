@@ -24,6 +24,7 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import ActionButton from '@/components/ActionButton';
 import PageHeader from '@/components/PageHeader';
 import { useAuth } from '@/auth/AuthContext';
+import { extractErrorMessage } from '@/utils/errorUtils';
 import { canApprove } from '@/auth/permissions';
 import { useNotification } from '@/context/NotificationContext';
 import {
@@ -130,9 +131,8 @@ const Reservas: React.FC = () => {
       setDrawerFormOpen(false);
       showSuccess('Reserva solicitada com sucesso!');
     },
-    onError: (err: any) => {
-      const msg = err.response?.data?.message || err.message || 'Erro ao criar reserva.';
-      showError(msg);
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao criar reserva.'));
     },
   });
 
@@ -144,9 +144,8 @@ const Reservas: React.FC = () => {
       setDrawerFormOpen(false);
       showSuccess(`${res.length} reservas recorrentes geradas com sucesso!`);
     },
-    onError: (err: any) => {
-      const msg = err.response?.data?.message || err.message || 'Erro ao criar agendamento recorrente.';
-      showError(msg);
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao criar agendamento recorrente.'));
     },
   });
 
@@ -157,8 +156,8 @@ const Reservas: React.FC = () => {
       cliente.invalidateQueries({ queryKey: ['reservas-metricas'] });
       showSuccess('Reserva aprovada com sucesso!');
     },
-    onError: (err: any) => {
-      showError(err.response?.data?.message || 'Erro ao aprovar reserva.');
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao aprovar reserva.'));
     },
   });
 
@@ -170,8 +169,8 @@ const Reservas: React.FC = () => {
       setCancelarReservaAlvo(null);
       showSuccess('Solicitação de reserva rejeitada.');
     },
-    onError: (err: any) => {
-      showError(err.response?.data?.message || 'Erro ao rejeitar reserva.');
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao rejeitar reserva.'));
     },
   });
 
@@ -183,8 +182,8 @@ const Reservas: React.FC = () => {
       setCancelarReservaAlvo(null);
       showSuccess('Reserva cancelada com sucesso.');
     },
-    onError: (err: any) => {
-      showError(err.response?.data?.message || 'Erro ao cancelar reserva.');
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao cancelar reserva.'));
     },
   });
 
@@ -195,8 +194,8 @@ const Reservas: React.FC = () => {
       cliente.invalidateQueries({ queryKey: ['reservas-metricas'] });
       showSuccess('Saída do ativo registrada com sucesso!');
     },
-    onError: (err: any) => {
-      showError(err.response?.data?.message || 'Erro ao registrar saída de ativo.');
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao registrar saída de ativo.'));
     },
   });
 
@@ -209,8 +208,8 @@ const Reservas: React.FC = () => {
       setDevolucaoReservaAlvo(null);
       showSuccess('Devolução do ativo concluída!');
     },
-    onError: (err: any) => {
-      showError(err.response?.data?.message || 'Erro ao registrar devolução.');
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao registrar devolução.'));
     },
   });
 

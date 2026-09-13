@@ -98,7 +98,8 @@ public class MetricaEstrategicaController {
     @Operation(summary = "Índice de Sazonalidade Litúrgica e Preditividade Pastoral")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Índice de sazonalidade retornado com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SazonalidadeLiturgicaResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = SazonalidadeLiturgicaResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

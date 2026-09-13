@@ -26,7 +26,8 @@ public final class HierarquiaPrioridadeAgendaPolicy implements PrioridadeAgendaP
                 throw new ConflitoAgendaEclesialException("Já existe evento litúrgico no mesmo espaço");
             } else if (novoEvento.prioridade() == 2 && mesmoEspaco && existente.prioridade() > 2) {
                 cancelamentos.add(existente);
-            } else if (novoEvento.prioridade() >= 3 && (existente.prioridade() < novoEvento.prioridade() || mesmoEspaco)) {
+            } else if (novoEvento.prioridade() >= 3
+                    && (existente.prioridade() < novoEvento.prioridade() || mesmoEspaco)) {
                 throw new ConflitoAgendaEclesialException("Conflito de prioridade ou espaço na agenda eclesial");
             }
         }

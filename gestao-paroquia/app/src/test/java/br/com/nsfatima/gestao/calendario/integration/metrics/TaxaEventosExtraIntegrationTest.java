@@ -61,7 +61,7 @@ class TaxaEventosExtraIntegrationTest {
                         .param("fim", "2026-10-31T23:59:59Z")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.taxaEventosAdicionadosExtra").value(66.66666666666666));
+                .andExpect(jsonPath("$.taxaEventosAdicionadosExtra").value(66.6667));
     }
 
     private EventoEntity createEvento(UUID orgId, String titulo, String status, String inicio) {

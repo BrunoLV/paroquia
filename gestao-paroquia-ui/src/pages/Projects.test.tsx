@@ -1,12 +1,13 @@
 import {vi} from "vitest";
 import React from 'react';
-import {act, fireEvent, render, screen, within} from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import Projects from './Projects';
 import {ThemeProvider} from '@mui/material/styles';
 import theme from '../theme';
 import {MemoryRouter} from 'react-router-dom';
 import apiClient from '../api/client';
 import {AuthProvider} from '../auth/AuthContext';
+import {QueryProvider} from '../api/QueryProvider';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
@@ -90,7 +91,9 @@ describe('Projects Page', () => {
         <MemoryRouter>
           <AuthProvider>
             <ThemeProvider theme={theme}>
-              <Projects />
+              <QueryProvider>
+                <Projects />
+              </QueryProvider>
             </ThemeProvider>
           </AuthProvider>
         </MemoryRouter>
@@ -122,7 +125,9 @@ describe('Projects Page', () => {
     
     // Check elements in Details Drawer
     expect(screen.getByText('Detalhes do Projeto')).toBeInTheDocument();
-    expect(screen.getByText('35.5%')).toBeInTheDocument(); // percentualTempoDecorrido
+    await waitFor(() => {
+      expect(screen.getByText('35.5%')).toBeInTheDocument(); // percentualTempoDecorrido
+    });
     expect(screen.getAllByText('10').length).toBeGreaterThan(0); // totalEventos e TablePagination
     expect(screen.getByText('4')).toBeInTheDocument(); // eventosRealizados
   });

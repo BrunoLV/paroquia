@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {
     Alert,
+    alpha,
     Avatar,
     Box,
     ButtonGroup,
@@ -34,6 +35,7 @@ import {ExportFormat, useOrganogramaExport} from '../hooks/useOrganogramaExport'
 import {OrganogramaExportButton} from '../components/organograma/OrganogramaExportButton';
 import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
+import theme from '../theme';
 
 const Organograma: React.FC = () => {
   const { data: organograma, isLoading, isError } = useQuery({
@@ -90,28 +92,30 @@ const Organograma: React.FC = () => {
     }
   };
 
+  // Reaproveita as cores semânticas do tema para o papel do membro no organograma
+  // (não há cor "roxa" dedicada no tema — Secretário usa o dourado do secondary).
   const getRoleBadgeColor = (role: string) => {
     switch (role?.toUpperCase()) {
       case 'PAROCO':
-        return '#d32f2f'; // Red
+        return theme.palette.error.main;
       case 'VIGARIO':
       case 'PADRE':
-        return '#f57c00'; // Orange
+        return theme.palette.warning.main;
       case 'COORDENADOR':
-        return '#1976d2'; // Blue
+        return theme.palette.info.main;
       case 'VICE_COORDENADOR':
       case 'VICE-COORDENADOR':
-        return '#388e3c'; // Green
+        return theme.palette.success.main;
       case 'SECRETARIO':
-        return '#7b1fa2'; // Purple
+        return theme.palette.secondary.main;
       default:
-        return '#757575'; // Grey
+        return theme.palette.grey[600];
     }
   };
 
   const renderMembroNode = (member: OrganogramaNode, orgType?: string) => {
     const isEconomic = orgType === 'CONSELHO_ECONOMICO';
-    const roleColor = isEconomic ? '#2e7d32' : getRoleBadgeColor(member.subtype);
+    const roleColor = isEconomic ? theme.palette.success.main : getRoleBadgeColor(member.subtype);
     const initials = member.label
       .split(' ')
       .slice(0, 2)
@@ -151,32 +155,32 @@ const Organograma: React.FC = () => {
     switch (subtype?.toUpperCase()) {
       case 'CLERO':
         return {
-          bgcolor: '#fff5f5',
-          borderColor: '#ffe3e3',
-          textColor: '#c62828',
-          iconColor: '#e53935',
+          bgcolor: alpha(theme.palette.error.main, 0.06),
+          borderColor: alpha(theme.palette.error.main, 0.15),
+          textColor: theme.palette.error.dark,
+          iconColor: theme.palette.error.main,
           icon: ChurchIcon,
         };
       case 'CONSELHO':
         return {
-          bgcolor: '#f0f4c3',
-          borderColor: '#e6ee9c',
-          textColor: '#827717',
-          iconColor: '#afb42b',
+          bgcolor: alpha(theme.palette.secondary.main, 0.12),
+          borderColor: alpha(theme.palette.secondary.main, 0.25),
+          textColor: theme.palette.secondary.dark,
+          iconColor: theme.palette.secondary.dark,
           icon: SupervisorAccountIcon,
         };
       case 'CONSELHO_ECONOMICO':
         return {
-          bgcolor: '#e8f5e9',
-          borderColor: '#c8e6c9',
-          textColor: '#1b5e20',
-          iconColor: '#2e7d32',
+          bgcolor: alpha(theme.palette.success.main, 0.10),
+          borderColor: alpha(theme.palette.success.main, 0.22),
+          textColor: theme.palette.success.dark,
+          iconColor: theme.palette.success.main,
           icon: SupervisorAccountIcon,
         };
       default:
         return {
-          bgcolor: '#f5f7fb',
-          borderColor: '#eef2f6',
+          bgcolor: theme.custom.subtlePanelBg,
+          borderColor: theme.custom.borderSubtle,
           textColor: 'primary.main',
           iconColor: 'primary.main',
           icon: ChurchIcon,

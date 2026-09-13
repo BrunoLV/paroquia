@@ -2,7 +2,6 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ExportacaoCalendarioUseCase;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

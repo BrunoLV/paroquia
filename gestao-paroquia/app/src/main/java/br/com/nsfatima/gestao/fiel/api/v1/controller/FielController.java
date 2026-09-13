@@ -77,7 +77,8 @@ public class FielController {
     @Operation(summary = "Lista todos os Fiéis")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de fiéis recuperada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = FielConsultaResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = FielConsultaResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

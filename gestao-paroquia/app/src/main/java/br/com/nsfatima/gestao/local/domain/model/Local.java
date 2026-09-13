@@ -37,7 +37,8 @@ public class Local {
                  String descricao,
                  boolean ativo,
                  UUID igrejaId) {
-        this(id, nome, tipo, endereco, capacidadeMaxima, descricao, ativo, igrejaId, null, null, Instant.now(), Instant.now());
+        this(id, nome, tipo, endereco, capacidadeMaxima, descricao, ativo, igrejaId, null, null,
+                Instant.now(), Instant.now());
     }
 
     public Local(UUID id,

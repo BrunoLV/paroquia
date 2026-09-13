@@ -47,7 +47,8 @@ public interface AutorizacaoProjetoPolicy {
      * @param atorOrganizacaoId ID da organização do ator
      * @param targetOrgId ID da organização responsável pelo projeto
      */
-    void assertCanStartOrConclude(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
+    void assertCanStartOrConclude(
+            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
 
     /**
      * Valida permissão para solicitação ou execução de cancelamento de projeto.
@@ -57,7 +58,8 @@ public interface AutorizacaoProjetoPolicy {
      * @param atorOrganizacaoId ID da organização do ator
      * @param targetOrgId ID da organização responsável pelo projeto
      */
-    default void assertCanCancel(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+    default void assertCanCancel(
+            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
         assertCanStartOrConclude(papel, tipoGrupo, atorOrganizacaoId, targetOrgId);
     }
 }

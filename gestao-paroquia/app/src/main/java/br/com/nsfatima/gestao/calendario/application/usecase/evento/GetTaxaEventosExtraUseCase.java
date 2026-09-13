@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -18,6 +20,8 @@ import java.util.UUID;
  */
 @Service
 public class GetTaxaEventosExtraUseCase {
+
+    private static final int TAXA_SCALE = 4;
 
     private final EventoJpaRepository eventoJpaRepository;
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
@@ -57,11 +61,20 @@ public class GetTaxaEventosExtraUseCase {
                 periodo.inicio(),
                 periodo.fim());
 
-        double taxa = total == 0L ? 0.0 : (extras / (double) total) * 100.0;
+        BigDecimal taxa = calcularTaxa(extras, total);
 
         return new TaxaEventosExtraResponse(
                 periodo.granularidade() != null ? periodo.granularidade() : "custom",
                 taxa);
+    }
+
+    /** Percentual numerador/denominador com precisão decimal exata; {@code ZERO} se não houver denominador. */
+    private BigDecimal calcularTaxa(long numerador, long denominador) {
+        return denominador == 0L
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(numerador)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(denominador), TAXA_SCALE, RoundingMode.HALF_UP);
     }
 
     private void assertAccessToOrganization(UUID grupoParoquialId) {

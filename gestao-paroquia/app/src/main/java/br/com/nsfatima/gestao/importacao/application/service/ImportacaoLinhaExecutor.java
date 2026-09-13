@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.importacao.application.service;
 
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
-import br.com.nsfatima.gestao.calendario.application.service.EventoService;
 import br.com.nsfatima.gestao.calendario.application.service.MotorLiturgico;
 import br.com.nsfatima.gestao.calendario.application.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;

@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.model;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -25,7 +26,7 @@ public record CicloLiturgico(
         int diaInicio,
         int mesFim,
         int diaFim,
-        double fatorDemanda,
+        BigDecimal fatorDemanda,
         String descricao
 ) {
 }

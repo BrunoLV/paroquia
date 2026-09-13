@@ -160,7 +160,8 @@ public class CancelEventoUseCase {
         EventoEntity saved = Objects.requireNonNull(eventoJpaRepository.save(evento));
 
         if (eventoReservaIntegrationService != null) {
-            eventoReservaIntegrationService.cancelarReservasEventoEmCascata(saved.getId(), saved.getTitulo(), usuarioId);
+            eventoReservaIntegrationService.cancelarReservasEventoEmCascata(
+                    saved.getId(), saved.getTitulo(), usuarioId);
         }
 
         registerSystemObservacaoUseCase.execute(saved.getId(),

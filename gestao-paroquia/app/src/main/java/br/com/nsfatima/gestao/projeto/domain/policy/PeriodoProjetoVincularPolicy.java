@@ -14,14 +14,17 @@ public final class PeriodoProjetoVincularPolicy implements ProjetoVincularPolicy
     @Override
     public void validarEvento(ProjetoVinculo projeto, Instant inicioEvento, Instant fimEvento) {
         validarProjeto(projeto);
-        if (possuiPeriodo(projeto) && (inicioEvento.isBefore(projeto.inicio()) || fimEvento.isAfter(projeto.fim()))) {
+        boolean foraDoPeriodo = possuiPeriodo(projeto)
+                && (inicioEvento.isBefore(projeto.inicio()) || fimEvento.isAfter(projeto.fim()));
+        if (foraDoPeriodo) {
             throw new IllegalArgumentException("O período do evento está fora do limite definido para o projeto "
                     + projeto.nome());
         }
     }
 
     @Override
-    public void validarRecorrencia(ProjetoVinculo projeto, Instant inicioEvento, Instant fimEvento, RegraRecorrencia regra) {
+    public void validarRecorrencia(
+            ProjetoVinculo projeto, Instant inicioEvento, Instant fimEvento, RegraRecorrencia regra) {
         validarEvento(projeto, inicioEvento, fimEvento);
         if (!possuiPeriodo(projeto)) {
             return;
@@ -35,10 +38,13 @@ public final class PeriodoProjetoVincularPolicy implements ProjetoVincularPolicy
                     + projeto.nome());
         }
         if (regra.numeroOcorrencias() != null) {
-            List<LocalDate> datas = regra.gerarDatas(inicioEvento.atZone(ZoneOffset.UTC).toLocalDate(), fimProjeto.plusYears(5));
-            if (datas.isEmpty() || datas.get(Math.min(datas.size(), regra.numeroOcorrencias()) - 1).isAfter(fimProjeto)) {
-                throw new IllegalArgumentException("As ocorrências da repetição excedem o período definido para o projeto "
-                        + projeto.nome());
+            List<LocalDate> datas = regra.gerarDatas(
+                    inicioEvento.atZone(ZoneOffset.UTC).toLocalDate(), fimProjeto.plusYears(5));
+            int ultimaOcorrencia = Math.min(datas.size(), regra.numeroOcorrencias()) - 1;
+            if (datas.isEmpty() || datas.get(ultimaOcorrencia).isAfter(fimProjeto)) {
+                throw new IllegalArgumentException(
+                        "As ocorrências da repetição excedem o período definido para o projeto "
+                                + projeto.nome());
             }
         }
     }

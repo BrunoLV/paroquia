@@ -60,7 +60,8 @@ public class DashboardComunidadeController {
                     + "aniversário e cujo dia/mês cai na janela informada.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Aniversariantes listados com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AniversarianteDTO.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = AniversarianteDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

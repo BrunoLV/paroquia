@@ -22,7 +22,8 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
     void deveRetornarModoImediatoParaParocoEConselho() {
         assertThat(policy.resolveRequestMode(PapelOrganizacional.PAROCO, null, atorOrgId, atorOrgId))
                 .isEqualTo(CancelamentoRequestMode.IMMEDIATE);
-        assertThat(policy.resolveRequestMode(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO, atorOrgId, atorOrgId))
+        assertThat(policy.resolveRequestMode(
+                PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO, atorOrgId, atorOrgId))
                 .isEqualTo(CancelamentoRequestMode.IMMEDIATE);
     }
 
@@ -37,10 +38,12 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
     @DisplayName("Liderança local requer aprovação no próprio escopo e falha fora de escopo")
     void deveValidarLiderancaLocal() {
         UUID outraOrgId = UUID.randomUUID();
-        assertThat(policy.resolveRequestMode(PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, atorOrgId))
+        assertThat(policy.resolveRequestMode(
+                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, atorOrgId))
                 .isEqualTo(CancelamentoRequestMode.REQUIRES_APROVACAO);
 
-        assertThatThrownBy(() -> policy.resolveRequestMode(PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, outraOrgId))
+        assertThatThrownBy(() -> policy.resolveRequestMode(
+                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, outraOrgId))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 
@@ -52,7 +55,8 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
         assertThatCode(() -> policy.assertCanDecideAprovacao(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO))
                 .doesNotThrowAnyException();
 
-        assertThatThrownBy(() -> policy.assertCanDecideAprovacao(PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL))
+        assertThatThrownBy(() -> policy.assertCanDecideAprovacao(
+                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
 }

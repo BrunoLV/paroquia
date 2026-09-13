@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +43,7 @@ class CalcularSazonalidadeLiturgicaUseCaseTest {
         assertNotNull(result);
         assertFalse(result.isEmpty());
         assertEquals("Quaresma", result.get(0).cicloNome());
-        assertEquals(2.5, result.get(0).fatorDemanda());
+        assertEquals(BigDecimal.valueOf(2.5), result.get(0).fatorDemanda());
         assertEquals("PICO_OPERACIONAL", result.get(0).nivelDemanda());
     }
 }

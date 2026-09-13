@@ -141,7 +141,8 @@ public class PastoralMovimentoOficialController {
             @Parameter(description = "Identificador único do item oficial", required = true)
             @PathVariable UUID id) {
         PastoralMovimentoOficial oficial = service.get(id)
-                .orElseThrow(() -> new PastoralMovimentoOficialBusinessException("Pastoral or Movimento Oficial not found with ID: " + id));
+                .orElseThrow(() -> new PastoralMovimentoOficialBusinessException(
+                        "Pastoral or Movimento Oficial not found with ID: " + id));
         return toResponse(oficial);
     }
 
@@ -155,7 +156,8 @@ public class PastoralMovimentoOficialController {
     @Operation(summary = "List all official pastorals/movements")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = PastoralMovimentoOficialResponse.class)))),
+                    content = @Content(array = @ArraySchema(
+                            schema = @Schema(implementation = PastoralMovimentoOficialResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })

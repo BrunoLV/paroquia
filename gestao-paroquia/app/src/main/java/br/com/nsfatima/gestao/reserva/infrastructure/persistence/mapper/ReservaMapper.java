@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 public class ReservaMapper {
 
     public Reserva toDomain(ReservaEntity entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         IntervaloReserva intervalo = new IntervaloReserva(
                 entity.getDataHoraInicio(),
@@ -44,7 +46,9 @@ public class ReservaMapper {
     }
 
     public ReservaEntity toEntity(Reserva domain) {
-        if (domain == null) return null;
+        if (domain == null) {
+            return null;
+        }
 
         return new ReservaEntity(
                 domain.getId().value(),

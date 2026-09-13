@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.metrics;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.math.BigDecimal;
+
 /**
  * Mede a qualidade do planejamento pastoral pela proporção de eventos criados fora do fluxo normal
  * de planejamento (com justificativa de adição extraordinária) em relação ao total de eventos do
@@ -13,5 +15,5 @@ public record TaxaEventosExtraResponse(
         String periodo,
 
         @Schema(description = "Percentual de eventos adicionados extra-ordinariamente", example = "15.5")
-        double taxaEventosAdicionadosExtra) {
+        BigDecimal taxaEventosAdicionadosExtra) {
 }

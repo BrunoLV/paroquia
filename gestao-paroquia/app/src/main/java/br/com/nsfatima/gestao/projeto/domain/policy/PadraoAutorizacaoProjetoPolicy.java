@@ -40,7 +40,8 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
     }
 
     @Override
-    public void assertCanCreate(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+    public void assertCanCreate(
+            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (!PROJECT_EDITOR_ROLES.contains(papel)) {
             throw new ForbiddenOperationException("Usuário não tem permissão para criar projetos");
         }
@@ -51,7 +52,8 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
     }
 
     @Override
-    public void assertCanEdit(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+    public void assertCanEdit(
+            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (!PROJECT_EDITOR_ROLES.contains(papel)) {
             throw new ForbiddenOperationException("Usuário não tem permissão para editar projetos");
         }
@@ -62,7 +64,8 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
     }
 
     @Override
-    public void assertCanStartOrConclude(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+    public void assertCanStartOrConclude(
+            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (isHighLevelActor(papel, tipoGrupo)) {
             return;
         }

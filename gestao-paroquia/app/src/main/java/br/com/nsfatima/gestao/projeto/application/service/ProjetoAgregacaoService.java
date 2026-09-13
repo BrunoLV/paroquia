@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -65,7 +66,8 @@ public class ProjetoAgregacaoService {
         MapaColaboracaoDTO mapaColaboracao = new MapaColaboracaoDTO(envolvidos);
 
         // Saúde Temporal
-        double percentual = domainService.calcularPercentualTempoDecorrido(projeto.getInicioUtc(), projeto.getFimUtc());
+        BigDecimal percentual = domainService.calcularPercentualTempoDecorrido(
+                projeto.getInicioUtc(), projeto.getFimUtc());
         boolean emRisco = domainService.verificarSeEstaEmRisco(projeto.getInicioUtc(),
                 projeto.getFimUtc(), eventosPendentes);
 

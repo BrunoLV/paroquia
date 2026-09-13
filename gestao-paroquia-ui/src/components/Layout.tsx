@@ -417,7 +417,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   onClick={handleLogout}
                   sx={{
                     bgcolor: 'rgba(255,255,255,0.16)',
-                    color: '#FFFFFF',
+                    color: 'common.white',
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.28)' },
                   }}
                 />
