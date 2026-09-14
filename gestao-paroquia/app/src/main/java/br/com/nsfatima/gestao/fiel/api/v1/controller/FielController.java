@@ -6,10 +6,10 @@ import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielConsultaResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.AlterarStatusFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.UpdateFielRequest;
-import br.com.nsfatima.gestao.fiel.application.usecase.CreateFielUseCase;
-import br.com.nsfatima.gestao.fiel.application.usecase.GetFielUseCase;
+import br.com.nsfatima.gestao.fiel.application.usecase.CriarFielUseCase;
+import br.com.nsfatima.gestao.fiel.application.usecase.ObterFielUseCase;
 import br.com.nsfatima.gestao.fiel.application.usecase.ListFieisUseCase;
-import br.com.nsfatima.gestao.fiel.application.usecase.UpdateFielUseCase;
+import br.com.nsfatima.gestao.fiel.application.usecase.AtualizarFielUseCase;
 import br.com.nsfatima.gestao.fiel.application.usecase.GerenciarCicloVidaFielUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -47,19 +47,19 @@ import java.util.UUID;
 @Tag(name = "Fiéis", description = "Endpoints para gerenciamento de Fiéis (pessoas físicas no Contexto Paroquial)")
 public class FielController {
 
-    private final CreateFielUseCase createFielUseCase;
-    private final GetFielUseCase getFielUseCase;
+    private final CriarFielUseCase createFielUseCase;
+    private final ObterFielUseCase getFielUseCase;
     private final ListFieisUseCase listFieisUseCase;
-    private final UpdateFielUseCase updateFielUseCase;
+    private final AtualizarFielUseCase updateFielUseCase;
     private final GerenciarCicloVidaFielUseCase cicloVidaFielUseCase;
     private final EventoActorContextResolver actorContextResolver;
     private final MembroGrupoJpaRepository membroGrupoRepository;
 
     public FielController(
-            CreateFielUseCase createFielUseCase,
-            GetFielUseCase getFielUseCase,
+            CriarFielUseCase createFielUseCase,
+            ObterFielUseCase getFielUseCase,
             ListFieisUseCase listFieisUseCase,
-            UpdateFielUseCase updateFielUseCase,
+            AtualizarFielUseCase updateFielUseCase,
             GerenciarCicloVidaFielUseCase cicloVidaFielUseCase,
             EventoActorContextResolver actorContextResolver,
             MembroGrupoJpaRepository membroGrupoRepository) {

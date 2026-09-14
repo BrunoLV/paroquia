@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoFiltroRequest;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.CreateSolicitacaoAprovacaoUseCase;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.CriarSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.DecideSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ListAprovacoesUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -43,13 +43,13 @@ import java.util.UUID;
 @Tag(name = "Aprovações", description = "Endpoints para gerenciamento do fluxo de aprovação de eventos")
 public class AprovacaoController {
 
-    private final CreateSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase;
+    private final CriarSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase;
     private final DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase;
     private final ListAprovacoesUseCase listAprovacoesUseCase;
     private final EventoAuditPublisher eventoAuditPublisher;
 
     public AprovacaoController(
-            CreateSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase,
+            CriarSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase,
             DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase,
             ListAprovacoesUseCase listAprovacoesUseCase,
             EventoAuditPublisher eventoAuditPublisher,

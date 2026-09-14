@@ -15,11 +15,11 @@ import java.util.UUID;
  * anotação livre, mas parte do rastro exigido por outros casos de uso (alocação, desalocação).
  */
 @Service
-public class CreateNotaAtivoPatrimonialUseCase {
+public class CriarNotaAtivoPatrimonialUseCase {
 
     private final ObservacaoAtivoPatrimonialJpaRepository repository;
 
-    public CreateNotaAtivoPatrimonialUseCase(ObservacaoAtivoPatrimonialJpaRepository repository) {
+    public CriarNotaAtivoPatrimonialUseCase(ObservacaoAtivoPatrimonialJpaRepository repository) {
         this.repository = repository;
     }
 

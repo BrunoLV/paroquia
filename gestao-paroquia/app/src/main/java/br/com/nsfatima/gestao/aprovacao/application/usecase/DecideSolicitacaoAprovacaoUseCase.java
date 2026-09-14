@@ -46,7 +46,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
     private final AprovacaoMapper aprovacaoMapper;
     private final EventoActorContextResolver actorContextResolver;
-    private final ValidateAprovacaoUseCase validateAprovacaoUseCase;
+    private final ValidarAprovacaoUseCase validarAprovacaoUseCase;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
     private final AprovacaoAuditPublisher auditPublisher;
     private final AprovacaoMetricsPublisher metricsPublisher;
@@ -57,7 +57,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
             AprovacaoJpaRepository aprovacaoJpaRepository,
             AprovacaoMapper aprovacaoMapper,
             EventoActorContextResolver actorContextResolver,
-            ValidateAprovacaoUseCase validateAprovacaoUseCase,
+            ValidarAprovacaoUseCase validarAprovacaoUseCase,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper,
             AprovacaoAuditPublisher auditPublisher,
             AprovacaoMetricsPublisher metricsPublisher,
@@ -66,7 +66,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
         this.aprovacaoMapper = aprovacaoMapper;
         this.actorContextResolver = actorContextResolver;
-        this.validateAprovacaoUseCase = validateAprovacaoUseCase;
+        this.validarAprovacaoUseCase = validarAprovacaoUseCase;
         this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
         this.auditPublisher = auditPublisher;
         this.metricsPublisher = metricsPublisher;
@@ -82,7 +82,7 @@ public class DecideSolicitacaoAprovacaoUseCase {
         aprovacao.assegurarDecidivel(inicioAcao(entity), Instant.now());
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        validateAprovacaoUseCase.validateAprovacaoDecisionRole(actorContext.role(), actorContext.organizationType());
+        validarAprovacaoUseCase.validarPapelDecisaoAprovacao(actorContext.role(), actorContext.organizationType());
 
         String aprovadorId = actorContext.usuarioId() != null ? actorContext.usuarioId().toString() : "system";
         if (request.status() == AprovacaoStatus.REPROVADA) {

@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.conselho.api.v1.controller;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.CreateCpcDecisaoRequest;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.CpcDecisaoResponse;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.HomologarCpcDecisaoRequest;
-import br.com.nsfatima.gestao.conselho.application.usecase.CreateCpcDecisaoUseCase;
+import br.com.nsfatima.gestao.conselho.application.usecase.CriarCpcDecisaoUseCase;
 import br.com.nsfatima.gestao.conselho.application.usecase.HomologarCpcDecisaoUseCase;
 import br.com.nsfatima.gestao.conselho.application.usecase.ListCpcDecisoesUseCase;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
@@ -42,12 +42,12 @@ import java.util.UUID;
 @Tag(name = "Conselhos", description = "Endpoints para atas, decisões e homologações do CPP e CPC")
 public class CpcDecisaoController {
 
-    private final CreateCpcDecisaoUseCase createCpcDecisaoUseCase;
+    private final CriarCpcDecisaoUseCase createCpcDecisaoUseCase;
     private final HomologarCpcDecisaoUseCase homologarCpcDecisaoUseCase;
     private final ListCpcDecisoesUseCase listCpcDecisoesUseCase;
 
     public CpcDecisaoController(
-            CreateCpcDecisaoUseCase createCpcDecisaoUseCase,
+            CriarCpcDecisaoUseCase createCpcDecisaoUseCase,
             HomologarCpcDecisaoUseCase homologarCpcDecisaoUseCase,
             ListCpcDecisoesUseCase listCpcDecisoesUseCase) {
         this.createCpcDecisaoUseCase = createCpcDecisaoUseCase;

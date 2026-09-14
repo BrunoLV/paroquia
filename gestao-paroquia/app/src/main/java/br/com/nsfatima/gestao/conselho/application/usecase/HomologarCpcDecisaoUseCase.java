@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * Homologa ou veta uma ata/decisão de conselho previamente registrada, encerrando o fluxo
- * iniciado por {@link CreateCpcDecisaoUseCase}. Toda a regra de transição vive no agregado
+ * iniciado por {@link CriarCpcDecisaoUseCase}. Toda a regra de transição vive no agregado
  * {@link CpcDecisao}: só uma decisão {@link StatusHomologacao#PENDENTE_HOMOLOGACAO} pode ser
  * decidida, e vetar exige motivo.
  */

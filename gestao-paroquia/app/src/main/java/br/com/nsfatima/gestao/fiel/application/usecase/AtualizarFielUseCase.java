@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** Use case para atualização de cadastro civil do fiel. */
 @Service
-public class UpdateFielUseCase {
+public class AtualizarFielUseCase {
 
     private static final String ACTOR_SYSTEM = "system";
 
@@ -24,7 +24,7 @@ public class UpdateFielUseCase {
     private final UnidadeTerritorialJpaRepository unidades;
     private final ValidacaoDocumentoCivil validacaoDocumento;
 
-    public UpdateFielUseCase(
+    public AtualizarFielUseCase(
             FielJpaRepository repository,
             FielMapper mapper,
             UnidadeTerritorialJpaRepository unidades,

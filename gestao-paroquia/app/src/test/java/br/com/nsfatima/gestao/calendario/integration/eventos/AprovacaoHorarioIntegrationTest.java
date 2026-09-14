@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.aprovacao.application.usecase.CreateSolicitacaoAprovacaoUseCase;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.CriarSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.support.fake.FakeAprovacaoRepository;
@@ -21,7 +21,7 @@ class AprovacaoHorarioIntegrationTest {
         FakeLegacyEnumInconsistencyPublisher publisher = new FakeLegacyEnumInconsistencyPublisher();
         AprovacaoMapper mapper = new AprovacaoMapper(publisher);
 
-        CreateSolicitacaoAprovacaoUseCase useCase = new CreateSolicitacaoAprovacaoUseCase(
+        CriarSolicitacaoAprovacaoUseCase useCase = new CriarSolicitacaoAprovacaoUseCase(
                 repository,
                 resolver,
                 null,

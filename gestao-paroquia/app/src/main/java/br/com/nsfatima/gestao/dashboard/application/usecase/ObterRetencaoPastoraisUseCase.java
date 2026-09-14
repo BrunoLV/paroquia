@@ -26,7 +26,7 @@ import java.util.UUID;
  * resultado.
  */
 @Service
-public class GetRetencaoPastoraisUseCase {
+public class ObterRetencaoPastoraisUseCase {
 
     private static final int MINIMO_VOLUNTARIOS = 3;
     private static final Set<TipoGrupo> TIPOS_COMUNITARIOS =
@@ -36,7 +36,7 @@ public class GetRetencaoPastoraisUseCase {
     private final MembroGrupoJpaRepository membroRepository;
     private final EscopoDashboardResolver escopoResolver;
 
-    public GetRetencaoPastoraisUseCase(
+    public ObterRetencaoPastoraisUseCase(
             GrupoParoquialJpaRepository grupoRepository,
             MembroGrupoJpaRepository membroRepository,
             EscopoDashboardResolver escopoResolver) {

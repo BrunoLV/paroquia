@@ -6,10 +6,10 @@ import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.GetMembroUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.ObterMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.PromoverACoordenadorUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.UpdateMembroUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.AtualizarMembroUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,16 +49,16 @@ import java.util.UUID;
 public class MembroController {
 
     private final AdicionarMembroUseCase adicionarMembroUseCase;
-    private final UpdateMembroUseCase updateMembroUseCase;
-    private final GetMembroUseCase getMembroUseCase;
+    private final AtualizarMembroUseCase updateMembroUseCase;
+    private final ObterMembroUseCase getMembroUseCase;
     private final ListMembrosUseCase listMembrosUseCase;
     private final PromoverACoordenadorUseCase promoverACoordenadorUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public MembroController(
             AdicionarMembroUseCase adicionarMembroUseCase,
-            UpdateMembroUseCase updateMembroUseCase,
-            GetMembroUseCase getMembroUseCase,
+            AtualizarMembroUseCase updateMembroUseCase,
+            ObterMembroUseCase getMembroUseCase,
             ListMembrosUseCase listMembrosUseCase,
             PromoverACoordenadorUseCase promoverACoordenadorUseCase,
             EventoActorContextResolver actorContextResolver) {

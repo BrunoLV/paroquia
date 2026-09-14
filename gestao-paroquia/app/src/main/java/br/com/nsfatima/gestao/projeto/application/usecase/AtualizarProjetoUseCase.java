@@ -21,7 +21,7 @@ import java.util.UUID;
  * Atualiza os dados de planejamento, metas ou escopo de um Projeto pastoral existente.
  */
 @Service
-public class UpdateProjetoUseCase {
+public class AtualizarProjetoUseCase {
 
     private final ProjetoEventoJpaRepository repository;
     private final ProjetoMapper mapper;
@@ -38,7 +38,7 @@ public class UpdateProjetoUseCase {
      * @param actorContextResolver Resolvedor de contexto do ator da requisição
      * @param authorizationService Serviço de autorização para validar permissões de edição
      */
-    public UpdateProjetoUseCase(
+    public AtualizarProjetoUseCase(
             ProjetoEventoJpaRepository repository,
             ProjetoMapper mapper,
             ProjetoAuditPublisher auditPublisher,

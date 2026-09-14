@@ -60,10 +60,10 @@ class MembroUseCaseTest {
     private AdicionarMembroUseCase adicionarUseCase;
 
     @InjectMocks
-    private UpdateMembroUseCase updateUseCase;
+    private AtualizarMembroUseCase updateUseCase;
 
     @InjectMocks
-    private GetMembroUseCase getUseCase;
+    private ObterMembroUseCase getUseCase;
 
     private MembroRequest request;
     private MembroGrupoEntity entity;

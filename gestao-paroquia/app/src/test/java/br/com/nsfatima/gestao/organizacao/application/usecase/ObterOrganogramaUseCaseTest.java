@@ -23,14 +23,14 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-class GetOrganogramaUseCaseTest {
+class ObterOrganogramaUseCaseTest {
 
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private ListGrupoParoquialMembrosUseCase listMembrosUseCase;
     private EncargoClericalJpaRepository encargoClericalRepository;
     private ClerigoJpaRepository clerigoRepository;
-    private GetOrganogramaUseCase getOrganogramaUseCase;
+    private ObterOrganogramaUseCase getOrganogramaUseCase;
 
     @BeforeEach
     void setUp() {
@@ -40,7 +40,7 @@ class GetOrganogramaUseCaseTest {
         encargoClericalRepository = Mockito.mock(EncargoClericalJpaRepository.class);
         clerigoRepository = Mockito.mock(ClerigoJpaRepository.class);
         when(encargoClericalRepository.findByFuncaoAndAtualTrue(Mockito.any())).thenReturn(List.of());
-        getOrganogramaUseCase = new GetOrganogramaUseCase(
+        getOrganogramaUseCase = new ObterOrganogramaUseCase(
                 grupoParoquialRepository, unidadeTerritorialRepository, listMembrosUseCase,
                 encargoClericalRepository, clerigoRepository, "Paróquia Teste");
     }

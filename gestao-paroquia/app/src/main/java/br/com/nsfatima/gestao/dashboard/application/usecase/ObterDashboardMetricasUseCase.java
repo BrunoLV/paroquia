@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
  * pedida no filtro, quando o ator tem acesso a ela, senão a organização do próprio ator.
  */
 @Service
-public class GetDashboardMetricsUseCase {
+public class ObterDashboardMetricasUseCase {
 
     private static final String STATUS_EVENTO_PENDENTE = "RASCUNHO";
     private static final int PERCENTUAL_SCALE = 1;
@@ -83,7 +83,7 @@ public class GetDashboardMetricsUseCase {
     private final JanelaTemporalResolver janelaResolver;
     private final EscopoDashboardResolver escopoResolver;
 
-    public GetDashboardMetricsUseCase(
+    public ObterDashboardMetricasUseCase(
             EventoJpaRepository eventoRepository,
             ProjetoEventoJpaRepository projetoRepository,
             AprovacaoJpaRepository aprovacaoRepository,

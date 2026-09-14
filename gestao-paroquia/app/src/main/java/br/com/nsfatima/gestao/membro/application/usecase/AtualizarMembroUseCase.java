@@ -24,7 +24,7 @@ import java.util.UUID;
  * de liderança da organização quando o papel atribuído for de coordenação.
  */
 @Service
-public class UpdateMembroUseCase {
+public class AtualizarMembroUseCase {
 
     private final MembroGrupoJpaRepository repository;
     private final FielJpaRepository fielRepository;
@@ -33,7 +33,7 @@ public class UpdateMembroUseCase {
     private final MembroGrupoMapper membroGrupoMapper;
     private final MembroAuditPublisher auditPublisher;
 
-    public UpdateMembroUseCase(
+    public AtualizarMembroUseCase(
             MembroGrupoJpaRepository repository,
             FielJpaRepository fielRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * árvore, e cada nó de grupo paroquial recebe também seus membros como nós-folha filhos.
  */
 @Service
-public class GetOrganogramaUseCase {
+public class ObterOrganogramaUseCase {
 
     private static final String GRUPO_PAROQUIAL_RAIZ_ID = "00000000-0000-0000-0000-000000000001";
 
@@ -44,7 +44,7 @@ public class GetOrganogramaUseCase {
     private final ClerigoJpaRepository clerigoRepository;
     private final String paroquiaNome;
 
-    public GetOrganogramaUseCase(
+    public ObterOrganogramaUseCase(
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
             ListGrupoParoquialMembrosUseCase listMembrosUseCase,

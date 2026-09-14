@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.sdd;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
-import br.com.nsfatima.gestao.fiel.application.usecase.CreateFielUseCase;
+import br.com.nsfatima.gestao.fiel.application.usecase.CriarFielUseCase;
 import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SddCenario1CadastroSemLoginIntegrationTest {
 
     @Autowired
-    private CreateFielUseCase createFielUseCase;
+    private CriarFielUseCase createFielUseCase;
 
     @Autowired
     private AdicionarMembroUseCase adicionarMembroUseCase;

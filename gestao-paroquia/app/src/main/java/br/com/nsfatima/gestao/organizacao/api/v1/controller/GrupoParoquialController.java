@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.GetOrganogramaUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ObterOrganogramaUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ListGrupoParoquialMembrosUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -51,14 +51,14 @@ public class GrupoParoquialController {
 
     private final GrupoParoquialService grupoParoquialService;
     private final ListGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase;
-    private final GetOrganogramaUseCase getOrganogramaUseCase;
+    private final ObterOrganogramaUseCase getOrganogramaUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final UsuarioJpaRepository usuarioRepository;
 
     public GrupoParoquialController(
             GrupoParoquialService grupoParoquialService,
             ListGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase,
-            GetOrganogramaUseCase getOrganogramaUseCase,
+            ObterOrganogramaUseCase getOrganogramaUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             UsuarioJpaRepository usuarioRepository) {
         this.grupoParoquialService = grupoParoquialService;

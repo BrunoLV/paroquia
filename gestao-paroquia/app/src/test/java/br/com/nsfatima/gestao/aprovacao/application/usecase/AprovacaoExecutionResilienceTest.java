@@ -42,7 +42,7 @@ class AprovacaoExecutionResilienceTest {
         repository = mock(AprovacaoJpaRepository.class);
         actorContextResolver = mock(EventoActorContextResolver.class);
         ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-        ValidateAprovacaoUseCase validateAprovacaoUseCase = mock(ValidateAprovacaoUseCase.class);
+        ValidarAprovacaoUseCase validarAprovacaoUseCase = mock(ValidarAprovacaoUseCase.class);
         AprovacaoAcaoPayloadMapper payloadMapper = mock(AprovacaoAcaoPayloadMapper.class);
         AprovacaoAuditPublisher auditPublisher = mock(AprovacaoAuditPublisher.class);
         AprovacaoMetricsPublisher metricsPublisher = mock(AprovacaoMetricsPublisher.class);
@@ -64,7 +64,7 @@ class AprovacaoExecutionResilienceTest {
                 repository,
                 aprovacaoMapper,
                 actorContextResolver,
-                validateAprovacaoUseCase,
+                validarAprovacaoUseCase,
                 payloadMapper,
                 auditPublisher,
                 metricsPublisher,

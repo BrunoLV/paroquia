@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.dashboard.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardLogisticaDTO;
-import br.com.nsfatima.gestao.dashboard.application.usecase.GetDashboardLogisticaUseCase;
+import br.com.nsfatima.gestao.dashboard.application.usecase.ObterDashboardLogisticaUseCase;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * Expõe a seção de logística do dashboard (choque de horário por local, ocupação de ambientes,
  * eventos por responsável e pendências de homologação), delegando o cálculo a
- * {@link GetDashboardLogisticaUseCase} sob o mesmo recorte temporal e escopo organizacional
+ * {@link ObterDashboardLogisticaUseCase} sob o mesmo recorte temporal e escopo organizacional
  * validado do endpoint de métricas.
  */
 @RestController
@@ -30,11 +30,11 @@ import java.util.UUID;
 @Tag(name = "Dashboard", description = "Endpoints para consulta de métricas e dados gerenciais")
 public class DashboardLogisticaController {
 
-    private final GetDashboardLogisticaUseCase getDashboardLogisticaUseCase;
+    private final ObterDashboardLogisticaUseCase getDashboardLogisticaUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public DashboardLogisticaController(
-            GetDashboardLogisticaUseCase getDashboardLogisticaUseCase,
+            ObterDashboardLogisticaUseCase getDashboardLogisticaUseCase,
             EventoActorContextResolver actorContextResolver) {
         this.getDashboardLogisticaUseCase = getDashboardLogisticaUseCase;
         this.actorContextResolver = actorContextResolver;

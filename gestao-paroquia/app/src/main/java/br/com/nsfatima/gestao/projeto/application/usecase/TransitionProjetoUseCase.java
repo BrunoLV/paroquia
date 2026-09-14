@@ -48,7 +48,7 @@ import java.util.UUID;
  * superior.
  *
  * <p>{@link #decidir} também processa solicitações de criação de projeto (tipo
- * {@code CRIACAO}, originadas em {@code CreateProjetoUseCase}) reconstruindo o payload de
+ * {@code CRIACAO}, originadas em {@code CriarProjetoUseCase}) reconstruindo o payload de
  * criação persistido em JSON quando aprovadas.
  */
 @Service

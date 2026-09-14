@@ -17,7 +17,7 @@ import java.util.UUID;
  * Executa regras de validação prévia de autoridade antes do despacho de aprovações.
  */
 @Service
-public class ValidateAprovacaoUseCase {
+public class ValidarAprovacaoUseCase {
 
     private static final Set<AprovadorPapel> ALLOWED_APPROVER_ROLES = Set.of(
             AprovadorPapel.PAROCO,
@@ -26,11 +26,11 @@ public class ValidateAprovacaoUseCase {
     private static final String ERROR_MSG = "Aprovacao is required for date change or cancellation";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
 
-    public ValidateAprovacaoUseCase(AprovacaoJpaRepository aprovacaoJpaRepository) {
+    public ValidarAprovacaoUseCase(AprovacaoJpaRepository aprovacaoJpaRepository) {
         this.aprovacaoJpaRepository = aprovacaoJpaRepository;
     }
 
-    public void validateRequired(UUID eventoId, UUID aprovacaoId) {
+    public void validarObrigatorio(UUID eventoId, UUID aprovacaoId) {
         if (aprovacaoId == null) {
             throw new AprovacaoObrigatoriaException(ERROR_MSG);
         }
@@ -57,10 +57,10 @@ public class ValidateAprovacaoUseCase {
      * <p>
      * Usage Example:
      * {@code
-     * useCase.validateAprovacaoDecisionRole("COORDENADOR", "CONSELHO");
+     * useCase.validarPapelDecisaoAprovacao("COORDENADOR", "CONSELHO");
      * }
      */
-    public void validateAprovacaoDecisionRole(String role, String organizationType) {
+    public void validarPapelDecisaoAprovacao(String role, String organizationType) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(organizationType);
         if (normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN) {

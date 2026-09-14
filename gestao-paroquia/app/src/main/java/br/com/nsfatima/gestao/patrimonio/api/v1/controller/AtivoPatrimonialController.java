@@ -13,7 +13,7 @@ import br.com.nsfatima.gestao.patrimonio.application.usecase.ConcluirManutencaoA
 import br.com.nsfatima.gestao.patrimonio.application.usecase.EditarDescricaoAtivoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.EnviarAtivoParaManutencaoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ExcluirAtivoPatrimonialUseCase;
-import br.com.nsfatima.gestao.patrimonio.application.usecase.GetMetricasOciosidadeUseCase;
+import br.com.nsfatima.gestao.patrimonio.application.usecase.ObterMetricasOciosidadeUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ListarAtivosPorGrupoParoquialUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ListarHistoricoManutencaoAtivoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.VerificarConflitoManutencaoUseCase;
@@ -69,7 +69,7 @@ public class AtivoPatrimonialController {
     private final ConcluirManutencaoAtivoUseCase concluirManutencaoUseCase;
     private final VerificarConflitoManutencaoUseCase verificarConflitoUseCase;
     private final ListarHistoricoManutencaoAtivoUseCase historicoManutencaoUseCase;
-    private final GetMetricasOciosidadeUseCase metricasOciosidadeUseCase;
+    private final ObterMetricasOciosidadeUseCase metricasOciosidadeUseCase;
 
     public AtivoPatrimonialController(CadastrarAtivoPatrimonialUseCase cadastrarUseCase,
                                       ListarAtivosPorGrupoParoquialUseCase listarUseCase,
@@ -80,7 +80,7 @@ public class AtivoPatrimonialController {
                                       ConcluirManutencaoAtivoUseCase concluirManutencaoUseCase,
                                       VerificarConflitoManutencaoUseCase verificarConflitoUseCase,
                                       ListarHistoricoManutencaoAtivoUseCase historicoManutencaoUseCase,
-                                      GetMetricasOciosidadeUseCase metricasOciosidadeUseCase) {
+                                      ObterMetricasOciosidadeUseCase metricasOciosidadeUseCase) {
         this.cadastrarUseCase = cadastrarUseCase;
         this.listarUseCase = listarUseCase;
         this.buscarUseCase = buscarUseCase;

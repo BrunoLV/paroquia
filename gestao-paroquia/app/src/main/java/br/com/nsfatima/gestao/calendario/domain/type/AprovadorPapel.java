@@ -7,7 +7,7 @@ import java.util.Locale;
 
 /**
  * Papel que qualifica quem pode decidir uma solicitação de aprovação de evento
- * (ver {@code ValidateAprovacaoUseCase}/{@code AprovacaoObrigatoriaException}).
+ * (ver {@code ValidarAprovacaoUseCase}/{@code AprovacaoObrigatoriaException}).
  * Apenas usuários que ocupam um destes papéis, na organização correta, têm
  * autoridade para aprovar/reprovar a solicitação vinculada a um evento.
  */

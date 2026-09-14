@@ -13,12 +13,12 @@ import java.util.UUID;
  * Recupera um vínculo Fiel-organização (membro) pelo identificador, para consulta de detalhes.
  */
 @Service
-public class GetMembroUseCase {
+public class ObterMembroUseCase {
 
     private final MembroGrupoJpaRepository repository;
     private final MembroMapper mapper;
 
-    public GetMembroUseCase(MembroGrupoJpaRepository repository, MembroMapper mapper) {
+    public ObterMembroUseCase(MembroGrupoJpaRepository repository, MembroMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }

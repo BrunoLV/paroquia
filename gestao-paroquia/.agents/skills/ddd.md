@@ -40,6 +40,7 @@ Antes de codificar, o agente deve contextualizar a funcionalidade dentro do mapa
 
 * **Vocabulário Oficial:** O código deve falar o idioma do negócio sem ambiguidades. Nomes de classes, métodos, atributos, parâmetros e exceções devem refletir os termos exatos do domínio.
 * Se um termo técnico colidir com o termo de negócio (ex.: `Client` vs. `Fiel`), priorize categoricamente o vocabulário do negócio (`Fiel`).
+* **Idioma dos Comentários:** Todo comentário (Javadoc de negócio da seção 1.1, ou comentário inline) é escrito em Português, mesmo em classes cujo nome segue convenção técnica em inglês (ex.: `Repository`, `Service`). Ver AGENTS.md §5 para a regra formal.
 
 ### 2.2. Categorização de Subdomínios
 

@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.SolicitacaoAjusteCadastralResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.SolicitarAjusteCadastralRequest;
 import br.com.nsfatima.gestao.fiel.application.usecase.GerenciarAjusteCadastralUseCase;
-import br.com.nsfatima.gestao.fiel.application.usecase.GetFielUseCase;
+import br.com.nsfatima.gestao.fiel.application.usecase.ObterFielUseCase;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,13 +38,13 @@ public class AjusteCadastralController {
     private final GerenciarAjusteCadastralUseCase useCase;
     private final EventoActorContextResolver ator;
     private final UsuarioJpaRepository usuarios;
-    private final GetFielUseCase getFiel;
+    private final ObterFielUseCase getFiel;
 
     public AjusteCadastralController(
             GerenciarAjusteCadastralUseCase useCase,
             EventoActorContextResolver ator,
             UsuarioJpaRepository usuarios,
-            GetFielUseCase getFiel) {
+            ObterFielUseCase getFiel) {
         this.useCase = useCase;
         this.ator = ator;
         this.usuarios = usuarios;

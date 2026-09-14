@@ -17,12 +17,12 @@ import java.util.UUID;
  * e anonimizando dados sensíveis conforme o perfil do operador.
  */
 @Service
-public class GetFielUseCase {
+public class ObterFielUseCase {
 
     private final FielJpaRepository fielRepository;
     private final FielMapper fielMapper;
 
-    public GetFielUseCase(FielJpaRepository fielRepository, FielMapper fielMapper) {
+    public ObterFielUseCase(FielJpaRepository fielRepository, FielMapper fielMapper) {
         this.fielRepository = fielRepository;
         this.fielMapper = fielMapper;
     }

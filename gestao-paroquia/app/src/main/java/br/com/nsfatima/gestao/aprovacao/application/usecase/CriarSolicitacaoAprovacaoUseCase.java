@@ -24,14 +24,14 @@ import java.util.UUID;
  * Cria a solicitação em estado PENDENTE para posterior chancela pela autoridade eclesiástica competente.
  */
 @Service
-public class CreateSolicitacaoAprovacaoUseCase {
+public class CriarSolicitacaoAprovacaoUseCase {
 
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
     private final EventoActorContextResolver eventoActorContextResolver;
     private final EventoAuditPublisher eventoAuditPublisher;
     private final AprovacaoMapper aprovacaoMapper;
 
-    public CreateSolicitacaoAprovacaoUseCase(
+    public CriarSolicitacaoAprovacaoUseCase(
             AprovacaoJpaRepository aprovacaoJpaRepository,
             EventoActorContextResolver eventoActorContextResolver,
             EventoAuditPublisher eventoAuditPublisher,

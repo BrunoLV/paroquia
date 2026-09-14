@@ -40,11 +40,11 @@ import java.util.stream.Stream;
 /**
  * Calcula a seção de logística do dashboard: choque de horário por local, taxa de ocupação dos
  * ambientes (estimada), eventos por responsável e pendências de homologação por tipo. Isolada do
- * {@code GetDashboardMetricsUseCase} porque a detecção de choque é uma auto-junção O(n²) sobre
+ * {@code ObterDashboardMetricasUseCase} porque a detecção de choque é uma auto-junção O(n²) sobre
  * eventos e merece ser paga só quando esta seção é aberta.
  */
 @Service
-public class GetDashboardLogisticaUseCase {
+public class ObterDashboardLogisticaUseCase {
 
     // ponytail: janela operacional fixa de 14h (06h-20h); extrair para configuração por paróquia
     // se as casas passarem a operar horários muito distintos.
@@ -62,7 +62,7 @@ public class GetDashboardLogisticaUseCase {
     private final JanelaTemporalResolver janelaResolver;
     private final EscopoDashboardResolver escopoResolver;
 
-    public GetDashboardLogisticaUseCase(
+    public ObterDashboardLogisticaUseCase(
             EventoJpaRepository eventoRepository,
             LocalJpaRepository localRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,

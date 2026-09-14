@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.dashboard.api.v1.controller;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.AniversarianteDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardComunidadeDTO;
-import br.com.nsfatima.gestao.dashboard.application.usecase.GetRetencaoPastoraisUseCase;
+import br.com.nsfatima.gestao.dashboard.application.usecase.ObterRetencaoPastoraisUseCase;
 import br.com.nsfatima.gestao.dashboard.application.usecase.ListarAniversariantesUseCase;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,12 +34,12 @@ import java.util.UUID;
 public class DashboardComunidadeController {
 
     private final ListarAniversariantesUseCase listarAniversariantesUseCase;
-    private final GetRetencaoPastoraisUseCase getRetencaoPastoraisUseCase;
+    private final ObterRetencaoPastoraisUseCase getRetencaoPastoraisUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public DashboardComunidadeController(
             ListarAniversariantesUseCase listarAniversariantesUseCase,
-            GetRetencaoPastoraisUseCase getRetencaoPastoraisUseCase,
+            ObterRetencaoPastoraisUseCase getRetencaoPastoraisUseCase,
             EventoActorContextResolver actorContextResolver) {
         this.listarAniversariantesUseCase = listarAniversariantesUseCase;
         this.getRetencaoPastoraisUseCase = getRetencaoPastoraisUseCase;

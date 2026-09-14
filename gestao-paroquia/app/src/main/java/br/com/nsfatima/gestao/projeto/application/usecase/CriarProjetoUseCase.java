@@ -31,7 +31,7 @@ import java.util.UUID;
  * com status PLANEJADO para posterior aprovação dos eventos e orçamento.
  */
 @Service
-public class CreateProjetoUseCase {
+public class CriarProjetoUseCase {
 
     private final ProjetoEventoJpaRepository repository;
     private final ProjetoMapper mapper;
@@ -42,7 +42,7 @@ public class CreateProjetoUseCase {
     private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
     private final ObjectMapper objectMapper;
 
-    public CreateProjetoUseCase(
+    public CriarProjetoUseCase(
             ProjetoEventoJpaRepository repository,
             ProjetoMapper mapper,
             ProjetoAuditPublisher auditPublisher,

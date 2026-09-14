@@ -9,10 +9,10 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoPatchRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.application.service.ProjetoAgregacaoService;
-import br.com.nsfatima.gestao.projeto.application.usecase.CreateProjetoUseCase;
+import br.com.nsfatima.gestao.projeto.application.usecase.CriarProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.ListProjetosUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.TransitionProjetoUseCase;
-import br.com.nsfatima.gestao.projeto.application.usecase.UpdateProjetoUseCase;
+import br.com.nsfatima.gestao.projeto.application.usecase.AtualizarProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
@@ -46,9 +46,9 @@ import java.util.UUID;
 public class ProjetoController {
 
     private static final String RESULT_SUCCESS = "success";
-    private final CreateProjetoUseCase createProjetoUseCase;
+    private final CriarProjetoUseCase createProjetoUseCase;
     private final ListProjetosUseCase listProjetosUseCase;
-    private final UpdateProjetoUseCase updateProjetoUseCase;
+    private final AtualizarProjetoUseCase updateProjetoUseCase;
     private final ProjetoAgregacaoService projetoAgregacaoService;
     private final TransitionProjetoUseCase transitionProjetoUseCase;
     private final ProjetoAuditPublisher auditPublisher;
@@ -71,9 +71,9 @@ public class ProjetoController {
      * @param mapper                   Mapeador de projetos
      */
     public ProjetoController(
-            CreateProjetoUseCase createProjetoUseCase,
+            CriarProjetoUseCase createProjetoUseCase,
             ListProjetosUseCase listProjetosUseCase,
-            UpdateProjetoUseCase updateProjetoUseCase,
+            AtualizarProjetoUseCase updateProjetoUseCase,
             ProjetoAgregacaoService projetoAgregacaoService,
             TransitionProjetoUseCase transitionProjetoUseCase,
             ProjetoAuditPublisher auditPublisher,

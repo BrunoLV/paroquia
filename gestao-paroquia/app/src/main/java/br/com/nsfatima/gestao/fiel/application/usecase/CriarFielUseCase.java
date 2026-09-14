@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** Use case para criação de fiel e validação dos dados civis e de residência. */
 @Service
-public class CreateFielUseCase {
+public class CriarFielUseCase {
 
     private static final String ACTOR_SYSTEM = "system";
 
@@ -25,7 +25,7 @@ public class CreateFielUseCase {
     private final UnidadeTerritorialJpaRepository unidades;
     private final ValidacaoDocumentoCivil validacaoDocumento;
 
-    public CreateFielUseCase(
+    public CriarFielUseCase(
             FielJpaRepository repository,
             FielMapper mapper,
             UnidadeTerritorialJpaRepository unidades,

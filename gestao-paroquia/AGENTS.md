@@ -84,6 +84,7 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
   * Conceitos de domínio, regras e testes: **Português** (Linguagem Ubíqua).
   * Termos técnicos e padrões arquiteturais: **Inglês** (`UseCase`, `Repository`, `Controller`, `Adapter`, `Factory`, `Strategy`).
   * **PROIBIDO** o uso de termos genéricos/vagos: `Data`, `Handler`, `Manager`, `Helper`, `Utility`, bem como o sufixo artificial `*Impl` sem propósito polimórfico comprovado.
+  * **Comentários (Javadoc e inline):** SEMPRE em **Português**, independentemente do idioma dos identificadores técnicos ao redor (ex.: um comentário dentro de um método de um `Repository` em inglês ainda deve ser escrito em português).
 * **Injeção de Dependências:**
   * Exclusivamente via **construtor com propriedades `private final`**.
   * **ESTRITAMENTE PROIBIDO** o uso de `@Autowired` em campos (*field injection*).

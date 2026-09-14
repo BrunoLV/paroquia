@@ -21,13 +21,13 @@ import java.util.UUID;
  * homologação por uma autoridade competente ({@link HomologarCpcDecisaoUseCase}).
  */
 @Service
-public class CreateCpcDecisaoUseCase {
+public class CriarCpcDecisaoUseCase {
 
     private final CpcDecisaoRepository repository;
     private final EventoActorContextResolver actorContextResolver;
     private final CpcDecisaoMapper mapper;
 
-    public CreateCpcDecisaoUseCase(
+    public CriarCpcDecisaoUseCase(
             CpcDecisaoRepository repository,
             EventoActorContextResolver actorContextResolver,
             CpcDecisaoMapper mapper) {

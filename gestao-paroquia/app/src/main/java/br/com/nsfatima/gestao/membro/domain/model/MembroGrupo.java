@@ -11,7 +11,7 @@ import java.util.UUID;
  * Agregado Raiz do vínculo de um {@code Fiel} a uma organização paroquial, com o papel que exerce ali.
  *
  * <p>Concentra as invariantes que antes viviam como sequências de {@code setX(...)} nos casos de uso
- * {@code AdicionarMembroUseCase} / {@code UpdateMembroUseCase} / {@code PromoverACoordenadorUseCase}:</p>
+ * {@code AdicionarMembroUseCase} / {@code AtualizarMembroUseCase} / {@code PromoverACoordenadorUseCase}:</p>
  * <ul>
  *   <li>o papel nunca é nulo e nunca é um papel <em>global</em> ({@code PAROCO}/{@code VIGARIO}/{@code ADMIN}) —
  *   esses só são concedidos via {@code AtribuirPapelGlobalUseCase};</li>

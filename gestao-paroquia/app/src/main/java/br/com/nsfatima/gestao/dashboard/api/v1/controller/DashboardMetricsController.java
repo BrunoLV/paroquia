@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.dashboard.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardMetricsDTO;
-import br.com.nsfatima.gestao.dashboard.application.usecase.GetDashboardMetricsUseCase;
+import br.com.nsfatima.gestao.dashboard.application.usecase.ObterDashboardMetricasUseCase;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 /**
  * Expõe o endpoint de métricas consolidadas das seções crítica e de projetos do dashboard.
- * Delega o cálculo ao {@link GetDashboardMetricsUseCase}, aplicando o recorte temporal e o escopo
+ * Delega o cálculo ao {@link ObterDashboardMetricasUseCase}, aplicando o recorte temporal e o escopo
  * organizacional recebidos no filtro global — este último sempre validado contra o que o ator
  * autenticado pode ver.
  */
@@ -30,11 +30,11 @@ import java.util.UUID;
 @Tag(name = "Dashboard", description = "Endpoints para consulta de métricas e dados gerenciais")
 public class DashboardMetricsController {
 
-    private final GetDashboardMetricsUseCase getDashboardMetricsUseCase;
+    private final ObterDashboardMetricasUseCase getDashboardMetricsUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public DashboardMetricsController(
-            GetDashboardMetricsUseCase getDashboardMetricsUseCase,
+            ObterDashboardMetricasUseCase getDashboardMetricsUseCase,
             EventoActorContextResolver actorContextResolver) {
         this.getDashboardMetricsUseCase = getDashboardMetricsUseCase;
         this.actorContextResolver = actorContextResolver;

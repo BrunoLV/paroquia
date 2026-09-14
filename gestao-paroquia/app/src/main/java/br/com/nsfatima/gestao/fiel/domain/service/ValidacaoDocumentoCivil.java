@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
  * CPF obrigatório e válido (dígito verificador) para brasileiros, RNE/RNM ou passaporte para
  * estrangeiros.
  *
- * <p>Antes vivia como {@code static} em {@code CreateFielUseCase}, invocado por chamada cruzada de
- * {@code UpdateFielUseCase} (anti-padrão). Isolado aqui, é injetado por ambos e testável sozinho.</p>
+ * <p>Antes vivia como {@code static} em {@code CriarFielUseCase}, invocado por chamada cruzada de
+ * {@code AtualizarFielUseCase} (anti-padrão). Isolado aqui, é injetado por ambos e testável sozinho.</p>
  */
 public class ValidacaoDocumentoCivil {
 

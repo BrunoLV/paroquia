@@ -10,7 +10,7 @@ import java.util.UUID;
  * <p>Concentra a máquina de estados {@code ABERTO -> EM_ANDAMENTO -> CONCLUIDO}
  * ({@code CANCELADO} a partir de {@code ABERTO} ou {@code EM_ANDAMENTO}; {@code CONCLUIDO} e
  * {@code CANCELADO} são terminais) e a invariante {@code fim >= inicio}, que antes viviam como
- * {@code setStatus(...)} cru e blocos de {@code if} espalhados por {@code UpdateProjetoUseCase} e
+ * {@code setStatus(...)} cru e blocos de {@code if} espalhados por {@code AtualizarProjetoUseCase} e
  * {@code TransitionProjetoUseCase}.</p>
  */
 public class Projeto {

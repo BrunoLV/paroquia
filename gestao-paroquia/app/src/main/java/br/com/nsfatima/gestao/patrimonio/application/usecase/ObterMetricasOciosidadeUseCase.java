@@ -14,13 +14,13 @@ import java.math.RoundingMode;
  * ociosidade (proporção de {@code DISPONIVEL} sobre o total incorporado).
  */
 @Service
-public class GetMetricasOciosidadeUseCase {
+public class ObterMetricasOciosidadeUseCase {
 
     private static final int TAXA_SCALE = 4;
 
     private final AtivoPatrimonialRepository repository;
 
-    public GetMetricasOciosidadeUseCase(AtivoPatrimonialRepository repository) {
+    public ObterMetricasOciosidadeUseCase(AtivoPatrimonialRepository repository) {
         this.repository = repository;
     }
 
