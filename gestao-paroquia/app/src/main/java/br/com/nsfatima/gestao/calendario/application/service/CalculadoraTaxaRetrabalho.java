@@ -125,8 +125,10 @@ public class CalculadoraTaxaRetrabalho {
     }
 
     private boolean isRetrabalhoAdministrativoElegivel(AuditoriaOperacaoEntity registroAuditoria) {
-        String acao = registroAuditoria.getAcao() == null ? "" : registroAuditoria.getAcao().toLowerCase();
-        String resultado = registroAuditoria.getResultado() == null ? "" : registroAuditoria.getResultado().toLowerCase();
+        String acao = registroAuditoria.getAcao() == null ? ""
+                : registroAuditoria.getAcao().toLowerCase();
+        String resultado = registroAuditoria.getResultado() == null ? ""
+                : registroAuditoria.getResultado().toLowerCase();
         if (!resultado.equals(RESULTADO_SUCESSO) && !resultado.equals(RESULTADO_EXECUTADO)) {
             return false;
         }

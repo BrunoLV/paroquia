@@ -38,8 +38,10 @@ class AuditTrailOrderingIntegrationTest {
         UUID secondId = UUID.fromString("00000000-0000-0000-0000-000000000222");
         UUID eventoId = UUID.randomUUID();
 
-        auditoriaOperacaoJpaRepository.save(registroAuditoria(secondId, grupoParoquialId, eventoId, sameInstant, "patch"));
-        auditoriaOperacaoJpaRepository.save(registroAuditoria(firstId, grupoParoquialId, eventoId, sameInstant, "cancel"));
+        auditoriaOperacaoJpaRepository.save(
+                registroAuditoria(secondId, grupoParoquialId, eventoId, sameInstant, "patch"));
+        auditoriaOperacaoJpaRepository.save(
+                registroAuditoria(firstId, grupoParoquialId, eventoId, sameInstant, "cancel"));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
                         .param("grupoParoquialId", grupoParoquialId.toString())

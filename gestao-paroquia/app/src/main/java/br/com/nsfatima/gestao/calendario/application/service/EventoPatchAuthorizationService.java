@@ -135,7 +135,8 @@ public class EventoPatchAuthorizationService {
 
         boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
                 || matchesScope(actorContext, eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId)
-                || verificarVinculoUsuario(eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId, policy.editorRoles());
+                || verificarVinculoUsuario(eventoGrupoParoquialResponsavelId,
+                        eventIgrejaVinculoId, policy.editorRoles());
 
         if (!escopoAutorizado) {
             throw new ForbiddenOperationException(

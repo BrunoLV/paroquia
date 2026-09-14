@@ -33,7 +33,8 @@ class GetUsuarioUseCaseTest {
         grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
         clerigoRepository = mock(ClerigoJpaRepository.class);
-        useCase = new ObterUsuarioUseCase(usuarioRepository, grupoParoquialRepository, fielRepository, clerigoRepository);
+        useCase = new ObterUsuarioUseCase(
+                usuarioRepository, grupoParoquialRepository, fielRepository, clerigoRepository);
     }
 
     @Test

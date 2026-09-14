@@ -15,7 +15,7 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
 ## 2. Escopo do Monorepo e Isolamento
 
 * **Proposta do Sistema:** Sistema para gestão administrativa e pastoral paroquial.
-* **Backend (`gestao-paroquia/`):** API REST em Java 25 com Spring Boot 3, arquitetura Hexagonal (Ports & Adapters) e Clean Architecture.
+* **Backend (`gestao-paroquia/`):** API REST em Java 25 com Spring Boot 4, servidor embarcado Jetty 12, Log4j2, arquitetura Hexagonal (Ports & Adapters) e Clean Architecture.
 * **Frontend (`gestao-paroquia-ui/`):** SPA Web em React 19, TypeScript estrito, Vite 5 e MUI 9.
 * **Isolamento de Fronteiras:** 
   * Backend e Frontend **DEVEM** manter dependências, ambientes de build, scripts, testes e governança técnica 100% independentes.

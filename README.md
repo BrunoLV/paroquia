@@ -2,12 +2,12 @@
 
 [![Docker Compose](https://img.shields.io/badge/docker-compose-blue.svg?style=flat-square&logo=docker)](./docker-compose.yml)
 [![Java 25](https://img.shields.io/badge/Java-25-ED8B00.svg?style=flat-square&logo=openjdk)](./gestao-paroquia)
-[![Spring Boot 3](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F.svg?style=flat-square&logo=springboot)](./gestao-paroquia)
+[![Spring Boot 4](https://img.shields.io/badge/Spring_Boot-4.x-6DB33F.svg?style=flat-square&logo=springboot)](./gestao-paroquia)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB.svg?style=flat-square&logo=react)](./gestao-paroquia-ui)
 [![Vite 5](https://img.shields.io/badge/Vite-5-646CFF.svg?style=flat-square&logo=vite)](./gestao-paroquia-ui)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-336791.svg?style=flat-square&logo=postgresql)](./docker-compose.yml)
 
-Sistema unificado de gestão administrativa e pastoral, construído para servir com precisão e zelo a rotina de uma paróquia — do agendamento de uma missa à homologação de uma ata do Conselho Paroquial. Backend monolítico modular em **Java 25 (Spring Boot 3)**, frontend em **React 19 (TypeScript + Material UI 9 + Vite)**.
+Sistema unificado de gestão administrativa e pastoral, construído para servir com precisão e zelo a rotina de uma paróquia — do agendamento de uma missa à homologação de uma ata do Conselho Paroquial. Backend monolítico modular em **Java 25 (Spring Boot 4 + Jetty 12 + Log4j2)**, frontend em **React 19 (TypeScript + Material UI 9 + Vite)**.
 
 O sistema cobre o ciclo operacional completo da paróquia: agendamento de eventos e espaços, fluxos de aprovação, cadastro de fiéis e gestão de membros na estrutura organizacional (pastorais, movimentos, conselhos), decisões e homologações do Conselho Paroquial (CPC), controle de patrimônio (ativos e alocações), importação e exportação de relatórios (CSV, PDF e Word) e um dashboard executivo com métricas consolidadas — tudo sob rígidos controles de auditoria e conformidade com a LGPD. Tecnologia a serviço da missão, sem abrir mão de rigor.
 
@@ -17,7 +17,7 @@ O sistema cobre o ciclo operacional completo da paróquia: agendamento de evento
 
 O repositório é organizado em módulos independentes, cada um com suas próprias regras de arquitetura, testes e documentação:
 
-- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 3**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
+- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 4**, servidor web **Jetty 12**, **Log4j2**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
 - **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
 - **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4 e seeder automático de dados. Variáveis de ambiente em [`.env.example`](./.env.example).
 - **[Documentação (`gestao-paroquia/docs/`)](./gestao-paroquia/docs):** Portal de documentação técnica — arquitetura, guia de início rápido, documentação por domínio e regras de conformidade com a LGPD.

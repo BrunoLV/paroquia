@@ -1,6 +1,6 @@
 # ⚙️ Paróquia — Backend (`gestao-paroquia`)
 
-API RESTful para o sistema de gestão paroquial da Paróquia Nossa Senhora de Fátima. É um monolito modular desenvolvido em **Java 25 (Spring Boot 3)** com foco em alta confiabilidade, segurança, desacoplamento e privacidade de dados (LGPD).
+API RESTful para o sistema de gestão paroquial da Paróquia Nossa Senhora de Fátima. É um monolito modular desenvolvido em **Java 25 (Spring Boot 4 + Jetty 12 + Log4j2)** com foco em alta confiabilidade, segurança, desacoplamento e privacidade de dados (LGPD).
 
 ---
 
@@ -29,7 +29,7 @@ A aplicação está dividida em 14 domínios explicados sob o pacote raiz `br.co
 * **`patrimonio`**: Cadastro de ativos patrimoniais, alocação/reserva por evento, transferência entre organizações, manutenção e métricas de ociosidade.
 * **`importacao`**: Processamento batch de importação e exportação de dados (relatórios em Excel via Apache POI e PDF via OpenPDF).
 * **`dashboard`**: Métricas executivas, estatísticas gerais e visão consolidada para a gestão paroquial.
-* **`observabilidade`**: Emissão de logs estruturados em formato JSON com MDC, telemetria e healthchecks.
+* **`observabilidade`**: Emissão de logs estruturados via Log4j2 com MDC, rastreio de ações HTTP, telemetria e healthchecks.
 * **`support`**: Utilitários transversais, tratamento global de exceções e abstrações de infraestrutura compartilhada.
 
 ---
@@ -37,7 +37,7 @@ A aplicação está dividida em 14 domínios explicados sob o pacote raiz `br.co
 ## 🛠️ Tecnologias e Ferramentas
 
 * **Linguagem & Runtime:** **Java 25** (gerenciado nativamente via Gradle Toolchains / Foojay Resolver)
-* **Framework Principal:** **Spring Boot 3.x**
+* **Framework Principal:** **Spring Boot 4.x** (servidor web embarcado **Jetty 12**, logging **Log4j2**)
 * **Spring Data JPA:** Persistência de dados ORM
 * **Spring Security:** Autenticação stateless (JWT), autorização baseada em roles e controle de acesso fino
 * **Spring Web (MVC):** API RESTful declarativa e tipada

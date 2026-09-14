@@ -19,21 +19,6 @@ public class GestaoParoquiaApplication {
 
 
     static void main(String... args) {
-        preloadLoggingClasses();
         SpringApplication.run(GestaoParoquiaApplication.class, args);
-    }
-
-    private static void preloadLoggingClasses() {
-        String[] classesToPreload = {
-                "ch.qos.logback.classic.spi.ThrowableProxy",
-                "ch.qos.logback.classic.spi.LoggingEvent",
-                "ch.qos.logback.classic.spi.StackTraceElementProxy"
-        };
-        for (String className : classesToPreload) {
-            try {
-                Class.forName(className);
-            } catch (ClassNotFoundException ignored) {
-            }
-        }
     }
 }
