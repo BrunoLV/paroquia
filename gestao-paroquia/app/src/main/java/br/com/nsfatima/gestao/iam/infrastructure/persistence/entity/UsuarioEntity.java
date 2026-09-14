@@ -166,7 +166,7 @@ public class UsuarioEntity extends BaseVersionedEntity {
      * Garante {@code criadoEmUtc}/{@code atualizadoEmUtc} preenchidos mesmo quando o chamador não os define
      * explicitamente — essas colunas são {@code NOT NULL}, e nem todo ponto que cria um {@code Usuario} (ex.:
      * fixtures de teste, seeds) passa pelos casos de uso que populam auditoria de forma consciente
-     * (ver {@code CreateUsuarioUseCase}, {@code UpdateUsuarioUseCase}).
+     * (ver {@code CriarUsuarioUseCase}, {@code AtualizarUsuarioUseCase}).
      */
     /** Papéis globais como Value Object. */
     public Papeis papeis() {

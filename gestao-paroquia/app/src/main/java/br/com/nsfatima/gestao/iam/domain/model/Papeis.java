@@ -10,7 +10,7 @@ import java.util.Set;
  * separada por vírgulas (ex.: {@code "ROLE_ADMIN,ROLE_USER"}).
  *
  * <p>Encapsula, num único ponto, a manipulação antes espalhada como {@code roles.contains(...)} +
- * concatenação de string nos casos de uso (ver {@code ApproveUsuarioUseCase}).</p>
+ * concatenação de string nos casos de uso (ver {@code AprovarUsuarioUseCase}).</p>
  */
 public final class Papeis {
 

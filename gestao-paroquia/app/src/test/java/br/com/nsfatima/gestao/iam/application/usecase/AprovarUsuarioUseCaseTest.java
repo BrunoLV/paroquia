@@ -23,13 +23,13 @@ class ApproveUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
     private MembroGrupoJpaRepository vinculoRepository;
-    private ApproveUsuarioUseCase useCase;
+    private AprovarUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
         vinculoRepository = mock(MembroGrupoJpaRepository.class);
-        useCase = new ApproveUsuarioUseCase(usuarioRepository, vinculoRepository);
+        useCase = new AprovarUsuarioUseCase(usuarioRepository, vinculoRepository);
     }
 
     @AfterEach

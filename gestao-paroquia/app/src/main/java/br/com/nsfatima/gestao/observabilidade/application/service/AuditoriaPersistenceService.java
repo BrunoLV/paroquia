@@ -133,7 +133,7 @@ public class AuditoriaPersistenceService {
         entity.setAcao(action);
         entity.setResultado(result);
         entity.setAtor(actor == null || actor.isBlank() ? "anonymous" : actor);
-        entity.setAtorUsuarioId(resolveActorUserId(enriched));
+        entity.setAtorUsuarioId(resolverIdUsuarioAtor(enriched));
         entity.setCorrelationId((String) enriched.getOrDefault(KEY_CORRELATION_ID, "n/a"));
         entity.setOcorridoEmUtc(Instant.now());
         entity.setDetalhesAuditaveisJson(writeDetails(enriched));
@@ -206,7 +206,7 @@ public class AuditoriaPersistenceService {
         return null;
     }
 
-    private UUID resolveActorUserId(Map<String, Object> metadata) {
+    private UUID resolverIdUsuarioAtor(Map<String, Object> metadata) {
         UUID explicit = parseUuid(firstNonNull(metadata.get("usuarioId"), metadata.get("atorUsuarioId")));
         if (explicit != null) {
             return explicit;

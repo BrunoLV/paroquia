@@ -25,7 +25,7 @@ class GetUsuarioUseCaseTest {
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private FielJpaRepository fielRepository;
     private ClerigoJpaRepository clerigoRepository;
-    private GetUsuarioUseCase useCase;
+    private ObterUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +33,7 @@ class GetUsuarioUseCaseTest {
         grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
         clerigoRepository = mock(ClerigoJpaRepository.class);
-        useCase = new GetUsuarioUseCase(usuarioRepository, grupoParoquialRepository, fielRepository, clerigoRepository);
+        useCase = new ObterUsuarioUseCase(usuarioRepository, grupoParoquialRepository, fielRepository, clerigoRepository);
     }
 
     @Test

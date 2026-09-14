@@ -20,12 +20,12 @@ import static org.mockito.Mockito.when;
 class UpdateUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
-    private UpdateUsuarioUseCase useCase;
+    private AtualizarUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        useCase = new UpdateUsuarioUseCase(usuarioRepository);
+        useCase = new AtualizarUsuarioUseCase(usuarioRepository);
     }
 
     @AfterEach

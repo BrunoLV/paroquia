@@ -2,11 +2,11 @@ package br.com.nsfatima.gestao.iam.api.v1.controller;
 
 import br.com.nsfatima.gestao.iam.api.v1.dto.CreateUsuarioRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
-import br.com.nsfatima.gestao.iam.application.usecase.ApproveUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.GetUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.AprovarUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.ObterUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.UpdateUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.AtualizarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.service.UsuarioAuthorizationService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.AdicionarVinculoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.VinculoResponse;
@@ -40,8 +40,8 @@ import java.util.UUID;
 
 /**
  * CRUD de usuários e gestão dos seus vínculos organizacionais (membros). Todo cadastro é administrativo
- * (via {@link CreateUsuarioUseCase}, exige um {@code Fiel} já existente) — não há mais autocadastro público;
- * {@link ApproveUsuarioUseCase} segue existindo para o fluxo de aprovação de usuários pendentes criados
+ * (via {@link CriarUsuarioUseCase}, exige um {@code Fiel} já existente) — não há mais autocadastro público;
+ * {@link AprovarUsuarioUseCase} segue existindo para o fluxo de aprovação de usuários pendentes criados
  * administrativamente. A autorização por endpoint combina {@code @PreAuthorize} de papel global com
  * checagens finas de escopo organizacional feitas por {@link UsuarioAuthorizationService} (admin ou
  * coordenador da organização do usuário-alvo).
@@ -52,25 +52,25 @@ import java.util.UUID;
 public class UsuarioController {
 
     private final ListUsuariosUseCase listUsuariosUseCase;
-    private final GetUsuarioUseCase getUsuarioUseCase;
-    private final CreateUsuarioUseCase createUsuarioUseCase;
-    private final UpdateUsuarioUseCase updateUsuarioUseCase;
+    private final ObterUsuarioUseCase getUsuarioUseCase;
+    private final CriarUsuarioUseCase createUsuarioUseCase;
+    private final AtualizarUsuarioUseCase updateUsuarioUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final RemoverVinculoUseCase removerVinculoUseCase;
     private final ListarVinculosUseCase listarVinculosUseCase;
     private final UsuarioAuthorizationService authorizationService;
-    private final ApproveUsuarioUseCase approveUsuarioUseCase;
+    private final AprovarUsuarioUseCase approveUsuarioUseCase;
 
     public UsuarioController(
             ListUsuariosUseCase listUsuariosUseCase,
-            GetUsuarioUseCase getUsuarioUseCase,
-            CreateUsuarioUseCase createUsuarioUseCase,
-            UpdateUsuarioUseCase updateUsuarioUseCase,
+            ObterUsuarioUseCase getUsuarioUseCase,
+            CriarUsuarioUseCase createUsuarioUseCase,
+            AtualizarUsuarioUseCase updateUsuarioUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             RemoverVinculoUseCase removerVinculoUseCase,
             ListarVinculosUseCase listarVinculosUseCase,
             UsuarioAuthorizationService authorizationService,
-            ApproveUsuarioUseCase approveUsuarioUseCase) {
+            AprovarUsuarioUseCase approveUsuarioUseCase) {
         this.listUsuariosUseCase = listUsuariosUseCase;
         this.getUsuarioUseCase = getUsuarioUseCase;
         this.createUsuarioUseCase = createUsuarioUseCase;

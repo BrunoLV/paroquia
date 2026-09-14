@@ -15,11 +15,11 @@ import java.util.UUID;
  * outras operações administrativas de usuário.
  */
 @Service
-public class UpdateUsuarioUseCase {
+public class AtualizarUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
 
-    public UpdateUsuarioUseCase(UsuarioJpaRepository usuarioRepository) {
+    public AtualizarUsuarioUseCase(UsuarioJpaRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 

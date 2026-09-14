@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
  * Recupera os detalhes completos de um usuário para exibição/edição administrativa.
  */
 @Service
-public class GetUsuarioUseCase {
+public class ObterUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final FielJpaRepository fielRepository;
     private final ClerigoJpaRepository clerigoRepository;
 
-    public GetUsuarioUseCase(
+    public ObterUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,
             FielJpaRepository fielRepository,

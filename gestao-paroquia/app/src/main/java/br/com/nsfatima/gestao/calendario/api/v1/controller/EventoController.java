@@ -201,7 +201,7 @@ public class EventoController {
             return ResponseEntity.status(result.status()).body(result.body());
 
         } catch (RuntimeException ex) {
-            String actor = resolveActor();
+            String actor = resolverAtor();
             Map<String, Object> metadata = Map.of(
                     "sensitiveChange", request.changesSensitiveFields());
             eventoAuditPublisher.publish(actor, "atualizar", eventoId.toString(), "failure", metadata);
@@ -266,7 +266,7 @@ public class EventoController {
         return ResponseEntity.status(result.status()).body(result.body());
     }
 
-    private String resolveActor() {
+    private String resolverAtor() {
         return actorContextResolver.resolveRequired().actor();
     }
 }

@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.membro.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
@@ -37,7 +37,7 @@ public class PromoverACoordenadorUseCase {
     private final FielJpaRepository fielRepository;
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final UsuarioJpaRepository usuarioRepository;
-    private final CreateUsuarioUseCase createUsuarioUseCase;
+    private final CriarUsuarioUseCase createUsuarioUseCase;
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private final MembroGrupoMapper membroGrupoMapper;
 
@@ -46,7 +46,7 @@ public class PromoverACoordenadorUseCase {
             FielJpaRepository fielRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UsuarioJpaRepository usuarioRepository,
-            CreateUsuarioUseCase createUsuarioUseCase,
+            CriarUsuarioUseCase createUsuarioUseCase,
             PapelGlobalAuthorizationService papelGlobalAuthorizationService,
             MembroGrupoMapper membroGrupoMapper) {
         this.membroRepository = membroRepository;

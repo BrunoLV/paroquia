@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.membro.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import br.com.nsfatima.gestao.iam.application.usecase.CreateUsuarioUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -39,7 +39,7 @@ class PromoverACoordenadorUseCaseTest {
     private FielJpaRepository fielRepository;
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private UsuarioJpaRepository usuarioRepository;
-    private CreateUsuarioUseCase createUsuarioUseCase;
+    private CriarUsuarioUseCase createUsuarioUseCase;
     private PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private PromoverACoordenadorUseCase useCase;
 
@@ -53,7 +53,7 @@ class PromoverACoordenadorUseCaseTest {
         fielRepository = mock(FielJpaRepository.class);
         grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        createUsuarioUseCase = mock(CreateUsuarioUseCase.class);
+        createUsuarioUseCase = mock(CriarUsuarioUseCase.class);
         papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
         useCase = new PromoverACoordenadorUseCase(membroRepository, fielRepository, grupoParoquialRepository,
                 usuarioRepository, createUsuarioUseCase, papelGlobalAuthorizationService, new MembroGrupoMapper());

@@ -16,14 +16,14 @@ import java.util.UUID;
  * com {@code Fiel} ou {@code Clerigo}. O usuário já nasce habilitado ({@code enabled=true}).
  */
 @Service
-public class CreateUsuarioUseCase {
+public class CriarUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final FielJpaRepository fielRepository;
     private final ClerigoJpaRepository clerigoRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CreateUsuarioUseCase(
+    public CriarUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
             FielJpaRepository fielRepository,
             ClerigoJpaRepository clerigoRepository,
@@ -65,14 +65,14 @@ public class CreateUsuarioUseCase {
         entity.setClerigoId(clerigoId);
         entity.setEnabled(true);
 
-        String actor = resolveActor();
+        String actor = resolverAtor();
         entity.setCriadoPor(actor);
         entity.setAtualizadoPor(actor);
 
         return usuarioRepository.save(entity).getId();
     }
 
-    private String resolveActor() {
+    private String resolverAtor() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null ? authentication.getName() : null;
     }

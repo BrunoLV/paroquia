@@ -30,7 +30,7 @@ class CreateUsuarioUseCaseTest {
     private UsuarioJpaRepository usuarioRepository;
     private FielJpaRepository fielRepository;
     private ClerigoJpaRepository clerigoRepository;
-    private CreateUsuarioUseCase useCase;
+    private CriarUsuarioUseCase useCase;
 
     @BeforeEach
     void setUp() {
@@ -39,7 +39,7 @@ class CreateUsuarioUseCaseTest {
         clerigoRepository = mock(ClerigoJpaRepository.class);
         PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
         when(passwordEncoder.encode(any())).thenReturn("encoded_pass");
-        useCase = new CreateUsuarioUseCase(usuarioRepository, fielRepository, clerigoRepository, passwordEncoder);
+        useCase = new CriarUsuarioUseCase(usuarioRepository, fielRepository, clerigoRepository, passwordEncoder);
     }
 
     @AfterEach

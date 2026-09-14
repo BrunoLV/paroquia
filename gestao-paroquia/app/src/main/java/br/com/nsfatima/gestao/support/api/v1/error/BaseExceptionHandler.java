@@ -60,14 +60,14 @@ public abstract class BaseExceptionHandler {
         }
 
         auditLogPersistenceService.log(
-                resolveActor(),
+                resolverAtor(),
                 "security-denied",
                 request == null ? "n/a" : request.getRequestURI(),
                 "DENY",
                 metadata);
     }
 
-    protected String resolveActor() {
+    protected String resolverAtor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null || authentication.getName().isBlank()) {
             return "anonymous";

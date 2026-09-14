@@ -17,12 +17,12 @@ import java.util.UUID;
  * aparece como membro efetivo de nenhuma organização.
  */
 @Service
-public class ApproveUsuarioUseCase {
+public class AprovarUsuarioUseCase {
 
     private final UsuarioJpaRepository usuarioRepository;
     private final MembroGrupoJpaRepository vinculoRepository;
 
-    public ApproveUsuarioUseCase(
+    public AprovarUsuarioUseCase(
             UsuarioJpaRepository usuarioRepository,
             MembroGrupoJpaRepository vinculoRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -46,7 +46,7 @@ public class ApproveUsuarioUseCase {
         usuario.aprovar(authentication != null ? authentication.getName() : null);
         usuarioRepository.save(usuario);
 
-        // Activate requested vinculos
+        // Ativa os vínculos organizacionais pendentes
         if (usuario.getFielId() != null) {
             var vinculos = vinculoRepository.findByFielId(usuario.getFielId());
             for (var vinculo : vinculos) {
