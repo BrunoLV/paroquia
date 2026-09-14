@@ -27,10 +27,10 @@ public class ListEventosUseCase {
     }
 
     /**
-     * Aggregates diverse search criteria to provide a filtered, paginated view of the parish calendar for users and
-     * administrative tools.
+     * Agrega diversos critérios de busca para fornecer uma visão filtrada e paginada do calendário paroquial
+     * para usuários e ferramentas administrativas.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * Page<EventoResponse> page = useCase.execute(filters, PageRequest.of(0, 20));
      * }

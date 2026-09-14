@@ -71,10 +71,10 @@ public class ObservacaoController {
     }
 
     /**
-     * Enables qualitative data enrichment for events by allowing users to attach textual notes and technical
-     * observations.
+     * Permite o enriquecimento qualitativo de dados dos eventos, possibilitando que usuários anexem notas
+     * textuais e observações técnicas.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.create(eventoId, new ObservacaoCreateRequest("NOTA", "Lembrar dos bancos extras"));
      * }
@@ -105,9 +105,9 @@ public class ObservacaoController {
     }
 
     /**
-     * Promotes collaborative transparency by aggregating all relevant comments and notes associated with an event.
+     * Promove transparência colaborativa, agregando todos os comentários e notas relevantes associados a um evento.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * List<ObservacaoResponse> list = controller.list(eventoId);
      * }
@@ -135,9 +135,10 @@ public class ObservacaoController {
     }
 
     /**
-     * Allows users to quickly find and manage their own contributions to an event's discussion or documentation.
+     * Permite que usuários encontrem e gerenciem rapidamente suas próprias contribuições à discussão ou
+     * documentação de um evento.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * List<ObservacaoResponse> minhas = controller.listMinhas(eventoId);
      * }
@@ -165,9 +166,9 @@ public class ObservacaoController {
     }
 
     /**
-     * Ensures information remains accurate and relevant by allowing authors to refine their previous observations.
+     * Garante que a informação permaneça precisa e relevante, permitindo que autores refinem observações anteriores.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.update(eventoId, observacaoId, new ObservacaoUpdateRequest("Conteúdo revisado"));
      * }
@@ -198,9 +199,9 @@ public class ObservacaoController {
     }
 
     /**
-     * Maintains data hygiene and privacy by allowing the removal of obsolete or incorrect notes from an event.
+     * Mantém a higiene e privacidade dos dados, permitindo a remoção de notas obsoletas ou incorretas de um evento.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.delete(eventoId, observacaoId);
      * }

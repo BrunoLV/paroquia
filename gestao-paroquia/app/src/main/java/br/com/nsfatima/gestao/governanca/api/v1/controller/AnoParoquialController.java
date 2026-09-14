@@ -78,7 +78,7 @@ public class AnoParoquialController {
      * Recupera o histórico de todos os anos paroquiais para permitir a análise de períodos passados e o planejamento
      * de futuros.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code GET /api/v1/anos-paroquiais}
      *
      * @return Lista de anos paroquiais registrados
@@ -104,7 +104,7 @@ public class AnoParoquialController {
      * Consulta o estado de um ano específico para verificar se o calendário está aberto para novas edições ou
      * travado para governança.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code GET /api/v1/anos-paroquiais/2026}
      *
      * @param ano O ano paroquial desejado
@@ -133,7 +133,7 @@ public class AnoParoquialController {
      * Altera o estado de governança de um ano para controlar o ciclo de vida do planejamento paroquial
      * (abertura/fechamento).
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code PATCH /api/v1/anos-paroquiais/2026} com corpo {@code { "status": "FECHADO" }}
      *
      * @param ano     O ano a ser atualizado

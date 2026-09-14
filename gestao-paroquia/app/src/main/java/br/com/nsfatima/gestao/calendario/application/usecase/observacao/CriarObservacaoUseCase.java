@@ -15,10 +15,10 @@ import java.util.UUID;
 public class CriarObservacaoUseCase {
 
     /**
-     * Instantiates a transient observation response object, primarily used for returning newly created data
-     * structures in a consistent format.
+     * Registra uma nova observação sobre um evento, retornando a estrutura de dados recém-criada em formato
+     * consistente.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, usuarioId, TipoObservacaoInput.SISTEMA, "Log entry");
      * }

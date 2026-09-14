@@ -32,7 +32,7 @@ public class ListProjetosUseCase {
      * Recupera a lista completa de projetos cadastrados para apoiar a visualização e gestão macro das iniciativas
      * paroquiais.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code List<ProjetoResponse> projetos = listProjetosUseCase.execute()}
      *
      * @return Lista de todos os projetos cadastrados

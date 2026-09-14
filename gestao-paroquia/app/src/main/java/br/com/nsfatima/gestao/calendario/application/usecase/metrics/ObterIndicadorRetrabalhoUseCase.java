@@ -30,10 +30,10 @@ public class ObterIndicadorRetrabalhoUseCase {
     }
 
     /**
-     * Calculates the operational inefficiency metric for a specific organization, helping leaders understand the
-     * frequency of post-planning changes.
+     * Calcula o indicador de ineficiência operacional para uma organização específica, ajudando lideranças a
+     * entender a frequência de mudanças pós-planejamento.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * IndicadorRetrabalhoResponse response = useCase.execute(orgId, "anual", null, null);
      * }

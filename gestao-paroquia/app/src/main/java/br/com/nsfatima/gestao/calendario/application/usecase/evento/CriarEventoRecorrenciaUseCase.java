@@ -52,10 +52,10 @@ public class CriarEventoRecorrenciaUseCase {
     }
 
     /**
-     * Transforms a single event into a recurring pattern, automatically populating the future calendar to improve
-     * planning efficiency.
+     * Transforma um evento único em um padrão recorrente, populando automaticamente o calendário futuro para
+     * melhorar a eficiência do planejamento.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, new RegraRecorrencia("WEEKLY", 1, ...));
      * }

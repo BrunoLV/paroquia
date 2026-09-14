@@ -42,10 +42,10 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
     }
 
     /**
-     * Records a formal request to create a new event that requires higher-level authorization due to its sensitivity
-     * or the proposer's role.
+     * Registra uma solicitação formal de criação de evento que exige autorização de nível superior devido à sua
+     * sensibilidade ou ao papel de quem propõe.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute("idempotency-key", createRequest);
      * }

@@ -31,10 +31,10 @@ public class ListAuditTrailUseCase {
     }
 
     /**
-     * Provides a detailed and filtered list of system operations, enabling comprehensive security reviews and
-     * activity tracking across the calendar domain.
+     * Fornece uma listagem detalhada e filtrada das operações do sistema, permitindo revisões de segurança
+     * abrangentes e rastreamento de atividade em todo o domínio de calendário.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * AuditoriaOperacaoResponse response = useCase.execute(orgId, "mensal", null, null, null, "patch", "success",
      * null);

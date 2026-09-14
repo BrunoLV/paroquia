@@ -47,15 +47,15 @@ public class ValidarAprovacaoUseCase {
         AprovadorPapel role = aprovacao.getAprovadorPapelEnum();
         if (!ALLOWED_APPROVER_ROLES.contains(role)) {
             throw new AprovacaoObrigatoriaException(
-                    "Conselho coordinator, conselho vice-coordinator, or parroco aprovacao is required");
+                    "É necessária a aprovação do coordenador do conselho, vice-coordenador do conselho ou do pároco");
         }
     }
 
     /**
-     * Enforces the organizational hierarchy by restricting decision-making power to specific roles within the
-     * Council or the Parish Priest.
+     * Reforça a hierarquia organizacional, restringindo o poder de decisão a papéis específicos dentro do
+     * Conselho ou ao Pároco.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.validarPapelDecisaoAprovacao("COORDENADOR", "CONSELHO");
      * }

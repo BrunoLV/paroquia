@@ -43,10 +43,10 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
     }
 
     /**
-     * Submits a request to modify critical fields of an existing event, ensuring that changes to dates or core
-     * details are vetted by the Parish Council.
+     * Envia uma solicitação para alterar campos críticos de um evento existente, garantindo que mudanças em datas
+     * ou dados essenciais sejam avaliadas pelo Conselho Paroquial.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, updateRequest);
      * }

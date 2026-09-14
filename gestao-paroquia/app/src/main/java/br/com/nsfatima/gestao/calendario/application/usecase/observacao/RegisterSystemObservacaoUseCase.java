@@ -32,10 +32,10 @@ public class RegisterSystemObservacaoUseCase {
     }
 
     /**
-     * Automates the creation of system-level observations (e.g., cancellation reasons) to ensure that important
-     * lifecycle changes are always documented.
+     * Automatiza a criação de observações de sistema (ex.: motivos de cancelamento) para garantir que mudanças
+     * importantes de ciclo de vida fiquem sempre documentadas.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, TipoObservacaoInput.SISTEMA, "Auto-log", null, "system", "cancellation-flow");
      * }

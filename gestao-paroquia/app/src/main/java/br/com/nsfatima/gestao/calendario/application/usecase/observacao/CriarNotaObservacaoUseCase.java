@@ -34,10 +34,10 @@ public class CriarNotaObservacaoUseCase {
     }
 
     /**
-     * Persists a manual user-generated observation, ensuring that the observation type is valid for manual entry and
-     * that the action is properly audited.
+     * Persiste uma observação manual gerada pelo usuário, garantindo que o tipo de observação seja válido para
+     * lançamento manual e que a ação seja devidamente auditada.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, usuarioId, "actor-name", TipoObservacaoInput.NOTA, "Conteúdo");
      * }

@@ -85,10 +85,10 @@ public class EventoController {
     }
 
     /**
-     * Serves as the primary entry point for adding new activities to the parish calendar, ensuring business rules
-     * and governance policies are applied from the start.
+     * Serve como ponto de entrada principal para adicionar novas atividades ao calendário paroquial, garantindo
+     * que regras de negócio e políticas de governança sejam aplicadas desde o início.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * CriarEventoRequest request = new CriarEventoRequest("Missa de Sábado", Instant.now(), ...);
      * ResponseEntity<Object> response = controller.create("idempotency-key", request);
@@ -116,9 +116,10 @@ public class EventoController {
     }
 
     /**
-     * Facilitates calendar discovery and scheduling by providing a searchable list of events for various stakeholders.
+     * Facilita a descoberta e o agendamento no calendário, fornecendo uma listagem pesquisável de eventos para
+     * os diversos interessados.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * EventoFiltroRequest filters = new EventoFiltroRequest(null, null, "LITURGICO", null);
      * Page<EventoResponse> page = controller.list(filters, PageRequest.of(0, 10));
@@ -143,9 +144,10 @@ public class EventoController {
     }
 
     /**
-     * Provides full descriptive details of a specific event to support deep-link views and editing interfaces.
+     * Fornece detalhes descritivos completos de um evento específico, dando suporte a visões de link direto e
+     * interfaces de edição.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * EventoResponse response = controller.get(eventoId);
      * }
@@ -173,10 +175,10 @@ public class EventoController {
     }
 
     /**
-     * Allows for incremental updates to event details while maintaining structural integrity and triggering
-     * re-approvals when necessary.
+     * Permite atualizações incrementais nos detalhes do evento, mantendo a integridade estrutural e disparando
+     * novas aprovações quando necessário.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * UpdateEventoRequest request = new UpdateEventoRequest("Nova Descrição", null, ...);
      * ResponseEntity<Object> response = controller.patch(eventoId, request);
@@ -210,10 +212,10 @@ public class EventoController {
     }
 
     /**
-     * Prevents further occurrences and removes the event from active visibility while maintaining an audit trail of
-     * why it was cancelled (Deprecated).
+     * Evita novas ocorrências e remove o evento da visibilidade ativa, mantendo um registro de auditoria do
+     * motivo do cancelamento (Descontinuado).
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.cancel(eventoId, new CancelarEventoRequest("Conflito de agenda"));
      * }
@@ -242,9 +244,10 @@ public class EventoController {
     }
 
     /**
-     * Safely retires an event from the schedule with a mandatory explanation to ensure organizational transparency.
+     * Retira um evento da agenda com segurança, exigindo uma justificativa para garantir transparência
+     * organizacional.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.cancelResilient(eventoId, new CancelarEventoResilienteRequest("Necessidade urgente de manutenção"));
      * }

@@ -27,10 +27,10 @@ public class ListObservacoesUseCase {
     }
 
     /**
-     * Retrieves all active observations for a specific event to support collaborative views and logistical
-     * coordination.
+     * Recupera todas as observações ativas de um evento específico para dar suporte a visões colaborativas e
+     * coordenação logística.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * List<ObservacaoResponse> all = useCase.execute(eventoId);
      * }

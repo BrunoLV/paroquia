@@ -51,10 +51,10 @@ public class EventoEnvolvidoController {
     }
 
     /**
-     * Updates the multi-disciplinary involvement in an event, ensuring all relevant pastorals and groups are
-     * correctly linked for logistical coordination.
+     * Atualiza o envolvimento multidisciplinar em um evento, garantindo que todas as pastorais e grupos
+     * relevantes estejam corretamente vinculados para coordenação logística.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.putEnvolvidos(eventoId, new EventoEnvolvidosRequest(List.of(...)));
      * }
@@ -81,10 +81,10 @@ public class EventoEnvolvidoController {
     }
 
     /**
-     * Resets the involvement list of an event to its default state, used when a collaboration plan is completely
-     * overhauled.
+     * Restaura a lista de envolvidos de um evento ao seu estado padrão, usado quando um plano de colaboração é
+     * completamente refeito.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.clearEnvolvidos(eventoId);
      * }

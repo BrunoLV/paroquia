@@ -95,7 +95,7 @@ public class ProjetoController {
      * Disponibiliza a criação de projetos paroquiais para permitir o planejamento e acompanhamento formal de
      * initiatives da comunidade.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code POST /api/v1/projetos} com corpo JSON contendo nome, descrição, datas e organização responsável.
      *
      * @param request Dados para criação do projeto
@@ -128,7 +128,7 @@ public class ProjetoController {
      * Expõe a listagem de todos os projetos para permitir a visibilidade global das atividades e facilitar a gestão
      * paroquial.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code GET /api/v1/projetos}
      *
      * @return Lista de todos os projetos cadastrados
@@ -149,7 +149,7 @@ public class ProjetoController {
      * Permite a atualização parcial de projetos para manter as informações sincronizadas com a evolução real das
      * atividades.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code PATCH /api/v1/projetos/{uuid}} com corpo JSON contendo apenas os campos que devem ser alterados.
      *
      * @param projetoId ID único do projeto
@@ -179,7 +179,7 @@ public class ProjetoController {
      * Fornece uma visão consolidada do projeto para apoiar a tomada de decisão baseada em indicadores de saúde e
      * execução.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code GET /api/v1/projetos/{uuid}/resumo}
      *
      * @param projetoId ID único do projeto

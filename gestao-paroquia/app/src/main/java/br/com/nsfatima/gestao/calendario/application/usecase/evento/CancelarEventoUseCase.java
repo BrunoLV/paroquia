@@ -80,9 +80,9 @@ public class CancelarEventoUseCase {
     }
 
     /**
-     * Attempts to cancel an event. Returns 200 OK for immediate cancellation or 202 ACCEPTED if aprovacao is needed.
+     * Tenta cancelar um evento. Retorna 200 OK para cancelamento imediato ou 202 ACCEPTED se aprovação for necessária.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * useCase.execute(id, new CancelarEventoRequest("Personal reasons"));
      */
     @Transactional
@@ -103,10 +103,10 @@ public class CancelarEventoUseCase {
     }
 
     /**
-     * Finalizes the cancellation process for events that have been vetted and approved, ensuring all side effects
-     * like audit logs and system notifications are triggered.
+     * Finaliza o processo de cancelamento de eventos já avaliados e aprovados, garantindo que todos os efeitos
+     * colaterais, como registros de auditoria e notificações do sistema, sejam disparados.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.executeApprovedCancellation(eventoId, "Aprovado pela coordenação", "admin", usuarioId);
      * }

@@ -34,10 +34,10 @@ public class ObterTaxaEventosExtraUseCase {
     }
 
     /**
-     * Provides a quantitative measure of planning quality by calculating the ratio of unplanned events within a
-     * specific organizational context and timeframe.
+     * Fornece uma medida quantitativa da qualidade do planejamento, calculando a proporção de eventos não
+     * planejados dentro de um contexto organizacional e período específicos.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * TaxaEventosExtraResponse response = useCase.execute(orgId, "mensal", null, null);
      * }

@@ -44,10 +44,10 @@ public class AtualizarObservacaoUseCase {
     }
 
     /**
-     * Updates an existing observation while maintaining a revision history, allowing for corrections while
-     * preserving the audit trail of information changes.
+     * Atualiza uma observação existente mantendo um histórico de revisões, permitindo correções sem perder o
+     * rastro de auditoria das mudanças de informação.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, observacaoId, usuarioId, "author", "New content");
      * }

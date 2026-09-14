@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.domain.exception;
 
 /**
- * Exception thrown when an event attempt to transition to an illegal status.
+ * Exceção lançada quando um evento tenta transicionar para um status inválido.
  * <p>
- * Usage Example:
+ * Exemplo de uso:
  * throw new InvalidStatusTransitionException("RASCUNHO", "CANCELADO", "Only confirmed events can be cancelled");
  */
 public class InvalidStatusTransitionException extends RuntimeException {

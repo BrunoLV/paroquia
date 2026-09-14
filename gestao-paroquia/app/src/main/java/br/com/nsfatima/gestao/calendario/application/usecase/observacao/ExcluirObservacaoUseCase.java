@@ -33,10 +33,10 @@ public class ExcluirObservacaoUseCase {
     }
 
     /**
-     * Marks an observation as removed in the database, enforcing ownership rules to ensure only authors or
-     * authorized personnel can hide specific notes.
+     * Marca uma observação como removida no banco de dados, aplicando regras de propriedade para garantir que
+     * apenas o autor ou pessoal autorizado possa ocultar notas específicas.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, observacaoId, usuarioId, "admin");
      * }

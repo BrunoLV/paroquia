@@ -27,10 +27,10 @@ public class ListMinhasObservacoesUseCase {
     }
 
     /**
-     * Filters observations to show only those created by the current user, facilitating personal management of notes
-     * and technical remarks.
+     * Filtra as observações para mostrar apenas as criadas pelo usuário atual, facilitando o gerenciamento
+     * pessoal de notas e observações técnicas.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * List<ObservacaoResponse> list = useCase.execute(eventoId, usuarioId);
      * }

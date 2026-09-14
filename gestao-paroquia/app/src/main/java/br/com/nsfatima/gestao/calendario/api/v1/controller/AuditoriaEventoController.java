@@ -48,10 +48,10 @@ public class AuditoriaEventoController {
     }
 
     /**
-     * Enables administrative oversight by providing a metric of unplanned activities, helping to evaluate the
-     * effectiveness of the initial calendar planning.
+     * Permite supervisão administrativa fornecendo uma métrica de atividades não planejadas, ajudando a avaliar
+     * a eficácia do planejamento inicial do calendário.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * TaxaEventosExtraResponse response = controller.getTaxaExtras(grupoParoquialId, "anual", null, null);
      * }
@@ -78,10 +78,10 @@ public class AuditoriaEventoController {
     }
 
     /**
-     * Supports security and accountability audits by allowing detailed inspection of system operations, filtered by
-     * actor, action, and correlation IDs.
+     * Dá suporte a auditorias de segurança e responsabilização, permitindo inspeção detalhada das operações do
+     * sistema, filtradas por ator, ação e IDs de correlação.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * AuditoriaOperacaoResponse response = controller.getTrilha(new AuditoriaFiltroRequest(...));
      * }
@@ -109,10 +109,10 @@ public class AuditoriaEventoController {
     }
 
     /**
-     * Identifies potential inefficiencies in the planning process by quantifying how many events were modified or
-     * cancelled after their initial creation.
+     * Identifica potenciais ineficiências no processo de planejamento, quantificando quantos eventos foram
+     * modificados ou cancelados após a criação inicial.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * IndicadorRetrabalhoResponse response = controller.getRetrabalho(grupoParoquialId, "mensal", null, null);
      * }

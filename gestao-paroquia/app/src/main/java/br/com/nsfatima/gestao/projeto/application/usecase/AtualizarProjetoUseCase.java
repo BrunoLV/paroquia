@@ -54,7 +54,7 @@ public class AtualizarProjetoUseCase {
     /**
      * Executa a atualização parcial de um projeto, validando permissões e mantendo a integridade das datas e status.
      *
-     * <p>Usage Example:
+     * <p>Exemplo de uso:
      * {@code updateProjetoUseCase.execute(projetoId, new ProjetoPatchRequest("Novo Nome", null, null, null, null,
      * null))}
      *

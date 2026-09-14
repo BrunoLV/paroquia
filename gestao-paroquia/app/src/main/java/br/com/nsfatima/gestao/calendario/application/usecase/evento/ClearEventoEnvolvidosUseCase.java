@@ -21,10 +21,10 @@ public class ClearEventoEnvolvidosUseCase {
     }
 
     /**
-     * Resets the collaboration list for an event, removing all pastoral links when the event's logistical
-     * requirements are completely reset.
+     * Reinicia a lista de colaboração de um evento, removendo todos os vínculos com pastorais quando os
+     * requisitos logísticos do evento são completamente redefinidos.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId);
      * }

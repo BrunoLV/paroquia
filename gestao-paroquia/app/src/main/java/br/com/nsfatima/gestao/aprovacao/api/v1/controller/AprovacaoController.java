@@ -61,9 +61,10 @@ public class AprovacaoController {
     }
 
     /**
-     * Entry point for requesting formal authorization for event-related actions that require governance oversight.
+     * Ponto de entrada para solicitar autorização formal de ações relacionadas a eventos que exigem supervisão
+     * de governança.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * AprovacaoCreateRequest request = new AprovacaoCreateRequest(eventoId, TipoSolicitacaoInput.CREATE);
      * AprovacaoResponse response = controller.create(request);
@@ -88,9 +89,10 @@ public class AprovacaoController {
     }
 
     /**
-     * Provides visibility into the approval pipeline for administrators and coordinators to monitor pending tasks.
+     * Fornece visibilidade sobre o fluxo de aprovações para que administradores e coordenadores acompanhem
+     * tarefas pendentes.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * AprovacaoFiltroRequest filters = new AprovacaoFiltroRequest(eventoId, "PENDENTE");
      * Page<AprovacaoResponse> page = controller.list(filters, PageRequest.of(0, 10));
@@ -110,10 +112,10 @@ public class AprovacaoController {
     }
 
     /**
-     * Records the final verdict on a request, triggering the subsequent automated actions (e.g., event creation or
-     * cancellation) if approved.
+     * Registra o veredito final de uma solicitação, disparando as ações automatizadas subsequentes (ex.: criação
+     * ou cancelamento de evento) se aprovada.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * AprovacaoDecisionRequest request = new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Validated by
      * coordination");

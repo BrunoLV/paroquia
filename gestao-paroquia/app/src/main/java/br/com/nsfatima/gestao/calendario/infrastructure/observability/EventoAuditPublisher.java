@@ -14,9 +14,9 @@ import java.util.UUID;
 public class EventoAuditPublisher implements AprovacaoAuditPublisher {
 
     /**
-     * Publishes an audit log entry with additional metadata.
+     * Publica um registro de auditoria com metadados adicionais.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * publisher.publish("admin", "atualizar", "evento:123", "success", Map.of("fields", List.of("titulo")));
      */
     private static final String KEY_RESOURCE_TYPE = "resourceType";
@@ -38,9 +38,9 @@ public class EventoAuditPublisher implements AprovacaoAuditPublisher {
     }
 
     /**
-     * Publishes a simple audit log entry.
+     * Publica um registro de auditoria simples.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * publisher.publish("admin", "ler", "evento:123", "success");
      */
     public void publish(String actor, String action, String target, String result) {

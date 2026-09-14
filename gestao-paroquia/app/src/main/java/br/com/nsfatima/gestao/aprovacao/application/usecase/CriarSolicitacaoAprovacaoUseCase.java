@@ -43,9 +43,9 @@ public class CriarSolicitacaoAprovacaoUseCase {
     }
 
     /**
-     * Initiates the governance workflow by persisting a pendente request and notifying the auditing system.
+     * Inicia o fluxo de governança, persistindo uma solicitação pendente e notificando o sistema de auditoria.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.create(eventoId, TipoSolicitacaoInput.CREATE);
      * }

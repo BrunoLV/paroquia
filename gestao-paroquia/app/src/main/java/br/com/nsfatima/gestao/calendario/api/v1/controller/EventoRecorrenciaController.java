@@ -76,10 +76,10 @@ public class EventoRecorrenciaController {
     }
 
     /**
-     * Automates the generation of future event occurrences based on a specific pattern, reducing manual entry for
-     * periodic parish activities.
+     * Automatiza a geração de ocorrências futuras de evento com base em um padrão específico, reduzindo o
+     * lançamento manual para atividades paroquiais periódicas.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * controller.createRecorrencia(eventoId, new EventoRecorrenciaRequest(Frequencia.WEEKLY, 1, ...));
      * }

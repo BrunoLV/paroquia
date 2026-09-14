@@ -27,10 +27,10 @@ public class ListRemovedObservacoesForAuditUseCase {
     }
 
     /**
-     * Provides access to soft-deleted observations for administrative and auditing purposes, ensuring full
-     * visibility into the event's history.
+     * Dá acesso às observações removidas (soft-delete) para fins administrativos e de auditoria, garantindo
+     * visibilidade completa do histórico do evento.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * List<ObservacaoResponse> removed = useCase.execute(eventoId);
      * }

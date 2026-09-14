@@ -23,10 +23,10 @@ public class AtualizarEventoEnvolvidosUseCase {
     }
 
     /**
-     * Synchronizes the list of organizations collaborating on an event, ensuring that the network of participants is
-     * always current and accurately reflects logistical plans.
+     * Sincroniza a lista de organizações envolvidas em um evento, garantindo que a rede de participantes esteja
+     * sempre atualizada e reflita com precisão os planos logísticos.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
      * useCase.execute(eventoId, List.of(new EventoEnvolvidoInput(orgId, PapelEnvolvido.APOIO)));
      * }
