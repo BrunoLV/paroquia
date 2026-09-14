@@ -18,12 +18,12 @@ import java.util.UUID;
  * enxergavam o {@code recorrenciaId}, nunca o conteúdo da regra.
  */
 @Service
-public class GetEventoRecorrenciaUseCase {
+public class ObterEventoRecorrenciaUseCase {
 
     private final EventoJpaRepository eventoRepository;
     private final EventoRecorrenciaJpaRepository recorrenciaRepository;
 
-    public GetEventoRecorrenciaUseCase(
+    public ObterEventoRecorrenciaUseCase(
             EventoJpaRepository eventoRepository,
             EventoRecorrenciaJpaRepository recorrenciaRepository) {
         this.eventoRepository = eventoRepository;
