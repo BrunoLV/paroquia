@@ -12,7 +12,7 @@ import java.util.UUID;
  * Registra uma nova observação ou nota descritiva associada a um evento da agenda.
  */
 @Service
-public class CreateObservacaoUseCase {
+public class CriarObservacaoUseCase {
 
     /**
      * Instantiates a transient observation response object, primarily used for returning newly created data

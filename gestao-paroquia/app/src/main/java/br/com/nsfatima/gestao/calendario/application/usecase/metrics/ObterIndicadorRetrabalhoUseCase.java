@@ -17,12 +17,12 @@ import java.util.UUID;
  * Mede o indicador de retrabalho baseado em eventos devolvidos ou alterados após submissão.
  */
 @Service
-public class GetIndicadorRetrabalhoUseCase {
+public class ObterIndicadorRetrabalhoUseCase {
 
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
     private final CalculadoraTaxaRetrabalho reworkRateCalculator;
 
-    public GetIndicadorRetrabalhoUseCase(
+    public ObterIndicadorRetrabalhoUseCase(
             PeriodoOperacionalPolicy periodoOperacionalPolicy,
             CalculadoraTaxaRetrabalho reworkRateCalculator) {
         this.periodoOperacionalPolicy = periodoOperacionalPolicy;

@@ -3,11 +3,11 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoCreateRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoUpdateRequest;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.CreateNotaObservacaoUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.DeleteObservacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.CriarNotaObservacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ExcluirObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListMinhasObservacoesUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListObservacoesUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.UpdateObservacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.AtualizarObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,20 +45,20 @@ import java.util.UUID;
 @PreAuthorize("isAuthenticated()")
 public class ObservacaoController {
 
-    private final CreateNotaObservacaoUseCase createNotaObservacaoUseCase;
+    private final CriarNotaObservacaoUseCase createNotaObservacaoUseCase;
     private final ListObservacoesUseCase listObservacoesUseCase;
     private final ListMinhasObservacoesUseCase listMinhasObservacoesUseCase;
-    private final UpdateObservacaoUseCase updateObservacaoUseCase;
-    private final DeleteObservacaoUseCase deleteObservacaoUseCase;
+    private final AtualizarObservacaoUseCase updateObservacaoUseCase;
+    private final ExcluirObservacaoUseCase deleteObservacaoUseCase;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
     private final EventoActorContextResolver actorContextResolver;
 
     public ObservacaoController(
-            CreateNotaObservacaoUseCase createNotaObservacaoUseCase,
+            CriarNotaObservacaoUseCase createNotaObservacaoUseCase,
             ListObservacoesUseCase listObservacoesUseCase,
             ListMinhasObservacoesUseCase listMinhasObservacoesUseCase,
-            UpdateObservacaoUseCase updateObservacaoUseCase,
-            DeleteObservacaoUseCase deleteObservacaoUseCase,
+            AtualizarObservacaoUseCase updateObservacaoUseCase,
+            ExcluirObservacaoUseCase deleteObservacaoUseCase,
             ObservacaoAuditPublisher observacaoAuditPublisher,
             EventoActorContextResolver actorContextResolver) {
         this.createNotaObservacaoUseCase = createNotaObservacaoUseCase;

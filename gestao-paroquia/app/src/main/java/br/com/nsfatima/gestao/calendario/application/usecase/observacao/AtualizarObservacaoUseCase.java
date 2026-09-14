@@ -22,7 +22,7 @@ import java.util.UUID;
  * Atualiza o conteúdo descritivo de uma anotação existente associada a um evento.
  */
 @Service
-public class UpdateObservacaoUseCase {
+public class AtualizarObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
     private final ObservacaoNotaRevisaoJpaRepository observacaoNotaRevisaoJpaRepository;
@@ -30,7 +30,7 @@ public class UpdateObservacaoUseCase {
     private final LegacyEnumInconsistencyPublisher legacyEnumInconsistencyPublisher;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
-    public UpdateObservacaoUseCase(
+    public AtualizarObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
             ObservacaoNotaRevisaoJpaRepository observacaoNotaRevisaoJpaRepository,
             MutacaoObservacaoPolicy mutacaoObservacaoPolicy,

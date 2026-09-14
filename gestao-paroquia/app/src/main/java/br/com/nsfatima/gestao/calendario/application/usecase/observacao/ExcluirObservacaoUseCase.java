@@ -17,13 +17,13 @@ import java.util.UUID;
  * Inativa ou remove logicamente notas de colaboração registradas em eventos.
  */
 @Service
-public class DeleteObservacaoUseCase {
+public class ExcluirObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
     private final MutacaoObservacaoPolicy mutacaoObservacaoPolicy;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
-    public DeleteObservacaoUseCase(
+    public ExcluirObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
             MutacaoObservacaoPolicy mutacaoObservacaoPolicy,
             ObservacaoAuditPublisher observacaoAuditPublisher) {

@@ -18,13 +18,13 @@ import java.util.UUID;
  * Insere nota complementar em evento com validação de autoria e papéis operacionais.
  */
 @Service
-public class CreateNotaObservacaoUseCase {
+public class CriarNotaObservacaoUseCase {
 
     private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
     private final MutacaoObservacaoPolicy mutacaoObservacaoPolicy;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
 
-    public CreateNotaObservacaoUseCase(
+    public CriarNotaObservacaoUseCase(
             ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
             MutacaoObservacaoPolicy mutacaoObservacaoPolicy,
             ObservacaoAuditPublisher observacaoAuditPublisher) {
