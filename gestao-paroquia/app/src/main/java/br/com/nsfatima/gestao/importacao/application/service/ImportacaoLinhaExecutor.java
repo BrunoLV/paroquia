@@ -53,9 +53,9 @@ public class ImportacaoLinhaExecutor {
     private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final AnoParoquialJpaRepository anoParoquialJpaRepository;
-    private final MotorLiturgico liturgicalEngine;
+    private final MotorLiturgico motorLiturgico;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
-    private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
+    private final ProvisionamentoLiturgicoService provisionamentoLiturgicoService;
 
     public ImportacaoLinhaExecutor(AdicionarMembroUseCase adicionarMembroUseCase,
                                    UsuarioJpaRepository usuarioJpaRepository,
@@ -65,9 +65,9 @@ public class ImportacaoLinhaExecutor {
                                    UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                                    PastoralMovimentoOficialRepository pastoralOficialRepository,
                                    AnoParoquialJpaRepository anoParoquialJpaRepository,
-                                   MotorLiturgico liturgicalEngine,
+                                   MotorLiturgico motorLiturgico,
                                    CicloLiturgicoRepository cicloLiturgicoRepository,
-                                   ProvisionamentoLiturgicoService liturgicalProvisioningService) {
+                                   ProvisionamentoLiturgicoService provisionamentoLiturgicoService) {
         this.adicionarMembroUseCase = adicionarMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
         this.grupoParoquialService = grupoParoquialService;
@@ -76,9 +76,9 @@ public class ImportacaoLinhaExecutor {
         this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
         this.pastoralOficialRepository = pastoralOficialRepository;
         this.anoParoquialJpaRepository = anoParoquialJpaRepository;
-        this.liturgicalEngine = liturgicalEngine;
+        this.motorLiturgico = motorLiturgico;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
-        this.liturgicalProvisioningService = liturgicalProvisioningService;
+        this.provisionamentoLiturgicoService = provisionamentoLiturgicoService;
     }
 
     /**
@@ -242,11 +242,11 @@ public class ImportacaoLinhaExecutor {
         entity.setIgrejaVinculoId(parseUuid(data.get(KEY_IGREJA_ID)));
         entity.setGrupoParoquialResponsavelId(resolveGrupoParoquialResponsavelId(data.get("grupoParoquialId")));
 
-        if (liturgicalProvisioningService != null) {
-            var anoLiturgico = liturgicalProvisioningService.resolveAndEnsure(entity.getInicioUtc());
+        if (provisionamentoLiturgicoService != null) {
+            var anoLiturgico = provisionamentoLiturgicoService.resolveAndEnsure(entity.getInicioUtc());
             entity.setAnoLiturgicoRef(anoLiturgico.getAno());
-        } else if (liturgicalEngine != null) {
-            int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(entity.getInicioUtc());
+        } else if (motorLiturgico != null) {
+            int anoLiturgicoRef = motorLiturgico.resolveAnoLiturgico(entity.getInicioUtc());
             entity.setAnoLiturgicoRef(anoLiturgicoRef);
         }
         if (cicloLiturgicoRepository != null) {

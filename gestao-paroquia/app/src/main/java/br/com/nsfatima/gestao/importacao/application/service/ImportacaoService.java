@@ -49,9 +49,9 @@ public class ImportacaoService {
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
                               ImportacaoFileParser importacaoFileParser,
                               AnoParoquialJpaRepository anoParoquialJpaRepository,
-                              MotorLiturgico liturgicalEngine,
+                              MotorLiturgico motorLiturgico,
                               CicloLiturgicoRepository cicloLiturgicoRepository,
-                              ProvisionamentoLiturgicoService liturgicalProvisioningService) {
+                              ProvisionamentoLiturgicoService provisionamentoLiturgicoService) {
         this.importacaoFileParser = importacaoFileParser;
         this.linhaExecutor = new ImportacaoLinhaExecutor(
                 adicionarMembroUseCase,
@@ -62,9 +62,9 @@ public class ImportacaoService {
                 unidadeTerritorialJpaRepository,
                 pastoralOficialRepository,
                 anoParoquialJpaRepository,
-                liturgicalEngine,
+                motorLiturgico,
                 cicloLiturgicoRepository,
-                liturgicalProvisioningService);
+                provisionamentoLiturgicoService);
     }
 
     /**

@@ -36,20 +36,20 @@ public class ProvisionamentoLiturgicoService {
 
     private final AnoLiturgicoRepository anoLiturgicoRepository;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
-    private final MotorLiturgico liturgicalEngine;
+    private final MotorLiturgico motorLiturgico;
     private final EventoJpaRepository eventoJpaRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
     private final SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository;
 
     public ProvisionamentoLiturgicoService(AnoLiturgicoRepository anoLiturgicoRepository,
                                         CicloLiturgicoRepository cicloLiturgicoRepository,
-                                        MotorLiturgico liturgicalEngine,
+                                        MotorLiturgico motorLiturgico,
                                         EventoJpaRepository eventoJpaRepository,
                                         UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                                         SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository) {
         this.anoLiturgicoRepository = anoLiturgicoRepository;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
-        this.liturgicalEngine = liturgicalEngine;
+        this.motorLiturgico = motorLiturgico;
         this.eventoJpaRepository = eventoJpaRepository;
         this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
         this.solenidadeLiturgicaJpaRepository = solenidadeLiturgicaJpaRepository;
@@ -69,7 +69,7 @@ public class ProvisionamentoLiturgicoService {
      */
     @Transactional
     public AnoLiturgicoEntity resolveAndEnsure(Instant targetDate) {
-        int anoRef = liturgicalEngine.resolveAnoLiturgico(targetDate);
+        int anoRef = motorLiturgico.resolveAnoLiturgico(targetDate);
         return ensureAnoLiturgicoEExiste(anoRef);
     }
 
@@ -81,7 +81,7 @@ public class ProvisionamentoLiturgicoService {
     private AnoLiturgicoEntity provisionNewLiturgicalYear(int year) {
         List<SolenidadeLiturgicaEntity> solenidadesDoBanco = solenidadeLiturgicaJpaRepository.findByAtivoTrue();
 
-        SaidaLiturgica output = liturgicalEngine.calcularAnoLiturgico(year, solenidadesDoBanco);
+        SaidaLiturgica output = motorLiturgico.calcularAnoLiturgico(year, solenidadesDoBanco);
 
         Instant inicioAdvento = output.dataInicio().atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant fimAnoLiturgico = output.dataFim().atTime(23, 59, 59).atZone(ZoneOffset.UTC).toInstant();

@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaFiltroReque
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.TaxaEventosExtraResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.GetTaxaEventosExtraUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.ObterTaxaEventosExtraUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ObterIndicadorRetrabalhoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ListAuditTrailUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,12 +34,12 @@ import java.util.UUID;
 @PreAuthorize("isAuthenticated()")
 public class AuditoriaEventoController {
 
-    private final GetTaxaEventosExtraUseCase getTaxaEventosExtraUseCase;
+    private final ObterTaxaEventosExtraUseCase getTaxaEventosExtraUseCase;
     private final ListAuditTrailUseCase listAuditTrailUseCase;
     private final ObterIndicadorRetrabalhoUseCase getIndicadorRetrabalhoUseCase;
 
     public AuditoriaEventoController(
-            GetTaxaEventosExtraUseCase getTaxaEventosExtraUseCase,
+            ObterTaxaEventosExtraUseCase getTaxaEventosExtraUseCase,
             ListAuditTrailUseCase listAuditTrailUseCase,
             ObterIndicadorRetrabalhoUseCase getIndicadorRetrabalhoUseCase) {
         this.getTaxaEventosExtraUseCase = getTaxaEventosExtraUseCase;

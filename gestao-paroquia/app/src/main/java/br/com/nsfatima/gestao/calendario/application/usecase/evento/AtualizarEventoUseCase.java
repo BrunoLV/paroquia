@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
-import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.UpdateEventoSolicitacaoAprovacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.AtualizarEventoSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
@@ -46,46 +46,46 @@ import java.util.UUID;
  * Caso de uso responsável por atualizar dados de evento, tratando autorização e fluxos de aprovação.
  */
 @Service
-public class UpdateEventoUseCase {
+public class AtualizarEventoUseCase {
 
     private final EventoDomainService domainService;
     private final EventoJpaRepository repository;
     private final EventoRecorrenciaJpaRepository recurrenceRepository;
-    private final EventoEnvolvidoJpaRepository involvementRepository;
+    private final EventoEnvolvidoJpaRepository envolvimentoRepository;
     private final EventoMapper mapper;
     private final EventoPatchAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
-    private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
+    private final AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase;
     private final ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase;
     private final ValidadorVinculoProjeto validadorVinculoProjeto;
     private final CadastroEventoMetricsPublisher metricsPublisher;
-    private final UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
+    private final AtualizarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
     private final EventoAuditPublisher auditPublisher;
-    private final ValidadorPrioridadeAgenda agendaPriorityValidatorService;
+    private final ValidadorPrioridadeAgenda validadorPrioridadeAgendaService;
     private final CacheManager cacheManager;
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
-    public UpdateEventoUseCase(
+    public AtualizarEventoUseCase(
             EventoDomainService domainService,
             EventoJpaRepository repository,
             EventoRecorrenciaJpaRepository recurrenceRepository,
-            EventoEnvolvidoJpaRepository involvementRepository,
+            EventoEnvolvidoJpaRepository envolvimentoRepository,
             EventoMapper mapper,
             EventoPatchAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
-            UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
+            AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase,
             ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase,
             ValidadorVinculoProjeto validadorVinculoProjeto,
             CadastroEventoMetricsPublisher metricsPublisher,
-            UpdateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
+            AtualizarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
             EventoAuditPublisher auditPublisher,
-            ValidadorPrioridadeAgenda agendaPriorityValidatorService,
+            ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
             CacheManager cacheManager,
             EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
         this.repository = repository;
         this.recurrenceRepository = recurrenceRepository;
-        this.involvementRepository = involvementRepository;
+        this.envolvimentoRepository = envolvimentoRepository;
         this.mapper = mapper;
         this.authorizationService = authorizationService;
         this.actorContextResolver = actorContextResolver;
@@ -95,7 +95,7 @@ public class UpdateEventoUseCase {
         this.metricsPublisher = metricsPublisher;
         this.aprovacaoRequestUseCase = aprovacaoRequestUseCase;
         this.auditPublisher = auditPublisher;
-        this.agendaPriorityValidatorService = agendaPriorityValidatorService;
+        this.validadorPrioridadeAgendaService = validadorPrioridadeAgendaService;
         this.cacheManager = cacheManager;
         this.eventoReservaIntegrationService = eventoReservaIntegrationService;
     }
@@ -218,7 +218,7 @@ public class UpdateEventoUseCase {
 
         // Busca manualmente o envolvimento para garantir resposta completa
         // (especialmente para consistência de carregamento EAGER)
-        List<EventoEnvolvidoEntity> involvement = involvementRepository.findByEventoId(saved.getId());
+        List<EventoEnvolvidoEntity> involvement = envolvimentoRepository.findByEventoId(saved.getId());
         saved.definirEnvolvidosCarregados(involvement);
 
         publishMetrics(entity, request);
@@ -309,7 +309,7 @@ public class UpdateEventoUseCase {
         UUID org = request.grupoParoquialResponsavelId() != null ? request.grupoParoquialResponsavelId() :
                 entity.getGrupoParoquialResponsavelId();
         List<UUID> part = request.participantes() != null ? request.participantes() :
-                involvementRepository.findByEventoId(entity.getId()).stream().map(
+                envolvimentoRepository.findByEventoId(entity.getId()).stream().map(
                         EventoEnvolvidoEntity::getGrupoParoquialId).toList();
 
         domainService.validateGrupoParoquialParticipantes(org, part);
@@ -330,7 +330,7 @@ public class UpdateEventoUseCase {
         UUID local = request.localId() != null ? request.localId() : entity.getLocalId();
         UUID igreja = request.igrejaVinculoId() != null ? request.igrejaVinculoId() : entity.getIgrejaVinculoId();
 
-        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validarPrioridadeEConflitos(
+        List<EventoEntity> autoCancel = validadorPrioridadeAgendaService.validarPrioridadeEConflitos(
                 cat,
                 inicio,
                 fim,
@@ -338,7 +338,7 @@ public class UpdateEventoUseCase {
                 igreja,
                 entity.getId(),
                 request.isBypassAgendaConflict());
-        agendaPriorityValidatorService.processarCancelamentosAutomaticos(
+        validadorPrioridadeAgendaService.processarCancelamentosAutomaticos(
                 autoCancel,
                 "Cancelado automaticamente devido a agendamento"
                 + " de Solenidade Global / Evento de Maior Prioridade");
@@ -393,10 +393,10 @@ public class UpdateEventoUseCase {
      * <p>
      * Exemplo de uso:
      * {@code
-     * UpdateEventoRequest request = useCase.restoreFromAprovacaoPayload(payload);
+     * UpdateEventoRequest request = useCase.restaurarDoPayloadAprovacao(payload);
      * }
      */
-    public UpdateEventoRequest restoreFromAprovacaoPayload(AprovacaoAcaoPayload payload) {
+    public UpdateEventoRequest restaurarDoPayloadAprovacao(AprovacaoAcaoPayload payload) {
         return new UpdateEventoRequest(payload.titulo(),
                 payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
 

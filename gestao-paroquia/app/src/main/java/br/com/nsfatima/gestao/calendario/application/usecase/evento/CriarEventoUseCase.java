@@ -1,13 +1,13 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
-import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CreateEventoSolicitacaoAprovacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CriarEventoSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
@@ -47,57 +47,57 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Use case responsible for creating new events, handling idempotency, authorization, and aprovacao flows.
+ * Caso de uso responsável por criar novos eventos, tratando idempotência, autorização e fluxos de aprovação.
  */
 @Service
-public class CreateEventoUseCase {
+public class CriarEventoUseCase {
 
     private final EventoDomainService domainService;
     private final EventoJpaRepository repository;
-    private final EventoEnvolvidoJpaRepository involvementRepository;
+    private final EventoEnvolvidoJpaRepository envolvimentoRepository;
     private final EventoMapper mapper;
     private final EventoIdempotencyService idempotencyService;
     private final EventoAuditPublisher auditPublisher;
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final EventoPatchAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
-    private final CreateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
-    private final UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase;
+    private final CriarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
+    private final AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase;
     private final ValidadorVinculoProjeto validadorVinculoProjeto;
     private final BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy;
     private final AnoParoquialJpaRepository anoParoquialRepository;
-    private final ValidadorPrioridadeAgenda agendaPriorityValidatorService;
+    private final ValidadorPrioridadeAgenda validadorPrioridadeAgendaService;
     private final CacheManager cacheManager;
-    private final MotorLiturgico liturgicalEngine;
+    private final MotorLiturgico motorLiturgico;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
-    private final ProvisionamentoLiturgicoService liturgicalProvisioningService;
+    private final ProvisionamentoLiturgicoService provisionamentoLiturgicoService;
 
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
-    public CreateEventoUseCase(
+    public CriarEventoUseCase(
             EventoDomainService domainService,
             EventoJpaRepository repository,
-            EventoEnvolvidoJpaRepository involvementRepository,
+            EventoEnvolvidoJpaRepository envolvimentoRepository,
             EventoMapper mapper,
             EventoIdempotencyService idempotencyService,
             EventoAuditPublisher auditPublisher,
             CadastroEventoMetricsPublisher metricsPublisher,
             EventoPatchAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
-            CreateEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
-            UpdateEventoEnvolvidosUseCase updateEnvolvidosUseCase,
+            CriarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
+            AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase,
             ValidadorVinculoProjeto validadorVinculoProjeto,
             BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy,
             AnoParoquialJpaRepository anoParoquialRepository,
-            ValidadorPrioridadeAgenda agendaPriorityValidatorService,
+            ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
             CacheManager cacheManager,
-            MotorLiturgico liturgicalEngine,
+            MotorLiturgico motorLiturgico,
             CicloLiturgicoRepository cicloLiturgicoRepository,
-            ProvisionamentoLiturgicoService liturgicalProvisioningService,
+            ProvisionamentoLiturgicoService provisionamentoLiturgicoService,
             EventoReservaIntegrationService eventoReservaIntegrationService) {
         this.domainService = domainService;
         this.repository = repository;
-        this.involvementRepository = involvementRepository;
+        this.envolvimentoRepository = envolvimentoRepository;
         this.mapper = mapper;
         this.idempotencyService = idempotencyService;
         this.auditPublisher = auditPublisher;
@@ -109,24 +109,24 @@ public class CreateEventoUseCase {
         this.validadorVinculoProjeto = validadorVinculoProjeto;
         this.bloqueioAnoParoquialPolicy = bloqueioAnoParoquialPolicy;
         this.anoParoquialRepository = anoParoquialRepository;
-        this.agendaPriorityValidatorService = agendaPriorityValidatorService;
+        this.validadorPrioridadeAgendaService = validadorPrioridadeAgendaService;
         this.cacheManager = cacheManager;
-        this.liturgicalEngine = liturgicalEngine;
+        this.motorLiturgico = motorLiturgico;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
-        this.liturgicalProvisioningService = liturgicalProvisioningService;
+        this.provisionamentoLiturgicoService = provisionamentoLiturgicoService;
         this.eventoReservaIntegrationService = eventoReservaIntegrationService;
     }
 
     /**
-     * Executes the creation request. Returns 201 CREATED with the event or 202 ACCEPTED if aprovacao is needed.
+     * Executa a requisição de criação. Retorna 201 CREATED com o evento ou 202 ACCEPTED se aprovação for necessária.
      * <p>
-     * Usage Example:
-     * useCase.execute("idemp-001", new CreateEventoRequest("Title", "Desc", ...));
+     * Exemplo de uso:
+     * useCase.execute("idemp-001", new CriarEventoRequest("Titulo", "Descricao", ...));
      */
     @Transactional
-    public EventoOperationResult execute(String idempotencyKey, CreateEventoRequest request) {
-        validateIdempotencyKey(idempotencyKey);
-        validateCreationRequest(request);
+    public EventoOperationResult execute(String idempotencyKey, CriarEventoRequest request) {
+        validarChaveIdempotencia(idempotencyKey);
+        validarRequisicaoCriacao(request);
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         if (request.isBypassAgendaConflict()) {
@@ -142,26 +142,26 @@ public class CreateEventoUseCase {
 
         }
 
-        return new EventoOperationResult.Success(createImmediate(idempotencyKey,
+        return new EventoOperationResult.Success(criarImediato(idempotencyKey,
                 request, actorContext.actor()), HttpStatus.CREATED);
 
     }
 
     /**
-     * Executes a creation that has already been approved through the aprovacao flow.
+     * Executa uma criação que já foi aprovada através do fluxo de aprovação.
      */
     @Transactional
-    public EventoResponse executeApprovedCreation(CreateEventoRequest request, String idempotencyKey) {
-        return createImmediate(idempotencyKey, request, "fluxo-aprovacao");
+    public EventoResponse executeApprovedCreation(CriarEventoRequest request, String idempotencyKey) {
+        return criarImediato(idempotencyKey, request, "fluxo-aprovacao");
     }
 
-    private void validateIdempotencyKey(String key) {
+    private void validarChaveIdempotencia(String key) {
         if (key == null || key.isBlank()) {
             throw new IllegalArgumentException("Cabeçalho Idempotency-Key é obrigatório");
         }
     }
 
-    private void validateCreationRequest(CreateEventoRequest request) {
+    private void validarRequisicaoCriacao(CriarEventoRequest request) {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
         validarBloqueioAnoParoquial(request.inicio(), status);
@@ -169,7 +169,7 @@ public class CreateEventoUseCase {
                 request.grupoParoquialResponsavelId(), request.participantes());
         validadorVinculoProjeto.validarEvento(request.projetoId(), request.inicio(), request.fim());
 
-        List<EventoEntity> autoCancel = agendaPriorityValidatorService.validarPrioridadeEConflitos(
+        List<EventoEntity> autoCancel = validadorPrioridadeAgendaService.validarPrioridadeEConflitos(
                 request.categoria(),
                 request.inicio(),
                 request.fim(),
@@ -177,7 +177,7 @@ public class CreateEventoUseCase {
                 request.igrejaVinculoId(),
                 null,
                 request.isBypassAgendaConflict());
-        agendaPriorityValidatorService.processarCancelamentosAutomaticos(
+        validadorPrioridadeAgendaService.processarCancelamentosAutomaticos(
                 autoCancel,
                 "Cancelado automaticamente devido a agendamento"
                 + " de Solenidade Global / Evento de Maior Prioridade");
@@ -191,37 +191,37 @@ public class CreateEventoUseCase {
         bloqueioAnoParoquialPolicy.assertPermitido(inicio, statusAno, statusEvento);
     }
 
-    private EventoResponse createImmediate(String idempotencyKey, CreateEventoRequest request, String actor) {
-        validateCreationRequest(request);
+    private EventoResponse criarImediato(String idempotencyKey, CriarEventoRequest request, String actor) {
+        validarRequisicaoCriacao(request);
         try {
             EventoIdempotencyService.IdempotencyResult result = idempotencyService.execute(idempotencyKey,
-                    request, () -> persistNewEvent(request));
+                    request, () -> persistirNovoEvento(request));
 
-            publishCreationOutcomes(result, request.inicio(), actor);
-            evictProjectCache(request.projetoId());
+            publicarResultadosCriacao(result, request.inicio(), actor);
+            evictCacheProjeto(request.projetoId());
             return result.response();
         } catch (RuntimeException ex) {
-            handleCreationFailure(actor, ex);
+            tratarFalhaCriacao(actor, ex);
             throw ex;
         }
     }
 
-    private void evictProjectCache(UUID projetoId) {
+    private void evictCacheProjeto(UUID projetoId) {
         if (projetoId != null) {
             Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE))
                     .ifPresent(cache -> cache.evict(projetoId));
         }
     }
 
-    private EventoResponse persistNewEvent(CreateEventoRequest request) {
+    private EventoResponse persistirNovoEvento(CriarEventoRequest request) {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         EventoEntity entity = mapper.toNewEntity(request, status);
 
-        if (liturgicalProvisioningService != null) {
-            AnoLiturgicoEntity anoLiturgico = liturgicalProvisioningService.resolveAndEnsure(request.inicio());
+        if (provisionamentoLiturgicoService != null) {
+            AnoLiturgicoEntity anoLiturgico = provisionamentoLiturgicoService.resolveAndEnsure(request.inicio());
             entity.setAnoLiturgicoRef(anoLiturgico.getAno());
-        } else if (liturgicalEngine != null) {
-            int anoLiturgicoRef = liturgicalEngine.resolveAnoLiturgico(request.inicio());
+        } else if (motorLiturgico != null) {
+            int anoLiturgicoRef = motorLiturgico.resolveAnoLiturgico(request.inicio());
             entity.setAnoLiturgicoRef(anoLiturgicoRef);
         }
         if (cicloLiturgicoRepository != null) {
@@ -256,15 +256,15 @@ public class CreateEventoUseCase {
             updateEnvolvidosUseCase.execute(saved.getId(), envolvidos);
         }
 
-        // Manually fetch involvement to ensure response is complete
+        // Busca manualmente o envolvimento para garantir que a resposta esteja completa
         List<EventoEnvolvidoEntity> involvement =
-                involvementRepository.findByEventoId(saved.getId());
+                envolvimentoRepository.findByEventoId(saved.getId());
         saved.definirEnvolvidosCarregados(involvement);
 
         return mapper.toResponse(saved);
     }
 
-    private void publishCreationOutcomes(EventoIdempotencyService.IdempotencyResult result,
+    private void publicarResultadosCriacao(EventoIdempotencyService.IdempotencyResult result,
                                          Instant inicio, String actor) {
 
         EventoResponse response = result.response();
@@ -277,26 +277,26 @@ public class CreateEventoUseCase {
                 actor, response.id().toString(), result.replay(), response.estadoConflito());
     }
 
-    private void handleCreationFailure(String actor, RuntimeException ex) {
+    private void tratarFalhaCriacao(String actor, RuntimeException ex) {
         metricsPublisher.publishCreateFailure("NEGOCIO_OU_VALIDACAO");
         auditPublisher.publishCreateFailure(actor, "NEGOCIO_OU_VALIDACAO", ex.getMessage());
     }
 
     /**
-     * Reconstructs the original creation request from stored aprovacao data to allow for final execution after
-     * governance vetting.
+     * Reconstrói a requisição de criação original a partir dos dados de aprovação armazenados, permitindo a
+     * execução final após a avaliação de governança.
      * <p>
-     * Usage Example:
+     * Exemplo de uso:
      * {@code
-     * CreateEventoRequest request = useCase.restoreFromAprovacaoPayload(payload);
+     * CriarEventoRequest request = useCase.restaurarDoPayloadAprovacao(payload);
      * }
      */
-    public CreateEventoRequest restoreFromAprovacaoPayload(AprovacaoAcaoPayload payload) {
-        Objects.requireNonNull(payload.grupoParoquialResponsavelId(), "grupoParoquialResponsavelId is required");
-        Objects.requireNonNull(payload.inicio(), "inicio is required");
-        Objects.requireNonNull(payload.fim(), "fim is required");
+    public CriarEventoRequest restaurarDoPayloadAprovacao(AprovacaoAcaoPayload payload) {
+        Objects.requireNonNull(payload.grupoParoquialResponsavelId(), "grupoParoquialResponsavelId é obrigatório");
+        Objects.requireNonNull(payload.inicio(), "inicio é obrigatório");
+        Objects.requireNonNull(payload.fim(), "fim é obrigatório");
 
-        return new CreateEventoRequest(payload.titulo(),
+        return new CriarEventoRequest(payload.titulo(),
                 payload.descricao(), payload.categoria(), payload.grupoParoquialResponsavelId(),
 
                 payload.projetoId(),

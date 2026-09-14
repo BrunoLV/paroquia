@@ -1,17 +1,17 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoResilienteRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoAprovacaoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelEventoUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.CreateEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelarEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.CriarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListEventosUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.UpdateEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.AtualizarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.application.service.EventoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -53,10 +53,10 @@ import java.util.UUID;
 @PreAuthorize("isAuthenticated()")
 public class EventoController {
 
-    private final CreateEventoUseCase createEventoUseCase;
+    private final CriarEventoUseCase createEventoUseCase;
     private final ListEventosUseCase listEventosUseCase;
-    private final UpdateEventoUseCase updateEventoUseCase;
-    private final CancelEventoUseCase cancelEventoUseCase;
+    private final AtualizarEventoUseCase updateEventoUseCase;
+    private final CancelarEventoUseCase cancelEventoUseCase;
     private final EventoService eventoService;
     private final EventoMapper eventoMapper;
     private final EventoActorContextResolver actorContextResolver;
@@ -64,10 +64,10 @@ public class EventoController {
     private final CadastroEventoMetricsPublisher cadastroEventoMetricsPublisher;
 
     public EventoController(
-            CreateEventoUseCase createEventoUseCase,
+            CriarEventoUseCase createEventoUseCase,
             ListEventosUseCase listEventosUseCase,
-            UpdateEventoUseCase updateEventoUseCase,
-            CancelEventoUseCase cancelEventoUseCase,
+            AtualizarEventoUseCase updateEventoUseCase,
+            CancelarEventoUseCase cancelEventoUseCase,
             EventoService eventoService,
             EventoMapper eventoMapper,
             EventoActorContextResolver actorContextResolver,
@@ -90,7 +90,7 @@ public class EventoController {
      * <p>
      * Usage Example:
      * {@code
-     * CreateEventoRequest request = new CreateEventoRequest("Missa de Sábado", Instant.now(), ...);
+     * CriarEventoRequest request = new CriarEventoRequest("Missa de Sábado", Instant.now(), ...);
      * ResponseEntity<Object> response = controller.create("idempotency-key", request);
      * }
      */
@@ -110,7 +110,7 @@ public class EventoController {
             @Parameter(description = "Chave de idempotência para garantir que a operação não seja repetida " +
                     "acidentalmente")
             @RequestHeader("Idempotency-Key") String idempotencyKey,
-            @RequestBody @Valid CreateEventoRequest request) {
+            @RequestBody @Valid CriarEventoRequest request) {
         EventoOperationResult result = createEventoUseCase.execute(idempotencyKey, request);
         return ResponseEntity.status(result.status()).body(result.body());
     }
@@ -215,7 +215,7 @@ public class EventoController {
      * <p>
      * Usage Example:
      * {@code
-     * controller.cancel(eventoId, new CancelEventoRequest("Conflito de agenda"));
+     * controller.cancel(eventoId, new CancelarEventoRequest("Conflito de agenda"));
      * }
      *
      * @deprecated Utilize POST /{eventoId}/cancel para maior resiliência.
@@ -234,7 +234,7 @@ public class EventoController {
     @SuppressWarnings("null")
     public ResponseEntity<Object> cancel(
             @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
-            @RequestBody @Valid CancelEventoRequest request) {
+            @RequestBody @Valid CancelarEventoRequest request) {
         EventoOperationResult result = cancelEventoUseCase.execute(eventoId, request);
         return ResponseEntity.status(result.status())
                 .header("Warning", "299 - \"This endpoint is deprecated\"")
@@ -246,7 +246,7 @@ public class EventoController {
      * <p>
      * Usage Example:
      * {@code
-     * controller.cancelResilient(eventoId, new CancelarEventoRequest("Necessidade urgente de manutenção"));
+     * controller.cancelResilient(eventoId, new CancelarEventoResilienteRequest("Necessidade urgente de manutenção"));
      * }
      */
     @PostMapping("/{eventoId}/cancel")
@@ -260,8 +260,8 @@ public class EventoController {
     @SuppressWarnings("null")
     public ResponseEntity<Object> cancelResilient(
             @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
-            @RequestBody @Valid CancelarEventoRequest request) {
-        var legacyRequest = new CancelEventoRequest(request.motivo());
+            @RequestBody @Valid CancelarEventoResilienteRequest request) {
+        var legacyRequest = new CancelarEventoRequest(request.motivo());
         EventoOperationResult result = cancelEventoUseCase.execute(eventoId, legacyRequest);
         return ResponseEntity.status(result.status()).body(result.body());
     }

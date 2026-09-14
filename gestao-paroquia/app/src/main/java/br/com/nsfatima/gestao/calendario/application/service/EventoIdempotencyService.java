@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
@@ -57,7 +57,7 @@ public class EventoIdempotencyService {
      * @throws IdempotencyConflictException se a chave já foi usada com um payload
      *                                        de hash diferente do atual
      */
-    public IdempotencyResult execute(String idempotencyKey, CreateEventoRequest request,
+    public IdempotencyResult execute(String idempotencyKey, CriarEventoRequest request,
                                      Supplier<EventoResponse> createAction) {
         String key = Objects.requireNonNull(idempotencyKey);
         String requestHash = hashRequest(request);
@@ -87,7 +87,7 @@ public class EventoIdempotencyService {
         return new IdempotencyResult(created, false);
     }
 
-    private String hashRequest(CreateEventoRequest request) {
+    private String hashRequest(CriarEventoRequest request) {
         String canonical = String.join("|",
                 nullSafe(request.titulo()),
                 nullSafe(request.descricao()),

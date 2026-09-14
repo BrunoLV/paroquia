@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /**
  * Converte entre {@link EventoEntity} (persistência) e os DTOs da API de eventos
- * ({@link CreateEventoRequest}, {@link UpdateEventoRequest}, {@link EventoResponse}), isolando o
+ * ({@link CriarEventoRequest}, {@link UpdateEventoRequest}, {@link EventoResponse}), isolando o
  * restante da aplicação dos detalhes de mapeamento — incluindo a conversão tolerante de status
  * legado (via {@link EventoStatusResponse#fromStoredValue}), a resolução do nome do projeto
  * vinculado e a extração dos participantes de apoio a partir dos envolvidos do evento.
@@ -45,7 +45,7 @@ public class EventoMapper {
      *     aprovação, conforme decidido pelo fluxo de aprovação)
      * @return nova entidade de evento pronta para persistência
      */
-    public EventoEntity toNewEntity(CreateEventoRequest request, EventoStatusInput status) {
+    public EventoEntity toNewEntity(CriarEventoRequest request, EventoStatusInput status) {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo(request.titulo());

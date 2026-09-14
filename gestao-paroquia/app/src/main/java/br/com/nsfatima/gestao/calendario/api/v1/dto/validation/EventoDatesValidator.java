@@ -10,7 +10,7 @@ import java.time.Instant;
  * Implementa a restrição {@link ValidEventoDates} usando reflexão: invoca os métodos de acesso
  * {@code inicio()} e {@code fim()} do objeto validado (tipicamente um record de DTO de evento) e
  * confirma que {@code fim} é estritamente posterior a {@code inicio}. Usar reflexão em vez de uma
- * interface comum permite aplicar a mesma anotação a DTOs distintos ({@code CreateEventoRequest},
+ * interface comum permite aplicar a mesma anotação a DTOs distintos ({@code CriarEventoRequest},
  * {@code UpdateEventoRequest}) sem exigir uma hierarquia de tipos compartilhada entre eles.
  */
 public class EventoDatesValidator implements ConstraintValidator<ValidEventoDates, Object> {

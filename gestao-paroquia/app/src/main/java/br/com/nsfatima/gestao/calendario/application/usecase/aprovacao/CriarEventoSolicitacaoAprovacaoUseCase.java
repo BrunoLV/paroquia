@@ -6,8 +6,8 @@ import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadM
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoAprovacaoPendenteResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -17,21 +17,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 /**
- * Atualiza o status de homologação ou solicitação de ajuste em evento pendente.
+ * Abre solicitação formal de aprovação para evento submetido por coordenação pastoral.
  */
 @Service
-public class UpdateEventoSolicitacaoAprovacaoUseCase {
+public class CriarEventoSolicitacaoAprovacaoUseCase {
 
     private final AprovacaoJpaRepository aprovacaoRepository;
     private final EventoActorContextResolver actorContextResolver;
     private final EventoAuditPublisher auditPublisher;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
-    public UpdateEventoSolicitacaoAprovacaoUseCase(
+    public CriarEventoSolicitacaoAprovacaoUseCase(
             AprovacaoJpaRepository aprovacaoRepository,
             EventoActorContextResolver actorContextResolver,
             EventoAuditPublisher auditPublisher,
@@ -43,22 +42,21 @@ public class UpdateEventoSolicitacaoAprovacaoUseCase {
     }
 
     /**
-     * Submits a request to modify critical fields of an existing event, ensuring that changes to dates or core
-     * details are vetted by the Parish Council.
+     * Records a formal request to create a new event that requires higher-level authorization due to its sensitivity
+     * or the proposer's role.
      * <p>
      * Usage Example:
      * {@code
-     * useCase.execute(eventoId, updateRequest);
+     * useCase.execute("idempotency-key", createRequest);
      * }
      */
     @Transactional
-    public EventoAprovacaoPendenteResponse execute(UUID eventoId, UpdateEventoRequest request) {
+    public EventoAprovacaoPendenteResponse execute(String idempotencyKey, CriarEventoRequest request) {
         EventoActorContext context = actorContextResolver.resolveRequired();
 
         AprovacaoEntity entity = new AprovacaoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setEventoId(eventoId);
-        entity.setTipoSolicitacao(TipoSolicitacaoInput.EDICAO_EVENTO.name());
+        entity.setTipoSolicitacao(TipoSolicitacaoInput.CRIACAO_EVENTO.name());
         entity.setStatus(AprovacaoStatus.PENDENTE);
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
@@ -66,17 +64,12 @@ public class UpdateEventoSolicitacaoAprovacaoUseCase {
         entity.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
 
-        AprovacaoAcaoPayload payload = buildPayload(eventoId, request);
+        AprovacaoAcaoPayload payload = buildPayload(idempotencyKey, request);
         entity.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
 
         aprovacaoRepository.save(entity);
 
-        auditPublisher.publish(context.actor(),
-                "aprovacao-decisao-solicitacao", entity.getId().toString(), "sucesso", Map.of(
-
-                        "tipoSolicitacao", entity.getTipoSolicitacao(),
-                        "targetEventId", eventoId
-                ));
+        auditPublisher.publish(context.actor(), "aprovacao-decisao-solicitacao", entity.getId().toString(), "sucesso");
 
         return new EventoAprovacaoPendenteResponse(
                 entity.getId(),
@@ -84,10 +77,10 @@ public class UpdateEventoSolicitacaoAprovacaoUseCase {
                 "APROVACAO_PENDENTE");
     }
 
-    private AprovacaoAcaoPayload buildPayload(UUID eventoId, UpdateEventoRequest request) {
+    private AprovacaoAcaoPayload buildPayload(String idempotencyKey, CriarEventoRequest request) {
         return new AprovacaoAcaoPayload(
-                null, // idempotencyKey
-                eventoId,
+                idempotencyKey,
+                null, // eventoId
                 request.titulo(),
                 request.descricao(),
                 request.categoria(),
@@ -95,9 +88,9 @@ public class UpdateEventoSolicitacaoAprovacaoUseCase {
                 request.projetoId(),
                 request.inicio(),
                 request.fim(),
-                null, // status
+                request.status(),
                 request.adicionadoExtraJustificativa(),
-                request.canceladoMotivo(),
+                null, // canceladoMotivo
                 null, // motivo
                 request.participantes(),
                 request.localId(),

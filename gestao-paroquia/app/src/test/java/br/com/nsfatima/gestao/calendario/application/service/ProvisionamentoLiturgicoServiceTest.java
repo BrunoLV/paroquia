@@ -47,16 +47,16 @@ class LiturgicalProvisioningServiceTest {
     @Mock
     private SolenidadeLiturgicaJpaRepository solenidadeLiturgicaJpaRepository;
 
-    private MotorLiturgico liturgicalEngine;
+    private MotorLiturgico motorLiturgico;
     private ProvisionamentoLiturgicoService service;
 
     @BeforeEach
     void setUp() {
-        liturgicalEngine = new MotorLiturgico();
+        motorLiturgico = new MotorLiturgico();
         service = new ProvisionamentoLiturgicoService(
                 anoLiturgicoRepository,
                 cicloLiturgicoRepository,
-                liturgicalEngine,
+                motorLiturgico,
                 eventoJpaRepository,
                 unidadeTerritorialJpaRepository,
                 solenidadeLiturgicaJpaRepository

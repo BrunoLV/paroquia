@@ -33,7 +33,7 @@ class EventoParticipantesIntegrationTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Autowired
-    private EventoEnvolvidoJpaRepository involvementRepository;
+    private EventoEnvolvidoJpaRepository envolvimentoRepository;
 
     @Test
     @DisplayName("Should return participants in response when creating event")
@@ -85,7 +85,7 @@ class EventoParticipantesIntegrationTest {
         inv.setEventoId(eventoId);
         inv.setGrupoParoquialId(UUID.fromString(initialParticipanteId));
         inv.setPapelParticipacao(PapelEnvolvido.APOIO);
-        involvementRepository.save(inv);
+        envolvimentoRepository.save(inv);
 
         // 2. Perform update
         String payload = """

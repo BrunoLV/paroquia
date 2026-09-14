@@ -19,14 +19,14 @@ import java.util.UUID;
  * Calcula a proporção de eventos extraordinários em relação à programação ordinária.
  */
 @Service
-public class GetTaxaEventosExtraUseCase {
+public class ObterTaxaEventosExtraUseCase {
 
     private static final int TAXA_SCALE = 4;
 
     private final EventoJpaRepository eventoJpaRepository;
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
 
-    public GetTaxaEventosExtraUseCase(
+    public ObterTaxaEventosExtraUseCase(
             EventoJpaRepository eventoJpaRepository,
             PeriodoOperacionalPolicy periodoOperacionalPolicy) {
         this.eventoJpaRepository = eventoJpaRepository;

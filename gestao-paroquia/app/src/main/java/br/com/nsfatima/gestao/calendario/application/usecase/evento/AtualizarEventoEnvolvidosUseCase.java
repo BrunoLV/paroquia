@@ -14,11 +14,11 @@ import java.util.UUID;
  * Atualiza o rol de pastorais, movimentos e comissões corresponsáveis pelo evento.
  */
 @Service
-public class UpdateEventoEnvolvidosUseCase {
+public class AtualizarEventoEnvolvidosUseCase {
 
     private final EventoEnvolvidoJpaRepository eventoEnvolvidoJpaRepository;
 
-    public UpdateEventoEnvolvidosUseCase(EventoEnvolvidoJpaRepository eventoEnvolvidoJpaRepository) {
+    public AtualizarEventoEnvolvidosUseCase(EventoEnvolvidoJpaRepository eventoEnvolvidoJpaRepository) {
         this.eventoEnvolvidoJpaRepository = eventoEnvolvidoJpaRepository;
     }
 

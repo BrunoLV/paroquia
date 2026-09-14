@@ -14,7 +14,7 @@
  *
  * <p>Criar/atualizar/cancelar um evento pode desviar para o fluxo de aprovação do contexto
  * {@code aprovacao} quando o ator não tem alçada suficiente ou a mudança é sensível (ver
- * {@code CreateEventoUseCase}/{@code UpdateEventoUseCase}/{@code CancelEventoUseCase} e as
+ * {@code CriarEventoUseCase}/{@code AtualizarEventoUseCase}/{@code CancelarEventoUseCase} e as
  * estratégias em {@code application.usecase.aprovacao.strategy}).
  *
  * <p>Ciclo de vida de status do evento ({@code EventoStatusInput}/{@code EventoStatusResponse}):

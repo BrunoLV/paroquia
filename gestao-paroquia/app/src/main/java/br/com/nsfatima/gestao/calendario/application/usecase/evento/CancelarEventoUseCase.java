@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadM
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelamentoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoCanceladoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
@@ -43,7 +43,7 @@ import java.util.UUID;
  * Use case for cancelling an event, either immediately or via an aprovacao flow.
  */
 @Service
-public class CancelEventoUseCase {
+public class CancelarEventoUseCase {
 
     private final EventoJpaRepository eventoJpaRepository;
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
@@ -56,7 +56,7 @@ public class CancelEventoUseCase {
     private final CacheManager cacheManager;
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
 
-    public CancelEventoUseCase(
+    public CancelarEventoUseCase(
             EventoJpaRepository eventoJpaRepository,
             AprovacaoJpaRepository aprovacaoJpaRepository,
             EventoActorContextResolver actorContextResolver,
@@ -83,10 +83,10 @@ public class CancelEventoUseCase {
      * Attempts to cancel an event. Returns 200 OK for immediate cancellation or 202 ACCEPTED if aprovacao is needed.
      * <p>
      * Usage Example:
-     * useCase.execute(id, new CancelEventoRequest("Personal reasons"));
+     * useCase.execute(id, new CancelarEventoRequest("Personal reasons"));
      */
     @Transactional
-    public EventoOperationResult execute(UUID eventoId, CancelEventoRequest request) {
+    public EventoOperationResult execute(UUID eventoId, CancelarEventoRequest request) {
         EventoEntity evento = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
@@ -135,7 +135,7 @@ public class CancelEventoUseCase {
     }
 
     private EventoOperationResult processImmediate(EventoEntity evento,
-                                                   CancelEventoRequest request, EventoActorContext actorContext) {
+                                                   CancelarEventoRequest request, EventoActorContext actorContext) {
 
         EventoCanceladoResponse response = applyCancellation(evento,
                 request.motivo(), actorContext.actor(), actorContext.usuarioId(), "sucesso");
@@ -145,7 +145,7 @@ public class CancelEventoUseCase {
     }
 
     private EventoOperationResult processAprovacao(EventoEntity evento,
-                                                  CancelEventoRequest request, EventoActorContext actorContext) {
+                                                  CancelarEventoRequest request, EventoActorContext actorContext) {
 
         CancelamentoPendenteResponse response = criarAprovacaoPendente(evento, request, actorContext);
         metricsPublisher.publishCancellationFlow("PENDENTE_CREATED", "PENDENTE");
@@ -176,7 +176,7 @@ public class CancelEventoUseCase {
                 "motivo", motivo,
                 "tipoObservacao", TipoObservacaoInput.CANCELAMENTO.name()));
 
-        evictProjectCache(saved.getProjetoId());
+        evictCacheProjeto(saved.getProjetoId());
 
         return new EventoCanceladoResponse(saved.getId(),
                 saved.getStatus(), saved.getCanceladoMotivo(), saved.getTitulo(),
@@ -184,7 +184,7 @@ public class CancelEventoUseCase {
                 saved.getInicioUtc(), saved.getFimUtc(), saved.getGrupoParoquialResponsavelId());
     }
 
-    private void evictProjectCache(UUID projetoId) {
+    private void evictCacheProjeto(UUID projetoId) {
         if (projetoId != null) {
             Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE))
                     .ifPresent(cache -> cache.evict(projetoId));
@@ -192,7 +192,7 @@ public class CancelEventoUseCase {
     }
 
     private CancelamentoPendenteResponse criarAprovacaoPendente(EventoEntity evento,
-                                                               CancelEventoRequest request,
+                                                               CancelarEventoRequest request,
                                                                EventoActorContext actorContext) {
 
         AprovacaoEntity aprovacao = new AprovacaoEntity();

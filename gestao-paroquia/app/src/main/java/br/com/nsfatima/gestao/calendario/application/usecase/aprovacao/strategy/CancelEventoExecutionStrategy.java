@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadM
 import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoCanceladoResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -25,12 +25,12 @@ import java.util.UUID;
 @Component
 public class CancelEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
-    private final CancelEventoUseCase cancelEventoUseCase;
+    private final CancelarEventoUseCase cancelEventoUseCase;
     private final EventoJpaRepository eventoRepository;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     public CancelEventoExecutionStrategy(
-            CancelEventoUseCase cancelEventoUseCase,
+            CancelarEventoUseCase cancelEventoUseCase,
             EventoJpaRepository eventoRepository,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
         this.cancelEventoUseCase = cancelEventoUseCase;

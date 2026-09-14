@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadM
 import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.UpdateEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.AtualizarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -24,12 +24,12 @@ import java.util.UUID;
 @Component
 public class UpdateEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
-    private final UpdateEventoUseCase updateEventoUseCase;
+    private final AtualizarEventoUseCase updateEventoUseCase;
     private final EventoJpaRepository eventoRepository;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     public UpdateEventoExecutionStrategy(
-            UpdateEventoUseCase updateEventoUseCase,
+            AtualizarEventoUseCase updateEventoUseCase,
             EventoJpaRepository eventoRepository,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
         this.updateEventoUseCase = updateEventoUseCase;
@@ -73,7 +73,7 @@ public class UpdateEventoExecutionStrategy implements EstrategiaExecucaoAprovaca
 
         EventoResponse response = updateEventoUseCase.executeApprovedUpdate(
                 eventoId,
-                updateEventoUseCase.restoreFromAprovacaoPayload(payload));
+                updateEventoUseCase.restaurarDoPayloadAprovacao(payload));
 
         aprovacao.setEventoId(response.id());
 

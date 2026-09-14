@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.dto.evento;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CreateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import jakarta.validation.ConstraintViolation;
@@ -29,10 +29,10 @@ class EventoDtoValidationTest {
     }
 
     @Test
-    @DisplayName("CreateEventoRequest: should fail when title is too long")
+    @DisplayName("CriarEventoRequest: should fail when title is too long")
     void createEventoRequest_TitleTooLong() {
         String longTitle = "A".repeat(161);
-        CreateEventoRequest request = new CreateEventoRequest(
+        CriarEventoRequest request = new CriarEventoRequest(
                 longTitle,
                 "Descricao",
                 null,
@@ -46,16 +46,16 @@ class EventoDtoValidationTest {
                 null
         );
 
-        Set<ConstraintViolation<CreateEventoRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CriarEventoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for long title");
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("titulo")));
     }
 
     @Test
-    @DisplayName("CreateEventoRequest: should fail when description is too long")
+    @DisplayName("CriarEventoRequest: should fail when description is too long")
     void createEventoRequest_DescriptionTooLong() {
         String longDescription = "A".repeat(4001);
-        CreateEventoRequest request = new CreateEventoRequest(
+        CriarEventoRequest request = new CriarEventoRequest(
                 "Titulo",
                 longDescription,
                 null,
@@ -69,7 +69,7 @@ class EventoDtoValidationTest {
                 null
         );
 
-        Set<ConstraintViolation<CreateEventoRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CriarEventoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for long description");
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("descricao")));
     }
@@ -124,10 +124,10 @@ class EventoDtoValidationTest {
     }
 
     @Test
-    @DisplayName("CreateEventoRequest: should fail when end date is before start date")
+    @DisplayName("CriarEventoRequest: should fail when end date is before start date")
     void createEventoRequest_EndBeforeStart() {
         Instant now = Instant.now();
-        CreateEventoRequest request = new CreateEventoRequest(
+        CriarEventoRequest request = new CriarEventoRequest(
                 "Titulo",
                 "Descricao",
                 null,
@@ -141,14 +141,14 @@ class EventoDtoValidationTest {
                 null
         );
 
-        Set<ConstraintViolation<CreateEventoRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CriarEventoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for invalid dates");
     }
 
     @Test
-    @DisplayName("CreateEventoRequest e UpdateEventoRequest: devem suportar campo bypassAgendaConflict")
+    @DisplayName("CriarEventoRequest e UpdateEventoRequest: devem suportar campo bypassAgendaConflict")
     void dto_BypassAgendaConflictField() {
-        CreateEventoRequest createReq = new CreateEventoRequest(
+        CriarEventoRequest createReq = new CriarEventoRequest(
                 "Titulo", "Desc", null, UUID.randomUUID(), null, null, null,
                 Instant.now(), Instant.now().plusSeconds(3600), EventoStatusInput.RASCUNHO,
                 null, null, true

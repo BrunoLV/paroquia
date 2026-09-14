@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 @ValidEventoDates
 @Schema(description = "Solicitação para criação de um novo evento")
-public record CreateEventoRequest(
+public record CriarEventoRequest(
         @Schema(description = "Título do evento", example = "Missa de Domingo")
         @NotBlank @Size(max = 160) String titulo,
 
@@ -63,7 +63,7 @@ public record CreateEventoRequest(
         @Schema(description = "Lista de IDs dos ativos patrimoniais alocados para o evento")
         List<UUID> ativoIds) {
 
-    public CreateEventoRequest(
+    public CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
@@ -86,7 +86,7 @@ public record CreateEventoRequest(
      * compatibilidade com chamadores anteriores à introdução desses campos. Assume que o evento não
      * possui vínculo de igreja específico e que o conflito de agenda não deve ser ignorado.
      */
-    public CreateEventoRequest(
+    public CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
@@ -108,7 +108,7 @@ public record CreateEventoRequest(
      * Construtor legado sem {@code bypassAgendaConflict}, mantido para compatibilidade com chamadores
      * anteriores à introdução da flag de bypass. Assume que o conflito de agenda não deve ser ignorado.
      */
-    public CreateEventoRequest(
+    public CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,

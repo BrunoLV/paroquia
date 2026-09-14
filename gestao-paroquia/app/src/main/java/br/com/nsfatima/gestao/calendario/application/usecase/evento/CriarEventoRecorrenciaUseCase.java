@@ -27,7 +27,7 @@ import java.util.UUID;
  * Use case responsible for registering a recurrence rule for an existing event and generating instances.
  */
 @Service
-public class CreateEventoRecorrenciaUseCase {
+public class CriarEventoRecorrenciaUseCase {
 
     private final EventoRecorrenciaJpaRepository recurrenceRepository;
     private final EventoJpaRepository eventRepository;
@@ -36,7 +36,7 @@ public class CreateEventoRecorrenciaUseCase {
     private final AnoParoquialJpaRepository anoParoquialRepository;
     private final ValidadorVinculoProjeto validadorVinculoProjeto;
 
-    public CreateEventoRecorrenciaUseCase(
+    public CriarEventoRecorrenciaUseCase(
             EventoRecorrenciaJpaRepository recurrenceRepository,
             EventoJpaRepository eventRepository,
             GeradorRecorrenciaAnualJob generationJob,

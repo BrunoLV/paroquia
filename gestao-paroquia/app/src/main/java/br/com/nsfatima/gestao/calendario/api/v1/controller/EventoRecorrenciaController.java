@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaDetalheResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.CreateEventoRecorrenciaUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.CriarEventoRecorrenciaUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.GetEventoRecorrenciaUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -37,13 +37,13 @@ import java.util.UUID;
 @PreAuthorize("isAuthenticated()")
 public class EventoRecorrenciaController {
 
-    private final CreateEventoRecorrenciaUseCase createEventoRecorrenciaUseCase;
+    private final CriarEventoRecorrenciaUseCase createEventoRecorrenciaUseCase;
     private final GetEventoRecorrenciaUseCase getEventoRecorrenciaUseCase;
     private final EventoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
 
     public EventoRecorrenciaController(
-            CreateEventoRecorrenciaUseCase createEventoRecorrenciaUseCase,
+            CriarEventoRecorrenciaUseCase createEventoRecorrenciaUseCase,
             GetEventoRecorrenciaUseCase getEventoRecorrenciaUseCase,
             EventoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver) {

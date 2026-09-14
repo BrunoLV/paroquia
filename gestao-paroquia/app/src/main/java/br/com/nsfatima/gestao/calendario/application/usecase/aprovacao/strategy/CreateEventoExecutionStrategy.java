@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadM
 import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.CreateEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.CriarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CreateEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
-    private final CreateEventoUseCase createEventoUseCase;
+    private final CriarEventoUseCase createEventoUseCase;
     private final EventoJpaRepository eventoRepository;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
     public CreateEventoExecutionStrategy(
-            CreateEventoUseCase createEventoUseCase,
+            CriarEventoUseCase createEventoUseCase,
             EventoJpaRepository eventoRepository,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
         this.createEventoUseCase = createEventoUseCase;
@@ -70,7 +70,7 @@ public class CreateEventoExecutionStrategy implements EstrategiaExecucaoAprovaca
                 : payload.idempotencyKey();
 
         EventoResponse response = createEventoUseCase.executeApprovedCreation(
-                createEventoUseCase.restoreFromAprovacaoPayload(payload),
+                createEventoUseCase.restaurarDoPayloadAprovacao(payload),
                 idempotencyKey);
 
         aprovacao.setEventoId(response.id());
