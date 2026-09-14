@@ -61,14 +61,14 @@ public class CalculadoraTaxaRetrabalho {
      * @param periodo período operacional já resolvido (início/fim) para o cálculo
      * @return indicador com a taxa calculada e os valores de numerador/denominador
      */
-    public IndicadorRetrabalhoResponse calculateForOrganization(
+    public IndicadorRetrabalhoResponse calcularParaOrganizacao(
             UUID grupoParoquialId,
             PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
-        long numerador = auditoriaOperacaoJpaRepository.countEligibleAdministrativeReworkOccurrences(
+        long numerador = auditoriaOperacaoJpaRepository.contarOcorrenciasRetrabalhoAdministrativoElegiveis(
                 grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim());
-        long denominador = auditoriaOperacaoJpaRepository.countDistinctAffectedEvents(
+        long denominador = auditoriaOperacaoJpaRepository.contarEventosDistintosAfetados(
                 grupoParoquialId,
                 periodo.inicio(),
                 periodo.fim());
@@ -90,30 +90,30 @@ public class CalculadoraTaxaRetrabalho {
      * @param periodo período operacional já resolvido (início/fim) para o cálculo
      * @return métricas de retrabalho consolidadas para o período
      */
-    public SnapshotReworkMetrics calculateForSnapshot(PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
-        return calculate(auditoriaOperacaoJpaRepository
+    public MetricasRetrabalhoSnapshot calcularParaSnapshot(PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
+        return calcular(auditoriaOperacaoJpaRepository
                 .findByOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
                         periodo.inicio(),
                         periodo.fim()));
     }
 
-    private SnapshotReworkMetrics calculate(List<AuditoriaOperacaoEntity> auditRecords) {
-        Set<UUID> distinctAffectedEvents = new HashSet<>();
+    private MetricasRetrabalhoSnapshot calcular(List<AuditoriaOperacaoEntity> registrosAuditoria) {
+        Set<UUID> eventosDistintosAfetados = new HashSet<>();
         long numerador = 0L;
 
-        for (AuditoriaOperacaoEntity auditRecord : auditRecords) {
-            if (auditRecord.getEventoId() != null) {
-                distinctAffectedEvents.add(auditRecord.getEventoId());
+        for (AuditoriaOperacaoEntity registroAuditoria : registrosAuditoria) {
+            if (registroAuditoria.getEventoId() != null) {
+                eventosDistintosAfetados.add(registroAuditoria.getEventoId());
             }
 
-            if (isEligibleAdministrativeRework(auditRecord)) {
+            if (isRetrabalhoAdministrativoElegivel(registroAuditoria)) {
                 numerador++;
             }
         }
 
-        long denominador = distinctAffectedEvents.size();
+        long denominador = eventosDistintosAfetados.size();
         BigDecimal taxa = calcularTaxa(numerador, denominador);
-        return new SnapshotReworkMetrics(taxa, numerador, denominador);
+        return new MetricasRetrabalhoSnapshot(taxa, numerador, denominador);
     }
 
     /** Quociente numerador/denominador com precisão decimal exata; {@code ZERO} se não houver denominador. */
@@ -124,28 +124,28 @@ public class CalculadoraTaxaRetrabalho {
                         .divide(BigDecimal.valueOf(denominador), TAXA_SCALE, RoundingMode.HALF_UP);
     }
 
-    private boolean isEligibleAdministrativeRework(AuditoriaOperacaoEntity auditRecord) {
-        String action = auditRecord.getAcao() == null ? "" : auditRecord.getAcao().toLowerCase();
-        String result = auditRecord.getResultado() == null ? "" : auditRecord.getResultado().toLowerCase();
-        if (!result.equals(RESULTADO_SUCESSO) && !result.equals(RESULTADO_EXECUTADO)) {
+    private boolean isRetrabalhoAdministrativoElegivel(AuditoriaOperacaoEntity registroAuditoria) {
+        String acao = registroAuditoria.getAcao() == null ? "" : registroAuditoria.getAcao().toLowerCase();
+        String resultado = registroAuditoria.getResultado() == null ? "" : registroAuditoria.getResultado().toLowerCase();
+        if (!resultado.equals(RESULTADO_SUCESSO) && !resultado.equals(RESULTADO_EXECUTADO)) {
             return false;
         }
 
-        if (action.equals(ACAO_CANCELAMENTO)) {
+        if (acao.equals(ACAO_CANCELAMENTO)) {
             return true;
         }
 
-        if (!action.equals(ACAO_ALTERACAO)) {
+        if (!acao.equals(ACAO_ALTERACAO)) {
             return false;
         }
 
-        Map<String, Object> details = deserializeDetails(auditRecord.getDetalhesAuditaveisJson());
-        return isTrue(details.get("agendaAlterada"))
-                || isTrue(details.get("grupoParoquialResponsavelAlterada"))
-                || isTrue(details.get("cancelamento"));
+        Map<String, Object> detalhes = desserializarDetalhes(registroAuditoria.getDetalhesAuditaveisJson());
+        return isTrue(detalhes.get("agendaAlterada"))
+                || isTrue(detalhes.get("grupoParoquialResponsavelAlterada"))
+                || isTrue(detalhes.get("cancelamento"));
     }
 
-    private Map<String, Object> deserializeDetails(String json) {
+    private Map<String, Object> desserializarDetalhes(String json) {
         try {
             return json == null || json.isBlank() ? Map.of() : objectMapper.readValue(json, MAP_TYPE);
         } catch (JacksonException ex) {
@@ -173,7 +173,7 @@ public class CalculadoraTaxaRetrabalho {
      * @param denominadorEventosAfetados quantidade de eventos distintos afetados por
      *                                    qualquer operação auditada no período
      */
-    public record SnapshotReworkMetrics(
+    public record MetricasRetrabalhoSnapshot(
             BigDecimal taxaRetrabalho,
             long numeradorOcorrenciasElegiveis,
             long denominadorEventosAfetados) {

@@ -20,13 +20,13 @@ import java.util.UUID;
 public class ObterIndicadorRetrabalhoUseCase {
 
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
-    private final CalculadoraTaxaRetrabalho reworkRateCalculator;
+    private final CalculadoraTaxaRetrabalho calculadoraTaxaRetrabalho;
 
     public ObterIndicadorRetrabalhoUseCase(
             PeriodoOperacionalPolicy periodoOperacionalPolicy,
-            CalculadoraTaxaRetrabalho reworkRateCalculator) {
+            CalculadoraTaxaRetrabalho calculadoraTaxaRetrabalho) {
         this.periodoOperacionalPolicy = periodoOperacionalPolicy;
-        this.reworkRateCalculator = reworkRateCalculator;
+        this.calculadoraTaxaRetrabalho = calculadoraTaxaRetrabalho;
     }
 
     /**
@@ -43,7 +43,7 @@ public class ObterIndicadorRetrabalhoUseCase {
             UUID grupoParoquialId, String granularidade, Instant inicio, Instant fim) {
         assertAccessToOrganization(grupoParoquialId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
-        return reworkRateCalculator.calculateForOrganization(grupoParoquialId, periodo);
+        return calculadoraTaxaRetrabalho.calcularParaOrganizacao(grupoParoquialId, periodo);
     }
 
     private void assertAccessToOrganization(UUID grupoParoquialId) {

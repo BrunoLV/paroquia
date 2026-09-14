@@ -114,7 +114,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
                     )
               )
             """, nativeQuery = true)
-    long countEligibleAdministrativeReworkOccurrences(
+    long contarOcorrenciasRetrabalhoAdministrativoElegiveis(
             @Param("grupoParoquialId") UUID grupoParoquialId,
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc);
@@ -138,7 +138,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
               and a.ocorrido_em_utc < :fimUtc
               and a.evento_id is not null
             """, nativeQuery = true)
-    long countDistinctAffectedEvents(
+    long contarEventosDistintosAfetados(
             @Param("grupoParoquialId") UUID grupoParoquialId,
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc);

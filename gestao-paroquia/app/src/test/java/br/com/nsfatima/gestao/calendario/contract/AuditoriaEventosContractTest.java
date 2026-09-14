@@ -35,7 +35,7 @@ class AuditoriaEventosContractTest {
         UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 
-        auditoriaOperacaoJpaRepository.save(auditRecord(
+        auditoriaOperacaoJpaRepository.save(registroAuditoria(
                 UUID.fromString("00000000-0000-0000-0000-000000000101"),
                 grupoParoquialId,
                 eventoId,
@@ -56,7 +56,7 @@ class AuditoriaEventosContractTest {
                 .andExpect(jsonPath("$.items[0].detalhesAuditaveis.scheduleChanged").value(true));
     }
 
-    private AuditoriaOperacaoEntity auditRecord(
+    private AuditoriaOperacaoEntity registroAuditoria(
             UUID id,
             UUID grupoParoquialId,
             UUID eventoId,

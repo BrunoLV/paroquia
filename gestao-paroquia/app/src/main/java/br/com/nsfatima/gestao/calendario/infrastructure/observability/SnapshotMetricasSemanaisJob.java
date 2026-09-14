@@ -28,16 +28,16 @@ public class SnapshotMetricasSemanaisJob {
 
     private final CadastroEventoMetricsPublisher cadastroEventoMetricsPublisher;
     private final PeriodoOperacionalPolicy periodoOperacionalPolicy;
-    private final CalculadoraTaxaRetrabalho reworkRateCalculator;
+    private final CalculadoraTaxaRetrabalho calculadoraTaxaRetrabalho;
     private final List<Map<String, Object>> snapshotHistory = Collections.synchronizedList(new ArrayList<>());
 
     public SnapshotMetricasSemanaisJob(
             CadastroEventoMetricsPublisher cadastroEventoMetricsPublisher,
             PeriodoOperacionalPolicy periodoOperacionalPolicy,
-            CalculadoraTaxaRetrabalho reworkRateCalculator) {
+            CalculadoraTaxaRetrabalho calculadoraTaxaRetrabalho) {
         this.cadastroEventoMetricsPublisher = cadastroEventoMetricsPublisher;
         this.periodoOperacionalPolicy = periodoOperacionalPolicy;
-        this.reworkRateCalculator = reworkRateCalculator;
+        this.calculadoraTaxaRetrabalho = calculadoraTaxaRetrabalho;
     }
 
     /**
@@ -55,8 +55,8 @@ public class SnapshotMetricasSemanaisJob {
     @Scheduled(cron = "0 0 1 * * MON", zone = "UTC")
     public Map<String, Object> snapshot() {
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve("SEMANAL", null, null);
-        CalculadoraTaxaRetrabalho.SnapshotReworkMetrics reworkMetrics =
-                reworkRateCalculator.calculateForSnapshot(periodo);
+        CalculadoraTaxaRetrabalho.MetricasRetrabalhoSnapshot reworkMetrics =
+                calculadoraTaxaRetrabalho.calcularParaSnapshot(periodo);
         Map<String, Object> cadastroMetrics = cadastroEventoMetricsPublisher.snapshot();
         Map<String, Object> snapshot = new LinkedHashMap<>();
         snapshot.put("capturedAt", Instant.now().toString());
