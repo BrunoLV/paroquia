@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
  * {@code AnoParoquialController} para acionar a máquina de estados de governança do calendário anual.
  */
 @Schema(description = "Requisição para atualizar o status de um ano paroquial")
-public record UpdateAnoParoquialRequest(
+public record AtualizarAnoParoquialRequest(
         @NotBlank
         @Schema(description = "Novo status (EM_PLANEJAMENTO, FECHADO, CONCLUIDO)")
         String status) {

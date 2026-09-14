@@ -47,7 +47,7 @@ public class AlterarStatusAnoParoquialUseCase {
             }
             case CONCLUIDO -> {
                 anoParoquial.concluir(anoCivilCorrente, agora);
-                rolloverService.concludeYear(ano);
+                rolloverService.concluirAno(ano);
                 return repository.buscarPorAno(ano).orElseThrow();
             }
             default -> throw new IllegalArgumentException("Status de ano paroquial não suportado: " + alvo);

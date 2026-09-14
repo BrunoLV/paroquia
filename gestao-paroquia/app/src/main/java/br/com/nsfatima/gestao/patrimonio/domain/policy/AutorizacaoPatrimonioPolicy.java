@@ -15,7 +15,7 @@ public interface AutorizacaoPatrimonioPolicy {
      * @param papel papel organizacional do ator
      * @return true se for ator de alto nível
      */
-    boolean isHighLevelActor(PapelOrganizacional papel);
+    boolean isAtorDeAltoNivel(PapelOrganizacional papel);
 
     /**
      * Valida se o ator tem permissão para gerir bens da unidade territorial informada.

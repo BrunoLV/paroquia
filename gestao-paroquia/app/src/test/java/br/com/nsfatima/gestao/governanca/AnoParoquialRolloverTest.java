@@ -32,7 +32,7 @@ class AnoParoquialRolloverTest {
 
     @Test
     void deveTerScheduledCronExpressionParaDec31FimDeDia() throws NoSuchMethodException {
-        Method method = AnoParoquialRolloverService.class.getMethod("rolloverYearAutomatically");
+        Method method = AnoParoquialRolloverService.class.getMethod("transicionarAnoAutomaticamente");
         Scheduled scheduled = method.getAnnotation(Scheduled.class);
 
         assertThat(scheduled).isNotNull();
@@ -40,24 +40,24 @@ class AnoParoquialRolloverTest {
     }
 
     @Test
-    void deveVirarAnoSettingIssoParaConcluidoEInitializingProximoAno() {
-        // Arrange: Year 2026 is EM_PLANEJAMENTO
+    void deveVirarAnoDefinindoComoConcluidoEInicializandoProximoAno() {
+        // Arrange: ano 2026 está EM_PLANEJAMENTO
         AnoParoquialEntity entity = new AnoParoquialEntity();
         entity.setAno(2026);
         entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO);
         repository.saveAndFlush(entity);
 
-        // Act: conclude Year 2026
-        rolloverService.concludeYear(2026);
+        // Act: conclui o ano 2026
+        rolloverService.concluirAno(2026);
 
-        // Assert: 2026 is CONCLUIDO
-        Optional<AnoParoquialEntity> year2026 = repository.findByAno(2026);
-        assertThat(year2026).isPresent();
-        assertThat(year2026.get().getStatus()).isEqualTo(AnoParoquialStatus.CONCLUIDO);
+        // Assert: 2026 está CONCLUIDO
+        Optional<AnoParoquialEntity> ano2026 = repository.findByAno(2026);
+        assertThat(ano2026).isPresent();
+        assertThat(ano2026.get().getStatus()).isEqualTo(AnoParoquialStatus.CONCLUIDO);
 
-        // Assert: 2027 is created as EM_PLANEJAMENTO
-        Optional<AnoParoquialEntity> year2027 = repository.findByAno(2027);
-        assertThat(year2027).isPresent();
-        assertThat(year2027.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO);
+        // Assert: 2027 é criado como EM_PLANEJAMENTO
+        Optional<AnoParoquialEntity> ano2027 = repository.findByAno(2027);
+        assertThat(ano2027).isPresent();
+        assertThat(ano2027.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO);
     }
 }

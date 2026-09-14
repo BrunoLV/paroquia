@@ -40,38 +40,38 @@ public class AnoParoquialRolloverService {
      */
     @Scheduled(cron = "59 59 23 31 12 *")
     @Transactional
-    public void rolloverYearAutomatically() {
-        int currentYear = LocalDate.now().getYear();
-        LOGGER.info("Iniciando rollover automático do Ano Paroquial para o ano {}", currentYear);
-        concludeYear(currentYear);
+    public void transicionarAnoAutomaticamente() {
+        int anoCorrente = LocalDate.now().getYear();
+        LOGGER.info("Iniciando rollover automático do Ano Paroquial para o ano {}", anoCorrente);
+        concluirAno(anoCorrente);
     }
 
     /**
      * Conclui um dado ano e cria automaticamente o próximo em EM_PLANEJAMENTO caso não exista.
      */
     @Transactional
-    public void concludeYear(int year) {
+    public void concluirAno(int ano) {
         Instant agora = Instant.now();
-        AnoParoquial ano = repository.buscarPorAno(year)
-                .orElseGet(() -> AnoParoquial.abrirPlanejamento(year, agora));
+        AnoParoquial anoParoquial = repository.buscarPorAno(ano)
+                .orElseGet(() -> AnoParoquial.abrirPlanejamento(ano, agora));
 
-        if (ano.getStatus() == AnoParoquialStatus.CONCLUIDO) {
-            LOGGER.info("Ano Paroquial {} já está CONCLUIDO.", year);
+        if (anoParoquial.getStatus() == AnoParoquialStatus.CONCLUIDO) {
+            LOGGER.info("Ano Paroquial {} já está CONCLUIDO.", ano);
             return;
         }
 
-        sucessaoService.assegurarAnosAnterioresConcluidos(year);
-        ano.concluir(year, agora);
-        repository.salvar(ano);
+        sucessaoService.assegurarAnosAnterioresConcluidos(ano);
+        anoParoquial.concluir(ano, agora);
+        repository.salvar(anoParoquial);
 
-        int nextYear = year + 1;
-        if (repository.buscarPorAno(nextYear).isEmpty()) {
-            repository.salvar(AnoParoquial.abrirPlanejamento(nextYear, agora));
+        int proximoAno = ano + 1;
+        if (repository.buscarPorAno(proximoAno).isEmpty()) {
+            repository.salvar(AnoParoquial.abrirPlanejamento(proximoAno, agora));
             LOGGER.info("Rollover concluído: ano {} definido como CONCLUIDO, ano {} inicializado como EM_PLANEJAMENTO",
-                    year, nextYear);
+                    ano, proximoAno);
         } else {
             LOGGER.info("Rollover concluído: ano {} definido como CONCLUIDO. O ano {} já estava inicializado.",
-                    year, nextYear);
+                    ano, proximoAno);
         }
     }
 }

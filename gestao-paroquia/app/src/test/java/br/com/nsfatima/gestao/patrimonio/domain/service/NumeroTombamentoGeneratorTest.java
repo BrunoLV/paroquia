@@ -44,7 +44,7 @@ class NumeroTombamentoGeneratorTest {
         String numero = generator.generate(2026);
 
         assertThat(numero).isEqualTo("PAT-2026-0001");
-        verify(seeder).ensureYearRowExists(2026);
+        verify(seeder).garantirLinhaDoAno(2026);
     }
 
     @Test

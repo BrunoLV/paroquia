@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.api.v1.dto.AnoParoquialResponse;
-import br.com.nsfatima.gestao.governanca.api.v1.dto.UpdateAnoParoquialRequest;
+import br.com.nsfatima.gestao.governanca.api.v1.dto.AtualizarAnoParoquialRequest;
 import br.com.nsfatima.gestao.governanca.application.usecase.AlterarStatusAnoParoquialUseCase;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquial;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
@@ -94,7 +94,7 @@ public class AnoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     @Cacheable(value = CacheConfig.ANO_PAROQUIAL_CACHE)
-    public List<AnoParoquialResponse> list() {
+    public List<AnoParoquialResponse> listar() {
         return repository.findAll().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -121,7 +121,7 @@ public class AnoParoquialController {
             @ApiResponse(responseCode = "404", description = "Ano paroquial não encontrado")
     })
     @Cacheable(value = CacheConfig.ANO_PAROQUIAL_CACHE, key = "#ano")
-    public ResponseEntity<AnoParoquialResponse> get(
+    public ResponseEntity<AnoParoquialResponse> buscar(
             @Parameter(description = "Ano paroquial (ex: 2026)", required = true)
             @PathVariable Integer ano) {
         return repository.findByAno(ano)
@@ -153,10 +153,10 @@ public class AnoParoquialController {
     })
     @Transactional
     @CacheEvict(value = CacheConfig.ANO_PAROQUIAL_CACHE, allEntries = true)
-    public ResponseEntity<AnoParoquialResponse> update(
+    public ResponseEntity<AnoParoquialResponse> atualizar(
             @Parameter(description = "Ano paroquial a ser atualizado", required = true)
             @PathVariable Integer ano,
-            @Valid @RequestBody UpdateAnoParoquialRequest request) {
+            @Valid @RequestBody AtualizarAnoParoquialRequest request) {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         autorizacaoPolicy.assertPodeGerir(

@@ -60,10 +60,10 @@ public class ProjetoAuthorizationService {
      * @param actorContext contexto do ator autenticado
      * @return true se for ator de alto nível
      */
-    public boolean isHighLevelActor(EventoActorContext actorContext) {
+    public boolean isAtorDeAltoNivel(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
-        return policy.isHighLevelActor(normalizedRole, normalizedOrgType);
+        return policy.isAtorDeAltoNivel(normalizedRole, normalizedOrgType);
     }
 
     /**

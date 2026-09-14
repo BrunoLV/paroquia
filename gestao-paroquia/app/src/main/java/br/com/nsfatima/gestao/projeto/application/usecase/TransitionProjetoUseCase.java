@@ -36,7 +36,7 @@ import java.util.UUID;
  *
  * <p><b>Regra de desvio para aprovação no cancelamento:</b> ao contrário de
  * {@link #iniciar} e {@link #concluir}, que aplicam a transição diretamente quando o ator está
- * autorizado, {@link #cancelar} verifica {@code ProjetoAuthorizationService#isHighLevelActor}.
+ * autorizado, {@link #cancelar} verifica {@code ProjetoAuthorizationService#isAtorDeAltoNivel}.
  * Se o ator for de alto nível (ex.: PAROCO, ADMIN, coordenador de conselho pastoral), o
  * cancelamento é aplicado imediatamente e os eventos vinculados são cancelados ou desvinculados
  * conforme {@code cancelarEventosVinculados}. Caso contrário — mesmo que o ator tenha permissão
@@ -133,7 +133,7 @@ public class TransitionProjetoUseCase {
      * Cancela o projeto (a partir de {@code ABERTO} ou {@code EM_ANDAMENTO}), ou solicita seu
      * cancelamento para aprovação, dependendo do nível do ator.
      *
-     * <p>Se o ator for de alto nível ({@code ProjetoAuthorizationService#isHighLevelActor}), o
+     * <p>Se o ator for de alto nível ({@code ProjetoAuthorizationService#isAtorDeAltoNivel}), o
      * cancelamento é aplicado imediatamente: o projeto vai para {@code CANCELADO} e os eventos
      * vinculados são cancelados (se {@code cancelarEventosVinculados} for {@code true}) ou
      * desvinculados do projeto (caso contrário). Caso contrário, nenhuma mudança de status é
@@ -166,7 +166,7 @@ public class TransitionProjetoUseCase {
             throw new IllegalStateException("Somente projetos ABERTO ou EM_ANDAMENTO podem ser cancelados");
         }
 
-        if (authorizationService.isHighLevelActor(actorContext)) {
+        if (authorizationService.isAtorDeAltoNivel(actorContext)) {
             // Cancelar imediatamente
             Projeto agregado = mapper.toDomain(projeto);
             agregado.cancelar();
@@ -209,7 +209,7 @@ public class TransitionProjetoUseCase {
      * Decide (aprova ou reprova) uma solicitação de aprovação pendente relacionada a um
      * projeto — de criação ({@code CRIACAO}) ou de cancelamento ({@code CANCELAMENTO}). Só pode
      * ser executada por um ator de alto nível
-     * ({@code ProjetoAuthorizationService#isHighLevelActor}), reforçando que o desvio de
+     * ({@code ProjetoAuthorizationService#isAtorDeAltoNivel}), reforçando que o desvio de
      * aprovação criado em {@link #cancelar} (ou na criação de projeto) só pode ser resolvido por
      * uma autoridade superior.
      *
@@ -240,7 +240,7 @@ public class TransitionProjetoUseCase {
         }
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        if (!authorizationService.isHighLevelActor(actorContext)) {
+        if (!authorizationService.isAtorDeAltoNivel(actorContext)) {
             throw new ForbiddenOperationException(
                     "Apenas ADMIN, PAROCO ou coordenadores do CONSELHO podem decidir solicitações de projeto");
         }

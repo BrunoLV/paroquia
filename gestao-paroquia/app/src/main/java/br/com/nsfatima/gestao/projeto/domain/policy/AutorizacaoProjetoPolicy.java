@@ -17,7 +17,7 @@ public interface AutorizacaoProjetoPolicy {
      * @param tipoGrupo tipo do grupo ao qual o ator está vinculado
      * @return true se o ator for de alto nível
      */
-    boolean isHighLevelActor(PapelOrganizacional papel, TipoGrupo tipoGrupo);
+    boolean isAtorDeAltoNivel(PapelOrganizacional papel, TipoGrupo tipoGrupo);
 
     /**
      * Valida permissão para criação de projetos no grupo responsável.

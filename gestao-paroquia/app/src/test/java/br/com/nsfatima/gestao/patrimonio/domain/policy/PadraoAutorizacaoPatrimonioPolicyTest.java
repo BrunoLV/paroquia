@@ -19,13 +19,13 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
     @Test
     @DisplayName("Identifica papéis de alto nível com alçada ampla")
     void deveIdentificarAltoNivel() {
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.ADMIN)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.PAROCO)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.PRESIDENTE_CPC)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.MESA_CPP)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.COORD_PASTORAL_GLOBAL)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.COORD_PASTORAL_LOCAL)).isFalse();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.MEMBRO_PASTORAL)).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.ADMIN)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PAROCO)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PRESIDENTE_CPC)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MESA_CPP)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.COORD_PASTORAL_GLOBAL)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.COORD_PASTORAL_LOCAL)).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MEMBRO_PASTORAL)).isFalse();
     }
 
     @Test

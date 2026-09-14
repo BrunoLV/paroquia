@@ -27,21 +27,21 @@ class AnoParoquialTransitionTest {
     @Autowired
     private AnoParoquialJpaRepository repository;
 
-    private int currentYear;
+    private int anoCorrente;
 
     @BeforeEach
     void setup() {
         repository.deleteAll();
-        currentYear = LocalDate.now().getYear();
+        anoCorrente = LocalDate.now().getYear();
     }
 
     @Test
     void devePermitirTransicionarParaEmPlanejamentoMesmoSeAnteriorAnoENaoConcluido() throws Exception {
-        // Arrange: previous year exists but is not CONCLUIDO (it is EM_PLANEJAMENTO)
-        saveAno(currentYear - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
+        // Arrange: ano anterior existe mas não está CONCLUIDO (está EM_PLANEJAMENTO)
+        saveAno(anoCorrente - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
 
-        // Act & Assert: try to set current year to EM_PLANEJAMENTO (allowed)
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+        // Act & Assert: tenta definir o ano corrente como EM_PLANEJAMENTO (permitido)
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + anoCorrente)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"EM_PLANEJAMENTO\"}")
                         .header("X-Actor-Role", "paroco")
@@ -51,11 +51,11 @@ class AnoParoquialTransitionTest {
 
     @Test
     void deveFalhaParaTransicionarParaFechadoSeAnteriorAnoENaoConcluido() throws Exception {
-        // Arrange: previous year exists but is not CONCLUIDO (it is EM_PLANEJAMENTO)
-        saveAno(currentYear - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
+        // Arrange: ano anterior existe mas não está CONCLUIDO (está EM_PLANEJAMENTO)
+        saveAno(anoCorrente - 1, AnoParoquialStatus.EM_PLANEJAMENTO);
 
-        // Act & Assert: try to set current year to FECHADO (fails)
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+        // Act & Assert: tenta definir o ano corrente como FECHADO (falha)
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + anoCorrente)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"FECHADO\"}")
                         .header("X-Actor-Role", "paroco")
@@ -65,12 +65,12 @@ class AnoParoquialTransitionTest {
 
     @Test
     void deveFalhaParaTransicionarParaFechadoSeQualquerPriorAnoENaoConcluido() throws Exception {
-        // Arrange: year N-2 is EM_PLANEJAMENTO, N-1 is CONCLUIDO
-        saveAno(currentYear - 2, AnoParoquialStatus.EM_PLANEJAMENTO);
-        saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
+        // Arrange: ano N-2 está EM_PLANEJAMENTO, N-1 está CONCLUIDO
+        saveAno(anoCorrente - 2, AnoParoquialStatus.EM_PLANEJAMENTO);
+        saveAno(anoCorrente - 1, AnoParoquialStatus.CONCLUIDO);
 
-        // Act & Assert: try to set current year to FECHADO (fails because N-2 is not CONCLUIDO)
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+        // Act & Assert: tenta definir o ano corrente como FECHADO (falha porque N-2 não está CONCLUIDO)
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + anoCorrente)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"FECHADO\"}")
                         .header("X-Actor-Role", "paroco")
@@ -80,11 +80,11 @@ class AnoParoquialTransitionTest {
 
     @Test
     void devePermitirTransicionarParaEmPlanejamentoSeAnteriorAnoEConcluido() throws Exception {
-        // Arrange: previous year is CONCLUIDO
-        saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
+        // Arrange: ano anterior está CONCLUIDO
+        saveAno(anoCorrente - 1, AnoParoquialStatus.CONCLUIDO);
 
         // Act & Assert
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + anoCorrente)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"EM_PLANEJAMENTO\"}")
                         .header("X-Actor-Role", "paroco")
@@ -94,13 +94,13 @@ class AnoParoquialTransitionTest {
 
     @Test
     void deveFalhaParaTransicionarForaDeEmPlanejamentoSeAnoENaoAtualCalendarioAno() throws Exception {
-        // Arrange: a future year is in EM_PLANEJAMENTO
-        saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
-        saveAno(currentYear, AnoParoquialStatus.CONCLUIDO);
-        saveAno(currentYear + 1, AnoParoquialStatus.EM_PLANEJAMENTO);
+        // Arrange: um ano futuro está EM_PLANEJAMENTO
+        saveAno(anoCorrente - 1, AnoParoquialStatus.CONCLUIDO);
+        saveAno(anoCorrente, AnoParoquialStatus.CONCLUIDO);
+        saveAno(anoCorrente + 1, AnoParoquialStatus.EM_PLANEJAMENTO);
 
-        // Act & Assert: try to set future year to FECHADO, should fail because currentYear != currentYear + 1
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + (currentYear + 1))
+        // Act & Assert: tenta definir o ano futuro como FECHADO; deve falhar porque não é o ano corrente
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + (anoCorrente + 1))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"FECHADO\"}")
                         .header("X-Actor-Role", "paroco")
@@ -110,12 +110,12 @@ class AnoParoquialTransitionTest {
 
     @Test
     void devePermitirTransicionarForaDeEmPlanejamentoSeAnoEAtualCalendarioAno() throws Exception {
-        // Arrange: current year is in EM_PLANEJAMENTO, previous is CONCLUIDO
-        saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
-        saveAno(currentYear, AnoParoquialStatus.EM_PLANEJAMENTO);
+        // Arrange: ano corrente está EM_PLANEJAMENTO, anterior está CONCLUIDO
+        saveAno(anoCorrente - 1, AnoParoquialStatus.CONCLUIDO);
+        saveAno(anoCorrente, AnoParoquialStatus.EM_PLANEJAMENTO);
 
-        // Act & Assert: transition current year to FECHADO
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+        // Act & Assert: transiciona o ano corrente para FECHADO
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + anoCorrente)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"FECHADO\"}")
                         .header("X-Actor-Role", "paroco")
@@ -125,12 +125,12 @@ class AnoParoquialTransitionTest {
 
     @Test
     void deveFalhaParaAtualizarConcluidoAno() throws Exception {
-        // Arrange: current year is CONCLUIDO
-        saveAno(currentYear - 1, AnoParoquialStatus.CONCLUIDO);
-        saveAno(currentYear, AnoParoquialStatus.CONCLUIDO);
+        // Arrange: ano corrente está CONCLUIDO
+        saveAno(anoCorrente - 1, AnoParoquialStatus.CONCLUIDO);
+        saveAno(anoCorrente, AnoParoquialStatus.CONCLUIDO);
 
-        // Act & Assert: try to transition back to EM_PLANEJAMENTO, should fail
-        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + currentYear)
+        // Act & Assert: tenta voltar para EM_PLANEJAMENTO; deve falhar
+        mockMvc.perform(patch("/api/v1/anos-paroquiais/" + anoCorrente)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\": \"EM_PLANEJAMENTO\"}")
                         .header("X-Actor-Role", "paroco")

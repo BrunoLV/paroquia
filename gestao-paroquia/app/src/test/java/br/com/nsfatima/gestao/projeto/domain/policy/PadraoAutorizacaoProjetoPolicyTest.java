@@ -19,11 +19,11 @@ class PadraoAutorizacaoProjetoPolicyTest {
     @Test
     @DisplayName("Pároco e Admin são sempre considerados atores de alto nível")
     void deveReconhecerAltoNivelParaParocoEAdmin() {
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.PAROCO, TipoGrupo.PASTORAL)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.ADMIN, null)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO)).isTrue();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.PASTORAL)).isFalse();
-        assertThat(policy.isHighLevelActor(PapelOrganizacional.MEMBRO_PASTORAL, TipoGrupo.PASTORAL)).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PAROCO, TipoGrupo.PASTORAL)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.ADMIN, null)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.PASTORAL)).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MEMBRO_PASTORAL, TipoGrupo.PASTORAL)).isFalse();
     }
 
     @Test

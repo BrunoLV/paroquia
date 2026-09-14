@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Seeds the yearly counter row in its own transaction so a unique-constraint
- * collision under concurrent first-use-of-year never aborts the caller's transaction.
+ * Semeia a linha de contador anual em sua própria transação, para que uma colisão de
+ * unique-constraint no primeiro uso concorrente do ano nunca aborte a transação de quem chamou.
  */
 @Service
 public class PatrimonioNumeracaoAnualSeeder {
@@ -21,7 +21,7 @@ public class PatrimonioNumeracaoAnualSeeder {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void ensureYearRowExists(int ano) {
+    public void garantirLinhaDoAno(int ano) {
         if (repository.existsById(ano)) {
             return;
         }
@@ -31,7 +31,7 @@ public class PatrimonioNumeracaoAnualSeeder {
             entity.setUltimoNumero(0);
             repository.saveAndFlush(entity);
         } catch (DataIntegrityViolationException ex) {
-            // another transaction concurrently seeded the same year — row already exists.
+            // outra transação semeou o mesmo ano concorrentemente — a linha já existe.
         }
     }
 }

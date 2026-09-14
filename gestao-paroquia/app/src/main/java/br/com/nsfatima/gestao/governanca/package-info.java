@@ -1,6 +1,6 @@
 /**
  * Contexto de governança: ciclo de vida do Ano Paroquial ({@code AnoParoquialEntity}/
- * {@code AnoParoquialStatus}, {@code EM_PLANEJAMENTO -> FECHADO -> CONCLUIDO}), que gate-keeps o
+ * {@code AnoParoquialStatus}, {@code EM_PLANEJAMENTO -> FECHADO -> CONCLUIDO}), que controla o acesso ao
  * provisionamento anual de solenidades/eventos para Matriz e Comunidades ({@code AnoParoquialSeeder})
  * e sua transição automática/agendada entre anos ({@code AnoParoquialRolloverService}).
  *

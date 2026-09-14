@@ -27,7 +27,7 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
             PapelOrganizacional.PADRE);
 
     @Override
-    public boolean isHighLevelActor(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
+    public boolean isAtorDeAltoNivel(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
         if (papel == null) {
             return false;
         }
@@ -45,7 +45,7 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
         if (!PROJECT_EDITOR_ROLES.contains(papel)) {
             throw new ForbiddenOperationException("Usuário não tem permissão para criar projetos");
         }
-        if (!isHighLevelActor(papel, tipoGrupo) && atorOrganizacaoId != null
+        if (!isAtorDeAltoNivel(papel, tipoGrupo) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
             throw new ForbiddenOperationException("Usuário não pode criar projetos para outra organização");
         }
@@ -57,7 +57,7 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
         if (!PROJECT_EDITOR_ROLES.contains(papel)) {
             throw new ForbiddenOperationException("Usuário não tem permissão para editar projetos");
         }
-        if (!isHighLevelActor(papel, tipoGrupo) && atorOrganizacaoId != null
+        if (!isAtorDeAltoNivel(papel, tipoGrupo) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
             throw new ForbiddenOperationException("Usuário não pode editar projetos de outra organização");
         }
@@ -66,7 +66,7 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
     @Override
     public void assertCanStartOrConclude(
             PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
-        if (isHighLevelActor(papel, tipoGrupo)) {
+        if (isAtorDeAltoNivel(papel, tipoGrupo)) {
             return;
         }
         boolean isOrgLeader = papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL

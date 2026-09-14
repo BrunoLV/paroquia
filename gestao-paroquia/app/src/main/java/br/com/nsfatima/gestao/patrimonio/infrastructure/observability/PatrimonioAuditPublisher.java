@@ -31,7 +31,7 @@ public class PatrimonioAuditPublisher {
      * @param ativoId       ativo criado
      * @param grupoParoquialId organização dona do ativo
      */
-    public void publishCreateSuccess(String actor, UUID ativoId, UUID grupoParoquialId) {
+    public void publishCriacao(String actor, UUID ativoId, UUID grupoParoquialId) {
         auditLogPersistenceService.log(actor, "criar", ativoId.toString(), RESULT_SUCCESS,
                 withDefaults(ativoId, grupoParoquialId, Map.of()));
     }
@@ -66,7 +66,7 @@ public class PatrimonioAuditPublisher {
      * @param actor   ator que teve a ação negada
      * @param ativoId ativo alvo da tentativa, ou {@code null} se não aplicável
      */
-    public void publishDeniedWrite(String actor, UUID ativoId) {
+    public void publishEscritaNegada(String actor, UUID ativoId) {
         auditLogPersistenceService.log(actor, "escrita-negada", ativoId == null ? "ativo" : ativoId.toString(),
                 "ACCESS_DENIED", Map.of("resourceType", TYPE_ATIVO, "errorCategory", "AUTHZ"));
     }

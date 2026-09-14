@@ -23,7 +23,7 @@ public final class PadraoAutorizacaoPatrimonioPolicy implements AutorizacaoPatri
             PapelOrganizacional.MESA_CPP);
 
     @Override
-    public boolean isHighLevelActor(PapelOrganizacional papel) {
+    public boolean isAtorDeAltoNivel(PapelOrganizacional papel) {
         if (papel == null) {
             return false;
         }
@@ -40,7 +40,7 @@ public final class PadraoAutorizacaoPatrimonioPolicy implements AutorizacaoPatri
             throw new ForbiddenOperationException("Usuário não tem permissão para gerir ativos patrimoniais");
         }
 
-        if (!isHighLevelActor(papel)
+        if (!isAtorDeAltoNivel(papel)
                 && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, grupoParoquialId)) {
             throw new ForbiddenOperationException("Usuário não pode gerir ativos de outra unidade territorial");

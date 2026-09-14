@@ -37,8 +37,8 @@ public class PatrimonioAuthorizationService {
      * @param actorContext contexto do ator autenticado
      * @return true se for alto nível
      */
-    public boolean isHighLevelActor(EventoActorContext actorContext) {
+    public boolean isAtorDeAltoNivel(EventoActorContext actorContext) {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        return policy.isHighLevelActor(papel);
+        return policy.isAtorDeAltoNivel(papel);
     }
 }

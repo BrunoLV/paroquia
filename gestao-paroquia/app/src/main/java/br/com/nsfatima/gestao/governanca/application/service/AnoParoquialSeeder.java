@@ -34,7 +34,7 @@ public class AnoParoquialSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void onApplicationReady() {
-        seedIfEmpty();
+        semearSeVazio();
     }
 
     /**
@@ -42,15 +42,15 @@ public class AnoParoquialSeeder {
      * vazia; não faz nada se já existir qualquer ano registrado (idempotente após a primeira execução).
      */
     @Transactional
-    public void seedIfEmpty() {
+    public void semearSeVazio() {
         if (repository.count() == 0) {
-            int currentYear = LocalDate.now().getYear();
+            int anoCorrente = LocalDate.now().getYear();
             AnoParoquialEntity entity = new AnoParoquialEntity();
-            entity.setAno(currentYear);
+            entity.setAno(anoCorrente);
             entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO);
             repository.save(entity);
-            LOGGER.info("Parish Year initialized: Seeded year {} as EM_PLANEJAMENTO because the database was empty.",
-                    currentYear);
+            LOGGER.info("Ano Paroquial inicializado: ano {} semeado como EM_PLANEJAMENTO porque o banco estava vazio.",
+                    anoCorrente);
 
         }
     }

@@ -32,7 +32,7 @@ public class NumeroTombamentoGenerator {
      */
     @Transactional
     public String generate(int ano) {
-        seeder.ensureYearRowExists(ano);
+        seeder.garantirLinhaDoAno(ano);
 
         PatrimonioNumeracaoAnualEntity contador = repository.findById(ano)
                 .orElseThrow(() -> new IllegalStateException(

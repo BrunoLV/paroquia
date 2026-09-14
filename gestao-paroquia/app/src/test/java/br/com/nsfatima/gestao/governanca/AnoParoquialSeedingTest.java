@@ -24,17 +24,17 @@ class AnoParoquialSeedingTest {
 
     @Test
     @Transactional
-    void deveSemearAtualAnoQuandoDatabaseEVazio() {
+    void deveSemearAnoAtualQuandoBancoEstiverVazio() {
         // Arrange
         repository.deleteAll();
         assertThat(repository.count()).isZero();
 
         // Act
-        seeder.seedIfEmpty();
+        seeder.semearSeVazio();
 
         // Assert
-        int currentYear = LocalDate.now().getYear();
-        Optional<AnoParoquialEntity> seeded = repository.findByAno(currentYear);
+        int anoCorrente = LocalDate.now().getYear();
+        Optional<AnoParoquialEntity> seeded = repository.findByAno(anoCorrente);
         assertThat(seeded).isPresent();
         assertThat(seeded.get().getStatus()).isEqualTo(AnoParoquialStatus.EM_PLANEJAMENTO);
     }

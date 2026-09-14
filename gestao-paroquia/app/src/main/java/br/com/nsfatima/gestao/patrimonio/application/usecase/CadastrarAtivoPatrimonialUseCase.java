@@ -80,7 +80,7 @@ public class CadastrarAtivoPatrimonialUseCase {
                 agora);
 
         AtivoPatrimonial salvo = repository.save(ativo);
-        auditPublisher.publishCreateSuccess(actor.actor(), salvo.getId().value(), salvo.getGrupoParoquialId());
+        auditPublisher.publishCriacao(actor.actor(), salvo.getId().value(), salvo.getGrupoParoquialId());
         return AtivoPatrimonialResponse.de(salvo);
     }
 }
