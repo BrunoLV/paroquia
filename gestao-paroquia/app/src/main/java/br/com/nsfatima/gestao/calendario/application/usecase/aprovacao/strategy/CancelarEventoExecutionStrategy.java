@@ -23,17 +23,17 @@ import java.util.UUID;
  * solicitação (com fallback para o snapshot registrado na própria entidade de aprovação).
  */
 @Component
-public class CancelEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
+public class CancelarEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
-    private final CancelarEventoUseCase cancelEventoUseCase;
+    private final CancelarEventoUseCase cancelarEventoUseCase;
     private final EventoJpaRepository eventoRepository;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
-    public CancelEventoExecutionStrategy(
-            CancelarEventoUseCase cancelEventoUseCase,
+    public CancelarEventoExecutionStrategy(
+            CancelarEventoUseCase cancelarEventoUseCase,
             EventoJpaRepository eventoRepository,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
-        this.cancelEventoUseCase = cancelEventoUseCase;
+        this.cancelarEventoUseCase = cancelarEventoUseCase;
         this.eventoRepository = eventoRepository;
         this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
     }
@@ -70,7 +70,7 @@ public class CancelEventoExecutionStrategy implements EstrategiaExecucaoAprovaca
 
         if (eventoId == null) {
             throw new IllegalArgumentException(
-                    "eventoId must be present in approval payload or entity for cancellation");
+                    "eventoId deve estar presente no payload de aprovação ou na entidade para cancelamento");
         }
 
         String motivo = payload.canceladoMotivo();
@@ -81,7 +81,7 @@ public class CancelEventoExecutionStrategy implements EstrategiaExecucaoAprovaca
             motivo = aprovacao.getMotivoCancelamentoSnapshot();
         }
 
-        EventoCanceladoResponse response = cancelEventoUseCase.executeApprovedCancellation(
+        EventoCanceladoResponse response = cancelarEventoUseCase.executeApprovedCancellation(
                 eventoId,
                 motivo,
                 actorContext.actor(),

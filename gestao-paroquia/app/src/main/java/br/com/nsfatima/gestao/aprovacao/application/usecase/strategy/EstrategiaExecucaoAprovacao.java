@@ -50,6 +50,6 @@ public interface EstrategiaExecucaoAprovacao {
      * @param aprovacao aprovação que foi reprovada
      */
     default void onRejected(AprovacaoEntity aprovacao) {
-        // No-op by default; strategies whose pending resource needs cleanup on rejection may override this.
+        // Sem efeito por padrão; estratégias cujo recurso pendente precise de limpeza na rejeição podem sobrescrever isto.
     }
 }

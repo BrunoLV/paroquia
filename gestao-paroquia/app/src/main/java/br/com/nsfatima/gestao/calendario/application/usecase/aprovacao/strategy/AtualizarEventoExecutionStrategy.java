@@ -6,33 +6,33 @@ import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadM
 import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.CriarEventoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.AtualizarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 /**
- * Estratégia de execução do fluxo de aprovação para solicitações de criação de evento
- * (tipo {@link TipoSolicitacaoInput#CRIACAO_EVENTO}). Quando uma criação é desviada
+ * Estratégia de execução do fluxo de aprovação para solicitações de edição de evento
+ * (tipo {@link TipoSolicitacaoInput#EDICAO_EVENTO}). Quando uma atualização é desviada
  * para aprovação (ator sem nível hierárquico suficiente), esta estratégia reconstrói o
- * pedido de criação a partir do payload salvo na solicitação e o executa de forma
- * idempotente, usando uma chave derivada do id da aprovação quando o payload original
- * não trouxer uma {@code Idempotency-Key} explícita — evitando duplicidade caso a
- * execução da aprovação seja repetida.
+ * pedido de atualização a partir do payload salvo na solicitação e aplica a alteração
+ * efetiva no evento após a decisão de aprovação.
  */
 @Component
-public class CreateEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
+public class AtualizarEventoExecutionStrategy implements EstrategiaExecucaoAprovacao {
 
-    private final CriarEventoUseCase createEventoUseCase;
+    private final AtualizarEventoUseCase atualizarEventoUseCase;
     private final EventoJpaRepository eventoRepository;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
 
-    public CreateEventoExecutionStrategy(
-            CriarEventoUseCase createEventoUseCase,
+    public AtualizarEventoExecutionStrategy(
+            AtualizarEventoUseCase atualizarEventoUseCase,
             EventoJpaRepository eventoRepository,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper) {
-        this.createEventoUseCase = createEventoUseCase;
+        this.atualizarEventoUseCase = atualizarEventoUseCase;
         this.eventoRepository = eventoRepository;
         this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
     }
@@ -41,37 +41,39 @@ public class CreateEventoExecutionStrategy implements EstrategiaExecucaoAprovaca
      * Indica se esta estratégia trata o tipo de solicitação informado.
      *
      * @param tipo tipo da solicitação de aprovação
-     * @return {@code true} apenas para {@link TipoSolicitacaoInput#CRIACAO_EVENTO}
+     * @return {@code true} apenas para {@link TipoSolicitacaoInput#EDICAO_EVENTO}
      */
     @Override
     public boolean supports(TipoSolicitacaoInput tipo) {
-        return tipo == TipoSolicitacaoInput.CRIACAO_EVENTO;
+        return tipo == TipoSolicitacaoInput.EDICAO_EVENTO;
     }
 
     /**
-     * Cria o evento após a aprovação da solicitação, restaurando o pedido de criação
-     * original a partir do payload da ação e executando-o de forma idempotente (usando
-     * a chave do payload, ou uma derivada do id da aprovação se ausente), registrando
-     * o id do evento criado na entidade de aprovação para rastreabilidade.
+     * Aplica a atualização do evento após a aprovação da solicitação, restaurando o
+     * pedido de atualização original a partir do payload da ação de aprovação e
+     * registrando o id do evento afetado na entidade de aprovação para rastreabilidade.
      *
      * @param aprovacao entidade de aprovação já decidida, contendo o payload da ação
      * @param actorContext contexto do ator que decidiu a aprovação (não utilizado
-     *                       diretamente na criação, mantido pela assinatura comum da
-     *                       estratégia de execução)
-     * @return resultado da execução com status "EXECUTED", id e status do evento criado
+     *                       diretamente na atualização, mantido pela assinatura comum
+     *                       da estratégia de execução)
+     * @return resultado da execução com status "EXECUTED", id e status do evento atualizado
+     * @throws IllegalArgumentException se não houver id de evento no payload nem na entidade
      */
     @Override
     public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
 
         AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
-        String idempotencyKey = payload.idempotencyKey() == null
-                ? "aprovacao-exec-" + aprovacao.getId()
-                : payload.idempotencyKey();
+        UUID eventoId = payload.eventoId() != null ? payload.eventoId() : aprovacao.getEventoId();
 
-        EventoResponse response = createEventoUseCase.executeApprovedCreation(
-                createEventoUseCase.restaurarDoPayloadAprovacao(payload),
-                idempotencyKey);
+        if (eventoId == null) {
+            throw new IllegalArgumentException("eventoId deve estar presente no payload de aprovação ou na entidade");
+        }
+
+        EventoResponse response = atualizarEventoUseCase.executeApprovedUpdate(
+                eventoId,
+                atualizarEventoUseCase.restaurarDoPayloadAprovacao(payload));
 
         aprovacao.setEventoId(response.id());
 
@@ -87,12 +89,18 @@ public class CreateEventoExecutionStrategy implements EstrategiaExecucaoAprovaca
      * adquirir lock de linha, para exibição em telas de acompanhamento da aprovação.
      *
      * @param aprovacao entidade de aprovação cujo evento associado será consultado
-     * @return status atual do evento, ou {@code null} se ainda não houver evento criado
+     * @return status atual do evento, ou {@code null} se não houver evento associado
      */
     @Override
     public String fetchResourceStatus(AprovacaoEntity aprovacao) {
-        if (aprovacao.getEventoId() != null) {
-            return eventoRepository.findStatusByIdNoLock(aprovacao.getEventoId()).orElse(null);
+        UUID eventoId = aprovacao.getEventoId();
+        if (eventoId == null) {
+            AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
+            eventoId = payload.eventoId();
+        }
+
+        if (eventoId != null) {
+            return eventoRepository.findStatusByIdNoLock(eventoId).orElse(null);
         }
         return null;
     }
