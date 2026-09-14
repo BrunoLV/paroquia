@@ -24,6 +24,8 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import BlockIcon from '@mui/icons-material/Block';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import EditIcon from '@mui/icons-material/Edit';
@@ -104,11 +106,13 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
     reset,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<FielEditFormInput>({
     resolver: zodResolver(fielEditSchema),
     defaultValues: formInputVazio(),
   });
+
+  const handleClose = () => confirmDiscard(isDirty, onClose);
 
   useEffect(() => {
     if (open) {
@@ -135,7 +139,7 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
@@ -150,7 +154,7 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
             />
           </Stack>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             {/* Dados Civis */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -583,7 +587,7 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
                     Nenhum vínculo familiar registrado.
                   </Typography>
                 ) : (
-                  <Grid container spacing={1.5} sx={{ mb: 2 }}>
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
                     {familiares.map((r) => (
                       <Grid size={{ xs: 12, sm: 6 }} key={r.id}>
                         <Paper
@@ -685,7 +689,7 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
           <ActionButton
             title="Cancelar"
             icon={<CloseIcon />}
-            onClick={onClose}
+            onClick={handleClose}
             color="secondary"
           />
           <ActionButton

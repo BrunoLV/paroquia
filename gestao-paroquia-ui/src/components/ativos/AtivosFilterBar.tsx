@@ -9,9 +9,8 @@ import {
   Select,
   Stack,
   Switch,
-  TextField,
 } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import SearchField from '@/components/SearchField';
 import StatusIcon from '@/components/StatusIcon';
 import { getCategoriaAtivoMeta } from '@/utils/statusMeta/categoriaAtivoStatus';
 import { getAtivoStatusMeta } from '@/utils/statusMeta/ativoStatus';
@@ -51,12 +50,10 @@ export const AtivosFilterBar: React.FC<AtivosFilterBarProps> = ({
 }) => (
   <Paper sx={{ p: 2, mb: 3 }}>
     <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
-      <SearchIcon color="action" />
-      <TextField
-        size="small"
-        placeholder="Buscar por nome ou tombamento..."
+      <SearchField
         value={searchTerm}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={onSearchChange}
+        placeholder="Buscar por nome ou tombamento..."
         sx={{ flexGrow: 1, minWidth: 240 }}
       />
       <FormControl size="small" sx={{ minWidth: 200 }}>

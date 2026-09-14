@@ -22,6 +22,8 @@ import {
 import BadgeIcon from '@mui/icons-material/Badge';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CloseIcon from '@mui/icons-material/Close';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import SaveIcon from '@mui/icons-material/Save';
 import ActionButton from '@/components/ActionButton';
@@ -62,11 +64,13 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ClerigoFormInput>({
     resolver: zodResolver(clerigoSchema),
     defaultValues: estadoInicialForm() as ClerigoFormInput,
   });
+
+  const handleClose = () => confirmDiscard(isDirty, onClose);
 
   useEffect(() => {
     if (open) {
@@ -81,10 +85,10 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(submit)} noValidate>
         <DialogTitle>{isEditing ? 'Editar clérigo' : 'Novo clérigo'}</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             {/* Identificação e Dados Canônicos */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -368,7 +372,7 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
           <ActionButton
             title="Cancelar"
             icon={<CloseIcon />}
-            onClick={onClose}
+            onClick={handleClose}
             color="secondary"
           />
           <ActionButton

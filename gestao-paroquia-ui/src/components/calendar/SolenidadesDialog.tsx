@@ -1,8 +1,7 @@
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material';
 import { Circle as CircleIcon, Close as CloseIcon, Event as EventIcon } from '@mui/icons-material';
 import ActionButton from '../ActionButton';
 import StatusIcon from '../StatusIcon';
-import theme from '../../theme';
 import { SolemnityInfo } from '../../utils/liturgicalCalendar';
 
 interface SolenidadesDialogProps {
@@ -15,7 +14,9 @@ interface SolenidadesDialogProps {
 
 /** Catálogo de solenidades/santoral do ano corrente: datas fixas e móveis (via algoritmo de
  * Meeus/Jones/Butcher), com cor litúrgica e fator de demanda de cada data — ver `useCalendarData`. */
-const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemnities }: SolenidadesDialogProps) => (
+const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemnities }: SolenidadesDialogProps) => {
+  const theme = useTheme();
+  return (
   <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
     <DialogTitle sx={{ color: 'primary.main' }}>
       <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
@@ -29,7 +30,7 @@ const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemn
       <Box sx={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
           <thead>
-            <tr style={{ borderBottom: `2px solid ${theme.palette.divider}`, backgroundColor: theme.palette.grey[100] }}>
+            <tr style={{ borderBottom: `2px solid ${theme.palette.divider}`, backgroundColor: theme.custom.surfaceMuted }}>
               <th style={{ padding: '8px 12px' }}>Data</th>
               <th style={{ padding: '8px 12px' }}>Solenidade / Marco</th>
               <th style={{ padding: '8px 12px' }}>Tipo</th>
@@ -77,6 +78,7 @@ const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemn
       <ActionButton title="Fechar" icon={<CloseIcon />} onClick={onClose} color="primary" />
     </DialogActions>
   </Dialog>
-);
+  );
+};
 
 export default SolenidadesDialog;

@@ -2,7 +2,8 @@ import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {
-    Box,
+    Card,
+    CardContent,
     Dialog,
     DialogActions,
     DialogContent,
@@ -13,10 +14,14 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     TextField,
+    Typography,
 } from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
+import {Close as CloseIcon, ContactMail as ContactMailIcon, Groups as GroupsIcon, Save as SaveIcon} from '@mui/icons-material';
+import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
+import {confirmDiscard} from '@/utils/confirmDiscard';
 import {Organizacao, PastoralMovimentoOficial} from '../api/types';
 import {Usuario} from '../api/usuarios';
 import {getOrganizacaoMembros} from '../api/organizacoes';
@@ -68,7 +73,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
     handleSubmit,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<OrganizacaoFormInput>({
     resolver: zodResolver(organizacaoSchema),
     defaultValues,
@@ -139,6 +144,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
 
   const coordinatorOptions = getCoordinatorOptions();
 
+  const handleClose = () => confirmDiscard(isDirty, onClose);
+
   const onSubmit = (data: OrganizacaoFormInput) => {
     onSave({
       nome: data.nome.trim(),
@@ -171,7 +178,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullWidth
       maxWidth="sm"
     >
@@ -179,8 +186,16 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
         <DialogTitle>
           {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
         </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Stack spacing={2.5}>
+          <Card variant="outlined" sx={{ borderRadius: 2 }}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                <GroupsIcon color="primary" fontSize="small" />
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                  Identificação do Organismo
+                </Typography>
+              </Stack>
             <TextField
               label="Nome"
               variant="outlined"
@@ -191,6 +206,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               helperText={errors.nome?.message}
               disabled={isPending}
               {...register('nome')}
+              sx={{ mb: 2.5 }}
             />
 
             <Grid container spacing={2}>
@@ -278,6 +294,17 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                 />
               </FormControl>
             )}
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined" sx={{ borderRadius: 2 }}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                <ContactMailIcon color="primary" fontSize="small" />
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                  Contato e Coordenação
+                </Typography>
+              </Stack>
 
             <TextField
               label="Contato (E-mail/Tel)"
@@ -286,6 +313,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               size="small"
               disabled={isPending}
               {...register('contato')}
+              sx={{ mb: 2.5 }}
             />
 
             <Grid container spacing={2}>
@@ -337,10 +365,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                 </FormControl>
               </Grid>
             </Grid>
-          </Box>
+            </CardContent>
+          </Card>
+          </Stack>
         </DialogContent>
         <DialogActions>
-          <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} disabled={isPending} color="secondary" />
+          <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={handleClose} disabled={isPending} color="secondary" />
           <ActionButton
             title={organizacao ? 'Salvar Alterações' : 'Salvar'}
             icon={<SaveIcon />}

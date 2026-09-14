@@ -8,6 +8,8 @@ interface ActionButtonProps {
   label?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit';
+  /** ID de um `<form>` externo, para submissão a partir de um botão fora do form (ex.: rodapé de Drawer). */
+  form?: string;
   color?: ButtonProps['color'];
   variant?: ButtonProps['variant'];
   size?: 'small' | 'medium';
@@ -22,12 +24,12 @@ interface ActionButtonProps {
 
 /** Botão de ação sempre textual; controles compactos usam IconActionButton. */
 const ActionButton: React.FC<ActionButtonProps> = ({
-  title, icon, label, onClick, type = 'button', color = 'primary', variant = 'contained',
+  title, icon, label, onClick, type = 'button', form, color = 'primary', variant = 'contained',
   size = 'small', disabled, fullWidth, component, sx, children, ariaLabel,
 }) => {
   const buttonEl = (
     <Button
-      type={type} color={color} variant={variant} size={size} onClick={onClick}
+      type={type} form={form} color={color} variant={variant} size={size} onClick={onClick}
       startIcon={icon} disabled={disabled} fullWidth={fullWidth}
       sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
     >

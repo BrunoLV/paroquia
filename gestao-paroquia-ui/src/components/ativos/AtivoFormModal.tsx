@@ -23,6 +23,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import SaveIcon from '@mui/icons-material/Save';
 import ActionButton from '@/components/ActionButton';
 import StatusIcon from '@/components/StatusIcon';
@@ -65,7 +67,7 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<AtivoFormInput>({
     resolver: zodResolver(ativoSchema),
     defaultValues: emptyForm,
@@ -89,11 +91,13 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
     });
   };
 
+  const handleClose = () => confirmDiscard(isDirty, onClose);
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(submit)} noValidate>
         <DialogTitle>Novo Ativo Patrimonial</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -211,7 +215,7 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
-          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={handleClose} />
           <ActionButton title="Salvar Ativo" icon={<SaveIcon />} color="primary" type="submit" disabled={isPending} />
         </DialogActions>
       </form>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {
+  Card,
+  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
@@ -8,11 +10,13 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Stack,
   TextField,
-  Box,
   Typography,
 } from '@mui/material';
-import { Close as CloseIcon, Send as SendIcon } from '@mui/icons-material';
+import { Close as CloseIcon, Gavel as GavelIcon, Send as SendIcon } from '@mui/icons-material';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import { Organizacao } from '../api/types';
 import ActionButton from './ActionButton';
 
@@ -59,10 +63,13 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
     });
   };
 
+  const isDirty = Boolean(titulo.trim() || pautaDescricao.trim() || comunidadeId);
+  const handleClose = () => confirmDiscard(isDirty, onClose);
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
     >
@@ -70,12 +77,22 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
         <DialogTitle>
           Registrar Ata / Decisão de Conselho (CPC / CPP)
         </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-            <Typography variant="body2" color="textSecondary">
-              Preencha os dados da reunião e as deliberações aprovadas pelo conselho. O documento ficará pendente de homologação pelo Pároco / Mesa Diretora do CPP.
-            </Typography>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Stack spacing={2.5}>
+          <Typography variant="body2" color="textSecondary">
+            Preencha os dados da reunião e as deliberações aprovadas pelo conselho. O documento ficará pendente de homologação pelo Pároco / Mesa Diretora do CPP.
+          </Typography>
 
+          <Card variant="outlined" sx={{ borderRadius: 2 }}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                <GavelIcon color="primary" fontSize="small" />
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                  Decisão do CPC / CPP
+                </Typography>
+              </Stack>
+
+              <Stack spacing={2.5}>
             <TextField
               label="Título da Ata / Decisão"
               required
@@ -126,13 +143,16 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
               onChange={(e) => setPautaDescricao(e.target.value)}
               disabled={isSubmitting}
             />
-          </Box>
+              </Stack>
+            </CardContent>
+          </Card>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <ActionButton
             title="Cancelar"
             icon={<CloseIcon />}
-            onClick={onClose}
+            onClick={handleClose}
             disabled={isSubmitting}
             color="secondary"
           />

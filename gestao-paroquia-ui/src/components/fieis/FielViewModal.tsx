@@ -31,7 +31,9 @@ import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import PhoneIcon from '@mui/icons-material/Phone';
 import PublicIcon from '@mui/icons-material/Public';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import WcIcon from '@mui/icons-material/Wc';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import ActionButton from '@/components/ActionButton';
 import StatusIcon from '@/components/StatusIcon';
 import { getSituacaoAtivoMeta } from '@/utils/statusMeta/situacaoStatus';
@@ -96,7 +98,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
           <StatusIcon {...getSituacaoAtivoMeta(isAtivo)} />
         </Stack>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
         <Stack spacing={2.5}>
           {/* Header com Avatar e Nome */}
           <Paper
@@ -193,6 +195,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <InfoField
                     label="Sexo"
+                    icon={<WcIcon fontSize="inherit" />}
                     value={SEXO_LABELS[dados.sexo ?? 'NAO_INFORMADO'] ?? 'Não informado'}
                   />
                 </Grid>
@@ -215,6 +218,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                     <Grid size={{ xs: 6, sm: 4 }}>
                       <InfoField
                         label="Documento estrangeiro"
+                        icon={<BadgeIcon fontSize="inherit" />}
                         value={
                           TIPO_DOC_LABELS[dados.dadosIdentificacao?.tipoDocumentoEstrangeiro ?? ''] ??
                           dados.dadosIdentificacao?.tipoDocumentoEstrangeiro ??
@@ -225,6 +229,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                     <Grid size={{ xs: 12, sm: 4 }}>
                       <InfoField
                         label="Número do documento"
+                        icon={<BadgeIcon fontSize="inherit" />}
                         value={
                           formatDocumentoEstrangeiro(
                             dados.dadosIdentificacao?.tipoDocumentoEstrangeiro,
@@ -239,12 +244,14 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                     <Grid size={{ xs: 6, sm: 4 }}>
                       <InfoField
                         label="CPF"
+                        icon={<BadgeIcon fontSize="inherit" />}
                         value={formatCpf(dados.dadosIdentificacao?.cpfFormatado ?? dados.cpf) || '-'}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }}>
                       <InfoField
                         label="RG"
+                        icon={<BadgeIcon fontSize="inherit" />}
                         value={formatRg(dados.dadosIdentificacao?.rg ?? dados.rg ?? '') || '-'}
                       />
                     </Grid>
@@ -319,7 +326,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                   Nenhum vínculo familiar registrado.
                 </Typography>
               ) : (
-                <Grid container spacing={1.5}>
+                <Grid container spacing={2}>
                   {familiares.map((r) => (
                     <Grid size={{ xs: 12, sm: 6 }} key={r.id}>
                       <Paper

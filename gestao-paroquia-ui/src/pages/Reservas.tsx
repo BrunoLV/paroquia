@@ -6,23 +6,21 @@ import {
   Card,
   CardContent,
   FormControl,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   Tab,
   Tabs,
-  TextField,
   Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import TableViewIcon from '@mui/icons-material/TableView';
-import SearchIcon from '@mui/icons-material/Search';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import ActionButton from '@/components/ActionButton';
 import PageHeader from '@/components/PageHeader';
+import SearchField from '@/components/SearchField';
 import { useAuth } from '@/auth/AuthContext';
 import { extractErrorMessage } from '@/utils/errorUtils';
 import { canApprove } from '@/auth/permissions';
@@ -297,22 +295,12 @@ const Reservas: React.FC = () => {
             }}
           >
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ flex: 1 }}>
-              <TextField
-                size="small"
+              <SearchField
                 placeholder="Pesquisar por item, responsável ou finalidade..."
                 value={busca}
-                onChange={(e) => {
-                  setBusca(e.target.value);
+                onChange={(value) => {
+                  setBusca(value);
                   setPage(0);
-                }}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  },
                 }}
                 sx={{ minWidth: { sm: 260 } }}
               />

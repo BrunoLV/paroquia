@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   CardContent,
-  IconButton,
   Stack,
   Tooltip,
   Typography,
@@ -13,6 +12,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import BuildIcon from '@mui/icons-material/Build';
+import IconActionButton from '@/components/IconActionButton';
 import { ReservaDetalhe } from '@/api/types';
 import { getReservaStatusMeta } from '@/utils/statusMeta/reservaStatus';
 
@@ -66,12 +66,8 @@ export const ReservaCalendarView: React.FC<ReservaCalendarViewProps> = ({
             {mesNome}
           </Typography>
           <Stack direction="row" spacing={1}>
-            <IconButton size="small" onClick={handleMesAnterior}>
-              <ChevronLeftIcon />
-            </IconButton>
-            <IconButton size="small" onClick={handleMesProximo}>
-              <ChevronRightIcon />
-            </IconButton>
+            <IconActionButton title="Mês anterior" icon={<ChevronLeftIcon />} size="small" onClick={handleMesAnterior} />
+            <IconActionButton title="Próximo mês" icon={<ChevronRightIcon />} size="small" onClick={handleMesProximo} />
           </Stack>
         </Stack>
 

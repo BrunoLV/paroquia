@@ -5,16 +5,17 @@ import {
     alpha,
     Avatar,
     Box,
-    ButtonGroup,
     Card,
     CardContent,
     Collapse,
     Container,
     Grid,
     Skeleton,
+    Stack,
     ToggleButton,
     ToggleButtonGroup,
     Typography,
+    useTheme,
 } from '@mui/material';
 import {
     AccountTree as AccountTreeIcon,
@@ -35,9 +36,10 @@ import {ExportFormat, useOrganogramaExport} from '../hooks/useOrganogramaExport'
 import {OrganogramaExportButton} from '../components/organograma/OrganogramaExportButton';
 import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
-import theme from '../theme';
+import IconActionButton from '../components/IconActionButton';
 
 const Organograma: React.FC = () => {
+  const theme = useTheme();
   const { data: organograma, isLoading, isError } = useQuery({
     queryKey: ['organograma'],
     queryFn: getOrganograma,
@@ -418,44 +420,41 @@ const Organograma: React.FC = () => {
           <Box>
             {/* Controle de Zoom */}
             <Box className="no-export" sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <ButtonGroup
-                size="small"
-                variant="outlined"
+              <Stack
+                direction="row"
+                spacing={0.5}
                 sx={{
+                  alignItems: 'center',
                   bgcolor: 'background.paper',
                   border: '1px solid',
                   borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 0.5,
                 }}
               >
-                <ActionButton
+                <IconActionButton
                   title="Diminuir Zoom"
                   icon={<ZoomOutIcon fontSize="small" />}
                   onClick={handleZoomOut}
                   disabled={zoom <= 0.5}
-                  sx={{ color: 'primary.main', borderColor: 'divider' }}
+                  size="small"
                 />
                 <ActionButton
                   title="Resetar Zoom"
                   icon={<></>}
                   label={`${Math.round(zoom * 100)}%`}
+                  variant="text"
                   onClick={handleZoomReset}
-                  sx={{
-                    color: 'primary.main',
-                    borderColor: 'divider',
-                    fontWeight: 700,
-                    fontSize: '0.75rem',
-                    px: 2,
-                    minWidth: 52,
-                  }}
+                  sx={{ color: 'primary.main', fontWeight: 700, fontSize: '0.75rem', px: 1, minWidth: 52 }}
                 />
-                <ActionButton
+                <IconActionButton
                   title="Aumentar Zoom"
                   icon={<ZoomInIcon fontSize="small" />}
                   onClick={handleZoomIn}
                   disabled={zoom >= 1.5}
-                  sx={{ color: 'primary.main', borderColor: 'divider' }}
+                  size="small"
                 />
-              </ButtonGroup>
+              </Stack>
             </Box>
 
             <Box sx={{ overflowX: 'auto', width: '100%', pb: 4 }}>

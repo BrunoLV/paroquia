@@ -1,17 +1,18 @@
 import React from 'react';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   Stack,
   Typography,
   Box,
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
+import CloseIcon from '@mui/icons-material/Close';
+import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import { ReservaConflitoDetalhe } from '@/api/types';
 
 interface EventoConflitoRecursoDialogProps {
@@ -46,7 +47,7 @@ export const EventoConflitoRecursoDialog: React.FC<EventoConflitoRecursoDialogPr
         <WarningAmberIcon color="error" />
         Bloqueio de Conflito de Recursos (409)
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
         <Typography variant="body1" sx={{ mb: 2 }}>
           {mensagem ||
             'Não foi possível salvar o evento pois o local ou recurso selecionado já possui reserva ativa no mesmo intervalo, incluindo a margem de buffer de segurança.'}
@@ -85,9 +86,7 @@ export const EventoConflitoRecursoDialog: React.FC<EventoConflitoRecursoDialogPr
         </Stack>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} variant="contained" color="primary">
-          Ajustar Horário ou Espaço
-        </Button>
+        <ActionButton title="Ajustar Horário ou Espaço" icon={<CloseIcon />} color="secondary" onClick={onClose} />
       </DialogActions>
     </Dialog>
   );

@@ -20,7 +20,7 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 
 | Escopo da Tarefa no Frontend | Skills Mandatórias | Invariantes Críticas |
 | :--- | :--- | :--- |
-| **Componentes, Páginas, Telas & Layout** | `react-frontend.md` | • Semântica MUI 9 pura: **PROIBIDAS** tags HTML cruas (`div`, `span`, `p`) para layout/texto.<br>• Uso exclusivo do novo `<Grid2 container spacing={2}>` e `<Grid2 size={{ xs: 12, ... }}>`.<br>• Limites de linhas: componentes puros (10–60 linhas); formulários densos (máximo 120 linhas).<br>• Cantos arredondados padronizados pelo tema (`shape.borderRadius: 12`). |
+| **Componentes, Páginas, Telas & Layout** | `react-frontend.md`<br>`DESIGN_SYSTEM.md` | • Leitura de `DESIGN_SYSTEM.md` **obrigatória** antes de tocar em qualquer tela/modal/formulário — é a fonte única do padrão visual (botões, busca, diálogos, tabelas, estados assíncronos).<br>• Semântica MUI 9 pura: **PROIBIDAS** tags HTML cruas (`div`, `span`, `p`) para layout/texto.<br>• Uso exclusivo do novo `<Grid2 container spacing={2}>` e `<Grid2 size={{ xs: 12, ... }}>`.<br>• Limites de linhas: componentes puros (10–60 linhas); formulários densos (máximo 120 linhas).<br>• Cantos arredondados padronizados pelo tema (`shape.borderRadius: 12`). |
 | **Formulários & Entradas de Dados** | `react-frontend.md` | • Schema Zod obrigatório em `src/schemas/<entidade>Schema.ts`.<br>• Integração mandatória via `react-hook-form` + `@hookform/resolvers/zod`.<br>• Proibida proliferação de `useState` para múltiplos inputs.<br>• Máscaras e formatadores sistemáticos (`src/utils/masks.ts`). |
 | **Server State & Integração com API** | `react-frontend.md` | • TanStack Query v5 exclusivo em hooks dedicados (`src/hooks/`).<br>• Chaves centralizadas via Query Key Factories serializáveis (`fielKeys.all`).<br>• Proibidas chamadas diretas de `fetch`/`axios` dentro do corpo de componentes.<br>• Invalidação de queries e feedback visual com notificações após mutações. |
 | **Acessibilidade (a11y) & Tabelas** | `react-frontend.md` | • Linhas de tabela clicáveis devem ter `role="button"`, `tabIndex={0}` e listeners `onKeyDown` (`Enter`/`Space`).<br>• Botões e menus de ações na linha **DEVEM** conter `event.stopPropagation()`.<br>• Paginação obrigatória em todas as listagens (`<TablePagination>`). |
@@ -31,36 +31,9 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 
 ## 3. Padrão Visual Oficial (*Padrão Arrojado*)
 
-O módulo de **Fiéis** (`src/pages/Fieis.tsx`) estabelece o padrão canônico para todas as telas do sistema:
+👉 **Fonte única e obrigatória: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).** Leia-o antes de criar ou alterar qualquer tela, modal, formulário ou componente visual. Não duplicar seu conteúdo aqui — qualquer divergência entre este arquivo e `DESIGN_SYSTEM.md` resolve-se a favor do `DESIGN_SYSTEM.md`.
 
-### 3.1. Estrutura de Página e Telas
-* Contêiner raiz: `<Stack spacing={3}>`.
-* Cabeçalho de página mandatório (`src/components/PageHeader.tsx`):
-  ```tsx
-  <PageHeader
-    icon={<PersonOutlineIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
-    title="Título da Página"
-    subtitle="Descrição objetiva do contexto do módulo"
-    actions={<ActionButton title="Novo Registro" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />}
-  />
-  ```
-* Barra de busca e filtros com contêiner delimitado (`<Box sx={{ maxWidth: 400 }}>`) e adorno de lupa.
-
-### 3.2. Botões e Ações (`ActionButton`)
-* **PROIBIDO** utilizar `<Button>` cru sem estilização semântica ou botões apenas com ícone sem rótulo/tooltip.
-* Utilize exclusivamente `<ActionButton title="..." icon={<Icon />} ... />` (`src/components/ActionButton.tsx`):
-  * **Ação Primária** (Salvar, Criar, Homologar): `color="primary"`, ícone `<SaveIcon />` / `<AddIcon />` / `<CheckCircleIcon />`.
-  * **Ação Secundária** (Cancelar, Fechar, Voltar): `color="secondary"`, ícone `<CloseIcon />` / `<ArrowBackIcon />`.
-  * **Ação Destrutiva** (Inativar, Excluir, Vetar): `color="error"`, ícone `<BlockIcon />` / `<CancelIcon />` / `<DeleteIcon />`.
-
-### 3.3. Tríade de Estados Assíncronos
-* **Loading:** Renderizar `<Skeleton>` estruturados com dimensões aproximadas ao conteúdo real; nunca deixar telas em branco.
-* **Empty State:** Se a busca ou tabela não contiver dados, renderizar `<EmptyState>` com ícone contextual e botão de ação primária.
-* **Error State:** Falhas na query devem renderizar alertas contextuais com opção de retry (`refetch()`).
-
-### 3.4. Indicadores Categóricos de Domínio (`StatusIcon`)
-* Tipos, categorias, classificações, sacramentos e estados de ciclo de vida **DEVEM** ser renderizados exclusivamente via `<StatusIcon {...get<Propriedade>Meta(valor)} />` (`src/components/StatusIcon.tsx`).
-* Proibido exibir enums crus com sublinhados (`_`); utilize mapeadores de rótulos amigáveis.
+Resumo do que ele cobre: layout de página (`PageHeader`, `Stack spacing={3}`), busca (`SearchField`), botões (`ActionButton`/`IconActionButton` + semântica de cor — nunca `ActionButton` sem `label` como controle só-ícone), estrutura de diálogos (`Card`+`Grid2`+`DIALOG_CONTENT_SCROLL_SX`, um único controle de fechar por Dialog/Drawer), espaçamento fixo de campos (`Stack spacing={2.5}`/`Grid spacing={2}`, nunca `Box`+`gap`), tríade de estados assíncronos, `StatusIcon`, `InfoField` com ícone obrigatório em toda tela de detalhe, tabelas e modo escuro (`useTheme()`, nunca import estático de tema). É especificação global: aplica-se a toda tela/módulo, novo ou existente, sem exceções por página.
 
 ---
 

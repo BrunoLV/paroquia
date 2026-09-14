@@ -21,6 +21,8 @@ import {
 import BuildIcon from '@mui/icons-material/Build';
 import CloseIcon from '@mui/icons-material/Close';
 import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import { manutencaoAtivoSchema, ManutencaoAtivoFormInput } from '@/schemas/ativoSchema';
 import { verificarConflitoManutencao } from '@/api/ativos';
 import { AtivoPatrimonial, ReservaImpeditiva } from '@/api/types';
@@ -52,7 +54,7 @@ export const AtivoManutencaoModal: React.FC<AtivoManutencaoModalProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ManutencaoAtivoFormInput>({
     resolver: zodResolver(manutencaoAtivoSchema),
     defaultValues: { descricaoReparo: '', dataInicio: '', dataFimPrevista: '' },
@@ -109,11 +111,13 @@ export const AtivoManutencaoModal: React.FC<AtivoManutencaoModalProps> = ({
     });
   };
 
+  const handleClose = () => confirmDiscard(isDirty, onClose);
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(submit)} noValidate>
         <DialogTitle>Enviar para Manutenção — {ativo.nome}</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -183,7 +187,7 @@ export const AtivoManutencaoModal: React.FC<AtivoManutencaoModalProps> = ({
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
-          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
+          <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={handleClose} />
           <ActionButton
             title="Enviar para Manutenção"
             icon={<BuildIcon />}

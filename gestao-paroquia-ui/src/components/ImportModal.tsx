@@ -3,6 +3,7 @@ import {
     Alert,
     alpha,
     Box,
+    Stack,
     Chip,
     CircularProgress,
     Dialog,
@@ -25,6 +26,7 @@ import {
     TablePagination,
     TableRow,
     Typography,
+    useTheme,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -36,6 +38,7 @@ import {
     Download as DownloadIcon,
     Error as ErrorIcon,
 } from '@mui/icons-material';
+import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
 import {useNotification} from '../context/NotificationContext';
 import {extractErrorMessage} from '../utils/errorUtils';
 import {useQueryClient} from '@tanstack/react-query';
@@ -45,7 +48,6 @@ import {
     ImportacaoValidacaoResultado,
     validarImportacao
 } from '../api/importacao';
-import theme from '../theme';
 import ActionButton from './ActionButton';
 
 interface ImportModalProps {
@@ -69,6 +71,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   onSuccess,
   defaultEntity = 'MEMBRO',
 }) => {
+  const theme = useTheme();
   const { showSuccess, showError } = useNotification();
   const queryClient = useQueryClient();
   const [activeStep, setActiveStep] = useState(0);
@@ -153,7 +156,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         Importação de Registros em Lote
       </DialogTitle>
 
-      <DialogContent dividers>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {STEPS.map((label) => (
             <Step key={label}>
@@ -163,7 +166,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         </Stepper>
 
         {activeStep === 0 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+          <Stack spacing={2.5} sx={{ mt: 1 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="import-entity-label">Tipo de Cadastro</InputLabel>
               <Select
@@ -188,7 +191,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               <ActionButton title="Baixar Template Excel (.xlsx)" icon={<DownloadIcon />} color="primary" onClick={() => handleDownload('XLSX')} />
             </Box>
 
-            <Box sx={{ border: '2px dashed', borderColor: 'divider', p: 3, textAlign: 'center', bgcolor: theme.custom.subtlePanelBg }}>
+            <Box sx={{ border: '2px dashed', borderColor: 'divider', p: 3, textAlign: 'center', bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
               <ActionButton title="Selecionar Arquivo CSV ou Excel" icon={<UploadIcon />} color="primary" component="label">
                 <input
                   type="file"
@@ -202,11 +205,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 {selectedFile ? `Arquivo selecionado: ${selectedFile.name}` : 'Nenhum arquivo selecionado'}
               </Typography>
             </Box>
-          </Box>
+          </Stack>
         )}
 
         {activeStep === 1 && validationResult && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+          <Stack spacing={2.5} sx={{ mt: 1 }}>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Chip icon={<ValidIcon />} label={`${validationResult.totalValidos} Válidos`} color="success" />
               <Chip icon={<ErrorIcon />} label={`${validationResult.totalInvalidos} Inválidos`} color="error" />
@@ -263,7 +266,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
               />
             </TableContainer>
-          </Box>
+          </Stack>
         )}
 
         {activeStep === 2 && validationResult && (

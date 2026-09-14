@@ -17,12 +17,16 @@ import {
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BuildIcon from '@mui/icons-material/Build';
+import CategoryIcon from '@mui/icons-material/Category';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
+import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import EventIcon from '@mui/icons-material/Event';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import StatusIcon from '@/components/StatusIcon';
 import { InfoField } from '@/components/fieis/fielConstants';
 import { getAtivoStatusMeta } from '@/utils/statusMeta/ativoStatus';
@@ -79,8 +83,8 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
         </Stack>
       </DialogTitle>
 
-      <DialogContent dividers>
-        <Grid container spacing={2.5}>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+        <Grid container spacing={2}>
           <Grid size={{ xs: 12 }}>
             <Paper
               variant="outlined"
@@ -170,13 +174,13 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
                 </Stack>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoField label="Tipo" value={categoriaMeta.label} />
+                    <InfoField label="Tipo" icon={<CategoryIcon fontSize="inherit" />} value={categoriaMeta.label} />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoField label="Nº de Tombamento" value={ativo.codigoTombamento} />
+                    <InfoField label="Nº de Tombamento" icon={<QrCodeIcon fontSize="inherit" />} value={ativo.codigoTombamento} />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <InfoField label="Reservável" value={ativo.isReservavel ? 'Sim' : 'Não'} />
+                    <InfoField label="Reservável" icon={<BookmarkIcon fontSize="inherit" />} value={ativo.isReservavel ? 'Sim' : 'Não'} />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <InfoField
@@ -186,7 +190,7 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
                     />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
-                    <InfoField label="Descrição" value={ativo.descricao || '-'} />
+                    <InfoField label="Descrição" icon={<DescriptionIcon fontSize="inherit" />} value={ativo.descricao || '-'} />
                   </Grid>
                 </Grid>
               </CardContent>

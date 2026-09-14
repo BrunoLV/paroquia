@@ -18,6 +18,8 @@ import {
   Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import BadgeIcon from '@mui/icons-material/Badge';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
@@ -80,11 +82,13 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<FielCreateFormInput>({
     resolver: zodResolver(fielCreateSchema),
     defaultValues,
   });
+
+  const handleClose = () => confirmDiscard(isDirty, onClose);
 
   const paisOrigem = watch('paisOrigem');
   const tipoDocumentoEstrangeiro = watch('tipoDocumentoEstrangeiro');
@@ -95,10 +99,10 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>Novo fiel</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             {/* Dados Civis */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -512,7 +516,7 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
           <ActionButton
             title="Cancelar"
             icon={<CloseIcon />}
-            onClick={onClose}
+            onClick={handleClose}
             color="secondary"
           />
           <ActionButton

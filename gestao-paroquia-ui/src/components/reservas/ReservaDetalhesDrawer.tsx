@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Button,
   Divider,
   Drawer,
   Grid,
@@ -9,14 +8,19 @@ import {
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import ActionButton from '@/components/ActionButton';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import BuildIcon from '@mui/icons-material/Build';
 import EventIcon from '@mui/icons-material/Event';
 import PersonIcon from '@mui/icons-material/Person';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { ReservaDetalhe } from '@/api/types';
 import StatusIcon from '@/components/StatusIcon';
+import { InfoField } from '@/components/fieis/fielConstants';
 import { getReservaStatusMeta } from '@/utils/statusMeta/reservaStatus';
 
 interface ReservaDetalhesDrawerProps {
@@ -63,9 +67,7 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Detalhes da Reserva
           </Typography>
-          <Button size="small" onClick={onClose} startIcon={<CloseIcon />}>
-            Fechar
-          </Button>
+          <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
         </Stack>
 
         <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
@@ -92,30 +94,15 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
 
         <Grid container spacing={2}>
           <Grid size={{ xs: 12 }}>
-            <Typography variant="caption" color="text.secondary">
-              Finalidade / Descrição
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {reserva.descricao}
-            </Typography>
+            <InfoField label="Finalidade / Descrição" icon={<DescriptionIcon fontSize="inherit" />} value={reserva.descricao} />
           </Grid>
 
           <Grid size={{ xs: 6 }}>
-            <Typography variant="caption" color="text.secondary">
-              Início do Uso
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {formatarData(reserva.dataHoraInicio)}
-            </Typography>
+            <InfoField label="Início do Uso" icon={<ScheduleIcon fontSize="inherit" />} value={formatarData(reserva.dataHoraInicio)} />
           </Grid>
 
           <Grid size={{ xs: 6 }}>
-            <Typography variant="caption" color="text.secondary">
-              Término do Uso
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {formatarData(reserva.dataHoraFim)}
-            </Typography>
+            <InfoField label="Término do Uso" icon={<ScheduleIcon fontSize="inherit" />} value={formatarData(reserva.dataHoraFim)} />
           </Grid>
 
           {reserva.bufferMinutos > 0 && (
@@ -189,12 +176,11 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
 
           {reserva.aprovadorNome && (
             <Grid size={{ xs: 12 }}>
-              <Typography variant="caption" color="text.secondary">
-                Aprovado por:
-              </Typography>
-              <Typography variant="body2">
-                {reserva.aprovadorNome} em {formatarData(reserva.aprovadoEm)}
-              </Typography>
+              <InfoField
+                label="Aprovado por"
+                icon={<CheckCircleIcon fontSize="inherit" />}
+                value={`${reserva.aprovadorNome} em ${formatarData(reserva.aprovadoEm)}`}
+              />
             </Grid>
           )}
 

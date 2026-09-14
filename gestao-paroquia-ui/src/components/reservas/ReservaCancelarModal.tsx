@@ -2,7 +2,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,6 +10,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import BlockIcon from '@mui/icons-material/Block';
+import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import {
   cancelamentoReservaSchema,
   CancelamentoReservaFormData,
@@ -35,7 +39,7 @@ export const ReservaCancelarModal: React.FC<ReservaCancelarModalProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm<CancelamentoReservaFormData>({
     resolver: zodResolver(cancelamentoReservaSchema),
     defaultValues: { motivo: '' },
@@ -46,18 +50,18 @@ export const ReservaCancelarModal: React.FC<ReservaCancelarModalProps> = ({
     reset();
   };
 
-  const handleClose = () => {
+  const handleClose = () => confirmDiscard(isDirty, () => {
     reset();
     onClose();
-  };
+  });
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle sx={{ fontWeight: 700 }}>
           {isPendente ? 'Rejeitar Solicitação de Reserva' : 'Cancelar Reserva'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <DialogContentText sx={{ mb: 2 }}>
             Tem certeza que deseja {isPendente ? 'rejeitar a solicitação' : 'cancelar a reserva'} para o recurso{' '}
             <strong>{itemNome}</strong>? Esta operação liberará a agenda e registrará auditoria canônica.
@@ -76,17 +80,14 @@ export const ReservaCancelarModal: React.FC<ReservaCancelarModalProps> = ({
           />
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleClose} disabled={isSubmitting}>
-            Voltar
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
+          <ActionButton title="Voltar" icon={<CloseIcon />} color="secondary" onClick={handleClose} disabled={isSubmitting} />
+          <ActionButton
+            title={isPendente ? 'Rejeitar Solicitação' : 'Confirmar Cancelamento'}
+            icon={<BlockIcon />}
             color="error"
+            type="submit"
             disabled={isSubmitting}
-          >
-            {isPendente ? 'Rejeitar Solicitação' : 'Confirmar Cancelamento'}
-          </Button>
+          />
         </DialogActions>
       </form>
     </Dialog>

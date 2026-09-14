@@ -10,6 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import BuildIcon from '@mui/icons-material/Build';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -18,6 +19,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import ActionButton from '@/components/ActionButton';
 import StatusIcon from '@/components/StatusIcon';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import { getSituacaoAtivoMeta } from '@/utils/statusMeta/situacaoStatus';
 import { Local, Organizacao } from '@/api/types';
 
@@ -71,8 +73,8 @@ export const LocalViewModal: React.FC<LocalViewModalProps> = ({
         </Stack>
       </DialogTitle>
 
-      <DialogContent dividers>
-        <Grid container spacing={2.5}>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+        <Grid container spacing={2}>
           {/* Destaques principais */}
           <Grid size={{ xs: 12, sm: 6 }}>
             <Card variant="outlined" sx={{ height: '100%', backgroundColor: 'background.default' }}>
@@ -139,9 +141,12 @@ export const LocalViewModal: React.FC<LocalViewModalProps> = ({
             <Card variant="outlined">
               <CardContent>
                 <Stack spacing={1}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
-                    Finalidades de Uso, Equipamentos e Restrições
-                  </Typography>
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                    <BuildIcon color="action" fontSize="small" />
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
+                      Finalidades de Uso, Equipamentos e Restrições
+                    </Typography>
+                  </Stack>
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: 'text.primary' }}>
                     {descricao}
                   </Typography>

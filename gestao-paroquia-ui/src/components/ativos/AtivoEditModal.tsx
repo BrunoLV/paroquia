@@ -15,9 +15,12 @@ import {
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import SaveIcon from '@mui/icons-material/Save';
 import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import { getCategoriaAtivoMeta } from '@/utils/statusMeta/categoriaAtivoStatus';
 import { descricaoAtivoSchema, DescricaoAtivoFormInput } from '@/schemas/ativoSchema';
 import { AtivoPatrimonial } from '@/api/types';
@@ -51,7 +54,7 @@ export const AtivoEditModal: React.FC<AtivoEditModalProps> = ({ open, ativo, isP
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<DescricaoAtivoFormInput>({
     resolver: zodResolver(descricaoAtivoSchema),
     defaultValues: { descricao: '' },
@@ -66,18 +69,22 @@ export const AtivoEditModal: React.FC<AtivoEditModalProps> = ({ open, ativo, isP
   if (!ativo) return null;
 
   const submit = (data: DescricaoAtivoFormInput) => onSave(data.descricao || null);
+  const handleClose = () => confirmDiscard(isDirty, onClose);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(submit)} noValidate>
         <DialogTitle>Editar Ativo — {ativo.nome}</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main', mb: 2 }}>
-                  Campos imutáveis
-                </Typography>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <LockIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Campos imutáveis
+                  </Typography>
+                </Stack>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField label="Nome" value={ativo.nome} fullWidth size="small" disabled slotProps={lockAdornment} />
@@ -103,9 +110,12 @@ export const AtivoEditModal: React.FC<AtivoEditModalProps> = ({ open, ativo, isP
 
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main', mb: 2 }}>
-                  Descrição (editável)
-                </Typography>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <EditIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Descrição (editável)
+                  </Typography>
+                </Stack>
                 <TextField
                   fullWidth
                   multiline
@@ -121,7 +131,7 @@ export const AtivoEditModal: React.FC<AtivoEditModalProps> = ({ open, ativo, isP
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
-          <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
+          <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={handleClose} />
           <ActionButton title="Salvar Descrição" icon={<SaveIcon />} color="primary" type="submit" disabled={isPending} />
         </DialogActions>
       </form>

@@ -22,6 +22,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CloseIcon from '@mui/icons-material/Close';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import EditIcon from '@mui/icons-material/Edit';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import EmailIcon from '@mui/icons-material/Email';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
@@ -75,7 +76,7 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
           )}
         </Stack>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
         <Stack spacing={2.5}>
           {/* Header com Avatar e Nome */}
           <Paper

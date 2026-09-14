@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  IconButton,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -16,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import IconActionButton from '@/components/IconActionButton';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
@@ -162,9 +162,12 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
                       <StatusIcon {...statusMeta} />
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" onClick={(e) => handleOpenMenu(e, r)}>
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
+                      <IconActionButton
+                        title="Mais ações"
+                        icon={<MoreVertIcon fontSize="small" />}
+                        size="small"
+                        onClick={(e) => handleOpenMenu(e, r)}
+                      />
                     </TableCell>
                   </TableRow>
                 );

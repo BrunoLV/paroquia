@@ -19,6 +19,7 @@ import {
     Tabs,
     TextField,
     Typography,
+    useTheme,
 } from '@mui/material';
 import {
     Cancel as CancelIcon,
@@ -39,7 +40,6 @@ import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
 import TableActionMenu from '../components/TableActionMenu';
 import StatusIcon from '../components/StatusIcon';
-import theme from '../theme';
 import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
 
 /**
@@ -54,6 +54,7 @@ import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from 
  * aprovador decide (ver `decisionMutation`/`projectDecisionMutation` abaixo).
  */
 const Aprovacoes = () => {
+  const theme = useTheme();
   const { showError, showSuccess } = useNotification();
   // tipoAprovacao alterna a fonte de dados exibida (eventos x projetos); tabValue
   // filtra por status dentro dessa fonte (ver array `statuses`).
@@ -471,7 +472,7 @@ const Aprovacoes = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom.subtlePanelBg }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
               {aprovacaoSelecionada.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>
@@ -607,7 +608,7 @@ const Aprovacoes = () => {
             <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom.subtlePanelBg }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
               {aprovacaoProjetoSelecionada.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>

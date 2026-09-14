@@ -41,10 +41,13 @@ import {
   Notifications as NotificationsIcon,
   People as PeopleIcon,
   Settings as SettingsIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isUnlinkedUser } from '../auth/permissions';
+import { useThemeMode } from '../context/ThemeModeContext';
 import ActionButton from './ActionButton';
 import IconActionButton from './IconActionButton';
 
@@ -63,6 +66,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { mode, toggleMode } = useThemeMode();
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -289,7 +293,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </Box>
       <Divider />
 
-      <List sx={{ px: 1, py: 1.5, flexGrow: 1, overflowY: 'auto' }} aria-label="Navegação principal">
+      <List component="nav" sx={{ px: 1, py: 1.5, flexGrow: 1, overflowY: 'auto' }} aria-label="Navegação principal">
         {/* Item raiz Dashboard */}
         {renderNavigationItem(dashboardItem)}
 
@@ -359,6 +363,26 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box
+        component="a"
+        href="#main-content"
+        sx={{
+          position: 'absolute',
+          left: 8,
+          top: -48,
+          zIndex: (t) => t.zIndex.tooltip + 1,
+          bgcolor: 'background.paper',
+          color: 'primary.main',
+          px: 2,
+          py: 1,
+          borderRadius: 1,
+          boxShadow: 3,
+          transition: 'top 0.15s ease-in',
+          '&:focus-visible': { top: 8 },
+        }}
+      >
+        Pular para o conteúdo principal
+      </Box>
       <Drawer
         variant={isMdUp ? 'permanent' : 'temporary'}
         open={isMdUp ? true : mobileOpen}
@@ -402,6 +426,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               Nossa Senhora de Fátima
             </Typography>
 
+            <IconActionButton
+              title={mode === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+              icon={mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+              color="inherit"
+              onClick={toggleMode}
+              sx={{ mr: user ? 1 : 0 }}
+            />
+
             {user && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'primary.main', fontSize: '0.8rem', fontWeight: 700 }}>
@@ -426,7 +458,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="xl" sx={{ pb: 6, flexGrow: 1, px: { xs: 2, sm: 3, lg: 4 } }}>
+        <Container id="main-content" component="main" tabIndex={-1} maxWidth="xl" sx={{ pb: 6, flexGrow: 1, px: { xs: 2, sm: 3, lg: 4 }, outline: 'none' }}>
           {user && isUnlinkedUser(user) ? (
             <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
               <Paper elevation={2} sx={{ p: 4, maxWidth: 600, width: '100%', borderRadius: 2 }}>

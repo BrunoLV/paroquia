@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
-  Button,
   CircularProgress,
   Divider,
   Drawer,
@@ -20,6 +19,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
+import ActionButton from '@/components/ActionButton';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import { reservaSchema, ReservaFormData } from '@/schemas/reservaSchema';
 import { TipoItemReserva } from '@/api/types';
 
@@ -54,7 +55,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
     watch,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ReservaFormData>({
     resolver: zodResolver(reservaSchema),
     defaultValues: {
@@ -78,8 +79,8 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
 
   useEffect(() => {
     if (open) {
-      if (preselectedTipo) setValue('tipoItem', preselectedTipo);
-      if (preselectedItemId) setValue('itemId', preselectedItemId);
+      if (preselectedTipo) setValue('tipoItem', preselectedTipo, { shouldDirty: false });
+      if (preselectedItemId) setValue('itemId', preselectedItemId, { shouldDirty: false });
     } else {
       reset();
     }
@@ -90,30 +91,27 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
     if (selectedTipo === 'LOCAL' && selectedItemId) {
       const loc = locais.find((l) => l.id === selectedItemId);
       if (loc && loc.bufferPadraoMinutos) {
-        setValue('bufferMinutos', loc.bufferPadraoMinutos);
+        setValue('bufferMinutos', loc.bufferPadraoMinutos, { shouldDirty: false });
       }
     }
   }, [selectedTipo, selectedItemId, locais, setValue]);
+
+  const handleClose = () => confirmDiscard(isDirty, onClose);
 
   return (
     <Drawer
       anchor="right"
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       slotProps={{
         paper: { sx: { width: { xs: '100%', sm: 480 }, p: 3 } },
       }}
     >
       <Stack spacing={2} sx={{ height: '100%', justifyContent: 'space-between' }}>
         <Box>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Nova Reserva de Recurso
-            </Typography>
-            <Button size="small" onClick={onClose} startIcon={<CloseIcon />}>
-              Fechar
-            </Button>
-          </Stack>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+            Nova Reserva de Recurso
+          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Aloque espaços físicos ou ativos patrimoniais para suas atividades pastorais ou eventos.
           </Typography>
@@ -335,18 +333,15 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
 
         <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-end' }}>
-            <Button variant="contained" color="secondary" onClick={onClose} disabled={isLoading}>
-              Cancelar
-            </Button>
-            <Button
-              variant="contained"
+            <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={handleClose} disabled={isLoading} />
+            <ActionButton
+              title="Confirmar Solicitação"
+              icon={isLoading ? <CircularProgress size={16} /> : <SaveIcon />}
+              color="primary"
               type="submit"
               form="reserva-form"
               disabled={isLoading}
-              startIcon={isLoading ? <CircularProgress size={16} /> : <SaveIcon />}
-            >
-              Confirmar Solicitação
-            </Button>
+            />
           </Stack>
         </Box>
       </Stack>

@@ -16,6 +16,8 @@ import { isGlobalCreator } from '@/auth/permissions';
 import { Local } from '@/api/types';
 import { getOrganizacoes } from '@/api/organizacoes';
 import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import { confirmDiscard } from '@/utils/confirmDiscard';
 import { LocalFormInput, localSchema } from '@/schemas/localSchema';
 import { LocalInformacoesGeraisCard } from './LocalInformacoesGeraisCard';
 import { LocalEnderecoCard } from './LocalEnderecoCard';
@@ -64,7 +66,7 @@ export const LocalFormModal: React.FC<LocalFormModalProps> = ({
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<LocalFormInput>({
     resolver: zodResolver(localSchema),
     defaultValues: {
@@ -142,14 +144,16 @@ export const LocalFormModal: React.FC<LocalFormModalProps> = ({
     onSave(payload);
   };
 
+  const handleClose = () => confirmDiscard(isDirty, onClose);
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>
           {local ? 'Editar Local' : 'Novo Local'}
         </DialogTitle>
 
-        <DialogContent dividers>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
             <LocalInformacoesGeraisCard
               control={control}
@@ -170,7 +174,7 @@ export const LocalFormModal: React.FC<LocalFormModalProps> = ({
           <ActionButton
             title="Cancelar"
             icon={<CloseIcon />}
-            onClick={onClose}
+            onClick={handleClose}
             color="secondary"
           />
           <ActionButton

@@ -22,6 +22,7 @@ import {
     Paper,
     Select,
     Skeleton,
+    Stack,
     Table,
     TableBody,
     TableCell,
@@ -50,6 +51,7 @@ import {
 import {useAuth} from '../auth/AuthContext';
 import PageHeader from '../components/PageHeader';
 import ActionButton from '../components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '../theme/dialogStyles';
 import TableActionMenu from '../components/TableActionMenu';
 import StatusIcon from '../components/StatusIcon';
 import { getProjetoStatusMeta } from '../utils/statusMeta/projetoStatus';
@@ -431,8 +433,8 @@ const Projects = () => {
           <DialogTitle>
             {isEditMode ? 'Editar Projeto' : 'Cadastrar Projeto'}
           </DialogTitle>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+          <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+            <Stack spacing={2.5} sx={{ mt: 1 }}>
               <TextField
                 label="Nome do Projeto"
                 required
@@ -514,7 +516,7 @@ const Projects = () => {
                   </Select>
                 </FormControl>
               )}
-            </Box>
+            </Stack>
           </DialogContent>
           <DialogActions>
             <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={() => setDialogOpen(false)} color="secondary" />
@@ -534,16 +536,13 @@ const Projects = () => {
       >
         {selectedProject && (
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <Box>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 0.5 }}>
-                  Detalhes do Projeto
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Visão consolidada de dados e indicadores.
-                </Typography>
-              </Box>
-              <ActionButton title="Fechar" icon={<CloseIcon />} size="small" color="secondary" onClick={() => setSelectedProject(null)} />
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 0.5 }}>
+                Detalhes do Projeto
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Visão consolidada de dados e indicadores.
+              </Typography>
             </Box>
             
             <Divider />

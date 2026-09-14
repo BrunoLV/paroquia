@@ -4,7 +4,7 @@
 
 Esta skill capacita o Agente de IA a projetar, refatorar e auditar código de frontend no ecossistema **`gestao-paroquia-ui`**. O agente atua como um Engenheiro Frontend Principal especializado em **React 19**, **TypeScript estrito**, **Material UI (MUI 9)**, **TanStack Query v5**, **Vite** e **Vitest**.
 
-O objetivo é garantir interfaces declarativas com tipagem robusta, acessibilidade por teclado (a11y/WCAG), isolamento completo de regras de negócio em hooks e fidelidade absoluta aos padrões visuais e ergonômicos estabelecidos pelo módulo de referência **Fiéis** (`src/pages/Fieis.tsx`).
+O objetivo é garantir interfaces declarativas com tipagem robusta, acessibilidade por teclado (a11y/WCAG), isolamento completo de regras de negócio em hooks e fidelidade absoluta à especificação global de padrões visuais e ergonômicos em [`DESIGN_SYSTEM.md`](../../DESIGN_SYSTEM.md) — aplicável a toda tela/módulo, sem exceções.
 
 ---
 
@@ -78,7 +78,7 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 
 ## 5. Design System e Padrões Visuais Oficiais (*Padrão Arrojado*)
 
-O módulo **Fiéis** (`src/pages/Fieis.tsx`) é a referência visual e funcional mandatória para todo o sistema:
+👉 **Fonte única e obrigatória: [`../../DESIGN_SYSTEM.md`](../../DESIGN_SYSTEM.md)** (raiz de `gestao-paroquia-ui/`). Leia-o antes de tocar em qualquer tela, modal, formulário ou componente visual — cobre layout de página, `SearchField`, `ActionButton`/`IconActionButton`, estrutura de `Dialog` (`Card`+`Grid2`+`DIALOG_CONTENT_SCROLL_SX`), tríade de estados assíncronos, `StatusIcon` e tabelas. É especificação global, aplicável igualmente a toda tela/módulo do sistema, novo ou existente. As subseções 5.1–5.7 abaixo foram consolidadas lá; mantidas aqui apenas como referência histórica rápida — em caso de divergência, `DESIGN_SYSTEM.md` prevalece.
 
 ### 5.1. Layout de Páginas e Cabeçalho
 

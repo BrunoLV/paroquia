@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import { Box, FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
+import SearchField from '@/components/SearchField';
 
 interface OrganizacoesFilterBarProps {
   searchTerm: string;
@@ -21,12 +21,10 @@ export const OrganizacoesFilterBar: React.FC<OrganizacoesFilterBarProps> = ({
 }) => (
   <Paper sx={{ p: 2, mb: 3 }}>
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-      <SearchIcon color="action" />
-      <TextField
-        size="small"
-        placeholder="Buscar por nome, coordenador ou tipo..."
+      <SearchField
         value={searchTerm}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={onSearchChange}
+        placeholder="Buscar por nome, coordenador ou tipo..."
         sx={{ flexGrow: 1, minWidth: 280 }}
       />
       <FormControl size="small" sx={{ minWidth: 180 }}>

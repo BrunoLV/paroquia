@@ -24,6 +24,7 @@ import {
   TextField,
   Typography,
   Stack,
+  useTheme,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -38,14 +39,15 @@ import { getOrganizacoes } from '../api/organizacoes';
 import { CpcDecisao, StatusHomologacao } from '../api/types';
 import { CpcDecisaoModal } from '../components/CpcDecisaoModal';
 import ActionButton from '../components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '../theme/dialogStyles';
 import TableActionMenu from '../components/TableActionMenu';
 import StatusIcon from '../components/StatusIcon';
 import { getHomologacaoStatusMeta } from '../utils/statusMeta/homologacaoStatus';
 import PageHeader from '../components/PageHeader';
-import theme from '../theme';
 import { formatDateBr } from '../utils/masks';
 
 export const ConselhosAtas: React.FC = () => {
+  const theme = useTheme();
   const { user } = useAuth();
   const { showSuccess, showError } = useNotification();
   const queryClient = useQueryClient();
@@ -160,7 +162,7 @@ export const ConselhosAtas: React.FC = () => {
           
           border: '1px solid',
           borderColor: 'divider',
-          backgroundColor: theme.custom.subtlePanelBg,
+          backgroundColor: theme.custom?.subtlePanelBg ?? '#F8F9FA',
         }}
       >
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
@@ -309,8 +311,8 @@ export const ConselhosAtas: React.FC = () => {
 
       <Dialog open={!!vetoDialogItem} onClose={() => setVetoDialogItem(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Vetar Ata / Decisão de Conselho</DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Stack spacing={2.5} sx={{ mt: 1 }}>
             <Typography variant="body2" color="textSecondary">
               Informe o motivo do veto para a ata "{vetoDialogItem?.titulo}". Esta justificativa será gravada de forma auditável.
             </Typography>
@@ -324,7 +326,7 @@ export const ConselhosAtas: React.FC = () => {
               onChange={(e) => setMotivoVeto(e.target.value)}
               required
             />
-          </Box>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar veto" icon={<CloseIcon />} onClick={() => setVetoDialogItem(null)} color="secondary" />

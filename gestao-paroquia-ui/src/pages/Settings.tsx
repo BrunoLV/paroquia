@@ -16,6 +16,7 @@ import {
   Paper,
   Select,
   Skeleton,
+  Stack,
   Tab,
   Table,
   TableBody,
@@ -72,6 +73,7 @@ import PageHeader from '@/components/PageHeader';
 import StatusIcon from '@/components/StatusIcon';
 import SacramentoIcon from '@/components/SacramentoIcon';
 import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import TableActionMenu from '@/components/TableActionMenu';
 import { getAnoParoquialStatusMeta } from '@/utils/statusMeta/anoParoquialStatus';
 import { SACRAMENTO_META } from '@/utils/statusMeta/sacramentos';
@@ -819,8 +821,8 @@ export const Settings = () => {
       {/* Admin User Register Modal */}
       <Dialog open={isAdminRegisterModalOpen} onClose={() => setIsAdminRegisterModalOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Cadastrar Novo Usuário do Sistema</DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Stack spacing={2.5} sx={{ pt: 1 }}>
             <FormControl fullWidth size="small">
               <InputLabel id="admin-reg-fiel-label">Vincular a Fiel Cadastrado</InputLabel>
               <Select
@@ -862,7 +864,7 @@ export const Settings = () => {
               value={adminRegisterPassword}
               onChange={(e) => setAdminRegisterPassword(e.target.value)}
             />
-          </Box>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setIsAdminRegisterModalOpen(false)} />
@@ -889,8 +891,8 @@ export const Settings = () => {
       {/* PO Form Modal */}
       <Dialog open={poModalOpen} onClose={() => setPoModalOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{selectedPO ? 'Editar Tipo Oficial' : 'Novo Tipo Oficial'}</DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Stack spacing={2.5} sx={{ pt: 1 }}>
             <TextField
               label="Nome do Tipo Oficial"
               fullWidth
@@ -913,7 +915,7 @@ export const Settings = () => {
                 <MenuItem value="MOVIMENTO">Movimento</MenuItem>
               </Select>
             </FormControl>
-          </Box>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setPoModalOpen(false)} />

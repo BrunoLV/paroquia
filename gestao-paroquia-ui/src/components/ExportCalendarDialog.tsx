@@ -14,10 +14,12 @@ import {
     Radio,
     RadioGroup,
     Select,
+    Stack,
     TextField,
 } from '@mui/material';
 
 import {Close as CloseIcon, Download as DownloadIcon} from '@mui/icons-material';
+import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
 import {Organizacao} from '../api/types';
 import ActionButton from './ActionButton';
 
@@ -86,9 +88,9 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>Exportar Calendário</DialogTitle>
-      <DialogContent dividers>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-          
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+        <Stack spacing={2.5} sx={{ mt: 1 }}>
+
           <FormControl>
             <FormLabel sx={{ fontWeight: 600, fontSize: '0.75rem', mb: 0.5 }}>Formato de Saída:</FormLabel>
             <RadioGroup row value={formato} onChange={(e) => isFormatoExportacao(e.target.value) && setFormato(e.target.value)}>
@@ -228,7 +230,7 @@ export const ExportCalendarDialog: React.FC<ExportCalendarDialogProps> = ({ open
             </FormControl>
           </Box>
 
-        </Box>
+        </Stack>
       </DialogContent>
       <DialogActions>
         <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} color="secondary" />

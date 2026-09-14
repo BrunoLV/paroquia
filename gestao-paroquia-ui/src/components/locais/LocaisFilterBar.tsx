@@ -1,6 +1,6 @@
 import React from 'react';
-import { FormControl, InputLabel, MenuItem, Paper, Select, Stack, TextField } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
+import { FormControl, InputLabel, MenuItem, Paper, Select, Stack } from '@mui/material';
+import SearchField from '@/components/SearchField';
 import { Organizacao } from '@/api/types';
 
 interface LocaisFilterBarProps {
@@ -28,12 +28,10 @@ export const LocaisFilterBar: React.FC<LocaisFilterBarProps> = ({
 }) => (
   <Paper sx={{ p: 2, mb: 3 }}>
     <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
-      <SearchIcon color="action" />
-      <TextField
-        size="small"
-        placeholder="Buscar local por nome ou endereço..."
+      <SearchField
         value={searchTerm}
-        onChange={(e) => onSearchChange(e.target.value)}
+        onChange={onSearchChange}
+        placeholder="Buscar local por nome ou endereço..."
         sx={{ flexGrow: 1, minWidth: 260 }}
       />
       <FormControl size="small" sx={{ minWidth: 180 }}>

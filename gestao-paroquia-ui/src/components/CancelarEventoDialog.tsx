@@ -1,15 +1,16 @@
 import React, {useState} from 'react';
 import {
-    Box,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Stack,
     TextField,
 } from '@mui/material';
 import {ArrowBack as ArrowBackIcon, Block as BlockIcon} from '@mui/icons-material';
 import {useNotification} from '../context/NotificationContext';
+import {DIALOG_CONTENT_SCROLL_SX} from '../theme/dialogStyles';
 import ActionButton from './ActionButton';
 
 interface CancelarEventoDialogProps {
@@ -53,8 +54,8 @@ const CancelarEventoDialog: React.FC<CancelarEventoDialogProps> = ({
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <form onSubmit={handleSubmit} noValidate>
         <DialogTitle>Cancelar Evento</DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Stack spacing={2.5}>
             <DialogContentText color="text.secondary">
               Você está prestes a cancelar o evento{eventTitle ? ` "${eventTitle}"` : ''}.
               Por favor, informe a justificativa abaixo. Esta ação é irreversível e notificará os organizadores.
@@ -70,7 +71,7 @@ const CancelarEventoDialog: React.FC<CancelarEventoDialogProps> = ({
               disabled={isSubmitting}
               slotProps={{ htmlInput: { maxLength: 4000 } }}
             />
-          </Box>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <ActionButton

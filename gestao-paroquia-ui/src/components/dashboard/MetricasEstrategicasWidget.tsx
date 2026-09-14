@@ -1,11 +1,10 @@
 import React from 'react';
-import { Box, Card, CardContent, Grid, Typography, Chip, Skeleton } from '@mui/material';
+import { Box, Card, CardContent, Grid, Typography, Chip, Skeleton, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { usePainelMetricasEstrategicas } from '../../hooks/useMetricasEstrategicas';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ActionButton from '../ActionButton';
-import theme from '../../theme';
 import {
   getAvaliacaoExecutivaLabel,
   getDiagnosticoPastoralLabel,
@@ -14,6 +13,7 @@ import {
 } from '../../utils/statusMeta/metricasEstrategicasLabels';
 
 export const MetricasEstrategicasWidget: React.FC = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { data, isLoading } = usePainelMetricasEstrategicas();
 
@@ -28,7 +28,7 @@ export const MetricasEstrategicasWidget: React.FC = () => {
   const { taxaProjetos, slaDespacho, impactoSocial, concorrenciaInterpastoral } = data;
 
   return (
-    <Card sx={{ mb: 3, bgcolor: theme.custom.subtlePanelBg }}>
+    <Card sx={{ mb: 3, bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

@@ -14,8 +14,8 @@ import {
     Select,
     TextField,
     Typography,
+    useTheme,
 } from '@mui/material';
-import theme from '../theme';
 
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';
 type TerminationType = 'NEVER' | 'DATE' | 'COUNT';
@@ -61,6 +61,7 @@ export const DAYS_OF_WEEK = [
 ];
 
 const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disabled }) => {
+  const theme = useTheme();
   const [terminationType, setTerminationType] = React.useState<TerminationType>(
     rule.dataLimite ? 'DATE' : rule.numeroOcorrencias ? 'COUNT' : 'NEVER'
   );
@@ -96,7 +97,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({ rule, onChange, disable
   };
 
   return (
-    <Box sx={{ p: 2, bgcolor: theme.custom.subtlePanelBg, border: '1px solid', borderColor: 'divider' }}>
+    <Box sx={{ p: 2, bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA', border: '1px solid', borderColor: 'divider' }}>
       <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
         Configurações de Repetição
       </Typography>

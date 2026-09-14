@@ -22,6 +22,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Add as AddIcon, Close as CloseIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import { getOrganizacaoMembros } from '@/api/organizacoes';
 import { adicionarVinculo, AdicionarVinculoRequest, removerVinculo, Usuario } from '@/api/usuarios';
 import { Organizacao, PAPEL_ECLESIAL_LABELS } from '@/api/types';
@@ -109,7 +110,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Membros - {organizacao?.nome}</DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
         {isLoading ? (
           <Box sx={{ py: 2 }}>
             <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
