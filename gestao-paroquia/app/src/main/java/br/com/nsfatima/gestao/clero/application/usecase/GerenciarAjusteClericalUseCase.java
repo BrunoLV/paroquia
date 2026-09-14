@@ -93,8 +93,6 @@ public class GerenciarAjusteClericalUseCase {
             if (entity.getEndereco() != null) {
                 clerigo.setEndereco(entity.getEndereco());
             }
-            clerigo.setAtualizadoEmUtc(agora);
-            clerigo.setAtualizadoPor(usuarioAprovadorId.toString());
             clerigos.save(clerigo);
             notificacoes.publicar(
                     entity.getUsuarioSolicitanteId(),

@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -11,7 +13,7 @@ import java.util.UUID;
 /** Proposta de alteração que só altera o Fiel após decisão administrativa. */
 @Entity
 @Table(name = "solicitacoes_ajuste_cadastral", schema = "calendario")
-public class SolicitacaoAjusteCadastralEntity {
+public class SolicitacaoAjusteCadastralEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -51,7 +53,6 @@ public class SolicitacaoAjusteCadastralEntity {
     private String justificativaAnalise;
     private UUID analisadoPorUsuarioId;
     private Instant analisadoEmUtc;
-    private Instant criadoEmUtc;
 
     public UUID getId() {
         return id;
@@ -187,13 +188,5 @@ public class SolicitacaoAjusteCadastralEntity {
 
     public void setAnalisadoEmUtc(Instant v) {
         analisadoEmUtc = v;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant v) {
-        criadoEmUtc = v;
     }
 }

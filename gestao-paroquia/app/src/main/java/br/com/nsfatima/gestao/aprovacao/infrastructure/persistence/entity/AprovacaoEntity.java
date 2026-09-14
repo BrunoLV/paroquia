@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoGrupoAttributeConverter;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "aprovacoes", schema = "calendario")
-public class AprovacaoEntity extends BaseVersionedEntity {
+public class AprovacaoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -42,9 +42,6 @@ public class AprovacaoEntity extends BaseVersionedEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)
     private AprovacaoStatus status;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
 
     @Column(name = "decidido_em_utc")
     private Instant decididoEmUtc;
@@ -102,14 +99,6 @@ public class AprovacaoEntity extends BaseVersionedEntity {
 
     public void setTipoSolicitacao(String tipoSolicitacao) {
         this.tipoSolicitacao = tipoSolicitacao;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
     }
 
     public String getAprovadorPapel() {

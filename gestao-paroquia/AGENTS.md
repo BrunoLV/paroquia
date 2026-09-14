@@ -116,6 +116,28 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
   `support.domain.AggregateRoot<ID>`, registram `DomainEvent` internamente e são drenados
   pela camada de aplicação via `PublicadorEventosDominio.publicar(raiz)` após o `save`.
 
+### 5.2. Padrão Mandatório de Auditoria de Entidades (Spring Data JPA Auditing)
+
+* **Modelo Único de Auditoria (`BaseAuditableEntity`):**
+  * **Todas** as entidades JPA mapeadas (`@Entity`) no sistema **DEVEM** estender `br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity`.
+  * **ESTRITAMENTE PROIBIDO** criar modelos paralelos, alternativos ou incompletos de auditoria (como entidades que registram apenas criação ou auditam via campos soltos).
+* **Nomenclatura e Tipagem Padronizada:**
+  * `criado_em_utc` (`Instant criadoEmUtc`) com anotação `@CreatedDate`.
+  * `atualizado_em_utc` (`Instant atualizadoEmUtc`) com anotação `@LastModifiedDate`.
+  * `criado_por` (`String criadoPor`, tamanho 128) com anotação `@CreatedBy`.
+  * `atualizado_por` (`String atualizadoPor`, tamanho 128) com anotação `@LastModifiedBy`.
+* **Erradicação Total de Auditoria Manual:**
+  * **PROIBIDO** declarar callbacks manuais `@PrePersist` ou `@PreUpdate` para fins de auditoria em entidades JPA.
+  * **PROIBIDO** preencher campos de auditoria manualmente ou chamar rotinas de resolução de ator (`resolverAtor()`, `setCriadoPor(...)`, `setCriadoEmUtc(...)`) em casos de uso (`usecase`), serviços de aplicação ou controllers.
+  * O preenchimento dos campos é 100% automático e delegado ao `AuditingEntityListener` do Spring Data JPA acoplado ao `AuditorAware<String>` configurado em `JpaAuditingConfig`.
+* **Isolamento Estrito de Domínio (Clean / Hexagonal Architecture):**
+  * Conceitos e mecanismos do framework de auditoria JPA **NUNCA** devem vazar para o domínio (`domain/model/`).
+  * As entidades de domínio permanecem agnósticas de persistência; o mapeamento entre domínio e entidade de banco de dados reside exclusivamente nos mappers da camada de infraestrutura.
+* **Testes de Repositório (`@DataJpaTest`):**
+  * Todo teste de slice JPA que persista ou consulte entidades auditadas deve importar a configuração com `@Import(JpaAuditingConfig.class)`.
+* **Evolução de Esquema e Migrações (Flyway):**
+  * Novas tabelas vinculadas a entidades JPA devem incluir as 4 colunas de auditoria (`criado_em_utc TIMESTAMP NOT NULL DEFAULT NOW()`, `atualizado_em_utc TIMESTAMP NOT NULL DEFAULT NOW()`, `criado_por VARCHAR(128) NOT NULL DEFAULT 'sistema'`, `atualizado_por VARCHAR(128) NOT NULL DEFAULT 'sistema'`) com documentação obrigatória via `COMMENT ON COLUMN`.
+
 ---
 
 ## 6. Higiene de Código, Qualidade e Governança

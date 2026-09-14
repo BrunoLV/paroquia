@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.clero.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -12,7 +14,7 @@ import java.util.UUID;
 /** Pendência moderável; os valores propostos ficam protegidos até a decisão. */
 @Entity
 @Table(name = "solicitacoes_ajuste_clerical", schema = "calendario")
-public class SolicitacaoAjusteClericalEntity {
+public class SolicitacaoAjusteClericalEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -46,9 +48,6 @@ public class SolicitacaoAjusteClericalEntity {
 
     private UUID analisadoPorUsuarioId;
     private Instant analisadoEmUtc;
-
-    @Column(nullable = false)
-    private Instant criadoEmUtc;
 
     public UUID getId() {
         return id;
@@ -136,14 +135,6 @@ public class SolicitacaoAjusteClericalEntity {
 
     public void setAnalisadoEmUtc(Instant valor) {
         analisadoEmUtc = valor;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant valor) {
-        criadoEmUtc = valor;
     }
 
     private String digitos(String valor) {

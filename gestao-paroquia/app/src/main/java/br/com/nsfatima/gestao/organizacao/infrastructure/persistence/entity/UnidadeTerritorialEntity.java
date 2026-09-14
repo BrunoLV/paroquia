@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "unidade_territorial", schema = "calendario")
-public class UnidadeTerritorialEntity extends BaseVersionedEntity {
+public class UnidadeTerritorialEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

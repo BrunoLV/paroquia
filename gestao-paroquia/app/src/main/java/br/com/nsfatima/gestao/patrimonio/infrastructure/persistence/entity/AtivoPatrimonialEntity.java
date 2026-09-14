@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,7 +26,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoStatus;
  */
 @Entity
 @Table(name = "ativos_patrimoniais", schema = "calendario")
-public class AtivoPatrimonialEntity {
+public class AtivoPatrimonialEntity extends BaseAuditableEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -61,12 +63,6 @@ public class AtivoPatrimonialEntity {
 
     @Column(name = "cadastrado_por_id")
     private UUID cadastradoPorId;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
@@ -106,8 +102,8 @@ public class AtivoPatrimonialEntity {
         this.dataAquisicao = dataAquisicao;
         this.valorAquisicao = valorAquisicao;
         this.cadastradoPorId = cadastradoPorId;
-        this.criadoEmUtc = criadoEmUtc;
-        this.updatedAt = updatedAt;
+        setCriadoEmUtc(criadoEmUtc);
+        setAtualizadoEmUtc(updatedAt);
         this.deletedAt = deletedAt;
         this.version = version;
     }
@@ -189,20 +185,6 @@ public class AtivoPatrimonialEntity {
         this.cadastradoPorId = cadastradoPorId;
     }
 
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public Instant getDeletedAt() {
         return deletedAt;
     }
@@ -210,7 +192,8 @@ public class AtivoPatrimonialEntity {
         this.deletedAt = deletedAt;
     }
 
-    public long getVersion() {
+    @Override
+    public Long getVersion() {
         return version;
     }
     public void setVersion(long version) {

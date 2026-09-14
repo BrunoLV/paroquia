@@ -10,9 +10,13 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
+import org.springframework.context.annotation.Import;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class CicloLiturgicoRepositoryTest {
 
     @Autowired

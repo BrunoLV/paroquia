@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
@@ -34,7 +33,7 @@ class UpdateUsuarioUseCaseTest {
     }
 
     @Test
-    void devePopularAtualizadoPorComOActorAutenticado() {
+    void deveAtualizarUsernameEStatusDoUsuario() {
         UUID id = UUID.randomUUID();
         UsuarioEntity existing = new UsuarioEntity();
         existing.setId(id);
@@ -42,14 +41,12 @@ class UpdateUsuarioUseCaseTest {
         existing.setPasswordHash("hash");
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(existing));
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin.paroquia", "senha"));
-
         useCase.execute(id, "novo.username", true);
 
         ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
         verify(usuarioRepository).save(captor.capture());
 
-        assertThat(captor.getValue().getAtualizadoPor()).isEqualTo("admin.paroquia");
+        assertThat(captor.getValue().getUsername()).isEqualTo("novo.username");
+        assertThat(captor.getValue().isEnabled()).isTrue();
     }
 }

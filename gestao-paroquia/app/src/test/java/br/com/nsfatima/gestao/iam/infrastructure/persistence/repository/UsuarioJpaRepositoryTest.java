@@ -12,11 +12,16 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class UsuarioJpaRepositoryTest {
 
     @Autowired
@@ -59,11 +64,10 @@ class UsuarioJpaRepositoryTest {
     }
 
     @Test
+    @WithMockUser(username = "admin")
     void devePersistirComFielIdECamposDeAuditoria() {
         UUID userId = UUID.randomUUID();
         UUID fielId = FielTestFixtures.criarFiel(fielRepository);
-        Instant criadoEm = Instant.now();
-        Instant atualizadoEm = criadoEm.plusSeconds(60);
 
         UsuarioEntity usuario = new UsuarioEntity();
         usuario.setId(userId);
@@ -71,17 +75,13 @@ class UsuarioJpaRepositoryTest {
         usuario.setPasswordHash("hash");
         usuario.setEnabled(true);
         usuario.setFielId(fielId);
-        usuario.setCriadoEmUtc(criadoEm);
-        usuario.setAtualizadoEmUtc(atualizadoEm);
-        usuario.setCriadoPor("admin");
-        usuario.setAtualizadoPor("admin");
 
         UsuarioEntity saved = repository.saveAndFlush(usuario);
         UsuarioEntity found = repository.findById(saved.getId()).orElseThrow();
 
         assertThat(found.getFielId()).isEqualTo(fielId);
-        assertThat(found.getCriadoEmUtc()).isEqualTo(criadoEm);
-        assertThat(found.getAtualizadoEmUtc()).isEqualTo(atualizadoEm);
+        assertThat(found.getCriadoEmUtc()).isNotNull();
+        assertThat(found.getAtualizadoEmUtc()).isNotNull();
         assertThat(found.getCriadoPor()).isEqualTo("admin");
         assertThat(found.getAtualizadoPor()).isEqualTo("admin");
     }

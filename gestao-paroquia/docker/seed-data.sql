@@ -436,7 +436,7 @@ VALUES
 
 INSERT INTO calendario.ativos_patrimoniais (
     id, nome, codigo_tombamento, descricao, categoria, status, is_reservavel, grupo_paroquial_id,
-    data_aquisicao, valor_aquisicao, cadastrado_por_id, criado_em_utc, updated_at, deleted_at, version
+    data_aquisicao, valor_aquisicao, cadastrado_por_id, criado_em_utc, atualizado_em_utc, deleted_at, version
 ) VALUES
     ('80000000-0000-0000-0000-000000000001', 'Projetor Multimídia Epson', 'PAT-2026-0001', 'Full HD, 3500 lumens', 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000100', '2024-03-10', 3500.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
     ('80000000-0000-0000-0000-000000000002', 'Caixa de Som Amplificada', 'PAT-2026-0002', NULL, 'ELETRONICO', 'DISPONIVEL', TRUE, '00000000-0000-0000-0000-000000000200', '2024-06-15', 1800.00, NULL, '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', NULL, 0),
@@ -459,7 +459,7 @@ ON CONFLICT (ano) DO NOTHING;
 -- Manutenção em andamento do retroprojetor antigo (Matriz) — mantém o ativo 0006 em EM_MANUTENCAO.
 INSERT INTO calendario.ativo_manutencoes (
     id, ativo_id, descricao_reparo, data_inicio, data_fim_prevista, data_fim_real,
-    registrado_por_id, created_at, updated_at, version
+    registrado_por_id, criado_em_utc, atualizado_em_utc, version
 ) VALUES 
     (
         '82000000-0000-0000-0000-000000000001', '80000000-0000-0000-0000-000000000006',
@@ -704,7 +704,7 @@ INSERT INTO calendario.reservas (
     id, tipo_item, item_id, data_hora_inicio, data_hora_fim, buffer_minutos,
     descricao, solicitante_id, pastoral_movimento_id, evento_id, grupo_recorrencia_id,
     status, aprovador_id, aprovado_em, motivo_cancelamento, cancelado_por_id,
-    check_avarias, created_at, updated_at, deleted_at, version
+    check_avarias, criado_em_utc, atualizado_em_utc, deleted_at, version
 ) VALUES
     -- 1. Reserva LOCAL confirmada vinculada a evento
     (

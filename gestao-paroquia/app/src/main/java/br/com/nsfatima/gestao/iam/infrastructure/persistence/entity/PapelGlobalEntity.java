@@ -1,14 +1,11 @@
 package br.com.nsfatima.gestao.iam.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -17,7 +14,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "papel_global", schema = "calendario")
-public class PapelGlobalEntity extends BaseVersionedEntity {
+public class PapelGlobalEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -30,18 +27,6 @@ public class PapelGlobalEntity extends BaseVersionedEntity {
 
     @Column(nullable = false)
     private boolean ativo = true;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
-
-    @Column(name = "atualizado_em_utc", nullable = false)
-    private Instant atualizadoEmUtc;
-
-    @Column(name = "criado_por")
-    private String criadoPor;
-
-    @Column(name = "atualizado_por")
-    private String atualizadoPor;
 
     public UUID getId() {
         return id;
@@ -73,53 +58,5 @@ public class PapelGlobalEntity extends BaseVersionedEntity {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
-    }
-
-    public Instant getAtualizadoEmUtc() {
-        return atualizadoEmUtc;
-    }
-
-    public void setAtualizadoEmUtc(Instant atualizadoEmUtc) {
-        this.atualizadoEmUtc = atualizadoEmUtc;
-    }
-
-    public String getCriadoPor() {
-        return criadoPor;
-    }
-
-    public void setCriadoPor(String criadoPor) {
-        this.criadoPor = criadoPor;
-    }
-
-    public String getAtualizadoPor() {
-        return atualizadoPor;
-    }
-
-    public void setAtualizadoPor(String atualizadoPor) {
-        this.atualizadoPor = atualizadoPor;
-    }
-
-    @PrePersist
-    void preencherAuditoriaNaCriacao() {
-        Instant agora = Instant.now();
-        if (criadoEmUtc == null) {
-            criadoEmUtc = agora;
-        }
-        if (atualizadoEmUtc == null) {
-            atualizadoEmUtc = agora;
-        }
-    }
-
-    @PreUpdate
-    void atualizarTimestampNaModificacao() {
-        atualizadoEmUtc = Instant.now();
     }
 }

@@ -8,7 +8,6 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
-import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,8 +106,6 @@ public class AtualizarFielUseCase {
                 fiel.getDocumentoEstrangeiroTipo(),
                 fiel.getDocumentoEstrangeiroNumero());
 
-        fiel.setAtualizadoEmUtc(Instant.now());
-        fiel.setAtualizadoPor(actor == null ? ACTOR_SYSTEM : actor);
         return mapper.toResponse(repository.save(fiel));
     }
 

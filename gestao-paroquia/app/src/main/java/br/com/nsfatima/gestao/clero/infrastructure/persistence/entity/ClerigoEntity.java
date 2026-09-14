@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.clero.infrastructure.persistence.entity;
 import br.com.nsfatima.gestao.clero.domain.model.GrauOrdem;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -18,8 +18,7 @@ import java.util.UUID;
 /** Persistência do cadastro pessoal e canônico de um clérigo. */
 @Entity
 @Table(name = "clerigos", schema = "calendario")
-@SuppressWarnings("PMD.ExcessivePublicCount")
-public class ClerigoEntity extends BaseVersionedEntity {
+public class ClerigoEntity extends BaseAuditableEntity {
     @Id
     private UUID id;
 
@@ -74,18 +73,6 @@ public class ClerigoEntity extends BaseVersionedEntity {
     private boolean ativo = true;
 
     private Instant deletedAt;
-
-    @Column(nullable = false)
-    private Instant criadoEmUtc;
-
-    @Column(nullable = false)
-    private Instant atualizadoEmUtc;
-
-    @Column(nullable = false)
-    private String criadoPor;
-
-    @Column(nullable = false)
-    private String atualizadoPor;
 
     public UUID getId() {
         return id;
@@ -245,38 +232,6 @@ public class ClerigoEntity extends BaseVersionedEntity {
 
     public void setDeletedAt(Instant valor) {
         deletedAt = valor;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant valor) {
-        criadoEmUtc = valor;
-    }
-
-    public Instant getAtualizadoEmUtc() {
-        return atualizadoEmUtc;
-    }
-
-    public void setAtualizadoEmUtc(Instant valor) {
-        atualizadoEmUtc = valor;
-    }
-
-    public String getCriadoPor() {
-        return criadoPor;
-    }
-
-    public void setCriadoPor(String valor) {
-        criadoPor = valor;
-    }
-
-    public String getAtualizadoPor() {
-        return atualizadoPor;
-    }
-
-    public void setAtualizadoPor(String valor) {
-        atualizadoPor = valor;
     }
 
     private String digitos(String valor) {

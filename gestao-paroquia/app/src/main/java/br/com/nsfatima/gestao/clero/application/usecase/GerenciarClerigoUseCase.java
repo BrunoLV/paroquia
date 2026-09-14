@@ -107,8 +107,6 @@ public class GerenciarClerigoUseCase {
 
         usuarios.findByClerigoId(id).ifPresent(u -> {
             u.setEnabled(false);
-            u.setAtualizadoPor(actor == null ? ACTOR_SYSTEM : actor);
-            u.setAtualizadoEmUtc(agora);
             usuarios.save(u);
         });
 

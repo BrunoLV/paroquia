@@ -1,15 +1,12 @@
 package br.com.nsfatima.gestao.iam.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.iam.domain.model.Papeis;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -21,7 +18,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "usuarios", schema = "calendario")
-public class UsuarioEntity extends BaseVersionedEntity {
+public class UsuarioEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -53,18 +50,6 @@ public class UsuarioEntity extends BaseVersionedEntity {
     /** Referência exclusiva ao clérigo quando a conta pertence a ministro ordenado. */
     @Column(name = "clerigo_id")
     private UUID clerigoId;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
-
-    @Column(name = "atualizado_em_utc", nullable = false)
-    private Instant atualizadoEmUtc;
-
-    @Column(name = "criado_por")
-    private String criadoPor;
-
-    @Column(name = "atualizado_por")
-    private String atualizadoPor;
 
     public UUID getId() {
         return id;
@@ -130,44 +115,6 @@ public class UsuarioEntity extends BaseVersionedEntity {
         this.clerigoId = clerigoId;
     }
 
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
-    }
-
-    public Instant getAtualizadoEmUtc() {
-        return atualizadoEmUtc;
-    }
-
-    public void setAtualizadoEmUtc(Instant atualizadoEmUtc) {
-        this.atualizadoEmUtc = atualizadoEmUtc;
-    }
-
-    public String getCriadoPor() {
-        return criadoPor;
-    }
-
-    public void setCriadoPor(String criadoPor) {
-        this.criadoPor = criadoPor;
-    }
-
-    public String getAtualizadoPor() {
-        return atualizadoPor;
-    }
-
-    public void setAtualizadoPor(String atualizadoPor) {
-        this.atualizadoPor = atualizadoPor;
-    }
-
-    /**
-     * Garante {@code criadoEmUtc}/{@code atualizadoEmUtc} preenchidos mesmo quando o chamador não os define
-     * explicitamente — essas colunas são {@code NOT NULL}, e nem todo ponto que cria um {@code Usuario} (ex.:
-     * fixtures de teste, seeds) passa pelos casos de uso que populam auditoria de forma consciente
-     * (ver {@code CriarUsuarioUseCase}, {@code AtualizarUsuarioUseCase}).
-     */
     /** Papéis globais como Value Object. */
     public Papeis papeis() {
         return Papeis.deCsv(roles);
@@ -184,7 +131,7 @@ public class UsuarioEntity extends BaseVersionedEntity {
     public void aprovar(String actor) {
         this.enabled = true;
         this.roles = papeis().adicionar("ROLE_USER").paraCsv();
-        this.atualizadoPor = actor;
+        setAtualizadoPor(actor);
     }
 
     public void ativar() {
@@ -202,21 +149,5 @@ public class UsuarioEntity extends BaseVersionedEntity {
     /** Recebe o hash já produzido pelo {@code PasswordEncoder} (a cifragem é responsabilidade da app). */
     public void redefinirSenhaHash(String hash) {
         this.passwordHash = hash;
-    }
-
-    @PrePersist
-    void preencherAuditoriaNaCriacao() {
-        Instant agora = Instant.now();
-        if (criadoEmUtc == null) {
-            criadoEmUtc = agora;
-        }
-        if (atualizadoEmUtc == null) {
-            atualizadoEmUtc = agora;
-        }
-    }
-
-    @PreUpdate
-    void atualizarTimestampNaModificacao() {
-        atualizadoEmUtc = Instant.now();
     }
 }

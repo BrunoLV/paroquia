@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.fiel.domain.model.Parentesco;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
@@ -14,13 +16,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Table(name = "fiel_dependentes", schema = "calendario")
-public class FielDependenteEntity {
+public class FielDependenteEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -49,9 +50,6 @@ public class FielDependenteEntity {
 
     @Column(name = "crismado", nullable = false)
     private boolean crismado;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc = Instant.now();
 
     public UUID getId() {
         return id;
@@ -115,13 +113,5 @@ public class FielDependenteEntity {
 
     public void setCrismado(boolean crismado) {
         this.crismado = crismado;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
     }
 }

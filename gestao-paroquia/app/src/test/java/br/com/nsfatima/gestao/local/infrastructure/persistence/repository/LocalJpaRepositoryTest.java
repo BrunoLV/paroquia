@@ -3,10 +3,12 @@ package br.com.nsfatima.gestao.local.infrastructure.persistence.repository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.context.annotation.Import;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class LocalJpaRepositoryTest {
 
     @Autowired

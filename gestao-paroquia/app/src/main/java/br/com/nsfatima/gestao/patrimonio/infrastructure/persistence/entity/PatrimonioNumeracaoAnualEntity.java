@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "patrimonio_numeracao_anual", schema = "calendario")
-public class PatrimonioNumeracaoAnualEntity extends BaseVersionedEntity {
+public class PatrimonioNumeracaoAnualEntity extends BaseAuditableEntity {
 
     @Id
     private Integer ano;

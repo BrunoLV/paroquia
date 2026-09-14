@@ -3,10 +3,12 @@ package br.com.nsfatima.gestao.iam.infrastructure.persistence.repository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.PapelGlobalEntity;
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -16,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 @ActiveProfiles("test")
 class PapelGlobalJpaRepositoryTest {
 

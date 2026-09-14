@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.converter.RegraRecorrenciaConverter;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "eventos_recorrencia", schema = "calendario")
-public class EventoRecorrenciaEntity extends BaseVersionedEntity {
+public class EventoRecorrenciaEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

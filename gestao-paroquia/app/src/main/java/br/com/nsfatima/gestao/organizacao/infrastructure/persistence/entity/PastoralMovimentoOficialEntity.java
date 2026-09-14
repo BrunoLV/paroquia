@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "pastorais_movimentos_oficiais", schema = "calendario")
-public class PastoralMovimentoOficialEntity extends BaseVersionedEntity {
+public class PastoralMovimentoOficialEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

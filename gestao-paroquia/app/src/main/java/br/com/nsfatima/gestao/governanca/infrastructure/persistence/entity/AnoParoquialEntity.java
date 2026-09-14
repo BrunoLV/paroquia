@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +9,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -19,7 +20,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "anos_paroquiais", schema = "calendario")
-public class AnoParoquialEntity {
+public class AnoParoquialEntity extends BaseAuditableEntity {
 
     @Id
     private Integer ano;
@@ -31,10 +32,6 @@ public class AnoParoquialEntity {
     /** Instante em que o ano transitou para {@code FECHADO}; {@code null} enquanto ainda em planejamento. */
     @Column(name = "data_fechamento_utc")
     private Instant dataFechamentoUtc;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Instant updatedAt;
 
     public Integer getAno() {
         return ano;
@@ -58,13 +55,5 @@ public class AnoParoquialEntity {
 
     public void setDataFechamentoUtc(Instant dataFechamentoUtc) {
         this.dataFechamentoUtc = dataFechamentoUtc;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

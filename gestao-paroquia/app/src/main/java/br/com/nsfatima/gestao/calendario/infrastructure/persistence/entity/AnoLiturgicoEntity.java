@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,7 +20,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "anos_liturgicos", schema = "calendario")
-public class AnoLiturgicoEntity {
+public class AnoLiturgicoEntity extends BaseAuditableEntity {
 
     @Id
     @Column(name = "ano", nullable = false)
@@ -37,19 +39,20 @@ public class AnoLiturgicoEntity {
     @Column(name = "data_fim_comum", nullable = false)
     private Instant dataFimComum;
 
-    @Column(name = "atualizado_em_utc", nullable = false)
-    private Instant atualizadoEmUtc;
-
     public AnoLiturgicoEntity() {
     }
 
-    public AnoLiturgicoEntity(Integer ano, String cicloLetra,
-                              Instant dataInicioAdvento, Instant dataFimComum, Instant atualizadoEmUtc) {
+    public AnoLiturgicoEntity(
+            Integer ano,
+            String cicloLetra,
+            Instant dataInicioAdvento,
+            Instant dataFimComum,
+            Instant atualizadoEmUtc) {
         this.ano = ano;
         this.cicloLetra = cicloLetra;
         this.dataInicioAdvento = dataInicioAdvento;
         this.dataFimComum = dataFimComum;
-        this.atualizadoEmUtc = atualizadoEmUtc;
+        setAtualizadoEmUtc(atualizadoEmUtc);
     }
 
     public Integer getAno() {
@@ -82,13 +85,5 @@ public class AnoLiturgicoEntity {
 
     public void setDataFimComum(Instant dataFimComum) {
         this.dataFimComum = dataFimComum;
-    }
-
-    public Instant getAtualizadoEmUtc() {
-        return atualizadoEmUtc;
-    }
-
-    public void setAtualizadoEmUtc(Instant atualizadoEmUtc) {
-        this.atualizadoEmUtc = atualizadoEmUtc;
     }
 }

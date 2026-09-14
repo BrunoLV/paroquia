@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.calendario.domain.model.TipoCicloLiturgico;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "tb_ciclo_liturgico", schema = "calendario")
-public class CicloLiturgicoEntity extends BaseVersionedEntity {
+public class CicloLiturgicoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

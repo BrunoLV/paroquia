@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.clero.domain.model.TipoPessoaFamiliar;
 import br.com.nsfatima.gestao.fiel.domain.model.TipoRelacionamentoFamiliar;
 import jakarta.persistence.Column;
@@ -14,7 +16,7 @@ import java.util.UUID;
 /** Aresta direcionada de parentesco que pode ligar fiéis e clérigos. */
 @Entity
 @Table(name = "relacionamentos_familiares", schema = "calendario")
-public class RelacionamentoFamiliarEntity {
+public class RelacionamentoFamiliarEntity extends BaseAuditableEntity {
     @Id
     private UUID id;
 
@@ -38,9 +40,6 @@ public class RelacionamentoFamiliarEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_relacao", nullable = false)
     private TipoRelacionamentoFamiliar tipo;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
@@ -99,14 +98,6 @@ public class RelacionamentoFamiliarEntity {
 
     public void setTipo(TipoRelacionamentoFamiliar valor) {
         tipo = valor;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant valor) {
-        criadoEmUtc = valor;
     }
 
     public Instant getDeletedAt() {

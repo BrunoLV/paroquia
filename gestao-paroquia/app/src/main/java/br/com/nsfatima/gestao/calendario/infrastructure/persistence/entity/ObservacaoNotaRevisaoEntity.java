@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "observacoes_nota_revisoes", schema = "calendario")
-public class ObservacaoNotaRevisaoEntity extends BaseVersionedEntity {
+public class ObservacaoNotaRevisaoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "fieis", schema = "calendario")
 @SuppressWarnings("PMD.ExcessivePublicCount")
-public class FielEntity extends BaseVersionedEntity {
+public class FielEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -118,18 +118,6 @@ public class FielEntity extends BaseVersionedEntity {
 
     @Column(name = "dados_cadastrais_eliminados", nullable = false)
     private boolean dadosCadastraisEliminados;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
-
-    @Column(name = "atualizado_em_utc", nullable = false)
-    private Instant atualizadoEmUtc;
-
-    @Column(name = "criado_por", nullable = false)
-    private String criadoPor;
-
-    @Column(name = "atualizado_por", nullable = false)
-    private String atualizadoPor;
 
     @Transient
     private Vocacao vocacao;
@@ -377,43 +365,10 @@ public class FielEntity extends BaseVersionedEntity {
         dadosCadastraisEliminados = value;
     }
 
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant value) {
-        criadoEmUtc = value;
-    }
-
-    public Instant getAtualizadoEmUtc() {
-        return atualizadoEmUtc;
-    }
-
-    public void setAtualizadoEmUtc(Instant value) {
-        atualizadoEmUtc = value;
-    }
-
-    public String getCriadoPor() {
-        return criadoPor;
-    }
-
-    public void setCriadoPor(String value) {
-        criadoPor = value;
-    }
-
-    public String getAtualizadoPor() {
-        return atualizadoPor;
-    }
-
-    public void setAtualizadoPor(String value) {
-        atualizadoPor = value;
-    }
-
     /** Desativação reversível do cadastro (LGPD). */
     public void desativar(Instant agora, String actor) {
         this.ativo = false;
         this.desativadoEmUtc = agora;
-        marcarAtualizado(agora, actor);
     }
 
     /** Reativa um cadastro desativado; rejeita se os dados civis já foram anonimizados. */
@@ -423,7 +378,6 @@ public class FielEntity extends BaseVersionedEntity {
         }
         this.ativo = true;
         this.desativadoEmUtc = null;
-        marcarAtualizado(agora, actor);
     }
 
     /**
@@ -447,12 +401,6 @@ public class FielEntity extends BaseVersionedEntity {
         setEnderecoCidade(null);
         setEnderecoEstado(null);
         this.dadosCadastraisEliminados = true;
-        marcarAtualizado(agora, actor);
-    }
-
-    private void marcarAtualizado(Instant agora, String actor) {
-        this.atualizadoEmUtc = agora;
-        this.atualizadoPor = actor;
     }
 
     private String digitos(String value) {

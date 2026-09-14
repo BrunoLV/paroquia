@@ -9,8 +9,12 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.time.Instant;
 import java.util.Optional;
 
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
+import org.springframework.context.annotation.Import;
+
 import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class AnoLiturgicoRepositoryTest {
 
     @Autowired

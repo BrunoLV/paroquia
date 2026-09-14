@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.reserva.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "reservas", schema = "calendario")
-public class ReservaEntity {
+public class ReservaEntity extends BaseAuditableEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -68,12 +70,6 @@ public class ReservaEntity {
     @Column(name = "check_avarias", columnDefinition = "TEXT")
     private String checkAvarias;
 
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
@@ -124,8 +120,8 @@ public class ReservaEntity {
         this.motivoCancelamento = motivoCancelamento;
         this.canceladoPorId = canceladoPorId;
         this.checkAvarias = checkAvarias;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        setCriadoEmUtc(createdAt);
+        setAtualizadoEmUtc(updatedAt);
         this.deletedAt = deletedAt;
         this.version = version;
     }
@@ -267,22 +263,6 @@ public class ReservaEntity {
         this.checkAvarias = checkAvarias;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public Instant getDeletedAt() {
         return deletedAt;
     }
@@ -291,7 +271,8 @@ public class ReservaEntity {
         this.deletedAt = deletedAt;
     }
 
-    public long getVersion() {
+    @Override
+    public Long getVersion() {
         return version;
     }
 

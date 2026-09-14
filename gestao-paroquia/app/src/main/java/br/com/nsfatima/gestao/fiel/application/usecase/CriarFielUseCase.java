@@ -9,7 +9,6 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
-import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,12 +52,6 @@ public class CriarFielUseCase {
         FielEntity fiel = new FielEntity();
         fiel.setId(UUID.randomUUID());
         aplicar(fiel, request);
-
-        Instant agora = Instant.now();
-        fiel.setCriadoEmUtc(agora);
-        fiel.setAtualizadoEmUtc(agora);
-        fiel.setCriadoPor(actor == null ? ACTOR_SYSTEM : actor);
-        fiel.setAtualizadoPor(actor == null ? ACTOR_SYSTEM : actor);
 
         return mapper.toResponse(repository.save(fiel));
     }

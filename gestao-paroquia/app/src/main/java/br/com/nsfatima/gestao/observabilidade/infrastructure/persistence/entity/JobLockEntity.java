@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +19,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "job_locks", schema = "calendario")
-public class JobLockEntity {
+public class JobLockEntity extends BaseAuditableEntity {
 
     @Id
     @Column(length = 128)

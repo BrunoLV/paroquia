@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "observacoes_evento", schema = "calendario")
-public class ObservacaoEventoEntity extends BaseVersionedEntity {
+public class ObservacaoEventoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -34,9 +34,6 @@ public class ObservacaoEventoEntity extends BaseVersionedEntity {
 
     @Column(nullable = false, length = 4000)
     private String conteudo;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
 
     /** Indica remoção lógica (soft delete): {@code true} quando a observação foi removida e não deve mais ser exibida
      * ativamente. */
@@ -89,14 +86,6 @@ public class ObservacaoEventoEntity extends BaseVersionedEntity {
 
     public void setConteudo(String conteudo) {
         this.conteudo = conteudo;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
     }
 
     public boolean isRemovida() {

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.local.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "locais", schema = "calendario")
-public class LocalEntity extends BaseVersionedEntity {
+public class LocalEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -81,27 +81,13 @@ public class LocalEntity extends BaseVersionedEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
     @PrePersist
     public void onPrePersist() {
-        Instant now = Instant.now();
-        if (this.createdAt == null) {
-            this.createdAt = now;
-        }
-        if (this.updatedAt == null) {
-            this.updatedAt = now;
-        }
         syncLegacyFields();
     }
 
     @PreUpdate
     public void onPreUpdate() {
-        this.updatedAt = Instant.now();
         syncLegacyFields();
     }
 
@@ -293,21 +279,5 @@ public class LocalEntity extends BaseVersionedEntity {
 
     public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

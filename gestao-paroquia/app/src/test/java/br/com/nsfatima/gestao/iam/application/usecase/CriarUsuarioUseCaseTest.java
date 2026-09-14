@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -48,10 +47,8 @@ class CreateUsuarioUseCaseTest {
     }
 
     @Test
-    void devePopularAuditoriaComOActorAutenticado() {
+    void deveSalvarUsuarioComDadosCorretos() {
         UUID fielId = UUID.randomUUID();
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin.paroquia", "senha"));
         when(usuarioRepository.findByUsernameIgnoreCase("novo.usuario")).thenReturn(Optional.empty());
         when(fielRepository.findById(fielId)).thenReturn(Optional.of(new FielEntity()));
         when(usuarioRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -62,8 +59,9 @@ class CreateUsuarioUseCaseTest {
         verify(usuarioRepository).save(captor.capture());
 
         UsuarioEntity saved = captor.getValue();
-        assertThat(saved.getCriadoPor()).isEqualTo("admin.paroquia");
-        assertThat(saved.getAtualizadoPor()).isEqualTo("admin.paroquia");
+        assertThat(saved.getUsername()).isEqualTo("novo.usuario");
+        assertThat(saved.getFielId()).isEqualTo(fielId);
+        assertThat(saved.isEnabled()).isTrue();
     }
 
     @Test

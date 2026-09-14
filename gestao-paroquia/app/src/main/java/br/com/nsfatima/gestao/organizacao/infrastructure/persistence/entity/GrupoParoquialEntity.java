@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "grupo_paroquial", schema = "calendario")
-public class GrupoParoquialEntity extends BaseVersionedEntity {
+public class GrupoParoquialEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

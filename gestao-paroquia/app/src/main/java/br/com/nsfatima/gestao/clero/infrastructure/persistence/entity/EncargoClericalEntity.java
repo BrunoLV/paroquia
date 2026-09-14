@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.clero.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +15,7 @@ import java.util.UUID;
 /** Histórico institucional dos encargos recebidos por um clérigo. */
 @Entity
 @Table(name = "encargos_clericais", schema = "calendario")
-public class EncargoClericalEntity {
+public class EncargoClericalEntity extends BaseAuditableEntity {
     @Id
     private UUID id;
 
@@ -29,9 +31,6 @@ public class EncargoClericalEntity {
 
     @Column(nullable = false)
     private boolean atual;
-
-    @Column(nullable = false)
-    private Instant criadoEmUtc;
 
     private Instant encerradoEmUtc;
 
@@ -73,14 +72,6 @@ public class EncargoClericalEntity {
 
     public void setAtual(boolean valor) {
         atual = valor;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant valor) {
-        criadoEmUtc = valor;
     }
 
     public Instant getEncerradoEmUtc() {

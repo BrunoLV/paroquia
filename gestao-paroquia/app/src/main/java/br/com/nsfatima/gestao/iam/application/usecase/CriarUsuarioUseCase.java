@@ -4,7 +4,6 @@ import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.Clerig
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,15 +64,6 @@ public class CriarUsuarioUseCase {
         entity.setClerigoId(clerigoId);
         entity.setEnabled(true);
 
-        String actor = resolverAtor();
-        entity.setCriadoPor(actor);
-        entity.setAtualizadoPor(actor);
-
         return usuarioRepository.save(entity).getId();
-    }
-
-    private String resolverAtor() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null ? authentication.getName() : null;
     }
 }

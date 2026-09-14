@@ -7,10 +7,14 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.UUID;
 
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
+import org.springframework.context.annotation.Import;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class ParoquiaConfiguracaoJpaRepositoryTest {
 
     @Autowired

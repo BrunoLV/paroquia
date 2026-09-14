@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "projetos_eventos", schema = "calendario")
-public class ProjetoEventoEntity extends BaseVersionedEntity {
+public class ProjetoEventoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

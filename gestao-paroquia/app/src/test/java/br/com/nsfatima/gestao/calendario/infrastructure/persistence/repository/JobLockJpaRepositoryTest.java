@@ -8,10 +8,14 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
+import org.springframework.context.annotation.Import;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class JobLockJpaRepositoryTest {
 
     @Autowired

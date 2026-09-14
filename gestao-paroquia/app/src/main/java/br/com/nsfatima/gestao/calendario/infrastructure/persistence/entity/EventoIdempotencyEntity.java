@@ -1,11 +1,12 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "evento_idempotency", schema = "calendario")
-public class EventoIdempotencyEntity {
+public class EventoIdempotencyEntity extends BaseAuditableEntity {
 
     @Id
     @Column(name = "idempotency_key", nullable = false, length = 128)
@@ -33,9 +34,6 @@ public class EventoIdempotencyEntity {
     /** Código de status HTTP da resposta original, devolvido novamente em requisições repetidas com a mesma chave. */
     @Column(name = "response_status", nullable = false)
     private Integer responseStatus;
-
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
 
     public String getIdempotencyKey() {
         return idempotencyKey;
@@ -67,13 +65,5 @@ public class EventoIdempotencyEntity {
 
     public void setResponseStatus(Integer responseStatus) {
         this.responseStatus = responseStatus;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }

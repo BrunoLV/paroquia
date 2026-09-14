@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoGrupoAttributeConverter;
@@ -26,7 +28,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "projeto_solicitacoes_aprovacao", schema = "calendario")
-public class ProjetoSolicitacaoAprovacaoEntity {
+public class ProjetoSolicitacaoAprovacaoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -56,9 +58,6 @@ public class ProjetoSolicitacaoAprovacaoEntity {
 
     @Column(name = "cancelar_eventos_vinculados")
     private Boolean cancelarEventosVinculados = false;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
 
     @Column(name = "decidido_em_utc")
     private Instant decididoEmUtc;
@@ -141,14 +140,6 @@ public class ProjetoSolicitacaoAprovacaoEntity {
 
     public void setCancelarEventosVinculados(Boolean cancelarEventosVinculados) {
         this.cancelarEventosVinculados = cancelarEventosVinculados;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
     }
 
     public Instant getDecididoEmUtc() {

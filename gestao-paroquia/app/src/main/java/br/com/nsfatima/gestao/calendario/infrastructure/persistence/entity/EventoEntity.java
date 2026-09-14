@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "eventos", schema = "calendario")
-public class EventoEntity extends BaseVersionedEntity {
+public class EventoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;

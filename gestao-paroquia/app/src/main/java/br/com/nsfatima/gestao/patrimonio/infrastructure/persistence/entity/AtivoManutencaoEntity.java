@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "ativo_manutencoes", schema = "calendario")
-public class AtivoManutencaoEntity {
+public class AtivoManutencaoEntity extends BaseAuditableEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -38,12 +40,6 @@ public class AtivoManutencaoEntity {
 
     @Column(name = "registrado_por_id", nullable = false)
     private UUID registradoPorId;
-
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @Version
     @Column(name = "version", nullable = false)
@@ -71,8 +67,8 @@ public class AtivoManutencaoEntity {
         this.dataFimPrevista = dataFimPrevista;
         this.dataFimReal = dataFimReal;
         this.registradoPorId = registradoPorId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        setCriadoEmUtc(createdAt);
+        setAtualizadoEmUtc(updatedAt);
         this.version = version;
     }
 
@@ -125,21 +121,8 @@ public class AtivoManutencaoEntity {
         this.registradoPorId = registradoPorId;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public long getVersion() {
+    @Override
+    public Long getVersion() {
         return version;
     }
     public void setVersion(long version) {

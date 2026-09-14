@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +24,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "eventos_envolvidos", schema = "calendario")
 @IdClass(EventoEnvolvidoEntity.Key.class)
-public class EventoEnvolvidoEntity {
+public class EventoEnvolvidoEntity extends BaseAuditableEntity {
 
     @Id
     @Column(name = "evento_id")

@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,7 +12,7 @@ import java.util.UUID;
 /** Aviso persistente sem PII para comunicação de decisões do módulo. */
 @Entity
 @Table(name = "notificacoes", schema = "calendario")
-public class NotificacaoEntity {
+public class NotificacaoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -20,9 +22,6 @@ public class NotificacaoEntity {
 
     private String tipo;
     private String mensagem;
-
-    @Column(name = "criado_em_utc")
-    private Instant criadoEmUtc;
 
     @Column(name = "lida_em_utc")
     private Instant lidaEmUtc;
@@ -57,14 +56,6 @@ public class NotificacaoEntity {
 
     public void setMensagem(String v) {
         mensagem = v;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant v) {
-        criadoEmUtc = v;
     }
 
     public Instant getLidaEmUtc() {

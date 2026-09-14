@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.conselho.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "cpc_decisoes", schema = "calendario")
-public class CpcDecisaoEntity extends BaseVersionedEntity {
+public class CpcDecisaoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -57,9 +57,6 @@ public class CpcDecisaoEntity extends BaseVersionedEntity {
 
     @Column(name = "motivo_veto", length = 2000)
     private String motivoVeto;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
 
     @Column(name = "decidido_em_utc")
     private Instant decididoEmUtc;
@@ -150,14 +147,6 @@ public class CpcDecisaoEntity extends BaseVersionedEntity {
 
     public void setMotivoVeto(String motivoVeto) {
         this.motivoVeto = motivoVeto;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
     }
 
     public Instant getDecididoEmUtc() {

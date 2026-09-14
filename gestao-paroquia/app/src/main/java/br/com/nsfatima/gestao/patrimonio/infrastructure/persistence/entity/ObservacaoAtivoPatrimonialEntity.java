@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseVersionedEntity;
+import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "observacoes_ativo_patrimonial", schema = "calendario")
-public class ObservacaoAtivoPatrimonialEntity extends BaseVersionedEntity {
+public class ObservacaoAtivoPatrimonialEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -34,9 +34,6 @@ public class ObservacaoAtivoPatrimonialEntity extends BaseVersionedEntity {
 
     @Column(nullable = false, length = 4000)
     private String conteudo;
-
-    @Column(name = "criado_em_utc", nullable = false)
-    private Instant criadoEmUtc;
 
     @Column(name = "removida", nullable = false)
     private boolean removida;
@@ -85,14 +82,6 @@ public class ObservacaoAtivoPatrimonialEntity extends BaseVersionedEntity {
 
     public void setConteudo(String conteudo) {
         this.conteudo = conteudo;
-    }
-
-    public Instant getCriadoEmUtc() {
-        return criadoEmUtc;
-    }
-
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
-        this.criadoEmUtc = criadoEmUtc;
     }
 
     public boolean isRemovida() {
