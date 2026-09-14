@@ -65,7 +65,7 @@ public class SolenidadeLiturgicaService {
      */
     @Transactional
     public SolenidadeLiturgicaResponseDTO create(SolenidadeLiturgicaRequestDTO req, String userRole) {
-        validateRole(userRole);
+        validarPapel(userRole);
 
         SolenidadeLiturgicaEntity entity = new SolenidadeLiturgicaEntity();
         entity.setId(UUID.randomUUID());
@@ -98,7 +98,7 @@ public class SolenidadeLiturgicaService {
      */
     @Transactional
     public SolenidadeLiturgicaResponseDTO update(UUID id, SolenidadeLiturgicaRequestDTO req, String userRole) {
-        validateRole(userRole);
+        validarPapel(userRole);
 
         SolenidadeLiturgicaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Solenidade litúrgica não encontrada: " + id));
@@ -152,7 +152,7 @@ public class SolenidadeLiturgicaService {
      */
     @Transactional
     public void delete(UUID id, String userRole) {
-        validateRole(userRole);
+        validarPapel(userRole);
 
         SolenidadeLiturgicaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Solenidade litúrgica não encontrada: " + id));
@@ -160,7 +160,7 @@ public class SolenidadeLiturgicaService {
         repository.save(entity);
     }
 
-    private void validateRole(String userRole) {
+    private void validarPapel(String userRole) {
         String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";
         if (!"PAROCO".equals(roleUpper) && !"VIGARIO".equals(roleUpper)) {
             throw new ForbiddenOperationException(

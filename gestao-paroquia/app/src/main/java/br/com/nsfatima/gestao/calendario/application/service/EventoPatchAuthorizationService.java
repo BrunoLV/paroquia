@@ -104,7 +104,7 @@ public class EventoPatchAuthorizationService {
 
         boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
                 || matchesScope(actorContext, grupoParoquialResponsavelId, igrejaVinculoId)
-                || checkUserVinculo(grupoParoquialResponsavelId, igrejaVinculoId, policy.creatorRoles());
+                || verificarVinculoUsuario(grupoParoquialResponsavelId, igrejaVinculoId, policy.creatorRoles());
 
         if (!escopoAutorizado) {
             throw new AccessDeniedException(
@@ -135,7 +135,7 @@ public class EventoPatchAuthorizationService {
 
         boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
                 || matchesScope(actorContext, eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId)
-                || checkUserVinculo(eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId, policy.editorRoles());
+                || verificarVinculoUsuario(eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId, policy.editorRoles());
 
         if (!escopoAutorizado) {
             throw new ForbiddenOperationException(
@@ -181,7 +181,7 @@ public class EventoPatchAuthorizationService {
         return matchesOrg && matchesChurch;
     }
 
-    private boolean checkUserVinculo(UUID grupoParoquialResponsavelId,
+    private boolean verificarVinculoUsuario(UUID grupoParoquialResponsavelId,
                                         UUID eventIgrejaVinculoId, Set<PapelOrganizacional> allowedRoles) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

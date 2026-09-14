@@ -23,7 +23,7 @@ public class MotorLiturgico {
     /**
      * Calcula a data da Páscoa usando o Algoritmo de Meeus/Jones/Butcher.
      */
-    public LocalDate calculateEaster(int year) {
+    public LocalDate calcularPascoa(int year) {
         int a = year % 19;
         int b = year / 100;
         int c = year % 100;
@@ -41,65 +41,65 @@ public class MotorLiturgico {
         return LocalDate.of(year, month, day);
     }
 
-    public LocalDate calculateQuartaDeCinzas(int year) {
+    public LocalDate calcularQuartaDeCinzas(int year) {
         // Início da Quaresma: 40 dias de jejum antes da Páscoa, não contando os 6 domingos
         // do período (40 + 6 = 46 dias corridos antes do Domingo de Páscoa).
-        return calculateEaster(year).minusDays(46);
+        return calcularPascoa(year).minusDays(46);
     }
 
-    public LocalDate calculateQuartaSanta(int year) {
+    public LocalDate calcularQuartaSanta(int year) {
         // Quarta-feira da Semana Santa, imediatamente anterior ao Tríduo Pascal.
-        return calculateEaster(year).minusDays(4);
+        return calcularPascoa(year).minusDays(4);
     }
 
-    public LocalDate calculateQuintaSanta(int year) {
+    public LocalDate calcularQuintaSanta(int year) {
         // Quinta-feira Santa: início do Tríduo Pascal (Missa da Ceia do Senhor).
-        return calculateEaster(year).minusDays(3);
+        return calcularPascoa(year).minusDays(3);
     }
 
-    public LocalDate calculateVesperaPascoa(int year) {
+    public LocalDate calcularVesperaPascoa(int year) {
         // Sábado Santo / Vigília Pascal, véspera do Domingo de Páscoa.
-        return calculateEaster(year).minusDays(1);
+        return calcularPascoa(year).minusDays(1);
     }
 
-    public LocalDate calculateAscensao(int year) {
+    public LocalDate calcularAscensao(int year) {
         // Regra tradicional: 40 dias após a Páscoa (contando a própria Páscoa como dia 1),
         // por isso o offset é 39+3=42 dias corridos a partir do Domingo de Páscoa.
-        return calculateEaster(year).plusDays(42);
+        return calcularPascoa(year).plusDays(42);
     }
 
-    public LocalDate calculatePentecostes(int year) {
+    public LocalDate calcularPentecostes(int year) {
         // 50 dias após a Páscoa (Páscoa = dia 1), equivalente a +49 dias corridos.
-        return calculateEaster(year).plusDays(49);
+        return calcularPascoa(year).plusDays(49);
     }
 
-    public LocalDate calculateSantissimaTrindade(int year) {
+    public LocalDate calcularSantissimaTrindade(int year) {
         // Domingo seguinte a Pentecostes (+7 dias sobre o offset de Pentecostes = +56).
-        return calculateEaster(year).plusDays(56);
+        return calcularPascoa(year).plusDays(56);
     }
 
-    public LocalDate calculateCorpusChristi(int year) {
+    public LocalDate calcularCorpusChristi(int year) {
         // Quinta-feira após a Santíssima Trindade no calendário tradicional; no rito atual
         // celebrada no domingo seguinte, por isso +60 dias (Trindade +4) em vez de +57.
-        return calculateEaster(year).plusDays(60);
+        return calcularPascoa(year).plusDays(60);
     }
 
-    public LocalDate calculateSagradoCoracao(int year) {
+    public LocalDate calcularSagradoCoracao(int year) {
         // Sexta-feira após o 2º domingo depois de Pentecostes (Trindade +12 dias = +68).
-        return calculateEaster(year).plusDays(68);
+        return calcularPascoa(year).plusDays(68);
     }
 
     /**
      * Calcula o 1º Domingo do Advento do ano civil anterior (início do anoLiturgico).
      */
-    public ZonedDateTime calculateAdventoInicio(int liturgicalYear) {
-        return calculateAdventoSundayDate(liturgicalYear - 1).atStartOfDay(ZoneOffset.UTC);
+    public ZonedDateTime calcularAdventoInicio(int liturgicalYear) {
+        return calcularDataDomingoAdvento(liturgicalYear - 1).atStartOfDay(ZoneOffset.UTC);
     }
 
     /**
      * Encontra o domingo mais próximo a 30 de novembro do ano especificado.
      */
-    private LocalDate calculateAdventoSundayDate(int year) {
+    private LocalDate calcularDataDomingoAdvento(int year) {
         LocalDate baseDate = LocalDate.of(year, 11, 30);
         DayOfWeek dayOfWeek = baseDate.getDayOfWeek();
 
@@ -112,14 +112,14 @@ public class MotorLiturgico {
         }
     }
 
-    public LocalDate calculateCristoRei(int year) {
+    public LocalDate calcularCristoRei(int year) {
         // Último domingo do Ano Litúrgico: o domingo imediatamente anterior ao 1º Domingo
         // do Advento (que abre o próximo ano litúrgico).
-        LocalDate adventoCurrent = calculateAdventoSundayDate(year);
+        LocalDate adventoCurrent = calcularDataDomingoAdvento(year);
         return adventoCurrent.minusDays(7);
     }
 
-    public LocalDate calculateEpifania(int year) {
+    public LocalDate calcularEpifania(int year) {
         // No Brasil, Epifania é celebrada no domingo entre 2 e 8 de janeiro (nunca em data
         // fixa); se nenhum dia nesse intervalo cair num domingo (impossível na prática, mas
         // mantido como salvaguarda), cai de volta para a data fixa tradicional (6/jan).
@@ -143,7 +143,7 @@ public class MotorLiturgico {
         // data no fim do ano civil corrente (a partir do Advento) já pertence ao ano
         // litúrgico seguinte — daí calcular o início do advento do "próximo" ano litúrgico
         // (anoCivil + 1) e comparar contra ele.
-        ZonedDateTime inicioAdventoProximoAnoLiturgico = calculateAdventoInicio(anoCivil + 1);
+        ZonedDateTime inicioAdventoProximoAnoLiturgico = calcularAdventoInicio(anoCivil + 1);
 
         if (zdt.isAfter(inicioAdventoProximoAnoLiturgico) || zdt.isEqual(inicioAdventoProximoAnoLiturgico)) {
             return anoCivil + 1;
@@ -171,18 +171,18 @@ public class MotorLiturgico {
      * Calcula o ano litúrgico de forma dinâmica a partir das entidades SolenidadeLiturgicaEntity
      * cadastradas e gerenciadas na base de dados.
      */
-    public SaidaLiturgica calculateLiturgicalYear(int anoNominal, List<SolenidadeLiturgicaEntity> solenidadesDoBanco) {
+    public SaidaLiturgica calcularAnoLiturgico(int anoNominal, List<SolenidadeLiturgicaEntity> solenidadesDoBanco) {
         if (solenidadesDoBanco == null || solenidadesDoBanco.isEmpty()) {
-            return calculateLiturgicalYear(anoNominal);
+            return calcularAnoLiturgico(anoNominal);
         }
 
-        LocalDate dataInicio = calculateAdventoSundayDate(anoNominal - 1);
-        LocalDate dataFim = calculateAdventoSundayDate(anoNominal).minusDays(1);
+        LocalDate dataInicio = calcularDataDomingoAdvento(anoNominal - 1);
+        LocalDate dataFim = calcularDataDomingoAdvento(anoNominal).minusDays(1);
         String cicloLetra = resolveCicloLetra(anoNominal);
 
         Map<String, MarcoLiturgico> marcos = new LinkedHashMap<>();
 
-        LocalDate pascoa = calculateEaster(anoNominal);
+        LocalDate pascoa = calcularPascoa(anoNominal);
 
         for (SolenidadeLiturgicaEntity s : solenidadesDoBanco) {
             if (!s.isAtivo()) {
@@ -217,9 +217,9 @@ public class MotorLiturgico {
     /**
      * Calcula o ano litúrgico completo (SaidaLiturgica) de forma estática como fallback.
      */
-    public SaidaLiturgica calculateLiturgicalYear(int anoNominal) {
-        LocalDate dataInicio = calculateAdventoSundayDate(anoNominal - 1);
-        LocalDate dataFim = calculateAdventoSundayDate(anoNominal).minusDays(1);
+    public SaidaLiturgica calcularAnoLiturgico(int anoNominal) {
+        LocalDate dataInicio = calcularDataDomingoAdvento(anoNominal - 1);
+        LocalDate dataFim = calcularDataDomingoAdvento(anoNominal).minusDays(1);
         String cicloLetra = resolveCicloLetra(anoNominal);
 
         Map<String, MarcoLiturgico> marcos = new LinkedHashMap<>();
@@ -227,51 +227,51 @@ public class MotorLiturgico {
         // Marcos móveis
         marcos.put("QUARTA_CINZAS", new MarcoLiturgico(
                 "QUARTA_CINZAS", "Quarta-feira de Cinzas",
-                calculateQuartaDeCinzas(anoNominal),
+                calcularQuartaDeCinzas(anoNominal),
                 CorLiturgica.ROXO, 2.50));
         marcos.put("QUARTA_SANTA", new MarcoLiturgico(
                 "QUARTA_SANTA", "Quarta-feira Santa",
-                calculateQuartaSanta(anoNominal),
+                calcularQuartaSanta(anoNominal),
                 CorLiturgica.ROXO, 2.00));
         marcos.put("QUINTA_SANTA", new MarcoLiturgico(
                 "QUINTA_SANTA", "Quinta-feira Santa",
-                calculateQuintaSanta(anoNominal),
+                calcularQuintaSanta(anoNominal),
                 CorLiturgica.BRANCO, 3.00));
         marcos.put("SABADO_SANTO", new MarcoLiturgico(
                 "SABADO_SANTO", "Sábado Santo",
-                calculateVesperaPascoa(anoNominal),
+                calcularVesperaPascoa(anoNominal),
                 CorLiturgica.BRANCO, 3.00));
         marcos.put("PASCOA", new MarcoLiturgico(
                 "PASCOA", "Domingo de Páscoa",
-                calculateEaster(anoNominal),
+                calcularPascoa(anoNominal),
                 CorLiturgica.BRANCO, 3.00));
         marcos.put("ASCENSAO", new MarcoLiturgico(
                 "ASCENSAO", "Ascensão do Senhor",
-                calculateAscensao(anoNominal),
+                calcularAscensao(anoNominal),
                 CorLiturgica.BRANCO, 2.50));
         marcos.put("PENTECOSTES", new MarcoLiturgico(
                 "PENTECOSTES", "Domingo de Pentecostes",
-                calculatePentecostes(anoNominal),
+                calcularPentecostes(anoNominal),
                 CorLiturgica.VERMELHO, 3.00));
         marcos.put("SANTISSIMA_TRINDADE", new MarcoLiturgico(
                 "SANTISSIMA_TRINDADE", "Santíssima Trindade",
-                calculateSantissimaTrindade(anoNominal),
+                calcularSantissimaTrindade(anoNominal),
                 CorLiturgica.BRANCO, 2.50));
         marcos.put("CORPUS_CHRISTI", new MarcoLiturgico(
                 "CORPUS_CHRISTI", "Corpus Christi",
-                calculateCorpusChristi(anoNominal),
+                calcularCorpusChristi(anoNominal),
                 CorLiturgica.BRANCO, 3.00));
         marcos.put("SAGRADO_CORACAO", new MarcoLiturgico(
                 "SAGRADO_CORACAO", "Sagrado Coração de Jesus",
-                calculateSagradoCoracao(anoNominal),
+                calcularSagradoCoracao(anoNominal),
                 CorLiturgica.BRANCO, 2.50));
         marcos.put("CRISTO_REI", new MarcoLiturgico(
                 "CRISTO_REI", "Nosso Senhor Jesus Cristo, Rei do Universo",
-                calculateCristoRei(anoNominal),
+                calcularCristoRei(anoNominal),
                 CorLiturgica.BRANCO, 2.50));
         marcos.put("EPIFANIA", new MarcoLiturgico(
                 "EPIFANIA", "Epifania do Senhor",
-                calculateEpifania(anoNominal),
+                calcularEpifania(anoNominal),
                 CorLiturgica.BRANCO, 2.50));
 
         // Solenidades fixas (Santoral)

@@ -23,18 +23,18 @@ class LiturgicalEngineTest {
     @Test
     @DisplayName("Deve calcular a data da Páscoa corretamente usando algoritmo Meeus/Jones/Butcher")
     void deveCalcularPascoa() {
-        assertThat(engine.calculateEaster(2026)).isEqualTo(LocalDate.of(2026, 4, 5));
-        assertThat(engine.calculateEaster(2027)).isEqualTo(LocalDate.of(2027, 3, 28));
-        assertThat(engine.calculateEaster(2028)).isEqualTo(LocalDate.of(2028, 4, 16));
+        assertThat(engine.calcularPascoa(2026)).isEqualTo(LocalDate.of(2026, 4, 5));
+        assertThat(engine.calcularPascoa(2027)).isEqualTo(LocalDate.of(2027, 3, 28));
+        assertThat(engine.calcularPascoa(2028)).isEqualTo(LocalDate.of(2028, 4, 16));
     }
 
     @Test
     @DisplayName("Deve calcular o 1º Domingo do Advento para o ano litúrgico")
     void deveCalcularInicioAdvento() {
-        ZonedDateTime advento2026 = engine.calculateAdventoInicio(2026);
+        ZonedDateTime advento2026 = engine.calcularAdventoInicio(2026);
         assertThat(advento2026.toLocalDate()).isEqualTo(LocalDate.of(2025, 11, 30));
 
-        ZonedDateTime advento2027 = engine.calculateAdventoInicio(2027);
+        ZonedDateTime advento2027 = engine.calcularAdventoInicio(2027);
         assertThat(advento2027.toLocalDate()).isEqualTo(LocalDate.of(2026, 11, 29));
     }
 
@@ -83,7 +83,7 @@ class LiturgicalEngineTest {
         sMovel.setFatorDemanda(3.0);
         sMovel.setAtivo(true);
 
-        SaidaLiturgica output = engine.calculateLiturgicalYear(2026, List.of(sFixa, sMovel));
+        SaidaLiturgica output = engine.calcularAnoLiturgico(2026, List.of(sFixa, sMovel));
 
         assertThat(output).isNotNull();
         assertThat(output.marcosCalculados()).hasSize(2);
@@ -94,7 +94,7 @@ class LiturgicalEngineTest {
     @Test
     @DisplayName("Deve retornar SaidaLiturgica completo com limites, ciclo e todos os marcos móveis e fixos como fallback")
     void deveRetornarLiturgicalOutputCompleto() {
-        SaidaLiturgica output = engine.calculateLiturgicalYear(2026);
+        SaidaLiturgica output = engine.calcularAnoLiturgico(2026);
 
         assertThat(output).isNotNull();
         assertThat(output.anoNominal()).isEqualTo(2026);

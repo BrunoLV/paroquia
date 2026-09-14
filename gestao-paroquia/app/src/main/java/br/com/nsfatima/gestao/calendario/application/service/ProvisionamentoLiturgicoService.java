@@ -81,7 +81,7 @@ public class ProvisionamentoLiturgicoService {
     private AnoLiturgicoEntity provisionNewLiturgicalYear(int year) {
         List<SolenidadeLiturgicaEntity> solenidadesDoBanco = solenidadeLiturgicaJpaRepository.findByAtivoTrue();
 
-        SaidaLiturgica output = liturgicalEngine.calculateLiturgicalYear(year, solenidadesDoBanco);
+        SaidaLiturgica output = liturgicalEngine.calcularAnoLiturgico(year, solenidadesDoBanco);
 
         Instant inicioAdvento = output.dataInicio().atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant fimAnoLiturgico = output.dataFim().atTime(23, 59, 59).atZone(ZoneOffset.UTC).toInstant();
