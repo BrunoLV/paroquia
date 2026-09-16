@@ -88,7 +88,7 @@ Os testes ficam em `app/src/test/java`, espelhando o pacote do bounded context c
 ## 🔒 Privacidade e Conformidade (LGPD)
 
 A aplicação manipula dados pessoais e sensíveis sob rígidas regras em conformidade com a LGPD (Lei Geral de Proteção de Dados).
-Consulte a documentação mandatória em [`docs/ia/regra_dura_lgpd.md`](./docs/ia/regra_dura_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs — a diretiva cobre minimização de dados, mascaramento em logs e critérios de retenção.
+Consulte a documentação mandatória em [`../docs/guide/logging-metricas.md`](../docs/guide/logging-metricas.md) e na skill canônica [`.agents/skills/lgpd-privacy-by-design/SKILL.md`](../.agents/skills/lgpd-privacy-by-design/SKILL.md) antes de criar ou alterar entidades, DTOs ou logs — a diretiva cobre minimização de dados, mascaramento em logs e critérios de retenção.
 
 ---
 
@@ -130,11 +130,6 @@ gestao-paroquia/
 ├── docker/                     # Scripts SQL de inicialização e dados iniciais
 │   ├── init-data.sql           # Schema inicial do banco de dados
 │   └── seed-data.sql           # Dados de semente para ambiente local/dev
-├── docs/                       # Portal de documentação técnica, arquitetura e LGPD
-│   ├── architecture.md         # Visão geral da arquitetura
-│   ├── getting-started.md      # Guia de início rápido
-│   ├── domains/                # Documentação detalhada por bounded context
-│   └── ia/regra_dura_lgpd.md   # Diretiva mandatória de conformidade LGPD
 ├── demo_mvp.sh                 # Demonstração automatizada do ciclo de vida do MVP
 ├── build.gradle.kts            # Configuração raiz do Gradle
 └── AGENTS.md                   # Diretrizes completas de engenharia do backend
@@ -147,11 +142,11 @@ gestao-paroquia/
 
 * **Swagger UI (com a API em execução):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 * **OpenAPI Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-* **Documentação do Sistema:** [`docs/README.md`](./docs/README.md)
-* [Visão Geral da Arquitetura](./docs/architecture.md)
-* [Guia de Início Rápido](./docs/getting-started.md)
-* [Documentação dos Domínios](./docs/domains/)
-* [Regra Dura LGPD](./docs/ia/regra_dura_lgpd.md)
-
-
+* **Portal de Documentação Central (Docsify):** [`../docs/guide/`](../docs/guide/)
+* [Visão Geral da Arquitetura](../docs/guide/arquitetura.md)
+* [Regras de Negócio e Funcionalidades](../docs/guide/regras-funcionalidades.md)
+* [Padrões de Projeto e Classes](../docs/guide/padroes-projeto.md)
+* [Fluxos e Diagramas de Sequência](../docs/guide/fluxos-sequencia.md)
+* [Máquinas de Estado](../docs/guide/estados.md)
+* [Logging, LGPD e Métricas](../docs/guide/logging-metricas.md)
 * **Padrões de Engenharia Backend:** [`AGENTS.md`](./AGENTS.md)

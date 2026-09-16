@@ -120,3 +120,8 @@ Os testes da interface são executados com **Vitest** e **React Testing Library*
 
 Execute `npm test` para rodar a suíte completa uma única vez, ou `npm run test:watch` durante o desenvolvimento.
 
+---
+
+## 📚 Documentação Central
+
+Para arquitetura geral, regras de negócio, diagramas Mermaid e especificações do sistema, consulte o [Portal de Documentação Central (Docsify)](../docs/guide/).

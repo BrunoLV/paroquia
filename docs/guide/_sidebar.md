@@ -1,0 +1,7 @@
+- [⛪ Visão Geral & Objetivos](README.md)
+- [📋 Regras & Funcionalidades](regras-funcionalidades.md)
+- [🏛️ Padrões de Arquitetura](arquitetura.md)
+- [🧩 Padrões de Projeto (Design Patterns)](padroes-projeto.md)
+- [🔄 Diagramas de Sequência](fluxos-sequencia.md)
+- [⚙️ Diagramas de Estados](estados.md)
+- [📊 Logging & Métricas](logging-metricas.md)

@@ -20,7 +20,7 @@ O repositório é organizado em módulos independentes, cada um com suas própri
 - **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 4**, servidor web **Jetty 12**, **Log4j2**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
 - **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
 - **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4 e seeder automático de dados. Variáveis de ambiente em [`.env.example`](./.env.example).
-- **[Documentação (`gestao-paroquia/docs/`)](./gestao-paroquia/docs):** Portal de documentação técnica — arquitetura, guia de início rápido, documentação por domínio e regras de conformidade com a LGPD.
+- **[Documentação (`docs/guide/`)](./docs/guide):** Portal de documentação técnica via Docsify com suporte a Mermaid — arquitetura, diagramas conceituais, regras de negócio, padrões e observabilidade.
 
 - **Scripts utilitários (`run.sh`, `restart-docker.sh`):** Atalhos para o ciclo de vida completo do ambiente (subir, testar, checar qualidade, buildar e reiniciar os contêineres).
 
@@ -98,8 +98,9 @@ docker compose up -d
 | Serviço | URL / Endereço | Credenciais / Notas |
 | :--- | :--- | :--- |
 | **Frontend Web** | [http://localhost:3000](http://localhost:3000) | Interface administrativa em React (Vite) |
-| **Backend REST API** | [http://localhost:8080](http://localhost:8080) | API Spring Boot 3 |
-| **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Documentação interativa OpenAPI |
+| **Backend REST API** | [http://localhost:8080](http://localhost:8080) | API Spring Boot 4 + Jetty 12 + Log4j2 |
+| **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Documentação interativa OpenAPI 3 |
+| **Portal de Documentação (Docsify)** | [`docs/guide/`](./docs/guide) | Guia arquitetural vivo com diagramas Mermaid (`npx docsify-cli serve docs/guide`) |
 | **pgAdmin 4** | [http://localhost:5050](http://localhost:5050) | Email: `admin@admin.com` \| Senha: `admin` |
 | **PostgreSQL DB** | `localhost:5432` | DB: `calendario` \| User: `postgres` \| Pass: `password` |
 
@@ -111,11 +112,11 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 
 | Camada | Tecnologias e Ferramentas |
 | :--- | :--- |
-| **Backend** | Java 25 (Gradle Toolchain), Spring Boot 3, Spring Data JPA, Spring Security, Spring Actuator, Spring Cache + Caffeine, Flyway |
+| **Backend** | Java 25 (Gradle Toolchain), Spring Boot 4, Eclipse Jetty 12, Log4j2 (Async Disruptor), Spring Data JPA, Spring Security, Spring Actuator, Spring Cache + Caffeine, Flyway |
 | **Frontend** | React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query 5, Axios, React Router DOM 6 |
 | **Banco de Dados** | PostgreSQL 16 (Ambiente de Execução / Docker), H2 Database (Ambiente de Testes) |
 | **Qualidade & Linters** | **Backend:** Checkstyle 13.8.0, PMD 7.16.0, SpotBugs, JaCoCo <br> **Frontend:** Vitest, React Testing Library, TypeScript (`tsc`) |
-| **Relatórios / Mídia** | **Backend:** Apache POI (Excel), OpenPDF (PDF) <br> **Frontend:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo, `html-to-image` (exportação de organogramas) |
+| **Relatórios / Mídia** | **Backend:** Apache POI (Excel), OpenPDF (PDF), docx4j (Word) <br> **Frontend:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo, `html-to-image` (exportação de organogramas) |
 
 ---
 
@@ -124,17 +125,26 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 - **Engenharia e Padrões de Codificação:** Consulte [`AGENTS.md`](./AGENTS.md) e [`gestao-paroquia/AGENTS.md`](./gestao-paroquia/AGENTS.md) para diretrizes de desenvolvimento, TDD e linters.
 - **Travas de Qualidade (Quality Gates):** Todo código de backend passa por Checkstyle, PMD, SpotBugs e JaCoCo antes de ser aceito; o frontend passa por `tsc` e pela suíte Vitest. Rode tudo de uma vez com `./run.sh check`.
 - **Auditoria e Rastreabilidade:** O domínio `governanca` registra logs de auditoria estruturados para operações sensíveis, com histórico consultável.
-- **Privacidade e Proteção de Dados (LGPD):** Consulte a diretiva mandatória em [`gestao-paroquia/docs/ia/regra_dura_lgpd.md`](./gestao-paroquia/docs/ia/regra_dura_lgpd.md) antes de criar ou alterar entidades, DTOs ou logs que envolvam dados pessoais.
+- **Privacidade e Proteção de Dados (LGPD):** Consulte o guia de observabilidade em [`docs/guide/logging-metricas.md`](./docs/guide/logging-metricas.md) e a skill canônica [`.agents/skills/lgpd-privacy-by-design/SKILL.md`](./.agents/skills/lgpd-privacy-by-design/SKILL.md) antes de criar ou alterar entidades, DTOs ou logs que envolvam dados pessoais.
 
 ---
 
-## 📖 Documentação Adicional
+## 📖 Portal de Documentação Técnica Central (`docs/guide/`)
 
-- [Portal de Documentação do Backend](./gestao-paroquia/docs/README.md)
-- [Visão Geral da Arquitetura do Backend](./gestao-paroquia/docs/architecture.md)
-- [Guia de Início Rápido do Backend](./gestao-paroquia/docs/getting-started.md)
-- [Documentação por Domínio](./gestao-paroquia/docs/domains/)
+Toda a documentação técnica, conceitual e de arquitetura do monorepo está unificada em [`docs/guide/`](./docs/guide), com renderização interativa via **Docsify** e diagramas **Mermaid v10**:
 
+- [⛪ **Visão Geral & Objetivos**](./docs/guide/README.md): Missão eclesial, pilares arquiteturais e stack tecnológica.
+- [📋 **Regras de Negócio & Funcionalidades**](./docs/guide/regras-funcionalidades.md): Catálogo completo dos 15 Bounded Contexts e recursos da UI.
+- [🏛️ **Padrões de Arquitetura**](./docs/guide/arquitetura.md): Clean/Hexagonal Architecture, Virtual Threads e **Diagrama Mermaid C4/Container**.
+- [🧩 **Padrões de Projeto (Design Patterns)**](./docs/guide/padroes-projeto.md): Domain Policies puras, Records/Value Objects, Tell Don't Ask e **Diagrama Mermaid de Classes**.
+- [🔄 **Diagramas de Sequência**](./docs/guide/fluxos-sequencia.md): Fluxos temporais de agendamento de eventos, alocação de ativos e homologação do CPC.
+- [⚙️ **Diagramas de Estados**](./docs/guide/estados.md): Máquinas de estado finito de eventos, aprovações, ativos patrimoniais e atas.
+- [📊 **Logging, LGPD & Métricas**](./docs/guide/logging-metricas.md): Log4j2 assíncrono (LMAX Disruptor), MDC, PII Zero e métricas Prometheus/Actuator.
+
+Para executar o portal localmente:
+```bash
+npx docsify-cli serve docs/guide
+```
 
 ---
 *Construído com rigor de engenharia e reverência ao propósito que serve: sustentar, com eficiência, alta confiabilidade e conformidade com a LGPD, a gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima.* ⛪

@@ -1,0 +1,102 @@
+# 📊 Padrão de Logging, LGPD & Métricas
+
+Este documento define os padrões mandatórios de observabilidade do **Projeto Paróquia**, detalhando a infraestrutura assíncrona de logs com Log4j2, os controles de privacidade de dados (LGPD / PII Zero) e a telemetria baseada em Spring Boot Actuator e Prometheus.
+
+---
+
+## 1. Arquitetura de Logging Assíncrono com Log4j2
+
+O backend adota o **Apache Log4j2** configurado exclusivamente em modo assíncrono com o **LMAX Disruptor**:
+
+```
+[Virtual Thread / UseCase] 
+           │
+           ▼
+[Log4j2 Event Logger] ──(Zero Bloqueio)──► [Disruptor RingBuffer (Lock-free)]
+                                                    │
+                                                    ▼ (Background Thread)
+                                           [Async Logger Worker]
+                                                    │
+                                                    ├──► [PII Masking Filter]
+                                                    │
+                                                    └──► [JSON Output Appender] ──► Console / STDOUT
+```
+
+### 1.1. Configuração do LMAX Disruptor
+- A propriedade JVM `-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector` garante que todas as chamadas de log ocorram de forma *lock-free* e sem bloquear a execução das Virtual Threads.
+- Tamanho do buffer circular: configurado para alta vazão com descarte gracioso sob sobrecarga extrema (*garbage-free logging*).
+
+---
+
+## 2. Rastreabilidade com MDC (Mapped Diagnostic Context)
+
+Toda requisição HTTP que ingressa no backend passa por um filtro de observabilidade (`MdcFilter`) que injeta metadados contextuais padronizados no contexto de log:
+
+```json
+{
+  "timestamp": "2026-09-16T11:45:02.124Z",
+  "level": "INFO",
+  "logger": "br.com.nsfatima.gestao.calendario.application.usecase.CriarEventoUseCase",
+  "message": "Evento criado com sucesso. ID: 4f1a2380-6bc1-40c2-a7d1-05244b7d19e0",
+  "context": {
+    "correlationId": "c7a8b920-1e9a-4f51-b847-190284051a23",
+    "userId": "usr_99812",
+    "username": "secretaria.central",
+    "tenantId": "paroquia-ns-fatima",
+    "userRoles": ["SECRETARIA"],
+    "action": "CRIAR_EVENTO",
+    "httpMethod": "POST",
+    "requestUri": "/api/v1/eventos"
+  }
+}
+```
+
+### Diretrizes de Uso do MDC:
+- **`correlationId`:** Gerado no primeiro ponto de contato (ou propagado pelo cabeçalho HTTP `X-Correlation-ID`) e mantido ao longo de toda a esteira de processamento e respostas de erro (`ProblemDetail`).
+- **Limpeza Garantida:** O filtro sempre executa `MDC.clear()` em bloco `finally` para evitar vazamento de contexto entre reusos de thread.
+
+---
+
+## 3. Conformidade LGPD & Política PII Zero em Logs
+
+Em estrita consonância com a **LGPD (Lei 13.709/2018)** e a skill canônica [`lgpd-privacy-by-design`](.agents/skills/lgpd-privacy-by-design/SKILL.md), é **expressamente proibido** imprimir Informações Pessoais Identificáveis (PII) em texto claro nos logs da aplicação.
+
+### 3.1. Dados com Proibição Absoluta de Log
+- CPFs, RGs ou números de documentos civis.
+- Endereços residenciais, CEPs e números prediais.
+- Telefones e números de WhatsApp.
+- E-mails pessoais de fiéis ou clérigos.
+- Dados de saúde, donativos financeiros nominais ou anotações de aconselhamento espiritual.
+
+### 3.2. Mascaramento Automático (*Sanitization Pattern*)
+Sempre que for estritamente necessário registrar a ocorrência de um evento associado a um fiel, utilize identificadores sintéticos (`FielId`) ou padrões de mascaramento (*masking*):
+
+| Dado | Formato de Mascaramento | Exemplo |
+| :--- | :--- | :--- |
+| **CPF** | `***.NNN.NNN-**` | `***.456.789-**` |
+| **E-mail** | `p***@dominio.com` | `j***@gmail.com` |
+| **Telefone** | `(NN) *****-NNNN` | `(11) *****-1234` |
+
+---
+
+## 4. Métricas e Telemetria com Spring Boot Actuator & Prometheus
+
+O sistema exporta métricas em tempo real no formato aberto do **Prometheus** através da rota protegida `/actuator/prometheus`.
+
+### 4.1. Métricas Principais da Aplicação
+
+| Nome da Métrica | Tipo | Descrição | Tags / Dimensões |
+| :--- | :--- | :--- | :--- |
+| `paroquia.eventos.criados` | Counter | Total de eventos criados no calendário | `status`, `tipo_celebracao`, `organizacao` |
+| `paroquia.eventos.conflito.detectado` | Counter | Total de tentativas bloqueadas por choque | `local_id`, `motivo` |
+| `paroquia.aprovacoes.tempo_decisao` | Timer | Tempo decorrido entre submissão e parecer | `tipo_solicitacao`, `decisao` |
+| `paroquia.ativos.alocacoes.ativas` | Gauge | Quantidade de ativos patrimoniais alocados | `categoria_ativo`, `comunidade` |
+| `paroquia.usecase.execucao` | Timer | Latência de execução dos casos de uso | `usecase_name`, `outcome` |
+
+### 4.2. Healthchecks & Probes de Orquestração
+As rotas de saúde são configuradas para garantir integração imediata com orquestradores de contêineres (Docker / Kubernetes):
+
+- **Liveness Probe (`/actuator/health/liveness`):**
+  Indica se o processo Java está vivo e respondendo. Caso falhe, o orquestrador reinicia o contêiner.
+- **Readiness Probe (`/actuator/health/readiness`):**
+  Verifica se as conexões com o PostgreSQL e migrações do Flyway estão prontas para receber tráfego de usuários. Se o banco estiver indisponível, o tráfego é temporariamente drenado.
