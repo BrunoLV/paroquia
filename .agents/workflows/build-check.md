@@ -15,14 +15,17 @@ Execute a partir do diretório `gestao-paroquia/`:
 # 1.1. Verificação estrita de qualidade estática (Checkstyle, SpotBugs, PMD)
 ./gradlew check
 
-# 1.2. Execução da suíte de testes unitários
+# 1.2. Execução da suíte de testes unitários e de arquitetura (ArchUnit)
 ./gradlew test
 
-# 1.3. Compilação completa e geração de artefatos
+# 1.3. Execução direcionada apenas da validação arquitetural ArchUnit
+./gradlew test --tests "br.com.nsfatima.gestao.architecture.*"
+
+# 1.4. Compilação completa e geração de artefatos
 ./gradlew build -x test
 ```
 
-> **Critério de Aceite:** O build deve finalizar com `BUILD SUCCESSFUL` e zero warnings de compilação ou violação de estilo.
+> **Critério de Aceite:** O build deve finalizar com `BUILD SUCCESSFUL`, 100% de conformidade com as regras do ArchUnit e zero warnings de compilação ou violação de estilo.
 
 ---
 

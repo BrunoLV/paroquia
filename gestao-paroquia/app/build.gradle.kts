@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.openpdf)
 
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.archunit.junit5)
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.boot.starter.webmvc.test)
     testImplementation(libs.spring.boot.starter.data.jpa.test)

@@ -128,3 +128,18 @@ O frontend adota uma arquitetura em camadas orientada a hooks customizados e com
    - Cálculos, transformações e lógica de API são encapsulados em hooks especializados (ex: `useCalendarGrid`, `useEventoCrud`).
 3. **Design System & Acessibilidade:**
    - Construído com base em primitivas de layout do **Material UI 9** (`Box`, `Stack`, `Grid`, `Typography`, `Card`), proibindo tags HTML cruas para manter consistência responsiva.
+
+---
+
+### 2.5. Validação Arquitetural Contínua com ArchUnit
+
+Para blindar a arquitetura contra degradação estrutural e violações de fronteiras, o projeto integra o **ArchUnit 1.4.0** à esteira de testes automatizados do Gradle (`br.com.nsfatima.gestao.architecture.*`), garantindo que 100% das invariantes sejam checadas a cada build:
+
+| Classe de Teste | Invariantes Validadas |
+| :--- | :--- |
+| `HexagonalArchitectureTest` | • Domínio 100% puro Java 25 (zero frameworks Spring/JPA/Jackson).<br>• Domínio não depende de camadas externas (`application`, `api`, `infrastructure`).<br>• `application` não depende de persistência concreta nem de `api`.<br>• `api` não consome repositórios Spring Data JPA diretamente. |
+| `DomainPolicyArchitectureTest` | • Todas as classes `*Policy` residem em `domain.policy`.<br>• Policies são estritamente stateless e zero-I/O (sem anotações `@Service`, `@Component`, etc.).<br>• Policies não dependem de classes do pacote `infrastructure`. |
+| `JpaEntityArchitectureTest` | • Todas as entidades `@Entity` residem em `infrastructure.persistence.entity`.<br>• Todas as entidades JPA estendem obrigatoriamente `BaseAuditableEntity`.<br>• Nenhuma anotação de persistência relacional vaza para a camada `domain`. |
+| `RestControllerArchitectureTest` | • Todos os controllers `@RestController` residem em pacotes `api`.<br>• Zero métodos `@ExceptionHandler` inline em controllers (centralizados em `@RestControllerAdvice`).<br>• Controllers não dependem diretamente de entidades JPA de persistência. |
+| `ModularMonolithArchitectureTest` | • Domínio de um bounded context não acessa a persistência de outro contexto.<br>• Camada de aplicação não acessa diretamente entidades JPA privadas de outros contextos. |
+

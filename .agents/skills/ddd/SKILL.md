@@ -216,6 +216,14 @@ public class DomainConfiguration {
 }
 ```
 
+### 5.3. Guardião de Arquitetura DDD com ArchUnit
+
+Para garantir que as regras táticas do DDD nunca sofram erosão arquitetural ao longo do tempo, o projeto conta com uma suíte de testes de arquitetura contínua (`br.com.nsfatima.gestao.architecture.*`):
+* `HexagonalArchitectureTest`: impede dependências do `domain` com frameworks, anotações de persistência ou camadas externas.
+* `DomainPolicyArchitectureTest`: enforça que toda `*Policy` seja stateless, resida em `domain.policy` e não tenha acoplamento com infraestrutura.
+* `JpaEntityArchitectureTest`: garante que todas as entidades `@Entity` estendam `BaseAuditableEntity` e fiquem confinadas em `infrastructure.persistence.entity`.
+* `ModularMonolithArchitectureTest`: bloqueia acoplamento promíscuo entre modelos de persistência de contextos distintos.
+
 ---
 
 ## 6. Checklist de Qualidade DDD para o Agente IA
@@ -231,3 +239,4 @@ Antes de concluir qualquer tarefa ou PR, verifique rigorosamente:
 7. [ ] **Anti-Corruption Layer (ACL):** Dados de sistemas externos ou outros bounded contexts são traduzidos antes de atingir o domínio?
 8. [ ] **Desacoplamento de Eventos:** Os eventos de domínio são instanciados na camada de domínio e despachados na camada de aplicação após a persistência via `AggregateRoot` e `PublicadorEventosDominio`?
 9. [ ] **Policies vs Services:** Variações de regras e estratégias foram modeladas como `*Policy` stateless em `domain/policy/` em vez de `if/switch` em serviços?
+10. [ ] **Conformidade ArchUnit:** As novas regras ou entidades passam integralmente na suíte de testes `br.com.nsfatima.gestao.architecture.*`?

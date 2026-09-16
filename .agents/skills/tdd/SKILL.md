@@ -278,8 +278,19 @@ void deveRetornarVarianteFalha() {
             assertThat(recusada.codigoErro()).isEqualTo(422);
         });
 }
-
 ```
+
+### 7.3. Testes de Arquitetura como Especificação Estrutural (ArchUnit)
+
+Além dos testes unitários de comportamento funcional, as restrições e regras arquiteturais do sistema são testadas como código através do **ArchUnit**:
+
+* **Pacote Canônico:** Localizado em `br.com.nsfatima.gestao.architecture.*`.
+* **Invariantes Cobertas:**
+  1. *Pureza do Domínio:* `domain` não depende de frameworks (Spring, JPA, Hibernate, Jackson) nem de camadas externas (`application`, `api`, `infrastructure`).
+  2. *Policies Puras:* Classes `*Policy` residem em `domain.policy`, são stateless e zero-I/O (sem anotações Spring).
+  3. *Auditoria de Entidades:* Todas as classes `@Entity` residem em `infrastructure.persistence.entity` e estendem `BaseAuditableEntity`.
+  4. *Controllers REST:* Residem em `api`, não contêm `@ExceptionHandler` inline e não injetam nem dependem diretamente de entidades JPA.
+  5. *Encapsulamento Modular:* Domínio e aplicação de um bounded context não acessam modelos de persistência privada de outros contextos.
 
 ---
 
@@ -304,3 +315,4 @@ Antes de considerar qualquer entrega de testes finalizada, valide:
 5. [ ] **Qualidade de Asserção (AssertJ):** Foi priorizado `assertThat(...)` com verificações semânticas estritas em vez de asserções superficiais?
 6. [ ] **Validação de Efeitos Colaterais:** Para métodos `void`, foi validado o comportamento esperado nas portas de saída usando `then(mock).should()` ou `ArgumentCaptor`?
 7. [ ] **Determinismo e Velocidade:** Todos os testes são independentes entre si e executam em milissegundos sem concorrência com estado estático compartilhado?
+8. [ ] **Conformidade Arquitetural (ArchUnit):** As novas classes ou refatorações mantêm a suíte do ArchUnit 100% verde sem violar isolamento hexagonal ou acoplamento inter-camadas?

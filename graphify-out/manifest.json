@@ -915,8 +915,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/build.gradle.kts": {
-    "mtime": 1789361355.6376593,
-    "ast_hash": "bfc00aba206891b248317888d1b38ab3",
+    "mtime": 1789560837.3959126,
+    "ast_hash": "7324fe67ec89c323429d07ee5cbcb9d0",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/GestaoParoquiaApplication.java": {
@@ -4485,8 +4485,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789440629.3123078,
-    "ast_hash": "3f9e3580fb22b20fb73ec4f1d961f034",
+    "mtime": 1789561522.0539274,
+    "ast_hash": "1a2598da1d7a974440f44dbd3e22a234",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -4550,8 +4550,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/AGENTS.md": {
-    "mtime": 1789440676.987326,
-    "ast_hash": "9c2faf39e07079aff845bb768dc962b9",
+    "mtime": 1789561542.7618976,
+    "ast_hash": "8da5c78c95a6a0fa9b367921f773388e",
     "semantic_hash": ""
   },
   "gestao-paroquia/CLAUDE.md": {
@@ -6960,8 +6960,8 @@
     "semantic_hash": ""
   },
   "docs/guide/arquitetura.md": {
-    "mtime": 1789559242.3096824,
-    "ast_hash": "f6f36f601f4299485eceb67bee362dd7",
+    "mtime": 1789561575.7368503,
+    "ast_hash": "5bba49f6043254be0a81d89337d2f4cc",
     "semantic_hash": ""
   },
   "docs/guide/estados.md": {
@@ -6992,6 +6992,31 @@
   "docs/guide/regras-funcionalidades.md": {
     "mtime": 1789559232.9817045,
     "ast_hash": "e678751d15202c01a4774822b70e6199",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/architecture/DomainPolicyArchitectureTest.java": {
+    "mtime": 1789561262.3023012,
+    "ast_hash": "4646fe71ad4a1ba1fd6ac1a0163473d7",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/architecture/HexagonalArchitectureTest.java": {
+    "mtime": 1789561253.2573142,
+    "ast_hash": "692dd44406338a4f49d5cd7213b9ca46",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/architecture/JpaEntityArchitectureTest.java": {
+    "mtime": 1789561265.973296,
+    "ast_hash": "d1684756bf9d85bf41c586d74a653d95",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/architecture/ModularMonolithArchitectureTest.java": {
+    "mtime": 1789561273.567285,
+    "ast_hash": "cd23cc31027bce42a47ab0cee1566fb0",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/architecture/RestControllerArchitectureTest.java": {
+    "mtime": 1789561269.6402905,
+    "ast_hash": "52f35f908fe16aeb67663fc5ad552608",
     "semantic_hash": ""
   }
 }
