@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, LinearProgress, Paper, Stack, Tooltip, Typography} from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {OcupacaoAmbientes} from '../../api/types';
+import {OcupacaoAmbientes} from '@/api/types';
 
 interface OcupacaoAmbientesCardProps {
   data?: OcupacaoAmbientes;

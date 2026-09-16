@@ -1,5 +1,5 @@
 import React, {createContext, ReactNode, useContext, useMemo, useState} from 'react';
-import {PeriodoDashboard} from '../api/types';
+import {PeriodoDashboard} from '@/api/types';
 
 interface DashboardFilterContextType {
   periodo: PeriodoDashboard;

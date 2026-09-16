@@ -3,10 +3,10 @@ import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
 import {ThemeProvider} from '@mui/material/styles';
-import theme from '../theme';
-import {Organizacao} from '../api/types';
+import theme from '@/theme';
+import {Organizacao} from '@/api/types';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {getOrganizacaoMembros} from '../api/organizacoes';
+import {getOrganizacaoMembros} from '@/api/organizacoes';
 
 vi.mock('../api/organizacoes', async (importOriginal: any) => {
   const actual: any = await importOriginal();

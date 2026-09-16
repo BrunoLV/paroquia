@@ -1,7 +1,8 @@
 import React from 'react';
 import {Box, Paper, Stack, Typography} from '@mui/material';
-import {Business as OrgIcon, Place as PlaceIcon} from '@mui/icons-material';
-import {WeeklyEvent} from '../../api/types';
+import OrgIcon from '@mui/icons-material/Business';
+import PlaceIcon from '@mui/icons-material/Place';
+import {WeeklyEvent} from '@/api/types';
 
 interface WeeklyTimelineProps {
   events: WeeklyEvent[];

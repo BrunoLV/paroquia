@@ -14,20 +14,18 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import {
-    Check as CheckIcon,
-    Close as CloseIcon,
-    Delete as DeleteIcon,
-    Edit as EditIcon,
-    Send as SendIcon,
-} from '@mui/icons-material';
-import {useAuth} from '../auth/AuthContext';
-import {useNotification} from '../context/NotificationContext';
-import {extractErrorMessage} from '../utils/errorUtils';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SendIcon from '@mui/icons-material/Send';
+import {useAuth} from '@/auth/AuthContext';
+import {useNotification} from '@/context/NotificationContext';
+import {extractErrorMessage} from '@/utils/errorUtils';
 import StatusIcon from './StatusIcon';
-import {getObservacaoTipoMeta} from '../utils/statusMeta/observacaoTipo';
-import {Observacao} from '../api/types';
-import {createObservacao, deleteObservacao as deleteObsApi, getObservacoes, updateObservacao} from '../api/observacoes';
+import {getObservacaoTipoMeta} from '@/utils/statusMeta/observacaoTipo';
+import {Observacao} from '@/api/types';
+import {createObservacao, deleteObservacao as deleteObsApi, getObservacoes, updateObservacao} from '@/api/observacoes';
 import ActionButton from './ActionButton';
 
 interface ObservacoesEventoProps {

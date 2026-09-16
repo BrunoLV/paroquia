@@ -2,13 +2,13 @@ import React from 'react';
 import { Alert, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
-import { AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto } from '../api/types';
+import { AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto } from '@/api/types';
 import ActionButton from './ActionButton';
 import EventoDadosCard from './eventos/EventoDadosCard';
 import EventoOrganizacaoCard from './eventos/EventoOrganizacaoCard';
 import EventoLocalCard from './eventos/EventoLocalCard';
 import EventoDataRecorrenciaCard from './eventos/EventoDataRecorrenciaCard';
-import { useCadastroEventoForm } from '../hooks/useCadastroEventoForm';
+import { useCadastroEventoForm } from '@/hooks/useCadastroEventoForm';
 
 interface CadastroEventoModalProps {
   open: boolean;
@@ -61,7 +61,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
   return (
     <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="md" fullWidth>
       <form onSubmit={handleFormSubmit} noValidate>
-        <DialogTitle>{initialEvent ? 'Editar evento' : 'Novo evento'}</DialogTitle>
+        <DialogTitle>{initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}</DialogTitle>
         <DialogContent dividers>
           <Stack spacing={2.5} sx={{ mt: 0.5 }}>
             {isClosedYear && (

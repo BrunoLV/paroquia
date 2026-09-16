@@ -8,9 +8,10 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
-import {ArrowBack as ArrowBackIcon, Block as BlockIcon} from '@mui/icons-material';
-import {useNotification} from '../context/NotificationContext';
-import {DIALOG_CONTENT_SCROLL_SX} from '../theme/dialogStyles';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BlockIcon from '@mui/icons-material/Block';
+import {useNotification} from '@/context/NotificationContext';
+import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
 import ActionButton from './ActionButton';
 
 interface CancelarEventoDialogProps {

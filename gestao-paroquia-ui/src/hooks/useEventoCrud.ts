@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
-import { useAuth } from '../auth/AuthContext';
-import { useNotification } from '../context/NotificationContext';
-import apiClient from '../api/client';
-import { getRecorrencia } from '../api/eventos';
-import { extractErrorMessage } from '../utils/errorUtils';
-import { Evento, ReservaConflitoDetalhe } from '../api/types';
-import { EditScope } from '../components/EditScopeDialog';
+import { useAuth } from '@/auth/AuthContext';
+import { useNotification } from '@/context/NotificationContext';
+import apiClient from '@/api/client';
+import { getRecorrencia } from '@/api/eventos';
+import { extractErrorMessage } from '@/utils/errorUtils';
+import { Evento, ReservaConflitoDetalhe } from '@/api/types';
+import { EditScope } from '@/components/EditScopeDialog';
 
 /**
  * Todo o fluxo de escrita de eventos do calendário: abrir/fechar os diálogos de

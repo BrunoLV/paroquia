@@ -1,12 +1,10 @@
 import React from 'react';
 import {alpha, Box, Card, CardContent, Grid, Typography} from '@mui/material';
-import {
-    Assignment as ProjectIcon,
-    CalendarMonth as CalendarIcon,
-    Groups as PeopleIcon,
-    HourglassEmpty as PendingIcon
-} from '@mui/icons-material';
-import {GeneralSummary} from '../../api/types';
+import ProjectIcon from '@mui/icons-material/Assignment';
+import CalendarIcon from '@mui/icons-material/CalendarMonth';
+import PeopleIcon from '@mui/icons-material/Groups';
+import PendingIcon from '@mui/icons-material/HourglassEmpty';
+import {GeneralSummary} from '@/api/types';
 
 interface SummaryCardsProps {
   resumo?: GeneralSummary;

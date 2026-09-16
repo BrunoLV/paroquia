@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {Snackbar} from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import {WeeklyEvent} from '../../api/types';
-import {formatarAgendaFimDeSemana} from '../../utils/agendaFimDeSemana';
-import ActionButton from '../ActionButton';
+import {WeeklyEvent} from '@/api/types';
+import {formatarAgendaFimDeSemana} from '@/utils/agendaFimDeSemana';
+import ActionButton from '@/components/ActionButton';
 
 interface ExportarAgendaButtonProps {
   eventosSemana?: WeeklyEvent[];

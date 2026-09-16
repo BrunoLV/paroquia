@@ -33,39 +33,37 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import {
-    Add as AddIcon,
-    Assignment as WorkIcon,
-    Cancel as CancelIcon,
-    Business as BusinessIcon,
-    CalendarToday as CalendarIcon,
-    Check as CheckIcon,
-    Close as CloseIcon,
-    Edit as EditIcon,
-    Info as InfoIcon,
-    PlayArrow as PlayArrowIcon,
-    Save as SaveIcon,
-    Visibility as VisibilityIcon,
-    Warning as WarningIcon,
-} from '@mui/icons-material';
-import {useAuth} from '../auth/AuthContext';
-import PageHeader from '../components/PageHeader';
-import ActionButton from '../components/ActionButton';
-import { DIALOG_CONTENT_SCROLL_SX } from '../theme/dialogStyles';
-import TableActionMenu from '../components/TableActionMenu';
-import StatusIcon from '../components/StatusIcon';
-import { getProjetoStatusMeta } from '../utils/statusMeta/projetoStatus';
+import AddIcon from '@mui/icons-material/Add';
+import WorkIcon from '@mui/icons-material/Assignment';
+import CancelIcon from '@mui/icons-material/Cancel';
+import BusinessIcon from '@mui/icons-material/Business';
+import CalendarIcon from '@mui/icons-material/CalendarToday';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import InfoIcon from '@mui/icons-material/Info';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SaveIcon from '@mui/icons-material/Save';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import WarningIcon from '@mui/icons-material/Warning';
+import {useAuth} from '@/auth/AuthContext';
+import PageHeader from '@/components/PageHeader';
+import ActionButton from '@/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
+import TableActionMenu from '@/components/TableActionMenu';
+import StatusIcon from '@/components/StatusIcon';
+import { getProjetoStatusMeta } from '@/utils/statusMeta/projetoStatus';
 import {
     canManageProjetos as userCanManageProjetos,
     canTransitionProjeto as userCanTransitionProjeto,
     isGlobalCreator as userIsGlobalCreator
-} from '../auth/permissions';
-import apiClient from '../api/client';
-import { getOrganizacoes } from '../api/organizacoes';
-import {Organizacao, Projeto} from '../api/types';
-import {useNotification} from '../context/NotificationContext';
-import { extractErrorMessage } from '../utils/errorUtils';
-import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '../api/projects';
+} from '@/auth/permissions';
+import apiClient from '@/api/client';
+import { getOrganizacoes } from '@/api/organizacoes';
+import {Organizacao, Projeto} from '@/api/types';
+import {useNotification} from '@/context/NotificationContext';
+import { extractErrorMessage } from '@/utils/errorUtils';
+import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '@/api/projects';
 
 // DTO interfaces for project summaries
 interface StatusExecucao {

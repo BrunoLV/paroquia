@@ -2,14 +2,14 @@ import { useEffect, useMemo } from 'react';
 import { useForm, useWatch, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '../auth/AuthContext';
-import { isGlobalCreator } from '../auth/permissions';
-import { useNotification } from '../context/NotificationContext';
-import { listarReservas } from '../api/reservas';
-import { getRecorrencia } from '../api/eventos';
-import { AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto } from '../api/types';
-import { formatIsoToLocal, formatLocalDate, getRecurrenceDates } from '../utils/recurrenceUtils';
-import { eventoFormSchema, EventoFormInput } from '../schemas/eventoSchema';
+import { useAuth } from '@/auth/AuthContext';
+import { isGlobalCreator } from '@/auth/permissions';
+import { useNotification } from '@/context/NotificationContext';
+import { listarReservas } from '@/api/reservas';
+import { getRecorrencia } from '@/api/eventos';
+import { AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto } from '@/api/types';
+import { formatIsoToLocal, formatLocalDate, getRecurrenceDates } from '@/utils/recurrenceUtils';
+import { eventoFormSchema, EventoFormInput } from '@/schemas/eventoSchema';
 
 interface UseCadastroEventoFormParams {
   open: boolean;

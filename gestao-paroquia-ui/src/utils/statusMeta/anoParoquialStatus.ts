@@ -3,7 +3,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { AnoParoquialStatus } from '../../api/types';
+import type { AnoParoquialStatus } from '@/api/types';
 
 export type { AnoParoquialStatus };
 

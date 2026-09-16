@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, Grid, Paper, Typography} from '@mui/material';
-import {ProjetosPorStatus} from '../../api/types';
+import {ProjetosPorStatus} from '@/api/types';
 
 interface ProjetosPorStatusCardProps {
   data?: ProjetosPorStatus;

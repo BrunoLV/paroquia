@@ -1,3 +1,8 @@
+---
+name: flyway
+description: "Migrações e evolução de esquema relacional com Flyway: versionamento semântico, padrão Expand & Contract (Zero-Downtime), imutabilidade de scripts, idempotência e comentários DDL (COMMENT ON)."
+---
+
 # Skill do Agente de IA: Migrações de Banco de Dados com Flyway (Especialista em Evolução Contínua e Zero-Downtime)
 
 ## 1. Visão Geral e Contexto

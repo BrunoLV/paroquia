@@ -1,6 +1,6 @@
 ---
-Name: Graphify Token Conservation Routing
-Activation: Always On
+trigger: always_on
+description: "Diretrizes críticas de economia de contexto e navegação via grafo de conhecimento Graphify."
 ---
 
 # Diretrizes Críticas de Economia de Contexto

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { isSameDay } from '../utils/calendarHelpers';
+import { isSameDay } from '@/utils/calendarHelpers';
 
 export interface CalendarDay {
   date: Date;

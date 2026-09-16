@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
-import {getDashboardLogistica} from '../api/dashboard';
-import {DashboardLogistica, PeriodoDashboard} from '../api/types';
+import {getDashboardLogistica} from '@/api/dashboard';
+import {DashboardLogistica, PeriodoDashboard} from '@/api/types';
 
 /**
  * Busca a seção de logística do Dashboard (`GET /dashboard/logistica` via `getDashboardLogistica`

@@ -1,5 +1,5 @@
-import { DashboardMetrics } from '../api/types';
-import { MetricasEstrategicasPainelResponse } from '../api/metricasTypes';
+import { DashboardMetrics } from '@/api/types';
+import { MetricasEstrategicasPainelResponse } from '@/api/metricasTypes';
 import {
   getAvaliacaoExecutivaLabel,
   getDiagnosticoPastoralLabel,

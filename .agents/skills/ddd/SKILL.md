@@ -1,3 +1,8 @@
+---
+name: ddd
+description: "Aplica Domain-Driven Design (DDD) tático e estratégico, Clean/Hexagonal Architecture, entidades ricas (Tell Don't Ask, sem anemia), Policies vs Services, Value Objects imutáveis e ciclo de vida de agregados com eventos de domínio."
+---
+
 # Guia de Implementação Domain-Driven Design (DDD)
 
 ## Instruções para Agente IA de Desenvolvimento (Skill & Harness Java)
@@ -24,9 +29,7 @@ O código-fonte deve atuar como a especificação formal do negócio. Desenvolve
  * formal de ao menos um responsável legal registrado.
  */
 public class InscricaoCatequese { ... }
-
 ```
-
 
 * **Rastreabilidade de Regras:** Sempre que um método aplicar uma regra complexa ou cálculo, mencione o nome do conceito ou código de regra validado com os *Domain Experts*.
 
@@ -40,6 +43,7 @@ Antes de codificar, o agente deve contextualizar a funcionalidade dentro do mapa
 
 * **Vocabulário Oficial:** O código deve falar o idioma do negócio sem ambiguidades. Nomes de classes, métodos, atributos, parâmetros e exceções devem refletir os termos exatos do domínio.
 * Se um termo técnico colidir com o termo de negócio (ex.: `Client` vs. `Fiel`), priorize categoricamente o vocabulário do negócio (`Fiel`).
+* **Idioma dos Comentários:** Todo comentário (Javadoc de negócio da seção 1.1, ou comentário inline) é escrito em Português, mesmo em classes cujo nome segue convenção técnica em inglês (ex.: `Repository`, `Service`). Ver `AGENTS.md` §5 para a regra formal.
 
 ### 2.2. Categorização de Subdomínios
 
@@ -77,10 +81,7 @@ public record FielId(UUID value) {
         return new FielId(UUID.randomUUID());
     }
 }
-
 ```
-
-
 
 ### 3.2. Objetos de Valor (*Value Objects - VOs*)
 
@@ -98,10 +99,7 @@ public record Endereco(String logradouro, String numero, Cep cep, Cidade cidade)
         }
     }
 }
-
 ```
-
-
 
 ### 3.3. Entidades (*Entities*) e Raízes de Agregado (*Aggregate Roots*)
 
@@ -109,6 +107,10 @@ public record Endereco(String logradouro, String numero, Cep cep, Cidade cidade)
 * **Mutabilidade Controlada (Métodos de Negócio):** Proibição absoluta de *setters* genéricos (`setStatus`, `setNome`). O estado só é alterado por métodos que descrevem eventos ou comandos de negócio (`registrarCrisma()`, `transferirComunidade()`).
 * **Relacionamento Entre Agregados Exclusivamente por ID:** Um agregado NUNCA deve conter uma referência direta de objeto para outro agregado. Mantenha apenas o identificador tipado correspondente (ex.: `ParoquiaId paroquiaOrigemId`), garantindo baixo acoplamento e consistência modular.
 * **Regra Fundamental de Transacionalidade:** Em uma única transação de banco de dados, modifique **apenas UM Agregado**. A consistência entre múltiplos agregados deve ser orquestrada de forma **eventual**.
+* **Encapsulamento de Coleções:** getters de agregado devolvem `List.copyOf(...)`, `Collections.unmodifiableList(...)` ou um VO-coleção — nunca a referência interna mutável (Java não tem `ReadonlyArray`). A coleção interna só muda por métodos da raiz (`adicionarItem`, `removerItem`).
+* **Anti-padrão "enum-como-domínio":** `domain/model/` contendo **apenas um enum** é sintoma de anemia — o agregado de fato virou a `@Entity` JPA. Enums de domínio **nunca** importam Jackson, DTOs de `api/` ou qualquer framework.
+* **Tell, Don't Ask:** o orquestrador não lê o estado para decidir a mutação.
+  `if (aprovacao.getStatus() == PENDENTE) aprovacao.setStatus(APROVADA)` → `aprovacao.aprovar(decisor, obs, agora)`. A guarda de transição e a exceção de estado ilegal moram no agregado.
 
 ### 3.4. Fábricas do Domínio (*Domain Factories*)
 
@@ -117,10 +119,7 @@ public record Endereco(String logradouro, String numero, Cep cep, Cidade cidade)
 public static Fiel matricularNovoFiel(DadosPessoais dados, ParoquiaId paroquiaOrigem) {
     // Validações de criação e emissão do evento de boas-vindas
 }
-
 ```
-
-
 
 ### 3.5. Especificações de Negócio (*Specification Pattern*)
 
@@ -135,45 +134,25 @@ public class PadrinhoElegivelSpecification implements DomainSpecification<Fiel> 
         return fiel.isBatizado() && fiel.isCrismado() && !fiel.possuiImpedimentoCanonico();
     }
 }
-
 ```
-
-
 
 ### 3.6. Serviços de Domínio (*Domain Services*)
 
 * Operações de negócio complexas que envolvem múltiplos agregados ou dependem de regras que não pertencem conceitualmente a uma única entidade pertencem a um *Domain Service*.
 * Devem ser *stateless* e localizados em `domain/service/`.
 
-### 3.6.1. Policies versus Services
+### 3.6.1. Policies versus Services (DDD Tático)
 
-* **Variação é Policy:** regras de cálculo, autorização, seleção ou decisão que variam por tipo, perfil, campanha ou contexto são contratos `*Policy` (Strategy), localizados em `domain/policy/` ou `domain/<aggregate>/policy/`; é proibido escondê-las em cadeias `if/else` ou `switch/case` de `*Service`.
-* **Policy pura:** uma Policy é stateless e zero-I/O. Não recebe nem injeta repositórios, clientes HTTP, cache, DTO REST, entidades JPA, `SecurityContext` ou anotações de framework. O Application Service busca os fatos necessários e entrega agregados, Value Objects ou snapshots imutáveis em memória.
-* **Tell, Don't Ask:** a Policy calcula e devolve uma decisão ou Value Object. Ela nunca altera uma entidade/agregado por setter; a mutação pertence ao método semântico do agregado, como `aplicarRegra(policy)`.
-* **Uso legítimo de Service:** Application Services orquestram portas, transações, mensageria e I/O. Domain Services coordenam conceitos entre agregados sem variação algorítmica. Nenhum dos dois substitui uma Strategy de domínio.
+* **Variação é Policy:** Regras de cálculo, autorização, seleção ou decisão que variam por tipo, perfil, campanha ou contexto são contratos `*Policy` (Strategy), localizados em `domain/policy/` ou `domain/<aggregate>/policy/`; é expressamente proibido escondê-las em cadeias `if/else` ou `switch/case` de classes `*Service`.
+* **Policy Pura (Zero-I/O):** Uma Policy é stateless e zero-I/O. Não recebe nem injeta repositórios, clientes HTTP, cache, DTOs REST, entidades JPA, `SecurityContext` ou anotações de framework. O Application Service / UseCase busca os fatos necessários e entrega à Policy apenas agregados, Value Objects ou snapshots imutáveis em memória.
+* **Tell, Don't Ask:** A Policy calcula e devolve uma decisão ou Value Object. Ela nunca altera uma entidade/agregado por setter; a mutação pertence ao método semântico do próprio agregado, como `agregado.aplicarRegra(policy)`.
+* **Uso Legítimo de Service:** Application Services orquestram portas, transações, mensageria e I/O. Domain Services coordenam conceitos entre agregados sem variação algorítmica. Nenhum dos dois substitui uma Strategy de domínio.
 
 ### 3.7. Eventos de Domínio (*Domain Events*)
 
 * Representam fatos consumados relevantes para o negócio (`BatismoCelebrado`, `FielInativado`).
-* **Padrão de Coleta Interna:** A Raiz do Agregado armazena internamente os eventos gerados durante a execução dos métodos de negócio. A camada de aplicação extrai e despacha esses eventos após a persistência bem-sucedida da transação:
-```java
-public abstract class AggregateRoot<ID> {
-    private final List<DomainEvent> domainEvents = new ArrayList<>();
-
-    protected void registerEvent(DomainEvent event) {
-        this.domainEvents.add(event);
-    }
-
-    public List<DomainEvent> pullDomainEvents() {
-        List<DomainEvent> events = List.copyOf(this.domainEvents);
-        this.domainEvents.clear();
-        return events;
-    }
-}
-
-```
-
-
+* **Padrão de Coleta Interna:** A Raiz do Agregado armazena internamente os eventos gerados durante a execução dos métodos de negócio. A camada de aplicação extrai e despacha esses eventos após a persistência bem-sucedida da transação.
+* **Implementação Canônica:** Use `br.com.nsfatima.gestao.support.domain.AggregateRoot<ID>` — `registrarEvento(DomainEvent)` (protegido) e `extrairEventos()` (drena e limpa). `DomainEvent` expõe `Instant ocorridoEm()`. Após `repository.save(agregado)`, o caso de uso chama `publicadorEventosDominio.publicar(agregado)` (`support.infrastructure.messaging.PublicadorEventosDominio`) — substitui chamadas diretas e espalhadas a `ApplicationEventPublisher`.
 
 ### 3.8. Coordenação de Múltiplos Agregados (*Process Managers / Sagas*)
 
@@ -192,6 +171,7 @@ com.empresa.projeto.modulo
 │   ├── model/                            <-- Pacotes agrupados por subdomínios coesos
 │   │   ├── fiel/                         <-- Agregado Fiel (Fiel, FielId, Documentos, etc.)
 │   │   └── sacramento/                   <-- Agregado Sacramento (Batismo, Matrimonio, etc.)
+│   ├── policy/                           <-- Policies puras (Strategies stateless e zero-I/O)
 │   ├── repository/                       <-- Portas de saída: Interfaces de repositórios (contratos puros)
 │   ├── service/                          <-- Domain Services (regras que cruzam entidades)
 │   ├── specification/                    <-- Predicados de regras reutilizáveis
@@ -212,7 +192,6 @@ com.empresa.projeto.modulo
     ├── acl/                              <-- Anti-Corruption Layer (Adaptadores para APIs externas)
     ├── messaging/                        <-- Dispatchers e Listeners (Kafka, RabbitMQ, Spring Events)
     └── rest/                             <-- Controllers HTTP (@RestController, OpenAPI)
-
 ```
 
 ---
@@ -223,7 +202,6 @@ com.empresa.projeto.modulo
 * O modelo de domínio (`domain/model/`) NÃO deve ter anotações `@Entity`, `@Id` ou `@Column`.
 * A persistência deve definir entidades JPA dedicadas em `infrastructure/db/entity/`.
 * O adaptador do repositório em `infrastructure/db/` usa mappers (manuais ou MapStruct) para carregar o modelo de domínio puro e salvar o estado no modelo relacional.
-
 
 2. **Injeção de Dependências de Classes de Domínio:**
 * Nunca anote classes de `domain/` com `@Service` ou `@Component`.
@@ -236,12 +214,7 @@ public class DomainConfiguration {
         return new MatricularFielDomainService(fielRepository);
     }
 }
-
 ```
-
-
-
-
 
 ---
 
@@ -251,9 +224,10 @@ Antes de concluir qualquer tarefa ou PR, verifique rigorosamente:
 
 1. [ ] **Documentação Viva:** Todos os agregados, VOs e métodos contêm Javadoc explicando a regra de negócio e a terminologia ubíqua correspondente?
 2. [ ] **Isolamento de Frameworks:** O pacote `domain` está 100% livre de bibliotecas externas (Spring, JPA, Hibernate)?
-3. [ ] **Encapsulamento e Imutabilidade:** As entidades usam métodos semânticos em vez de `setters` públicos? Os Value Objects e IDs foram implementados com `record`?
+3. [ ] **Encapsulamento e Imutabilidade:** As entidades usam métodos semânticos em vez de `setters` públicos? Os Value Objects e IDs foram implementados com `record`? Coleções são encapsuladas e imutáveis?
 4. [ ] **Identidade Tipada:** Os agregados utilizam IDs fortemente tipados (`record EntidadeId`) em vez de `UUID`/`Long` primitivos?
 5. [ ] **Limite de Agregados:** Os relacionamentos entre agregados distintos usam apenas seus respectivos IDs, sem carregar instâncias de objetos diretamente?
 6. [ ] **Transação Única:** A mutação de estado se limita a no máximo um único agregado por transação no Use Case?
 7. [ ] **Anti-Corruption Layer (ACL):** Dados de sistemas externos ou outros bounded contexts são traduzidos antes de atingir o domínio?
-8. [ ] **Desacoplamento de Eventos:** Os eventos de domínio são instanciados na camada de domínio e despachados na camada de aplicação após a persistência?
+8. [ ] **Desacoplamento de Eventos:** Os eventos de domínio são instanciados na camada de domínio e despachados na camada de aplicação após a persistência via `AggregateRoot` e `PublicadorEventosDominio`?
+9. [ ] **Policies vs Services:** Variações de regras e estratégias foram modeladas como `*Policy` stateless em `domain/policy/` em vez de `if/switch` em serviços?

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchPainelMetricasConsolidado, fetchConcorrenciaInterpastoral } from '../api/metricas';
-import { MetricasEstrategicasPainelResponse, ConcorrenciaInterpastoralResponse } from '../api/metricasTypes';
+import { fetchPainelMetricasConsolidado, fetchConcorrenciaInterpastoral } from '@/api/metricas';
+import { MetricasEstrategicasPainelResponse, ConcorrenciaInterpastoralResponse } from '@/api/metricasTypes';
 
 /**
  * Busca o painel consolidado de métricas estratégicas (`GET` via `fetchPainelMetricasConsolidado`

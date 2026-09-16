@@ -5,9 +5,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import BadgeIcon from '@mui/icons-material/Badge';
-import { formatPhone } from '../utils/phoneUtils';
-import { formatCurrencyBRL } from '../utils/currencyUtils';
-import { CpfMaskVariant, formatCpf } from '../utils/cpfUtils';
+import { formatPhone } from '@/utils/phoneUtils';
+import { formatCurrencyBRL } from '@/utils/currencyUtils';
+import { CpfMaskVariant, formatCpf } from '@/utils/cpfUtils';
 
 interface FormattedCellProps {
   value?: string | number | null;

@@ -8,7 +8,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import BlockIcon from '@mui/icons-material/Block';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { AprovacaoResponse, ProjetoAprovacaoResponse } from '../../api/types';
+import type { AprovacaoResponse, ProjetoAprovacaoResponse } from '@/api/types';
 
 export type AprovacaoStatus = AprovacaoResponse['status'];
 export type AprovacaoTipoSolicitacao = AprovacaoResponse['tipoSolicitacao'] | ProjetoAprovacaoResponse['tipoSolicitacao'];

@@ -1,16 +1,16 @@
 import React from 'react';
 import { Box, Card, CardContent, Grid, Typography, Chip, Skeleton, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { usePainelMetricasEstrategicas } from '../../hooks/useMetricasEstrategicas';
+import { usePainelMetricasEstrategicas } from '@/hooks/useMetricasEstrategicas';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ActionButton from '../ActionButton';
+import ActionButton from '@/components/ActionButton';
 import {
   getAvaliacaoExecutivaLabel,
   getDiagnosticoPastoralLabel,
   getNivelRiscoLabel,
   getStatusSlaLabel,
-} from '../../utils/statusMeta/metricasEstrategicasLabels';
+} from '@/utils/statusMeta/metricasEstrategicasLabels';
 
 export const MetricasEstrategicasWidget: React.FC = () => {
   const theme = useTheme();

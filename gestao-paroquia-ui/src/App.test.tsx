@@ -1,7 +1,7 @@
 import React from 'react';
 import {act, render, screen} from '@testing-library/react';
 import App from './App';
-import apiClient from './api/client';
+import apiClient from '@/api/client';
 import {vi} from 'vitest';
 
 vi.mock('./api/client');

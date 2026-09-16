@@ -19,14 +19,17 @@ import {
     Typography,
 } from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {Close as CloseIcon, ContactMail as ContactMailIcon, Groups as GroupsIcon, Save as SaveIcon} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import GroupsIcon from '@mui/icons-material/Groups';
+import SaveIcon from '@mui/icons-material/Save';
 import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
 import {confirmDiscard} from '@/utils/confirmDiscard';
-import {Organizacao, PastoralMovimentoOficial} from '../api/types';
-import {Usuario} from '../api/usuarios';
-import {getOrganizacaoMembros} from '../api/organizacoes';
-import ActionButton from '../components/ActionButton';
-import {organizacaoSchema, OrganizacaoFormInput} from '../schemas/organizacaoSchema';
+import {Organizacao, PastoralMovimentoOficial} from '@/api/types';
+import {Usuario} from '@/api/usuarios';
+import {getOrganizacaoMembros} from '@/api/organizacoes';
+import ActionButton from '@/components/ActionButton';
+import {organizacaoSchema, OrganizacaoFormInput} from '@/schemas/organizacaoSchema';
 
 interface OrganizacaoFormModalProps {
   open: boolean;

@@ -3,7 +3,7 @@ import {vi} from 'vitest';
 import {render, screen} from '@testing-library/react';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import EventDistributionPieChart from './EventDistributionPieChart';
-import {EventDistribution} from '../../api/types';
+import {EventDistribution} from '@/api/types';
 
 vi.mock('recharts', () => {
   const Passthrough = ({ children }: any) => <div>{children}</div>;

@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { ApiSolenidadeDTO } from '../utils/liturgicalCalendar';
+import { ApiSolenidadeDTO } from '@/utils/liturgicalCalendar';
 
 /**
  * Busca apenas as solenidades litúrgicas atualmente ativas, usadas para plotar o

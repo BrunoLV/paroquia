@@ -7,8 +7,8 @@ import {
   generateStructuredPDF,
   generateWordDocument,
 } from './exportUtils';
-import { DashboardMetrics } from '../api/types';
-import { MetricasEstrategicasPainelResponse } from '../api/metricasTypes';
+import { DashboardMetrics } from '@/api/types';
+import { MetricasEstrategicasPainelResponse } from '@/api/metricasTypes';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('exportUtils', () => {

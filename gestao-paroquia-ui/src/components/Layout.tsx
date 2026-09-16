@@ -20,34 +20,32 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import {
-  AccountTree as AccountTreeIcon,
-  Assessment as AssessmentIcon,
-  Assignment as AssignmentIcon,
-  CalendarMonth as CalendarIcon,
-  Church as ChurchIcon,
-  Dashboard as DashboardIcon,
-  EventAvailable as ReservasIcon,
-  ExpandLess,
-  ExpandMore,
-  FactCheck as FactCheckIcon,
-  Groups as GroupsIcon,
-  Inventory as InventoryIcon,
-  LocationOn as LocationIcon,
-  Logout as LogoutIcon,
-  ManageAccounts as ManageAccountsIcon,
-  Menu as MenuIcon,
-  MenuBook as MenuBookIcon,
-  Notifications as NotificationsIcon,
-  People as PeopleIcon,
-  Settings as SettingsIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
-} from '@mui/icons-material';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import CalendarIcon from '@mui/icons-material/CalendarMonth';
+import ChurchIcon from '@mui/icons-material/Church';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ReservasIcon from '@mui/icons-material/EventAvailable';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import GroupsIcon from '@mui/icons-material/Groups';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import LocationIcon from '@mui/icons-material/LocationOn';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PeopleIcon from '@mui/icons-material/People';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
-import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isUnlinkedUser } from '../auth/permissions';
-import { useThemeMode } from '../context/ThemeModeContext';
+import { useAuth } from '@/auth/AuthContext';
+import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isUnlinkedUser } from '@/auth/permissions';
+import { useThemeMode } from '@/context/ThemeModeContext';
 import ActionButton from './ActionButton';
 import IconActionButton from './IconActionButton';
 

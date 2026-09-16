@@ -1,8 +1,8 @@
-Aqui está o documento reformulado e calibrado especificamente para o **Java 25**.
+---
+name: solid
+description: "Princípios SOLID aplicados à arquitetura Java 25: SRP, OCP com Pattern Matching e Sealed Types, LSP, ISP com interfaces funcionais e DIP com injeção por construtor imutável."
+---
 
-Nesta versão, os princípios SOLID ganham o respaldo dos recursos mais modernos da linguagem — como **Pattern Matching exaustivo com Records e Sealed Types** (eliminando `if/else` com checagem de tipos em tempo de compilação para o OCP/LSP), **Unnamed Variables (`_`)** para segregação limpa de parâmetros, e o uso de **Virtual Threads** e imutabilidade estrita.
-
-```markdown
 # Skill do Agente de IA: Engenharia e Arquitetura de Código Java 25 (SOLID Avançado)
 
 ## 1. Visão Geral e Contexto
@@ -30,9 +30,7 @@ O código deve expressar com clareza as intenções arquiteturais que justificar
    * Time de Estratégia Comercial e Precificação.
    */
   public final class PrecificacaoVolumeStrategy implements CalculoMensalidadeStrategy { ... }
-
-```
-
+  ```
 * **Rastreabilidade de Contratos (LSP):** Métodos que implementam regras regidas por contratos estritos de substituição devem documentar explicitamente suas pré e pós-condições garantidas.
 
 ---
@@ -50,21 +48,17 @@ O código deve expressar com clareza as intenções arquiteturais que justificar
 * **Definição:** Entidades de software devem ser abertas para extensão, mas fechadas para modificação.
 * **Composição sobre Herança:** Favoreça o padrão *Strategy* ou composição funcional sobre árvores profundas de herança de classes concretas.
 * **Ação do Agente no Java 25 (Exaustividade com `sealed` e Pattern Matching):**
-* Quando o conjunto de variantes de domínio for aberto ou desconhecido: utilize **interfaces polimórficas** tradicionais ou `@FunctionalInterface` via composição/Strategy.
-* Quando o conjunto de variantes for restrito e conhecido pelo domínio (ex.: Tipos de Pagamento, Estados de um Pedido): use **`sealed interface` com `records` e Pattern Matching no `switch**`. O compilador do Java 25 garante a checagem exaustiva de tipos sem blocos `default` artificiais, permitindo extensão controlada e detectando inconsistências em tempo de compilação.
-
-
+  * Quando o conjunto de variantes de domínio for aberto ou desconhecido: utilize **interfaces polimórficas** tradicionais ou `@FunctionalInterface` via composição/Strategy.
+  * Quando o conjunto de variantes for restrito e conhecido pelo domínio (ex.: Tipos de Pagamento, Estados de um Pedido): use **`sealed interface` com `records` e Pattern Matching no `switch`**. O compilador do Java 25 garante a checagem exaustiva de tipos sem blocos `default` artificiais, permitindo extensão controlada e detectando inconsistências em tempo de compilação.
 
 ### 3.3. L — Liskov Substitution Principle (Princípio da Substituição de Liskov)
 
 * **Definição (Design by Contract):** Objetos de um subtipo devem substituir objetos do supertipo sem violar a consistência do sistema ou alterar as garantias do contrato original.
 * **As Quatro Regras de Ouro do Contrato:**
-1. **Não fortaleça pré-condições:** O subtipo não pode exigir parâmetros mais restritos do que o tipo base declarou (ex.: rejeitar argumentos que a interface declarava como válidos).
-2. **Não enfraqueça pós-condições:** O subtipo deve entregar todas as garantias do tipo base (ex.: nunca retorne `null` onde a interface garantia uma lista ou instância válida; retorne `Optional.empty()` ou coleções vazias imutáveis como `List.of()`).
-3. **Preserve invariantes:** O subtipo não pode violar regras internas que o tipo base sempre manteve íntegras.
-4. **Não lance exceções inesperadas:** É expressamente proibido sobrescrever métodos lançando `UnsupportedOperationException` ou introduzir exceções não previstas na semântica do contrato.
-
-
+  1. **Não fortaleça pré-condições:** O subtipo não pode exigir parâmetros mais restritos do que o tipo base declarou (ex.: rejeitar argumentos que a interface declarava como válidos).
+  2. **Não enfraqueça pós-condições:** O subtipo deve entregar todas as garantias do tipo base (ex.: nunca retorne `null` onde a interface garantia uma lista ou instância válida; retorne `Optional.empty()` ou coleções vazias imutáveis como `List.of()`).
+  3. **Preserve invariantes:** O subtipo não pode violar regras internas que o tipo base sempre manteve íntegras.
+  4. **Não lance exceções inesperadas:** É expressamente proibido sobrescrever métodos lançando `UnsupportedOperationException` ou introduzir exceções não previstas na semântica do contrato.
 
 ### 3.4. I — Interface Segregation Principle (Princípio da Segregação de Interfaces)
 
@@ -76,10 +70,8 @@ O código deve expressar com clareza as intenções arquiteturais que justificar
 ### 3.5. D — Dependency Inversion Principle (Princípio da Inversão de Dependência)
 
 * **Definição:**
-1. Módulos de alto nível (regras de negócio) não devem depender de módulos de baixo nível (infraestrutura, bancos, APIs externas). Ambos devem depender de abstrações.
-2. **A Abstração Pertence ao Consumidor:** A interface de serviço deve ser definida e residir junto ao módulo de alto nível que a consome (Input/Output Port), nunca orientada aos detalhes da tecnologia que a implementa.
-
-
+  1. Módulos de alto nível (regras de negócio) não devem depender de módulos de baixo nível (infraestrutura, bancos, APIs externas). Ambos devem depender de abstrações.
+  2. **A Abstração Pertence ao Consumidor:** A interface de serviço deve ser definida e residir junto ao módulo de alto nível que a consome (Input/Output Port), nunca orientada aos detalhes da tecnologia que a implementa.
 * **Injeção Estrita via Construtor:** Toda dependência obrigatória deve ser imutável (`private final`) e injetada exclusivamente pelo construtor. Injeção de dependência por reflexão em campos (`@Autowired` em propriedades privadas) é proibida.
 
 ---
@@ -89,10 +81,8 @@ O código deve expressar com clareza as intenções arquiteturais que justificar
 O Agente deve evitar o "SOLID cego", que degrada a legibilidade e a manutenibilidade do ecossistema:
 
 * **Proibição do Anti-Pattern `*Impl` por Reflexo:**
-* Não crie interfaces artificiais (`UsuarioService` e `UsuarioServiceImpl`) se existe apenas uma implementação e não há requisito de polimorfismo ou fronteira arquitetural (ex.: banco de dados ou integração externa).
-* Use classes concretas simples para serviços de aplicação diretos. Crie interfaces quando houver polimorfismo genuíno (*Strategy*), desacoplamento de I/O (*Repository* / *Gateway*) ou fronteira de domínio.
-
-
+  * Não crie interfaces artificiais (`UsuarioService` e `UsuarioServiceImpl`) se existe apenas uma implementação e não há requisito de polimorfismo ou fronteira arquitetural (ex.: banco de dados ou integração externa).
+  * Use classes concretas simples para serviços de aplicação diretos. Crie interfaces quando houver polimorfismo genuíno (*Strategy*), desacoplamento de I/O (*Repository* / *Gateway*) ou fronteira de domínio.
 * **Prematuro vs. Necessário (YAGNI):** Não projete pontos de extensão para cenários hipotéticos que não decorrem dos requisitos presentes no código atual.
 
 ---
@@ -210,7 +200,6 @@ public final class ProcessadorFaturamento {
         return valorFinal;
     }
 }
-
 ```
 
 ---
@@ -222,14 +211,8 @@ Antes de submeter código ou considerar uma tarefa concluída, valide:
 1. [ ] **Coerência de Ator (SRP):** A classe agrupa apenas dados e comportamentos que atendem ao mesmo ator e mudam sob as mesmas motivações de negócio?
 2. [ ] **Contratos e Subtipagem (LSP):** As implementações cumprem todas as garantias da interface? Nenhuma implementação lança exceções inesperadas ou enfraquece pós-condições (como retornar `null`)?
 3. [ ] **Extensão Polimórfica e Exaustividade (OCP):**
-* Variações abertas utilizam estratégias, lambdas ou composição em vez de cadeias de condicionais?
-* Variações restritas utilizam `sealed interface` com `switch` exaustivo do Java 25 sem cláusulas `default` desnecessárias?
-
-
+   * Variações abertas utilizam estratégias, lambdas ou composição em vez de cadeias de condicionais?
+   * Variações restritas utilizam `sealed interface` com `switch` exaustivo do Java 25 sem cláusulas `default` desnecessárias?
 4. [ ] **Segregação Funcional (ISP):** Interfaces unitárias foram marcadas com `@FunctionalInterface`? Parâmetros ignorados em contratos herdados foram expressos com `_`?
 5. [ ] **Propriedade da Abstração e Injeção (DIP):** As interfaces de fronteira pertencem ao módulo que as consome? As dependências são imutáveis (`final`) e fornecidas pelo construtor?
 6. [ ] **Anti-Overengineering Check:** Não foram criadas interfaces artificiais sem polimorfismo comprovado (como o anti-pattern `*Impl`)?
-
-```
-
-```

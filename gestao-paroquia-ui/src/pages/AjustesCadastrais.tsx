@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Block as BlockIcon,
-  CheckCircle as CheckCircleIcon,
-  Close as CloseIcon,
-  ContactMail as ContactMailIcon,
-  FactCheck as AjusteIcon,
-  Visibility as VisibilityIcon,
-} from '@mui/icons-material';
+import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import AjusteIcon from '@mui/icons-material/FactCheck';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
   Card,

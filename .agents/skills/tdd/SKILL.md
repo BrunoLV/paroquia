@@ -1,3 +1,8 @@
+---
+name: tdd
+description: "Engenharia de testes unitários e TDD em Java 25: ciclo Red-Green-Refactor estrito, JUnit 5, Mockito 5 STRICT_STUBS, AssertJ, isolamento total de I/O e testes como especificação viva."
+---
+
 # Skill do Agente de IA: Engenharia de Testes Unitários e TDD em Java 25 (Rigor de Especificação)
 
 ## 1. Visão Geral e Contexto

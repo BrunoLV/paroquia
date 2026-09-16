@@ -28,26 +28,24 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import {
-    ArrowBack as ArrowBackIcon,
-    ArrowForward as ArrowForwardIcon,
-    Check as CheckIcon,
-    CheckCircle as ValidIcon,
-    CloudUpload as UploadIcon,
-    Close as CloseIcon,
-    Download as DownloadIcon,
-    Error as ErrorIcon,
-} from '@mui/icons-material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CheckIcon from '@mui/icons-material/Check';
+import ValidIcon from '@mui/icons-material/CheckCircle';
+import UploadIcon from '@mui/icons-material/CloudUpload';
+import CloseIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/Download';
+import ErrorIcon from '@mui/icons-material/Error';
 import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
-import {useNotification} from '../context/NotificationContext';
-import {extractErrorMessage} from '../utils/errorUtils';
+import {useNotification} from '@/context/NotificationContext';
+import {extractErrorMessage} from '@/utils/errorUtils';
 import {useQueryClient} from '@tanstack/react-query';
 import {
     confirmarImportacao,
     downloadTemplate,
     ImportacaoValidacaoResultado,
     validarImportacao
-} from '../api/importacao';
+} from '@/api/importacao';
 import ActionButton from './ActionButton';
 
 interface ImportModalProps {

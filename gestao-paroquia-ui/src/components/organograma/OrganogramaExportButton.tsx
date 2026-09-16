@@ -4,8 +4,8 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ImageIcon from '@mui/icons-material/Image';
 import CodeIcon from '@mui/icons-material/Code';
-import {ExportFormat} from '../../hooks/useOrganogramaExport';
-import ActionButton from '../ActionButton';
+import {ExportFormat} from '@/hooks/useOrganogramaExport';
+import ActionButton from '@/components/ActionButton';
 
 export interface OrganogramaExportButtonProps {
   onExport: (format: ExportFormat) => void;

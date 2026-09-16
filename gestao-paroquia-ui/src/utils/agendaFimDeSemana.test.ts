@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import {formatarAgendaFimDeSemana} from './agendaFimDeSemana';
-import {WeeklyEvent} from '../api/types';
+import {WeeklyEvent} from '@/api/types';
 
 const evento = (titulo: string, inicio: string): WeeklyEvent => ({
   titulo,

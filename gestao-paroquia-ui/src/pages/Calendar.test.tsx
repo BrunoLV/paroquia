@@ -3,18 +3,18 @@ import React from 'react';
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import Calendar from './Calendar';
 import {BrowserRouter} from 'react-router-dom';
-import {AuthProvider} from '../auth/AuthContext';
+import {AuthProvider} from '@/auth/AuthContext';
 import {ThemeProvider} from '@mui/material/styles';
-import theme from '../theme';
-import apiClient from '../api/client';
-import { QueryProvider } from '../api/QueryProvider';
+import theme from '@/theme';
+import apiClient from '@/api/client';
+import { QueryProvider } from '@/api/QueryProvider';
 
-vi.mock('../api/client');
+vi.mock('@/api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const mockShowError = vi.fn();
 const mockShowSuccess = vi.fn();
-vi.mock('../context/NotificationContext', () => ({
+vi.mock('@/context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
     showSuccess: mockShowSuccess,
@@ -179,7 +179,7 @@ test('opens event details modal when clicking an event', async () => {
   });
 
   // Verify details modal header
-  expect(screen.getByText('Detalhes do Evento')).toBeInTheDocument();
+  expect(screen.getByText(/detalhes do evento/i)).toBeInTheDocument();
   expect(screen.getAllByTestId('ChurchIcon').length).toBeGreaterThan(0);
 });
 
@@ -396,4 +396,3 @@ test('opens solemnities dialog when clicking Solenidades & Santoral button', asy
   expect(screen.getByText(/Santa Maria, Mãe de Deus/i)).toBeInTheDocument();
   expect(screen.getByText(/Natal do Senhor/i)).toBeInTheDocument();
 });
-

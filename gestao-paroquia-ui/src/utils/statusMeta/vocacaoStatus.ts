@@ -4,7 +4,7 @@ import ChurchIcon from '@mui/icons-material/Church';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { Vocacao } from '../../api/types';
+import type { Vocacao } from '@/api/types';
 
 export type { Vocacao };
 

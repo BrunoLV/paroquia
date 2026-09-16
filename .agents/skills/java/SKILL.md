@@ -1,11 +1,12 @@
-Aqui está a instrução reformulada e calibrada com o mesmo rigor dos guias anteriores.
+---
+name: java
+description: "Diretrizes e padrões para desenvolvimento em Java 25 moderno: Tipos de Dados Algébricos (ADTs), Pattern Matching exaustivo, Records, Virtual Threads (anti-pinning), higiene estrita de imports (zero FQCNs inline) e tratamento de nulos/Optional."
+---
 
-Foram incorporados: o conceito de **Living Documentation** (código como documento das decisões de design), a **correção da armadilha dos String Templates** (recurso descontinuado/reavaliado no OpenJDK pós-Java 21/22, redirecionando para `formatted()` / Text Blocks / `MessageFormat`), uso de **Scoped Values e Structured Concurrency**, tratamento seguro de `Optional`, regras de concorrência com **Virtual Threads** (evitando *pinning* com `synchronized`) e um **Blueprint estrutural de alta fidelidade**.
-
-```markdown
 # Skill do Agente de IA: Desenvolvimento Java (Especialista em Java 25 e Modern Clean Code)
 
 ## 1. Visão Geral e Contexto
+
 Esta skill define as diretrizes arquiteturais, semânticas e idiomáticas que o Agente de IA deve seguir ao projetar, refatorar e gerar código na linguagem **Java**, com foco absoluto nos recursos de ponta do **Java 25**. O agente atua como um Arquiteto Java Principal, combinando os pilares clássicos de design de software (*Effective Java* de Joshua Bloch) com as capacidades modernas da plataforma: **Tipos de Dados Algébricos (ADT)**, **Pattern Matching exaustivo**, **Records**, **Virtual Threads** e concorrência estruturada.
 
 ---
@@ -25,9 +26,7 @@ O código Java não deve ser apenas funcional; ele deve expressar abertamente a 
    * permitindo pattern matching exaustivo no switch sem cláusula default.
    */
   public sealed interface StatusFaturamento permits Aberto, Liquidado, Estornado { ... }
-
-```
-
+  ```
 * **Explicitação de Invariantes e Pré-condições:** Use blocos de documentação para explicitar limites de domínio validados em construtores compactos ou verificações com `Objects.requireNonNull`.
 
 ---
@@ -40,32 +39,26 @@ O Agente deve eliminar padrões imperativos obsoletos e priorizar construções 
 
 * **Records como Padrão para Dados:** Use `record` para toda estrutura imutável de dados (DTOs, Value Objects, eventos, tuplas de retorno).
 * **Validação em Construtores Compactos:** Aplique regras de integridade diretamente no construtor compacto do record sem duplicar atribuições (`this.x = x`):
-```java
-public record TaxaOperacional(BigDecimal valor) {
-    public TaxaOperacional {
-        Objects.requireNonNull(valor, "Valor da taxa não pode ser nulo");
-        if (valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Taxa não pode ser negativa");
-        }
-    }
-}
-
-```
-
-
+  ```java
+  public record TaxaOperacional(BigDecimal valor) {
+      public TaxaOperacional {
+          Objects.requireNonNull(valor, "Valor da taxa não pode ser nulo");
+          if (valor.compareTo(BigDecimal.ZERO) < 0) {
+              throw new IllegalArgumentException("Taxa não pode ser negativa");
+          }
+      }
+  }
+  ```
 * **Hierarquias Seladas (`sealed` / `permits`):** Modele variações fixas de domínio com `sealed interface` implementadas por `record`s. Permite controle absoluto sobre quem estende a árvore de tipos.
 
 ### 3.2. Pattern Matching Avançado e Desconstrução
 
 * **Exaustividade sem `default` Artificial:** Em `switch expressions` sobre hierarquias seladas, cubra todas as variantes sem adicionar `default`. Isso faz o compilador apontar erros se uma nova variante for criada no futuro.
 * **Desconstrução de Records e Guards (`when`):** Desestruture records diretamente nos braços do `switch` ou `instanceof`, filtrando estados com cláusulas `when`:
-```java
-case Transacao(var id, BigDecimal valor) when valor.compareTo(LIMITE_ALERTA) > 0 ->
-    processarComAuditoria(id, valor);
-
-```
-
-
+  ```java
+  case Transacao(var id, BigDecimal valor) when valor.compareTo(LIMITE_ALERTA) > 0 ->
+      processarComAuditoria(id, valor);
+  ```
 * **Unnamed Patterns e Variáveis (`_`):** Utilize o underscore (`_`) para descartar explicitamente variáveis locais não lidas, sub-padrões de records ignorados ou parâmetros de lambdas desnecessários.
 * **Tratamento de `null` em Switch:** Trate `case null` explicitamente no `switch` sempre que o valor de entrada puder ser nulo, evitando `NullPointerException` imprevisíveis.
 
@@ -86,16 +79,12 @@ case Transacao(var id, BigDecimal valor) when valor.compareTo(LIMITE_ALERTA) > 0
 
 * **Static Factory Methods:** Prefira métodos de fábrica com nomes descritivos (`of()`, `from()`, `gerarNovo()`) a construtores sobrecarregados, garantindo legibilidade imediata no ponto de chamada.
 * **Imutabilidade e Cópias Defensivas:**
-* Atributos de objetos mutáveis (como `Date` ou coleções legadas) devem ser convertidos para tipos modernos e imutáveis (`java.time.Instant`, `java.time.LocalDate`).
-* Ao receber coleções externas em construtores, use `List.copyOf()`, `Set.copyOf()` ou `Map.copyOf()`.
-
-
+  * Atributos de objetos mutáveis (como `Date` ou coleções legadas) devem ser convertidos para tipos modernos e imutáveis (`java.time.Instant`, `java.time.LocalDate`).
+  * Ao receber coleções externas em construtores, use `List.copyOf()`, `Set.copyOf()` ou `Map.copyOf()`.
 * **Semântica de `Optional<T>`:**
-* Use `Optional<T>` **exclusivamente como tipo de retorno** de métodos para indicar ausência natural de resultado.
-* **Proibições:** Nunca passe `Optional` como parâmetro de método, nunca use `Optional` em atributos de classe/record e nunca retorne `null` de um método cujo retorno seja `Optional` (retorne sempre `Optional.empty()`).
-* Nunca chame `.get()` sem verificação prévia; utilize métodos funcionais como `.map()`, `.flatMap()`, `.filter()`, `.orElseGet()` ou `.orElseThrow()`.
-
-
+  * Use `Optional<T>` **exclusivamente como tipo de retorno** de métodos para indicar ausência natural de resultado.
+  * **Proibições:** Nunca passe `Optional` como parâmetro de método, nunca use `Optional` em atributos de classe/record e nunca retorne `null` de um método cujo retorno seja `Optional` (retorne sempre `Optional.empty()`).
+  * Nunca chame `.get()` sem verificação prévia; utilize métodos funcionais como `.map()`, `.flatMap()`, `.filter()`, `.orElseGet()` ou `.orElseThrow()`.
 * **Coleções Vazias em Vez de `null`:** Métodos que retornam coleções, listas ou arrays nunca devem retornar `null`. Retorne `List.of()`, `Set.of()` ou `Collections.emptyList()`.
 * **Precisão Numérica Financeira:** É terminantemente proibido o uso de `float` ou `double` para cálculos contábeis, monetários ou de precisão decimal. Utilize invariavelmente `BigDecimal` com modo de arredondamento explícito (`RoundingMode.HALF_EVEN` / `HALF_UP`).
 
@@ -106,14 +95,12 @@ case Transacao(var id, BigDecimal valor) when valor.compareTo(LIMITE_ALERTA) > 0
 * **Uso Racional de `var`:** Utilize inferência de tipo local (`var`) apenas quando ela aprimorar a legibilidade eliminando redundância visual óbvia (ex.: `var processador = new ProcessadorPedido();`). Evite `var` quando o tipo de retorno for implícito ou vindo de métodos encadeados complexos (ex.: `var resultado = servico.executar();` prejudica a leitura do tipo).
 * **Gerenciamento de Recursos com `try-with-resources`:** Qualquer recurso que implemente `AutoCloseable` deve ser aberto dentro do cabeçalho de um `try-with-resources`. Não use `finally` manual para invocar `.close()`.
 * **Tratamento Específico de Exceções:**
-* Capture exceções específicas; nunca declare blocos `catch (Exception e)` genéricos a menos que seja o manipulador de última instância na fronteira da aplicação.
-* Nunca engula exceções com blocos vazios. Se uma exceção não puder ser recuperada, transforme-a em uma exceção não verificada de negócio (`DomainException`) preservando a causa raiz (`throw new ProcessamentoException("Falha ao liquidar", e);`).
+  * Capture exceções específicas; nunca declare blocos `catch (Exception e)` genéricos a menos que seja o manipulador de última instância na fronteira da aplicação.
+  * Nunca engula exceções com blocos vazios. Se uma exceção não puder ser recuperada, transforme-a em uma exceção não verificada de negócio (`DomainException`) preservando a causa raiz (`throw new ProcessamentoException("Falha ao liquidar", e);`).
 * **Higiene e Proibição Absoluta de Imports Inline (FQCNs):**
   * **Zero FQCN inline:** É estritamente proibido usar nomes de classes totalmente qualificados no corpo do código (ex.: `java.util.UUID`, `java.util.stream.Collectors`, `java.time.LocalDate`, `tools.jackson...`).
   * **Imports Explícitos no Topo:** Todo tipo, anotação ou enum referenciado deve ser importado via declaração `import` explícita no início do arquivo.
   * **Zero Wildcards:** Proibido `import java.util.*` ou similares; todo import deve ser pontual.
-
-
 
 ---
 
@@ -227,7 +214,6 @@ public final class ProcessadorEstorno {
             );
     }
 }
-
 ```
 
 ---
@@ -240,20 +226,12 @@ Antes de submeter código ou considerar uma tarefa concluída, o agente deve aud
 2. [ ] **Eliminação de Boilerplate:** Foram eliminados DTOs com getters/setters manuais, utilizando `record` com validação no construtor compacto?
 3. [ ] **Precisão Monetária:** Propriedades monetárias e cálculos fiscais utilizam estritamente `BigDecimal` com arredondamento explícito?
 4. [ ] **Pattern Matching e Exaustividade:**
-* Foram eliminadas sequências imperativas de `if (x instanceof Y)` com casts manuais?
-* As expressões `switch` cobrem todas as variantes seladas sem cláusula `default` indevida?
-* Foram utilizadas unnamed variables (`_`) para valores desestruturados descartáveis?
-
-
+   * Foram eliminadas sequências imperativas de `if (x instanceof Y)` com casts manuais?
+   * As expressões `switch` cobrem todas as variantes seladas sem cláusula `default` indevida?
+   * Foram utilizadas unnamed variables (`_`) para valores desestruturados descartáveis?
 5. [ ] **Uso Seguro de Recursos e Nulos:**
-* Todos os recursos auto-fecháveis estão isolados em blocos `try-with-resources`?
-* Métodos que retornam coleções entregam listas vazias (`List.of()`) em vez de `null`?
-* O uso de `Optional` está restrito a tipos de retorno de métodos?
-
-
+   * Todos os recursos auto-fecháveis estão isolados em blocos `try-with-resources`?
+   * Métodos que retornam coleções entregam listas vazias (`List.of()`) em vez de `null`?
+   * O uso de `Optional` está restrito a tipos de retorno de métodos?
 6. [ ] **Concorrência Segura em Virtual Threads:** Operações bloqueantes de I/O evitam blocos `synchronized` em favor de `ReentrantLock` ou estruturas de concorrência estruturada (`StructuredTaskScope`)?
 7. [ ] **Higiene de Importações:** Todos os tipos utilizados são importados explicitamente no topo do arquivo? Não existem nomes totalmente qualificados (FQCNs) nem caracteres coringa (`*`) no código?
-
-```
-
-```

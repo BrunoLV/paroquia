@@ -21,26 +21,24 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import {
-    Cancel as CancelIcon,
-    CheckCircle as CheckCircleIcon,
-    Close as CloseIcon,
-    EventNote as EventNoteIcon,
-    FactCheck as FactCheckIcon,
-    Visibility as VisibilityIcon,
-    WorkHistory as WorkHistoryIcon,
-} from '@mui/icons-material';
-import {decideAprovacao, getAprovacoes} from '../api/aprovacoes';
-import {decideAprovacaoProjeto, getAprovacoesProjeto} from '../api/projects';
-import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '../api/types';
-import {useNotification} from '../context/NotificationContext';
-import {extractErrorMessage} from '../utils/errorUtils';
-import apiClient from '../api/client';
-import PageHeader from '../components/PageHeader';
-import ActionButton from '../components/ActionButton';
-import TableActionMenu from '../components/TableActionMenu';
-import StatusIcon from '../components/StatusIcon';
-import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '../utils/statusMeta/aprovacaoStatus';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+import {decideAprovacao, getAprovacoes} from '@/api/aprovacoes';
+import {decideAprovacaoProjeto, getAprovacoesProjeto} from '@/api/projects';
+import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '@/api/types';
+import {useNotification} from '@/context/NotificationContext';
+import {extractErrorMessage} from '@/utils/errorUtils';
+import apiClient from '@/api/client';
+import PageHeader from '@/components/PageHeader';
+import ActionButton from '@/components/ActionButton';
+import TableActionMenu from '@/components/TableActionMenu';
+import StatusIcon from '@/components/StatusIcon';
+import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '@/utils/statusMeta/aprovacaoStatus';
 
 /**
  * Tela de "caixa de entrada" de aprovações pastorais.

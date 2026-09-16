@@ -1,6 +1,6 @@
 import apiClient from './client';
 import { Evento } from './types';
-import { RecurrenceRule } from '../components/RecurrenceForm';
+import { RecurrenceRule } from '@/components/RecurrenceForm';
 
 export interface ListEventosParams {
   dataInicio: string;

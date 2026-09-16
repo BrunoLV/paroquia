@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
-import { MoreHoriz as MoreHorizIcon } from '@mui/icons-material';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ActionButton from './ActionButton';
 
 export interface TableAction {

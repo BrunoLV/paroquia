@@ -1,9 +1,9 @@
 import React from 'react';
 import {Grid, Typography} from '@mui/material';
-import SummaryCards from '../SummaryCards';
-import ProjetosPorStatusCard from '../ProjetosPorStatusCard';
-import MembrosPorPastoralCard from '../MembrosPorPastoralCard';
-import {DashboardMetrics} from '../../../api/types';
+import SummaryCards from '@/components/dashboard/SummaryCards';
+import ProjetosPorStatusCard from '@/components/dashboard/ProjetosPorStatusCard';
+import MembrosPorPastoralCard from '@/components/dashboard/MembrosPorPastoralCard';
+import {DashboardMetrics} from '@/api/types';
 
 interface SecaoCriticaProps {
   metrics?: DashboardMetrics;

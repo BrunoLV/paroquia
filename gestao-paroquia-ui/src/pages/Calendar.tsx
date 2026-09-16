@@ -1,23 +1,26 @@
 import { useState } from 'react';
 import { Box } from '@mui/material';
-import { Add as AddIcon, CalendarMonth as CalendarIcon, Download as DownloadIcon, Event as EventIcon } from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
-import CadastroEventoModal from '../components/CadastroEventoModal';
-import CancelarEventoDialog from '../components/CancelarEventoDialog';
-import EditScopeDialog from '../components/EditScopeDialog';
-import { ExportCalendarDialog } from '../components/ExportCalendarDialog';
-import { EventoConflitoRecursoDialog } from '../components/EventoConflitoRecursoDialog';
-import PageHeader from '../components/PageHeader';
-import ActionButton from '../components/ActionButton';
-import CalendarToolbar from '../components/calendar/CalendarToolbar';
-import CalendarMonthGrid from '../components/calendar/CalendarMonthGrid';
-import CalendarAgendaList from '../components/calendar/CalendarAgendaList';
-import EventoDetailsDialog from '../components/calendar/EventoDetailsDialog';
-import SolenidadesDialog from '../components/calendar/SolenidadesDialog';
-import { useCalendarGrid } from '../hooks/useCalendarGrid';
-import { useCalendarFilterState } from '../hooks/useCalendarFilterState';
-import { useCalendarData } from '../hooks/useCalendarData';
-import { useEventoCrud } from '../hooks/useEventoCrud';
+import AddIcon from '@mui/icons-material/Add';
+import CalendarIcon from '@mui/icons-material/CalendarMonth';
+import DownloadIcon from '@mui/icons-material/Download';
+import EventIcon from '@mui/icons-material/Event';
+import { useAuth } from '@/auth/AuthContext';
+import CadastroEventoModal from '@/components/CadastroEventoModal';
+import CancelarEventoDialog from '@/components/CancelarEventoDialog';
+import EditScopeDialog from '@/components/EditScopeDialog';
+import { ExportCalendarDialog } from '@/components/ExportCalendarDialog';
+import { EventoConflitoRecursoDialog } from '@/components/EventoConflitoRecursoDialog';
+import PageHeader from '@/components/PageHeader';
+import ActionButton from '@/components/ActionButton';
+import CalendarToolbar from '@/components/calendar/CalendarToolbar';
+import CalendarMonthGrid from '@/components/calendar/CalendarMonthGrid';
+import CalendarAgendaList from '@/components/calendar/CalendarAgendaList';
+import EventoDetailsDialog from '@/components/calendar/EventoDetailsDialog';
+import SolenidadesDialog from '@/components/calendar/SolenidadesDialog';
+import { useCalendarGrid } from '@/hooks/useCalendarGrid';
+import { useCalendarFilterState } from '@/hooks/useCalendarFilterState';
+import { useCalendarData } from '@/hooks/useCalendarData';
+import { useEventoCrud } from '@/hooks/useEventoCrud';
 
 /**
  * Página do Calendário Paroquial — orquestrador fino que compõe os hooks de estado/dados

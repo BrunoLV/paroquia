@@ -6,7 +6,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import BlockIcon from '@mui/icons-material/Block';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { TipoObservacao } from '../../api/types';
+import type { TipoObservacao } from '@/api/types';
 
 export type { TipoObservacao };
 

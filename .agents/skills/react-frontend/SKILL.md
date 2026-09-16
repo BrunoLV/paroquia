@@ -1,10 +1,15 @@
+---
+name: react-frontend
+description: "Engenharia de frontend em React 19, TypeScript estrito, Material UI (MUI 9), TanStack Query v5, Zod, React Hook Form, Vite e Vitest, com aderência obrigatória ao gestao-paroquia-ui/DESIGN_SYSTEM.md."
+---
+
 # Skill: React Frontend Engineering (`gestao-paroquia-ui`)
 
 ## 1. Visão Geral e Contexto
 
 Esta skill capacita o Agente de IA a projetar, refatorar e auditar código de frontend no ecossistema **`gestao-paroquia-ui`**. O agente atua como um Engenheiro Frontend Principal especializado em **React 19**, **TypeScript estrito**, **Material UI (MUI 9)**, **TanStack Query v5**, **Vite** e **Vitest**.
 
-O objetivo é garantir interfaces declarativas com tipagem robusta, acessibilidade por teclado (a11y/WCAG), isolamento completo de regras de negócio em hooks e fidelidade absoluta à especificação global de padrões visuais e ergonômicos em [`DESIGN_SYSTEM.md`](../../DESIGN_SYSTEM.md) — aplicável a toda tela/módulo, sem exceções.
+O objetivo é garantir interfaces declarativas com tipagem robusta, acessibilidade por teclado (a11y/WCAG), isolamento completo de regras de negócio em hooks e fidelidade absoluta à especificação global de padrões visuais e ergonômicos em [`gestao-paroquia-ui/DESIGN_SYSTEM.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/DESIGN_SYSTEM.md) — aplicável a toda tela/módulo, sem exceções.
 
 ---
 
@@ -26,9 +31,7 @@ O código JSX/TSX deve documentar a intenção de negócio e as decisões ergon�
  * dados de testemunhas e impedimentos canônicos, preservando contexto.
  */
 export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... }) => { ... };
-
 ```
-
 
 * **Comentários de Acessibilidade e Eventos:** Justifique explicitamente contenções de propagação de eventos (`stopPropagation`), armadilhas de foco (*focus traps*) e escolhas semânticas de ARIA.
 * **Proibição de Comentários Triviais:** Comentários como `// Renderiza botão` ou `// Hook de estado` são proibidos.
@@ -40,17 +43,13 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 * **Isolamento de Lógica de Negócios:** Componentes visuais devem ser camadas de renderização finas e declarativas. Todas as transições de estado complexas, efeitos colaterais e requisições HTTP DEVEM ser encapsuladas em hooks customizados (`src/hooks/`).
 * **Primitivos Semânticos do MUI 9:** É expressamente proibido o uso de elementos HTML crus (`div`, `span`, `p`) para layout ou tipografia. Utilize exclusivamente `Box`, `Stack`, `Grid2`, `Container` e `Typography`. Elementos nativos só são tolerados quando estritamente necessários para marcação inline semântica acessível.
 * **Limites de Tamanho e Decomposição Atômica:**
-* **Componentes visuais puros e atômicos:** Limite estrito de **10–60 linhas** de JSX.
-* **Formulários densos e orquestradores de tabela:** Teto expandido de **até 120 linhas** para evitar a fragmentação artificial de controles e resolvers de formulário.
-* Componentes que excederem esses limites devem ser decompostos em subcomponentes coesos dentro da pasta `components/` adjacente ao arquivo pai.
-
-
+  * **Componentes visuais puros e atômicos:** Limite estrito de **10–60 linhas** de JSX.
+  * **Formulários densos e orquestradores de tabela:** Teto expandido de **até 120 linhas** para evitar a fragmentação artificial de controles e resolvers de formulário.
+  * Componentes que excederem esses limites devem ser decompostos em subcomponentes coesos dentro da pasta `components/` adjacente ao arquivo pai.
 * **Hierarquia de Estado Controlada:**
-* **Server State:** Gerenciado exclusivamente via TanStack Query v5.
-* **Shared UI State:** Utilize React Context para estados efêmeros de interface compartilhados no módulo (ex.: etapa ativa de wizard multietapas, visibilidade de gavetas).
-* Injeções no objeto global `window` ou stores singleton externas desordenadas são terminantemente proibidas.
-
-
+  * **Server State:** Gerenciado exclusivamente via TanStack Query v5.
+  * **Shared UI State:** Utilize React Context para estados efêmeros de interface compartilhados no módulo (ex.: etapa ativa de wizard multietapas, visibilidade de gavetas).
+  * Injeções no objeto global `window` ou stores singleton externas desordenadas são terminantemente proibidas.
 
 ---
 
@@ -68,9 +67,7 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
   error={Boolean(errors.nome)}
   helperText={errors.nome?.message}
 />
-
 ```
-
 
 * **Máscaras e Formatadores de Dados:** Utilitários de `src/utils/masks.ts` devem ser aplicados sistematicamente a CPF, RG, telefones, CEP, moeda (BRL via `Intl.NumberFormat`) e datas em todas as telas de entrada e edição.
 
@@ -78,11 +75,11 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 
 ## 5. Design System e Padrões Visuais Oficiais (*Padrão Arrojado*)
 
-👉 **Fonte única e obrigatória: [`../../DESIGN_SYSTEM.md`](../../DESIGN_SYSTEM.md)** (raiz de `gestao-paroquia-ui/`). Leia-o antes de tocar em qualquer tela, modal, formulário ou componente visual — cobre layout de página, `SearchField`, `ActionButton`/`IconActionButton`, estrutura de `Dialog` (`Card`+`Grid2`+`DIALOG_CONTENT_SCROLL_SX`), tríade de estados assíncronos, `StatusIcon` e tabelas. É especificação global, aplicável igualmente a toda tela/módulo do sistema, novo ou existente. As subseções 5.1–5.7 abaixo foram consolidadas lá; mantidas aqui apenas como referência histórica rápida — em caso de divergência, `DESIGN_SYSTEM.md` prevalece.
+👉 **Fonte única e obrigatória: [`gestao-paroquia-ui/DESIGN_SYSTEM.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/DESIGN_SYSTEM.md).** Leia-o antes de tocar em qualquer tela, modal, formulário ou componente visual — cobre layout de página, `SearchField`, `ActionButton`/`IconActionButton`, estrutura de `Dialog` (`Card`+`Grid2`+`DIALOG_CONTENT_SCROLL_SX`), tríade de estados assíncronos, `StatusIcon` e tabelas. É especificação global, aplicável igualmente a toda tela/módulo do sistema, novo ou existente.
 
 ### 5.1. Layout de Páginas e Cabeçalho
 
-* Contêiner raiz de rotas: `<Stack spacing="{3}">`.
+* Contêiner raiz de rotas: `<Stack spacing={3}>`.
 * Cabeçalho de página mandatório (`src/components/PageHeader.tsx`):
 ```tsx
 <PageHeader
@@ -91,9 +88,7 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
   subtitle="Gestão canônica e cadastral dos membros da comunidade paroquial"
   actions={<ActionButton title="Novo Fiel" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />}
 />
-
 ```
-
 
 * Barra de busca e filtros:
 ```tsx
@@ -113,26 +108,21 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
     }}
   />
 </Box>
-
 ```
-
-
 
 ### 5.2. Botões e Ações Padronizadas
 
-* O uso de `<Button>` cru sem padronização visual é proibido. Utilize sempre `<ActionButton icon="{<Icon" title="..."/>} ... />` (`src/components/ActionButton.tsx`).
+* O uso de `<Button>` cru sem padronização visual é proibido. Utilize sempre `<ActionButton icon={<Icon />} title="..." ... />` (`src/components/ActionButton.tsx`).
 * **Semântica de Cores e Ícones:**
-* **Ação Primária** (Salvar, Criar, Submeter, Homologar): `color="primary"`, ícone `<SaveIcon/>` / `<AddIcon/>` / `<CheckCircleIcon/>`.
-* **Ação Secundária / Cancelamento** (Fechar, Voltar): `color="secondary"`, ícone `<CloseIcon/>` / `<ArrowBackIcon/>`.
-* **Ação Destrutiva** (Inativar, Excluir, Vetar): `color="error"`, ícone `<BlockIcon/>` / `<CancelIcon/>` / `<DeleteIcon/>`.
-
-
+  * **Ação Primária** (Salvar, Criar, Submeter, Homologar): `color="primary"`, ícone `<SaveIcon/>` / `<AddIcon/>` / `<CheckCircleIcon/>`.
+  * **Ação Secundária / Cancelamento** (Fechar, Voltar): `color="secondary"`, ícone `<CloseIcon/>` / `<ArrowBackIcon/>`.
+  * **Ação Destrutiva** (Inativar, Excluir, Vetar): `color="error"`, ícone `<BlockIcon/>` / `<CancelIcon/>` / `<DeleteIcon/>`.
 * Botões de ação compostos apenas por ícones sem rótulo ou sem `<Tooltip>` acessível são proibidos.
 
 ### 5.3. Tabelas de Dados e Acessibilidade (a11y)
 
-* Contêiner estrutural: `<Card><CardContent 0 p: sx="{{" }}><TableContainer><Table>...`.
-* Cabeçalhos: `<TableHead 'action.hover' backgroundColor: sx="{{" }}>` com células configuradas com `sx={{ fontWeight: 600 }}` ou `700`.
+* Contêiner estrutural: `<Card><CardContent sx={{ p: 0 }}><TableContainer><Table>...`.
+* Cabeçalhos: `<TableHead sx={{ backgroundColor: 'action.hover' }}>` com células configuradas com `sx={{ fontWeight: 600 }}` ou `700`.
 * **Linhas Clicáveis Acessíveis via Teclado:**
 ```tsx
 <TableRow
@@ -148,23 +138,17 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
   }}
   sx={{ cursor: 'pointer' }}
 >
-
 ```
-
 
 * **Isolamento de Ações na Linha:** Cliques em botões de ação ou menus internos da linha DEVEM chamar `event.stopPropagation()` para não acionar a navegação do `TableRow`:
 ```tsx
 <TableActionMenu onClick={(e) => e.stopPropagation()} ... />
-
 ```
 
-
 * **Paginação Obrigatória:** Toda tabela do sistema deve implementar `<TablePagination>` com:
-* `rowsPerPageOptions={[5, 10, 25]}`
-* `labelRowsPerPage="Linhas por página:"`
-* `labelDisplayedRows={({ from, to, count }) => `${from}–${to} de${count !== -1 ? count : `mais de ${to}`}`}`
-
-
+  * `rowsPerPageOptions={[5, 10, 25]}`
+  * `labelRowsPerPage="Linhas por página:"`
+  * `labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}`
 
 ### 5.4. Tríade de Estados Assíncronos
 
@@ -177,16 +161,13 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
   description="Não encontramos nenhum fiel cadastrado com os critérios informados."
   action={<ActionButton title="Cadastrar Primeiro Fiel" icon={<AddIcon />} color="primary" onClick={handleCreate} />}
 />
-
 ```
-
-
 * **Error State:** Falhas na query devem renderizar alerta contextual com botão de ação acionando `refetch()`.
 
 ### 5.5. Diálogos (Modais) e Painéis Laterais (Drawers)
 
-* Estrutura de Diálogo: `<Dialog fullWidth maxWidth="md" onClose="{...}" open="{...}">` contendo `<DialogTitle>`, `<DialogContent 'auto' 'calc(100vh - 200px)', dividers maxHeight: overflowY: sx="{{" }}>` e `<DialogActions>`.
-* Empacotamento de conteúdo: `<Stack spacing="{2.5}">`.
+* Estrutura de Diálogo: `<Dialog fullWidth maxWidth="md" open={...} onClose={...}>` contendo `<DialogTitle>`, `<DialogContent dividers sx={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>` e `<DialogActions>`.
+* Empacotamento de conteúdo: `<Stack spacing={2.5}>`.
 * Agrupamento visual de campos em Cards delineados:
 ```tsx
 <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -204,10 +185,7 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
     </Grid2>
   </CardContent>
 </Card>
-
 ```
-
-
 
 ### 5.6. Exibição Somente Leitura e Indicadores Categóricos
 
@@ -245,9 +223,7 @@ export const fielKeys = {
   details: () => [...fielKeys.all, 'detail'] as const,
   detail: (id: string) => [...fielKeys.details(), id] as const,
 };
-
 ```
-
 
 * **Tratamento de Mutações e Efeitos Colaterais:**
 ```ts
@@ -264,16 +240,11 @@ export const useSaveFielMutation = () => {
     },
   });
 };
-
 ```
-
-
 
 ---
 
 ## 7. Blueprint Estrutural (Exemplo de Formulário Reativo e Declarativo)
-
-Exemplo canônico demonstrando o desacoplamento de lógica, tipagem Zod e componentes semânticos:
 
 ```tsx
 // src/schemas/dizimoLancamentoSchema.ts
@@ -287,7 +258,6 @@ export const dizimoLancamentoSchema = z.object({
 });
 
 export type DizimoLancamentoInput = z.infer<typeof dizimoLancamentoSchema>;
-
 ```
 
 ```tsx
@@ -434,7 +404,6 @@ export const DizimoLancamentoDialog: React.FC<DizimoLancamentoDialogProps> = ({ 
     </Dialog>
   );
 };
-
 ```
 
 ---
@@ -464,7 +433,7 @@ Antes de concluir qualquer tarefa ou submeter alterações, valide rigorosamente
 1. [ ] **Documentação Viva:** Todos os componentes de tela, formulários e hooks possuem blocos JSDoc documentando a regra de negócio e as decisões ergonômicas?
 2. [ ] **Validação com Zod:** Todo formulário possui schema Zod correspondente em `src/schemas/` com mensagens de erro humanizadas?
 3. [ ] **Semântica do MUI 9:** Não existem elementos HTML brutos (`div`, `span`, `p`) soltos no JSX para fins de layout?
-4. [ ] **Grid2 Unificado:** Foi utilizado estritamente `<Grid2 container spacing="{2}">` com `<Grid2 ... 12, size="{{" xs: }}>`, sem tags legadas de Grid?
+4. [ ] **Grid2 Unificado:** Foi utilizado estritamente `<Grid2 container spacing={2}>` com `<Grid2 size={{ xs: 12, ... }}>`, sem tags legadas de Grid?
 5. [ ] **Acessibilidade em Tabelas:** As linhas navegáveis possuem `role="button"`, `tabIndex={0}`, controle de tecla `Enter`/`Space` e os menus internos contêm `event.stopPropagation()`?
 6. [ ] **Tríade de Estados Assíncronos:** A tela implementa Skeleton para loading, EmptyState visual para ausência de registros e alerta com retry para erros?
 7. [ ] **Isolamento de Server-State:** Toda comunicação com a API é intermediada por hooks de TanStack Query com query keys hierárquicas e invalidação pós-mutação?

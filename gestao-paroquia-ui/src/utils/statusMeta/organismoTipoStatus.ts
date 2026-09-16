@@ -8,7 +8,7 @@ import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { TipoOrganismoParoquial } from '../../api/types';
+import type { TipoOrganismoParoquial } from '@/api/types';
 
 export type { TipoOrganismoParoquial };
 

@@ -11,20 +11,18 @@ import {
   Select,
   Typography,
 } from '@mui/material';
-import {
-  Block as BlockIcon,
-  CalendarMonth as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-  FormatListBulleted as ListIcon,
-  Refresh as RefreshIcon,
-  Today as TodayIcon,
-} from '@mui/icons-material';
-import ActionButton from '../ActionButton';
-import StatusIcon from '../StatusIcon';
-import { CALENDAR_CATEGORIES } from '../../hooks/useCalendarFilterState';
-import { MONTH_NAMES } from '../../utils/calendarHelpers';
-import { Organizacao } from '../../api/types';
+import BlockIcon from '@mui/icons-material/Block';
+import CalendarIcon from '@mui/icons-material/CalendarMonth';
+import ChevronLeft from '@mui/icons-material/ChevronLeft';
+import ChevronRight from '@mui/icons-material/ChevronRight';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import TodayIcon from '@mui/icons-material/Today';
+import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
+import { CALENDAR_CATEGORIES } from '@/hooks/useCalendarFilterState';
+import { MONTH_NAMES } from '@/utils/calendarHelpers';
+import { Organizacao } from '@/api/types';
 
 interface LiturgicalInfo {
   cycle: string;

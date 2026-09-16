@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, LinearProgress, Paper, Stack, Typography} from '@mui/material';
-import {EventosPorResponsavel} from '../../api/types';
+import {EventosPorResponsavel} from '@/api/types';
 
 interface EventosPorResponsavelCardProps {
   data?: EventosPorResponsavel[];

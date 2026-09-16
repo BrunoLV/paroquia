@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
-import {getAniversariantes, getDashboardComunidade} from '../api/dashboard';
-import {Aniversariante, DashboardComunidade, PeriodoDashboard} from '../api/types';
+import {getAniversariantes, getDashboardComunidade} from '@/api/dashboard';
+import {Aniversariante, DashboardComunidade, PeriodoDashboard} from '@/api/types';
 
 /**
  * Busca os aniversariantes do período (`GET /dashboard/aniversariantes` via `getAniversariantes`).

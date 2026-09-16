@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Chip, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { Controller, type Control } from 'react-hook-form';
-import { Organizacao } from '../../api/types';
-import { EventoFormInput } from '../../schemas/eventoSchema';
+import { Organizacao } from '@/api/types';
+import { EventoFormInput } from '@/schemas/eventoSchema';
 
 interface EventoApoioSelectProps {
   control: Control<EventoFormInput>;

@@ -3,7 +3,7 @@ import {Stack} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import ActionButton from '../ActionButton';
+import ActionButton from '@/components/ActionButton';
 
 interface ReportExportButtonsProps {
   onExportCSV: () => void;

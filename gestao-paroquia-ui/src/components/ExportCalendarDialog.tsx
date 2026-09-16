@@ -18,9 +18,10 @@ import {
     TextField,
 } from '@mui/material';
 
-import {Close as CloseIcon, Download as DownloadIcon} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/Download';
 import {DIALOG_CONTENT_SCROLL_SX} from '@/theme/dialogStyles';
-import {Organizacao} from '../api/types';
+import {Organizacao} from '@/api/types';
 import ActionButton from './ActionButton';
 
 export interface ExportCalendarDialogProps {

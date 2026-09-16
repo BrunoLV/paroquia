@@ -3,8 +3,8 @@ import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import type { SvgIconProps } from '@mui/material';
-import HostiaIcon from '../../components/icons/HostiaIcon';
-import type { VidaSacramental } from '../../api/types';
+import HostiaIcon from '@/components/icons/HostiaIcon';
+import type { VidaSacramental } from '@/api/types';
 
 interface SacramentoMeta {
   icon: React.ReactElement<SvgIconProps>;

@@ -2,7 +2,7 @@ import React from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Box, Chip, List, ListItemButton, ListItemText, Paper, Typography} from '@mui/material';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
-import {EventoOrfao} from '../../api/types';
+import {EventoOrfao} from '@/api/types';
 
 interface EventosOrfaosCardProps {
   eventos?: EventoOrfao[];

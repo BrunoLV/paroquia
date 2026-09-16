@@ -14,10 +14,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Close as CloseIcon, Gavel as GavelIcon, Send as SendIcon } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import GavelIcon from '@mui/icons-material/Gavel';
+import SendIcon from '@mui/icons-material/Send';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import { confirmDiscard } from '@/utils/confirmDiscard';
-import { Organizacao } from '../api/types';
+import { Organizacao } from '@/api/types';
 import ActionButton from './ActionButton';
 
 interface CpcDecisaoModalProps {

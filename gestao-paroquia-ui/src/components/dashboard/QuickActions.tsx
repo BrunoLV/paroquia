@@ -1,13 +1,11 @@
 import React from 'react';
 import {Card, CardContent, Stack, Typography} from '@mui/material';
-import {
-  Add as AddIcon,
-  CalendarMonth as CalendarIcon,
-  Groups as MemberIcon,
-  Assignment as ProjectIcon,
-} from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import CalendarIcon from '@mui/icons-material/CalendarMonth';
+import MemberIcon from '@mui/icons-material/Groups';
+import ProjectIcon from '@mui/icons-material/Assignment';
 import { useNavigate } from 'react-router-dom';
-import ActionButton from '../ActionButton';
+import ActionButton from '@/components/ActionButton';
 
 interface QuickActionsProps {
   onNewEvent?: () => void;

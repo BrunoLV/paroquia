@@ -4,7 +4,7 @@ import {MemoryRouter} from 'react-router-dom';
 import SummaryCards from './SummaryCards';
 import UpcomingEvents from './UpcomingEvents';
 import {ThemeProvider} from '@mui/material/styles';
-import theme from '../../theme';
+import theme from '@/theme';
 
 describe('Dashboard Widgets', () => {
   describe('SummaryCards', () => {

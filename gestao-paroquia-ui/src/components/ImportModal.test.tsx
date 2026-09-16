@@ -3,7 +3,7 @@ import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import ImportModal from './ImportModal';
-import {confirmarImportacao, downloadTemplate, validarImportacao} from '../api/importacao';
+import {confirmarImportacao, downloadTemplate, validarImportacao} from '@/api/importacao';
 
 vi.mock('../api/importacao', () => ({
   downloadTemplate: jest.fn(),

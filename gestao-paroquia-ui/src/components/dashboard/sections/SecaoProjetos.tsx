@@ -1,7 +1,7 @@
 import React from 'react';
 import {Grid, Typography} from '@mui/material';
-import ActiveProjectsProgressList from '../ActiveProjectsProgressList';
-import ProjetosPorStatusCard from '../ProjetosPorStatusCard';
+import ActiveProjectsProgressList from '@/components/dashboard/ActiveProjectsProgressList';
+import ProjetosPorStatusCard from '@/components/dashboard/ProjetosPorStatusCard';
 import type {DashboardMetrics} from '@/api/types';
 
 interface SecaoProjetosProps {

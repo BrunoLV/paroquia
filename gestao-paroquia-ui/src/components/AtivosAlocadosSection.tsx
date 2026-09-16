@@ -1,9 +1,9 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Box, Paper, Skeleton, Stack, Typography } from '@mui/material';
-import { Inventory as InventoryIcon } from '@mui/icons-material';
-import { listarReservas } from '../api/reservas';
-import { getReservaStatusMeta } from '../utils/statusMeta/reservaStatus';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import { listarReservas } from '@/api/reservas';
+import { getReservaStatusMeta } from '@/utils/statusMeta/reservaStatus';
 import StatusIcon from './StatusIcon';
 
 interface AtivosAlocadosSectionProps {

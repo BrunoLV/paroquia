@@ -1,6 +1,6 @@
 import {act, renderHook} from '@testing-library/react';
 import {toPng, toSvg} from 'html-to-image';
-import {useOrganogramaExport} from '../useOrganogramaExport';
+import {useOrganogramaExport} from '@/hooks/useOrganogramaExport';
 import {vi} from 'vitest';
 
 vi.mock('html-to-image', () => ({

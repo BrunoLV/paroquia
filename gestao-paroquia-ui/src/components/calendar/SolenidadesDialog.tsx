@@ -1,8 +1,10 @@
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material';
-import { Circle as CircleIcon, Close as CloseIcon, Event as EventIcon } from '@mui/icons-material';
-import ActionButton from '../ActionButton';
-import StatusIcon from '../StatusIcon';
-import { SolemnityInfo } from '../../utils/liturgicalCalendar';
+import CircleIcon from '@mui/icons-material/Circle';
+import CloseIcon from '@mui/icons-material/Close';
+import EventIcon from '@mui/icons-material/Event';
+import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
+import { SolemnityInfo } from '@/utils/liturgicalCalendar';
 
 interface SolenidadesDialogProps {
   open: boolean;

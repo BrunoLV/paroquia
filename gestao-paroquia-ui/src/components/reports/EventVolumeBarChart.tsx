@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Paper, Typography, useTheme } from '@mui/material';
-import { BarChart as BarIcon } from '@mui/icons-material';
+import BarIcon from '@mui/icons-material/BarChart';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { EventDistribution } from '../../api/types';
+import { EventDistribution } from '@/api/types';
 
 interface EventVolumeBarChartProps {
   data: EventDistribution[];
@@ -85,4 +85,3 @@ const EventVolumeBarChart: React.FC<EventVolumeBarChartProps> = ({ data }) => {
 };
 
 export default EventVolumeBarChart;
-

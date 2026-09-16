@@ -14,29 +14,27 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import {
-  Block as BlockIcon,
-  Business as BusinessIcon,
-  Cancel as CancelIcon,
-  CheckCircle as CheckCircleIcon,
-  Close as CloseIcon,
-  Description as DescriptionIcon,
-  Edit as EditIcon,
-  Event as EventIcon,
-  Groups as PeopleIcon,
-  LocationOn as LocationIcon,
-  PriorityHigh as PriorityHighIcon,
-  Repeat as RepeatIcon,
-  Schedule as ScheduleIcon,
-} from '@mui/icons-material';
-import ActionButton from '../ActionButton';
-import StatusIcon from '../StatusIcon';
-import ObservacoesEvento from '../ObservacoesEvento';
-import AtivosAlocadosSection from '../AtivosAlocadosSection';
-import { getEventoStatusMeta } from '../../utils/statusMeta/eventoStatus';
-import { getCategoriaEventoMeta } from '../../utils/statusMeta/categoriaEventoStatus';
-import { DAYS_OF_WEEK, RecurrenceRule } from '../RecurrenceForm';
-import { Evento, SetorPastoral } from '../../api/types';
+import BlockIcon from '@mui/icons-material/Block';
+import BusinessIcon from '@mui/icons-material/Business';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import DescriptionIcon from '@mui/icons-material/Description';
+import EditIcon from '@mui/icons-material/Edit';
+import EventIcon from '@mui/icons-material/Event';
+import PeopleIcon from '@mui/icons-material/Groups';
+import LocationIcon from '@mui/icons-material/LocationOn';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import RepeatIcon from '@mui/icons-material/Repeat';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import ActionButton from '@/components/ActionButton';
+import StatusIcon from '@/components/StatusIcon';
+import ObservacoesEvento from '@/components/ObservacoesEvento';
+import AtivosAlocadosSection from '@/components/AtivosAlocadosSection';
+import { getEventoStatusMeta } from '@/utils/statusMeta/eventoStatus';
+import { getCategoriaEventoMeta } from '@/utils/statusMeta/categoriaEventoStatus';
+import { DAYS_OF_WEEK, RecurrenceRule } from '@/components/RecurrenceForm';
+import { Evento, SetorPastoral } from '@/api/types';
 
 /** 1=Solenidade, 2=Preceito, 3=Pastoral, 4=Movimento — ver `Evento.nivelPrioridade` em api/types.ts. */
 const NIVEL_PRIORIDADE_LABELS: Record<number, string> = {

@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
-import {getDashboardMetrics} from '../api/dashboard';
-import {DashboardMetrics, PeriodoDashboard} from '../api/types';
+import {getDashboardMetrics} from '@/api/dashboard';
+import {DashboardMetrics, PeriodoDashboard} from '@/api/types';
 
 /**
  * Busca as métricas consolidadas do Dashboard (`GET /dashboard/metrics` via `getDashboardMetrics`

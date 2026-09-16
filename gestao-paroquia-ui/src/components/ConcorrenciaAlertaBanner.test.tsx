@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import ConcorrenciaAlertaBanner from './ConcorrenciaAlertaBanner';
-import { ConflitoItemDto } from '../api/metricasTypes';
+import { ConflitoItemDto } from '@/api/metricasTypes';
 
 describe('ConcorrenciaAlertaBanner', () => {
   it('não deve renderizar nada quando a lista de conflitos estiver vazia', () => {

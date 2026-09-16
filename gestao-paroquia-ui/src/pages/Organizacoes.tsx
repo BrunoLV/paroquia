@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Container } from '@mui/material';
-import { Add as AddIcon, Groups as GroupsIcon } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import GroupsIcon from '@mui/icons-material/Groups';
 import { createOrganizacao, deleteOrganizacao, getOrganizacoes, updateOrganizacao } from '@/api/organizacoes';
 import { getUsuarios } from '@/api/usuarios';
 import { getPastoraisOficiais } from '@/api/pastoraisOficiais';

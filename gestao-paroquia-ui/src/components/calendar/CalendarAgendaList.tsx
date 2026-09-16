@@ -1,10 +1,12 @@
 import { Box, Card, Paper, Typography } from '@mui/material';
-import { Business as BusinessIcon, CalendarMonth as CalendarIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
-import StatusIcon from '../StatusIcon';
-import { getEventoStatusMeta } from '../../utils/statusMeta/eventoStatus';
-import { getCategoriaEventoMeta } from '../../utils/statusMeta/categoriaEventoStatus';
-import { getCategoryColor, MONTH_NAMES } from '../../utils/calendarHelpers';
-import { Evento } from '../../api/types';
+import BusinessIcon from '@mui/icons-material/Business';
+import CalendarIcon from '@mui/icons-material/CalendarMonth';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import StatusIcon from '@/components/StatusIcon';
+import { getEventoStatusMeta } from '@/utils/statusMeta/eventoStatus';
+import { getCategoriaEventoMeta } from '@/utils/statusMeta/categoriaEventoStatus';
+import { getCategoryColor, MONTH_NAMES } from '@/utils/calendarHelpers';
+import { Evento } from '@/api/types';
 
 interface CalendarAgendaListProps {
   agendaEvents: Evento[];

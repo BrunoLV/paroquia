@@ -3,7 +3,7 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import BlockIcon from '@mui/icons-material/Block';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { StatusHomologacao } from '../../api/types';
+import type { StatusHomologacao } from '@/api/types';
 
 export type { StatusHomologacao };
 

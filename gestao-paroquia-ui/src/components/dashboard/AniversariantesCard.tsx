@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, Chip, List, ListItem, ListItemText, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography} from '@mui/material';
 import CakeIcon from '@mui/icons-material/Cake';
-import {Aniversariante, PeriodoDashboard} from '../../api/types';
+import {Aniversariante, PeriodoDashboard} from '@/api/types';
 
 interface AniversariantesCardProps {
   aniversariantes?: Aniversariante[];

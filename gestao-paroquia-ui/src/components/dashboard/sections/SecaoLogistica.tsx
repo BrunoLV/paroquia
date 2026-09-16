@@ -1,9 +1,9 @@
 import React from 'react';
 import {Grid} from '@mui/material';
-import ChoqueHorarioAlert from '../ChoqueHorarioAlert';
-import OcupacaoAmbientesCard from '../OcupacaoAmbientesCard';
-import EventosPorResponsavelCard from '../EventosPorResponsavelCard';
-import {DashboardLogistica} from '../../../api/types';
+import ChoqueHorarioAlert from '@/components/dashboard/ChoqueHorarioAlert';
+import OcupacaoAmbientesCard from '@/components/dashboard/OcupacaoAmbientesCard';
+import EventosPorResponsavelCard from '@/components/dashboard/EventosPorResponsavelCard';
+import {DashboardLogistica} from '@/api/types';
 
 interface SecaoLogisticaProps {
   logistica?: DashboardLogistica;

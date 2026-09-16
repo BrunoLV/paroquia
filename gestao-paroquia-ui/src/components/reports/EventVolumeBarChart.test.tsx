@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import EventVolumeBarChart from './EventVolumeBarChart';
-import { EventDistribution } from '../../api/types';
+import { EventDistribution } from '@/api/types';
 
 const renderChart = (data: EventDistribution[], mode: 'light' | 'dark' = 'light') => {
   const theme = createTheme({ palette: { mode } });
@@ -29,4 +29,3 @@ describe('EventVolumeBarChart', () => {
     expect(screen.getByText('Nenhum dado disponível para exibição no gráfico de barras.')).toBeInTheDocument();
   });
 });
-

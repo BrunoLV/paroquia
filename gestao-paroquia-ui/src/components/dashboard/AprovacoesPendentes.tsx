@@ -3,10 +3,10 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { getAprovacoes } from '../../api/aprovacoes';
-import StatusIcon from '../StatusIcon';
-import ActionButton from '../ActionButton';
-import { getAprovacaoDetalhe, getAprovacaoTipoMeta } from '../../utils/statusMeta/aprovacaoStatus';
+import { getAprovacoes } from '@/api/aprovacoes';
+import StatusIcon from '@/components/StatusIcon';
+import ActionButton from '@/components/ActionButton';
+import { getAprovacaoDetalhe, getAprovacaoTipoMeta } from '@/utils/statusMeta/aprovacaoStatus';
 
 const formatTempoPendente = (isoDate: string): string => {
   const minutos = Math.max(0, Math.floor((Date.now() - new Date(isoDate).getTime()) / 60000));

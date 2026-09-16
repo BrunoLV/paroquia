@@ -2,7 +2,7 @@ import React from 'react';
 import {Box, Paper, Typography, useTheme} from '@mui/material';
 import PieChartOutlineIcon from '@mui/icons-material/PieChartOutlineOutlined';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
-import {EventDistribution} from '../../api/types';
+import {EventDistribution} from '@/api/types';
 
 interface EventDistributionPieChartProps {
   data: EventDistribution[];

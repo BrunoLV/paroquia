@@ -10,7 +10,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { CategoriaEvento } from '../../api/types';
+import type { CategoriaEvento } from '@/api/types';
 
 export type { CategoriaEvento };
 

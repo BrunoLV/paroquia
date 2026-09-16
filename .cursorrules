@@ -1,21 +1,8 @@
 # Regras de Governança do Projeto Paróquia
 
-Todas as diretrizes de arquitetura, padrões de código (Java/React), regras de LGPD e comandos de ferramentas estão centralizadas para garantir paridade entre todos os agentes de IA operando neste repositório.
+Todas as diretrizes de arquitetura, padrões de código (Java/React), regras de LGPD, políticas de qualidade e comandos de ferramentas estão centralizadas para garantir paridade entre todos os agentes de IA operando neste repositório.
 
 **Ação Obrigatória:**
-Antes de analisar código, propor soluções ou gerar qualquer arquivo, você DEVE LER o arquivo `AGENTS.md` localizado na raiz deste diretório. Ele contém as instruções estritas que você precisa seguir.
+Antes de analisar código, propor soluções ou gerar qualquer arquivo, você DEVE LER o arquivo `AGENTS.md` localizado na raiz deste monorepo. Ele contém as instruções mandatórias que você precisa seguir.
 
-👉 Leia `AGENTS.md` agora.
-
-### REGRAS TÁTICAS DE ARQUITETURA: POLICIES VS SERVICES (DDD)
-
-1. PROIBIÇÃO DE REGRAS VARIÁVEIS EM SERVICES:
-   - NUNCA crie ou expanda classes `*Service` com encadeamentos de `if/else` ou `switch/case` para lidar com variações de cálculo, taxa, desconto, juros, autorização ou decisão de negócio.
-   - Se uma regra varia por tipo, perfil, campanha ou contexto, implemente-a obrigatoriamente como uma **Policy** (Strategy) em `domain/policy/`.
-2. ISOLAMENTO DE POLICIES NO DOMÍNIO:
-   - Toda Policy deve ser estritamente STATELESS e ZERO I/O.
-   - É proibido injetar repositórios, APIs, clientes de banco, caches ou decorators de framework dentro de `*Policy`.
-   - O Application Service carrega previamente os dados e os repassa prontos em memória.
-3. TELL, DON'T ASK & ANEMIA:
-   - A Policy nunca altera Entidade/Agregado por setters; ela devolve Value Object ou decisão para que o Agregado execute a mutação.
-   - O consumo esperado é `aggregate.applyRule(policyInstance)`.
+👉 **Leia `AGENTS.md` agora para carregar seu contexto operacional.**

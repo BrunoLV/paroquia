@@ -4,9 +4,9 @@ import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
 // @ts-ignore
 import ObservacoesEvento from './ObservacoesEvento';
-import {createObservacao, getObservacoes} from '../api/observacoes';
+import {createObservacao, getObservacoes} from '@/api/observacoes';
 import {ThemeProvider} from '@mui/material/styles';
-import theme from '../theme';
+import theme from '@/theme';
 
 // Mock API client methods
 vi.mock('../api/observacoes', () => ({

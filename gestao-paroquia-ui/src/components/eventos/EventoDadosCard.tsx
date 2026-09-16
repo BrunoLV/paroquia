@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import { Controller, type UseFormReturn } from 'react-hook-form';
-import { EventoFormInput } from '../../schemas/eventoSchema';
+import { EventoFormInput } from '@/schemas/eventoSchema';
 
 export const CATEGORIES = ['SOLENIDADE', 'PASTORAL', 'SOCIAL', 'LITURGICO', 'ADMINISTRATIVO', 'SACRAMENTAL', 'FORMATIVO', 'ASSISTENCIAL', 'MOVIMENTO'];
 export const STATUSES = ['RASCUNHO', 'CONFIRMADO', 'ADICIONADO_EXTRA', 'CANCELADO'];

@@ -1,18 +1,24 @@
 import {vi} from "vitest";
 import React from 'react';
-import {fireEvent, render, screen, within} from '@testing-library/react';
+import { fireEvent, render as rtlRender, screen, within, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CadastroEventoModal from './CadastroEventoModal';
-import {useAuth} from '../auth/AuthContext';
+import { useAuth } from '@/auth/AuthContext';
 
-vi.mock('../auth/AuthContext');
+vi.mock('@/auth/AuthContext');
 const mockedUseAuth = vi.mocked(useAuth);
 
 const mockShowError = jest.fn();
-vi.mock('../context/NotificationContext', () => ({
+vi.mock('@/context/NotificationContext', () => ({
   useNotification: () => ({
     showError: mockShowError,
   }),
 }));
+
+const render = (ui: React.ReactElement) => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return rtlRender(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+};
 
 describe('CadastroEventoModal', () => {
   const mockOnClose = jest.fn();
@@ -147,7 +153,7 @@ describe('CadastroEventoModal', () => {
     expect(screen.getByText('Pastoral B')).toBeInTheDocument();
   });
 
-  it('shows validation error when title is missing', () => {
+  it('shows validation error when title is missing', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     
     const titleInput = screen.getByLabelText(/título do evento/i);
@@ -156,11 +162,13 @@ describe('CadastroEventoModal', () => {
     const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
-    expect(mockShowError).toHaveBeenCalledWith('O título do evento é obrigatório.');
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith('O título do evento é obrigatório.');
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error when organization is missing', () => {
+  it('shows validation error when organization is missing', async () => {
     render(<CadastroEventoModal {...defaultProps} organizations={[]} />);
     
     const titleInput = screen.getByLabelText(/título do evento/i);
@@ -169,11 +177,13 @@ describe('CadastroEventoModal', () => {
     const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
-    expect(mockShowError).toHaveBeenCalledWith('A organização responsável é obrigatória.');
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith('A organização responsável é obrigatória.');
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error when start date is missing', () => {
+  it('shows validation error when start date is missing', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     
     const titleInput = screen.getByLabelText(/título do evento/i);
@@ -185,11 +195,13 @@ describe('CadastroEventoModal', () => {
     const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
-    expect(mockShowError).toHaveBeenCalledWith('A data e hora de início é obrigatória.');
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith('A data e hora de início é obrigatória.');
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error when end date is missing (non-recurring)', () => {
+  it('shows validation error when end date is missing (non-recurring)', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     
     const titleInput = screen.getByLabelText(/título do evento/i);
@@ -201,11 +213,13 @@ describe('CadastroEventoModal', () => {
     const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
-    expect(mockShowError).toHaveBeenCalledWith('A data e hora de término é obrigatória.');
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith('A data e hora de término é obrigatória.');
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error when start date is after end date', () => {
+  it('shows validation error when start date is after end date', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     
     const titleInput = screen.getByLabelText(/título do evento/i);
@@ -220,7 +234,9 @@ describe('CadastroEventoModal', () => {
     const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
-    expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith('A data de início não pode ser posterior à data de término.');
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -367,11 +383,13 @@ describe('CadastroEventoModal', () => {
     });
   });
 
-  it('shows validation error when status is ADICIONADO_EXTRA and justification is empty', () => {
+  it('shows validation error when status is ADICIONADO_EXTRA and justification is empty', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     
     // Fill required fields
     fireEvent.change(screen.getByLabelText(/título do evento/i), { target: { value: 'Missa Extra' } });
+    fireEvent.change(screen.getByLabelText(/data e hora de início/i), { target: { value: '2026-05-31T10:00' } });
+    fireEvent.change(screen.getByLabelText(/data e hora de término/i), { target: { value: '2026-05-31T12:00' } });
     
     // Select status ADICIONADO_EXTRA
     const statusSelect = screen.getByLabelText(/Status/i);
@@ -386,7 +404,9 @@ describe('CadastroEventoModal', () => {
     const submitButton = screen.getByRole('button', { name: /Salvar/i });
     fireEvent.click(submitButton);
 
-    expect(mockShowError).toHaveBeenCalledWith('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith('A justificativa é obrigatória para eventos adicionados extraordinariamente.');
+    });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 

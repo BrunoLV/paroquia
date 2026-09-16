@@ -2,18 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack } from '@mui/material';
-import {
-  Add as AddIcon,
-  Build as BuildIcon,
-  CheckCircle as CheckCircleIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  EventAvailable as ReservarIcon,
-  Inventory as InventoryIcon,
-  Visibility as VisibilityIcon,
-} from '@mui/icons-material';
-import { useAuth } from '../auth/AuthContext';
-import { canExcluirAtivo, canManageAtivos, canManageManutencaoAtivo, isGlobalCreator } from '../auth/permissions';
+import AddIcon from '@mui/icons-material/Add';
+import BuildIcon from '@mui/icons-material/Build';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ReservarIcon from '@mui/icons-material/EventAvailable';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useAuth } from '@/auth/AuthContext';
+import { canExcluirAtivo, canManageAtivos, canManageManutencaoAtivo, isGlobalCreator } from '@/auth/permissions';
 import {
   cadastrarAtivo,
   concluirManutencao,
@@ -21,27 +19,27 @@ import {
   enviarParaManutencao,
   excluirAtivo,
   getAtivosPorOrganizacao,
-} from '../api/ativos';
-import { getOrganizacoes } from '../api/organizacoes';
+} from '@/api/ativos';
+import { getOrganizacoes } from '@/api/organizacoes';
 import {
   AtivoCategoria,
   AtivoPatrimonial,
   CadastrarAtivoPayload,
   EnviarManutencaoPayload,
   Organizacao,
-} from '../api/types';
-import { useNotification } from '../context/NotificationContext';
-import PageHeader from '../components/PageHeader';
-import ActionButton from '../components/ActionButton';
-import { TableAction } from '../components/TableActionMenu';
-import AtivosFilterBar from '../components/ativos/AtivosFilterBar';
-import AtivosTable from '../components/ativos/AtivosTable';
-import AtivoViewModal from '../components/ativos/AtivoViewModal';
-import AtivoFormModal from '../components/ativos/AtivoFormModal';
-import AtivoEditModal from '../components/ativos/AtivoEditModal';
-import AtivoManutencaoModal from '../components/ativos/AtivoManutencaoModal';
-import AtivoExcluirConfirmDialog from '../components/ativos/AtivoExcluirConfirmDialog';
-import { extractErrorMessage } from '../utils/errorUtils';
+} from '@/api/types';
+import { useNotification } from '@/context/NotificationContext';
+import PageHeader from '@/components/PageHeader';
+import ActionButton from '@/components/ActionButton';
+import { TableAction } from '@/components/TableActionMenu';
+import AtivosFilterBar from '@/components/ativos/AtivosFilterBar';
+import AtivosTable from '@/components/ativos/AtivosTable';
+import AtivoViewModal from '@/components/ativos/AtivoViewModal';
+import AtivoFormModal from '@/components/ativos/AtivoFormModal';
+import AtivoEditModal from '@/components/ativos/AtivoEditModal';
+import AtivoManutencaoModal from '@/components/ativos/AtivoManutencaoModal';
+import AtivoExcluirConfirmDialog from '@/components/ativos/AtivoExcluirConfirmDialog';
+import { extractErrorMessage } from '@/utils/errorUtils';
 
 const isOrganizacaoElegivelProprietaria = (org: Organizacao): boolean =>
   org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';

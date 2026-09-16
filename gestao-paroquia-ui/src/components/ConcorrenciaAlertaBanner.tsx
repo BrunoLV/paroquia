@@ -1,8 +1,8 @@
 import React from 'react';
 import { Alert, AlertTitle, Box, Typography, Chip, Stack } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { ConflitoItemDto } from '../api/metricasTypes';
-import { getNivelRiscoLabel } from '../utils/statusMeta/metricasEstrategicasLabels';
+import { ConflitoItemDto } from '@/api/metricasTypes';
+import { getNivelRiscoLabel } from '@/utils/statusMeta/metricasEstrategicasLabels';
 
 interface ConcorrenciaAlertaBannerProps {
   conflitos: ConflitoItemDto[];

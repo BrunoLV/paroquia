@@ -1,9 +1,9 @@
 import { alpha, Box, Card, Grid, Typography } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { CalendarDay } from '../../hooks/useCalendarGrid';
-import { getCategoryColor } from '../../utils/calendarHelpers';
-import { getLiturgicalSeason, getLiturgicalSeasonStyle } from '../../utils/liturgicalCalendar';
-import { Evento } from '../../api/types';
+import AddIcon from '@mui/icons-material/Add';
+import { CalendarDay } from '@/hooks/useCalendarGrid';
+import { getCategoryColor } from '@/utils/calendarHelpers';
+import { getLiturgicalSeason, getLiturgicalSeasonStyle } from '@/utils/liturgicalCalendar';
+import { Evento } from '@/api/types';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 

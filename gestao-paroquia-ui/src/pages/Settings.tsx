@@ -29,18 +29,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  Category as CategoryIcon,
-  CheckCircle as CheckCircleIcon,
-  Close as CloseIcon,
-  CloudUpload as UploadIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Link as LinkIcon,
-  Lock as LockIcon,
-  Settings as SettingsIcon,
-} from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import CategoryIcon from '@mui/icons-material/Category';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadIcon from '@mui/icons-material/CloudUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import LinkIcon from '@mui/icons-material/Link';
+import LockIcon from '@mui/icons-material/Lock';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { getAnosParoquiais, updateAnoParoquialStatus } from '@/api/anosParoquiais';
 import { getOrganizacoes } from '@/api/organizacoes';

@@ -12,12 +12,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import {
-  Edit as EditIcon,
-  Groups as GroupsIcon,
-  ToggleOff as ToggleOffIcon,
-  ToggleOn as ToggleOnIcon,
-} from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit';
+import GroupsIcon from '@mui/icons-material/Groups';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import { Organizacao } from '@/api/types';
 import { FormattedContact } from '@/components/FormattedCell';
 import StatusIcon from '@/components/StatusIcon';

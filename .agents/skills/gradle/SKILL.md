@@ -1,3 +1,8 @@
+---
+name: gradle
+description: "Automação e engenharia de build com Gradle: Kotlin DSL (.gradle.kts), Java 25 Toolchain, Version Catalogs libs.versions.toml, Convention Plugins em build-logic e Lazy API."
+---
+
 # Skill do Agente de IA: Automação, Engenharia de Build e Performance com Gradle (Java 25)
 
 ## 1. Visão Geral e Contexto

@@ -21,7 +21,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Add as AddIcon, Close as CloseIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/theme/dialogStyles';
 import { getOrganizacaoMembros } from '@/api/organizacoes';
 import { adicionarVinculo, AdicionarVinculoRequest, removerVinculo, Usuario } from '@/api/usuarios';

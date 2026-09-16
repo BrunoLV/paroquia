@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, LinearProgress, Paper, Stack, Typography} from '@mui/material';
-import {GeneralSummary} from '../../api/types';
+import {GeneralSummary} from '@/api/types';
 
 interface MembrosPorPastoralCardProps {
   resumo?: GeneralSummary;

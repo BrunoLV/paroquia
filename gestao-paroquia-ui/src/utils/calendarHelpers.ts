@@ -1,5 +1,5 @@
 import { alpha } from '@mui/material';
-import theme from '../theme';
+import theme from '@/theme';
 
 /** Compara ano/mês/dia, ignorando hora — usado para agrupar eventos por dia no grid/agenda. */
 export const isSameDay = (d1: Date, d2: Date): boolean => (

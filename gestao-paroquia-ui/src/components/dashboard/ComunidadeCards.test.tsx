@@ -1,7 +1,7 @@
 import React from 'react';
 import {render, screen} from '@testing-library/react';
 import {ThemeProvider} from '@mui/material/styles';
-import theme from '../../theme';
+import theme from '@/theme';
 import AniversariantesCard from './AniversariantesCard';
 import RetencaoPastoraisCard from './RetencaoPastoraisCard';
 

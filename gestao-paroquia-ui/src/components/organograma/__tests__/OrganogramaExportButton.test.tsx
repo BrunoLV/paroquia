@@ -1,7 +1,7 @@
 import React from 'react';
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import '@testing-library/jest-dom';
-import {OrganogramaExportButton} from '../OrganogramaExportButton';
+import {OrganogramaExportButton} from '@/components/organograma/OrganogramaExportButton';
 
 describe('OrganogramaExportButton', () => {
   const defaultProps = {

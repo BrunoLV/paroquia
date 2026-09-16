@@ -1,3 +1,8 @@
+---
+name: sql
+description: "Engenharia SQL e modelagem relacional multi-dialeto (PostgreSQL, MySQL, H2): sargabilidade estrita no WHERE, índices, DDL com COMMENT ON mandatório, prevenção contra injeção e precisão monetária DECIMAL."
+---
+
 # Skill do Agente de IA: Engenharia SQL e Modelagem Relacional (Especialista Multi-Dialeto)
 
 ## 1. Visão Geral e Contexto

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import {
-  MarkEmailRead as LidaIcon,
-  MarkEmailUnread as NovaIcon,
-  Notifications as NotificacaoIcon,
-} from '@mui/icons-material';
+import LidaIcon from '@mui/icons-material/MarkEmailRead';
+import NovaIcon from '@mui/icons-material/MarkEmailUnread';
+import NotificacaoIcon from '@mui/icons-material/Notifications';
 import {
   Card,
   CardContent,

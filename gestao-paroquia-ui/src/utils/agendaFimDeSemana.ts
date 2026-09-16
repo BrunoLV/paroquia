@@ -1,4 +1,4 @@
-import {WeeklyEvent} from '../api/types';
+import {WeeklyEvent} from '@/api/types';
 
 /**
  * Monta uma lista simplificada, em texto puro, dos eventos de sábado e domingo — para colar num

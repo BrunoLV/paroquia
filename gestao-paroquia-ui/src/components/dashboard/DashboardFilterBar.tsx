@@ -1,9 +1,9 @@
 import React from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {MenuItem, Stack, TextField, ToggleButton, ToggleButtonGroup} from '@mui/material';
-import {getOrganizacoes} from '../../api/organizacoes';
-import {Organizacao, PeriodoDashboard} from '../../api/types';
-import {useDashboardFilter} from '../../context/DashboardFilterContext';
+import {getOrganizacoes} from '@/api/organizacoes';
+import {Organizacao, PeriodoDashboard} from '@/api/types';
+import {useDashboardFilter} from '@/context/DashboardFilterContext';
 
 const RECORTES: Array<{value: PeriodoDashboard; label: string}> = [
   {value: 'HOJE', label: 'Hoje'},

@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Card, CardContent, Chip, FormControl, Grid, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Controller, type UseFormReturn } from 'react-hook-form';
-import { AtivoPatrimonial, Local } from '../../api/types';
-import { EventoFormInput } from '../../schemas/eventoSchema';
+import { AtivoPatrimonial, Local } from '@/api/types';
+import { EventoFormInput } from '@/schemas/eventoSchema';
 
 interface EventoLocalCardProps {
   form: UseFormReturn<EventoFormInput>;

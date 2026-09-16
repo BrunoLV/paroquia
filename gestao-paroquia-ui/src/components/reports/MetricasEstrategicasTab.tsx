@@ -17,16 +17,14 @@ import {
   Alert,
   Skeleton,
 } from '@mui/material';
-import {
-  AutoGraph as PredictiveIcon,
-  AssignmentTurnedIn as ProjectIcon,
-  Timer as SlaIcon,
-  VolunteerActivism as SocialIcon,
-  WarningAmber as ConflictIcon,
-  Domain as PropertyIcon,
-} from '@mui/icons-material';
-import { usePainelMetricasEstrategicas } from '../../hooks/useMetricasEstrategicas';
-import ConcorrenciaAlertaBanner from '../ConcorrenciaAlertaBanner';
+import PredictiveIcon from '@mui/icons-material/AutoGraph';
+import ProjectIcon from '@mui/icons-material/AssignmentTurnedIn';
+import SlaIcon from '@mui/icons-material/Timer';
+import SocialIcon from '@mui/icons-material/VolunteerActivism';
+import ConflictIcon from '@mui/icons-material/WarningAmber';
+import PropertyIcon from '@mui/icons-material/Domain';
+import { usePainelMetricasEstrategicas } from '@/hooks/useMetricasEstrategicas';
+import ConcorrenciaAlertaBanner from '@/components/ConcorrenciaAlertaBanner';
 import {
   getAvaliacaoExecutivaLabel,
   getDiagnosticoPastoralLabel,
@@ -34,7 +32,7 @@ import {
   getNivelRiscoLabel,
   getRecomendacaoCaeLabel,
   getStatusSlaLabel,
-} from '../../utils/statusMeta/metricasEstrategicasLabels';
+} from '@/utils/statusMeta/metricasEstrategicasLabels';
 
 export const MetricasEstrategicasTab: React.FC = () => {
   const { data, isLoading, error } = usePainelMetricasEstrategicas();

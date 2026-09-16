@@ -1,10 +1,8 @@
 import {Card, CardContent, Grid, Stack, Typography} from '@mui/material';
-import {
-  Assignment as ProjetoIcon,
-  CalendarMonth as EventoIcon,
-  Groups as PastoralIcon,
-  PendingActions as AprovacaoIcon,
-} from '@mui/icons-material';
+import ProjetoIcon from '@mui/icons-material/Assignment';
+import EventoIcon from '@mui/icons-material/CalendarMonth';
+import PastoralIcon from '@mui/icons-material/Groups';
+import AprovacaoIcon from '@mui/icons-material/PendingActions';
 import type {GeneralSummary} from '@/api/types';
 
 interface PainelResumoPeriodoProps {

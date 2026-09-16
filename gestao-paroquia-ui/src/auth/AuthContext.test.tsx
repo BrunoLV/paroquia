@@ -2,7 +2,7 @@ import {vi} from "vitest";
 import React from 'react';
 import {act, render, screen} from '@testing-library/react';
 import {AuthProvider, useAuth} from './AuthContext';
-import apiClient from '../api/client';
+import apiClient from '@/api/client';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;

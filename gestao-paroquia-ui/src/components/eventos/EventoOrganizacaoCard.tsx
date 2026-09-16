@@ -2,8 +2,8 @@ import React from 'react';
 import { Card, CardContent, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import { Controller, type UseFormReturn } from 'react-hook-form';
-import { Organizacao, Projeto } from '../../api/types';
-import { EventoFormInput } from '../../schemas/eventoSchema';
+import { Organizacao, Projeto } from '@/api/types';
+import { EventoFormInput } from '@/schemas/eventoSchema';
 import EventoApoioSelect from './EventoApoioSelect';
 
 interface EventoOrganizacaoCardProps {

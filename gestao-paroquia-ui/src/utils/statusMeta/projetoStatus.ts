@@ -4,7 +4,7 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { Projeto } from '../../api/types';
+import type { Projeto } from '@/api/types';
 
 export type ProjetoStatus = Projeto['status'];
 

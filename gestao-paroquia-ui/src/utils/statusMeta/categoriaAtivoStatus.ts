@@ -5,7 +5,7 @@ import CheckroomIcon from '@mui/icons-material/Checkroom';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { AtivoCategoria } from '../../api/types';
+import type { AtivoCategoria } from '@/api/types';
 
 export type { AtivoCategoria };
 

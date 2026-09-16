@@ -17,26 +17,24 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import {
-    AccountTree as AccountTreeIcon,
-    Church as ChurchIcon,
-    ExpandLess as ExpandLessIcon,
-    ExpandMore as ExpandMoreIcon,
-    GridView as GridViewIcon,
-    People as PeopleIcon,
-    SupervisorAccount as SupervisorAccountIcon,
-    ZoomIn as ZoomInIcon,
-    ZoomOut as ZoomOutIcon,
-} from '@mui/icons-material';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import ChurchIcon from '@mui/icons-material/Church';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import GridViewIcon from '@mui/icons-material/GridView';
+import PeopleIcon from '@mui/icons-material/People';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import OrganizationChart from '@dabeng/react-orgchart';
 import '@dabeng/react-orgchart/dist/ChartContainer.css';
-import {getOrganograma} from '../api/organizacoes';
-import {OrganogramaNode} from '../api/types';
-import {ExportFormat, useOrganogramaExport} from '../hooks/useOrganogramaExport';
-import {OrganogramaExportButton} from '../components/organograma/OrganogramaExportButton';
-import PageHeader from '../components/PageHeader';
-import ActionButton from '../components/ActionButton';
-import IconActionButton from '../components/IconActionButton';
+import {getOrganograma} from '@/api/organizacoes';
+import {OrganogramaNode} from '@/api/types';
+import {ExportFormat, useOrganogramaExport} from '@/hooks/useOrganogramaExport';
+import {OrganogramaExportButton} from '@/components/organograma/OrganogramaExportButton';
+import PageHeader from '@/components/PageHeader';
+import ActionButton from '@/components/ActionButton';
+import IconActionButton from '@/components/IconActionButton';
 
 const Organograma: React.FC = () => {
   const theme = useTheme();

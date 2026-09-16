@@ -2,8 +2,8 @@ import React from 'react';
 import {Box, Paper, Skeleton, Stack, Typography} from '@mui/material';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import { useNavigate } from 'react-router-dom';
-import StatusIcon from '../StatusIcon';
-import { getCategoriaEventoMeta } from '../../utils/statusMeta/categoriaEventoStatus';
+import StatusIcon from '@/components/StatusIcon';
+import { getCategoriaEventoMeta } from '@/utils/statusMeta/categoriaEventoStatus';
 
 interface Evento {
   id: string;

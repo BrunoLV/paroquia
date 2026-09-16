@@ -1,19 +1,19 @@
 import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '../auth/AuthContext';
-import { isGlobalCreator } from '../auth/permissions';
-import { useNotification } from '../context/NotificationContext';
-import apiClient from '../api/client';
-import { getOrganizacoes } from '../api/organizacoes';
-import { getAtivos } from '../api/ativos';
-import { getAnosParoquiais } from '../api/anosParoquiais';
-import { fetchSolenidadesLiturgicasAtivas } from '../api/solenidades';
-import { AprovacaoResponse, Evento, Local, Organizacao, Projeto } from '../api/types';
+import { useAuth } from '@/auth/AuthContext';
+import { isGlobalCreator } from '@/auth/permissions';
+import { useNotification } from '@/context/NotificationContext';
+import apiClient from '@/api/client';
+import { getOrganizacoes } from '@/api/organizacoes';
+import { getAtivos } from '@/api/ativos';
+import { getAnosParoquiais } from '@/api/anosParoquiais';
+import { fetchSolenidadesLiturgicasAtivas } from '@/api/solenidades';
+import { AprovacaoResponse, Evento, Local, Organizacao, Projeto } from '@/api/types';
 import {
   buildSolemnitiesFromApi,
   getLiturgicalCycleLetter,
-} from '../utils/liturgicalCalendar';
-import { isSameDay } from '../utils/calendarHelpers';
+} from '@/utils/liturgicalCalendar';
+import { isSameDay } from '@/utils/calendarHelpers';
 
 type EventosApiResponse = { content: Evento[] } | Evento[];
 

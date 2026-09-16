@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, Chip, Paper, Stack, Typography} from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
-import {RetencaoPastoral} from '../../api/types';
+import {RetencaoPastoral} from '@/api/types';
 
 interface RetencaoPastoraisCardProps {
   pastorais?: RetencaoPastoral[];

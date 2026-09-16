@@ -4,7 +4,7 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import BuildIcon from '@mui/icons-material/Build';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
 import type { ChipProps, SvgIconProps } from '@mui/material';
-import type { AtivoStatus } from '../../api/types';
+import type { AtivoStatus } from '@/api/types';
 
 export type { AtivoStatus };
 

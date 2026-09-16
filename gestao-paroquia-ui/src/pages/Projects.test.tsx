@@ -3,11 +3,11 @@ import React from 'react';
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import Projects from './Projects';
 import {ThemeProvider} from '@mui/material/styles';
-import theme from '../theme';
+import theme from '@/theme';
 import {MemoryRouter} from 'react-router-dom';
-import apiClient from '../api/client';
-import {AuthProvider} from '../auth/AuthContext';
-import {QueryProvider} from '../api/QueryProvider';
+import apiClient from '@/api/client';
+import {AuthProvider} from '@/auth/AuthContext';
+import {QueryProvider} from '@/api/QueryProvider';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
@@ -321,5 +321,4 @@ describe('Projects Page', () => {
     expect(mockShowSuccess).toHaveBeenCalledWith('Projeto concluído com sucesso!');
   });
 });
-
 

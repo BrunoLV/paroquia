@@ -21,31 +21,29 @@ import {
     Tabs,
     Tab,
 } from '@mui/material';
-import MetricasEstrategicasTab from '../components/reports/MetricasEstrategicasTab';
-import {
-    Assessment as AssessmentIcon,
-    Assignment as ProjectIcon,
-    AutoGraph as AutoGraphIcon,
-    Event as EventIcon,
-    FilterList as FilterIcon,
-    FormatListBulleted as ListIcon,
-    PendingActions as PendingIcon,
-    Warning as WarningIcon,
-} from '@mui/icons-material';
+import MetricasEstrategicasTab from '@/components/reports/MetricasEstrategicasTab';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import ProjectIcon from '@mui/icons-material/Assignment';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import EventIcon from '@mui/icons-material/Event';
+import FilterIcon from '@mui/icons-material/FilterList';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import PendingIcon from '@mui/icons-material/PendingActions';
+import WarningIcon from '@mui/icons-material/Warning';
 import {useQuery} from '@tanstack/react-query';
-import {getDashboardMetrics} from '../api/dashboard';
-import {getOrganizacoes} from '../api/organizacoes';
-import apiClient from '../api/client';
-import {DashboardMetrics, Organizacao, WeeklyEvent} from '../api/types';
-import ReportFilters from '../components/reports/ReportFilters';
-import ReportExportButtons from '../components/reports/ReportExportButtons';
-import EventDistributionPieChart from '../components/dashboard/EventDistributionPieChart';
-import EventVolumeBarChart from '../components/reports/EventVolumeBarChart';
-import { usePainelMetricasEstrategicas } from '../hooks/useMetricasEstrategicas';
-import {useNotification} from '../context/NotificationContext';
-import PageHeader from '../components/PageHeader';
-import StatusIcon from '../components/StatusIcon';
-import { getProjetoStatusMeta, type ProjetoStatus } from '../utils/statusMeta/projetoStatus';
+import {getDashboardMetrics} from '@/api/dashboard';
+import {getOrganizacoes} from '@/api/organizacoes';
+import apiClient from '@/api/client';
+import {DashboardMetrics, Organizacao, WeeklyEvent} from '@/api/types';
+import ReportFilters from '@/components/reports/ReportFilters';
+import ReportExportButtons from '@/components/reports/ReportExportButtons';
+import EventDistributionPieChart from '@/components/dashboard/EventDistributionPieChart';
+import EventVolumeBarChart from '@/components/reports/EventVolumeBarChart';
+import { usePainelMetricasEstrategicas } from '@/hooks/useMetricasEstrategicas';
+import {useNotification} from '@/context/NotificationContext';
+import PageHeader from '@/components/PageHeader';
+import StatusIcon from '@/components/StatusIcon';
+import { getProjetoStatusMeta, type ProjetoStatus } from '@/utils/statusMeta/projetoStatus';
 
 const Reports: React.FC = () => {
   const { showError, showSuccess } = useNotification();

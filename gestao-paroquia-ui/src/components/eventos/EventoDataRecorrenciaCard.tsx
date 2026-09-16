@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Card, CardContent, Collapse, FormControlLabel, Grid, Stack, Switch, TextField, Typography } from '@mui/material';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import { Controller, type UseFormReturn } from 'react-hook-form';
-import RecurrenceForm from '../RecurrenceForm';
-import { EventoFormInput } from '../../schemas/eventoSchema';
+import RecurrenceForm from '@/components/RecurrenceForm';
+import { EventoFormInput } from '@/schemas/eventoSchema';
 
 interface EventoDataRecorrenciaCardProps {
   form: UseFormReturn<EventoFormInput>;

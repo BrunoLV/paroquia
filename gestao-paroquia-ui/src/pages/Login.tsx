@@ -7,11 +7,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '@/auth/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useNotification } from '../context/NotificationContext';
-import { extractErrorMessage } from '../utils/errorUtils';
-import ActionButton from '../components/ActionButton';
+import { useNotification } from '@/context/NotificationContext';
+import { extractErrorMessage } from '@/utils/errorUtils';
+import ActionButton from '@/components/ActionButton';
 
 import LoginIcon from '@mui/icons-material/Login';
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import {Grid, Typography} from '@mui/material';
-import AniversariantesCard from '../AniversariantesCard';
-import RetencaoPastoraisCard from '../RetencaoPastoraisCard';
-import {Aniversariante, DashboardComunidade, PeriodoDashboard} from '../../../api/types';
+import AniversariantesCard from '@/components/dashboard/AniversariantesCard';
+import RetencaoPastoraisCard from '@/components/dashboard/RetencaoPastoraisCard';
+import {Aniversariante, DashboardComunidade, PeriodoDashboard} from '@/api/types';
 
 interface SecaoComunidadeProps {
   aniversariantes?: Aniversariante[];

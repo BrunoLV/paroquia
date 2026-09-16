@@ -1,6 +1,6 @@
 import React from 'react';
 import {Alert, AlertTitle, Box, Typography} from '@mui/material';
-import {ChoqueHorario} from '../../api/types';
+import {ChoqueHorario} from '@/api/types';
 
 interface ChoqueHorarioAlertProps {
   choques?: ChoqueHorario[];

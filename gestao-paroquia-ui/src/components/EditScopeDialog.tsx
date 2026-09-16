@@ -11,12 +11,10 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
-import {
-    Close as CloseIcon,
-    Event as EventIcon,
-    EventRepeat as EventRepeatIcon,
-    Update as UpdateIcon,
-} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import EventIcon from '@mui/icons-material/Event';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
+import UpdateIcon from '@mui/icons-material/Update';
 import ActionButton from './ActionButton';
 
 export type EditScope = 'ONLY_THIS' | 'THIS_AND_FOLLOWING' | 'EDIT_ALL';

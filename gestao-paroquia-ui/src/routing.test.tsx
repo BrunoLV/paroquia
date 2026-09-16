@@ -3,9 +3,9 @@ import React from 'react';
 import {act, render, screen} from '@testing-library/react';
 import {MemoryRouter} from 'react-router-dom';
 import AppRoutes from './AppRoutes';
-import apiClient from './api/client';
-import {AuthProvider} from './auth/AuthContext';
-import {QueryProvider} from './api/QueryProvider';
+import apiClient from '@/api/client';
+import {AuthProvider} from '@/auth/AuthContext';
+import {QueryProvider} from '@/api/QueryProvider';
 
 vi.mock('./api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
@@ -105,4 +105,3 @@ describe('Routing', () => {
     expect(screen.queryByTestId('settings-page')).not.toBeInTheDocument();
   });
 });
-

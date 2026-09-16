@@ -2,12 +2,12 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Reports from './Reports';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../theme';
+import theme from '@/theme';
 import { MemoryRouter } from 'react-router-dom';
-import apiClient from '../api/client';
-import { AuthProvider } from '../auth/AuthContext';
-import { QueryProvider } from '../api/QueryProvider';
-import * as exportUtils from '../utils/exportUtils';
+import apiClient from '@/api/client';
+import { AuthProvider } from '@/auth/AuthContext';
+import { QueryProvider } from '@/api/QueryProvider';
+import * as exportUtils from '@/utils/exportUtils';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 vi.mock('../api/client');

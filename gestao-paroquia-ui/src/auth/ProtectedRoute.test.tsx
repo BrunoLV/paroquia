@@ -4,7 +4,7 @@ import {act, render, screen} from '@testing-library/react';
 import {MemoryRouter, Route, Routes} from 'react-router-dom';
 import {AuthProvider} from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
-import apiClient from '../api/client';
+import apiClient from '@/api/client';
 
 vi.mock('../api/client');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;

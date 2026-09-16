@@ -1,11 +1,11 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
-import apiClient from '../api/client';
-import {getOrganizacoes} from '../api/organizacoes';
-import {useAuth} from '../auth/AuthContext';
-import {useNotification} from '../context/NotificationContext';
-import {extractErrorMessage} from '../utils/errorUtils';
-import {Evento, Local, Organizacao, Projeto} from '../api/types';
+import apiClient from '@/api/client';
+import {getOrganizacoes} from '@/api/organizacoes';
+import {useAuth} from '@/auth/AuthContext';
+import {useNotification} from '@/context/NotificationContext';
+import {extractErrorMessage} from '@/utils/errorUtils';
+import {Evento, Local, Organizacao, Projeto} from '@/api/types';
 
 const isAdminUser = (roles?: string[]): boolean =>
   !!roles && (roles.includes('ADMIN') || roles.includes('ROLE_ADMIN'));

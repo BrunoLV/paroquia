@@ -1,15 +1,13 @@
 import React from 'react';
 import {alpha, Box, Chip, Grid, LinearProgress, Paper, Stack, Tooltip, Typography} from '@mui/material';
-import {
-  AccessTime as TimeIcon,
-  CalendarToday as EventIcon,
-  Flag as FlagIcon,
-  HourglassEmpty as PendingIcon,
-  Warning as WarningIcon,
-} from '@mui/icons-material';
-import {ProjectDetail} from '../../api/types';
-import StatusIcon from '../StatusIcon';
-import {getProjetoStatusMeta, type ProjetoStatus} from '../../utils/statusMeta/projetoStatus';
+import TimeIcon from '@mui/icons-material/AccessTime';
+import EventIcon from '@mui/icons-material/CalendarToday';
+import FlagIcon from '@mui/icons-material/Flag';
+import PendingIcon from '@mui/icons-material/HourglassEmpty';
+import WarningIcon from '@mui/icons-material/Warning';
+import {ProjectDetail} from '@/api/types';
+import StatusIcon from '@/components/StatusIcon';
+import {getProjetoStatusMeta, type ProjetoStatus} from '@/utils/statusMeta/projetoStatus';
 
 interface ActiveProjectsProgressListProps {
   projects: ProjectDetail[];

@@ -1,4 +1,4 @@
-import { RecurrenceRule } from '../components/RecurrenceForm';
+import { RecurrenceRule } from '@/components/RecurrenceForm';
 
 export const formatLocalDate = (d: Date): string => {
   const year = d.getFullYear();
