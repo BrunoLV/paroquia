@@ -910,8 +910,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/vite.config.ts": {
-    "mtime": 1788660641.88225,
-    "ast_hash": "fb0ef00008a156401cac53b34a228b01",
+    "mtime": 1789608346.885935,
+    "ast_hash": "099244568971949c5fb3a8da5552b904",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/build.gradle.kts": {
@@ -1765,8 +1765,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/security/SecurityConfig.java": {
-    "mtime": 1789590120.4871857,
-    "ast_hash": "144212c386346f9cdbc997b0a3fc8bc4",
+    "mtime": 1789608305.316007,
+    "ast_hash": "62d5187a17c10276e180e54b9584c09f",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/time/TimezoneConfig.java": {
@@ -3460,8 +3460,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/contract/SecurityAccessMatrixContractTest.java": {
-    "mtime": 1789579207.7169013,
-    "ast_hash": "bae04cdb7645d41713a20ab7fe75306a",
+    "mtime": 1789608312.5209944,
+    "ast_hash": "22d16f88b9054393bc96598e4df720bf",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/domain/service/PrioridadeAgendaValidatorServiceTest.java": {
@@ -4485,8 +4485,8 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1789607444.5022037,
-    "ast_hash": "f899c7c6a2c2d51e0345baca561b361b",
+    "mtime": 1789608338.0059505,
+    "ast_hash": "6b7f7d67cb3dea89cf0387137fb37092",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/.gemini.md": {
@@ -4550,13 +4550,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/application.yml": {
-    "mtime": 1789579643.6454015,
-    "ast_hash": "55357b5dc6906af57d9590cd928ee436",
+    "mtime": 1789608301.0370142,
+    "ast_hash": "986201f566ee1c9ab178a234b0f5f766",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/resources/application.yml": {
-    "mtime": 1789579677.7283623,
-    "ast_hash": "bdd13a2327487a690b5f77c77d9f89c8",
+    "mtime": 1789608453.1227517,
+    "ast_hash": "bf760b5f1eb6d5124ef04dfc0787c823",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/logo-paroquia.png": {
@@ -7030,13 +7030,13 @@
     "semantic_hash": ""
   },
   "docker-env.sh": {
-    "mtime": 1789588461.7730522,
-    "ast_hash": "7f751212f38be3cfcd5944cfb3e81ae4",
+    "mtime": 1789608351.3419273,
+    "ast_hash": "a6bddf37338c35d6f49bfe890b6572b6",
     "semantic_hash": ""
   },
   "manage.sh": {
-    "mtime": 1789588443.7330737,
-    "ast_hash": "bbb9686078f5e9cc32602fb6ed621908",
+    "mtime": 1789608356.6809182,
+    "ast_hash": "2b20db6397edb178c620170fc3d0e0bf",
     "semantic_hash": ""
   },
   "DOCKER.md": {
@@ -7047,6 +7047,11 @@
   "docs/guide/docker.md": {
     "mtime": 1789607497.3715208,
     "ast_hash": "d7a310897473ca6de051098aba0b818b",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/support/infrastructure/config/WebMvcConfig.java": {
+    "mtime": 1789608309.269,
+    "ast_hash": "ca9f5a67886ed4be497f7eb4c00416f6",
     "semantic_hash": ""
   }
 }

@@ -70,9 +70,20 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationOutcomeProcessor)
                         .accessDeniedHandler(authenticationOutcomeProcessor))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/actuator/info",
-                                "/actuator/prometheus", "/actuator/metrics", "/actuator/metrics/**", "/error").permitAll()
-                        .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger", "/swagger-ui", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/actuator/info",
+                                "/actuator/prometheus",
+                                "/actuator/metrics",
+                                "/actuator/metrics/**",
+                                "/error").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger",
+                                "/swagger-ui",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/organizacoes").permitAll()
                         .anyRequest().authenticated())
