@@ -1,7 +1,25 @@
+# ==============================================================================
+# docker-compose.yml - Arquitetura de Microsserviços e Infraestrutura da Paróquia
+# ==============================================================================
+# Orquestra Banco de Dados (PostgreSQL 16), Builder, API Spring Boot, Frontend Vite,
+# Ferramentas de Observabilidade (Prometheus + Grafana) e pgAdmin.
+# ==============================================================================
+
+networks:
+  paroquia-net:
+    name: paroquia-net
+    driver: bridge
+
 services:
+  # ----------------------------------------------------------------------------
+  # 1. Banco de Dados Relacional - PostgreSQL 16 Alpine
+  # ----------------------------------------------------------------------------
   db:
     image: postgres:16-alpine
     container_name: gestao-db
+    restart: unless-stopped
+    networks:
+      - paroquia-net
     environment:
       POSTGRES_DB: calendario
       POSTGRES_USER: postgres
@@ -10,47 +28,70 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./gestao-paroquia/docker/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql
+      - ./gestao-paroquia/docker/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql:ro
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d calendario" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d calendario"]
       interval: 10s
       timeout: 5s
       retries: 5
-    mem_limit: 224M
-    memswap_limit: 320M
+    mem_limit: 256M
     cpus: 0.5
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 224M
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 2. Builder do Backend - Compilação e Empacotamento de JAR
+  # ----------------------------------------------------------------------------
   builder:
     build:
       context: ./gestao-paroquia
       dockerfile: ../Dockerfile.builder
     container_name: gestao-builder
+    networks:
+      - paroquia-net
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+      - TESTCONTAINERS_RYUK_DISABLED=false
+      - GRADLE_OPTS=-Dorg.gradle.workers.max=3
     volumes:
       - shared_volume:/shared
       - ./gestao-paroquia:/workspace
       - gradle_cache:/root/.gradle
-    mem_limit: 1024M
-    memswap_limit: 1280M
-    cpus: 2.0
+    mem_limit: 4096M
+    cpus: 3.0
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 1024M
+          cpus: '3.0'
+          memory: 4096M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 3. Backend REST API - Spring Boot 3 / Java 25
+  # ----------------------------------------------------------------------------
   api:
     build:
-      context: ./gestao-paroquia
-      dockerfile: ../Dockerfile.api
+      context: .
+      dockerfile: Dockerfile.api
     container_name: gestao-api
+    restart: unless-stopped
+    networks:
+      - paroquia-net
     ports:
       - "8080:8080"
     depends_on:
@@ -65,8 +106,8 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=password
       - PORT=8080
-      - APP_CORS_ALLOWED_ORIGINS=http://localhost:3000
-      - JAVA_TOOL_OPTIONS=-Xmx350m -Xms128m -XX:+UseSerialGC
+      - APP_CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173
+      - JAVA_TOOL_OPTIONS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseSerialGC
       - APP_CRYPTO_KEY=default-dev-fallback-key-should-be-changed-in-prod
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
@@ -75,39 +116,58 @@ services:
       retries: 10
       start_period: 40s
     mem_limit: 512M
-    memswap_limit: 640M
     cpus: 1.0
     deploy:
       resources:
         limits:
           cpus: '1.0'
           memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 4. Seeder de Banco de Dados - Carga de dados iniciais para ambiente local
+  # ----------------------------------------------------------------------------
   db-seeder:
     image: postgres:16-alpine
     container_name: gestao-db-seeder
+    networks:
+      - paroquia-net
     environment:
       - PGPASSWORD=password
     depends_on:
       api:
         condition: service_healthy
     volumes:
-      - ./gestao-paroquia/docker/seed-data.sql:/seed-data.sql
+      - ./gestao-paroquia/docker/seed-data.sql:/seed-data.sql:ro
     command: psql -h db -U postgres -d calendario -f /seed-data.sql
     mem_limit: 128M
-    memswap_limit: 128M
     cpus: 0.25
     deploy:
       resources:
         limits:
           cpus: '0.25'
           memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 5. Frontend - React + Vite SPA
+  # ----------------------------------------------------------------------------
   ui:
     build:
       context: ./gestao-paroquia-ui
       dockerfile: ../Dockerfile.ui
     container_name: gestao-ui
+    restart: unless-stopped
+    networks:
+      - paroquia-net
     working_dir: /app
     volumes:
       - ./gestao-paroquia-ui:/app
@@ -121,35 +181,128 @@ services:
     depends_on:
       api:
         condition: service_started
-    mem_limit: 1152M
-    memswap_limit: 1408M
+    mem_limit: 1024M
     cpus: 1.0
     deploy:
       resources:
         limits:
           cpus: '1.0'
-          memory: 1152M
+          memory: 1024M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 6. pgAdmin 4 - Gerenciador Web do PostgreSQL
+  # ----------------------------------------------------------------------------
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.1
     container_name: gestao-pgadmin
+    restart: unless-stopped
+    networks:
+      - paroquia-net
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_EMAIL: admin@paroquia.local
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
     depends_on:
       - db
-    mem_limit: 128M
-    memswap_limit: 160M
-    cpus: 0.25
+    mem_limit: 256M
+    cpus: 0.5
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: 128M
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 7. Prometheus - Coleta e Armazenamento de Métricas (v3 LTS)
+  # ----------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    container_name: gestao-prometheus
+    restart: unless-stopped
+    networks:
+      - paroquia-net
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      api:
+        condition: service_started
+    mem_limit: 256M
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------------------------
+  # 8. Grafana - Visualização e Dashboards de Observabilidade (v11)
+  # ----------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: gestao-grafana
+    restart: unless-stopped
+    networks:
+      - paroquia-net
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    mem_limit: 256M
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ==============================================================================
+# Volumes Persistentes
+# ==============================================================================
 volumes:
   postgres_data:
+    name: paroquia_postgres_data
   shared_volume:
+    name: paroquia_shared_volume
   gradle_cache:
+    name: paroquia_gradle_cache
+  prometheus_data:
+    name: paroquia_prometheus_data
+  grafana_data:
+    name: paroquia_grafana_data

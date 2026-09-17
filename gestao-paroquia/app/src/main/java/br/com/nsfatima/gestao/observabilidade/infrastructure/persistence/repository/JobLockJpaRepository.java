@@ -39,29 +39,28 @@ public interface JobLockJpaRepository extends JpaRepository<JobLockEntity, Strin
     int updateLock(@Param("name") String name, @Param("until") Instant until, @Param("now") Instant now);
 
     /**
-     * Insere a primeira ocorrência do lock de um job. Deve ser chamado apenas quando
-     * {@link #updateLock} retornar 0, indicando que a linha ainda não existe; uma tentativa de
-     * inserir um {@code name} já existente falha por violação de chave primária, sinalizando
-     * que outra instância detém o lock.
+     * Insere a primeira ocorrência do lock de um job de forma idempotente via {@code ON CONFLICT DO NOTHING}.
+     * Retorna 1 se o lock foi criado e adquirido, ou 0 se já existia.
      *
      * @param name identificador único do job
      * @param until instante até quando o lock deve ser considerado válido
      * @param now instante em que o lock foi adquirido
+     * @return 1 se inserido com sucesso, 0 se já existia conflito
      */
     @Transactional
     @Modifying
     @Query(value = """
             INSERT INTO calendario.job_locks (name, locked_until, locked_at)
             VALUES (:name, :until, :now)
+            ON CONFLICT (name) DO NOTHING
             """, nativeQuery = true)
-    void insertLock(@Param("name") String name, @Param("until") Instant until, @Param("now") Instant now);
+    int insertLock(@Param("name") String name, @Param("until") Instant until, @Param("now") Instant now);
 
     /**
      * Tenta adquirir o lock de um job, combinando renovação e primeira inserção em uma única
      * operação: renova se o lock existir e estiver expirado; caso contrário, tenta criá-lo. Se
-     * a inserção falhar (linha já existe e não estava expirada), o lock é considerado detido
-     * por outra instância e a aquisição falha silenciosamente, retornando {@code false} para
-     * que o chamador simplesmente pule a execução do job nesta instância.
+     * a inserção retornar 0 (já existia e não estava expirada), o lock é considerado detido
+     * por outra instância e a aquisição retorna {@code false}.
      *
      * @param name identificador único do job
      * @param until instante até quando o lock, se adquirido, será considerado válido
@@ -74,13 +73,7 @@ public interface JobLockJpaRepository extends JpaRepository<JobLockEntity, Strin
         if (updateLock(name, until, now) > 0) {
             return true;
         }
-        try {
-            insertLock(name, until, now);
-            return true;
-        } catch (Exception e) {
-            // Already exists and was not updated (still locked)
-            return false;
-        }
+        return insertLock(name, until, now) > 0;
     }
 
     /**

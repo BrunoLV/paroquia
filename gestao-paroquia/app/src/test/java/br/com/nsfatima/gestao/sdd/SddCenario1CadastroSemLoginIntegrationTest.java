@@ -9,8 +9,11 @@ import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +45,24 @@ class SddCenario1CadastroSemLoginIntegrationTest {
     @Autowired
     private GrupoParoquialJpaRepository grupoParoquialRepository;
 
+    @Autowired
+    private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
+
     @Test
     @DisplayName("Cenário 1 BDD: Fiel é cadastrado e vinculado a GrupoParoquial sem criação de conta de usuário (IAM)")
     void deveCadastrarFielEAdicionarComoMembroSemCriarUsuario() {
         long initialUserCount = usuarioJpaRepository.count();
+
+        // Garante que a unidade padrão do construtor exista no banco
+        UUID unidadePadraoId = UUID.fromString("00000000-0000-0000-0000-000000000100");
+        if (!unidadeTerritorialRepository.existsById(unidadePadraoId)) {
+            UnidadeTerritorialEntity matriz = new UnidadeTerritorialEntity();
+            matriz.setId(unidadePadraoId);
+            matriz.setNome("Matriz Central");
+            matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
+            matriz.setAtivo(true);
+            unidadeTerritorialRepository.saveAndFlush(matriz);
+        }
 
         // 1. Cadastra Fiel sem conta de usuário
         CreateFielRequest createRequest = new CreateFielRequest(

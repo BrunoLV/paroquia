@@ -19,10 +19,10 @@ O repositório é organizado em módulos independentes, cada um com suas própri
 
 - **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 4**, servidor web **Jetty 12**, **Log4j2**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
 - **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
-- **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4 e seeder automático de dados. Variáveis de ambiente em [`.env.example`](./.env.example).
-- **[Documentação (`docs/guide/`)](./docs/guide):** Portal de documentação técnica via Docsify com suporte a Mermaid — arquitetura, diagramas conceituais, regras de negócio, padrões e observabilidade.
+- **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4, Prometheus, Grafana e seeder automático de dados. Veja o guia completo em [**`DOCKER.md`**](./DOCKER.md).
+- **[Documentação (`docs/guide/`)](./docs/guide):** Portal de documentação técnica via Docsify com suporte a Mermaid — arquitetura, diagramas conceituais, regras de negócio, padrões, observabilidade e infraestrutura Docker.
 
-- **Scripts utilitários (`run.sh`, `restart-docker.sh`):** Atalhos para o ciclo de vida completo do ambiente (subir, testar, checar qualidade, buildar e reiniciar os contêineres).
+- **Scripts utilitários (`manage.sh`, `docker-env.sh`):** Interface de linha de comando e gerenciamento do ciclo de vida do ambiente (subir serviços, testar, checar qualidade, compilar e reiniciar os contêineres).
 
 ---
 
@@ -65,44 +65,54 @@ Antes de subir o ambiente, copie o arquivo de variáveis de ambiente de exemplo 
 cp .env.example .env
 ```
 
-A forma recomendada de executar a aplicação completa é via **Docker Compose**, usando o script utilitário `run.sh` (que também expõe atalhos para testes e build):
+A forma recomendada de executar e desenvolver é usando a CLI unificada **`manage.sh`**:
 
 ```bash
-# Subir todos os serviços (PostgreSQL, Backend API, Frontend UI, pgAdmin e Seeder)
-./run.sh dev
-# equivalente a: docker compose up -d
+# Iniciar infraestrutura Docker (DB, Prometheus, Grafana) e rodar API e UI localmente
+./manage.sh dev
 
 # Executar as suítes de teste (backend Gradle + frontend Vitest)
-./run.sh test
+./manage.sh test
 
-# Executar as travas de qualidade (Checkstyle, PMD, SpotBugs) e os testes
-./run.sh check
+# Executar as travas de qualidade (Checkstyle, PMD, SpotBugs, ArchUnit) e testes
+./manage.sh check
 
 # Gerar os artefatos de build de produção (backend + frontend)
-./run.sh build
+./manage.sh build
 
-# Reiniciar/recompor os contêineres Docker (aceita -c/--clean, --no-cache, -r/--no-build)
-./run.sh docker [opções]
+# Parar serviços locais e contêineres
+./manage.sh stop
 ```
 
-Alternativamente, o ambiente Docker pode ser controlado diretamente:
+Para controle direto do ciclo de vida dos contêineres Docker, utilize **`docker-env.sh`**:
 
 ```bash
-docker compose up -d
-# ou, com opções de limpeza/rebuild:
-./restart-docker.sh --help
+# Subir todo o ecossistema Docker Compose em background
+./docker-env.sh up
+
+# Subir forçando rebuild sem cache
+./docker-env.sh up --no-cache
+
+# Reiniciar ambiente com limpeza completa de volumes
+./docker-env.sh restart --clean
+
+# Acompanhar logs ou verificar status
+./docker-env.sh status
+./docker-env.sh logs -f -s api
 ```
 
 ### 🌐 Serviços e Ambientes Disponíveis
 
 | Serviço | URL / Endereço | Credenciais / Notas |
 | :--- | :--- | :--- |
-| **Frontend Web** | [http://localhost:3000](http://localhost:3000) | Interface administrativa em React (Vite) |
-| **Backend REST API** | [http://localhost:8080](http://localhost:8080) | API Spring Boot 4 + Jetty 12 + Log4j2 |
-| **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Documentação interativa OpenAPI 3 |
-| **Portal de Documentação (Docsify)** | [`docs/guide/`](./docs/guide) | Guia arquitetural vivo com diagramas Mermaid (`npx docsify-cli serve docs/guide`) |
-| **pgAdmin 4** | [http://localhost:5050](http://localhost:5050) | Email: `admin@admin.com` \| Senha: `admin` |
+| **Frontend Web** | [http://localhost:3000](http://localhost:3000) (ou `:5173`) | `admin` \| Senha: `senha123` |
+| **Backend REST API** | [http://localhost:8080/api](http://localhost:8080/api) | API Spring Boot 4 + Jetty 12 + Log4j2 |
+| **Swagger UI** | [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) | Documentação interativa OpenAPI 3 |
+| **Prometheus** | [http://localhost:9090](http://localhost:9090) | Coleta e armazenamento de métricas do sistema |
+| **Grafana** | [http://localhost:3001](http://localhost:3001) | Dashboards em tempo real (`admin` / `admin`) |
+| **pgAdmin 4** | [http://localhost:5050](http://localhost:5050) | `admin@paroquia.local` \| Senha: `admin` |
 | **PostgreSQL DB** | `localhost:5432` | DB: `calendario` \| User: `postgres` \| Pass: `password` |
+| **Portal de Documentação (Docsify)** | [`docs/guide/`](./docs/guide) | Guia arquitetural vivo (`npx docsify-cli serve docs/guide`) |
 
 Além desses serviços expostos, o Docker Compose também orquestra dois serviços de apoio sem porta publicada: **`builder`** (compila o backend antes de subir a API) e **`db-seeder`** (popula o banco com dados de exemplo após o healthcheck da API).
 
@@ -123,7 +133,7 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 ## 🛡️ Governança, Qualidade e Conformidade (LGPD)
 
 - **Engenharia e Padrões de Codificação:** Consulte [`AGENTS.md`](./AGENTS.md) e [`gestao-paroquia/AGENTS.md`](./gestao-paroquia/AGENTS.md) para diretrizes de desenvolvimento, TDD e linters.
-- **Travas de Qualidade (Quality Gates):** Todo código de backend passa por Checkstyle, PMD, SpotBugs e JaCoCo antes de ser aceito; o frontend passa por `tsc` e pela suíte Vitest. Rode tudo de uma vez com `./run.sh check`.
+- **Travas de Qualidade (Quality Gates):** Todo código de backend passa por Checkstyle, PMD, SpotBugs e JaCoCo antes de ser aceito; o frontend passa por `tsc` e pela suíte Vitest. Rode tudo de uma vez com `./manage.sh check`.
 - **Auditoria e Rastreabilidade:** O domínio `governanca` registra logs de auditoria estruturados para operações sensíveis, com histórico consultável.
 - **Privacidade e Proteção de Dados (LGPD):** Consulte o guia de observabilidade em [`docs/guide/logging-metricas.md`](./docs/guide/logging-metricas.md) e a skill canônica [`.agents/skills/lgpd-privacy-by-design/SKILL.md`](./.agents/skills/lgpd-privacy-by-design/SKILL.md) antes de criar ou alterar entidades, DTOs ou logs que envolvam dados pessoais.
 
@@ -140,6 +150,7 @@ Toda a documentação técnica, conceitual e de arquitetura do monorepo está un
 - [🔄 **Diagramas de Sequência**](./docs/guide/fluxos-sequencia.md): Fluxos temporais de agendamento de eventos, alocação de ativos e homologação do CPC.
 - [⚙️ **Diagramas de Estados**](./docs/guide/estados.md): Máquinas de estado finito de eventos, aprovações, ativos patrimoniais e atas.
 - [📊 **Logging, LGPD & Métricas**](./docs/guide/logging-metricas.md): Log4j2 assíncrono (LMAX Disruptor), MDC, PII Zero e métricas Prometheus/Actuator.
+- [🐳 **Infraestrutura Docker**](./docs/guide/docker.md): Topologia de contêineres, volumes, segurança e scripts de ciclo de vida.
 
 Para executar o portal localmente:
 ```bash

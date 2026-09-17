@@ -169,6 +169,7 @@ public class CancelarEventoUseCase {
 
 
         metricsPublisher.publishAdministrativeRework(false, true, false);
+        metricsPublisher.recordDelecao("EVENTO", "DIRETA");
         auditPublisher.publish(actor, "cancelar", saved.getId().toString(), auditResult, Map.of(
                 "eventoId", saved.getId(),
                 "grupoParoquialId", saved.getGrupoParoquialResponsavelId(),

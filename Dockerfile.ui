@@ -1,16 +1,28 @@
-FROM node:24-alpine
+FROM node:22-alpine
+
+LABEL org.opencontainers.image.title="Paróquia UI" \
+      org.opencontainers.image.description="Frontend React + TypeScript + Vite para Gestão Paroquial" \
+      org.opencontainers.image.source="https://github.com/brunoluizviana/paroquia"
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json ./
+# Assegura que o diretório pertença ao usuário node
+RUN chown -R node:node /app
 
-# Install dependencies
-RUN npm install
+# Copia manifestos de dependências
+COPY --chown=node:node package.json package-lock.json ./
 
-# Copy application source
-COPY . .
+# Instala dependências de forma limpa e otimizada
+RUN npm ci --prefer-offline
+
+# Copia o código fonte com permissões de usuário
+COPY --chown=node:node . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+ENV PORT=3000 \
+    HOST=0.0.0.0
+
+USER node
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]

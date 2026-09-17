@@ -5,3 +5,4 @@
 - [🔄 Diagramas de Sequência](fluxos-sequencia.md)
 - [⚙️ Diagramas de Estados](estados.md)
 - [📊 Logging & Métricas](logging-metricas.md)
+- [🐳 Infraestrutura Docker](docker.md)

@@ -36,10 +36,10 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
             where a.grupoParoquialId = :grupoParoquialId
               and a.ocorridoEmUtc >= :inicioUtc
               and a.ocorridoEmUtc < :fimUtc
-              and (:ator is null or a.ator = :ator)
-              and (:acao is null or lower(a.acao) = lower(:acao))
-              and (:resultado is null or lower(a.resultado) = lower(:resultado))
-              and (:correlationId is null or a.correlationId = :correlationId)
+              and (cast(:ator as string) is null or a.ator = :ator)
+              and (cast(:acao as string) is null or lower(a.acao) = lower(cast(:acao as string)))
+              and (cast(:resultado as string) is null or lower(a.resultado) = lower(cast(:resultado as string)))
+              and (cast(:correlationId as string) is null or a.correlationId = :correlationId)
             order by a.ocorridoEmUtc asc, a.id asc
             """)
     List<AuditoriaOperacaoEntity> findForTrail(

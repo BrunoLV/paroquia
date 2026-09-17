@@ -28,6 +28,36 @@ public class FakeCadastroEventoMetricsPublisher extends CadastroEventoMetricsPub
         calls.add(new MetricCall("aprovacao_execution_latency", List.of(tipo, latency)));
     }
 
+    @Override
+    public void publishAprovacaoDecisionLatency(String tipo, String status, Duration latency) {
+        calls.add(new MetricCall("aprovacao_decision_latency", List.of(tipo, status, latency)));
+    }
+
+    @Override
+    public void publishAprovacaoTotalLatency(String tipo, Duration latency) {
+        calls.add(new MetricCall("aprovacao_total_latency", List.of(tipo, latency)));
+    }
+
+    @Override
+    public void recordAprovacao(String tipo) {
+        calls.add(new MetricCall("record_aprovacao", List.of(tipo)));
+    }
+
+    @Override
+    public void recordRejeicao(String tipo) {
+        calls.add(new MetricCall("record_rejeicao", List.of(tipo)));
+    }
+
+    @Override
+    public void recordDelecao(String recurso, String origem) {
+        calls.add(new MetricCall("record_delecao", List.of(recurso, origem)));
+    }
+
+    @Override
+    public void recordEdicao(String recurso, String origem) {
+        calls.add(new MetricCall("record_edicao", List.of(recurso, origem)));
+    }
+
     public List<MetricCall> getCalls() {
         return List.copyOf(calls);
     }

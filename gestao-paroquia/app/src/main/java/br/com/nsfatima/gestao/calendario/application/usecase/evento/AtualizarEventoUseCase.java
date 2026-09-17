@@ -367,6 +367,12 @@ public class AtualizarEventoUseCase {
         if (scheduleChanged || cancellation || orgChanged) {
             metricsPublisher.publishAdministrativeRework(scheduleChanged, cancellation, orgChanged);
         }
+
+        if (cancellation) {
+            metricsPublisher.recordDelecao("EVENTO", "DIRETA");
+        } else {
+            metricsPublisher.recordEdicao("EVENTO", "DIRETA");
+        }
     }
 
     private void publishAudit(EventoEntity saved,

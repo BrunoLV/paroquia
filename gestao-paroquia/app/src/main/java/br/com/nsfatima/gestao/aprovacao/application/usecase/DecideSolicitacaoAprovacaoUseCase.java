@@ -121,8 +121,15 @@ public class DecideSolicitacaoAprovacaoUseCase {
             auditPublisher.publishAprovacaoDecision(actorContext.actor(), entity, "reprovado", metadata);
         }
         if (metricsPublisher != null) {
-            metricsPublisher.publishAprovacaoFlow(
-                    aprovacao.getTipoSolicitacao() == null ? "UNKNOWN" : aprovacao.getTipoSolicitacao(), "REJECTED");
+            String tipoNome = aprovacao.getTipoSolicitacao() == null ? "UNKNOWN" : aprovacao.getTipoSolicitacao();
+            metricsPublisher.publishAprovacaoFlow(tipoNome, "REJECTED");
+            metricsPublisher.recordRejeicao(tipoNome);
+            if (aprovacao.getCriadoEmUtc() != null && aprovacao.getDecididoEmUtc() != null) {
+                metricsPublisher.publishAprovacaoDecisionLatency(
+                        tipoNome,
+                        AprovacaoStatus.REPROVADA.name(),
+                        Duration.between(aprovacao.getCriadoEmUtc(), aprovacao.getDecididoEmUtc()));
+            }
         }
 
         publishDecisionEvent(entity, null);
@@ -181,9 +188,25 @@ public class DecideSolicitacaoAprovacaoUseCase {
         }
         if (metricsPublisher != null) {
             metricsPublisher.publishAprovacaoFlow(tipo.name(), "EXECUTED");
+            metricsPublisher.recordAprovacao(tipo.name());
+            if (tipo == TipoSolicitacaoInput.CANCELAMENTO) {
+                metricsPublisher.recordDelecao("EVENTO", "APROVACAO");
+            } else if (tipo == TipoSolicitacaoInput.EDICAO_EVENTO || tipo == TipoSolicitacaoInput.ALTERACAO_HORARIO) {
+                metricsPublisher.recordEdicao("EVENTO", "APROVACAO");
+            }
+            if (aprovacao.getCriadoEmUtc() != null && aprovacao.getDecididoEmUtc() != null) {
+                metricsPublisher.publishAprovacaoDecisionLatency(
+                        tipo.name(),
+                        AprovacaoStatus.APROVADA.name(),
+                        Duration.between(aprovacao.getCriadoEmUtc(), aprovacao.getDecididoEmUtc()));
+            }
             if (aprovacao.getDecididoEmUtc() != null) {
                 metricsPublisher.publishAprovacaoExecutionLatency(tipo.name(),
                         Duration.between(aprovacao.getDecididoEmUtc(), executedAt));
+            }
+            if (aprovacao.getCriadoEmUtc() != null) {
+                metricsPublisher.publishAprovacaoTotalLatency(tipo.name(),
+                        Duration.between(aprovacao.getCriadoEmUtc(), executedAt));
             }
         }
         publishDecisionEvent(entity, null);

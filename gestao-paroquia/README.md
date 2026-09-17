@@ -45,7 +45,7 @@ A aplicação está dividida em 14 domínios explicados sob o pacote raiz `br.co
 * **Spring Cache + Caffeine:** Caching de alto desempenho em memória
 
 
-* **Banco de Dados:** PostgreSQL 16 (Produção/Docker) & H2 Database (Testes Automatizados)
+* **Banco de Dados:** PostgreSQL 16 (Produção/Docker e Testes Automatizados via Testcontainers)
 * **Migrations:** Flyway Database Migrations
 * **Documentação de API:** Springdoc OpenAPI 2.x / Swagger UI
 * **Relatórios & Exportação:** Apache POI (Excel) & OpenPDF (PDF)
@@ -54,6 +54,7 @@ A aplicação está dividida em 14 domínios explicados sob o pacote raiz `br.co
 * **PMD 7.16.0** (análise estática, otimizações e prevenção de erros)
 * **SpotBugs** (detecção de falhas de segurança e riscos de ponteiro nulo)
 * **JaCoCo** (relatórios de cobertura de código da suíte de testes)
+* **ArchUnit 1.4.0** (validação automatizada de integridade e fronteiras arquiteturais)
 
 * **Agendamento:** Quartz Scheduler (jobs de snapshot de métricas e alocação de ativos)
 * **Observabilidade:** Logs estruturados em JSON com MDC, publicadores de métricas e healthchecks via Spring Boot Actuator
@@ -75,11 +76,12 @@ O desenvolvimento no backend deve respeitar rigorosamente as normas de engenhari
 
 ## 🧪 Estratégia de Testes e TDD (Test-Driven Development)
 
-A cobertura de testes é estruturada em três camadas obrigatórias (mão dupla TDD Red-Green-Refactor):
+A cobertura de testes é estruturada em camadas obrigatórias (mão dupla TDD Red-Green-Refactor):
 
 1. **Unit Tests (Testes Unitários):** Foco no domínio puro, validação de invariantes em Aggregates e Value Objects, utilizando fakes/mocks para I/O.
-2. **Integration Tests (Testes de Integração):** Validação de persistência JPA com H2, repositórios e contextos Spring.
-3. **End-to-End Tests (E2E):** Testes de fluxo completo via `MockMvc` / `WebTestClient` cobrindo da controller ao banco de dados.
+2. **Integration Tests (Testes de Integração):** Validação de persistência JPA com PostgreSQL 16 real gerenciado via Testcontainers, repositórios e contextos Spring.
+3. **Architecture Tests (Testes Arquiteturais):** Guardrails contínuos com ArchUnit garantindo Clean Architecture e isolamento hexagonal.
+4. **End-to-End Tests (E2E):** Testes de fluxo completo via `MockMvc` / `WebTestClient` cobrindo da controller ao banco de dados.
 
 Os testes ficam em `app/src/test/java`, espelhando o pacote do bounded context correspondente (ex.: `integration/eventos`, `integration/metrics`, `support/fake` para fakes reutilizáveis de infraestrutura). O relatório de cobertura JaCoCo é gerado em `build/reports/jacoco/` após `./gradlew check`.
 
@@ -106,12 +108,8 @@ Todos os comandos devem ser executados na raiz do diretório `gestao-paroquia`:
 # Subir a API Spring Boot em modo desenvolvimento
 ./gradlew bootRun
 
-# Gerar o artefato executável otimizado (JAR final em build/libs/app.jar)
+# Gerar o artefato executável otimizado (JAR final em app/build/libs/app.jar)
 ./gradlew bootJar
-
-# Executar a demonstração automatizada do ciclo de vida do MVP (gera relatório HTML)
-./demo_mvp.sh
-
 ```
 
 ---
@@ -130,10 +128,8 @@ gestao-paroquia/
 ├── docker/                     # Scripts SQL de inicialização e dados iniciais
 │   ├── init-data.sql           # Schema inicial do banco de dados
 │   └── seed-data.sql           # Dados de semente para ambiente local/dev
-├── demo_mvp.sh                 # Demonstração automatizada do ciclo de vida do MVP
 ├── build.gradle.kts            # Configuração raiz do Gradle
 └── AGENTS.md                   # Diretrizes completas de engenharia do backend
-
 ```
 
 ---

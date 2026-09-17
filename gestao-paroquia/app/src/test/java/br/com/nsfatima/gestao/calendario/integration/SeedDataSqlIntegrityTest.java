@@ -10,6 +10,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,45 +27,43 @@ public class SeedDataSqlIntegrityTest {
     @BeforeEach
     @AfterEach
     void cleanTables() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.auditoria_operacoes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.projeto_solicitacoes_aprovacao;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.notificacoes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.solicitacoes_ajuste_clerical;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.solicitacoes_ajuste_cadastral;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.reservas;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.relacionamentos_familiares;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.ativo_manutencoes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_ativo_patrimonial;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.ativos_patrimoniais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.patrimonio_numeracao_anual;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.encargos_clericais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.migracoes_clero_pendentes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_evento;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.aprovacoes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.projeto_solicitacoes_aprovacao;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.auditoria_operacoes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_envolvidos;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_recorrencia;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.projetos_eventos;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_paroquiais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.membro_grupo;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.usuarios;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.clerigos;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.locais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.grupo_paroquial;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.unidade_territorial;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.papel_global;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_ciclo_liturgico;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_liturgicos;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.pastorais_movimentos_oficiais;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.paroquia_configuracao;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_solenidade_liturgica;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.cpc_decisoes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.fiel_dependentes;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.fieis;");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
+        jdbcTemplate.execute("SET session_replication_role = 'replica';");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.auditoria_operacoes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.projeto_solicitacoes_aprovacao CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.notificacoes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.solicitacoes_ajuste_clerical CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.solicitacoes_ajuste_cadastral CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.reservas CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.relacionamentos_familiares CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.ativo_manutencoes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_ativo_patrimonial CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.ativos_patrimoniais CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.patrimonio_numeracao_anual CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.encargos_clericais CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.migracoes_clero_pendentes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_evento CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.aprovacoes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_envolvidos CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_recorrencia CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.projetos_eventos CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_paroquiais CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.membro_grupo CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.usuarios CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.clerigos CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.locais CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.grupo_paroquial CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.unidade_territorial CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.papel_global CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_ciclo_liturgico CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_liturgicos CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.pastorais_movimentos_oficiais CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.paroquia_configuracao CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_solenidade_liturgica CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.cpc_decisoes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.fiel_dependentes CASCADE;");
+        jdbcTemplate.execute("TRUNCATE TABLE calendario.fieis CASCADE;");
+        jdbcTemplate.execute("SET session_replication_role = 'origin';");
     }
 
     @Test
@@ -72,24 +73,11 @@ public class SeedDataSqlIntegrityTest {
 
         String sqlContent = Files.readString(seedFilePath);
 
-        // Remove PL/pgSQL DO block for H2 execution in tests
-        int doIndex = sqlContent.indexOf("DO $$");
-        int endDoIndex = sqlContent.indexOf("END $$;");
-        if (doIndex != -1 && endDoIndex != -1) {
-            sqlContent = sqlContent.substring(0, doIndex) + sqlContent.substring(endDoIndex + "END $$;".length());
-        }
-
-        // Replace PostgreSQL ON CONFLICT (including multiline DO UPDATE SET) for H2 compatibility in tests
-        sqlContent = sqlContent.replaceAll("(?s)ON CONFLICT\\b[^;]*", "");
-
-        String[] statements = sqlContent.split(";");
-
         assertDoesNotThrow(() -> {
-            for (String statement : statements) {
-                String trimmed = statement.trim();
-                if (!trimmed.isEmpty()) {
-                    jdbcTemplate.execute(trimmed);
-                }
+            var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+            try (Connection conn = dataSource.getConnection();
+                 Statement stmt = conn.createStatement()) {
+                stmt.execute(sqlContent);
             }
         }, "Executing seed-data.sql statements should not throw any foreign key or SQL execution errors");
 

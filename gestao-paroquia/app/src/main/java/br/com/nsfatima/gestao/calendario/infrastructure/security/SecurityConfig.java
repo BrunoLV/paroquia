@@ -27,7 +27,7 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${app.cors.allowed-origins:http://localhost:3000}")
+    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173}")
     private String allowedOrigins;
 
     @Bean
@@ -70,7 +70,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationOutcomeProcessor)
                         .accessDeniedHandler(authenticationOutcomeProcessor))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/actuator/info", "/error").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/info",
+                                "/actuator/prometheus", "/error").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/organizacoes").permitAll()

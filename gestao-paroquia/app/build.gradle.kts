@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.spring.boot.starter.cache)
     implementation(libs.caffeine)
     implementation(libs.spring.boot.starter.actuator)
+    implementation(libs.micrometer.registry.prometheus)
     implementation(libs.springdoc.openapi)
     implementation(libs.spring.boot.starter.flyway)
     implementation("org.springframework.boot:spring-boot-starter-quartz")
@@ -61,7 +62,8 @@ dependencies {
     testImplementation(libs.spring.boot.starter.webmvc.test)
     testImplementation(libs.spring.boot.starter.data.jpa.test)
     testImplementation(libs.spring.security.test)
-    testImplementation(libs.h2)
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.testcontainers.junit.jupiter)
 
     testRuntimeOnly(libs.junit.platform.launcher)
 }

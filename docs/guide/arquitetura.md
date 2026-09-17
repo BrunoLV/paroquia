@@ -143,3 +143,22 @@ Para blindar a arquitetura contra degradação estrutural e violações de front
 | `RestControllerArchitectureTest` | • Todos os controllers `@RestController` residem em pacotes `api`.<br>• Zero métodos `@ExceptionHandler` inline em controllers (centralizados em `@RestControllerAdvice`).<br>• Controllers não dependem diretamente de entidades JPA de persistência. |
 | `ModularMonolithArchitectureTest` | • Domínio de um bounded context não acessa a persistência de outro contexto.<br>• Camada de aplicação não acessa diretamente entidades JPA privadas de outros contextos. |
 
+---
+
+### 2.6. Infraestrutura de Testes com Testcontainers (PostgreSQL 16) & Docker Wormhole
+
+Para garantir paridade total entre os ambientes de teste, desenvolvimento e produção, o projeto elimina bancos em memória sintéticos (como H2) em favor de instâncias reais do **PostgreSQL 16** via **Testcontainers**:
+
+1. **Paridade de Dialeto e Migrações Flyway:**
+   - Todos os testes de integração, repositório (`@DataJpaTest`) e esteiras Spring executam sobre um container PostgreSQL 16 (`jdbc:tc:postgresql:16-alpine:///calendario?TC_DAEMON=true`).
+   - Recursos específicos do PostgreSQL (blocos anônimos `DO $$`, `ON CONFLICT`, funções de data, índices parciais e schemas) são validados exatamente como em produção.
+2. **Dimensionamento do Connection Pool nos Testes:**
+   - O HikariCP de teste é calibrado com `maximum-pool-size: 3` e expiração agressiva de conexões ociosas para evitar a exaustão de conexões no PostgreSQL compartilhado entre múltiplos contextos de teste.
+3. **Padrão Docker Wormhole (Docker-in-Docker Sibling Pattern):**
+   - Para builds e testes executados dentro de containers Docker (CI/CD ou serviço `builder` do `docker-compose.yml`), adota-se o padrão canônico **Docker Wormhole**:
+     - Compartilhamento do socket do Docker host (`/var/run/docker.sock:/var/run/docker.sock`).
+     - Montagem do workspace do host no **mesmo caminho absoluto** no container (`${PWD}:${PWD}`) com `working_dir: ${PWD}/gestao-paroquia`.
+     - Variável de ambiente `TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal` e cliente `docker-cli` instalado na imagem construtora (`Dockerfile.builder`).
+     - Dessa forma, os containers de teste criados pelo Testcontainers são orquestrados como contêineres irmãos (*sibling containers*) no daemon do host com resolução correta de bind mounts.
+
+
