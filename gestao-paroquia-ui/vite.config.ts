@@ -21,6 +21,21 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/swagger-ui': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/v3/api-docs': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/actuator': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   preview: {

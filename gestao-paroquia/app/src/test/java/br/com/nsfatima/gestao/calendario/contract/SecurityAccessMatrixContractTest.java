@@ -31,6 +31,12 @@ class SecurityAccessMatrixContractTest {
         mockMvc.perform(get("/actuator/prometheus"))
                 .andExpect(status().isOk());
 
+        mockMvc.perform(get("/actuator/metrics"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/swagger-ui/index.html"))
+                .andExpect(status().isOk());
+
         mockMvc.perform(get("/api/v1/eventos").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").value("AUTH_REQUIRED"));

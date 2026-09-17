@@ -15,7 +15,7 @@ ENV DB_URL=jdbc:postgresql://db:5432/calendario \
     DB_USER=postgres \
     DB_PASSWORD=postgres \
     PORT=8080 \
-    JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseSerialGC"
+    JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseSerialGC -Djdk.virtualThreadScheduler.parallelism=2"
 
 EXPOSE 8080
 

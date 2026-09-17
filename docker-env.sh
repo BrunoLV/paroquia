@@ -49,6 +49,7 @@ show_endpoints() {
     echo -e "  • Backend (API):       ${CYAN}http://localhost:8080/api${NC}"
     echo -e "  • Swagger UI:          ${CYAN}http://localhost:8080/swagger-ui/index.html${NC}"
     echo -e "  • Actuator Health:     ${CYAN}http://localhost:8080/actuator/health${NC}"
+    echo -e "  • Actuator Metrics:    ${CYAN}http://localhost:8080/actuator/metrics${NC}"
     echo -e "  • Prometheus:          ${CYAN}http://localhost:9090${NC}"
     echo -e "  • Grafana:             ${CYAN}http://localhost:3001${NC} (admin / admin)"
     echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.local / admin)"
