@@ -57,12 +57,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
+    setupFiles: './src/app/setupTests.ts',
     css: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      exclude: ['src/**/*.test.{ts,tsx}', 'src/setupTests.ts', 'src/vite-env.d.ts'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/app/setupTests.ts', 'src/app/vite-env.d.ts'],
     },
   },
 });

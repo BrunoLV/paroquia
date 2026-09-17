@@ -118,15 +118,19 @@ Todas as entidades mapeadas no banco de dados compartilham o mesmo contrato unif
 
 ### 2.4. Arquitetura do Frontend Reativo (React 19)
 
-O frontend adota uma arquitetura em camadas orientada a hooks customizados e composição de componentes:
+O frontend adota DDD e Arquitetura Hexagonal por bounded context. Cada contexto replica a fronteira `domain`, `application`, `infrastructure` e `presentation`; `app` compõe a SPA e `shared` contém apenas capacidades transversais.
 
 1. **Separação Estado de Servidor vs Estado de Interface:**
    - **Server State:** Gerenciado exclusivamente pelo **TanStack React Query v5**, provendo cache inteligente, invalidação após mutações e suporte a *optimistic updates*.
    - **Form State:** Controlado pelo **React Hook Form** validado por esquemas declarativos **Zod**.
-2. **Componentes Finos (*Thin Components*):**
+2. **Fronteiras Hexagonais:**
+   - `domain` é TypeScript puro e não depende de React, Axios, MUI ou TanStack Query.
+   - `application` declara portas e casos de uso; `infrastructure/http` fornece adapters HTTP.
+   - `presentation` contém páginas, componentes, hooks de Query e schemas Zod, sem acessar Axios diretamente.
+3. **Componentes Finos (*Thin Components*):**
    - O JSX é restrito a apresentação e ligações semânticas (10 a 60 linhas de código).
-   - Cálculos, transformações e lógica de API são encapsulados em hooks especializados (ex: `useCalendarGrid`, `useEventoCrud`).
-3. **Design System & Acessibilidade:**
+   - Cálculos, transformações e lógica de API são encapsulados em hooks especializados do contexto (ex.: `useCalendarioGrid`, `useEventoCrud`).
+4. **Design System & Acessibilidade:**
    - Construído com base em primitivas de layout do **Material UI 9** (`Box`, `Stack`, `Grid`, `Typography`, `Card`), proibindo tags HTML cruas para manter consistência responsiva.
 
 ---
@@ -160,5 +164,4 @@ Para garantir paridade total entre os ambientes de teste, desenvolvimento e prod
      - Montagem do workspace do host no **mesmo caminho absoluto** no container (`${PWD}:${PWD}`) com `working_dir: ${PWD}/gestao-paroquia`.
      - Variável de ambiente `TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal` e cliente `docker-cli` instalado na imagem construtora (`Dockerfile.builder`).
      - Dessa forma, os containers de teste criados pelo Testcontainers são orquestrados como contêineres irmãos (*sibling containers*) no daemon do host com resolução correta de bind mounts.
-
 

@@ -21,8 +21,8 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 | Escopo da Tarefa no Frontend | Skills Mandatórias | Invariantes Críticas |
 | :--- | :--- | :--- |
 | **Componentes, Páginas, Telas & Layout** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md)<br>[`DESIGN_SYSTEM.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/DESIGN_SYSTEM.md) | • Leitura de `DESIGN_SYSTEM.md` **obrigatória** antes de tocar em qualquer tela/modal/formulário — é a fonte única do padrão visual (botões, busca, diálogos, tabelas, estados assíncronos).<br>• Semântica MUI 9 pura: **PROIBIDAS** tags HTML cruas (`div`, `span`, `p`) para layout/texto.<br>• Uso exclusivo do novo `<Grid2 container spacing={2}>` e `<Grid2 size={{ xs: 12, ... }}>`.<br>• Limites de linhas: componentes puros (10–60 linhas); formulários densos (máximo 120 linhas).<br>• Cantos arredondados padronizados pelo tema (`shape.borderRadius: 12`). |
-| **Formulários & Entradas de Dados** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Schema Zod obrigatório em `src/schemas/<entidade>Schema.ts`.<br>• Integração mandatória via `react-hook-form` + `@hookform/resolvers/zod`.<br>• Proibida proliferação de `useState` para múltiplos inputs.<br>• Máscaras e formatadores sistemáticos (`src/utils/masks.ts`). |
-| **Server State & Integração com API** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • TanStack Query v5 exclusivo em hooks dedicados (`src/hooks/`).<br>• Chaves centralizadas via Query Key Factories serializáveis (`fielKeys.all`).<br>• Proibidas chamadas diretas de `fetch`/`axios` dentro do corpo de componentes.<br>• Invalidação de queries e feedback visual com notificações após mutações. |
+| **Formulários & Entradas de Dados** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Schema Zod obrigatório em `src/contextos/<contexto>/presentation/schemas/`.<br>• Integração mandatória via `react-hook-form` + `@hookform/resolvers/zod`.<br>• Proibida proliferação de `useState` para múltiplos inputs.<br>• Máscaras e formatadores em `src/shared/utils/`. |
+| **Server State & Integração com API** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • TanStack Query v5 exclusivo em `contextos/<contexto>/presentation/hooks/`.<br>• Chaves centralizadas no contexto proprietário.<br>• Adapters HTTP em `infrastructure/http/` implementam portas de `application`.<br>• Proibidas chamadas diretas de `fetch`/`axios` em componentes ou hooks de apresentação. |
 | **Acessibilidade (a11y) & Tabelas** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Linhas de tabela clicáveis devem ter `role="button"`, `tabIndex={0}` e listeners `onKeyDown` (`Enter`/`Space`).<br>• Botões e menus de ações na linha **DEVEM** conter `event.stopPropagation()`.<br>• Paginação obrigatória em todas as listagens (`<TablePagination>`). |
 | **Segurança e Privacidade (LGPD)** | [`lgpd-privacy-by-design`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/lgpd-privacy-by-design/SKILL.md) | • Paridade absoluta: dados civis de qualquer papel/clérigo isolados em modais de RH/administrativos.<br>• Proibido `console.log` com payloads ou PII exposta.<br>• Mascaramento obrigatório de dados civis (CPF, e-mail, telefone). |
 | **Testes Automatizados de Frontend** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md)<br>[`tdd`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/tdd/SKILL.md) | • Vitest + React Testing Library + `@testing-library/user-event`.<br>• Proibido `fireEvent`; simule interações reais com `userEvent`.<br>• Isolamento de rede: interceptação obrigatória via Mock Service Worker (MSW). |
@@ -43,11 +43,22 @@ Resumo do que ele cobre: layout de página (`PageHeader`, `Stack spacing={3}`), 
   * O uso de `any` ou `unknown` sem narrowing é **TERMINANTEMENTE PROIBIDO**.
   * Proibido `string` livre para valores finitos; utilize `enum` ou uniões de literais (`type Status = 'ATIVO' | 'INATIVO'`).
 * **Regra de Co-localização e Organização:**
-  * Testes (`.test.tsx`), schemas (`Schema.ts`) e estilos específicos devem residir junto ao componente ou módulo funcional correspondente.
+  * Testes (`.test.tsx`), schemas (`Schema.ts`) e estilos específicos devem residir junto ao módulo funcional em `contextos/<contexto>/presentation/`.
   * Subcomponentes derivados de telas devem residir na pasta `components/` adjacente ao arquivo de página pai.
 * **Estrutura de Importações:**
-  * Utilize invariavelmente os aliases absolutos configurados: `@/components`, `@/hooks`, `@/utils`, `@/schemas`, `@/api`.
+  * Utilize invariavelmente aliases absolutos: `@/contextos`, `@/shared` e `@/app`.
   * Proibidas importações relativas profundas (`../../../../components`).
+
+## 4.1. Arquitetura DDD e Hexagonal
+
+* Cada capacidade de negócio reside em `src/contextos/<contexto>/`, alinhada ao bounded context do backend.
+* `domain/` contém apenas TypeScript puro; não pode importar React, MUI, Axios, TanStack Query, Zod ou código de infraestrutura.
+* `application/` declara use cases e portas; depende de `domain`, nunca de adapters concretos ou componentes.
+* `infrastructure/http/` concentra adapters, DTOs e mapeadores HTTP; é o único local de cada contexto que conhece o cliente Axios.
+* `presentation/` concentra páginas, componentes, hooks Query e schemas Zod; só acessa dados por contratos/use cases da aplicação.
+* `src/shared/` não contém regras de negócio. `src/app/` apenas compõe providers e rotas.
+* Todo nome de domínio, ação e rota usa português. Apenas convenções técnicas como `Adapter`, `Port`, `Provider`, `Hook`, `Query`, `Mutation`, `DTO` e APIs de bibliotecas ficam em inglês.
+* Rotas canônicas: `/acesso`, `/painel`, `/calendario`, `/projetos`, `/aprovacoes` e `/relatorios`. Rotas inglesas são proibidas.
 
 ---
 

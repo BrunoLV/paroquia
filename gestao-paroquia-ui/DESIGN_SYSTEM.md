@@ -21,11 +21,11 @@ Toda mudança que altere um destes componentes ou padrões (`ActionButton`, `Ico
 ```
 
 - Contêiner raiz de toda rota: `<Stack spacing={3}>`.
-- Cabeçalho sempre via `PageHeader` (`src/components/PageHeader.tsx`), nunca `Typography` solto.
+- Cabeçalho sempre via `PageHeader` (`src/shared/presentation/components/PageHeader.tsx`), nunca `Typography` solto.
 
 ## 2. Busca — `SearchField`
 
-Componente único: `src/components/SearchField.tsx`. Nunca reimplementar `TextField` + `SearchIcon` à mão.
+Componente único: `src/shared/presentation/components/SearchField.tsx`. Nunca reimplementar `TextField` + `SearchIcon` à mão.
 
 ```tsx
 <SearchField value={busca} onChange={setBusca} placeholder="Pesquisar por nome ou CPF..." />
@@ -39,8 +39,8 @@ Componente único: `src/components/SearchField.tsx`. Nunca reimplementar `TextFi
 
 **Proibido** `<Button>`/`<IconButton>` cru do MUI em páginas e componentes de feature. Sempre:
 
-- Texto: `ActionButton` (`src/components/ActionButton.tsx`) — props `title`, `icon`, `color`, `variant`, `type`, `form?`, `disabled`, `fullWidth`, `component`.
-- Só ícone: `IconActionButton` (`src/components/IconActionButton.tsx`) — sempre com `Tooltip` (`title`) e `aria-label`.
+- Texto: `ActionButton` (`src/shared/presentation/components/ActionButton.tsx`) — props `title`, `icon`, `color`, `variant`, `type`, `form?`, `disabled`, `fullWidth`, `component`.
+- Só ícone: `IconActionButton` (`src/shared/presentation/components/IconActionButton.tsx`) — sempre com `Tooltip` (`title`) e `aria-label`.
 
 Semântica de cor obrigatória:
 
@@ -115,12 +115,12 @@ Mecanismo e valor são fixos, não "ao gosto da tela":
 
 ## 6. Indicadores Categóricos — `StatusIcon`
 
-- Categorias, tipos, sacramentos e status de ciclo de vida **sempre** via `<StatusIcon {...get<Propriedade>Meta(valor)} />` (`src/components/StatusIcon.tsx`).
+- Categorias, tipos, sacramentos e status de ciclo de vida **sempre** via `<StatusIcon {...get<Propriedade>Meta(valor)} />` (`src/shared/presentation/components/StatusIcon.tsx`).
 - Nunca exibir enum cru (`EM_MANUTENCAO`) — sempre mapeador de rótulo amigável.
 
 ## 6.1. Telas de Visualização/Detalhe — `InfoField`
 
-Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewModal.tsx`, `*DetalhesDrawer.tsx`) usa o componente compartilhado `InfoField` — `export const InfoField` em `src/components/fieis/fielConstants.tsx` — e não uma reimplementação local nem pares soltos de `Typography` caption+valor.
+Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewModal.tsx`, `*DetalhesDrawer.tsx`) usa o componente compartilhado `InfoField` — `export const InfoField` em `src/contextos/fiel/presentation/components/fieis/fielConstants.tsx` — e não uma reimplementação local nem pares soltos de `Typography` caption+valor.
 
 ```tsx
 <InfoField label="E-mail" icon={<EmailIcon fontSize="inherit" />} value={dados.email} />
@@ -144,11 +144,11 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
 
 ## 9. Modo Escuro
 
-O sistema tem tema claro/escuro (`createAppTheme(mode)` em `src/theme.ts`, alternado via `ThemeModeProvider`/`useThemeMode()` em `src/context/ThemeModeContext.tsx`). Regra única e não-negociável:
+O sistema tem tema claro/escuro (`createAppTheme(mode)` em `src/shared/presentation/theme/theme.ts`, alternado via `ThemeModeProvider`/`useThemeMode()` em `src/shared/presentation/context/ThemeModeContext.tsx`). Regra única e não-negociável:
 
 - **Dentro de um componente, cor de tema sempre via `useTheme()` do MUI** (`const theme = useTheme()`), nunca `import theme from '.../theme'` (essa é a instância clara estática, fixa, que não reage ao modo ativo). O import estático só é aceitável em código que não é componente React (ex.: uma constante de módulo calculada uma vez fora de qualquer render) — e mesmo assim, prefira passar a cor como parâmetro vindo de quem chama (que tem o hook).
 - Ao ler `theme.custom.*` num componente, use encadeamento opcional com fallback (`theme.custom?.subtlePanelBg ?? '#F8F9FA'`) — o `useTheme()` de um componente renderizado fora do `ThemeModeProvider` (comum em teste unitário isolado) devolve o tema default do MUI, que não tem `custom`.
-- Nunca hardcode um hex ou `theme.palette.grey[N]` assumindo fundo claro — ambos os modos precisam ficar legíveis; se a cor depende do modo, calcule a partir de `theme.palette.mode === 'dark'` ou de um token em `customTokensByMode` (`src/theme.ts`).
+- Nunca hardcode um hex ou `theme.palette.grey[N]` assumindo fundo claro — ambos os modos precisam ficar legíveis; se a cor depende do modo, calcule a partir de `theme.palette.mode === 'dark'` ou de um token em `customTokensByMode` (`src/shared/presentation/theme/theme.ts`).
 
 ---
 
@@ -156,15 +156,15 @@ O sistema tem tema claro/escuro (`createAppTheme(mode)` em `src/theme.ts`, alter
 
 | Componente/constante | Arquivo |
 | --- | --- |
-| `PageHeader` | `src/components/PageHeader.tsx` |
-| `ActionButton` | `src/components/ActionButton.tsx` |
-| `IconActionButton` | `src/components/IconActionButton.tsx` |
-| `SearchField` | `src/components/SearchField.tsx` |
-| `DIALOG_CONTENT_SCROLL_SX` | `src/theme/dialogStyles.ts` |
-| `StatusIcon` | `src/components/StatusIcon.tsx` |
-| `InfoField` | `src/components/fieis/fielConstants.tsx` |
-| `createAppTheme`, `customTokensByMode` | `src/theme.ts` |
-| `ThemeModeProvider`, `useThemeMode` | `src/context/ThemeModeContext.tsx` |
+| `PageHeader` | `src/shared/presentation/components/PageHeader.tsx` |
+| `ActionButton` | `src/shared/presentation/components/ActionButton.tsx` |
+| `IconActionButton` | `src/shared/presentation/components/IconActionButton.tsx` |
+| `SearchField` | `src/shared/presentation/components/SearchField.tsx` |
+| `DIALOG_CONTENT_SCROLL_SX` | `src/shared/presentation/theme/dialogStyles.ts` |
+| `StatusIcon` | `src/shared/presentation/components/StatusIcon.tsx` |
+| `InfoField` | `src/contextos/fiel/presentation/components/fieis/fielConstants.tsx` |
+| `createAppTheme`, `customTokensByMode` | `src/shared/presentation/theme/theme.ts` |
+| `ThemeModeProvider`, `useThemeMode` | `src/shared/presentation/context/ThemeModeContext.tsx` |
 
 ## Casos não cobertos
 

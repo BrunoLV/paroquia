@@ -1,6 +1,6 @@
 # 🎨 Paróquia — Frontend (`gestao-paroquia-ui`)
 
-Interface administrativa desenvolvida em **React 19** para o sistema de gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima. Cobre agendamento de eventos, aprovações, cadastro de membros, organograma, controle de patrimônio, importação/exportação de dados e um dashboard de métricas executivas — tudo consumindo a API REST do [backend](../gestao-paroquia).
+Interface administrativa desenvolvida em **React 19** para o sistema de gestão administrativa e pastoral da Paróquia Nossa Senhora de Fátima. Os módulos seguem DDD e Arquitetura Hexagonal por contexto, consumindo a API REST do [backend](../gestao-paroquia).
 
 ---
 
@@ -67,45 +67,38 @@ O projeto utiliza variáveis prefixadas com `VITE_` gerenciadas via Vite (declar
 
 ---
 
-## 📂 Estrutura de Pastas (`src/`)
+## 📂 Arquitetura de Pastas (`src/`)
 
 ```
 src/
-├── api/                  # Cliente Axios, QueryProvider e módulos de integração por domínio
-│   ├── client.ts         # Instância base do Axios com interceptors de resposta
-│   ├── QueryProvider.tsx # Provider do TanStack React Query
-│   ├── aprovacoes.ts     # Integração com o bounded context de aprovações
-│   ├── ativos.ts         # Integração com o bounded context de patrimônio (ativos)
-│   ├── conselhos.ts      # Integração com decisões/homologações do Conselho (CPC)
-│   ├── eventos.ts        # Integração com o calendário de eventos paroquiais
-│   ├── locais.ts         # Integração com o cadastro de espaços físicos
-│   ├── membros.ts        # Integração com o bounded context de membros
-│   ├── metricas.ts       # Integração com métricas estratégicas do dashboard
-│   ├── organizacoes.ts   # Integração com a estrutura organizacional
-│   ├── pastoraisOficiais.ts # Integração com pastorais/movimentos oficiais
-│   ├── projects.ts       # Integração com projetos paroquiais
-│   ├── solenidades.ts    # Integração com o calendário litúrgico
-│   ├── usuarios.ts       # Integração com gestão de usuários (IAM)
-│   └── importacao.ts     # Processamento de arquivos Excel/PDF
-├── auth/                 # Contexto de autenticação, JWT e verificação de autorização/roles
-│   ├── AuthContext.tsx   # Contexto global de sessão do usuário
-│   ├── ProtectedRoute.tsx# Componente de guarda de rota protegida
-│   └── permissions.ts   # Utilitários de matriz de permissões por papel
-├── components/           # Componentes reutilizáveis de interface
-│   ├── dashboard/         # Widgets do Dashboard (cards, gráfico de distribuição, timeline semanal, aprovações pendentes)
-│   ├── organograma/       # Exportação/renderização do organograma paroquial
-│   ├── reports/           # Filtros, gráficos de volume e exportação de relatórios
-│   └── ...                # Modais e diálogos de cadastro/edição (CadastroEventoModal, ImportModal, AtivoAlocacoesModal, CpcDecisaoModal, RecurrenceForm etc.)
-├── context/              # Contextos globais da aplicação React (ex: NotificationContext)
-├── hooks/                # Hooks customizados React (useMetricasEstrategicas, useOrganogramaExport)
-├── pages/                # Páginas da aplicação: Dashboard, Calendar, Aprovacoes, Ativos, ConselhosAtas, Organograma, Projects, Reports, Settings, Login
-├── types/                # Definições de tipos auxiliares (ex: react-orgchart.d.ts)
-├── utils/                # Utilitários de exportação (CSV, PDF), calendário litúrgico e formatadores
-├── theme.ts              # Configuração centralizada do tema Material UI (paleta Fátima, tipografia)
-├── setupTests.ts         # Setup do ambiente de testes Vitest com @testing-library/jest-dom
-├── AppRoutes.tsx         # Mapeamento centralizado de rotas da aplicação
-└── App.tsx               # Componente raiz da aplicação
+├── app/                  # Bootstrap, providers e roteamento: composição técnica da SPA
+├── shared/               # Código transversal técnico, visual e sem domínio próprio
+│   ├── domain/types/     # Contratos TypeScript compartilhados
+│   ├── infrastructure/   # Cliente HTTP, interceptors e integrações externas
+│   ├── presentation/     # Tema, providers e componentes do Design System
+│   └── utils/            # Formatadores e funções técnicas reutilizáveis
+└── contextos/            # Bounded contexts alinhados ao backend
+    └── <contexto>/
+        ├── domain/       # Modelos, regras e tipos puros: sem React, Axios ou MUI
+        ├── application/  # Use cases e portas de entrada/saída
+        ├── infrastructure/http/ # Adapters HTTP, DTOs e mapeadores
+        └── presentation/ # Páginas, componentes, hooks Query, schemas Zod e testes
 ```
+
+Os contextos são `calendario`, `fiel`, `clero`, `conselho`, `painel`, `governanca`, `iam`, `importacao`, `local`, `organizacao`, `membro`, `patrimonio`, `projeto`, `reserva` e `aprovacao`. Nomes de domínio ficam em português; nomes técnicos, como `Adapter`, `Port`, `Provider`, `Hook` e `Query`, permanecem em inglês.
+
+## 🧭 Rotas públicas
+
+| Área | Rota canônica |
+| --- | --- |
+| Acesso | `/acesso` |
+| Painel | `/painel` |
+| Calendário | `/calendario` |
+| Projetos | `/projetos` |
+| Aprovações | `/aprovacoes` |
+| Relatórios | `/relatorios` |
+
+As antigas URLs inglesas não são suportadas.
 
 ---
 
@@ -113,7 +106,7 @@ src/
 
 Os testes da interface são executados com **Vitest** e **React Testing Library**, seguindo o padrão `*.test.tsx` / `*.test.ts` colocalizado junto ao arquivo testado. Cobrem:
 - Renderização e comportamento de modais e formulários (ex.: `CadastroEventoModal.test.tsx`, `RecurrenceForm.test.tsx`).
-- Integração de páginas com a API utilizando mocks de respostas (`DataFetching.test.tsx` e os `*.test.ts` de `src/api/`).
+- Integração de páginas e adapters HTTP com mocks de respostas, co-localizados em `contextos/<contexto>/`.
 - Guardas de autenticação, contexto de sessão e rotas protegidas (`AuthContext.test.tsx`, `ProtectedRoute.test.tsx`, `permissions.test.ts`).
 - Utilitários de exportação (CSV/PDF), calendário litúrgico e formatação de moeda/data.
 - Interceptors HTTP e tratamento centralizado de erros (`interceptors.test.ts`).

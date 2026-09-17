@@ -18,7 +18,7 @@ O sistema cobre o ciclo operacional completo da paróquia: agendamento de evento
 O repositório é organizado em módulos independentes, cada um com suas próprias regras de arquitetura, testes e documentação:
 
 - **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 4**, servidor web **Jetty 12**, **Log4j2**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
-- **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** Interface de usuário moderna desenvolvida em **React 19**, **TypeScript**, **Material UI (MUI 9)**, **TanStack React Query** e **Vite 5**.
+- **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** SPA em **React 19**, **TypeScript**, **MUI 9**, **TanStack Query** e **Vite 5**, organizada em bounded contexts DDD com camadas Hexagonais (`domain`, `application`, `infrastructure` e `presentation`).
 - **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4, Prometheus, Grafana e seeder automático de dados. Veja o guia completo em [**`DOCKER.md`**](./DOCKER.md).
 - **[Documentação (`docs/guide/`)](./docs/guide):** Portal de documentação técnica via Docsify com suporte a Mermaid — arquitetura, diagramas conceituais, regras de negócio, padrões, observabilidade e infraestrutura Docker.
 
