@@ -5705,8 +5705,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/app/AppRoutes.tsx": {
-    "mtime": 1789610328.638534,
-    "ast_hash": "7cea3e0b788dd83f79b5c0a1562ad1b2",
+    "mtime": 1789612571.9388323,
+    "ast_hash": "d440929888395d4c0896ec9867cb24a1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/app/DataFetching.test.tsx": {
@@ -5730,8 +5730,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/app/routing.test.tsx": {
-    "mtime": 1789610328.6388617,
-    "ast_hash": "38bdc7bcfa3d30e1dc72ad5a9f24a44b",
+    "mtime": 1789613126.72646,
+    "ast_hash": "5d47a1b34115f220994552bdaf7b126b",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/app/setupTests.ts": {
@@ -5940,8 +5940,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/pages/Calendario.test.tsx": {
-    "mtime": 1789610328.641669,
-    "ast_hash": "b394b555bf207c37fab3cd082013af32",
+    "mtime": 1789613145.8974814,
+    "ast_hash": "abe4474528c08862ee98c50d0ecf711e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/pages/Calendario.tsx": {
@@ -6120,8 +6120,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/presentation/auth/AuthContext.test.tsx": {
-    "mtime": 1789610328.640857,
-    "ast_hash": "20fd5f49b523942d03887b7e498ec1db",
+    "mtime": 1789613126.72646,
+    "ast_hash": "3a8e12ba5ad855016acc1f551adc84b1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/presentation/auth/AuthContext.tsx": {
@@ -6150,13 +6150,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/presentation/pages/Acesso.test.tsx": {
-    "mtime": 1789610328.6404676,
-    "ast_hash": "e865df143cf7552c93df76753c38b4fc",
+    "mtime": 1789613126.72646,
+    "ast_hash": "30e16ad20caadff0eb4a67f11677268f",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/presentation/pages/Acesso.tsx": {
-    "mtime": 1789610328.640401,
-    "ast_hash": "222219e0f7a56c187632cceafda171ed",
+    "mtime": 1789612571.9388323,
+    "ast_hash": "5badb9ff9808e16d32e0d32102d329fe",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/presentation/pages/Notificacoes.tsx": {
