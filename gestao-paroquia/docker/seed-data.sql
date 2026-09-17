@@ -340,6 +340,16 @@ UPDATE calendario.eventos
 SET recorrencia_id = '50000000-0000-0000-0000-000000000001'
 WHERE id = '40000000-0000-0000-0000-000000000101';
 
+-- Chave idempotente já processada para exercitar a proteção contra duplicidade de comandos.
+INSERT INTO calendario.evento_idempotency (idempotency_key, request_hash, evento_id, response_status)
+VALUES (
+    'seed-criacao-evento-catequese-2026',
+    'f5b93fd637b3b2e9b8fdc4f5d48f445f1d55e7cbe69bbfdcb2afe9f1390c42a7',
+    '40000000-0000-0000-0000-000000000101',
+    201
+)
+ON CONFLICT (idempotency_key) DO NOTHING;
+
 -- Insert remaining recurring instances referencing recorrencia_id
 INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
 VALUES 
@@ -385,7 +395,22 @@ INSERT INTO calendario.aprovacoes (
 -- Observations
 INSERT INTO calendario.observacoes_evento (id, evento_id, usuario_id, tipo, conteudo, criado_em_utc, version)
 VALUES 
-    (gen_random_uuid(), '40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', 'NOTA', 'Lembrar de avisar os coroinhas sobre a missa.', '2026-02-01T14:00:00Z', 0);
+    ('96000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000002', 'NOTA', 'Lembrar de avisar os coroinhas sobre a missa.', '2026-02-01T14:00:00Z', 1)
+ON CONFLICT (id) DO NOTHING;
+
+-- Revisão auditável da nota, preservando o conteúdo anterior para histórico colaborativo.
+INSERT INTO calendario.observacoes_nota_revisoes (
+    id, observacao_id, conteudo_anterior, conteudo_novo, revisado_por_usuario_id, revisado_em_utc, version
+) VALUES (
+    '97000000-0000-0000-0000-000000000001',
+    '96000000-0000-0000-0000-000000000001',
+    'Lembrar de avisar os coroinhas sobre a missa.',
+    'Lembrar de avisar os coroinhas e os leitores sobre a missa.',
+    '10000000-0000-0000-0000-000000000002',
+    '2026-02-02T14:00:00Z',
+    0
+)
+ON CONFLICT (id) DO NOTHING;
 
 -- Project Approvals (Solicitações de Aprovação de Projetos)
 INSERT INTO calendario.projeto_solicitacoes_aprovacao (
@@ -974,5 +999,4 @@ INSERT INTO calendario.notificacoes (
         '2026-01-16T10:30:00Z'
     )
 ON CONFLICT (id) DO NOTHING;
-
 

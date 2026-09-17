@@ -23,8 +23,8 @@ class CicloLiturgicoRepositoryTest {
     private CicloLiturgicoRepository repository;
 
     @Test
-    @DisplayName("Deve carregar os ciclos litúrgicos inseridos via migração Flyway V049")
-    void deveCarregarCiclosLiturgicosDoSeed() {
+    @DisplayName("Deve carregar os ciclos litúrgicos institucionais do baseline Flyway")
+    void deveCarregarCiclosLiturgicosDoBaseline() {
         List<CicloLiturgicoEntity> ciclos = repository.findAll();
         assertTrue(ciclos.size() >= 6, "Deve haver pelo menos 6 ciclos litúrgicos semeados no banco");
 

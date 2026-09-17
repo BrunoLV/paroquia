@@ -112,6 +112,22 @@ Todos os comandos devem ser executados na raiz do diretório `gestao-paroquia`:
 ./gradlew bootJar
 ```
 
+### Baseline Flyway e seed local
+
+O projeto mantém a criação inicial do schema organizada por contexto em
+`app/src/main/resources/db/migration/`. As migrações criam o schema e os dados
+litúrgicos institucionais necessários ao calendário a partir de uma base vazia.
+
+Para um ambiente Docker novo, suba a API e carregue a massa sintética completa:
+
+```bash
+docker compose up -d db api
+docker compose run --rm db-seeder
+```
+
+O seed é exclusivo do desenvolvimento, recria os dados do schema `calendario` e
+oferece credenciais sintéticas como `admin` / `senha123`.
+
 ---
 
 ## 📂 Estrutura de Diretórios

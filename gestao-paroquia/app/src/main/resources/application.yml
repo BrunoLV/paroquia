@@ -20,7 +20,8 @@ spring:
     default-schema: calendario
     baseline-on-migrate: true
     baseline-version: 0
-    out-of-order: true
+    # A criação inicial do schema é sequencial; novas evoluções devem preservar sua ordem.
+    out-of-order: false
   threads:
     virtual:
       enabled: true

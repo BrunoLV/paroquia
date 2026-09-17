@@ -1,24 +1,35 @@
-DELETE FROM calendario.relacionamentos_familiares;
-DELETE FROM calendario.solicitacoes_ajuste_clerical;
-DELETE FROM calendario.migracoes_clero_pendentes;
-DELETE FROM calendario.encargos_clericais;
-DELETE FROM calendario.reservas;
-DELETE FROM calendario.eventos_envolvidos;
-DELETE FROM calendario.aprovacoes;
-DELETE FROM calendario.observacoes_evento;
-DELETE FROM calendario.auditoria_operacoes;
-DELETE FROM calendario.eventos;
-DELETE FROM calendario.eventos_recorrencia;
-DELETE FROM calendario.projetos_eventos;
-DELETE FROM calendario.membro_grupo;
-DELETE FROM calendario.papel_global;
-DELETE FROM calendario.usuarios;
-DELETE FROM calendario.clerigos;
-DELETE FROM calendario.fieis;
-DELETE FROM calendario.locais;
-DELETE FROM calendario.grupo_paroquial;
-DELETE FROM calendario.unidade_territorial;
-DELETE FROM calendario.pastorais_movimentos_oficiais;
+TRUNCATE TABLE calendario.auditoria_operacoes,
+    calendario.aprovacoes,
+    calendario.ativo_manutencoes,
+    calendario.ativos_patrimoniais,
+    calendario.clerigos,
+    calendario.cpc_decisoes,
+    calendario.encargos_clericais,
+    calendario.evento_idempotency,
+    calendario.eventos,
+    calendario.eventos_envolvidos,
+    calendario.eventos_recorrencia,
+    calendario.fieis,
+    calendario.fiel_dependentes,
+    calendario.grupo_paroquial,
+    calendario.locais,
+    calendario.membro_grupo,
+    calendario.notificacoes,
+    calendario.observacoes_ativo_patrimonial,
+    calendario.observacoes_evento,
+    calendario.observacoes_nota_revisoes,
+    calendario.papel_global,
+    calendario.pastorais_movimentos_oficiais,
+    calendario.patrimonio_numeracao_anual,
+    calendario.projeto_solicitacoes_aprovacao,
+    calendario.projetos_eventos,
+    calendario.relacionamentos_familiares,
+    calendario.reservas,
+    calendario.solicitacoes_ajuste_cadastral,
+    calendario.solicitacoes_ajuste_clerical,
+    calendario.unidade_territorial,
+    calendario.usuarios
+RESTART IDENTITY CASCADE;
 
 -- Clero D (dd) e Matriz (01/100) são UnidadesTerritoriais (track linguagem_ubiqua_dominio)
 INSERT INTO calendario.unidade_territorial (id, nome, tipo)

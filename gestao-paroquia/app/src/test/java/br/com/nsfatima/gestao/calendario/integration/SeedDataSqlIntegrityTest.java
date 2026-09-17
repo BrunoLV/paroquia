@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,9 @@ import java.sql.Statement;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -24,50 +27,39 @@ public class SeedDataSqlIntegrityTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private Flyway flyway;
+
     @BeforeEach
     @AfterEach
     void cleanTables() {
-        jdbcTemplate.execute("SET session_replication_role = 'replica';");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.auditoria_operacoes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.projeto_solicitacoes_aprovacao CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.notificacoes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.solicitacoes_ajuste_clerical CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.solicitacoes_ajuste_cadastral CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.reservas CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.relacionamentos_familiares CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.ativo_manutencoes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_ativo_patrimonial CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.ativos_patrimoniais CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.patrimonio_numeracao_anual CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.encargos_clericais CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.migracoes_clero_pendentes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.observacoes_evento CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.aprovacoes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_envolvidos CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.eventos_recorrencia CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.projetos_eventos CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_paroquiais CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.membro_grupo CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.usuarios CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.clerigos CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.locais CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.grupo_paroquial CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.unidade_territorial CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.papel_global CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_ciclo_liturgico CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.anos_liturgicos CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.pastorais_movimentos_oficiais CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.paroquia_configuracao CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.tb_solenidade_liturgica CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.cpc_decisoes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.fiel_dependentes CASCADE;");
-        jdbcTemplate.execute("TRUNCATE TABLE calendario.fieis CASCADE;");
-        jdbcTemplate.execute("SET session_replication_role = 'origin';");
+        jdbcTemplate.execute("""
+                DO $$
+                DECLARE tabela RECORD;
+                BEGIN
+                    FOR tabela IN
+                        SELECT tablename
+                        FROM pg_tables
+                        WHERE schemaname = 'calendario'
+                    AND tablename NOT IN (
+                        'flyway_schema_history',
+                        'anos_liturgicos',
+                        'tb_ciclo_liturgico',
+                        'tb_solenidade_liturgica'
+                    )
+                    LOOP
+                        EXECUTE 'TRUNCATE TABLE calendario.' || quote_ident(tabela.tablename)
+                            || ' RESTART IDENTITY CASCADE';
+                    END LOOP;
+                END $$;
+                """);
     }
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
+        assertEquals(14, flyway.info().applied().length,
+                "O baseline deve manter uma migração Flyway por contexto com persistência");
+
         Path seedFilePath = Path.of("../docker/seed-data.sql");
         assertTrue(Files.exists(seedFilePath), "seed-data.sql file must exist in docker directory");
 
@@ -103,6 +95,14 @@ public class SeedDataSqlIntegrityTest {
                 "SELECT COUNT(*) FROM calendario.solicitacoes_ajuste_clerical", Integer.class);
         Integer relacionamentosCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.relacionamentos_familiares", Integer.class);
+        Integer idempotencyCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.evento_idempotency", Integer.class);
+        Integer revisoesNotasCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.observacoes_nota_revisoes", Integer.class);
+        Integer statusReservasCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT status) FROM calendario.reservas", Integer.class);
+        Integer statusAprovacoesCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT status) FROM calendario.aprovacoes", Integer.class);
 
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
         assertTrue(unidadesCount != null && unidadesCount > 0, "UnidadeTerritorial should be populated");
@@ -122,5 +122,50 @@ public class SeedDataSqlIntegrityTest {
                 "Seed deve incluir solicitações de ajuste clerical");
         assertTrue(relacionamentosCount != null && relacionamentosCount >= 6,
                 "Seed deve incluir relacionamentos familiares polimórficos");
+        assertTrue(idempotencyCount != null && idempotencyCount > 0,
+                "Seed deve incluir comando idempotente de criação de evento");
+        assertTrue(revisoesNotasCount != null && revisoesNotasCount > 0,
+                "Seed deve incluir histórico de revisão de nota de evento");
+        assertTrue(statusReservasCount != null && statusReservasCount >= 5,
+                "Seed deve incluir reservas em múltiplos estados operacionais");
+        assertTrue(statusAprovacoesCount != null && statusAprovacoesCount >= 4,
+                "Seed deve incluir decisões pendentes, aprovadas, reprovadas e com falha");
+    }
+
+    /**
+     * CRITÉRIO DE ACEITAÇÃO: o baseline precisa manter o catálogo PostgreSQL
+     * autodescritivo para que operações e auditorias entendam cada estrutura sem
+     * depender da leitura dos fontes da aplicação.
+     */
+    @Test
+    void deveDocumentarTodasAsTabelasEColunasDoSchemaCalendario() {
+        Integer tabelasSemDescricao = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM pg_class tabela
+                INNER JOIN pg_namespace esquema ON esquema.oid = tabela.relnamespace
+                LEFT JOIN pg_description descricao ON descricao.objoid = tabela.oid
+                    AND descricao.objsubid = 0
+                WHERE esquema.nspname = 'calendario'
+                  AND tabela.relkind = 'r'
+                  AND tabela.relname <> 'flyway_schema_history'
+                  AND descricao.description IS NULL
+                """, Integer.class);
+        Integer colunasSemDescricao = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM pg_class tabela
+                INNER JOIN pg_namespace esquema ON esquema.oid = tabela.relnamespace
+                INNER JOIN pg_attribute coluna ON coluna.attrelid = tabela.oid
+                LEFT JOIN pg_description descricao ON descricao.objoid = tabela.oid
+                    AND descricao.objsubid = coluna.attnum
+                WHERE esquema.nspname = 'calendario'
+                  AND tabela.relkind = 'r'
+                  AND tabela.relname <> 'flyway_schema_history'
+                  AND coluna.attnum > 0
+                  AND NOT coluna.attisdropped
+                  AND descricao.description IS NULL
+                """, Integer.class);
+
+        assertThat(tabelasSemDescricao).isZero();
+        assertThat(colunasSemDescricao).isZero();
     }
 }

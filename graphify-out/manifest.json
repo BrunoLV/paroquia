@@ -2014,346 +2014,6 @@
     "ast_hash": "873364013b94daeacbf3d2335aefeba9",
     "semantic_hash": ""
   },
-  "gestao-paroquia/app/src/main/resources/db/migration/V001__calendar_baseline.sql": {
-    "mtime": 1786157038.4387293,
-    "ast_hash": "87fca4f6455f64c3097c5f6c0dd44b75",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V002__create_eventos.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "495e972b76451807203d0723867c6298",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V003__create_projetos_eventos.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "89df495d4272eb11d44056ba61b88308",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V004__create_eventos_envolvidos.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "7b80fa7d91d4e51e971adc0e73b0840a",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V005__create_eventos_recorrencia.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "78d792beda7a3e0a2d335713a4b388bb",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V006__create_observacoes_evento.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "8c6dcfc3da7b7761ade2b8af9550eda4",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V007__indexes_eventos_periodo_status.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "826e5195ee01970eb2d493bc173d165a",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V008__create_evento_idempotency.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "386702eb17be81b4e64a78c138641df4",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V009__add_evento_conflict_pending_fields.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "bd209322181d821dd4129468bf7d98ba",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V010__create_aprovacoes.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "7bd689bc1d1bc46545bfa88fcfd6df8d",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V011__create_usuarios_membros_organizacao.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "a122702b5351b198f11716f60f522f67",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V012__extend_aprovacoes_for_pending_actions.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "e5d2192ae8f4ce601636155888b1f0f5",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V015__approval_action_payload_for_create_update.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "9df7dc46b71f8ecaeeb9a898db2a0869",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V016__extend_observacoes_evento_for_note_lifecycle.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "d4c63df51cf9614a09650770fe9815c0",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V017__create_auditoria_operacao.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "556165630d3574a84649601bbd51944f",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V018__add_aprovacao_error_message.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "abff1181cd57ee595784117c35a62e59",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V019__add_regra_json_to_recorrencia.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "48f524a5adf346309488b3eec3b9e67e",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V020__create_job_locks.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "709f672d291621d77e8aa3279c834344",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V021__add_recorrencia_id_to_eventos.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "ec446a9f92e284452c36a3bfbcd85cfa",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V022__evolve_projetos_for_management.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "2a38824e092748e5bd6b9011669db2fb",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V023__link_eventos_to_projetos.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "b083e385b908e46fa2d5c0e0bb176149",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V024__remove_categorias_table_add_enum_column.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "fe6a94c04325e365d50d6ad987100bd1",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V025__add_version_to_locais.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "fd17af468519abd3d9ab8a2ee7195938",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V026__create_anos_paroquiais.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "805137342b587f349990adee1726a58d",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V027__add_version_to_usuarios_membros.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "fc3b81f9b068ca604b81ff3321c82fdc",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V028__evolve_locais_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "3f5c04cc71a5ffe9330b14478639abec",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V029__evolve_organizacoes_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "d6ec6b8e8ccaf583101cedd63dbfae31",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V030__add_roles_to_usuarios_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "e11f33bf7eb54d4c70a5df7e665e5186",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V031__create_membros_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "d82a9584e7901c76392e1a97ac02da83",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V032__create_participantes_organizacoes_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "7b7d0f9be324e04ab5378d87dd2c2938",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V033__rename_planejamento_status_anos_paroquiais.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "a1486c8714e7c1acf8f9589fd3c408bd",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V034__create_projeto_solicitacoes_aprovacao_and_update_status.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "2c7ce6a01efba86d2eb57d528e19d881",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V035__create_paroquia_configuracao.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "6bf4c19a5a368e98a850adc0bf6f5dcb",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V036__add_coordenadores_to_organizacoes.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "374943079ba0fc2cedb9f06c98879b64",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V037__add_cadastro_fields_to_usuarios.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "c0ca5bd7c2d553a111de98c0a9a9df28",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V038__add_matriz_comunidades_fields.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "7479380e080ff8ff508d0a5f7645269f",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V039__add_event_igreja_vinculo.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "15b3c6761df3cbcb3653c73b587282fd",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V040__create_pastorais_movimentos_oficiais.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "e9fdb8b4eac1297396434a1cd5703dee",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V041__alter_pastorais_movimentos_oficiais_version_type.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "5149126fce31cfba67f6c70113ee4ef7",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V042__update_user_roles.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "9a49b139028fab0ca2c22a3df12b665d",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V043__add_usuario_igreja_id.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "f00b5586d687c7ba15082700ffe8e011",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V044__unificar_membros_usuarios.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "6107f6afb94ccaedcb21910ab26b85b5",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V045__rbac_eclesial_and_agenda_priority.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "52370285f66f440e8144e8425a851b71",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V046__migrate_generic_roles_to_specific.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "5a119681b4865f48c8c96191ebaf5b47",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V047__create_cpc_decisoes_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "c795a7980f2461319d97d482cfda0747",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V048__add_organizacao_id_to_locais.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "ff41017d4ca8473fc9e22d4199ed65c6",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V049__create_tabela_ciclo_liturgico.sql": {
-    "mtime": 1786157038.4399912,
-    "ast_hash": "9920eaccb69ddd3e9d3ec488d365ad3e",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V050__create_tabela_anos_liturgicos.sql": {
-    "mtime": 1786157038.4406338,
-    "ast_hash": "a8358f07a9ad5bac207af300259fd4df",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V051__seed_dez_anos_ciclos_liturgicos.sql": {
-    "mtime": 1786157038.4410384,
-    "ast_hash": "af8fa1330ff1404b26e1ab4c60eccf6f",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V052__create_tabela_solenidade_liturgica.sql": {
-    "mtime": 1786157038.441454,
-    "ast_hash": "c53285a96dffd1c00f6f0010d4ca5ced",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V053__create_patrimonio_tables.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "10e9219b1e6990759c24cfd35f18426b",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V054__create_alocacoes_ativos.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "72f0e588fbdbfcf5aadc5cd98416ba4c",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V055__normalize_legacy_conselho_tipo_organizacao_membros.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "4a625aaa900129cbd3895685184a7929",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V056__create_fieis_table.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "13e20803548cc83b50fa06f4a2828254",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V057__add_fiel_id_and_auditoria_to_usuarios.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "2af1476ddc8a7a43ba8d2b5a75286002",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V058__make_fiel_id_mandatory_on_usuarios.sql": {
-    "mtime": 1786156453.4690146,
-    "ast_hash": "0c3042f5e0d22452411801881aaa2016",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V059__add_sacramentos_to_fieis.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "8cf38facb39c072d3ddc61fb7c74b6da",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V060__remove_dados_pessoais_from_usuarios.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "5b8756b5ed54b5547ee6e2f72e9bb235",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V061__create_membro_grupo.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "e0e7ce5cf5128f54a345e70b49d0409e",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V062__create_papel_global.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "89a28783d66895c81fb3b17c8d2e616c",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V063__create_unidade_territorial.sql": {
-    "mtime": 1786157038.441834,
-    "ast_hash": "7cbb40dd5319d06a6ad4c2ed5deab897",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V064__rename_organizacoes_to_grupo_paroquial.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "ab4176e30475e92fd5bda1874eb5df60",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V065__rename_membro_grupo_organizacao_columns.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "61dc89b00eb00fd3005990f3a49d8f56",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V066__fix_grupo_paroquial_column_renames.sql": {
-    "mtime": 1786036367.295301,
-    "ast_hash": "dd19275079a78712edd77e65eb7b5bee",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V067__alter_fieis_cpf_hash_to_varchar.sql": {
-    "mtime": 1786157609.0685012,
-    "ast_hash": "06477a8313f30164dc7d25c7cf714bf5",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V068__reestruturacao_agregado_fiel_lgpd.sql": {
-    "mtime": 1786337794.4477842,
-    "ast_hash": "09be6994189a2a7fb04b21a0a8577f1e",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V069__remover_colunas_sacramentos_redundantes_fiel.sql": {
-    "mtime": 1786340708.384341,
-    "ast_hash": "5f442b50751aca26b97345dadd012bc0",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V070__garantir_colunas_reestruturacao_fiel.sql": {
-    "mtime": 1788230243.0266416,
-    "ast_hash": "6f63f2a51d9b25aecc61b5a10158378d",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/aprovacao/application/usecase/AprovacaoExecutionResilienceTest.java": {
     "mtime": 1789356841.098299,
     "ast_hash": "2a5ae295c769e57e2a64beb68d44acfd",
@@ -2620,8 +2280,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/repository/CicloLiturgicoRepositoryTest.java": {
-    "mtime": 1789388434.2270267,
-    "ast_hash": "1cda2e9a130d2157b5e8a305dba8df05",
+    "mtime": 1789615070.9110923,
+    "ast_hash": "5d1084f6f9442d06119bc5f2ebb8011d",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/repository/JobLockJpaRepositoryTest.java": {
@@ -2660,8 +2320,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/SeedDataSqlIntegrityTest.java": {
-    "mtime": 1789563696.7299924,
-    "ast_hash": "5a1ffb3c4e3aea658d3cd9cf5b4b7a91",
+    "mtime": 1789615511.9435012,
+    "ast_hash": "07f0394525522517477b08ef171326f9",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/SmokeCalendarFlowTest.java": {
@@ -3540,8 +3200,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/resources/sql/security-fixtures.sql": {
-    "mtime": 1788917346.6701689,
-    "ast_hash": "8fb7aa5d5dd3a45df16cf260ef679be2",
+    "mtime": 1789615070.9110923,
+    "ast_hash": "626baf1484a97e5e8adeb3c349a4c0be",
     "semantic_hash": ""
   },
   "gestao-paroquia/build.gradle.kts": {
@@ -3555,8 +3215,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/docker/seed-data.sql": {
-    "mtime": 1789388198.0451465,
-    "ast_hash": "dd06824a50157a82c678327796188241",
+    "mtime": 1789614466.5619662,
+    "ast_hash": "4f415cb9c47f1ec4018f927a35baa352",
     "semantic_hash": ""
   },
   "gestao-paroquia/gradlew": {
@@ -3650,13 +3310,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/README.md": {
-    "mtime": 1789588636.9108446,
-    "ast_hash": "956340a935db030856f167a5bfc77500",
+    "mtime": 1789615728.8692107,
+    "ast_hash": "1fabebbfc48e05ca9688179c2c56ea8e",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/application.yml": {
-    "mtime": 1789608301.0370142,
-    "ast_hash": "986201f566ee1c9ab178a234b0f5f766",
+    "mtime": 1789615892.4940746,
+    "ast_hash": "f52885805e78afe0f4ff9afca207b582",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/resources/application.yml": {
@@ -3667,11 +3327,6 @@
   "gestao-paroquia/app/src/main/resources/logo-paroquia.png": {
     "mtime": 1786036367.2967024,
     "ast_hash": "c725c2be0189353fd3290ff5262ff4cc",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V071__adicionar_colunas_sacramentos_fiel.sql": {
-    "mtime": 1788717460.3367898,
-    "ast_hash": "ce0b7ea66f7f423ee36732f364218142",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/AlterarStatusFielRequest.java": {
@@ -3689,26 +3344,6 @@
     "ast_hash": "e579276684ffdbe1f9f155591c92d52e",
     "semantic_hash": ""
   },
-  "gestao-paroquia/app/src/main/resources/db/migration/V072__ciclo_vida_lgpd_fieis.sql": {
-    "mtime": 1788749701.82794,
-    "ast_hash": "cc0f05c42ffa3a1cbd136655706c1385",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V073__dados_permanentes_certidao_sacramental.sql": {
-    "mtime": 1788750583.216095,
-    "ast_hash": "b26ff1eb9cc0968167c09578bc63061b",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V074__nome_permanente_certidao_sacramental.sql": {
-    "mtime": 1788750828.8561382,
-    "ast_hash": "4eef249865ca8ad13b4ec040fb20143a",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V075__solicitacoes_certidao_sacramental.sql": {
-    "mtime": 1788772391.449324,
-    "ast_hash": "71f2c514f8038f6ba59c2922e3096c8f",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/ContatoDto.java": {
     "mtime": 1788780634.2092044,
     "ast_hash": "8416afeb1c9e0cb7063fb4ddd32c62dc",
@@ -3722,11 +3357,6 @@
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/IgrejaFrequentaDto.java": {
     "mtime": 1788780634.2092044,
     "ast_hash": "78b4d91805ea55972569b171b735037d",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V076__reestruturar_cadastro_civil_fieis.sql": {
-    "mtime": 1788784158.5997841,
-    "ast_hash": "27bf7d5e74cb308929e749364939ec29",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/controller/AjusteCadastralController.java": {
@@ -3757,11 +3387,6 @@
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/infrastructure/persistence/repository/SolicitacaoAjusteCadastralJpaRepository.java": {
     "mtime": 1788795830.809136,
     "ast_hash": "8a277c2938d9dc54ddf43417bec41146",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V077__ajustes_e_relacionamentos_familiares.sql": {
-    "mtime": 1788784211.1987715,
-    "ast_hash": "5bc2d80693df9a7935b81debe02a2e00",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/controller/RelacionamentoFamiliarController.java": {
@@ -3822,11 +3447,6 @@
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/infrastructure/persistence/repository/NotificacaoJpaRepository.java": {
     "mtime": 1788820053.6412296,
     "ast_hash": "2f6618f86237a9034cb3d98c74e43f69",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V078__central_notificacoes.sql": {
-    "mtime": 1788781931.04336,
-    "ast_hash": "7804b6b567414a73ad2a78b7ac345543",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/fiel/api/v1/dto/SolicitacaoAjusteCadastralResponse.java": {
@@ -3934,11 +3554,6 @@
     "ast_hash": "af5d76fa32bf7fc2fc48189d35603c71",
     "semantic_hash": ""
   },
-  "gestao-paroquia/app/src/main/resources/db/migration/V079__create_clero.sql": {
-    "mtime": 1788801776.7141507,
-    "ast_hash": "d68eb56ffe7ca66b380e24b3aa1dbec3",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/clero/domain/model/GrauOrdemTest.java": {
     "mtime": 1788799703.2938962,
     "ast_hash": "9dfcfdc73d9afb9e2811f2739679df70",
@@ -4009,11 +3624,6 @@
     "ast_hash": "decdb21d433186c8218989a43cab0b26",
     "semantic_hash": ""
   },
-  "gestao-paroquia/app/src/main/resources/db/migration/V080__migrate_legacy_grau_ordem_clerigos.sql": {
-    "mtime": 1788811389.7884703,
-    "ast_hash": "bfbfd92d98d1db7ead02e40a56563314",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/clero/package-info.java": {
     "mtime": 1788821414.763589,
     "ast_hash": "1131f8ddd9c78c0f69761e18cd549304",
@@ -4027,11 +3637,6 @@
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/local/domain/model/EnderecoLocal.java": {
     "mtime": 1788874648.9918854,
     "ast_hash": "97587f0215ffe4022e61d1c034b343eb",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V081__update_locais_address_and_soft_delete.sql": {
-    "mtime": 1788868733.805186,
-    "ast_hash": "eeba73990edb12f6a46e42532f3a5f4f",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/api/v1/controller/ReservaController.java": {
@@ -4274,11 +3879,6 @@
     "ast_hash": "de29993f1e0fc6437d79b232ad714b2c",
     "semantic_hash": ""
   },
-  "gestao-paroquia/app/src/main/resources/db/migration/V082__create_reservas_table.sql": {
-    "mtime": 1788916297.5021598,
-    "ast_hash": "b33a5c96bcb99398bfac35c2f5b4fb55",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/reserva/domain/model/ReservaTest.java": {
     "mtime": 1789326937.4499967,
     "ast_hash": "a153347657c5e61014b0b785155cec97",
@@ -4517,21 +4117,6 @@
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/reserva/infrastructure/acl/ConsultaManutencaoAtivoAdapter.java": {
     "mtime": 1789014244.4485512,
     "ast_hash": "46f7cad9246ca54b5469f074a49021d9",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V083__patrimonio_adequacao_ativos.sql": {
-    "mtime": 1789014244.4498832,
-    "ast_hash": "a20b699d1a59afcbf63d274da8a5ba52",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V084__patrimonio_ativo_manutencoes.sql": {
-    "mtime": 1789014244.4498832,
-    "ast_hash": "c8febd3ca36cb96965b96c29794125c3",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V085__patrimonio_remove_alocacoes_ativos.sql": {
-    "mtime": 1789014244.4498832,
-    "ast_hash": "64d3524e9140466809b155f4af8998e1",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/patrimonio/application/usecase/EnviarAtivoParaManutencaoUseCaseTest.java": {
@@ -5199,11 +4784,6 @@
     "ast_hash": "f6c209124ed2db0aeef292e085fb3edd",
     "semantic_hash": ""
   },
-  "gestao-paroquia/app/src/main/resources/db/migration/V086__adiciona_comentarios_documentacao_tabelas_principais.sql": {
-    "mtime": 1789228268.0414667,
-    "ast_hash": "c5a59aa0bc5427bb1fa9f025a384b6b0",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/policy/CreateRequestMode.java": {
     "mtime": 1789228385.825329,
     "ast_hash": "51f487bc4e1445d40ac968d278c49128",
@@ -5562,11 +5142,6 @@
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/support/infrastructure/persistence/entity/BaseAuditableEntity.java": {
     "mtime": 1789388639.7929225,
     "ast_hash": "abe908c0bb93350fcbfe6254576f85aa",
-    "semantic_hash": ""
-  },
-  "gestao-paroquia/app/src/main/resources/db/migration/V087__padroniza_auditoria_entidades.sql": {
-    "mtime": 1789386983.3789911,
-    "ast_hash": "072efca1d2eff3ede6a6c93dc7faf6c8",
     "semantic_hash": ""
   },
   ".gemini.md": {
@@ -7052,6 +6627,76 @@
   "gestao-paroquia-ui/src/shared/utils/statusMeta/vocacaoStatus.ts": {
     "mtime": 1789610328.6534867,
     "ast_hash": "7187c583d3088ebe91c52d86f9bc3578",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V001__organizacao.sql": {
+    "mtime": 1789616307.7983377,
+    "ast_hash": "2003611e406b12523b94ca23604d4905",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V002__fiel.sql": {
+    "mtime": 1789616307.7983377,
+    "ast_hash": "e924df841f78673a4c28299b09d43475",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V003__clero.sql": {
+    "mtime": 1789616307.7983377,
+    "ast_hash": "9a75824fd9d73a529024d81dd9c28b29",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V004__iam.sql": {
+    "mtime": 1789616307.7983377,
+    "ast_hash": "18bcbe134a7cc8370bf084884d1ec46a",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V005__membro.sql": {
+    "mtime": 1789616250.660303,
+    "ast_hash": "e4383d4b9a3d389b6d68a59f5ecea611",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V006__local.sql": {
+    "mtime": 1789616250.660303,
+    "ast_hash": "2d834d94528db2f7e6c6168f10f13de4",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V007__governanca.sql": {
+    "mtime": 1789616307.7983377,
+    "ast_hash": "c8d9970a94eded5ee6804f54ab273318",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V008__projeto.sql": {
+    "mtime": 1789616307.7993376,
+    "ast_hash": "655c4865ff1f2931824ffd1bf3347fd0",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V009__calendario.sql": {
+    "mtime": 1789616307.7993376,
+    "ast_hash": "aa1fcfa7c028e11d107ce0610e333710",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V010__aprovacao.sql": {
+    "mtime": 1789616250.6643033,
+    "ast_hash": "529995bb3e2ae3ca1e10c790b0becf9c",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V011__conselho.sql": {
+    "mtime": 1789616307.7993376,
+    "ast_hash": "586f7a32601f0e48a48acacf961a6fce",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V012__patrimonio.sql": {
+    "mtime": 1789616307.7993376,
+    "ast_hash": "42e99f95c9ff1c02eb30488dff5dde6c",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V013__reserva.sql": {
+    "mtime": 1789616003.613154,
+    "ast_hash": "58767aed01133f5e107fecefe175bc21",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/resources/db/migration/V014__observabilidade.sql": {
+    "mtime": 1789616307.8003378,
+    "ast_hash": "f1a82f4caa22015193942879fd95ec00",
     "semantic_hash": ""
   }
 }
