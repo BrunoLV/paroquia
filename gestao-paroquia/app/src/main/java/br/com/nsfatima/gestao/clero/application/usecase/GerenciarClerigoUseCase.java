@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoResponse;
 import br.com.nsfatima.gestao.clero.api.v1.dto.EncargoClericalResponse;
 import br.com.nsfatima.gestao.clero.domain.model.Clerigo;
 import br.com.nsfatima.gestao.clero.domain.model.DadosCadastraisClerigo;
+import br.com.nsfatima.gestao.clero.domain.model.EnderecoClerigo;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.observability.ClerigoAuditPublisher;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
@@ -161,10 +162,18 @@ public class GerenciarClerigoUseCase {
     }
 
     private static DadosCadastraisClerigo dados(ClerigoRequest r) {
+        EnderecoClerigo endereco = r.endereco() == null ? EnderecoClerigo.vazio() : new EnderecoClerigo(
+                r.endereco().cep(),
+                r.endereco().logradouro(),
+                r.endereco().numero(),
+                r.endereco().complemento(),
+                r.endereco().bairro(),
+                r.endereco().cidade(),
+                r.endereco().uf());
         return new DadosCadastraisClerigo(
                 r.nomeCivil(), r.nomeEclesiastico(), r.dataNascimento(), r.paisOrigem(),
                 r.cpf(), r.rg(), r.documentoEstrangeiro(), r.email(), r.celular(), r.isWhatsapp(),
-                r.telefoneFixo(), r.endereco(), r.grauOrdem(), r.dioceseIncardinacao(),
+                r.telefoneFixo(), endereco, r.grauOrdem(), r.dioceseIncardinacao(),
                 r.dataOrdenacaoDiaconal(), r.dataOrdenacaoPresbiteral(), r.dataOrdenacaoEpiscopal());
     }
 

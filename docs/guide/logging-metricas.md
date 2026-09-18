@@ -100,3 +100,30 @@ As rotas de saúde são configuradas para garantir integração imediata com orq
   Indica se o processo Java está vivo e respondendo. Caso falhe, o orquestrador reinicia o contêiner.
 - **Readiness Probe (`/actuator/health/readiness`):**
   Verifica se as conexões com o PostgreSQL e migrações do Flyway estão prontas para receber tráfego de usuários. Se o banco estiver indisponível, o tráfego é temporariamente drenado.
+
+---
+
+## 5. Agregação e Centralização de Logs com Grafana Loki & Promtail
+
+O ecossistema conta com **Grafana Loki** e **Promtail** para indexação e visualização unificada de logs de infraestrutura e aplicação.
+
+### 5.1. Arquitetura de Coleta Híbrida
+- **Promtail:** Agente leve responsável pelo envio de streams de logs para a API push do Loki (`http://loki:3100/loki/api/v1/push`).
+  - **Containers Docker:** Descoberta dinâmica via `/var/run/docker.sock`, etiquetando `gestao-api` com `app="backend"` e `gestao-ui` com `app="frontend"`.
+  - **Desenvolvimento Local:** Monitoramento ativo dos arquivos `.run/api.log` e `.run/ui.log` gerados pelo comando `./manage.sh dev`.
+  - **Extração de Severidade:** Pipeline regex que extrai os níveis `INFO`, `WARN`, `ERROR` e `DEBUG` para indexação instantânea como label.
+
+### 5.2. Telemetria de Logs da UI (Client-Side)
+- O frontend React 19 conta com o módulo singleton `logger.ts` (`src/shared/infrastructure/logging/logger.ts`), que:
+  - Captura erros de renderização via `AppErrorBoundary`.
+  - Captura falhas de comunicação HTTP via interceptor do Axios.
+  - Captura exceções e rejeições globais (`window.addEventListener('error')`, `unhandledrejection`).
+  - Enfileira eventos em buffer e descarrega em lote assíncrono para o endpoint `POST /api/v1/observabilidade/logs`.
+- O backend sanitiza o lote contra PII (LGPD PII Zero) e emite os registros via Log4j2 sob a tag `[UI_CLIENT]`, permitindo correlação ponta a ponta pelo `correlationId`.
+
+### 5.3. Consultas LogQL Úteis no Grafana
+- **Todos os logs do backend:** `{app="backend"}`
+- **Erros no backend:** `{app="backend", level="ERROR"}`
+- **Logs do frontend / interface:** `{app="frontend"}` ou `{app="backend"} |= "[UI_CLIENT]"`
+- **Rastreamento por Correlation ID:** `{app=~"backend|frontend"} |= "corrId=c7a8b920-..."`
+

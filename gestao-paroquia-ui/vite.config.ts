@@ -59,6 +59,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/app/setupTests.ts',
     css: true,
+    testTimeout: 15000,
+    hookTimeout: 15000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

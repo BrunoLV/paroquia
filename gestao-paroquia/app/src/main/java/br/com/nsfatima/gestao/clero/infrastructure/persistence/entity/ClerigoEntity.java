@@ -58,6 +58,33 @@ public class ClerigoEntity extends BaseAuditableEntity {
     @Convert(converter = EncryptedStringConverter.class)
     private String endereco;
 
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "endereco_cep")
+    private String enderecoCep;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "endereco_logradouro", length = 500)
+    private String enderecoLogradouro;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "endereco_numero")
+    private String enderecoNumero;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "endereco_complemento")
+    private String enderecoComplemento;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "endereco_bairro")
+    private String enderecoBairro;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "endereco_cidade")
+    private String enderecoCidade;
+
+    @Column(name = "endereco_uf", length = 2)
+    private String enderecoUf;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GrauOrdem grauOrdem;
@@ -176,6 +203,62 @@ public class ClerigoEntity extends BaseAuditableEntity {
 
     public void setEndereco(String valor) {
         endereco = valor;
+    }
+
+    public String getEnderecoCep() {
+        return enderecoCep;
+    }
+
+    public void setEnderecoCep(String valor) {
+        enderecoCep = valor;
+    }
+
+    public String getEnderecoLogradouro() {
+        return enderecoLogradouro;
+    }
+
+    public void setEnderecoLogradouro(String valor) {
+        enderecoLogradouro = valor;
+    }
+
+    public String getEnderecoNumero() {
+        return enderecoNumero;
+    }
+
+    public void setEnderecoNumero(String valor) {
+        enderecoNumero = valor;
+    }
+
+    public String getEnderecoComplemento() {
+        return enderecoComplemento;
+    }
+
+    public void setEnderecoComplemento(String valor) {
+        enderecoComplemento = valor;
+    }
+
+    public String getEnderecoBairro() {
+        return enderecoBairro;
+    }
+
+    public void setEnderecoBairro(String valor) {
+        enderecoBairro = valor;
+    }
+
+    public String getEnderecoCidade() {
+        return enderecoCidade;
+    }
+
+    public void setEnderecoCidade(String valor) {
+        enderecoCidade = valor;
+    }
+
+    public String getEnderecoUf() {
+        return enderecoUf;
+    }
+
+    public void setEnderecoUf(String valor) {
+        enderecoUf = valor;
     }
 
     public GrauOrdem getGrauOrdem() {

@@ -13,6 +13,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoInstitucionalResponse;
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoRequest;
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoResponse;
+import br.com.nsfatima.gestao.clero.api.v1.dto.EnderecoClerigoDto;
 import br.com.nsfatima.gestao.clero.application.usecase.GerenciarAjusteClericalUseCase;
 import br.com.nsfatima.gestao.clero.application.usecase.GerenciarClerigoUseCase;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
@@ -41,6 +42,8 @@ class ClerigoControllerTest {
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
+    private final EnderecoClerigoDto enderecoPadrao =
+            new EnderecoClerigoDto("08000-000", "Rua 1", "10", null, "Centro", "São Paulo", "SP");
 
     @BeforeEach
     void setUp() {
@@ -70,7 +73,7 @@ class ClerigoControllerTest {
         when(useCase.obter(id)).thenReturn(new ClerigoResponse(
                 id, "João", "Padre João", LocalDate.of(1980, 1, 1), "BRA",
                 "123.456.789-01", null, null, "padre@test.com", "(11) 99999-8888",
-                true, null, "Rua 1", GrauOrdem.PADRE_DIOCESANO, "Diocese",
+                true, null, enderecoPadrao, GrauOrdem.PADRE_DIOCESANO, "Diocese",
                 LocalDate.of(2005, 1, 1), LocalDate.of(2006, 1, 1), null,
                 FuncaoEclesiastica.PAROCO, true));
 
@@ -96,7 +99,7 @@ class ClerigoControllerTest {
                 "11999998888",
                 true,
                 null,
-                "Rua 1",
+                enderecoPadrao,
                 GrauOrdem.PADRE_DIOCESANO,
                 "Diocese",
                 LocalDate.of(2005, 1, 1),
@@ -146,7 +149,7 @@ class ClerigoControllerTest {
         when(useCase.obterPorUsuario(userId)).thenReturn(new ClerigoResponse(
                 UUID.randomUUID(), "João", "Padre João", LocalDate.of(1980, 1, 1), "BRA",
                 "123.456.789-01", null, null, "padre@test.com", "(11) 99999-8888",
-                true, null, "Rua 1", GrauOrdem.PADRE_DIOCESANO, "Diocese",
+                true, null, enderecoPadrao, GrauOrdem.PADRE_DIOCESANO, "Diocese",
                 LocalDate.of(2005, 1, 1), LocalDate.of(2006, 1, 1), null,
                 FuncaoEclesiastica.PAROCO, true));
 
@@ -173,7 +176,7 @@ class ClerigoControllerTest {
                 "11999998888",
                 true,
                 null,
-                "Rua 1",
+                enderecoPadrao,
                 GrauOrdem.PADRE_DIOCESANO,
                 "Diocese",
                 LocalDate.of(2005, 1, 1),

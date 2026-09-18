@@ -38,6 +38,29 @@ public class AcaoRastreamentoFilter extends OncePerRequestFilter {
     public static final String MDC_GRUPO_PAROQUIAL_ID = "grupoParoquialId";
     public static final String MDC_ACAO = "acao";
 
+    private static final String PREFIXO_ACTUATOR = "/actuator";
+
+    /**
+     * Isola endpoints operacionais e de telemetria (health check, prometheus e métricas)
+     * do pipeline de rastreamento transacional para prevenir poluição dos registros de auditoria
+     * e sobrecarga desnecessária em sondagens frequentes de orquestradores.
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri != null) {
+            String contextPath = request.getContextPath();
+            String path = (contextPath != null && !contextPath.isEmpty() && uri.startsWith(contextPath))
+                    ? uri.substring(contextPath.length())
+                    : uri;
+            if (path.startsWith(PREFIXO_ACTUATOR)) {
+                return true;
+            }
+        }
+        String servletPath = request.getServletPath();
+        return servletPath != null && servletPath.startsWith(PREFIXO_ACTUATOR);
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,

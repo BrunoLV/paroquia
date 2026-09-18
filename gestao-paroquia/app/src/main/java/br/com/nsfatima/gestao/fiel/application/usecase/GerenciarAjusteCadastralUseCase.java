@@ -95,11 +95,11 @@ public class GerenciarAjusteCadastralUseCase {
                 entity.getCelular(),
                 entity.getTelefoneFixo(),
                 new EnderecoDto(
+                        entity.getEnderecoCep(),
                         entity.getEnderecoLogradouro(),
                         entity.getEnderecoNumero(),
                         entity.getEnderecoComplemento(),
                         entity.getEnderecoBairro(),
-                        entity.getEnderecoCep(),
                         entity.getEnderecoCidade(),
                         entity.getEnderecoEstado()),
                 entity.getCriadoEmUtc());

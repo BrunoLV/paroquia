@@ -1,0 +1,70 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # 1. Scrape dos contêineres Docker da Paróquia
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/gestao-(api|ui)'
+        action: keep
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/gestao-(.*)'
+        target_label: 'service'
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/gestao-api'
+        target_label: 'app'
+        replacement: 'backend'
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/gestao-ui'
+        target_label: 'app'
+        replacement: 'frontend'
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+    pipeline_stages:
+      - regex:
+          expression: '(?P<level>INFO|WARN|ERROR|DEBUG|TRACE)'
+      - labels:
+          level:
+
+  # 2. Scrape dos logs gerados durante desenvolvimento local (./manage.sh dev)
+  - job_name: local-dev-backend
+    static_configs:
+      - targets: ['localhost']
+        labels:
+          job: local-api
+          app: backend
+          service: api
+          container: local-api
+          __path__: /var/log/paroquia-dev/api.log
+    pipeline_stages:
+      - regex:
+          expression: '(?P<level>INFO|WARN|ERROR|DEBUG|TRACE)'
+      - labels:
+          level:
+
+  - job_name: local-dev-frontend
+    static_configs:
+      - targets: ['localhost']
+        labels:
+          job: local-ui
+          app: frontend
+          service: ui
+          container: local-ui
+          __path__: /var/log/paroquia-dev/ui.log
+    pipeline_stages:
+      - regex:
+          expression: '(?P<level>INFO|WARN|ERROR|DEBUG|TRACE)'
+      - labels:
+          level:

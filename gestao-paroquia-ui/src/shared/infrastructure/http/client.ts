@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '@/shared/infrastructure/logging/logger';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
@@ -11,10 +12,24 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    if (status === 401) {
       localStorage.removeItem('user');
       // Remove window.location.href = '/acesso' to avoid infinite refresh loops.
       // Component-level logic (e.g., ProtectedRoute) should handle redirection.
+    } else if (status && status >= 400 && !error.config?.url?.includes('/observabilidade/logs')) {
+      logger.warn(
+        `Falha na requisição HTTP: ${error.config?.method?.toUpperCase()} ${error.config?.url} [Status ${status}]`,
+        {
+          componente: 'ApiClient',
+          detalhes: JSON.stringify({
+            status,
+            url: error.config?.url,
+            method: error.config?.method,
+            data: error.response?.data,
+          }),
+        }
+      );
     }
     return Promise.reject(error);
   }

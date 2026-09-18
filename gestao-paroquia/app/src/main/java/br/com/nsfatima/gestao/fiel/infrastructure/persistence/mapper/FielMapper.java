@@ -38,11 +38,11 @@ public class FielMapper {
                         telefone(fiel.getTelefoneFixo()),
                         fiel.getEmail()),
                 new EnderecoDto(
+                        cep(fiel.getEnderecoCep()),
                         fiel.getEnderecoLogradouro(),
                         fiel.getEnderecoNumero(),
                         fiel.getEnderecoComplemento(),
                         fiel.getEnderecoBairro(),
-                        cep(fiel.getEnderecoCep()),
                         fiel.getEnderecoCidade(),
                         fiel.getEnderecoEstado()),
                 unidade == null ? null : new IgrejaFrequentaDto(

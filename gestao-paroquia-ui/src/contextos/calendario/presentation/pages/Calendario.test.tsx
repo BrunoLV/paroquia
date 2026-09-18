@@ -279,10 +279,10 @@ test('displays events with pending actions with reduced opacity and indicator', 
   await renderCalendar(mockUser, aprovacoesPendentes);
 
   // It should render the event with [Pendente] indicator
-  expect(screen.getByText(/\[Pendente\] Missa Paroquial/i)).toBeInTheDocument();
+  const eventPill = await screen.findByText(/\[Pendente\] Missa Paroquial/i);
+  expect(eventPill).toBeInTheDocument();
 
   // Click on the event to see details dialog warning
-  const eventPill = screen.getByText(/\[Pendente\] Missa Paroquial/i);
   await act(async () => {
     fireEvent.click(eventPill);
   });

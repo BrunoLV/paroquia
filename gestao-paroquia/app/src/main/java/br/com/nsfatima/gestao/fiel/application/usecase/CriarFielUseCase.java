@@ -61,7 +61,8 @@ public class CriarFielUseCase {
         fiel.setSexo(r.sexo());
         fiel.setDataNascimento(r.dataNascimento());
         fiel.setPaisOrigem(r.paisOrigem());
-        fiel.setCpf(r.cpf());
+        String cleanCpf = r.cpf() != null ? r.cpf().replaceAll("\\D", "") : null;
+        fiel.setCpf(cleanCpf != null && !cleanCpf.isBlank() ? cleanCpf : null);
         fiel.setRg(r.rg());
         fiel.setDocumentoEstrangeiroTipo(r.tipoDocumentoEstrangeiro());
         fiel.setDocumentoEstrangeiroNumero(r.numeroDocumentoEstrangeiro());
@@ -73,13 +74,16 @@ public class CriarFielUseCase {
         fiel.setDizimista(r.isDizimista());
         fiel.setPermitirDivulgacaoAniversario(r.permitirDivulgacaoAniversario());
 
-        fiel.setEnderecoLogradouro(r.endereco().logradouro());
-        fiel.setEnderecoNumero(r.endereco().numero());
-        fiel.setEnderecoComplemento(r.endereco().complemento());
-        fiel.setEnderecoBairro(r.endereco().bairro());
-        fiel.setEnderecoCep(r.endereco().cep());
-        fiel.setEnderecoCidade(r.endereco().cidade());
-        fiel.setEnderecoEstado(r.endereco().estado());
+        if (r.endereco() != null) {
+            fiel.setEnderecoLogradouro(r.endereco().logradouro());
+            fiel.setEnderecoNumero(r.endereco().numero());
+            fiel.setEnderecoComplemento(r.endereco().complemento());
+            fiel.setEnderecoBairro(r.endereco().bairro());
+            fiel.setEnderecoCep(r.endereco().cep() != null ? r.endereco().cep().replaceAll("\\D", "") : null);
+            fiel.setEnderecoCidade(r.endereco().cidade());
+            String uf = r.endereco().uf() != null ? r.endereco().uf() : r.endereco().estado();
+            fiel.setEnderecoEstado(uf != null ? uf.trim().toUpperCase() : null);
+        }
     }
 
     private void validarUnidade(UUID id) {

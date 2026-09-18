@@ -6,6 +6,16 @@ import { z } from 'zod';
  * já presentes na UI original (`ClerigoFormModal`), antes apenas visuais
  * e não bloqueantes; agora efetivamente exigidos.
  */
+export const clerigoEnderecoSchema = z.object({
+  cep: z.string().optional(),
+  logradouro: z.string().optional(),
+  numero: z.string().optional(),
+  complemento: z.string().optional(),
+  bairro: z.string().optional(),
+  cidade: z.string().optional(),
+  uf: z.string().optional(),
+}).optional();
+
 export const clerigoSchema = z.object({
   nomeEclesiastico: z.string().trim().min(1, 'Nome eclesiástico é obrigatório'),
   nomeCivil: z.string().optional(),
@@ -30,7 +40,7 @@ export const clerigoSchema = z.object({
   email: z.string().trim().min(1, 'E-mail é obrigatório'),
   celular: z.string().trim().min(1, 'Celular é obrigatório'),
   telefoneFixo: z.string().optional(),
-  endereco: z.string().optional(),
+  endereco: clerigoEnderecoSchema,
   isWhatsapp: z.boolean(),
 });
 

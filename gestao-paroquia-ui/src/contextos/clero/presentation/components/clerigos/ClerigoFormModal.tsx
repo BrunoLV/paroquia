@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Card,
   CardContent,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   FormControlLabel,
   Grid,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -28,8 +31,9 @@ import ContactMailIcon from '@mui/icons-material/ContactMail';
 import SaveIcon from '@mui/icons-material/Save';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import type { Clerigo, ClerigoPayload } from '@/shared/domain/types/types';
-import { formatCpf, formatPhone, formatRg } from '@/shared/utils/masks';
+import { formatCep, formatCpf, formatPhone, formatRg } from '@/shared/utils/masks';
 import { clerigoSchema, ClerigoFormInput } from '@/contextos/clero/presentation/schemas/clerigoSchema';
+import { fetchAddressByCep } from '@/shared/infrastructure/external/viaCep';
 import {
   FUNCOES_ECLESIASTICAS,
   GRAUS_ORDEM,
@@ -64,11 +68,50 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<ClerigoFormInput>({
     resolver: zodResolver(clerigoSchema),
     defaultValues: estadoInicialForm() as ClerigoFormInput,
   });
+
+  const [loadingCep, setLoadingCep] = useState(false);
+  const numeroInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleCepLookup = async (rawCep: string) => {
+    const cleanDigits = rawCep.replace(/\D/g, '');
+    if (cleanDigits.length === 8) {
+      setLoadingCep(true);
+      try {
+        const address = await fetchAddressByCep(cleanDigits);
+        if (address) {
+          setValue('endereco.logradouro', address.logradouro, {
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+          setValue('endereco.bairro', address.bairro, {
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+          setValue('endereco.cidade', address.cidade, {
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+          setValue('endereco.uf', address.uf, {
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+          numeroInputRef.current?.focus();
+        }
+      } finally {
+        setLoadingCep(false);
+      }
+    }
+  };
 
   const handleClose = () => confirmDiscard(isDirty, onClose);
 
@@ -290,7 +333,7 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                   </Typography>
                 </Stack>
                 <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField
                       fullWidth
                       size="small"
@@ -302,7 +345,7 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                       {...register('email')}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 3 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <Controller
                       name="celular"
                       control={control}
@@ -321,7 +364,7 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                       )}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 3 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <Controller
                       name="telefoneFixo"
                       control={control}
@@ -338,15 +381,7 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                       )}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 9 }}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Endereço residencial"
-                      {...register('endereco')}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 3 }}>
+                  <Grid size={{ xs: 12 }}>
                     <Controller
                       name="isWhatsapp"
                       control={control}
@@ -359,6 +394,172 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                             />
                           }
                           label="Celular é WhatsApp"
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <Divider sx={{ my: 0.5 }} />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 4 }}>
+                    <Controller
+                      name="endereco.cep"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          label="CEP"
+                          placeholder="00000-000"
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.cep)}
+                          helperText={errors.endereco?.cep?.message}
+                          onChange={(e) => {
+                            const formatted = formatCep(e.target.value);
+                            field.onChange(formatted);
+                            handleCepLookup(formatted);
+                          }}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                            input: {
+                              endAdornment: loadingCep ? (
+                                <InputAdornment position="end">
+                                  <CircularProgress size={20} />
+                                </InputAdornment>
+                              ) : null,
+                            },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 8 }}>
+                    <Controller
+                      name="endereco.logradouro"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          label="Logradouro"
+                          placeholder="Rua, Avenida, Praça..."
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.logradouro)}
+                          helperText={errors.endereco?.logradouro?.message}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 3 }}>
+                    <Controller
+                      name="endereco.numero"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          inputRef={(element) => {
+                            field.ref(element);
+                            numeroInputRef.current = element;
+                          }}
+                          label="Número"
+                          placeholder="123"
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.numero)}
+                          helperText={errors.endereco?.numero?.message}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 9 }}>
+                    <Controller
+                      name="endereco.complemento"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          label="Complemento"
+                          placeholder="Bloco, sala, fundos..."
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.complemento)}
+                          helperText={errors.endereco?.complemento?.message}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 5 }}>
+                    <Controller
+                      name="endereco.bairro"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          label="Bairro"
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.bairro)}
+                          helperText={errors.endereco?.bairro?.message}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 5 }}>
+                    <Controller
+                      name="endereco.cidade"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          label="Cidade"
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.cidade)}
+                          helperText={errors.endereco?.cidade?.message}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 2 }}>
+                    <Controller
+                      name="endereco.uf"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          value={field.value ?? ''}
+                          label="UF"
+                          placeholder="SP"
+                          fullWidth
+                          size="small"
+                          error={Boolean(errors.endereco?.uf)}
+                          helperText={errors.endereco?.uf?.message}
+                          onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                          slotProps={{
+                            inputLabel: { shrink: Boolean(field.value) || undefined },
+                            htmlInput: { maxLength: 2 },
+                          }}
                         />
                       )}
                     />

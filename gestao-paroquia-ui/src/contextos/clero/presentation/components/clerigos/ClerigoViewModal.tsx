@@ -39,6 +39,7 @@ import type { Clerigo, ClerigoInstitucional } from '@/shared/domain/types/types'
 import { formatDateBr } from '@/shared/utils/masks';
 import { getFuncaoEclesiasticaMeta, getGrauOrdemMeta } from '@/shared/utils/statusMeta/cleroStatus';
 import { getSituacaoAtivoMeta } from '@/shared/utils/statusMeta/situacaoStatus';
+import { formatarEndereco } from '@/contextos/fiel/presentation/components/fieis/fielConstants';
 import { InfoField } from './clerigoConstants';
 
 interface ClerigoViewModalProps {
@@ -287,7 +288,7 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
                   <Grid size={{ xs: 12 }}>
                     <InfoField
                       label="Endereço"
-                      value={(clerigo as Clerigo).endereco}
+                      value={formatarEndereco((clerigo as Clerigo).endereco)}
                       icon={<LocationOnIcon fontSize="small" />}
                     />
                   </Grid>

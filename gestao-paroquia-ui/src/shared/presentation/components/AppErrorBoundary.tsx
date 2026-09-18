@@ -2,6 +2,7 @@ import {Component, type ErrorInfo, type ReactNode} from 'react';
 import {Box, Typography} from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ActionButton from '@/shared/presentation/components/ActionButton';
+import logger from '@/shared/infrastructure/logging/logger';
 
 interface Props {
   children: ReactNode;
@@ -18,8 +19,11 @@ class AppErrorBoundary extends Component<Props, State> {
     return {hasError: true};
   }
 
-  public componentDidCatch(_error: Error, _errorInfo: ErrorInfo): void {
-    // Evita registrar detalhes potencialmente sensíveis no cliente.
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    logger.error('Erro de renderização capturado por AppErrorBoundary', error, {
+      componente: 'AppErrorBoundary',
+      detalhes: errorInfo.componentStack?.slice(0, 500),
+    });
   }
 
   private readonly handleReload = (): void => {

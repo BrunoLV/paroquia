@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoRequest;
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoResponse;
+import br.com.nsfatima.gestao.clero.api.v1.dto.EnderecoClerigoDto;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.domain.model.GrauOrdem;
 import br.com.nsfatima.gestao.clero.infrastructure.observability.ClerigoAuditPublisher;
@@ -68,7 +69,7 @@ class GerenciarClerigoUseCaseTest {
                 "11999998888",
                 true,
                 "1133334444",
-                "Rua da Igreja, 1",
+                new EnderecoClerigoDto("08000-000", "Rua da Igreja", "1", null, "Centro", "São Paulo", "SP"),
                 GrauOrdem.PADRE_DIOCESANO,
                 "Diocese de Teste",
                 LocalDate.of(2005, 1, 1),

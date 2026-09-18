@@ -51,7 +51,7 @@ public record CreateFielRequest(
                 telefone,
                 true,
                 null,
-                new EnderecoDto(endereco, null, null, null, null, null, null),
+                new EnderecoDto(null, endereco, null, null, null, null, null),
                 UUID.fromString("00000000-0000-0000-0000-000000000100"),
                 false,
                 false);

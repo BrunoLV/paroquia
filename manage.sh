@@ -81,7 +81,8 @@ show_endpoints() {
     echo -e "  • Actuator Metrics:    ${CYAN}http://localhost:8080/actuator/metrics${NC}"
     echo -e "  • Prometheus:          ${CYAN}http://localhost:9090${NC}"
     echo -e "  • Grafana:             ${CYAN}http://localhost:3001${NC} (admin / admin)"
-    echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.local / admin)"
+    echo -e "  • Loki:                ${CYAN}http://localhost:3100${NC}"
+    echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.com / admin)"
     echo -e "  • PostgreSQL:          ${CYAN}localhost:5432${NC}"
     echo ""
 }
@@ -90,11 +91,12 @@ show_help() {
     echo -e "${BOLD}Uso:${NC} ./manage.sh [COMANDO] [OPÇÕES]"
     echo ""
     echo -e "${BOLD}Comandos de Desenvolvimento:${NC}"
-    echo "  dev      Inicia infraestrutura Docker (DB/Métricas) e executa API e UI localmente."
+    echo "  dev      Inicia infraestrutura Docker (DB/Métricas/Logs) e executa API e UI localmente."
     echo "  stop     Interrompe todos os processos locais em execução e containers."
     echo "  restart  Reinicia o ambiente de desenvolvimento local completo."
     echo "  status   Exibe o status dos serviços locais e containers."
     echo "  logs     Acompanha os logs da API ou UI local (ex: ./manage.sh logs api)."
+    echo "  seed     Aplica o script seed-data.sql no banco de dados ativo."
     echo ""
     echo -e "${BOLD}Comandos de Qualidade e Build:${NC}"
     echo "  test     Executa a suíte de testes unitários e de integração (Gradle / UI)."
@@ -112,7 +114,7 @@ show_help() {
 
 start_infra() {
     log_info "Verificando dependências de infraestrutura no Docker..."
-    ./docker-env.sh up -s db -s prometheus -s grafana -r
+    ./docker-env.sh up -s db -s prometheus -s grafana -s loki -s promtail -r
     wait_for_port "localhost" 5432 30 || true
 }
 
@@ -278,6 +280,11 @@ cmd_build() {
     fi
 }
 
+cmd_seed() {
+    log_info "Aplicando semente de dados via docker-env..."
+    ./docker-env.sh seed
+}
+
 cmd_clean() {
     log_info "Limpando artefatos de build do Gradle..."
     (cd gestao-paroquia && ./gradlew clean)
@@ -299,6 +306,7 @@ case "$COMMAND" in
     restart) cmd_restart "$@" ;;
     status)  cmd_status "$@" ;;
     logs)    cmd_logs "$@" ;;
+    seed)    cmd_seed "$@" ;;
     test)    cmd_test "$@" ;;
     check)   cmd_check "$@" ;;
     build)   cmd_build "$@" ;;

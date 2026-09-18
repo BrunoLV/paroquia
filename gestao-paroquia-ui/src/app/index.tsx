@@ -3,6 +3,23 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import logger from '@/shared/infrastructure/logging/logger';
+
+// Listeners globais de falhas de execução e promises rejeitadas para telemetria/Loki
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', (event) => {
+    logger.error(`Erro global não capturado: ${event.message}`, event.error, {
+      componente: 'WindowGlobal',
+      detalhes: `${event.filename}:${event.lineno}:${event.colno}`,
+    });
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    logger.error('Promise rejeitada não tratada (unhandledrejection)', event.reason, {
+      componente: 'WindowGlobal',
+    });
+  });
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,6 +112,53 @@ class AcaoRastreamentoFilterTest {
                 .hasMessage("Erro simulado na cadeia");
 
         assertThat(MDC.get(AcaoRastreamentoFilter.MDC_USUARIO_ID)).isNull();
+        assertThat(MDC.get(AcaoRastreamentoFilter.MDC_ACAO)).isNull();
+    }
+
+    @Test
+    @DisplayName("Nao deve rastrear ou poluir MDC em requisicoes direcionadas ao Actuator")
+    void deveIgnorarRequisicoesActuator() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/actuator/health");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        AtomicBoolean executouChain = new AtomicBoolean(false);
+        AtomicReference<String> capturouAcao = new AtomicReference<>();
+        AtomicReference<String> capturouUsuario = new AtomicReference<>();
+
+        FilterChain chain = (req, res) -> {
+            executouChain.set(true);
+            capturouAcao.set(MDC.get(AcaoRastreamentoFilter.MDC_ACAO));
+            capturouUsuario.set(MDC.get(AcaoRastreamentoFilter.MDC_USUARIO_ID));
+        };
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(executouChain.get()).isTrue();
+        assertThat(capturouAcao.get()).isNull();
+        assertThat(capturouUsuario.get()).isNull();
+        assertThat(MDC.get(AcaoRastreamentoFilter.MDC_ACAO)).isNull();
+        assertThat(MDC.get(AcaoRastreamentoFilter.MDC_USUARIO_ID)).isNull();
+    }
+
+    @Test
+    @DisplayName("Nao deve rastrear requisicoes do Actuator mesmo quando houver context-path")
+    void deveIgnorarRequisicoesActuatorComContextPath() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/paroquia/actuator/prometheus");
+        request.setContextPath("/paroquia");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        AtomicBoolean executouChain = new AtomicBoolean(false);
+        AtomicReference<String> capturouAcao = new AtomicReference<>();
+
+        FilterChain chain = (req, res) -> {
+            executouChain.set(true);
+            capturouAcao.set(MDC.get(AcaoRastreamentoFilter.MDC_ACAO));
+        };
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(executouChain.get()).isTrue();
+        assertThat(capturouAcao.get()).isNull();
         assertThat(MDC.get(AcaoRastreamentoFilter.MDC_ACAO)).isNull();
     }
 }

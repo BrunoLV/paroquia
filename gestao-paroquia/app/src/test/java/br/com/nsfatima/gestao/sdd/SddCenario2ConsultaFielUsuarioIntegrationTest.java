@@ -78,7 +78,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
                 "BRA", "52998224725", null, null, null,
                 "coord@paroquia.org",
                 "11977776666", true, null,
-                new EnderecoDto("Rua B", "200", null, null, null, null, null),
+                new EnderecoDto("01000-000", "Rua B", "200", null, null, null, null),
                 matriz.getId(), false, false
         );
         FielResponse fielCoord = createFielUseCase.execute(reqCoord, "test-actor");
@@ -90,7 +90,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
                 "BRA", "11144477735", null, null, null,
                 "membro@paroquia.org",
                 "11966665555", true, null,
-                new EnderecoDto("Rua C", "300", null, null, null, null, null),
+                new EnderecoDto("01000-000", "Rua C", "300", null, null, null, null),
                 matriz.getId(), false, false
         );
         FielResponse fielMembro = createFielUseCase.execute(reqMembro, "test-actor");

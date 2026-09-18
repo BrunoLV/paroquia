@@ -8,9 +8,22 @@ import java.time.LocalDate;
 
 /** Contrato administrativo do cadastro civil e canônico do clérigo. */
 public record ClerigoRequest(
-        @NotBlank String nomeCivil, @NotBlank String nomeEclesiastico, @NotNull LocalDate dataNascimento,
-        @NotBlank String paisOrigem, String cpf, String rg, String documentoEstrangeiro,
-        @NotBlank String email, @NotBlank String celular, boolean isWhatsapp, String telefoneFixo, String endereco,
-        @NotNull GrauOrdem grauOrdem, @NotBlank String dioceseIncardinacao,
-        LocalDate dataOrdenacaoDiaconal, LocalDate dataOrdenacaoPresbiteral, LocalDate dataOrdenacaoEpiscopal,
-        FuncaoEclesiastica funcaoAtual) { }
+        @NotBlank String nomeCivil,
+        @NotBlank String nomeEclesiastico,
+        @NotNull LocalDate dataNascimento,
+        @NotBlank String paisOrigem,
+        String cpf,
+        String rg,
+        String documentoEstrangeiro,
+        @NotBlank String email,
+        @NotBlank String celular,
+        boolean isWhatsapp,
+        String telefoneFixo,
+        EnderecoClerigoDto endereco,
+        @NotNull GrauOrdem grauOrdem,
+        @NotBlank String dioceseIncardinacao,
+        LocalDate dataOrdenacaoDiaconal,
+        LocalDate dataOrdenacaoPresbiteral,
+        LocalDate dataOrdenacaoEpiscopal,
+        FuncaoEclesiastica funcaoAtual) {
+}

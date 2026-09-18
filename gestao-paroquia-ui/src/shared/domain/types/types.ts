@@ -30,12 +30,13 @@ export type PreferenciaCanalComunicacao =
 export type Parentesco = "FILHO" | "ENTEADO" | "TUTELADO" | "OUTRO";
 
 export interface Endereco {
+  cep?: string | null;
   logradouro?: string | null;
   numero?: string | null;
   complemento?: string | null;
   bairro?: string | null;
-  cep?: string | null;
   cidade?: string | null;
+  uf?: string | null;
   estado?: string | null;
 }
 
@@ -865,8 +866,8 @@ export interface MetricasOciosidade {
 export type GrauOrdem = 'DIACONO_TRANSITORIO' | 'DIACONO_PERMANENTE' | 'PADRE_DIOCESANO' | 'PADRE_RELIGIOSO' | 'BISPO';
 export type FuncaoEclesiastica = 'BISPO_DIOCESANO' | 'PAROCO' | 'ADMINISTRADOR_PAROQUIAL' | 'VIGARIO_PAROQUIAL' | 'DIACONO_AUXILIAR' | 'EMERITO';
 export interface ClerigoInstitucional { clerigoId: string; nomeEclesiastico: string; grauOrdem: GrauOrdem; funcaoAtual: FuncaoEclesiastica | null; paroquia: string; }
-export interface Clerigo extends ClerigoInstitucional { nomeCivil: string; dataNascimento: string; paisOrigem: string; cpfFormatado: string | null; rg: string | null; documentoEstrangeiro: string | null; email: string; celularFormatado: string; isWhatsapp: boolean; telefoneFixoFormatado: string | null; endereco: string | null; dioceseIncardinacao: string; dataOrdenacaoDiaconal: string | null; dataOrdenacaoPresbiteral: string | null; dataOrdenacaoEpiscopal: string | null; isAtivo: boolean; }
-export type ClerigoPayload = Omit<Clerigo, 'clerigoId' | 'cpfFormatado' | 'celularFormatado' | 'telefoneFixoFormatado' | 'paroquia' | 'isAtivo'> & { cpf?: string; celular: string; telefoneFixo?: string; };
+export interface Clerigo extends ClerigoInstitucional { nomeCivil: string; dataNascimento: string; paisOrigem: string; cpfFormatado: string | null; rg: string | null; documentoEstrangeiro: string | null; email: string; celularFormatado: string; isWhatsapp: boolean; telefoneFixoFormatado: string | null; endereco: Endereco | string | null; dioceseIncardinacao: string; dataOrdenacaoDiaconal: string | null; dataOrdenacaoPresbiteral: string | null; dataOrdenacaoEpiscopal: string | null; isAtivo: boolean; }
+export type ClerigoPayload = Omit<Clerigo, 'clerigoId' | 'cpfFormatado' | 'celularFormatado' | 'telefoneFixoFormatado' | 'paroquia' | 'isAtivo' | 'endereco'> & { cpf?: string; celular: string; telefoneFixo?: string; endereco?: Endereco | null; };
 
 export type TipoItemReserva = 'LOCAL' | 'ATIVO';
 

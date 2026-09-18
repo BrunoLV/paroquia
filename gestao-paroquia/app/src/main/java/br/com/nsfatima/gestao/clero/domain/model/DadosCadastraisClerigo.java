@@ -18,10 +18,38 @@ public record DadosCadastraisClerigo(
         String celular,
         boolean whatsapp,
         String telefoneFixo,
-        String endereco,
+        EnderecoClerigo endereco,
         GrauOrdem grauOrdem,
         String dioceseIncardinacao,
         LocalDate dataOrdenacaoDiaconal,
         LocalDate dataOrdenacaoPresbiteral,
         LocalDate dataOrdenacaoEpiscopal) {
+
+    /**
+     * Construtor de conveniência para retrocompatibilidade em testes legados que usam String livre.
+     */
+    public DadosCadastraisClerigo(
+            String nomeCivil,
+            String nomeEclesiastico,
+            LocalDate dataNascimento,
+            String paisOrigem,
+            String cpf,
+            String rg,
+            String documentoEstrangeiro,
+            String email,
+            String celular,
+            boolean whatsapp,
+            String telefoneFixo,
+            String enderecoTexto,
+            GrauOrdem grauOrdem,
+            String dioceseIncardinacao,
+            LocalDate dataOrdenacaoDiaconal,
+            LocalDate dataOrdenacaoPresbiteral,
+            LocalDate dataOrdenacaoEpiscopal) {
+        this(nomeCivil, nomeEclesiastico, dataNascimento, paisOrigem, cpf, rg, documentoEstrangeiro,
+                email, celular, whatsapp, telefoneFixo,
+                new EnderecoClerigo(null, enderecoTexto, null, null, null, null, null),
+                grauOrdem, dioceseIncardinacao, dataOrdenacaoDiaconal, dataOrdenacaoPresbiteral,
+                dataOrdenacaoEpiscopal);
+    }
 }

@@ -2,7 +2,9 @@ package br.com.nsfatima.gestao.clero.infrastructure.persistence.mapper;
 
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoInstitucionalResponse;
 import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoResponse;
+import br.com.nsfatima.gestao.clero.api.v1.dto.EnderecoClerigoDto;
 import br.com.nsfatima.gestao.clero.domain.model.Clerigo;
+import br.com.nsfatima.gestao.clero.domain.model.EnderecoClerigo;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +33,7 @@ public class ClerigoMapper {
                 telefone(clerigo.getCelular()),
                 clerigo.isWhatsapp(),
                 telefone(clerigo.getTelefoneFixo()),
-                clerigo.getEndereco(),
+                toEnderecoDto(clerigo),
                 clerigo.getGrauOrdem(),
                 clerigo.getDioceseIncardinacao(),
                 clerigo.getDataOrdenacaoDiaconal(),
@@ -58,7 +60,7 @@ public class ClerigoMapper {
         return new Clerigo(
                 e.getId(), e.getNomeCivil(), e.getNomeEclesiastico(), e.getDataNascimento(), e.getPaisOrigem(),
                 e.getCpf(), e.getRg(), e.getDocumentoEstrangeiro(), e.getEmail(), e.getCelular(), e.isWhatsapp(),
-                e.getTelefoneFixo(), e.getEndereco(), e.getGrauOrdem(), e.getDioceseIncardinacao(),
+                e.getTelefoneFixo(), toEnderecoDomain(e), e.getGrauOrdem(), e.getDioceseIncardinacao(),
                 e.getDataOrdenacaoDiaconal(), e.getDataOrdenacaoPresbiteral(), e.getDataOrdenacaoEpiscopal(),
                 e.isAtivo(), e.getDeletedAt(), e.getCriadoEmUtc(), e.getAtualizadoEmUtc(),
                 e.getCriadoPor(), e.getAtualizadoPor());
@@ -87,7 +89,16 @@ public class ClerigoMapper {
         e.setCelular(c.getCelular());
         e.setWhatsapp(c.isWhatsapp());
         e.setTelefoneFixo(c.getTelefoneFixo());
-        e.setEndereco(c.getEndereco());
+        if (c.getEndereco() != null) {
+            e.setEnderecoCep(c.getEndereco().cep());
+            e.setEnderecoLogradouro(c.getEndereco().logradouro());
+            e.setEnderecoNumero(c.getEndereco().numero());
+            e.setEnderecoComplemento(c.getEndereco().complemento());
+            e.setEnderecoBairro(c.getEndereco().bairro());
+            e.setEnderecoCidade(c.getEndereco().cidade());
+            e.setEnderecoUf(c.getEndereco().uf());
+            e.setEndereco(c.getEndereco().formatado());
+        }
         e.setGrauOrdem(c.getGrauOrdem());
         e.setDioceseIncardinacao(c.getDioceseIncardinacao());
         e.setDataOrdenacaoDiaconal(c.getDataOrdenacaoDiaconal());
@@ -97,6 +108,57 @@ public class ClerigoMapper {
         e.setDeletedAt(c.getDeletedAt());
         e.setAtualizadoEmUtc(c.getAtualizadoEmUtc());
         e.setAtualizadoPor(c.getAtualizadoPor());
+    }
+
+    public EnderecoClerigoDto toEnderecoDto(ClerigoEntity clerigo) {
+        if (clerigo.getEnderecoCep() != null
+                || clerigo.getEnderecoLogradouro() != null
+                || clerigo.getEnderecoCidade() != null
+                || clerigo.getEnderecoUf() != null) {
+            return new EnderecoClerigoDto(
+                    cep(clerigo.getEnderecoCep()),
+                    clerigo.getEnderecoLogradouro(),
+                    clerigo.getEnderecoNumero(),
+                    clerigo.getEnderecoComplemento(),
+                    clerigo.getEnderecoBairro(),
+                    clerigo.getEnderecoCidade(),
+                    clerigo.getEnderecoUf());
+        }
+        if (clerigo.getEndereco() != null && !clerigo.getEndereco().isBlank()) {
+            return new EnderecoClerigoDto(null, clerigo.getEndereco(), null, null, null, null, null);
+        }
+        return null;
+    }
+
+    public EnderecoClerigo toEnderecoDomain(ClerigoEntity e) {
+        if (e.getEnderecoCep() != null
+                || e.getEnderecoLogradouro() != null
+                || e.getEnderecoCidade() != null
+                || e.getEnderecoUf() != null) {
+            return new EnderecoClerigo(
+                    e.getEnderecoCep(),
+                    e.getEnderecoLogradouro(),
+                    e.getEnderecoNumero(),
+                    e.getEnderecoComplemento(),
+                    e.getEnderecoBairro(),
+                    e.getEnderecoCidade(),
+                    e.getEnderecoUf());
+        }
+        if (e.getEndereco() != null && !e.getEndereco().isBlank()) {
+            return new EnderecoClerigo(null, e.getEndereco(), null, null, null, null, null);
+        }
+        return EnderecoClerigo.vazio();
+    }
+
+    private String cep(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        String limpo = valor.replaceAll("\\D", "");
+        if (limpo.length() == 8) {
+            return limpo.replaceFirst("(\\d{5})(\\d{3})", "$1-$2");
+        }
+        return valor;
     }
 
     private String cpf(String valor) {

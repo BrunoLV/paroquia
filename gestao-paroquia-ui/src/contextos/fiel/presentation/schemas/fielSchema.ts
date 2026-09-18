@@ -7,13 +7,14 @@ import { z } from 'zod';
  * pois o mesmo endereço é usado tanto em criação (todos obrigatórios)
  * quanto potencialmente em edições parciais.
  */
-const enderecoSchema = z.object({
+export const enderecoSchema = z.object({
+  cep: z.string().optional(),
   logradouro: z.string().optional(),
   numero: z.string().optional(),
   complemento: z.string().optional(),
   bairro: z.string().optional(),
-  cep: z.string().optional(),
   cidade: z.string().optional(),
+  uf: z.string().optional(),
   estado: z.string().optional(),
 });
 
@@ -42,9 +43,19 @@ function validarIdentificacaoCivil(
 }
 
 function validarEnderecoCompleto(
-  endereco: { logradouro?: string; bairro?: string; cidade?: string; estado?: string; cep?: string },
+  endereco: {
+    logradouro?: string;
+    bairro?: string;
+    cidade?: string;
+    uf?: string;
+    estado?: string;
+    cep?: string;
+  },
   ctx: z.RefinementCtx,
 ) {
+  if (!endereco.cep?.trim()) {
+    ctx.addIssue({ code: 'custom', path: ['endereco', 'cep'], message: 'CEP é obrigatório' });
+  }
   if (!endereco.logradouro?.trim()) {
     ctx.addIssue({ code: 'custom', path: ['endereco', 'logradouro'], message: 'Logradouro é obrigatório' });
   }
@@ -54,11 +65,11 @@ function validarEnderecoCompleto(
   if (!endereco.cidade?.trim()) {
     ctx.addIssue({ code: 'custom', path: ['endereco', 'cidade'], message: 'Cidade é obrigatória' });
   }
-  if (!endereco.estado?.trim()) {
-    ctx.addIssue({ code: 'custom', path: ['endereco', 'estado'], message: 'UF é obrigatória' });
-  }
-  if (!endereco.cep?.trim()) {
-    ctx.addIssue({ code: 'custom', path: ['endereco', 'cep'], message: 'CEP é obrigatório' });
+  const ufValue = endereco.uf?.trim() || endereco.estado?.trim();
+  if (!ufValue) {
+    ctx.addIssue({ code: 'custom', path: ['endereco', 'uf'], message: 'UF é obrigatória' });
+  } else if (ufValue.length > 2) {
+    ctx.addIssue({ code: 'custom', path: ['endereco', 'uf'], message: 'UF deve ter 2 caracteres' });
   }
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Paper, Stack, Typography } from '@mui/material';
-import type { Clerigo, ClerigoPayload, FuncaoEclesiastica, GrauOrdem } from '@/shared/domain/types/types';
-import { formatCpf, formatPhone, formatRg } from '@/shared/utils/masks';
+import type { Clerigo, ClerigoPayload, Endereco, FuncaoEclesiastica, GrauOrdem } from '@/shared/domain/types/types';
+import { formatCep, formatCpf, formatPhone, formatRg } from '@/shared/utils/masks';
 
 export const GRAUS_ORDEM: { value: GrauOrdem; label: string }[] = [
   { value: 'DIACONO_PERMANENTE', label: 'Diácono Permanente' },
@@ -36,6 +36,16 @@ export const obterNomePais = (codigo?: string | null): string => {
   return pais ? pais.nome : codigo;
 };
 
+export const enderecoVazio = (): Endereco => ({
+  cep: '',
+  logradouro: '',
+  numero: '',
+  complemento: '',
+  bairro: '',
+  cidade: '',
+  uf: '',
+});
+
 export const estadoInicialForm = (): ClerigoPayload => ({
   nomeCivil: '',
   nomeEclesiastico: '',
@@ -48,7 +58,7 @@ export const estadoInicialForm = (): ClerigoPayload => ({
   celular: '',
   isWhatsapp: false,
   telefoneFixo: '',
-  endereco: '',
+  endereco: enderecoVazio(),
   grauOrdem: 'PADRE_DIOCESANO',
   dioceseIncardinacao: '',
   funcaoAtual: 'PAROCO',
@@ -69,7 +79,18 @@ export const clerigoParaPayload = (c: Clerigo): ClerigoPayload => ({
   celular: formatPhone(c.celularFormatado || ''),
   isWhatsapp: Boolean(c.isWhatsapp),
   telefoneFixo: formatPhone(c.telefoneFixoFormatado || ''),
-  endereco: c.endereco || '',
+  endereco:
+    c.endereco && typeof c.endereco === 'object'
+      ? {
+          cep: formatCep(c.endereco.cep || ''),
+          logradouro: c.endereco.logradouro || '',
+          numero: c.endereco.numero || '',
+          complemento: c.endereco.complemento || '',
+          bairro: c.endereco.bairro || '',
+          cidade: c.endereco.cidade || '',
+          uf: c.endereco.uf || c.endereco.estado || '',
+        }
+      : enderecoVazio(),
   grauOrdem: c.grauOrdem || 'PADRE_DIOCESANO',
   dioceseIncardinacao: c.dioceseIncardinacao || '',
   funcaoAtual: c.funcaoAtual || 'PAROCO',

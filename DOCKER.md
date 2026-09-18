@@ -65,6 +65,8 @@ flowchart TD
 | **pgadmin** | `gestao-pgadmin` | `dpage/pgadmin4:9.1` | `5050` | Gerenciador Web do Postgres | `admin@paroquia.local` / `admin` |
 | **prometheus**| `gestao-prometheus`| `prom/prometheus:v3.2.1` | `9090` | Coletor TSDB de métricas | N/A |
 | **grafana** | `gestao-grafana` | `grafana/grafana:11.5.2` | `3001` | Painéis e Dashboards analíticos | `admin` / `admin` |
+| **loki** | `gestao-loki` | `grafana/loki:3.2.1` | `3100` | Agregação e Armazenamento de Logs | N/A |
+| **promtail** | `gestao-promtail` | `grafana/promtail:3.2.1` | N/A | Coletor e remetente de logs para Loki | N/A |
 
 ---
 

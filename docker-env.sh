@@ -52,7 +52,8 @@ show_endpoints() {
     echo -e "  • Actuator Metrics:    ${CYAN}http://localhost:8080/actuator/metrics${NC}"
     echo -e "  • Prometheus:          ${CYAN}http://localhost:9090${NC}"
     echo -e "  • Grafana:             ${CYAN}http://localhost:3001${NC} (admin / admin)"
-    echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.local / admin)"
+    echo -e "  • Loki:                ${CYAN}http://localhost:3100${NC}"
+    echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.com / admin)"
     echo -e "  • PostgreSQL:          ${CYAN}localhost:5432${NC} (banco: calendario, user: postgres)"
     echo ""
 }
@@ -66,6 +67,7 @@ show_help() {
     echo "  restart  Reinicia os serviços (executa down e up)."
     echo "  status   Exibe o status atual e consumo de recursos dos containers."
     echo "  logs     Exibe logs dos containers (ou de um serviço específico)."
+    echo "  seed     Aplica o script seed-data.sql no banco de dados ativo."
     echo "  clean    Remove containers, volumes locais e dados de banco."
     echo "  help     Mostra esta ajuda detalhada."
     echo ""
@@ -73,11 +75,13 @@ show_help() {
     echo "  -c, --clean     Em 'up' ou 'restart', limpa volumes e cache antes de subir."
     echo "  --no-cache      Força reconstrução das imagens sem cache (docker compose build --no-cache)."
     echo "  -r, --no-build  Sobe os serviços sem tentar reconstruir imagens locais."
-    echo "  -s, --service   Especifica um serviço específico para logs ou rebuild (ex: -s api)."
+    echo "  -s, --service   Especifica um serviço específico para logs ou rebuild (pode ser repetido)."
     echo "  -f, --follow    Em 'logs', acompanha o streaming contínuo de logs (tail)."
     echo ""
     echo -e "${BOLD}Exemplos:${NC}"
     echo "  ./docker-env.sh up"
+    echo "  ./docker-env.sh up -s db -s prometheus -s grafana -r"
+    echo "  ./docker-env.sh seed"
     echo "  ./docker-env.sh restart --clean"
     echo "  ./docker-env.sh logs -f -s api"
     echo "  ./docker-env.sh status"
@@ -88,14 +92,21 @@ cmd_up() {
     local clean=false
     local no_cache=false
     local no_build=false
-    local service=""
+    local services=()
 
     while [ $# -gt 0 ]; do
         case "$1" in
             -c|--clean) clean=true; shift ;;
             --no-cache) no_cache=true; shift ;;
             -r|--no-build) no_build=true; shift ;;
-            -s|--service) service="${2:-}"; shift 2 ;;
+            -s|--service)
+                if [ -n "${2:-}" ]; then
+                    services+=("$2")
+                    shift 2
+                else
+                    shift
+                fi
+                ;;
             *) shift ;;
         esac
     done
@@ -114,11 +125,11 @@ cmd_up() {
 
     if [ "$no_build" = false ]; then
         log_info "Construindo imagens necessárias..."
-        docker compose build "${build_opts[@]}" ${service:+"$service"}
+        docker compose build "${build_opts[@]}" ${services[@]+"${services[@]}"}
     fi
 
     log_info "Iniciando containers do ecossistema..."
-    docker compose up -d ${service:+"$service"}
+    docker compose up -d ${services[@]+"${services[@]}"}
 
     log_success "Ecossistema iniciado com sucesso!"
     show_endpoints
@@ -151,15 +162,22 @@ cmd_status() {
 cmd_logs() {
     check_docker
     local follow=false
-    local service=""
+    local services=()
 
     while [ $# -gt 0 ]; do
         case "$1" in
             -f|--follow) follow=true; shift ;;
-            -s|--service) service="${2:-}"; shift 2 ;;
+            -s|--service)
+                if [ -n "${2:-}" ]; then
+                    services+=("$2")
+                    shift 2
+                else
+                    shift
+                fi
+                ;;
             *)
-                if [ -z "$service" ] && [[ "$1" != -* ]]; then
-                    service="$1"
+                if [[ "$1" != -* ]]; then
+                    services+=("$1")
                 fi
                 shift
                 ;;
@@ -171,17 +189,51 @@ cmd_logs() {
         log_args+=(-f)
     fi
 
-    if [ -n "$service" ]; then
-        log_info "Exibindo logs do serviço: $service"
-        docker compose logs "${log_args[@]}" "$service"
+    if [ ${#services[@]} -gt 0 ]; then
+        log_info "Exibindo logs do(s) serviço(s): ${services[*]}"
+        docker compose logs "${log_args[@]}" "${services[@]}"
     else
         log_info "Exibindo logs de todos os serviços..."
         docker compose logs "${log_args[@]}"
     fi
 }
 
+cmd_seed() {
+    check_docker
+    log_info "Aplicando semente de dados (seed-data.sql)..."
+    local seed_file="gestao-paroquia/docker/seed-data.sql"
+    if [ ! -f "$seed_file" ]; then
+        log_error "Arquivo de seed não encontrado em $seed_file"
+        exit 1
+    fi
+
+    if docker compose ps db --format json 2>/dev/null | grep -q '"running"'; then
+        log_info "Executando carga de dados no container gestao-db..."
+        docker compose exec -T db psql -U postgres -d calendario < "$seed_file"
+        log_success "Seed de dados aplicado com sucesso no banco de dados!"
+    else
+        log_error "Container gestao-db não está em execução. Inicie o banco antes de aplicar o seed."
+        exit 1
+    fi
+}
+
 cmd_clean() {
     check_docker
+    local force=false
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -y|--yes|-f|--force) force=true; shift ;;
+            *) shift ;;
+        esac
+    done
+
+    if [ "$force" = true ]; then
+        log_info "Removendo containers e volumes (modo forçado)..."
+        docker compose down -v --remove-orphans
+        log_success "Limpeza concluída com sucesso."
+        return 0
+    fi
+
     log_warn "ATENÇÃO: Todos os containers e volumes do projeto (PostgreSQL, Grafana, Prometheus) serão excluídos!"
     read -r -p "Deseja prosseguir com a limpeza total? [s/N]: " confirm
     if [[ "$confirm" =~ ^[sS]([iI][mM])?$ ]]; then
@@ -203,6 +255,7 @@ case "$COMMAND" in
     restart)  cmd_restart "$@" ;;
     status)   cmd_status "$@" ;;
     logs)     cmd_logs "$@" ;;
+    seed)     cmd_seed "$@" ;;
     clean)    cmd_clean "$@" ;;
     help|-h|--help) show_help ;;
     *)

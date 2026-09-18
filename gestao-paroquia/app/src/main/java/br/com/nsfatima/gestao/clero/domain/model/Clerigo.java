@@ -35,7 +35,7 @@ public class Clerigo {
     private String celular;
     private boolean whatsapp;
     private String telefoneFixo;
-    private String endereco;
+    private EnderecoClerigo endereco;
     private GrauOrdem grauOrdem;
     private String dioceseIncardinacao;
     private LocalDate dataOrdenacaoDiaconal;
@@ -61,7 +61,7 @@ public class Clerigo {
             String celular,
             boolean whatsapp,
             String telefoneFixo,
-            String endereco,
+            EnderecoClerigo endereco,
             GrauOrdem grauOrdem,
             String dioceseIncardinacao,
             LocalDate dataOrdenacaoDiaconal,
@@ -97,6 +97,38 @@ public class Clerigo {
         this.atualizadoEmUtc = atualizadoEmUtc != null ? atualizadoEmUtc : this.criadoEmUtc;
         this.criadoPor = criadoPor;
         this.atualizadoPor = atualizadoPor;
+    }
+
+    public Clerigo(
+            UUID id,
+            String nomeCivil,
+            String nomeEclesiastico,
+            LocalDate dataNascimento,
+            String paisOrigem,
+            String cpf,
+            String rg,
+            String documentoEstrangeiro,
+            String email,
+            String celular,
+            boolean whatsapp,
+            String telefoneFixo,
+            String enderecoTexto,
+            GrauOrdem grauOrdem,
+            String dioceseIncardinacao,
+            LocalDate dataOrdenacaoDiaconal,
+            LocalDate dataOrdenacaoPresbiteral,
+            LocalDate dataOrdenacaoEpiscopal,
+            boolean ativo,
+            Instant deletedAt,
+            Instant criadoEmUtc,
+            Instant atualizadoEmUtc,
+            String criadoPor,
+            String atualizadoPor) {
+        this(id, nomeCivil, nomeEclesiastico, dataNascimento, paisOrigem, cpf, rg, documentoEstrangeiro,
+                email, celular, whatsapp, telefoneFixo,
+                new EnderecoClerigo(null, enderecoTexto, null, null, null, null, null),
+                grauOrdem, dioceseIncardinacao, dataOrdenacaoDiaconal, dataOrdenacaoPresbiteral, dataOrdenacaoEpiscopal,
+                ativo, deletedAt, criadoEmUtc, atualizadoEmUtc, criadoPor, atualizadoPor);
     }
 
     /** Cadastra um novo clérigo, validando o grau da ordem e as datas de ordenação. */
@@ -208,8 +240,16 @@ public class Clerigo {
         return telefoneFixo;
     }
 
-    public String getEndereco() {
+    public EnderecoClerigo getEndereco() {
         return endereco;
+    }
+
+    public void setEndereco(EnderecoClerigo endereco) {
+        this.endereco = endereco;
+    }
+
+    public void setEndereco(String enderecoTexto) {
+        this.endereco = new EnderecoClerigo(null, enderecoTexto, null, null, null, null, null);
     }
 
     public GrauOrdem getGrauOrdem() {

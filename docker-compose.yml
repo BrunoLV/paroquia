@@ -205,7 +205,7 @@ services:
     networks:
       - paroquia-net
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@paroquia.local
+      PGADMIN_DEFAULT_EMAIL: admin@paroquia.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
@@ -243,9 +243,6 @@ services:
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
-    depends_on:
-      api:
-        condition: service_started
     mem_limit: 256M
     cpus: 0.5
     deploy:
@@ -280,6 +277,66 @@ services:
       - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+      - loki
+    mem_limit: 256M
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------------------------
+  # 9. Loki - Agregação e Armazenamento de Logs (v3 LTS)
+  # ----------------------------------------------------------------------------
+  loki:
+    image: grafana/loki:3.2.1
+    container_name: gestao-loki
+    restart: unless-stopped
+    networks:
+      - paroquia-net
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./docker/loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    mem_limit: 512M
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------------------------
+  # 10. Promtail - Coleta e Envio de Logs para o Loki
+  # ----------------------------------------------------------------------------
+  promtail:
+    image: grafana/promtail:3.2.1
+    container_name: gestao-promtail
+    restart: unless-stopped
+    user: "0:0"
+    networks:
+      - paroquia-net
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    volumes:
+      - ./docker/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./.run:/var/log/paroquia-dev:ro
+    depends_on:
+      - loki
     mem_limit: 256M
     cpus: 0.5
     deploy:
@@ -307,3 +364,5 @@ volumes:
     name: paroquia_prometheus_data
   grafana_data:
     name: paroquia_grafana_data
+  loki_data:
+    name: paroquia_loki_data

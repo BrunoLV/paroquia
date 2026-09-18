@@ -12,8 +12,11 @@ RUN chown -R node:node /app
 # Copia manifestos de dependências
 COPY --chown=node:node package.json package-lock.json ./
 
-# Instala dependências de forma limpa e otimizada
-RUN npm ci --prefer-offline
+# Instala dependências com tolerância a falhas de rede (retries, timeouts e cache mount)
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 && \
+    mkdir -p /app/node_modules/.vite && \
+    chown -R node:node /app/node_modules
 
 # Copia o código fonte com permissões de usuário
 COPY --chown=node:node . .

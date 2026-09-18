@@ -16,7 +16,7 @@ class FielTest {
         UUID id = UUID.randomUUID();
         LocalDate dataNascimento = LocalDate.of(1978, 7, 22);
 
-        Endereco endereco = new Endereco("Rua Nova", "10", "Apto 1", "Centro", "01000-000", "São Paulo", "SP");
+        Endereco endereco = new Endereco("01000-000", "Rua Nova", "10", "Apto 1", "Centro", "São Paulo", "SP");
         VidaSacramental vidaSacramental = new VidaSacramental(
                 true, LocalDate.of(1978, 8, 1), "Matriz", "Padre João", "01", "10", "100", "Maria e José",
                 true, LocalDate.of(1987, 5, 10), "Matriz", "Turma 1987",

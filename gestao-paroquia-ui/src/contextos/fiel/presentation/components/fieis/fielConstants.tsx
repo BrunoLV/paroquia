@@ -69,8 +69,9 @@ export const formatarEndereco = (endereco?: Endereco | string | null): string =>
     partes.push(log);
   }
   if (endereco.bairro) partes.push(endereco.bairro);
-  if (endereco.cidade || endereco.estado) {
-    partes.push([endereco.cidade, endereco.estado].filter(Boolean).join('/'));
+  const uf = endereco.uf || endereco.estado;
+  if (endereco.cidade || uf) {
+    partes.push([endereco.cidade, uf].filter(Boolean).join('/'));
   }
   if (endereco.cep) partes.push(`CEP: ${formatCep(endereco.cep)}`);
   return partes.length > 0 ? partes.join(', ') : 'Não informado';
@@ -118,8 +119,14 @@ export const paraCadastro = (fiel: Fiel): UpdateFielPayload => ({
   endereco:
     typeof fiel.endereco === 'object' && fiel.endereco
       ? {
-          ...fiel.endereco,
           cep: formatCep(fiel.endereco.cep),
+          logradouro: fiel.endereco.logradouro ?? '',
+          numero: fiel.endereco.numero ?? '',
+          complemento: fiel.endereco.complemento ?? '',
+          bairro: fiel.endereco.bairro ?? '',
+          cidade: fiel.endereco.cidade ?? '',
+          uf: (fiel.endereco.uf || fiel.endereco.estado || '').toUpperCase(),
+          estado: (fiel.endereco.uf || fiel.endereco.estado || '').toUpperCase(),
         }
       : {},
   unidadeTerritorialId: fiel.igrejaFrequenta?.id ?? '',

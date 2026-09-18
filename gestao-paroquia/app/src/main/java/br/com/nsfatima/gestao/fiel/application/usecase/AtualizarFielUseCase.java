@@ -43,7 +43,7 @@ public class AtualizarFielUseCase {
             fiel.setNome(r.nome());
         }
         if (r.sexo() != null) {
-            if (r.sexo() == Sexo.NAO_INFORMADO) {
+            if (r.sexo() == Sexo.NAO_INFORMADO && fiel.getSexo() != null && fiel.getSexo() != Sexo.NAO_INFORMADO) {
                 throw new IllegalArgumentException("Sexo deve ser masculino ou feminino.");
             }
             fiel.setSexo(r.sexo());
@@ -55,7 +55,8 @@ public class AtualizarFielUseCase {
             fiel.setPaisOrigem(r.paisOrigem());
         }
         if (r.cpf() != null) {
-            fiel.setCpf(r.cpf());
+            String cleanCpf = r.cpf().replaceAll("\\D", "");
+            fiel.setCpf(cleanCpf.isBlank() ? null : cleanCpf);
         }
         if (r.rg() != null) {
             fiel.setRg(r.rg());
@@ -94,9 +95,10 @@ public class AtualizarFielUseCase {
             fiel.setEnderecoNumero(r.endereco().numero());
             fiel.setEnderecoComplemento(r.endereco().complemento());
             fiel.setEnderecoBairro(r.endereco().bairro());
-            fiel.setEnderecoCep(r.endereco().cep());
+            fiel.setEnderecoCep(r.endereco().cep() != null ? r.endereco().cep().replaceAll("\\D", "") : null);
             fiel.setEnderecoCidade(r.endereco().cidade());
-            fiel.setEnderecoEstado(r.endereco().estado());
+            String uf = r.endereco().uf() != null ? r.endereco().uf() : r.endereco().estado();
+            fiel.setEnderecoEstado(uf != null ? uf.trim().toUpperCase() : null);
         }
 
         validacaoDocumento.validarPais(fiel.getPaisOrigem());
