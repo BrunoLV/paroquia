@@ -24,7 +24,7 @@ export interface DashboardMetricsParams {
 export const getDashboardMetrics = async (
   params: DashboardMetricsParams,
 ): Promise<DashboardMetrics> => {
-  const response = await apiClient.get<DashboardMetrics>('/dashboard/metrics', {
+  const response = await apiClient.get<DashboardMetrics>('/painel/metricas', {
     params: {periodo: params.periodo, grupoParoquialId: params.grupoParoquialId},
   });
   return response.data;
@@ -39,7 +39,7 @@ export const getDashboardMetrics = async (
 export const getDashboardLogistica = async (
   params: DashboardMetricsParams,
 ): Promise<DashboardLogistica> => {
-  const response = await apiClient.get<DashboardLogistica>('/dashboard/logistica', {
+  const response = await apiClient.get<DashboardLogistica>('/painel/logistica', {
     params: {periodo: params.periodo, grupoParoquialId: params.grupoParoquialId},
   });
   return response.data;
@@ -52,7 +52,7 @@ export const getDashboardLogistica = async (
 export const getAniversariantes = async (
   janela: PeriodoDashboard,
 ): Promise<Aniversariante[]> => {
-  const response = await apiClient.get<Aniversariante[]>('/dashboard/aniversariantes', {
+  const response = await apiClient.get<Aniversariante[]>('/painel/aniversariantes', {
     params: {janela},
   });
   return response.data;
@@ -65,7 +65,7 @@ export const getAniversariantes = async (
 export const getDashboardComunidade = async (
   grupoParoquialId?: string,
 ): Promise<DashboardComunidade> => {
-  const response = await apiClient.get<DashboardComunidade>('/dashboard/comunidade', {
+  const response = await apiClient.get<DashboardComunidade>('/painel/comunidade', {
     params: {grupoParoquialId},
   });
   return response.data;

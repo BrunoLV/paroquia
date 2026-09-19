@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 /**
  * Estados do ciclo de vida de uma solicitação de aprovação. Toda solicitação nasce PENDENTE (criada por
  * {@code CriarSolicitacaoAprovacaoUseCase} quando uma ação de negócio exige aprovação de um papel superior)
- * e é decidida uma única vez por {@code DecideSolicitacaoAprovacaoUseCase}:
+ * e é decidida uma única vez por {@code DecidirSolicitacaoAprovacaoUseCase}:
  * <ul>
  *   <li>{@link #PENDENTE} — aguardando decisão de um aprovador autorizado; estado inicial e único a partir do
  *   qual uma decisão pode ser tomada ({@code AprovacaoJaDecididaException} é lançada ao tentar decidir uma

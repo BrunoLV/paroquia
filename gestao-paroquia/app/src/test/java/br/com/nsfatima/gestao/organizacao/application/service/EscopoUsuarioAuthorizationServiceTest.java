@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserScopeAuthorizationServiceTest {
+class EscopoUsuarioAuthorizationServiceTest {
 
     private final UUID matrizId = UUID.randomUUID();
     private final UUID comunidadeBId = UUID.randomUUID();

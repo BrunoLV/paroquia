@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.service;
 
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
 import br.com.nsfatima.gestao.iam.domain.model.Papeis;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
@@ -55,14 +55,14 @@ public class UsuarioAdminService {
      * @param enabled novo estado de habilitação
      * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
      *                                                                    coordenador de uma organização do usuário-alvo
-     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException se o usuário não existir
+     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException se o usuário não existir
      */
     @Transactional
-    public void toggleActiveStatus(UUID id, boolean enabled) {
+    public void alternarStatusAtivo(UUID id, boolean enabled) {
         authorizationService.requireAdminOrCoordinatorOf(id);
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
         if (enabled) {
             usuario.ativar();
         } else {
@@ -86,14 +86,14 @@ public class UsuarioAdminService {
      * @param newRawPassword nova senha em texto puro, criptografada antes da persistência
      * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
      *                                                                    coordenador de uma organização do usuário-alvo
-     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException se o usuário não existir
+     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException se o usuário não existir
      */
     @Transactional
-    public void resetPassword(UUID id, String newRawPassword) {
+    public void redefinirSenha(UUID id, String newRawPassword) {
         authorizationService.requireAdminOrCoordinatorOf(id);
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
         usuario.redefinirSenhaHash(passwordEncoder.encode(newRawPassword));
         usuarioRepository.save(usuario);
 
@@ -114,14 +114,14 @@ public class UsuarioAdminService {
      * @param roles nova string de papéis separados por vírgula, que substitui os papéis globais atuais
      * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
      *                                                                    coordenador de uma organização do usuário-alvo
-     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException se o usuário não existir
+     * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException se o usuário não existir
      */
     @Transactional
-    public void updateGlobalRoles(UUID id, String roles) {
+    public void atualizarPapeisGlobais(UUID id, String roles) {
         authorizationService.requireAdminOrCoordinatorOf(id);
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
         usuario.substituirPapeis(Papeis.deCsv(roles));
         usuarioRepository.save(usuario);
 

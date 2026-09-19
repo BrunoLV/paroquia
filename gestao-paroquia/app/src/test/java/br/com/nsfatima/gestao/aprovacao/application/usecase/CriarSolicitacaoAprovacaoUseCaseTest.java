@@ -92,7 +92,7 @@ class CriarSolicitacaoAprovacaoUseCaseTest {
         when(mapper.toResponse(entity)).thenReturn(response);
 
 
-        AprovacaoResponse result = useCase.create(eventoId, TipoSolicitacaoInput.CRIACAO_EVENTO);
+        AprovacaoResponse result = useCase.criar(eventoId, TipoSolicitacaoInput.CRIACAO_EVENTO);
 
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(aprovacaoId);

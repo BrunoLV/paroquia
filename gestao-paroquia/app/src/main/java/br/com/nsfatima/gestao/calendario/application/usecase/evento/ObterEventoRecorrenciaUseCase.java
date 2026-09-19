@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaDetalheResponse;
-import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
+import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
@@ -33,7 +33,7 @@ public class ObterEventoRecorrenciaUseCase {
     @Transactional(readOnly = true)
     public Optional<EventoRecorrenciaDetalheResponse> execute(UUID eventoId) {
         EventoEntity evento = eventoRepository.findById(eventoId)
-                .orElseThrow(() -> new EventoNotFoundException(eventoId));
+                .orElseThrow(() -> new EventoNaoEncontradoException(eventoId));
 
         if (evento.getRecorrenciaId() == null) {
             return Optional.empty();

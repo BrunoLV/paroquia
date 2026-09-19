@@ -31,7 +31,7 @@ describe('Painel API Client', () => {
 
     const result = await getDashboardMetrics({ periodo: 'SEMANA' });
 
-    expect(apiClient.get).toHaveBeenCalledWith('/dashboard/metrics', {
+    expect(apiClient.get).toHaveBeenCalledWith('/painel/metricas', {
       params: { periodo: 'SEMANA', grupoParoquialId: undefined },
     });
     expect(result).toEqual(mockData);

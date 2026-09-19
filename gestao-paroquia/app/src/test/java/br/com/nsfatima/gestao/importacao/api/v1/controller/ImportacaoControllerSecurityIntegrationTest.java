@@ -22,15 +22,15 @@ class ImportacaoControllerSecurityIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void devePermitirAdminParaBaixarTemplate() throws Exception {
-        mockMvc.perform(get("/api/v1/importacao/template?tipo=MEMBRO&formato=CSV"))
+    void devePermitirAdminParaBaixarModelo() throws Exception {
+        mockMvc.perform(get("/api/v1/importacao/modelo?tipo=MEMBRO&formato=CSV"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void deveNegarUsuarioDeDownloadingTemplate() throws Exception {
-        mockMvc.perform(get("/api/v1/importacao/template?tipo=MEMBRO&formato=CSV"))
+        mockMvc.perform(get("/api/v1/importacao/modelo?tipo=MEMBRO&formato=CSV"))
                 .andExpect(status().isForbidden());
     }
 
@@ -64,7 +64,7 @@ class ImportacaoControllerSecurityIntegrationTest {
 
     @Test
     void deveExigirAuthParaAcessoImportationApi() throws Exception {
-        mockMvc.perform(get("/api/v1/importacao/template?tipo=MEMBRO&formato=CSV").header("X-Test-Anonymous", "true"))
+        mockMvc.perform(get("/api/v1/importacao/modelo?tipo=MEMBRO&formato=CSV").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }
 }

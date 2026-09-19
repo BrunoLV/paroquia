@@ -35,7 +35,7 @@ class EventoControllerCancelTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/v1/eventos/" + eventId + "/cancel")
+        mockMvc.perform(post("/api/v1/eventos/" + eventId + "/cancelar")
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
@@ -38,7 +38,7 @@ class CancelEventoStatusEligibilityIntegrationTest {
         entity.setStatus("RASCUNHO");
         eventoJpaRepository.save(entity);
 
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)

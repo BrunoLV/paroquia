@@ -1,16 +1,16 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.CalendarioBloqueadoException;
-import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
-import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleException;
-import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
+import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoIdempotenciaException;
+import br.com.nsfatima.gestao.calendario.domain.exception.RegraEclesialImutavelException;
+import br.com.nsfatima.gestao.calendario.domain.exception.TransicaoStatusInvalidaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalidoException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
-import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
@@ -29,13 +29,13 @@ import java.util.List;
 /**
  * Traduz exceções de regra de negócio do domínio (calendário, projeto, observações) para
  * respostas HTTP padronizadas ({@link ValidationErrorResponse}). Mapeamento exceção → status:
- * {@code CalendarioBloqueadoException}/{@code InvalidStatusTransitionException}/
+ * {@code CalendarioBloqueadoException}/{@code TransicaoStatusInvalidaException}/
  * {@code ObservacaoTipoManualInvalidoException}/{@code ObservacaoTipoImutavelException}/
- * {@code ImmutableEclesialRuleException} → 400 (violação de regra de negócio, requisição
- * rejeitada); {@code EventoNotFoundException}/{@code ProjetoNotFoundException}/
+ * {@code RegraEclesialImutavelException} → 400 (violação de regra de negócio, requisição
+ * rejeitada); {@code EventoNaoEncontradoException}/{@code ProjetoNaoEncontradoException}/
  * {@code ObservacaoNaoEncontradaException} → 404; {@code ObservacaoAutorInvalidoException} → 403
- * (ator não é o autor exigido); {@code IdempotencyConflictException}/
- * {@code InvalidStatusTransitionException}/{@code ObjectOptimisticLockingFailureException}/
+ * (ator não é o autor exigido); {@code ConflitoIdempotenciaException}/
+ * {@code TransicaoStatusInvalidaException}/{@code ObjectOptimisticLockingFailureException}/
  * {@code DataIntegrityViolationException} → 409 (conflito — chave de idempotência repetida com
  * payload diferente, transição de estado inválida, edição concorrente, ou violação de
  * unicidade/integridade referencial); {@code DataAccessException} → 503 (banco indisponível).
@@ -62,25 +62,25 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         String.valueOf(ex.getAno()))));
     }
 
-    @ExceptionHandler(EventoNotFoundException.class)
-    public ResponseEntity<ValidationErrorResponse> handleEventoNotFound(EventoNotFoundException ex) {
+    @ExceptionHandler(EventoNaoEncontradoException.class)
+    public ResponseEntity<ValidationErrorResponse> handleEventoNotFound(EventoNaoEncontradoException ex) {
         return buildValidation(
                 HttpStatus.NOT_FOUND,
                 ErrorCodes.EVENT_NOT_FOUND,
-                "Evento not found",
+                "Evento não encontrado",
                 List.of(new ValidationErrorItem(
                         ErrorCodes.EVENT_NOT_FOUND.name(),
                         "eventoId",
-                        "Event does not exist: " + ex.getMessage(),
+                        "Evento não existe: " + ex.getMessage(),
                         null)));
     }
 
-    @ExceptionHandler(ProjetoNotFoundException.class)
-    public ResponseEntity<ValidationErrorResponse> handleProjetoNotFound(ProjetoNotFoundException ex) {
+    @ExceptionHandler(ProjetoNaoEncontradoException.class)
+    public ResponseEntity<ValidationErrorResponse> handleProjetoNotFound(ProjetoNaoEncontradoException ex) {
         return buildValidation(
                 HttpStatus.NOT_FOUND,
                 ErrorCodes.RESOURCE_NOT_FOUND,
-                "Projeto not found",
+                "Projeto não encontrado",
                 List.of(new ValidationErrorItem(
                         ErrorCodes.RESOURCE_NOT_FOUND.name(),
                         "projetoId",
@@ -88,8 +88,8 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    @ExceptionHandler(IdempotencyConflictException.class)
-    public ResponseEntity<ValidationErrorResponse> handleIdempotencyConflict(IdempotencyConflictException ex) {
+    @ExceptionHandler(ConflitoIdempotenciaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleIdempotencyConflict(ConflitoIdempotenciaException ex) {
         return buildValidation(
                 HttpStatus.CONFLICT,
                 ErrorCodes.IDEMPOTENCY_KEY_CONFLICT,
@@ -101,8 +101,8 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    @ExceptionHandler(InvalidStatusTransitionException.class)
-    public ResponseEntity<ValidationErrorResponse> handleInvalidStatusTransition(InvalidStatusTransitionException ex) {
+    @ExceptionHandler(TransicaoStatusInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleInvalidStatusTransition(TransicaoStatusInvalidaException ex) {
         return buildValidation(
                 HttpStatus.CONFLICT,
                 ErrorCodes.INVALID_STATUS_TRANSITION,
@@ -167,8 +167,8 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    @ExceptionHandler(ImmutableEclesialRuleException.class)
-    public ResponseEntity<ValidationErrorResponse> handleImmutableEclesialRule(ImmutableEclesialRuleException ex) {
+    @ExceptionHandler(RegraEclesialImutavelException.class)
+    public ResponseEntity<ValidationErrorResponse> handleImmutableEclesialRule(RegraEclesialImutavelException ex) {
         return buildValidation(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.DOMAIN_RULE_VIOLATION,

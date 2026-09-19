@@ -73,7 +73,7 @@ describe('Organograma Page', () => {
 
   const renderOrganograma = async (user: any) => {
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') {
+      if (url === '/autenticacao/meu-perfil') {
         return Promise.resolve({ data: user });
       }
       if (url === '/organizacoes/organograma') {
@@ -193,7 +193,7 @@ describe('Organograma Page', () => {
     };
 
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') {
+      if (url === '/autenticacao/meu-perfil') {
         return Promise.resolve({ data: { id: '1', name: 'Admin', roles: ['ADMIN'] } });
       }
       if (url === '/organizacoes/organograma') {

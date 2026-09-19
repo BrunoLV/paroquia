@@ -1,13 +1,13 @@
 package br.com.nsfatima.gestao.aprovacao.api.v1.controller;
 
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoCreateRequest;
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.CriarAprovacaoRequest;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecidirAprovacaoRequest;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecisaoAprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoFiltroRequest;
 import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.CriarSolicitacaoAprovacaoUseCase;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.DecideSolicitacaoAprovacaoUseCase;
-import br.com.nsfatima.gestao.aprovacao.application.usecase.ListAprovacoesUseCase;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.DecidirSolicitacaoAprovacaoUseCase;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.ListarAprovacoesUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,14 +44,14 @@ import java.util.UUID;
 public class AprovacaoController {
 
     private final CriarSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase;
-    private final DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase;
-    private final ListAprovacoesUseCase listAprovacoesUseCase;
+    private final DecidirSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase;
+    private final ListarAprovacoesUseCase listAprovacoesUseCase;
     private final EventoAuditPublisher eventoAuditPublisher;
 
     public AprovacaoController(
             CriarSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase,
-            DecideSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase,
-            ListAprovacoesUseCase listAprovacoesUseCase,
+            DecidirSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase,
+            ListarAprovacoesUseCase listAprovacoesUseCase,
             EventoAuditPublisher eventoAuditPublisher,
             EventoActorContextResolver actorContextResolver) {
         this.createSolicitacaoAprovacaoUseCase = createSolicitacaoAprovacaoUseCase;
@@ -66,7 +66,7 @@ public class AprovacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * AprovacaoCreateRequest request = new AprovacaoCreateRequest(eventoId, TipoSolicitacaoInput.CREATE);
+     * CriarAprovacaoRequest request = new CriarAprovacaoRequest(eventoId, TipoSolicitacaoInput.CREATE);
      * AprovacaoResponse response = controller.create(request);
      * }
      */
@@ -82,8 +82,8 @@ public class AprovacaoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public AprovacaoResponse create(@RequestBody @Valid AprovacaoCreateRequest request) {
-        return createSolicitacaoAprovacaoUseCase.create(
+    public AprovacaoResponse criar(@RequestBody @Valid CriarAprovacaoRequest request) {
+        return createSolicitacaoAprovacaoUseCase.criar(
                 request.eventoId(),
                 request.tipoSolicitacao());
     }
@@ -95,7 +95,7 @@ public class AprovacaoController {
      * Exemplo de uso:
      * {@code
      * AprovacaoFiltroRequest filters = new AprovacaoFiltroRequest(eventoId, "PENDENTE");
-     * Page<AprovacaoResponse> page = controller.list(filters, PageRequest.of(0, 10));
+     * Page<AprovacaoResponse> page = controller.listar(filters, PageRequest.of(0, 10));
      * }
      */
     @GetMapping
@@ -107,7 +107,7 @@ public class AprovacaoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public Page<AprovacaoResponse> list(AprovacaoFiltroRequest filters, Pageable pageable) {
+    public Page<AprovacaoResponse> listar(AprovacaoFiltroRequest filters, Pageable pageable) {
         return listAprovacoesUseCase.execute(filters.eventoId(), filters.status(), pageable);
     }
 
@@ -117,9 +117,9 @@ public class AprovacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * AprovacaoDecisionRequest request = new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Validated by
+     * DecidirAprovacaoRequest request = new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "Validated by
      * coordination");
-     * AprovacaoDecisionResponse response = controller.decide(id, request);
+     * DecisaoAprovacaoResponse response = controller.decidir(id, request);
      * }
      */
     @PatchMapping("/{id}")
@@ -128,15 +128,15 @@ public class AprovacaoController {
             "aprovação existente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Decisão registrada com sucesso",
-                    content = @Content(schema = @Schema(implementation = AprovacaoDecisionResponse.class))),
+                    content = @Content(schema = @Schema(implementation = DecisaoAprovacaoResponse.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
     })
-    public AprovacaoDecisionResponse decide(
+    public DecisaoAprovacaoResponse decidir(
             @Parameter(description = "ID único da aprovação", required = true) @PathVariable UUID id,
-            @RequestBody @Valid AprovacaoDecisionRequest request) {
+            @RequestBody @Valid DecidirAprovacaoRequest request) {
         eventoAuditPublisher.publish(
                 "system",
                 "aprovacao-decisao-solicitacao",
@@ -144,6 +144,6 @@ public class AprovacaoController {
                 "recebido",
                 Map.of("correlationId", MDC.get("correlationId") == null ? "n/a" : MDC.get("correlationId")));
 
-        return decideSolicitacaoAprovacaoUseCase.decide(id, request);
+        return decideSolicitacaoAprovacaoUseCase.decidir(id, request);
     }
 }

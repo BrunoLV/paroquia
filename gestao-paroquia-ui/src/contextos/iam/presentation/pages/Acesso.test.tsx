@@ -82,7 +82,7 @@ test('submits login form', async () => {
   });
 
   fireEvent.change(screen.getByLabelText(/Nome de Usuário/i), { target: { value: 'testuser' } });
-  fireEvent.change(screen.getByLabelText(/Senha/i), { target: { value: 'password' } });
+  fireEvent.change(screen.getByLabelText(/Senha/i), { target: { value: 'password123' } });
 
   const submitButton = screen.getByRole('button', { name: /Entrar/i });
 
@@ -90,9 +90,9 @@ test('submits login form', async () => {
     fireEvent.click(submitButton);
   });
 
-  expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/login', {
+  expect(mockedApiClient.post).toHaveBeenCalledWith('/autenticacao/login', {
     username: 'testuser',
-    password: 'password',
+    password: 'password123',
   });
 });
 

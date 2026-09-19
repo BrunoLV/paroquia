@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GetUsuarioUseCaseTest {
+class ObterUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
     private GrupoParoquialJpaRepository grupoParoquialRepository;
@@ -124,7 +124,7 @@ class GetUsuarioUseCaseTest {
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
         org.junit.jupiter.api.Assertions.assertThrows(
-                br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException.class,
+                br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException.class,
                 () -> useCase.execute(usuarioId));
     }
 }

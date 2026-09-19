@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.domain.policy.AutorizacaoCancelamentoEventoPolicy;
-import br.com.nsfatima.gestao.calendario.domain.policy.CancelamentoRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCancelamento;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
@@ -22,7 +22,7 @@ public class EventoCancelamentoAuthorizationService {
         this.policy = policy;
     }
 
-    public CancelamentoRequestMode resolveRequestMode(
+    public ModoRequisicaoCancelamento resolveRequestMode(
             EventoActorContext actorContext,
             UUID eventoGrupoParoquialResponsavelId) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());

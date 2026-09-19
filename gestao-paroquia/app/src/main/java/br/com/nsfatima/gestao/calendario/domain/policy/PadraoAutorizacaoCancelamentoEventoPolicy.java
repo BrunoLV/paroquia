@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
@@ -25,32 +25,32 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
             TipoGrupo.PASTORAL);
 
     @Override
-    public CancelamentoRequestMode resolveRequestMode(
+    public ModoRequisicaoCancelamento resolveRequestMode(
             PapelOrganizacional papel,
             TipoGrupo tipoGrupo,
             UUID atorOrgId,
             UUID eventoOrgId) {
 
         if (isConselhoLeadership(papel, tipoGrupo) || papel == PapelOrganizacional.PAROCO) {
-            return CancelamentoRequestMode.IMMEDIATE;
+            return ModoRequisicaoCancelamento.IMEDIATO;
         }
 
         if (papel == PapelOrganizacional.VIGARIO) {
-            return CancelamentoRequestMode.REQUIRES_APROVACAO;
+            return ModoRequisicaoCancelamento.REQUER_APROVACAO;
         }
 
         if (isLocalLeadership(papel, tipoGrupo)) {
             if (atorOrgId == null) {
-                throw new ForbiddenOperationException("Usuário não pode cancelar eventos sem um escopo de organização");
+                throw new OperacaoProibidaException("Usuário não pode cancelar eventos sem um escopo de organização");
             }
             if (eventoOrgId == null || !Objects.equals(eventoOrgId, atorOrgId)) {
-                throw new ForbiddenOperationException(
+                throw new OperacaoProibidaException(
                         "User cannot cancel events outside the responsible organization scope");
             }
-            return CancelamentoRequestMode.REQUIRES_APROVACAO;
+            return ModoRequisicaoCancelamento.REQUER_APROVACAO;
         }
 
-        throw new ForbiddenOperationException("Usuário não tem permissão para cancelar eventos");
+        throw new OperacaoProibidaException("Usuário não tem permissão para cancelar eventos");
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
         if (papel == PapelOrganizacional.PAROCO || isConselhoLeadership(papel, tipoGrupo)) {
             return;
         }
-        throw new ForbiddenOperationException("Usuário não tem permissão para decidir aprovações de evento");
+        throw new OperacaoProibidaException("Usuário não tem permissão para decidir aprovações de evento");
     }
 
     private boolean isConselhoLeadership(PapelOrganizacional role, TipoGrupo organizationType) {

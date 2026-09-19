@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Job agendado que automatiza a transição {@code ABERTO -> EM_ANDAMENTO} de projetos cuja data
  * de início já foi atingida, evitando que projetos fiquem indefinidamente em {@code ABERTO}
- * quando ninguém aciona {@code TransitionProjetoUseCase#iniciar} manualmente. Usa
+ * quando ninguém aciona {@code TransicionarProjetoUseCase#iniciar} manualmente. Usa
  * {@code JobLockJpaRepository} para garantir execução exclusiva entre instâncias da aplicação.
  */
 @Component

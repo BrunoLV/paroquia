@@ -29,7 +29,7 @@ class AuthControllerIntegrationTest {
     @Test
     @WithUserDetails("joao.silva")
     void deveRetornarUsuarioProfileComOrganizacoes() throws Exception {
-        mockMvc.perform(get("/api/v1/auth/me"))
+        mockMvc.perform(get("/api/v1/autenticacao/meu-perfil"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username", is("joao.silva")))

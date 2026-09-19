@@ -7,7 +7,7 @@ import java.util.UUID;
  * Representação de uma solicitação de aprovação pendente (ou já decidida) sobre um projeto —
  * de criação ({@code tipoSolicitacao = "CRIACAO"}) ou cancelamento
  * ({@code tipoSolicitacao = "CANCELAMENTO"}). Retornada quando uma ação sobre projeto é
- * desviada para aprovação por {@code TransitionProjetoUseCase}.
+ * desviada para aprovação por {@code TransicionarProjetoUseCase}.
  */
 public record ProjetoAprovacaoResponse(
         UUID id,

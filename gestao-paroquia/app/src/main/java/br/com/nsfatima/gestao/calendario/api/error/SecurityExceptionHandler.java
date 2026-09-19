@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.PapelEscopoInvalidoException;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
@@ -29,9 +29,9 @@ public class SecurityExceptionHandler extends BaseExceptionHandler {
         super(auditLogPersistenceService);
     }
 
-    @ExceptionHandler(ForbiddenOperationException.class)
+    @ExceptionHandler(OperacaoProibidaException.class)
     public ResponseEntity<ValidationErrorResponse> handleForbiddenOperation(
-            ForbiddenOperationException ex,
+            OperacaoProibidaException ex,
             HttpServletRequest request) {
         logSecurityDenial(ErrorCodes.FORBIDDEN, ex.getMessage(), request);
         return buildValidation(

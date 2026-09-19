@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -66,7 +66,7 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
         envolvido.setPapelParticipacao(PapelEnvolvido.APOIO);
         eventoEnvolvidoJpaRepository.save(envolvido);
 
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.conselho.application.usecase;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.CpcDecisaoResponse;
-import br.com.nsfatima.gestao.conselho.api.v1.dto.CreateCpcDecisaoRequest;
+import br.com.nsfatima.gestao.conselho.api.v1.dto.CriarCpcDecisaoRequest;
 import br.com.nsfatima.gestao.conselho.domain.model.CpcDecisao;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
 import br.com.nsfatima.gestao.conselho.domain.repository.CpcDecisaoRepository;
@@ -44,7 +44,7 @@ public class CriarCpcDecisaoUseCase {
      * @return a decisão recém-criada, já com status pendente de homologação
      */
     @Transactional
-    public CpcDecisaoResponse execute(CreateCpcDecisaoRequest request) {
+    public CpcDecisaoResponse execute(CriarCpcDecisaoRequest request) {
         EventoActorContext context = actorContextResolver.resolveRequired();
 
         CpcDecisao decisao = CpcDecisao.registrar(

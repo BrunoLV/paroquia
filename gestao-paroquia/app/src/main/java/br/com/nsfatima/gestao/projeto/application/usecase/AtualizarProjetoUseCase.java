@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoPatchRequest;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.AtualizarProjetoRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
-import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.application.service.ProjetoAuthorizationService;
@@ -55,20 +55,20 @@ public class AtualizarProjetoUseCase {
      * Executa a atualização parcial de um projeto, validando permissões e mantendo a integridade das datas e status.
      *
      * <p>Exemplo de uso:
-     * {@code updateProjetoUseCase.execute(projetoId, new ProjetoPatchRequest("Novo Nome", null, null, null, null,
+     * {@code updateProjetoUseCase.execute(projetoId, new AtualizarProjetoRequest("Novo Nome", null, null, null, null,
      * null))}
      *
      * @param id      ID único do projeto a ser atualizado
      * @param request Dados para atualização (campos nulos são ignorados)
      * @return DTO com os dados do projeto atualizado
-     * @throws ProjetoNotFoundException se o ID não corresponder a um projeto existente
+     * @throws ProjetoNaoEncontradoException se o ID não corresponder a um projeto existente
      * @throws SecurityException        se o ator não tiver permissão para editar o projeto
      * @throws IllegalArgumentException se a nova data de fim for anterior à de início
      */
     @Transactional
-    public ProjetoResponse execute(UUID id, ProjetoPatchRequest request) {
+    public ProjetoResponse execute(UUID id, AtualizarProjetoRequest request) {
         ProjetoEventoEntity entity = repository.findById(id)
-                .orElseThrow(() -> new ProjetoNotFoundException(id));
+                .orElseThrow(() -> new ProjetoNaoEncontradoException(id));
 
         var actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanEdit(actorContext, entity.getGrupoParoquialResponsavelId());

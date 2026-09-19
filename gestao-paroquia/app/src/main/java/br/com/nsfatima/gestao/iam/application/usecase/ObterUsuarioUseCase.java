@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.Clerig
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
@@ -88,6 +88,6 @@ public class ObterUsuarioUseCase {
                             false, false, false, false);
 
                 })
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
     }
 }

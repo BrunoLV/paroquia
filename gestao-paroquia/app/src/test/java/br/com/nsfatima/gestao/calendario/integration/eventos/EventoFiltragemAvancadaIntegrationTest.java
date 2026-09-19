@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.integration.eventos;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListEventosUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListarEventosUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
@@ -32,7 +32,7 @@ class EventoFiltragemAvancadaIntegrationTest {
     private final UUID orgA = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
     private final UUID orgB = UUID.fromString("00000000-0000-0000-0000-0000000000bb");
     @Autowired
-    private ListEventosUseCase listEventosUseCase;
+    private ListarEventosUseCase listEventosUseCase;
     @Autowired
     private EventoJpaRepository repository;
     @Autowired

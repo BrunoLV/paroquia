@@ -8,7 +8,7 @@ import br.com.nsfatima.gestao.patrimonio.application.port.out.ConsultaReservaDeA
 import br.com.nsfatima.gestao.patrimonio.domain.event.AtivoEnviadoParaManutencaoEvent;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoConflitanteException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoInvalidaException;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoManutencao;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoManutencaoId;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
@@ -97,9 +97,9 @@ public class EnviarAtivoParaManutencaoUseCase {
 
     private AtivoPatrimonial carregar(UUID ativoId) {
         AtivoPatrimonial ativo = ativoRepository.findById(new AtivoPatrimonialId(ativoId))
-                .orElseThrow(() -> new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId));
+                .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
         if (ativo.estaExcluido()) {
-            throw new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId);
+            throw new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId);
         }
         return ativo;
     }

@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.patrimonio.application.usecase;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.EditarDescricaoAtivoRequest;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoCategoria;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
@@ -63,6 +63,6 @@ class EditarDescricaoAtivoUseCaseTest {
     void naoEditaAtivoExcluido() {
         when(repository.findById(new AtivoPatrimonialId(ativoId))).thenReturn(Optional.of(ativo(Instant.now())));
         assertThatThrownBy(() -> useCase().execute(ativoId, new EditarDescricaoAtivoRequest("x")))
-                .isInstanceOf(AtivoPatrimonialNotFoundException.class);
+                .isInstanceOf(AtivoPatrimonialNaoEncontradoException.class);
     }
 }

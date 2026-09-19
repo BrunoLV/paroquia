@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.api.dto.aprovacao;
 
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoCreateRequest;
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.CriarAprovacaoRequest;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecidirAprovacaoRequest;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import jakarta.validation.ConstraintViolation;
@@ -28,32 +28,32 @@ class AprovacaoDtoValidationTest {
     }
 
     @Test
-    @DisplayName("AprovacaoCreateRequest: should fail when eventoId is null")
+    @DisplayName("CriarAprovacaoRequest: should fail when eventoId is null")
     void aprovacaoCreateRequest_EventoIdNull() {
-        AprovacaoCreateRequest request = new AprovacaoCreateRequest(null, TipoSolicitacaoInput.CRIACAO_EVENTO);
+        CriarAprovacaoRequest request = new CriarAprovacaoRequest(null, TipoSolicitacaoInput.CRIACAO_EVENTO);
 
-        Set<ConstraintViolation<AprovacaoCreateRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CriarAprovacaoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("eventoId")));
     }
 
     @Test
-    @DisplayName("AprovacaoDecisionRequest: should fail when status is null")
+    @DisplayName("DecidirAprovacaoRequest: should fail when status is null")
     void aprovacaoDecisionRequest_StatusNull() {
-        AprovacaoDecisionRequest request = new AprovacaoDecisionRequest(null, "Obs");
+        DecidirAprovacaoRequest request = new DecidirAprovacaoRequest(null, "Obs");
 
-        Set<ConstraintViolation<AprovacaoDecisionRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<DecidirAprovacaoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("status")));
     }
 
     @Test
-    @DisplayName("AprovacaoDecisionRequest: should fail when observacao is too long")
+    @DisplayName("DecidirAprovacaoRequest: should fail when observacao is too long")
     void aprovacaoDecisionRequest_ObservacaoTooLong() {
         String longObs = "A".repeat(2001);
-        AprovacaoDecisionRequest request = new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, longObs);
+        DecidirAprovacaoRequest request = new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, longObs);
 
-        Set<ConstraintViolation<AprovacaoDecisionRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<DecidirAprovacaoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("observacao")));
     }

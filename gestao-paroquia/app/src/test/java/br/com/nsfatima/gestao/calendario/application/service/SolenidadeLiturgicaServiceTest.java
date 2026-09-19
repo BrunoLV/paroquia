@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaRequestDTO;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaResponseDTO;
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.domain.model.TipoSolenidade;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
@@ -98,7 +98,7 @@ class SolenidadeLiturgicaServiceTest {
         );
 
         assertThatThrownBy(() -> service.create(req, "SECRETARIO"))
-                .isInstanceOf(ForbiddenOperationException.class)
+                .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("Apenas Pároco ou Vigário");
     }
 }

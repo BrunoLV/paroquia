@@ -84,14 +84,14 @@ public class SecurityConfig {
                                 "/swagger-ui",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/autenticacao/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/observabilidade/logs").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/organizacoes").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
-                        .logoutUrl("/api/v1/auth/logout")
+                        .logoutUrl("/api/v1/autenticacao/logout")
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")

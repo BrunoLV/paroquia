@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Payload para decidir (aprovar/reprovar) uma solicitação de aprovação pendente de um projeto
- * (criação ou cancelamento), usado por {@code TransitionProjetoUseCase#decidir}. Só pode ser
+ * (criação ou cancelamento), usado por {@code TransicionarProjetoUseCase#decidir}. Só pode ser
  * enviado por um ator de alto nível.
  */
 @Schema(description = "Solicitação de decisão sobre aprovação de projeto")

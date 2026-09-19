@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,7 +39,7 @@ class CancelEventoTier1PerformanceTest {
         eventoJpaRepository.save(entity);
 
         long startNanos = System.nanoTime();
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)

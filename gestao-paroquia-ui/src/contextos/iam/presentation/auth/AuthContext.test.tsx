@@ -45,7 +45,7 @@ test('verifies session on initialization', async () => {
     );
   });
 
-  expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/me');
+  expect(mockedApiClient.get).toHaveBeenCalledWith('/autenticacao/meu-perfil');
   expect(screen.getByTestId('user').textContent).toBe('Session User');
   expect(screen.getByTestId('orgs').textContent).toBe('1');
 });
@@ -63,7 +63,7 @@ test('handles no session on initialization', async () => {
     );
   });
 
-  expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/me');
+  expect(mockedApiClient.get).toHaveBeenCalledWith('/autenticacao/meu-perfil');
   expect(screen.getByTestId('user').textContent).toBe('none');
   expect(screen.getByTestId('orgs').textContent).toBe('0');
   expect(localStorage.getItem('user')).toBeNull();
@@ -103,7 +103,7 @@ test('provides auth state and methods', async () => {
   });
 
   // Verify login call
-  expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/login', {
+  expect(mockedApiClient.post).toHaveBeenCalledWith('/autenticacao/login', {
     username: 'testuser',
     password: 'password',
   });
@@ -116,7 +116,7 @@ test('provides auth state and methods', async () => {
   });
 
   // Verify logout call
-  expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/logout');
+  expect(mockedApiClient.post).toHaveBeenCalledWith('/autenticacao/logout');
   expect(screen.getByTestId('user').textContent).toBe('none');
 });
 

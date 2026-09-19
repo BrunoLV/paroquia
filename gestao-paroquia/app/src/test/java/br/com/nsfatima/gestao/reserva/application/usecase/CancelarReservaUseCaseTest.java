@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegisterSystemObservacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegistrarObservacaoSistemaUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -38,7 +38,7 @@ class CancelarReservaUseCaseTest {
 
     @Mock private ReservaRepository reservaRepository;
     @Mock private ReservaAuthorizationService authorizationService;
-    @Mock private RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase;
+    @Mock private RegistrarObservacaoSistemaUseCase registerSystemObservacaoUseCase;
     @Mock private PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     private CancelarReservaUseCase useCase() {
@@ -54,14 +54,14 @@ class CancelarReservaUseCaseTest {
     }
 
     @Test
-    @DisplayName("Deve lançar ReservaNotFoundException quando reserva não existe")
+    @DisplayName("Deve lançar ReservaNaoEncontradaException quando reserva não existe")
     void deveLancarNotFoundQuandoReservaInexistente() {
         UUID id = UUID.randomUUID();
         when(reservaRepository.findById(new ReservaId(id))).thenReturn(Optional.empty());
         UsuarioActor operador = new UsuarioActor(UUID.randomUUID(), "op", List.of("ROLE_ADMIN"), List.of(), List.of());
 
         assertThatThrownBy(() -> useCase().executar(id, "motivo", null, operador))
-                .isInstanceOf(ReservaNotFoundException.class);
+                .isInstanceOf(ReservaNaoEncontradaException.class);
     }
 
     @Test

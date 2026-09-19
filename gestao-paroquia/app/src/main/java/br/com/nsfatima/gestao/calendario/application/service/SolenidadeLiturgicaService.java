@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaRequestDTO;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaResponseDTO;
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class SolenidadeLiturgicaService {
      * @param req dados da solenidade a ser criada
      * @param userRole papel do usuário solicitante, usado para validar autorização
      * @return solenidade criada
-     * @throws ForbiddenOperationException se o usuário não for Pároco nem Vigário
+     * @throws OperacaoProibidaException se o usuário não for Pároco nem Vigário
      */
     @Transactional
     public SolenidadeLiturgicaResponseDTO create(SolenidadeLiturgicaRequestDTO req, String userRole) {
@@ -93,7 +93,7 @@ public class SolenidadeLiturgicaService {
      * @param req dados a serem atualizados; campos {@code null} são ignorados
      * @param userRole papel do usuário solicitante, usado para validar autorização
      * @return solenidade atualizada
-     * @throws ForbiddenOperationException se o usuário não for Pároco nem Vigário
+     * @throws OperacaoProibidaException se o usuário não for Pároco nem Vigário
      * @throws IllegalArgumentException se nenhuma solenidade existir com o identificador informado
      */
     @Transactional
@@ -147,7 +147,7 @@ public class SolenidadeLiturgicaService {
      *
      * @param id identificador da solenidade a ser desativada
      * @param userRole papel do usuário solicitante, usado para validar autorização
-     * @throws ForbiddenOperationException se o usuário não for Pároco nem Vigário
+     * @throws OperacaoProibidaException se o usuário não for Pároco nem Vigário
      * @throws IllegalArgumentException se nenhuma solenidade existir com o identificador informado
      */
     @Transactional
@@ -163,7 +163,7 @@ public class SolenidadeLiturgicaService {
     private void validarPapel(String userRole) {
         String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";
         if (!"PAROCO".equals(roleUpper) && !"VIGARIO".equals(roleUpper)) {
-            throw new ForbiddenOperationException(
+            throw new OperacaoProibidaException(
                     "Apenas Pároco ou Vigário podem gerenciar o cadastro de solenidades litúrgicas.");
         }
     }

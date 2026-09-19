@@ -153,7 +153,7 @@ class ClerigoControllerTest {
                 LocalDate.of(2005, 1, 1), LocalDate.of(2006, 1, 1), null,
                 FuncaoEclesiastica.PAROCO, true));
 
-        mockMvc.perform(get("/api/v1/clerigos/me"))
+        mockMvc.perform(get("/api/v1/clerigos/meu-perfil"))
                 .andExpect(status().isOk());
     }
 

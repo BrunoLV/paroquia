@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
@@ -35,12 +35,12 @@ public class AprovarUsuarioUseCase {
      * tornando-o membro efetivo dessas organizações.
      *
      * @param userId identificador do usuário a aprovar
-     * @throws UsuarioNotFoundException se não existir usuário com o id informado
+     * @throws UsuarioNaoEncontradoException se não existir usuário com o id informado
      */
     @Transactional
     public void execute(UUID userId) {
         UsuarioEntity usuario = usuarioRepository.findById(userId)
-                .orElseThrow(() -> new UsuarioNotFoundException(userId));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(userId));
 
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         usuario.aprovar(authentication != null ? authentication.getName() : null);

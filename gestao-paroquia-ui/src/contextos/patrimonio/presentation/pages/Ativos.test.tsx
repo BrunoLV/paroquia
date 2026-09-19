@@ -63,7 +63,7 @@ describe('Ativos Page', () => {
 
   const renderAtivos = async (user: any) => {
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') return Promise.resolve({ data: user });
+      if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: user });
       if (url === '/organizacoes') return Promise.resolve({ data: mockOrgs });
       if (url === '/ativos/organizacao/org-1') return Promise.resolve({ data: mockAtivos });
       return Promise.reject(new Error('Not found'));

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.iam.api.v1.controller;
 
-import br.com.nsfatima.gestao.iam.api.v1.dto.PasswordResetRequest;
-import br.com.nsfatima.gestao.iam.api.v1.dto.RolesUpdateRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.RedefinirSenhaRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.AtualizarPapeisRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioStatusRequest;
 import br.com.nsfatima.gestao.iam.application.service.UsuarioAdminService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api/v1/usuarios")
-@Tag(name = "User Administration", description = "Administrative actions for user management")
+@Tag(name = "Administração de Usuários", description = "Ações administrativas para gestão de usuários")
 public class UsuarioAdminController {
 
     private final UsuarioAdminService usuarioAdminService;
@@ -54,8 +54,8 @@ public class UsuarioAdminController {
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
-    @Operation(summary = "Enable or disable a user", description = "Global administrators or Organization " +
-            "Coordinators can toggle user status.")
+    @Operation(summary = "Ativa ou desativa um usuário", description = "Administradores globais ou coordenadores de " +
+            "organização podem alternar o status do usuário.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Status do usuário atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
@@ -63,11 +63,11 @@ public class UsuarioAdminController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public void toggleStatus(
+    public void alternarStatus(
             @Parameter(description = "Identificador único do usuário", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid UsuarioStatusRequest request) {
-        usuarioAdminService.toggleActiveStatus(id, request.enabled());
+        usuarioAdminService.alternarStatusAtivo(id, request.enabled());
     }
 
     /**
@@ -76,15 +76,15 @@ public class UsuarioAdminController {
      * (escopados a uma organização), papéis globais valem no sistema inteiro — por isso a operação é
      * restrita a administradores globais, sem exceção para coordenadores.
      * <p>
-     * Exemplo: PATCH /api/v1/usuarios/{id}/roles { "roles": ["ADMIN"] }
+     * Exemplo: PATCH /api/v1/usuarios/{id}/papeis { "roles": ["ADMIN"] }
      *
      * @param id      identificador do usuário alvo
      * @param request lista de papéis que substitui os papéis globais atuais do usuário
      */
-    @PatchMapping("/{id}/roles")
+    @PatchMapping("/{id}/papeis")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update user global roles", description = "Only global administrators can update roles.")
+    @Operation(summary = "Atualiza papéis globais do usuário", description = "Apenas administradores globais podem atualizar papéis.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Papéis globais atualizados com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
@@ -92,11 +92,11 @@ public class UsuarioAdminController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public void updateRoles(
+    public void atualizarPapeis(
             @Parameter(description = "Identificador único do usuário", required = true)
             @PathVariable UUID id,
-            @RequestBody @Valid RolesUpdateRequest request) {
-        usuarioAdminService.updateGlobalRoles(id, request.roles());
+            @RequestBody @Valid AtualizarPapeisRequest request) {
+        usuarioAdminService.atualizarPapeisGlobais(id, request.roles());
     }
 
     /**
@@ -104,18 +104,18 @@ public class UsuarioAdminController {
      * usuário perdeu acesso à conta ou por política de segurança. A nova senha é sempre recebida em texto
      * puro e persistida apenas como hash.
      * <p>
-     * Exemplo: POST /api/v1/usuarios/{id}/password-reset { "newPassword": "..." }
+     * Exemplo: POST /api/v1/usuarios/{id}/redefinir-senha { "newPassword": "..." }
      *
      * @param id      identificador do usuário alvo
      * @param request nova senha em texto puro, a ser criptografada antes da persistência
      * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
      *     coordenador de uma organização à qual o usuário-alvo pertence
      */
-    @PostMapping("/{id}/password-reset")
+    @PostMapping("/{id}/redefinir-senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
-    @Operation(summary = "Reset user password", description = "Global administrators or Organization Coordinators can" +
-            " reset passwords.")
+    @Operation(summary = "Redefine a senha de um usuário", description = "Administradores globais ou coordenadores de organização" +
+            " podem redefinir senhas.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
@@ -123,10 +123,10 @@ public class UsuarioAdminController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public void resetPassword(
+    public void redefinirSenha(
             @Parameter(description = "Identificador único do usuário", required = true)
             @PathVariable UUID id,
-            @RequestBody @Valid PasswordResetRequest request) {
-        usuarioAdminService.resetPassword(id, request.newPassword());
+            @RequestBody @Valid RedefinirSenhaRequest request) {
+        usuarioAdminService.redefinirSenha(id, request.newPassword());
     }
 }

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
@@ -72,12 +72,12 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
     }
 
     @Override
-    public CreateRequestMode resolveCreateRequestMode(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
+    public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
         if (papel == PapelOrganizacional.PAROCO
                 || (tipoGrupo == TipoGrupo.CONSELHO && CONSELHO_CRIACAO_IMEDIATA.contains(papel))) {
-            return CreateRequestMode.IMMEDIATE;
+            return ModoRequisicaoCriacao.IMEDIATO;
         }
-        return CreateRequestMode.REQUIRES_APROVACAO;
+        return ModoRequisicaoCriacao.REQUER_APROVACAO;
     }
 
     @Override
@@ -86,7 +86,7 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
         boolean paroco = papel == PapelOrganizacional.PAROCO;
 
         if (!conselhoCoordinator && !paroco) {
-            throw new ForbiddenOperationException(
+            throw new OperacaoProibidaException(
                     "Apenas coordenador de conselho ou pároco pode alterar a organização responsável");
         }
     }

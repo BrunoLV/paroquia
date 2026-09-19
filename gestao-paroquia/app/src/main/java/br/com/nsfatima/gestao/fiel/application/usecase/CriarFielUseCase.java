@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.fiel.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.CriarFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.fiel.domain.service.ValidacaoDocumentoCivil;
@@ -36,7 +36,7 @@ public class CriarFielUseCase {
     }
 
     @Transactional
-    public FielResponse execute(CreateFielRequest request, String actor) {
+    public FielResponse execute(CriarFielRequest request, String actor) {
         validacaoDocumento.validarPais(request.paisOrigem());
         validacaoDocumento.validarDocumento(
                 request.paisOrigem(),
@@ -56,7 +56,7 @@ public class CriarFielUseCase {
         return mapper.toResponse(repository.save(fiel));
     }
 
-    private void aplicar(FielEntity fiel, CreateFielRequest r) {
+    private void aplicar(FielEntity fiel, CriarFielRequest r) {
         fiel.setNome(r.nome());
         fiel.setSexo(r.sexo());
         fiel.setDataNascimento(r.dataNascimento());

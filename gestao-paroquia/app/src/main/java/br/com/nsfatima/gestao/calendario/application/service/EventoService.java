@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
-import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
+import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -39,12 +39,12 @@ public class EventoService {
      * @param id identificador do evento
      * @param actorContext contexto de papel/organização do ator autenticado
      * @return evento encontrado
-     * @throws EventoNotFoundException se nenhum evento existir com o identificador informado
-     * @throws ForbiddenOperationException se o ator não tiver permissão para visualizar o evento
+     * @throws EventoNaoEncontradoException se nenhum evento existir com o identificador informado
+     * @throws OperacaoProibidaException se o ator não tiver permissão para visualizar o evento
      */
     public EventoEntity findById(UUID id, EventoActorContext actorContext) {
         EventoEntity evento = eventoJpaRepository.findById(id)
-                .orElseThrow(() -> new EventoNotFoundException(id));
+                .orElseThrow(() -> new EventoNaoEncontradoException(id));
 
         assertCanView(actorContext, evento.getGrupoParoquialResponsavelId());
 
@@ -106,6 +106,6 @@ public class EventoService {
             return;
         }
 
-        throw new ForbiddenOperationException("Usuario nao tem permissao para visualizar este evento");
+        throw new OperacaoProibidaException("Usuario nao tem permissao para visualizar este evento");
     }
 }

@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.SaudeTemporalDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.StatusExecucaoDTO;
 import br.com.nsfatima.gestao.projeto.application.service.ProjetoAgregacaoService;
-import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ class ProjetoAgregacaoControllerTest {
     @DisplayName("Deve retornar 404 quando projeto não existe")
     void deveRetornar404QuandoProjetoNaoExiste() throws Exception {
         UUID projetoId = UUID.randomUUID();
-        when(aggregationService.obterResumo(projetoId)).thenThrow(new ProjetoNotFoundException(projetoId));
+        when(aggregationService.obterResumo(projetoId)).thenThrow(new ProjetoNaoEncontradoException(projetoId));
 
         mockMvc.perform(get("/api/v1/projetos/{projetoId}/resumo", projetoId)
                         .header("X-Actor-Role", "paroco")

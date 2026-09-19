@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.local.application.service;
 
-import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
+import br.com.nsfatima.gestao.local.domain.exception.LocalNegocioException;
 import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
@@ -87,7 +87,7 @@ public class LocalService {
      * @param ativo            status de disponibilidade do local
      * @param igrejaId         nova igreja vinculada
      * @return o Local atualizado persistido
-     * @throws LocalBusinessException se o local não existir ou possuir eventos futuros ao inativar
+     * @throws LocalNegocioException se o local não existir ou possuir eventos futuros ao inativar
      */
     @Transactional
     public Local updateLocal(UUID id,
@@ -99,10 +99,10 @@ public class LocalService {
                              boolean ativo,
                              UUID igrejaId) {
         Local local = localRepository.findById(id)
-                .orElseThrow(() -> LocalBusinessException.notFound(id));
+                .orElseThrow(() -> LocalNegocioException.notFound(id));
 
         if (!ativo && local.isAtivo() && localRepository.hasFutureEvents(id)) {
-            throw LocalBusinessException.hasFutureEventsOnDeactivate(id);
+            throw LocalNegocioException.hasFutureEventsOnDeactivate(id);
         }
 
         local.alterarCadastro(nome, tipo, enderecoLocal, capacidadeMaxima, descricao, igrejaId);
@@ -119,15 +119,15 @@ public class LocalService {
      * Exclui logicamente um Local (soft delete), validando integridade referencial com eventos futuros.
      *
      * @param id ID do local a ser excluído
-     * @throws LocalBusinessException se não existir Local ou se possuir eventos futuros agendados
+     * @throws LocalNegocioException se não existir Local ou se possuir eventos futuros agendados
      */
     @Transactional
     public void deleteLocal(UUID id) {
         Local local = localRepository.findById(id)
-                .orElseThrow(() -> LocalBusinessException.notFound(id));
+                .orElseThrow(() -> LocalNegocioException.notFound(id));
 
         if (localRepository.hasFutureEvents(id)) {
-            throw LocalBusinessException.hasFutureEventsOnDelete(id);
+            throw LocalNegocioException.hasFutureEventsOnDelete(id);
         }
 
         local.marcarExcluido();

@@ -12,7 +12,7 @@ import java.util.UUID;
  *
  * <p>Concentra a máquina de estados {@code PENDENTE -> APROVADA | REPROVADA} e o pós-processamento
  * da execução ({@code APROVADA -> FALHA_EXECUCAO} ou registro de conclusão) que antes viviam
- * espalhados em {@code DecideSolicitacaoAprovacaoUseCase} como sequências de setters coordenados.</p>
+ * espalhados em {@code DecidirSolicitacaoAprovacaoUseCase} como sequências de setters coordenados.</p>
  *
  * <p>Invariantes:</p>
  * <ul>

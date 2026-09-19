@@ -27,7 +27,7 @@ class ObterOrganogramaUseCaseTest {
 
     private GrupoParoquialJpaRepository grupoParoquialRepository;
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
-    private ListGrupoParoquialMembrosUseCase listMembrosUseCase;
+    private ListarGrupoParoquialMembrosUseCase listMembrosUseCase;
     private EncargoClericalJpaRepository encargoClericalRepository;
     private ClerigoJpaRepository clerigoRepository;
     private ObterOrganogramaUseCase getOrganogramaUseCase;
@@ -36,7 +36,7 @@ class ObterOrganogramaUseCaseTest {
     void setUp() {
         grupoParoquialRepository = Mockito.mock(GrupoParoquialJpaRepository.class);
         unidadeTerritorialRepository = Mockito.mock(UnidadeTerritorialJpaRepository.class);
-        listMembrosUseCase = Mockito.mock(ListGrupoParoquialMembrosUseCase.class);
+        listMembrosUseCase = Mockito.mock(ListarGrupoParoquialMembrosUseCase.class);
         encargoClericalRepository = Mockito.mock(EncargoClericalJpaRepository.class);
         clerigoRepository = Mockito.mock(ClerigoJpaRepository.class);
         when(encargoClericalRepository.findByFuncaoAndAtualTrue(Mockito.any())).thenReturn(List.of());

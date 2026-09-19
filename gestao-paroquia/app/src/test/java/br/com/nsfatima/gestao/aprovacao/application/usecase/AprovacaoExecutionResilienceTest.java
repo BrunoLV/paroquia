@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase;
 
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionRequest;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecidirAprovacaoRequest;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.application.port.out.AprovacaoAuditPublisher;
 import br.com.nsfatima.gestao.aprovacao.application.port.out.AprovacaoMetricsPublisher;
@@ -34,7 +34,7 @@ class AprovacaoExecutionResilienceTest {
 
     private AprovacaoJpaRepository repository;
     private EventoActorContextResolver actorContextResolver;
-    private DecideSolicitacaoAprovacaoUseCase decideUseCase;
+    private DecidirSolicitacaoAprovacaoUseCase decideUseCase;
     private List<EstrategiaExecucaoAprovacao> strategies;
 
     @BeforeEach
@@ -60,7 +60,7 @@ class AprovacaoExecutionResilienceTest {
 
         AprovacaoMapper aprovacaoMapper = new AprovacaoMapper(mock(LegacyEnumInconsistencyPublisher.class));
 
-        decideUseCase = new DecideSolicitacaoAprovacaoUseCase(
+        decideUseCase = new DecidirSolicitacaoAprovacaoUseCase(
                 repository,
                 aprovacaoMapper,
                 actorContextResolver,
@@ -89,8 +89,8 @@ class AprovacaoExecutionResilienceTest {
         EstrategiaExecucaoAprovacao strategy = strategies.get(2); // cancel
         when(strategy.execute(any(), any())).thenThrow(new RuntimeException("Crash"));
 
-        assertThrows(AprovacaoExecucaoFalhouException.class, () -> decideUseCase.decide(id,
-                new AprovacaoDecisionRequest(AprovacaoStatus.APROVADA, "Ready to go")));
+        assertThrows(AprovacaoExecucaoFalhouException.class, () -> decideUseCase.decidir(id,
+                new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "Ready to go")));
 
         assertEquals(AprovacaoStatus.FALHA_EXECUCAO, entity.getStatus());
         assertTrue(entity.getMensagemErroExecucao().contains("Crash"));

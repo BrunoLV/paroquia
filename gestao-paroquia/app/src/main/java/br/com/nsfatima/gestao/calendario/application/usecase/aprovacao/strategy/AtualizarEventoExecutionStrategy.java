@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.strategy;
 
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecisaoAprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
@@ -61,7 +61,7 @@ public class AtualizarEventoExecutionStrategy implements EstrategiaExecucaoAprov
      * @throws IllegalArgumentException se não houver id de evento no payload nem na entidade
      */
     @Override
-    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
+    public DecisaoAprovacaoResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
 
         AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
@@ -77,7 +77,7 @@ public class AtualizarEventoExecutionStrategy implements EstrategiaExecucaoAprov
 
         aprovacao.setEventoId(response.id());
 
-        return new AprovacaoDecisionResponse.ActionExecution(
+        return new DecisaoAprovacaoResponse.ActionExecution(
                 "EXECUTED",
                 response.id(),
                 response.status() == null ? null : response.status().name(),

@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.patrimonio.application.port.out.ConsultaReservaDeAtivoPort;
 import br.com.nsfatima.gestao.patrimonio.domain.event.AtivoExcluidoEvent;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoExclusaoBloqueadaException;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoManutencaoRepository;
@@ -54,7 +54,7 @@ public class ExcluirAtivoPatrimonialUseCase {
     public void execute(UUID ativoId) {
         AtivoPatrimonial ativo = ativoRepository.findById(new AtivoPatrimonialId(ativoId))
                 .filter(a -> !a.estaExcluido())
-                .orElseThrow(() -> new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId));
+                .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
 
         EventoActorContext actor = actorContextResolver.resolveRequired();
         authorizationService.assertPodeGerirPatrimonio(actor, ativo.getGrupoParoquialId());

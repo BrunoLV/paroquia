@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.CpcDecisaoResponse;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.HomologarCpcDecisaoRequest;
-import br.com.nsfatima.gestao.conselho.domain.exception.CpcDecisaoNotFoundException;
+import br.com.nsfatima.gestao.conselho.domain.exception.CpcDecisaoNaoEncontradaException;
 import br.com.nsfatima.gestao.conselho.domain.model.CpcDecisao;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
 import br.com.nsfatima.gestao.conselho.domain.repository.CpcDecisaoRepository;
@@ -44,7 +44,7 @@ public class HomologarCpcDecisaoUseCase {
      * @param id identificador da decisão a homologar/vetar
      * @param request status decidido (homologado/vetado) e, se aplicável, o motivo do veto
      * @return a decisão atualizada
-     * @throws CpcDecisaoNotFoundException se não existir decisão com o {@code id} informado
+     * @throws CpcDecisaoNaoEncontradaException se não existir decisão com o {@code id} informado
      * @throws IllegalArgumentException se a decisão não estiver pendente, ou se vetar sem motivo
      */
     @Transactional
@@ -52,7 +52,7 @@ public class HomologarCpcDecisaoUseCase {
         EventoActorContext context = actorContextResolver.resolveRequired();
 
         CpcDecisao decisao = repository.buscarPorId(id)
-                .orElseThrow(() -> new CpcDecisaoNotFoundException(id));
+                .orElseThrow(() -> new CpcDecisaoNaoEncontradaException(id));
 
         if (request.status() == StatusHomologacao.VETADO) {
             decisao.vetar(context.actor(), request.motivoVeto(), Instant.now());

@@ -8,7 +8,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
  * imediatamente ou desviada para aprovação. Exatamente um dos dois campos é preenchido:
  * {@code projeto} quando a operação foi aplicada diretamente, {@code aprovacao} quando foi
  * criada uma solicitação de aprovação pendente (ator sem nível de autorização suficiente para
- * a ação imediata — ver {@code TransitionProjetoUseCase#cancelar}).
+ * a ação imediata — ver {@code TransicionarProjetoUseCase#cancelar}).
  */
 public record ProjetoCreationResult(
         ProjetoResponse projeto,

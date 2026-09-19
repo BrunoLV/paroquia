@@ -128,7 +128,7 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
 
   const cancelEventoMutation = useMutation({
     mutationFn: ({ id, motivo }: { id: string; motivo: string }) =>
-      apiClient.post(`/eventos/${id}/cancel`, { motivo }),
+      apiClient.post(`/eventos/${id}/cancelar`, { motivo }),
   });
 
   const handleEventSubmit = async (data: Record<string, unknown>) => {

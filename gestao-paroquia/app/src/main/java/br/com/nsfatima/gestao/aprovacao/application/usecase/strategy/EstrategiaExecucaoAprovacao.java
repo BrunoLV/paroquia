@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.aprovacao.application.usecase.strategy;
 
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecisaoAprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -9,7 +9,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
  * Estratégia (padrão Strategy) que encapsula, por tipo de solicitação, a ação de negócio a ser efetivamente
  * executada quando uma aprovação é decidida como APROVADA. Permite que diferentes contextos limitados
  * (calendario, projeto, patrimonio) registrem sua própria lógica de execução sem que
- * {@code DecideSolicitacaoAprovacaoUseCase} precise conhecer os detalhes de cada tipo de solicitação — o use
+ * {@code DecidirSolicitacaoAprovacaoUseCase} precise conhecer os detalhes de cada tipo de solicitação — o use
  * case apenas seleciona, dentre as implementações injetadas, a que responde {@code true} em
  * {@link #supports(TipoSolicitacaoInput)}.
  */
@@ -32,7 +32,7 @@ public interface EstrategiaExecucaoAprovacao {
      * @param actorContext contexto de autorização do ator que tomou a decisão
      * @return detalhes do resultado da execução, usados na resposta da API e nas notificações
      */
-    AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao, EventoActorContext actorContext);
+    DecisaoAprovacaoResponse.ActionExecution execute(AprovacaoEntity aprovacao, EventoActorContext actorContext);
 
     /**
      * Consulta o status atual do recurso afetado pela solicitação (ex.: status do evento), usado para reportar

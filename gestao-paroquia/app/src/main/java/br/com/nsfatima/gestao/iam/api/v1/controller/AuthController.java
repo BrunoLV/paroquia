@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * reimplementar as regras de autorização já resolvidas pelo Spring Security no login.
  */
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/autenticacao")
 @Tag(name = "Autenticação", description = "Endpoints para sessão e perfil do usuário logado")
 public class AuthController {
 
@@ -34,21 +34,21 @@ public class AuthController {
      * Retorna o perfil do usuário autenticado na requisição atual, incluindo authorities (roles globais e
      * papéis por organização) e a lista de organizações às quais ele possui vínculo ativo.
      * <p>
-     * Exemplo: GET /api/v1/auth/me -&gt; 200 OK { "id": "...", "username": "...", "enabled": true,
+     * Exemplo: GET /api/v1/autenticacao/meu-perfil -&gt; 200 OK { "id": "...", "username": "...", "enabled": true,
      * "roles": ["ADMIN"], "organizations": [...] }
      *
      * @param userDetails principal injetado pelo Spring Security; {@code null} quando não há usuário autenticado
      *                     (ex.: endpoint acessado anonimamente), caso em que o método retorna {@code null}
      * @return o perfil completo do usuário logado, ou {@code null} se não houver sessão autenticada
      */
-    @GetMapping("/me")
+    @GetMapping("/meu-perfil")
     @PreAuthorize("permitAll()")
     @Operation(summary = "Obtém o perfil do usuário logado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Perfil do usuário ou null se anônimo",
                     content = @Content(schema = @Schema(implementation = UsuarioResponse.class)))
     })
-    public UsuarioResponse me(@AuthenticationPrincipal UsuarioDetails userDetails) {
+    public UsuarioResponse meuPerfil(@AuthenticationPrincipal UsuarioDetails userDetails) {
         if (userDetails == null) {
             return null;
         }

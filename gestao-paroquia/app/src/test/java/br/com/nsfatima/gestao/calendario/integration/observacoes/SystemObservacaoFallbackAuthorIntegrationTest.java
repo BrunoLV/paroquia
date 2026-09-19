@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.observacoes;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegisterSystemObservacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegistrarObservacaoSistemaUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SystemObservacaoFallbackAuthorIntegrationTest {
 
     @Autowired
-    private RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase;
+    private RegistrarObservacaoSistemaUseCase registerSystemObservacaoUseCase;
 
     @Autowired
     private ObservacaoEventoJpaRepository observacaoEventoJpaRepository;

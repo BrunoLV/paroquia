@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.projeto.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
@@ -43,11 +43,11 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
     public void assertCanCreate(
             PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (!PROJECT_EDITOR_ROLES.contains(papel)) {
-            throw new ForbiddenOperationException("Usuário não tem permissão para criar projetos");
+            throw new OperacaoProibidaException("Usuário não tem permissão para criar projetos");
         }
         if (!isAtorDeAltoNivel(papel, tipoGrupo) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
-            throw new ForbiddenOperationException("Usuário não pode criar projetos para outra organização");
+            throw new OperacaoProibidaException("Usuário não pode criar projetos para outra organização");
         }
     }
 
@@ -55,11 +55,11 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
     public void assertCanEdit(
             PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (!PROJECT_EDITOR_ROLES.contains(papel)) {
-            throw new ForbiddenOperationException("Usuário não tem permissão para editar projetos");
+            throw new OperacaoProibidaException("Usuário não tem permissão para editar projetos");
         }
         if (!isAtorDeAltoNivel(papel, tipoGrupo) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
-            throw new ForbiddenOperationException("Usuário não pode editar projetos de outra organização");
+            throw new OperacaoProibidaException("Usuário não pode editar projetos de outra organização");
         }
     }
 
@@ -78,6 +78,6 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
         if (isOrgLeader && atorOrganizacaoId != null && Objects.equals(atorOrganizacaoId, targetOrgId)) {
             return;
         }
-        throw new ForbiddenOperationException("Usuário não tem permissão para executar esta transição de projeto");
+        throw new OperacaoProibidaException("Usuário não tem permissão para executar esta transição de projeto");
     }
 }

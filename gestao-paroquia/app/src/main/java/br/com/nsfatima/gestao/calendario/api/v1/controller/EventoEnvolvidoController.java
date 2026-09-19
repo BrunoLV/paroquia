@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidosRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidosResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.ClearEventoEnvolvidosUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.LimparEventoEnvolvidosUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.AtualizarEventoEnvolvidosUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
@@ -35,13 +35,13 @@ import java.util.UUID;
 public class EventoEnvolvidoController {
 
     private final AtualizarEventoEnvolvidosUseCase updateEventoEnvolvidosUseCase;
-    private final ClearEventoEnvolvidosUseCase clearEventoEnvolvidosUseCase;
+    private final LimparEventoEnvolvidosUseCase clearEventoEnvolvidosUseCase;
     private final EventoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
 
     public EventoEnvolvidoController(
             AtualizarEventoEnvolvidosUseCase updateEventoEnvolvidosUseCase,
-            ClearEventoEnvolvidosUseCase clearEventoEnvolvidosUseCase,
+            LimparEventoEnvolvidosUseCase clearEventoEnvolvidosUseCase,
             EventoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver) {
         this.updateEventoEnvolvidosUseCase = updateEventoEnvolvidosUseCase;

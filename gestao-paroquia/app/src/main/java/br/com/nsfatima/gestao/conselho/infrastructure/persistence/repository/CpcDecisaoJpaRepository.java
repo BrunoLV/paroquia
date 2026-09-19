@@ -10,7 +10,7 @@ import java.util.UUID;
 
 /**
  * Acesso a persistência das atas/decisões de conselho (CPC/CPP), com métodos de consulta
- * dedicados aos filtros usados por {@link br.com.nsfatima.gestao.conselho.application.usecase.ListCpcDecisoesUseCase}
+ * dedicados aos filtros usados por {@link br.com.nsfatima.gestao.conselho.application.usecase.ListarCpcDecisoesUseCase}
  * (por comunidade, por status de homologação, ou todas).
  */
 @Repository

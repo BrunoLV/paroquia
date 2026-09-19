@@ -27,7 +27,7 @@ class AprovacaoHorarioIntegrationTest {
                 null,
                 mapper);
 
-        assertNotNull(useCase.create(
+        assertNotNull(useCase.criar(
                 UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 TipoSolicitacaoInput.ALTERACAO_HORARIO));
     }

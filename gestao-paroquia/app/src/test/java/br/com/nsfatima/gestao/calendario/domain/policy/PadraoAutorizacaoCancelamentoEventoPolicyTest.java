@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.DisplayName;
@@ -21,17 +21,17 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
     @DisplayName("Pároco e liderança de conselho têm cancelamento imediato")
     void deveRetornarModoImediatoParaParocoEConselho() {
         assertThat(policy.resolveRequestMode(PapelOrganizacional.PAROCO, null, atorOrgId, atorOrgId))
-                .isEqualTo(CancelamentoRequestMode.IMMEDIATE);
+                .isEqualTo(ModoRequisicaoCancelamento.IMEDIATO);
         assertThat(policy.resolveRequestMode(
                 PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO, atorOrgId, atorOrgId))
-                .isEqualTo(CancelamentoRequestMode.IMMEDIATE);
+                .isEqualTo(ModoRequisicaoCancelamento.IMEDIATO);
     }
 
     @Test
     @DisplayName("Vigário requer aprovação para cancelamento")
     void deveRetornarRequerAprovacaoParaVigario() {
         assertThat(policy.resolveRequestMode(PapelOrganizacional.VIGARIO, null, atorOrgId, atorOrgId))
-                .isEqualTo(CancelamentoRequestMode.REQUIRES_APROVACAO);
+                .isEqualTo(ModoRequisicaoCancelamento.REQUER_APROVACAO);
     }
 
     @Test
@@ -40,11 +40,11 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
         UUID outraOrgId = UUID.randomUUID();
         assertThat(policy.resolveRequestMode(
                 PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, atorOrgId))
-                .isEqualTo(CancelamentoRequestMode.REQUIRES_APROVACAO);
+                .isEqualTo(ModoRequisicaoCancelamento.REQUER_APROVACAO);
 
         assertThatThrownBy(() -> policy.resolveRequestMode(
                 PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, outraOrgId))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test
@@ -57,6 +57,6 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
 
         assertThatThrownBy(() -> policy.assertCanDecideAprovacao(
                 PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
  * ({@code CANCELADO} a partir de {@code ABERTO} ou {@code EM_ANDAMENTO}; {@code CONCLUIDO} e
  * {@code CANCELADO} são terminais) e a invariante {@code fim >= inicio}, que antes viviam como
  * {@code setStatus(...)} cru e blocos de {@code if} espalhados por {@code AtualizarProjetoUseCase} e
- * {@code TransitionProjetoUseCase}.</p>
+ * {@code TransicionarProjetoUseCase}.</p>
  */
 public class Projeto {
 

@@ -60,7 +60,7 @@ export const createUsuario = async (request: CreateUsuarioRequest): Promise<stri
  * Aprova o cadastro de um usuário pendente.
  */
 export const approveUsuario = async (id: string): Promise<void> => {
-  await apiClient.put(`/usuarios/${id}/approve`);
+  await apiClient.put(`/usuarios/${id}/aprovar`);
 };
 
 /**

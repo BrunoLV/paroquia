@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.service;
 
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
@@ -37,51 +37,53 @@ class UsuarioAdminServiceTest {
     }
 
     @Test
-    void deveAlternarUsuarioStatus() {
+    void alternarStatusAtivo_deveAlternarUsuarioStatus() {
         UUID id = UUID.randomUUID();
-        UsuarioEntity user = new UsuarioEntity();
-        user.setEnabled(true);
-        when(repository.findById(id)).thenReturn(Optional.of(user));
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setEnabled(true);
+        when(repository.findById(id)).thenReturn(Optional.of(usuario));
 
-        service.toggleActiveStatus(id, false);
+        service.alternarStatusAtivo(id, false);
 
-        assertFalse(user.isEnabled());
-        verify(repository).save(user);
+        assertFalse(usuario.isEnabled());
+        verify(repository).save(usuario);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
 
     @Test
-    void deveRedefinirSenha() {
+    void redefinirSenha_deveAtualizarHashSenhaELogarAuditoria() {
         UUID id = UUID.randomUUID();
-        UsuarioEntity user = new UsuarioEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(user));
-        when(passwordEncoder.encode("new")).thenReturn("hash");
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(id);
+        when(repository.findById(id)).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.encode("new")).thenReturn("hash-new");
 
-        service.resetPassword(id, "new");
+        service.redefinirSenha(id, "new");
 
-        assertEquals("hash", user.getPasswordHash());
-        verify(repository).save(user);
+        assertEquals("hash-new", usuario.getPasswordHash());
+        verify(repository).save(usuario);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
 
     @Test
-    void deveAtualizarPapeis() {
+    void atualizarPapeisGlobais_deveAtualizarPapeisELogarAuditoria() {
         UUID id = UUID.randomUUID();
-        UsuarioEntity user = new UsuarioEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(user));
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(id);
+        when(repository.findById(id)).thenReturn(Optional.of(usuario));
 
-        service.updateGlobalRoles(id, "ROLE_ADMIN");
+        service.atualizarPapeisGlobais(id, "ROLE_ADMIN");
 
-        assertEquals("ROLE_ADMIN", user.getRoles());
-        verify(repository).save(user);
+        assertEquals("ROLE_ADMIN", usuario.getRoles());
+        verify(repository).save(usuario);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
 
     @Test
-    void deveLancarExceptionQuandoUsuarioNaoEncontrado() {
+    void alternarStatusAtivo_deveLancarUsuarioNaoEncontradoException() {
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(UsuarioNotFoundException.class, () -> service.toggleActiveStatus(id, true));
+        assertThrows(UsuarioNaoEncontradoException.class, () -> service.alternarStatusAtivo(id, true));
     }
 }

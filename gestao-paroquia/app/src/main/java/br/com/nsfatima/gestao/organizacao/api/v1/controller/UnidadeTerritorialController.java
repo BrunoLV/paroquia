@@ -54,7 +54,7 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<UnidadeTerritorialResponse> list() {
+    public List<UnidadeTerritorialResponse> listar() {
         return service.listAll().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -70,7 +70,7 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Unidade territorial não encontrada")
     })
-    public ResponseEntity<UnidadeTerritorialResponse> get(
+    public ResponseEntity<UnidadeTerritorialResponse> obter(
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id) {
         return service.findById(id)
@@ -90,7 +90,7 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public UnidadeTerritorialResponse create(@RequestBody @Valid UnidadeTerritorialRequest request) {
+    public UnidadeTerritorialResponse criar(@RequestBody @Valid UnidadeTerritorialRequest request) {
         UnidadeTerritorialEntity entity = service.create(
                 request.nome(),
                 request.tipo(),
@@ -112,7 +112,7 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Unidade territorial não encontrada")
     })
-    public UnidadeTerritorialResponse update(
+    public UnidadeTerritorialResponse atualizar(
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid UnidadeTerritorialRequest request) {
@@ -137,7 +137,7 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Unidade territorial não encontrada")
     })
-    public void delete(
+    public void excluir(
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id) {
         service.delete(id);

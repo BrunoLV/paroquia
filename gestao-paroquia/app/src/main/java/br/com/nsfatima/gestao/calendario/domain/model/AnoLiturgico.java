@@ -5,7 +5,7 @@ import java.time.Instant;
 /**
  * Representa o registro persistido de um ano litúrgico já provisionado — o ciclo
  * litúrgico e as datas de início/fim são regras eclesiais imutáveis após a
- * criação (ver {@code ImmutableEclesialRuleException}), servindo de referência
+ * criação (ver {@code RegraEclesialImutavelException}), servindo de referência
  * para validar novos eventos contra o calendário fechado do ano.
  *
  * @param ano ano civil de referência do ano litúrgico

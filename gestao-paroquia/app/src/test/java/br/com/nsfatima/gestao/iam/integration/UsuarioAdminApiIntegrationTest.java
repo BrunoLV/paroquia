@@ -15,7 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,6 +51,43 @@ class UsuarioAdminApiIntegrationTest {
         UsuarioEntity updated = usuarioRepository.findById(user.getId()).orElseThrow();
         System.out.println("USER ENABLED STATUS: " + updated.isEnabled());
         assertFalse(updated.isEnabled());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deveAtualizarPapeisUsuario() throws Exception {
+        UsuarioEntity user = new UsuarioEntity();
+        user.setId(UUID.randomUUID());
+        user.setUsername("user_roles_test");
+        user.setPasswordHash("hash");
+        user.setEnabled(true);
+        user.setFielId(FielTestFixtures.criarFiel(fielRepository));
+        usuarioRepository.save(user);
+
+        mockMvc.perform(patch("/api/v1/usuarios/" + user.getId() + "/papeis")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"roles\": \"ADMIN,COORDENADOR\"}"))
+                .andExpect(status().isNoContent());
+
+        UsuarioEntity updated = usuarioRepository.findById(user.getId()).orElseThrow();
+        assertTrue(updated.getRoles().contains("ADMIN"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deveRedefinirSenhaUsuario() throws Exception {
+        UsuarioEntity user = new UsuarioEntity();
+        user.setId(UUID.randomUUID());
+        user.setUsername("user_reset_test");
+        user.setPasswordHash("hash");
+        user.setEnabled(true);
+        user.setFielId(FielTestFixtures.criarFiel(fielRepository));
+        usuarioRepository.save(user);
+
+        mockMvc.perform(post("/api/v1/usuarios/" + user.getId() + "/redefinir-senha")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"newPassword\": \"novaSenha123!\"}"))
+                .andExpect(status().isNoContent());
     }
 
     @Test

@@ -18,7 +18,7 @@ describe('Data Fetching Requirements', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') return Promise.resolve({ data: { id: '1', roles: ['ADMIN'], organizations: [] } });
+      if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: { id: '1', roles: ['ADMIN'], organizations: [] } });
       if (url === '/eventos') return Promise.resolve({ data: { content: [] } });
       if (url === '/organizacoes') return Promise.resolve({ data: [] });
       if (url === '/unidades-territoriais') return Promise.resolve({ data: [] });

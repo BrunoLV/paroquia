@@ -1,16 +1,15 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoResilienteRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoAprovacaoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.CriarEventoUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListEventosUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.evento.ListarEventosUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.AtualizarEventoUseCase;
 import br.com.nsfatima.gestao.calendario.application.service.EventoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
@@ -30,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +52,7 @@ import java.util.UUID;
 public class EventoController {
 
     private final CriarEventoUseCase createEventoUseCase;
-    private final ListEventosUseCase listEventosUseCase;
+    private final ListarEventosUseCase listEventosUseCase;
     private final AtualizarEventoUseCase updateEventoUseCase;
     private final CancelarEventoUseCase cancelEventoUseCase;
     private final EventoService eventoService;
@@ -65,7 +63,7 @@ public class EventoController {
 
     public EventoController(
             CriarEventoUseCase createEventoUseCase,
-            ListEventosUseCase listEventosUseCase,
+            ListarEventosUseCase listEventosUseCase,
             AtualizarEventoUseCase updateEventoUseCase,
             CancelarEventoUseCase cancelEventoUseCase,
             EventoService eventoService,
@@ -180,7 +178,7 @@ public class EventoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * UpdateEventoRequest request = new UpdateEventoRequest("Nova Descrição", null, ...);
+     * AtualizarEventoRequest request = new AtualizarEventoRequest("Nova Descrição", null, ...);
      * ResponseEntity<Object> response = controller.patch(eventoId, request);
      * }
      */
@@ -197,7 +195,7 @@ public class EventoController {
     @SuppressWarnings("null")
     public ResponseEntity<Object> patch(
             @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
-            @RequestBody @Valid UpdateEventoRequest request) {
+            @RequestBody @Valid AtualizarEventoRequest request) {
         try {
             EventoOperationResult result = updateEventoUseCase.execute(eventoId, request);
             return ResponseEntity.status(result.status()).body(result.body());
@@ -205,54 +203,21 @@ public class EventoController {
         } catch (RuntimeException ex) {
             String actor = resolverAtor();
             Map<String, Object> metadata = Map.of(
-                    "sensitiveChange", request.changesSensitiveFields());
+                    "sensitiveChange", request.alteraCamposSensiveis());
             eventoAuditPublisher.publish(actor, "atualizar", eventoId.toString(), "failure", metadata);
             throw ex;
         }
     }
 
     /**
-     * Evita novas ocorrências e remove o evento da visibilidade ativa, mantendo um registro de auditoria do
-     * motivo do cancelamento (Descontinuado).
+     * Retira um evento da agenda com segurança e justificativa obrigatória para fins de governança e auditoria.
      * <p>
      * Exemplo de uso:
      * {@code
-     * controller.cancel(eventoId, new CancelarEventoRequest("Conflito de agenda"));
-     * }
-     *
-     * @deprecated Utilize POST /{eventoId}/cancel para maior resiliência.
-     */
-    @DeleteMapping("/{eventoId}")
-    @Operation(summary = "Cancela um evento (Depreciado)", description = "Utilize POST /{eventoId}/cancel para maior " +
-            "resiliência.", deprecated = true)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Evento cancelado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "401", description = "Não autenticado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado"),
-            @ApiResponse(responseCode = "404", description = "Evento não encontrado")
-    })
-    @Deprecated
-    @SuppressWarnings("null")
-    public ResponseEntity<Object> cancel(
-            @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
-            @RequestBody @Valid CancelarEventoRequest request) {
-        EventoOperationResult result = cancelEventoUseCase.execute(eventoId, request);
-        return ResponseEntity.status(result.status())
-                .header("Warning", "299 - \"This endpoint is deprecated\"")
-                .body(result.body());
-    }
-
-    /**
-     * Retira um evento da agenda com segurança, exigindo uma justificativa para garantir transparência
-     * organizacional.
-     * <p>
-     * Exemplo de uso:
-     * {@code
-     * controller.cancelResilient(eventoId, new CancelarEventoResilienteRequest("Necessidade urgente de manutenção"));
+     * controller.cancelar(eventoId, new CancelarEventoRequest("Necessidade urgente de manutenção"));
      * }
      */
-    @PostMapping("/{eventoId}/cancel")
+    @PostMapping("/{eventoId}/cancelar")
     @Operation(summary = "Cancela um evento", description = "Marca um evento como cancelado. Exige um motivo para o " +
             "cancelamento.")
     @ApiResponses(value = {
@@ -261,11 +226,10 @@ public class EventoController {
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
     @SuppressWarnings("null")
-    public ResponseEntity<Object> cancelResilient(
+    public ResponseEntity<Object> cancelar(
             @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
-            @RequestBody @Valid CancelarEventoResilienteRequest request) {
-        var legacyRequest = new CancelarEventoRequest(request.motivo());
-        EventoOperationResult result = cancelEventoUseCase.execute(eventoId, legacyRequest);
+            @RequestBody @Valid CancelarEventoRequest request) {
+        EventoOperationResult result = cancelEventoUseCase.execute(eventoId, request);
         return ResponseEntity.status(result.status()).body(result.body());
     }
 

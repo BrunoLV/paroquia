@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.patrimonio.application.usecase;
 
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,6 @@ public class BuscarAtivoPatrimonialUseCase {
         return repository.findById(new AtivoPatrimonialId(ativoId))
                 .filter(a -> !a.estaExcluido())
                 .map(AtivoPatrimonialResponse::de)
-                .orElseThrow(() -> new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId));
+                .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
     }
 }

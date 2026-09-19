@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * Porta de saída (Ports &amp; Adapters) para registro de auditoria das decisões de aprovação. Isola
- * {@code DecideSolicitacaoAprovacaoUseCase} do mecanismo concreto de auditoria, garantindo trilha de quem
+ * {@code DecidirSolicitacaoAprovacaoUseCase} do mecanismo concreto de auditoria, garantindo trilha de quem
  * decidiu o quê (executado, reprovado ou falhou) sem acoplar o use case ao formato de persistência do log.
  */
 public interface AprovacaoAuditPublisher {

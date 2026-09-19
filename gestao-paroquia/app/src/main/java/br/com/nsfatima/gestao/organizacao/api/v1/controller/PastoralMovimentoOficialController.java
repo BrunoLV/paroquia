@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.PastoralMovimentoOficialRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.PastoralMovimentoOficialResponse;
-import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialBusinessException;
+import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.application.service.PastoralMovimentoOficialService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,7 +65,7 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public PastoralMovimentoOficialResponse create(@RequestBody @Valid PastoralMovimentoOficialRequest request) {
+    public PastoralMovimentoOficialResponse criar(@RequestBody @Valid PastoralMovimentoOficialRequest request) {
         PastoralMovimentoOficial oficial = service.create(request.nome(), request.tipo());
         return toResponse(oficial);
     }
@@ -89,7 +89,7 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Item não encontrado")
     })
-    public PastoralMovimentoOficialResponse update(
+    public PastoralMovimentoOficialResponse atualizar(
             @Parameter(description = "Identificador único do item oficial", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid PastoralMovimentoOficialRequest request) {
@@ -114,7 +114,7 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Item não encontrado")
     })
-    public void delete(
+    public void excluir(
             @Parameter(description = "Identificador único do item oficial", required = true)
             @PathVariable UUID id) {
         service.delete(id);
@@ -125,7 +125,7 @@ public class PastoralMovimentoOficialController {
      *
      * @param id identificador do item
      * @return o item encontrado
-     * @throws PastoralMovimentoOficialBusinessException se o item não existir
+     * @throws PastoralMovimentoOficialNegocioException se o item não existir
      */
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
@@ -137,12 +137,12 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Item não encontrado")
     })
-    public PastoralMovimentoOficialResponse get(
+    public PastoralMovimentoOficialResponse obter(
             @Parameter(description = "Identificador único do item oficial", required = true)
             @PathVariable UUID id) {
         PastoralMovimentoOficial oficial = service.get(id)
-                .orElseThrow(() -> new PastoralMovimentoOficialBusinessException(
-                        "Pastoral or Movimento Oficial not found with ID: " + id));
+                .orElseThrow(() -> new PastoralMovimentoOficialNegocioException(
+                        "Pastoral ou Movimento Oficial não encontrado com ID: " + id));
         return toResponse(oficial);
     }
 
@@ -161,7 +161,7 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<PastoralMovimentoOficialResponse> list() {
+    public List<PastoralMovimentoOficialResponse> listar() {
         return service.list().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());

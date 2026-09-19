@@ -71,7 +71,7 @@ describe('Projetos Page', () => {
 
   const renderProjects = async (user: any) => {
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') {
+      if (url === '/autenticacao/meu-perfil') {
         return Promise.resolve({ data: user });
       }
       if (url === '/organizacoes') {

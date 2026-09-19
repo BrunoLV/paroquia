@@ -10,11 +10,11 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelamentoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoCanceladoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegisterSystemObservacaoUseCase;
-import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
-import br.com.nsfatima.gestao.calendario.domain.exception.InvalidStatusTransitionException;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegistrarObservacaoSistemaUseCase;
+import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.TransicaoStatusInvalidaException;
 import br.com.nsfatima.gestao.calendario.application.service.EventoCancelamentoAuthorizationService;
-import br.com.nsfatima.gestao.calendario.domain.policy.CancelamentoRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCancelamento;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
@@ -49,7 +49,7 @@ public class CancelarEventoUseCase {
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
     private final EventoActorContextResolver actorContextResolver;
     private final EventoCancelamentoAuthorizationService authorizationService;
-    private final RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase;
+    private final RegistrarObservacaoSistemaUseCase registerSystemObservacaoUseCase;
     private final EventoAuditPublisher auditPublisher;
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final AprovacaoAcaoPayloadMapper payloadMapper;
@@ -61,7 +61,7 @@ public class CancelarEventoUseCase {
             AprovacaoJpaRepository aprovacaoJpaRepository,
             EventoActorContextResolver actorContextResolver,
             EventoCancelamentoAuthorizationService authorizationService,
-            RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase,
+            RegistrarObservacaoSistemaUseCase registerSystemObservacaoUseCase,
             EventoAuditPublisher auditPublisher,
             CadastroEventoMetricsPublisher metricsPublisher,
             AprovacaoAcaoPayloadMapper payloadMapper,
@@ -92,10 +92,10 @@ public class CancelarEventoUseCase {
 
         validateCancellableStatus(evento);
 
-        CancelamentoRequestMode mode = authorizationService.resolveRequestMode(actorContext,
+        ModoRequisicaoCancelamento mode = authorizationService.resolveRequestMode(actorContext,
                 evento.getGrupoParoquialResponsavelId());
 
-        if (mode == CancelamentoRequestMode.IMMEDIATE) {
+        if (mode == ModoRequisicaoCancelamento.IMEDIATO) {
             return processImmediate(evento, request, actorContext);
         }
 
@@ -123,12 +123,12 @@ public class CancelarEventoUseCase {
 
     private EventoEntity findEntity(UUID eventoId) {
         return eventoJpaRepository.findById(Objects.requireNonNull(eventoId))
-                .orElseThrow(() -> new EventoNotFoundException(eventoId));
+                .orElseThrow(() -> new EventoNaoEncontradoException(eventoId));
     }
 
     private void validateCancellableStatus(EventoEntity evento) {
         if (EventoStatusInput.valueOf(evento.getStatus()) != EventoStatusInput.CONFIRMADO) {
-            throw new InvalidStatusTransitionException(evento.getStatus(),
+            throw new TransicaoStatusInvalidaException(evento.getStatus(),
                     EventoStatusInput.CANCELADO.name(), "Only CONFIRMADO events can be cancelled");
 
         }

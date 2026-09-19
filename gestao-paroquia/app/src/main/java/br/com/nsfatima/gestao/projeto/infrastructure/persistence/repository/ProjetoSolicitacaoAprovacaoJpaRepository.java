@@ -11,7 +11,7 @@ import java.util.UUID;
 
 /**
  * Repositório JPA para as solicitações de aprovação (criação/cancelamento) de projetos
- * ({@code ProjetoSolicitacaoAprovacaoEntity}), usado por {@code TransitionProjetoUseCase} para
+ * ({@code ProjetoSolicitacaoAprovacaoEntity}), usado por {@code TransicionarProjetoUseCase} para
  * persistir e decidir o desvio de aprovação.
  */
 public interface ProjetoSolicitacaoAprovacaoJpaRepository extends JpaRepository<ProjetoSolicitacaoAprovacaoEntity,

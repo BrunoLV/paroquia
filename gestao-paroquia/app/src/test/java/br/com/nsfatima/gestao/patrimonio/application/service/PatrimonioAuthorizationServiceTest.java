@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.application.service;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.patrimonio.domain.policy.PadraoAutorizacaoPatrimonioPolicy;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class PatrimonioAuthorizationServiceTest {
                 grupoParoquialId, UUID.randomUUID(), null);
 
         assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test
@@ -32,7 +32,7 @@ class PatrimonioAuthorizationServiceTest {
         UUID outraGrupoParoquialId = UUID.randomUUID();
 
         assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, outraGrupoParoquialId))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test

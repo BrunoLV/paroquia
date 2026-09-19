@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.MapaColaboracaoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.SaudeTemporalDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.StatusExecucaoDTO;
-import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoEventoProvider;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -44,13 +44,13 @@ public class ProjetoAgregacaoService {
      *
      * @param projetoId ID do projeto
      * @return DTO com o resumo agregado
-     * @throws ProjetoNotFoundException se o projeto não for encontrado
+     * @throws ProjetoNaoEncontradoException se o projeto não for encontrado
      */
     @Transactional(readOnly = true)
     @Cacheable(value = CacheConfig.PROJECT_RESUMO_CACHE, key = "#projetoId")
     public ProjetoResumoDTO obterResumo(UUID projetoId) {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId)
-                .orElseThrow(() -> new ProjetoNotFoundException(projetoId));
+                .orElseThrow(() -> new ProjetoNaoEncontradoException(projetoId));
 
         Instant agora = Instant.now();
 

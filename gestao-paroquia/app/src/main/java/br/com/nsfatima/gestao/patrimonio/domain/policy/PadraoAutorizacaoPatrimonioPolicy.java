@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 
 import java.util.Objects;
@@ -37,13 +37,13 @@ public final class PadraoAutorizacaoPatrimonioPolicy implements AutorizacaoPatri
     @Override
     public void assertPodeGerirPatrimonio(PapelOrganizacional papel, UUID atorOrganizacaoId, UUID grupoParoquialId) {
         if (!PATRIMONIO_EDITOR_ROLES.contains(papel)) {
-            throw new ForbiddenOperationException("Usuário não tem permissão para gerir ativos patrimoniais");
+            throw new OperacaoProibidaException("Usuário não tem permissão para gerir ativos patrimoniais");
         }
 
         if (!isAtorDeAltoNivel(papel)
                 && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, grupoParoquialId)) {
-            throw new ForbiddenOperationException("Usuário não pode gerir ativos de outra unidade territorial");
+            throw new OperacaoProibidaException("Usuário não pode gerir ativos de outra unidade territorial");
         }
     }
 }

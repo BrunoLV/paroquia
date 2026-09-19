@@ -26,8 +26,8 @@ import java.util.UUID;
  * validado do endpoint de métricas.
  */
 @RestController
-@RequestMapping("/api/v1/dashboard")
-@Tag(name = "Dashboard", description = "Endpoints para consulta de métricas e dados gerenciais")
+@RequestMapping("/api/v1/painel")
+@Tag(name = "Painel", description = "Endpoints para consulta de métricas e dados gerenciais")
 public class DashboardLogisticaController {
 
     private final ObterDashboardLogisticaUseCase getDashboardLogisticaUseCase;

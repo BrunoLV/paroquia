@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoExclusaoBloqueada
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoConflitanteException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoInvalidaException;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.ReservaImpeditiva;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -32,8 +32,8 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
         super(auditLogPersistenceService);
     }
 
-    @ExceptionHandler(AtivoPatrimonialNotFoundException.class)
-    public ResponseEntity<ValidationErrorResponse> handleNotFound(AtivoPatrimonialNotFoundException ex) {
+    @ExceptionHandler(AtivoPatrimonialNaoEncontradoException.class)
+    public ResponseEntity<ValidationErrorResponse> handleNotFound(AtivoPatrimonialNaoEncontradoException ex) {
         return buildValidation(
                 HttpStatus.NOT_FOUND,
                 ErrorCodes.RESOURCE_NOT_FOUND,

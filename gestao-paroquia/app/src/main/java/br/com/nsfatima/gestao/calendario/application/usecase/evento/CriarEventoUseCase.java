@@ -12,7 +12,7 @@ import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolic
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
-import br.com.nsfatima.gestao.calendario.domain.policy.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCriacao;
 import br.com.nsfatima.gestao.calendario.application.service.MotorLiturgico;
 import br.com.nsfatima.gestao.calendario.application.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
@@ -132,11 +132,11 @@ public class CriarEventoUseCase {
         if (request.isBypassAgendaConflict()) {
             authorizationService.assertCanBypassAgendaConflict(actorContext);
         }
-        CreateRequestMode mode = authorizationService.resolveCreateRequestMode(actorContext,
+        ModoRequisicaoCriacao mode = authorizationService.resolveModoRequisicaoCriacao(actorContext,
                 request.grupoParoquialResponsavelId(), request.igrejaVinculoId());
 
 
-        if (mode == CreateRequestMode.REQUIRES_APROVACAO) {
+        if (mode == ModoRequisicaoCriacao.REQUER_APROVACAO) {
             return new EventoOperationResult.Pendente(aprovacaoRequestUseCase.execute(idempotencyKey,
                     request), HttpStatus.ACCEPTED);
 

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
 
         assertThatThrownBy(() -> policy.assertPodeGerirPatrimonio(
                 PapelOrganizacional.COORD_PASTORAL_LOCAL, outraUnidade, unidadeProprietaria))
-                .isInstanceOf(ForbiddenOperationException.class)
+                .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("outra unidade territorial");
     }
 
@@ -58,7 +58,7 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
     void deveRejeitarPapeisSemPermissao() {
         assertThatThrownBy(() -> policy.assertPodeGerirPatrimonio(
                 PapelOrganizacional.MEMBRO_PASTORAL, unidadeProprietaria, unidadeProprietaria))
-                .isInstanceOf(ForbiddenOperationException.class)
+                .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("não tem permissão");
     }
 }

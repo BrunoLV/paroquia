@@ -1,11 +1,11 @@
 package br.com.nsfatima.gestao.iam.api.v1.controller;
 
-import br.com.nsfatima.gestao.iam.api.v1.dto.CreateUsuarioRequest;
+import br.com.nsfatima.gestao.iam.api.v1.dto.CriarUsuarioRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.application.usecase.AprovarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ObterUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.usecase.ListUsuariosUseCase;
+import br.com.nsfatima.gestao.iam.application.usecase.ListarUsuariosUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.AtualizarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.service.UsuarioAuthorizationService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.AdicionarVinculoRequest;
@@ -51,7 +51,7 @@ import java.util.UUID;
 @Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários e permissões (IAM)")
 public class UsuarioController {
 
-    private final ListUsuariosUseCase listUsuariosUseCase;
+    private final ListarUsuariosUseCase listUsuariosUseCase;
     private final ObterUsuarioUseCase getUsuarioUseCase;
     private final CriarUsuarioUseCase createUsuarioUseCase;
     private final AtualizarUsuarioUseCase updateUsuarioUseCase;
@@ -62,7 +62,7 @@ public class UsuarioController {
     private final AprovarUsuarioUseCase approveUsuarioUseCase;
 
     public UsuarioController(
-            ListUsuariosUseCase listUsuariosUseCase,
+            ListarUsuariosUseCase listUsuariosUseCase,
             ObterUsuarioUseCase getUsuarioUseCase,
             CriarUsuarioUseCase createUsuarioUseCase,
             AtualizarUsuarioUseCase updateUsuarioUseCase,
@@ -92,7 +92,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<UsuarioResponse> list() {
+    public List<UsuarioResponse> listar() {
         return listUsuariosUseCase.execute();
     }
 
@@ -108,7 +108,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "409", description = "Conflito de username ou já vinculado")
     })
-    public UUID create(@RequestBody @Valid CreateUsuarioRequest request) {
+    public UUID criar(@RequestBody @Valid CriarUsuarioRequest request) {
         return createUsuarioUseCase.execute(
                 request.username(),
                 request.password(),
@@ -126,7 +126,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public UsuarioResponse get(
+    public UsuarioResponse obter(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id) {
         authorizationService.requireAdminOrCoordinatorOf(id);
         return getUsuarioUseCase.execute(id);
@@ -142,13 +142,13 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public void update(
+    public void atualizar(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id,
             @RequestBody UsuarioResponse request) {
         updateUsuarioUseCase.execute(id, request.username(), request.enabled());
     }
 
-    @PutMapping("/{id}/approve")
+    @PutMapping("/{id}/aprovar")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CONSELHO_COORDENADOR')"
             + " or hasRole('GLOBAL_ADMIN') or hasRole('GLOBAL_PAROCO') or hasRole('GLOBAL_VIGARIO')"
             + " or hasRole('GLOBAL_SECRETARIA_PAROQUIAL')")
@@ -160,7 +160,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public void approve(
+    public void aprovar(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id) {
         approveUsuarioUseCase.execute(id);
     }

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.strategy;
 
-import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoDecisionResponse;
+import br.com.nsfatima.gestao.aprovacao.api.v1.dto.DecisaoAprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaExecucaoAprovacao;
@@ -61,7 +61,7 @@ public class CriarEventoExecutionStrategy implements EstrategiaExecucaoAprovacao
      * @return resultado da execução com status "EXECUTED", id e status do evento criado
      */
     @Override
-    public AprovacaoDecisionResponse.ActionExecution execute(AprovacaoEntity aprovacao,
+    public DecisaoAprovacaoResponse.ActionExecution execute(AprovacaoEntity aprovacao,
                                                              EventoActorContext actorContext) {
 
         AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(aprovacao.getActionPayloadJson());
@@ -75,7 +75,7 @@ public class CriarEventoExecutionStrategy implements EstrategiaExecucaoAprovacao
 
         aprovacao.setEventoId(response.id());
 
-        return new AprovacaoDecisionResponse.ActionExecution(
+        return new DecisaoAprovacaoResponse.ActionExecution(
                 "EXECUTED",
                 response.id(),
                 response.status() == null ? null : response.status().name(),

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +142,7 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
                             .content(content))
                     .andExpect(status().isForbidden());
         } catch (ServletException ex) {
-            assertInstanceOf(ForbiddenOperationException.class, ex.getCause());
+            assertInstanceOf(OperacaoProibidaException.class, ex.getCause());
         }
     }
 }

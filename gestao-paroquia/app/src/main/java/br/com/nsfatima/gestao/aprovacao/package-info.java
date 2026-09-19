@@ -3,7 +3,7 @@
  * negócio sensível (criar/atualizar/cancelar evento, cancelar projeto, alocar ativo patrimonial), a
  * ação não é aplicada de imediato — em vez disso, uma {@code AprovacaoEntity} é criada em estado
  * {@code PENDENTE} e a execução real é adiada até que um ator com alçada superior decida, via
- * {@code DecideSolicitacaoAprovacaoUseCase}.
+ * {@code DecidirSolicitacaoAprovacaoUseCase}.
  *
  * <p>Cada bounded context que precisa desse desvio (calendario, projeto, patrimonio) implementa a
  * interface {@code EstrategiaExecucaoAprovacao} (padrão Strategy) para plugar sua própria lógica de

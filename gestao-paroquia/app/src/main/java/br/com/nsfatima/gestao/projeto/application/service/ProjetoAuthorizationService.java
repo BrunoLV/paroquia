@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.projeto.application.service;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
@@ -36,7 +36,7 @@ public class ProjetoAuthorizationService {
         try {
             policy.assertCanCreate(
                     normalizedRole, normalizedOrgType, actorContext.organizationId(), grupoParoquialResponsavelId);
-        } catch (ForbiddenOperationException e) {
+        } catch (OperacaoProibidaException e) {
             throw new AccessDeniedException(e.getMessage());
         }
     }

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
-import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.calendario.domain.exception.RegraEclesialImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.model.SaidaLiturgica;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
@@ -232,13 +232,13 @@ public class ProvisionamentoLiturgicoService {
             String userRole, String campoModificado, String novoValor, String justificativaPastoral) {
         String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";
         if (!"PAROCO".equals(roleUpper) && !"VIGARIO".equals(roleUpper)) {
-            throw new ForbiddenOperationException("Apenas Pároco ou Vigário podem alterar cadastros litúrgicos.");
+            throw new OperacaoProibidaException("Apenas Pároco ou Vigário podem alterar cadastros litúrgicos.");
         }
 
         if (campoModificado != null) {
             String campoLower = campoModificado.toLowerCase();
             if (campoLower.contains("cicloletra") || campoLower.contains("pascoa") || "ciclo".equals(campoLower)) {
-                throw new ImmutableEclesialRuleException(
+                throw new RegraEclesialImutavelException(
                     "O Ciclo Litúrgico e o Domingo de Páscoa são regras eclesiais imutáveis.");
             }
         }

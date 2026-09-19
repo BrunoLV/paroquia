@@ -22,7 +22,7 @@ export interface ImportacaoValidacaoResultado {
  * @param formato Formato do arquivo a baixar, 'CSV' ou 'XLSX'.
  */
 export const downloadTemplate = async (tipo: string, formato: 'CSV' | 'XLSX'): Promise<void> => {
-  const response = await api.get(`/importacao/template`, {
+  const response = await api.get(`/importacao/modelo`, {
     params: { tipo, formato },
     responseType: 'blob',
   });

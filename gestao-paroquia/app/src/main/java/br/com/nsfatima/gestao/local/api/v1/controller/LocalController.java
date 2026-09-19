@@ -69,7 +69,7 @@ public class LocalController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public LocalResponse create(@RequestBody @Valid LocalRequest request) {
+    public LocalResponse criar(@RequestBody @Valid LocalRequest request) {
         Local local = localService.createLocal(
                 request.nome(),
                 request.tipo(),
@@ -99,7 +99,7 @@ public class LocalController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Local não encontrado")
     })
-    public LocalResponse update(
+    public LocalResponse atualizar(
             @Parameter(description = "Identificador único do local", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid LocalRequest request) {
@@ -133,7 +133,7 @@ public class LocalController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Local não encontrado")
     })
-    public void delete(
+    public void excluir(
             @Parameter(description = "Identificador único do local", required = true)
             @PathVariable UUID id) {
         localService.deleteLocal(id);
@@ -155,7 +155,7 @@ public class LocalController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Local não encontrado")
     })
-    public ResponseEntity<LocalResponse> get(
+    public ResponseEntity<LocalResponse> obter(
             @Parameter(description = "Identificador único do local", required = true)
             @PathVariable UUID id) {
         return localService.getLocal(id)
@@ -180,7 +180,7 @@ public class LocalController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<LocalResponse> list(
+    public List<LocalResponse> listar(
             @Parameter(description = "Filtro opcional por organização/grupo paroquial")
             @RequestParam(required = false) UUID grupoParoquialId,
             @Parameter(description = "Alias para grupoParoquialId")

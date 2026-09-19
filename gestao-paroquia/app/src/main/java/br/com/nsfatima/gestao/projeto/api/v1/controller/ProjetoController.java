@@ -3,15 +3,15 @@ package br.com.nsfatima.gestao.projeto.api.v1.controller;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.CriarProjetoRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoDecisaoRequest;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoPatchRequest;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.AtualizarProjetoRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.application.service.ProjetoAgregacaoService;
 import br.com.nsfatima.gestao.projeto.application.usecase.CriarProjetoUseCase;
-import br.com.nsfatima.gestao.projeto.application.usecase.ListProjetosUseCase;
-import br.com.nsfatima.gestao.projeto.application.usecase.TransitionProjetoUseCase;
+import br.com.nsfatima.gestao.projeto.application.usecase.ListarProjetosUseCase;
+import br.com.nsfatima.gestao.projeto.application.usecase.TransicionarProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.application.usecase.AtualizarProjetoUseCase;
 import br.com.nsfatima.gestao.projeto.infrastructure.observability.ProjetoAuditPublisher;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
@@ -47,10 +47,10 @@ public class ProjetoController {
 
     private static final String RESULT_SUCCESS = "success";
     private final CriarProjetoUseCase createProjetoUseCase;
-    private final ListProjetosUseCase listProjetosUseCase;
+    private final ListarProjetosUseCase listProjetosUseCase;
     private final AtualizarProjetoUseCase updateProjetoUseCase;
     private final ProjetoAgregacaoService projetoAgregacaoService;
-    private final TransitionProjetoUseCase transitionProjetoUseCase;
+    private final TransicionarProjetoUseCase transitionProjetoUseCase;
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
     private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
@@ -72,10 +72,10 @@ public class ProjetoController {
      */
     public ProjetoController(
             CriarProjetoUseCase createProjetoUseCase,
-            ListProjetosUseCase listProjetosUseCase,
+            ListarProjetosUseCase listProjetosUseCase,
             AtualizarProjetoUseCase updateProjetoUseCase,
             ProjetoAgregacaoService projetoAgregacaoService,
-            TransitionProjetoUseCase transitionProjetoUseCase,
+            TransicionarProjetoUseCase transitionProjetoUseCase,
             ProjetoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver,
             ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository,
@@ -111,7 +111,7 @@ public class ProjetoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<?> create(@RequestBody @Valid ProjetoCreateRequest request) {
+    public ResponseEntity<?> criar(@RequestBody @Valid CriarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
         var result = createProjetoUseCase.create(request);
         if (result.isPendenteAprovacao()) {
@@ -141,7 +141,7 @@ public class ProjetoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<ProjetoResponse> list() {
+    public List<ProjetoResponse> listar() {
         return listProjetosUseCase.execute();
     }
 
@@ -166,9 +166,9 @@ public class ProjetoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
     })
-    public ProjetoResponse patch(
+    public ProjetoResponse atualizar(
             @Parameter(description = "ID único do projeto") @PathVariable UUID projetoId,
-            @RequestBody @Valid ProjetoPatchRequest request) {
+            @RequestBody @Valid AtualizarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
         var response = updateProjetoUseCase.execute(projetoId, request);
         auditPublisher.publish(context.actor(), "update-project", projetoId.toString(), RESULT_SUCCESS);
@@ -290,7 +290,7 @@ public class ProjetoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<ProjetoAprovacaoResponse> listSolicitacoes(
+    public List<ProjetoAprovacaoResponse> listarSolicitacoes(
             @Parameter(description = "Filtro opcional por status da solicitação")
             @RequestParam(required = false) String status) {
         var solicitacoes = status != null ?

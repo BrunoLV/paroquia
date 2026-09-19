@@ -7,7 +7,7 @@
  * <p>Cancelamento de projeto segue a mesma regra de desvio para aprovação do contexto
  * {@code aprovacao}: atores de alto nível ({@code ProjetoAuthorizationService#isAtorDeAltoNivel})
  * cancelam imediatamente; os demais criam uma {@code ProjetoSolicitacaoAprovacaoEntity} pendente,
- * decidida depois via {@code TransitionProjetoUseCase#decidir}.
+ * decidida depois via {@code TransicionarProjetoUseCase#decidir}.
  *
  * <p>Ciclo de vida de status do projeto ({@code ProjetoStatus}):
  *

@@ -1,14 +1,14 @@
 package br.com.nsfatima.gestao.fiel.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
-import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.CriarFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielConsultaResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.AlterarStatusFielRequest;
-import br.com.nsfatima.gestao.fiel.api.v1.dto.UpdateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.AtualizarFielRequest;
 import br.com.nsfatima.gestao.fiel.application.usecase.CriarFielUseCase;
 import br.com.nsfatima.gestao.fiel.application.usecase.ObterFielUseCase;
-import br.com.nsfatima.gestao.fiel.application.usecase.ListFieisUseCase;
+import br.com.nsfatima.gestao.fiel.application.usecase.ListarFieisUseCase;
 import br.com.nsfatima.gestao.fiel.application.usecase.AtualizarFielUseCase;
 import br.com.nsfatima.gestao.fiel.application.usecase.GerenciarCicloVidaFielUseCase;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
@@ -49,7 +49,7 @@ public class FielController {
 
     private final CriarFielUseCase createFielUseCase;
     private final ObterFielUseCase getFielUseCase;
-    private final ListFieisUseCase listFieisUseCase;
+    private final ListarFieisUseCase listFieisUseCase;
     private final AtualizarFielUseCase updateFielUseCase;
     private final GerenciarCicloVidaFielUseCase cicloVidaFielUseCase;
     private final EventoActorContextResolver actorContextResolver;
@@ -58,7 +58,7 @@ public class FielController {
     public FielController(
             CriarFielUseCase createFielUseCase,
             ObterFielUseCase getFielUseCase,
-            ListFieisUseCase listFieisUseCase,
+            ListarFieisUseCase listFieisUseCase,
             AtualizarFielUseCase updateFielUseCase,
             GerenciarCicloVidaFielUseCase cicloVidaFielUseCase,
             EventoActorContextResolver actorContextResolver,
@@ -82,7 +82,7 @@ public class FielController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<? extends FielConsultaResponse> list() {
+    public List<? extends FielConsultaResponse> listar() {
         var context = actorContextResolver.resolveRequired();
         if (isCoordenador(context.role(), context.organizationId())) {
             return listFieisUseCase.executeContatoNoGrupo(context.organizationId());
@@ -103,7 +103,7 @@ public class FielController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Fiel não encontrado")
     })
-    public FielConsultaResponse get(
+    public FielConsultaResponse obter(
             @Parameter(description = "Identificador único do fiel") @PathVariable UUID id) {
         var context = actorContextResolver.resolveRequired();
         if (context.organizationId() != null
@@ -129,7 +129,7 @@ public class FielController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "409", description = "Conflito de CPF cadastrado")
     })
-    public FielResponse create(@RequestBody @Valid CreateFielRequest request) {
+    public FielResponse criar(@RequestBody @Valid CriarFielRequest request) {
         var context = actorContextResolver.resolveRequired();
         return createFielUseCase.execute(request, context.actor());
     }
@@ -145,9 +145,9 @@ public class FielController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Fiel não encontrado")
     })
-    public FielResponse updatePut(
+    public FielResponse atualizar(
             @Parameter(description = "Identificador único do fiel") @PathVariable UUID id,
-            @RequestBody UpdateFielRequest request) {
+            @RequestBody AtualizarFielRequest request) {
         var context = actorContextResolver.resolveRequired();
         return updateFielUseCase.execute(id, request, context.actor());
     }
@@ -163,9 +163,9 @@ public class FielController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Fiel não encontrado")
     })
-    public FielResponse updatePatch(
+    public FielResponse atualizarParcial(
             @Parameter(description = "Identificador único do fiel") @PathVariable UUID id,
-            @RequestBody UpdateFielRequest request) {
+            @RequestBody AtualizarFielRequest request) {
         var context = actorContextResolver.resolveRequired();
         return updateFielUseCase.execute(id, request, context.actor());
     }
@@ -202,7 +202,7 @@ public class FielController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Fiel não encontrado")
     })
-    public void softDelete(
+    public void desativar(
             @Parameter(description = "Identificador único do fiel") @PathVariable UUID id) {
         var context = actorContextResolver.resolveRequired();
         cicloVidaFielUseCase.desativar(id, context.actor());

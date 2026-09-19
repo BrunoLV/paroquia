@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.api.dto.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -75,9 +75,9 @@ class EventoDtoValidationTest {
     }
 
     @Test
-    @DisplayName("UpdateEventoRequest: should fail when title is blank")
+    @DisplayName("AtualizarEventoRequest: should fail when title is blank")
     void updateEventoRequest_TitleBlank() {
-        UpdateEventoRequest request = new UpdateEventoRequest(
+        AtualizarEventoRequest request = new AtualizarEventoRequest(
                 " ",
                 "Descricao",
                 null,
@@ -93,16 +93,16 @@ class EventoDtoValidationTest {
                 null
         );
 
-        Set<ConstraintViolation<UpdateEventoRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<AtualizarEventoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for blank title");
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("titulo")));
     }
 
     @Test
-    @DisplayName("UpdateEventoRequest: should fail when title is too long")
+    @DisplayName("AtualizarEventoRequest: should fail when title is too long")
     void updateEventoRequest_TitleTooLong() {
         String longTitle = "A".repeat(161);
-        UpdateEventoRequest request = new UpdateEventoRequest(
+        AtualizarEventoRequest request = new AtualizarEventoRequest(
                 longTitle,
                 "Descricao",
                 null,
@@ -118,7 +118,7 @@ class EventoDtoValidationTest {
                 null
         );
 
-        Set<ConstraintViolation<UpdateEventoRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<AtualizarEventoRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Should have violations for long title");
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("titulo")));
     }
@@ -146,7 +146,7 @@ class EventoDtoValidationTest {
     }
 
     @Test
-    @DisplayName("CriarEventoRequest e UpdateEventoRequest: devem suportar campo bypassAgendaConflict")
+    @DisplayName("CriarEventoRequest e AtualizarEventoRequest: devem suportar campo bypassAgendaConflict")
     void dto_BypassAgendaConflictField() {
         CriarEventoRequest createReq = new CriarEventoRequest(
                 "Titulo", "Desc", null, UUID.randomUUID(), null, null, null,
@@ -155,7 +155,7 @@ class EventoDtoValidationTest {
         );
         assertTrue(createReq.isBypassAgendaConflict());
 
-        UpdateEventoRequest updateReq = new UpdateEventoRequest(
+        AtualizarEventoRequest updateReq = new AtualizarEventoRequest(
                 "Titulo", "Desc", null, Instant.now(), Instant.now().plusSeconds(3600),
                 EventoStatusInput.RASCUNHO, null, null, UUID.randomUUID(), null, null, null, null, null, true
         );

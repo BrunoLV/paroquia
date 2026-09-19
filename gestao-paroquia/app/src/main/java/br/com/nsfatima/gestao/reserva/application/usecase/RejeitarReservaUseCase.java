@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
 import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
@@ -39,7 +39,7 @@ public class RejeitarReservaUseCase {
         Objects.requireNonNull(operador, "Operador é obrigatório.");
 
         Reserva reserva = reservaRepository.findById(new ReservaId(reservaId))
-                .orElseThrow(() -> new ReservaNotFoundException(reservaId));
+                .orElseThrow(() -> new ReservaNaoEncontradaException(reservaId));
 
         authorizationService.validarAutorizacaoAprovacao(operador, reserva);
 

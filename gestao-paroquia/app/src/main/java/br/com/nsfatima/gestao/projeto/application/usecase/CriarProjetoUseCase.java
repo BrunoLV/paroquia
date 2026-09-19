@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
-import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoCreateRequest;
+import br.com.nsfatima.gestao.projeto.api.v1.dto.CriarProjetoRequest;
 import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
 import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.application.service.ProjetoAuthorizationService;
@@ -70,7 +70,7 @@ public class CriarProjetoUseCase {
      * @return Resultado contendo ou o projeto criado ou a solicitação de aprovação pendente
      */
     @Transactional
-    public ProjetoCreationResult create(ProjetoCreateRequest request) {
+    public ProjetoCreationResult create(CriarProjetoRequest request) {
         var actorContext = actorContextResolver.resolveRequired();
         authorizationService.assertCanCreate(actorContext, request.grupoParoquialResponsavelId());
 

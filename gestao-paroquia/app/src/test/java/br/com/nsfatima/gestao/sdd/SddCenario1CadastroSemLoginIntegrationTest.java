@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.sdd;
 
-import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.CriarFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.application.usecase.CriarFielUseCase;
 import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
@@ -65,7 +65,7 @@ class SddCenario1CadastroSemLoginIntegrationTest {
         }
 
         // 1. Cadastra Fiel sem conta de usuário
-        CreateFielRequest createRequest = new CreateFielRequest(
+        CriarFielRequest createRequest = new CriarFielRequest(
                 "João Sem Login " + UUID.randomUUID(),
                 "987.654.321-00",
                 LocalDate.of(1985, 5, 20),

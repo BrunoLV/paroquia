@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
@@ -47,7 +47,7 @@ class CancelEventoImmediateIntegrationTest {
         entity.setStatus("CONFIRMADO");
         eventoJpaRepository.save(entity);
 
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)

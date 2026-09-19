@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 
-class ValidadorPrioridadeAgendaTest {
+class PrioridadeAgendaValidatorServiceTest {
 
     private EventoJpaRepository eventoJpaRepository;
     private ValidadorPrioridadeAgenda validatorService;

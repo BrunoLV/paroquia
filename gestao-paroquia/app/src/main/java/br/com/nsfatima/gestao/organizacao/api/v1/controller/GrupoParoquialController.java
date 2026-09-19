@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ObterOrganogramaUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.ListGrupoParoquialMembrosUseCase;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListarGrupoParoquialMembrosUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
@@ -50,14 +50,14 @@ import java.util.stream.Collectors;
 public class GrupoParoquialController {
 
     private final GrupoParoquialService grupoParoquialService;
-    private final ListGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase;
+    private final ListarGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase;
     private final ObterOrganogramaUseCase getOrganogramaUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final UsuarioJpaRepository usuarioRepository;
 
     public GrupoParoquialController(
             GrupoParoquialService grupoParoquialService,
-            ListGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase,
+            ListarGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase,
             ObterOrganogramaUseCase getOrganogramaUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             UsuarioJpaRepository usuarioRepository) {
@@ -86,7 +86,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public GrupoParoquialResponse create(@RequestBody @Valid GrupoParoquialRequest request) {
+    public GrupoParoquialResponse criar(@RequestBody @Valid GrupoParoquialRequest request) {
         GrupoParoquial org = grupoParoquialService.createOrganization(
                 request.nome(),
                 request.tipo(),
@@ -120,7 +120,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public GrupoParoquialResponse update(
+    public GrupoParoquialResponse atualizar(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid GrupoParoquialRequest request) {
@@ -214,7 +214,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public void delete(
+    public void excluir(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
         grupoParoquialService.deleteOrganization(id);
@@ -237,7 +237,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public ResponseEntity<GrupoParoquialResponse> get(
+    public ResponseEntity<GrupoParoquialResponse> obter(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
         return grupoParoquialService.getOrganization(id)
@@ -262,7 +262,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<GrupoParoquialResponse> list() {
+    public List<GrupoParoquialResponse> listar() {
         return grupoParoquialService.listOrganizations().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -286,7 +286,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public List<GrupoParoquialMembroResponse> listMembros(
+    public List<GrupoParoquialMembroResponse> listarMembros(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
         return listGrupoParoquialMembrosUseCase.execute(id);
@@ -306,7 +306,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public OrganogramaNodeResponse getOrganograma() {
+    public OrganogramaNodeResponse obterOrganograma() {
         return getOrganogramaUseCase.execute();
     }
 

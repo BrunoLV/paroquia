@@ -29,7 +29,7 @@ class DashboardMetricsIntegrationTest {
     @Test
     void deveNegarNaoAutenticadoAcesso() throws Exception {
         SecurityContextHolder.clearContext();
-        mockMvc.perform(get("/api/v1/dashboard/metrics")
+        mockMvc.perform(get("/api/v1/painel/metricas")
                         .header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }
@@ -37,7 +37,7 @@ class DashboardMetricsIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveRetornarDashboardMetricasParaAdmin() throws Exception {
-        mockMvc.perform(get("/api/v1/dashboard/metrics")
+        mockMvc.perform(get("/api/v1/painel/metricas")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral.totalEventosPeriodo").exists())
@@ -58,7 +58,7 @@ class DashboardMetricsIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveAceitarRecorteTemporalNoFiltro() throws Exception {
-        mockMvc.perform(get("/api/v1/dashboard/metrics")
+        mockMvc.perform(get("/api/v1/painel/metricas")
                         .param("periodo", "MES")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -69,7 +69,7 @@ class DashboardMetricsIntegrationTest {
     void deveRetornarFiltradoMetricasParaNaoAdmin() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
-        mockMvc.perform(get("/api/v1/dashboard/metrics")
+        mockMvc.perform(get("/api/v1/painel/metricas")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -81,7 +81,7 @@ class DashboardMetricsIntegrationTest {
     void deveNegarNaoAdminQueSolicitaOutraComunidadeNoFiltro() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
-        mockMvc.perform(get("/api/v1/dashboard/metrics")
+        mockMvc.perform(get("/api/v1/painel/metricas")
                         .session(session)
                         .param("grupoParoquialId", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON))

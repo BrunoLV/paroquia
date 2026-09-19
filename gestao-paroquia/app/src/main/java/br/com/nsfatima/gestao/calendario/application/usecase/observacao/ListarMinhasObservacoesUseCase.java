@@ -1,0 +1,58 @@
+package br.com.nsfatima.gestao.calendario.application.usecase.observacao;
+
+import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoResponse;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ObservacaoEventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Lista as anotações e notas colaborativas criadas pelo operador atual em eventos.
+ */
+@Service
+public class ListarMinhasObservacoesUseCase {
+
+    private final ObservacaoEventoJpaRepository observacaoEventoJpaRepository;
+    private final LegacyEnumInconsistencyPublisher legacyEnumInconsistencyPublisher;
+
+    public ListarMinhasObservacoesUseCase(
+            ObservacaoEventoJpaRepository observacaoEventoJpaRepository,
+            LegacyEnumInconsistencyPublisher legacyEnumInconsistencyPublisher) {
+        this.observacaoEventoJpaRepository = observacaoEventoJpaRepository;
+        this.legacyEnumInconsistencyPublisher = legacyEnumInconsistencyPublisher;
+    }
+
+    /**
+     * Filtra as observações para mostrar apenas as criadas pelo usuário atual, facilitando o gerenciamento
+     * pessoal de notas e observações técnicas.
+     * <p>
+     * Exemplo de uso:
+     * {@code
+     * List<ObservacaoResponse> list = useCase.execute(eventoId, usuarioId);
+     * }
+     */
+    public List<ObservacaoResponse> execute(UUID eventoId, UUID usuarioId) {
+        return observacaoEventoJpaRepository
+                .findByEventoIdAndUsuarioIdAndRemovidaFalseOrderByCriadoEmUtcAscIdAsc(eventoId, usuarioId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private ObservacaoResponse toResponse(ObservacaoEventoEntity entity) {
+        return new ObservacaoResponse(
+                entity.getId(),
+                entity.getEventoId(),
+                entity.getUsuarioId(),
+                TipoObservacaoResponse.fromStoredValue(
+                        entity.getTipo(),
+                        legacyEnumInconsistencyPublisher,
+                        entity.getEventoId().toString()),
+                entity.getConteudo(),
+                entity.getCriadoEmUtc());
+    }
+}

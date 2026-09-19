@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersi
 import br.com.nsfatima.gestao.reserva.api.v1.dto.ConflitoDetalheResponse;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaOperacaoInvalidaException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -74,8 +74,8 @@ public class ReservaExceptionHandler extends BaseExceptionHandler {
     /**
      * Trata recursos de reserva inexistentes para o identificador fornecido.
      */
-    @ExceptionHandler(ReservaNotFoundException.class)
-    public ResponseEntity<ValidationErrorResponse> handleNotFound(ReservaNotFoundException ex) {
+    @ExceptionHandler(ReservaNaoEncontradaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleNotFound(ReservaNaoEncontradaException ex) {
         return buildValidation(
                 HttpStatus.NOT_FOUND,
                 ErrorCodes.RESOURCE_NOT_FOUND,

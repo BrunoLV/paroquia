@@ -29,14 +29,14 @@ class DashboardLogisticaIntegrationTest {
     @Test
     void deveNegarNaoAutenticadoAcesso() throws Exception {
         SecurityContextHolder.clearContext();
-        mockMvc.perform(get("/api/v1/dashboard/logistica").header("X-Test-Anonymous", "true"))
+        mockMvc.perform(get("/api/v1/painel/logistica").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveRetornarEstruturaDeLogisticaParaAdmin() throws Exception {
-        mockMvc.perform(get("/api/v1/dashboard/logistica").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/painel/logistica").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.choquesHorario").isArray())
                 .andExpect(jsonPath("$.ocupacaoAmbientes.taxaDiaPercentual").exists())
@@ -49,7 +49,7 @@ class DashboardLogisticaIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveAceitarRecorteTemporalNoFiltro() throws Exception {
-        mockMvc.perform(get("/api/v1/dashboard/logistica").param("periodo", "MES"))
+        mockMvc.perform(get("/api/v1/painel/logistica").param("periodo", "MES"))
                 .andExpect(status().isOk());
     }
 
@@ -57,7 +57,7 @@ class DashboardLogisticaIntegrationTest {
     void deveNegarNaoAdminQueSolicitaOutraComunidadeNoFiltro() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
-        mockMvc.perform(get("/api/v1/dashboard/logistica")
+        mockMvc.perform(get("/api/v1/painel/logistica")
                         .session(session)
                         .param("grupoParoquialId", UUID.randomUUID().toString()))
                 .andExpect(status().isForbidden());

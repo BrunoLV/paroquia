@@ -34,7 +34,7 @@ class FailClosedAuthzIntegrationTest {
         when(externalVinculoReader.findVinculosAtivos(any(UUID.class)))
                 .thenThrow(new CannotAcquireLockException("db unavailable"));
 
-        mockMvc.perform(post("/api/v1/auth/login")
+        mockMvc.perform(post("/api/v1/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

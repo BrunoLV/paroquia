@@ -131,7 +131,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     void coordinatorShouldResetPasswordOfMemberInSameOrg() throws Exception {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
-        mockMvc.perform(post("/api/v1/usuarios/" + memberId + "/password-reset")
+        mockMvc.perform(post("/api/v1/usuarios/" + memberId + "/redefinir-senha")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isNoContent());
@@ -141,7 +141,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     void coordinatorShouldNotResetPasswordOfStranger() throws Exception {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
-        mockMvc.perform(post("/api/v1/usuarios/" + strangerId + "/password-reset")
+        mockMvc.perform(post("/api/v1/usuarios/" + strangerId + "/redefinir-senha")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isForbidden());
@@ -151,7 +151,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     void adminShouldResetAnyPassword() throws Exception {
         authenticateAs(coordinatorId, "ROLE_ADMIN"); // coordinator acting as admin
 
-        mockMvc.perform(post("/api/v1/usuarios/" + strangerId + "/password-reset")
+        mockMvc.perform(post("/api/v1/usuarios/" + strangerId + "/redefinir-senha")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isNoContent());

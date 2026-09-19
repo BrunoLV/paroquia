@@ -19,7 +19,7 @@ public interface AutorizacaoCancelamentoEventoPolicy {
      * @param eventoOrgId ID da organização responsável pelo evento
      * @return modo de cancelamento aplicável
      */
-    CancelamentoRequestMode resolveRequestMode(
+    ModoRequisicaoCancelamento resolveRequestMode(
             PapelOrganizacional papel,
             TipoGrupo tipoGrupo,
             UUID atorOrgId,

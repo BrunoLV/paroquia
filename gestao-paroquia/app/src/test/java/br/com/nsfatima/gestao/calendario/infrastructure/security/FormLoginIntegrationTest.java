@@ -30,7 +30,7 @@ class FormLoginIntegrationTest {
 
     @Test
     void deveLoginComValidoCredenciaisERetornarSessaoCookie() throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
+        MvcResult result = mockMvc.perform(post("/api/v1/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -52,7 +52,7 @@ class FormLoginIntegrationTest {
 
     @Test
     void deveRejeitarInvalidoCredenciais() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/login")
+        mockMvc.perform(post("/api/v1/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -66,7 +66,7 @@ class FormLoginIntegrationTest {
 
     @Test
     void deveRejeitarDesabilitadoUsuarioComAprovacaoObrigatorio() throws Exception {
-        mockMvc.perform(post("/api/v1/auth/login")
+        mockMvc.perform(post("/api/v1/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -81,7 +81,7 @@ class FormLoginIntegrationTest {
 
     @Test
     void deveInvalidarSessaoEmLogout() throws Exception {
-        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
+        MvcResult loginResult = mockMvc.perform(post("/api/v1/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -99,7 +99,7 @@ class FormLoginIntegrationTest {
         }
         assertNotNull(sessionCookie);
 
-        mockMvc.perform(post("/api/v1/auth/logout").cookie(sessionCookie))
+        mockMvc.perform(post("/api/v1/autenticacao/logout").cookie(sessionCookie))
                 .andExpect(status().isNoContent())
                 .andExpect(header().string("Set-Cookie", containsString("JSESSIONID=")));
 

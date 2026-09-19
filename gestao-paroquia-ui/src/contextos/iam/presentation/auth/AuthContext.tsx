@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verifySession = async () => {
       try {
-        const response = await apiClient.get<AuthMeResponse>('/auth/me');
+        const response = await apiClient.get<AuthMeResponse>('/autenticacao/meu-perfil');
         if (response.data) {
           const data = response.data;
           const currentUser: User = {
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await apiClient.post<LoginResponse>('/auth/login', {
+      const response = await apiClient.post<LoginResponse>('/autenticacao/login', {
         username,
         password,
       });
@@ -141,7 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await apiClient.post('/auth/logout');
+      await apiClient.post('/autenticacao/logout');
     } catch (error) {
     } finally {
       localStorage.removeItem('user');

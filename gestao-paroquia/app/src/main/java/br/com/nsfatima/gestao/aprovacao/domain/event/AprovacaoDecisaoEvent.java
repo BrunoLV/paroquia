@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Evento de domínio publicado ao final do fluxo de decisão de uma aprovação (aprovada, reprovada ou com falha
  * de execução). Consumido de forma assíncrona por {@code AprovacaoNotificationListener} para notificar as
- * partes interessadas sem acoplar {@code DecideSolicitacaoAprovacaoUseCase} aos canais de notificação.
+ * partes interessadas sem acoplar {@code DecidirSolicitacaoAprovacaoUseCase} aos canais de notificação.
  *
  * @param aprovacaoId    identificador da solicitação de aprovação decidida
  * @param eventoId       identificador do evento de calendário associado à solicitação

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.sdd;
 
-import br.com.nsfatima.gestao.fiel.api.v1.dto.CreateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.CriarFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.EnderecoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.application.usecase.CriarFielUseCase;
@@ -8,7 +8,7 @@ import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.ListarMembrosUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
@@ -44,7 +44,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
     private AdicionarMembroUseCase adicionarMembroUseCase;
 
     @Autowired
-    private ListMembrosUseCase listMembrosUseCase;
+    private ListarMembrosUseCase listMembrosUseCase;
 
     @Autowired
     private GrupoParoquialJpaRepository grupoParoquialRepository;
@@ -71,7 +71,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
         unidadeTerritorialRepository.saveAndFlush(matriz);
 
         // 2. Cadastrar 2 Fiéis leigos
-        CreateFielRequest reqCoord = new CreateFielRequest(
+        CriarFielRequest reqCoord = new CriarFielRequest(
                 "Coordenador da Pastoral " + UUID.randomUUID(),
                 Sexo.MASCULINO,
                 LocalDate.of(1980, 1, 1),
@@ -83,7 +83,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
         );
         FielResponse fielCoord = createFielUseCase.execute(reqCoord, "test-actor");
 
-        CreateFielRequest reqMembro = new CreateFielRequest(
+        CriarFielRequest reqMembro = new CriarFielRequest(
                 "Membro da Pastoral " + UUID.randomUUID(),
                 Sexo.FEMININO,
                 LocalDate.of(1992, 3, 15),

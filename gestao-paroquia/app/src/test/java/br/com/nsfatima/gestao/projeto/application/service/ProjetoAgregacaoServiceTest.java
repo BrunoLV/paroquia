@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.projeto.application.service;
 
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
-import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNotFoundException;
+import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoEventoProvider;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -82,6 +82,6 @@ class ProjetoAgregacaoServiceTest {
         UUID projetoId = UUID.randomUUID();
         when(projetoRepository.findById(projetoId)).thenReturn(Optional.empty());
 
-        assertThrows(ProjetoNotFoundException.class, () -> service.obterResumo(projetoId));
+        assertThrows(ProjetoNaoEncontradoException.class, () -> service.obterResumo(projetoId));
     }
 }

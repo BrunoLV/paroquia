@@ -99,7 +99,7 @@ class EventoIntegrationTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancel", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", orgId)

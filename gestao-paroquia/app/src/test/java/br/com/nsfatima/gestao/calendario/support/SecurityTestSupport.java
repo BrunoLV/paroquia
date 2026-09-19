@@ -40,7 +40,7 @@ public final class SecurityTestSupport {
                 }
                 """.formatted(username, password);
 
-        return mockMvc.perform(post("/api/v1/auth/login")
+        return mockMvc.perform(post("/api/v1/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())

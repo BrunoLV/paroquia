@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.local.domain.service;
 
 import br.com.nsfatima.gestao.local.application.service.LocalService;
-import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
+import br.com.nsfatima.gestao.local.domain.exception.LocalNegocioException;
 import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
@@ -96,7 +96,7 @@ class LocalServiceTest {
         localRepository.save(local);
         localRepository.setFutureEvents(id, true);
 
-        LocalBusinessException ex = assertThrows(LocalBusinessException.class, () -> localService.deleteLocal(id));
+        LocalNegocioException ex = assertThrows(LocalNegocioException.class, () -> localService.deleteLocal(id));
         assertTrue(ex.getMessage().contains("eventos futuros"));
     }
 
@@ -107,7 +107,7 @@ class LocalServiceTest {
         localRepository.save(local);
         localRepository.setFutureEvents(id, true);
 
-        LocalBusinessException ex = assertThrows(LocalBusinessException.class,
+        LocalNegocioException ex = assertThrows(LocalNegocioException.class,
                 () -> localService.updateLocal(
                         id, "Salão São Pedro", "SALAO", EnderecoLocal.vazio(), 150, "Som", false, null));
         assertTrue(ex.getMessage().contains("eventos futuros"));

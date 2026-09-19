@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.support.api.error;
 
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
-import br.com.nsfatima.gestao.local.domain.exception.LocalBusinessException;
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
+import br.com.nsfatima.gestao.local.domain.exception.LocalNegocioException;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.domain.exception.GrupoParoquialNegocioException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
@@ -34,13 +34,13 @@ public class GlobalDomainExceptionHandler extends BaseExceptionHandler {
     /**
      * Trata exceções de regra de negócio do contexto de local. A mensagem da exceção é inspecionada
      * para decidir entre {@code 404} (recurso inexistente) e {@code 409} (conflito de regra), pois
-     * {@link LocalBusinessException} não distingue esses dois casos por tipo.
+     * {@link LocalNegocioException} não distingue esses dois casos por tipo.
      *
      * @param ex exceção de negócio lançada pelo contexto de local
      * @return resposta HTTP padronizada com o código de erro de violação de regra de domínio
      */
-    @ExceptionHandler(LocalBusinessException.class)
-    public ResponseEntity<ValidationErrorResponse> handleLocalBusiness(LocalBusinessException ex) {
+    @ExceptionHandler(LocalNegocioException.class)
+    public ResponseEntity<ValidationErrorResponse> handleLocalBusiness(LocalNegocioException ex) {
         HttpStatus status = ex.getMessage().contains("not found") ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
         return buildValidation(
                 status,
@@ -55,7 +55,7 @@ public class GlobalDomainExceptionHandler extends BaseExceptionHandler {
 
     /**
      * Trata exceções de regra de negócio do contexto de organização, aplicando a mesma heurística de
-     * inspeção de mensagem usada em {@link #handleLocalBusiness(LocalBusinessException)} para escolher
+     * inspeção de mensagem usada em {@link #handleLocalBusiness(LocalNegocioException)} para escolher
      * entre {@code 404} e {@code 409}.
      *
      * @param ex exceção de negócio lançada pelo contexto de organização
@@ -82,8 +82,8 @@ public class GlobalDomainExceptionHandler extends BaseExceptionHandler {
      * @param ex exceção lançada quando o usuário não é encontrado
      * @return resposta HTTP {@code 404} com o código de erro de recurso não encontrado
      */
-    @ExceptionHandler(UsuarioNotFoundException.class)
-    public ResponseEntity<ValidationErrorResponse> handleUsuarioNotFound(UsuarioNotFoundException ex) {
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    public ResponseEntity<ValidationErrorResponse> handleUsuarioNotFound(UsuarioNaoEncontradoException ex) {
         return buildValidation(
                 HttpStatus.NOT_FOUND,
                 ErrorCodes.RESOURCE_NOT_FOUND,

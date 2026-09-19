@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.error;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,7 +75,7 @@ class ExceptionHandlerIntegrationTest {
     static class TestErrorController {
         @GetMapping("/forbidden")
         void throwForbidden() {
-            throw new ForbiddenOperationException("Operação não permitida");
+            throw new OperacaoProibidaException("Operação não permitida");
         }
 
         @GetMapping("/access-denied")

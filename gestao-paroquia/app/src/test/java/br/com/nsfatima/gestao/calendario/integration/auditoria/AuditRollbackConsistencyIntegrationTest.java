@@ -106,7 +106,7 @@ class AuditRollbackConsistencyIntegrationTest {
                 .when(auditoriaOperacaoJpaRepository)
                 .save(any(AuditoriaOperacaoEntity.class));
 
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", "paroco")
                         .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", grupoParoquialId.toString())

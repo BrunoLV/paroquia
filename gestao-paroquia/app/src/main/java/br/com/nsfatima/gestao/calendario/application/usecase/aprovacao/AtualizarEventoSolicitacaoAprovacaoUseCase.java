@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoAprovacaoPendenteResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -52,7 +52,7 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
      * }
      */
     @Transactional
-    public EventoAprovacaoPendenteResponse execute(UUID eventoId, UpdateEventoRequest request) {
+    public EventoAprovacaoPendenteResponse execute(UUID eventoId, AtualizarEventoRequest request) {
         EventoActorContext context = actorContextResolver.resolveRequired();
 
         AprovacaoEntity entity = new AprovacaoEntity();
@@ -84,7 +84,7 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
                 "APROVACAO_PENDENTE");
     }
 
-    private AprovacaoAcaoPayload buildPayload(UUID eventoId, UpdateEventoRequest request) {
+    private AprovacaoAcaoPayload buildPayload(UUID eventoId, AtualizarEventoRequest request) {
         return new AprovacaoAcaoPayload(
                 null, // idempotencyKey
                 eventoId,

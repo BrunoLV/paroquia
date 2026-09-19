@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
-import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialBusinessException;
+import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
@@ -33,7 +33,7 @@ public class PastoralMovimentoOficialService {
      * @param nome nome oficial da pastoral/movimento
      * @param tipo tipo, restrito a {@code PASTORAL} ou {@code MOVIMENTO}
      * @return o item recém-criado
-     * @throws PastoralMovimentoOficialBusinessException se o nome for ausente/duplicado ou o tipo inválido
+     * @throws PastoralMovimentoOficialNegocioException se o nome for ausente/duplicado ou o tipo inválido
      */
     @Transactional
     public PastoralMovimentoOficial create(String nome, TipoGrupo tipo) {
@@ -52,13 +52,13 @@ public class PastoralMovimentoOficialService {
      * @param nome novo nome oficial
      * @param tipo novo tipo, restrito a {@code PASTORAL} ou {@code MOVIMENTO}
      * @return o item atualizado
-     * @throws PastoralMovimentoOficialBusinessException se o item não existir, o nome for ausente/duplicado
+     * @throws PastoralMovimentoOficialNegocioException se o item não existir, o nome for ausente/duplicado
      *     por outro item, ou o tipo for inválido
      */
     @Transactional
     public PastoralMovimentoOficial update(UUID id, String nome, TipoGrupo tipo) {
         PastoralMovimentoOficial oficial = repository.findById(id)
-                .orElseThrow(() -> PastoralMovimentoOficialBusinessException.notFound(id));
+                .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
         validate(id, nome, tipo);
         oficial.update(nome, tipo);
         repository.save(oficial);
@@ -69,12 +69,12 @@ public class PastoralMovimentoOficialService {
      * Remove definitivamente um item do catálogo oficial.
      *
      * @param id identificador do item a remover
-     * @throws PastoralMovimentoOficialBusinessException se o item não existir
+     * @throws PastoralMovimentoOficialNegocioException se o item não existir
      */
     @Transactional
     public void delete(UUID id) {
         PastoralMovimentoOficial oficial = repository.findById(id)
-                .orElseThrow(() -> PastoralMovimentoOficialBusinessException.notFound(id));
+                .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
         repository.delete(id);
     }
 
@@ -101,10 +101,10 @@ public class PastoralMovimentoOficialService {
 
     private void validate(UUID id, String nome, TipoGrupo tipo) {
         if (nome == null || nome.trim().isEmpty()) {
-            throw new PastoralMovimentoOficialBusinessException("Nome é obrigatório");
+            throw new PastoralMovimentoOficialNegocioException("Nome é obrigatório");
         }
         if (tipo != TipoGrupo.PASTORAL && tipo != TipoGrupo.MOVIMENTO) {
-            throw new PastoralMovimentoOficialBusinessException("Tipo deve ser PASTORAL ou MOVIMENTO");
+            throw new PastoralMovimentoOficialNegocioException("Tipo deve ser PASTORAL ou MOVIMENTO");
         }
 
         // Unique name check (case-insensitive or exact)
@@ -114,7 +114,7 @@ public class PastoralMovimentoOficialService {
                     .filter(o -> o.getNome().equalsIgnoreCase(nome))
                     .findFirst();
             if (existing.isPresent() && (id == null || !existing.get().getId().equals(id))) {
-                throw new PastoralMovimentoOficialBusinessException("Pastoral ou Movimento com este nome já existe");
+                throw new PastoralMovimentoOficialNegocioException("Pastoral ou Movimento com este nome já existe");
             }
         }
     }

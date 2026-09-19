@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
@@ -37,12 +37,12 @@ public interface EventoPatchAuthorizationPolicy {
      * @param tipoGrupo tipo do grupo do ator
      * @return modo de criação resultante
      */
-    CreateRequestMode resolveCreateRequestMode(PapelOrganizacional papel, TipoGrupo tipoGrupo);
+    ModoRequisicaoCriacao resolveModoRequisicaoCriacao(PapelOrganizacional papel, TipoGrupo tipoGrupo);
 
     /**
      * Garante que o ator tem permissão para alterar a organização responsável por um evento.
      *
-     * @throws ForbiddenOperationException se o ator não for Pároco nem liderança de conselho pastoral autorizada
+     * @throws OperacaoProibidaException se o ator não for Pároco nem liderança de conselho pastoral autorizada
      */
     void assertCanChangeResponsibleOrganization(PapelOrganizacional papel, TipoGrupo tipoGrupo);
 }

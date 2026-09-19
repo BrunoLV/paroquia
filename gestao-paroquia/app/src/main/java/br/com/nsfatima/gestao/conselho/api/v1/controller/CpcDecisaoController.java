@@ -1,11 +1,11 @@
 package br.com.nsfatima.gestao.conselho.api.v1.controller;
 
-import br.com.nsfatima.gestao.conselho.api.v1.dto.CreateCpcDecisaoRequest;
+import br.com.nsfatima.gestao.conselho.api.v1.dto.CriarCpcDecisaoRequest;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.CpcDecisaoResponse;
 import br.com.nsfatima.gestao.conselho.api.v1.dto.HomologarCpcDecisaoRequest;
 import br.com.nsfatima.gestao.conselho.application.usecase.CriarCpcDecisaoUseCase;
 import br.com.nsfatima.gestao.conselho.application.usecase.HomologarCpcDecisaoUseCase;
-import br.com.nsfatima.gestao.conselho.application.usecase.ListCpcDecisoesUseCase;
+import br.com.nsfatima.gestao.conselho.application.usecase.ListarCpcDecisoesUseCase;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,12 +44,12 @@ public class CpcDecisaoController {
 
     private final CriarCpcDecisaoUseCase createCpcDecisaoUseCase;
     private final HomologarCpcDecisaoUseCase homologarCpcDecisaoUseCase;
-    private final ListCpcDecisoesUseCase listCpcDecisoesUseCase;
+    private final ListarCpcDecisoesUseCase listCpcDecisoesUseCase;
 
     public CpcDecisaoController(
             CriarCpcDecisaoUseCase createCpcDecisaoUseCase,
             HomologarCpcDecisaoUseCase homologarCpcDecisaoUseCase,
-            ListCpcDecisoesUseCase listCpcDecisoesUseCase) {
+            ListarCpcDecisoesUseCase listCpcDecisoesUseCase) {
         this.createCpcDecisaoUseCase = createCpcDecisaoUseCase;
         this.homologarCpcDecisaoUseCase = homologarCpcDecisaoUseCase;
         this.listCpcDecisoesUseCase = listCpcDecisoesUseCase;
@@ -57,7 +57,7 @@ public class CpcDecisaoController {
 
     /**
      * Lista atas/decisões de conselho, opcionalmente filtradas por comunidade ou por status
-     * de homologação (ver {@link ListCpcDecisoesUseCase} para a regra de precedência dos filtros).
+     * de homologação (ver {@link ListarCpcDecisoesUseCase} para a regra de precedência dos filtros).
      *
      * @param comunidadeId filtro opcional por comunidade
      * @param status filtro opcional por status de homologação
@@ -101,7 +101,7 @@ public class CpcDecisaoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public CpcDecisaoResponse create(@RequestBody @Valid CreateCpcDecisaoRequest request) {
+    public CpcDecisaoResponse create(@RequestBody @Valid CriarCpcDecisaoRequest request) {
         return createCpcDecisaoUseCase.execute(request);
     }
 

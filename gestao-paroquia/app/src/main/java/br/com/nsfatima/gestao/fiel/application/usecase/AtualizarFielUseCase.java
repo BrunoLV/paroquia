@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.fiel.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
-import br.com.nsfatima.gestao.fiel.api.v1.dto.UpdateFielRequest;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.AtualizarFielRequest;
 import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.fiel.domain.service.ValidacaoDocumentoCivil;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
@@ -35,7 +35,7 @@ public class AtualizarFielUseCase {
     }
 
     @Transactional
-    public FielResponse execute(UUID id, UpdateFielRequest r, String actor) {
+    public FielResponse execute(UUID id, AtualizarFielRequest r, String actor) {
         var fiel = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado."));
 

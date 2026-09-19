@@ -67,7 +67,7 @@ public class CriarSolicitacaoAprovacaoUseCase {
      * }
      */
     @Transactional
-    public AprovacaoResponse create(UUID eventoId, TipoSolicitacaoInput tipoSolicitacao) {
+    public AprovacaoResponse criar(UUID eventoId, TipoSolicitacaoInput tipoSolicitacao) {
         EventoActorContext actorContext = eventoActorContextResolver.resolveRequired();
         AprovadorPapel aprovadorPapel = AprovadorPapel.resolveForAprovacao(actorContext.role(),
                 actorContext.organizationType());

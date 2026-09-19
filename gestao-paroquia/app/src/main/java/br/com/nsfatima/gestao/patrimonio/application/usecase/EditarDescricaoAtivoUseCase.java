@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.EditarDescricaoAtivoRequest;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
@@ -47,9 +47,9 @@ public class EditarDescricaoAtivoUseCase {
 
     private AtivoPatrimonial carregar(UUID ativoId) {
         AtivoPatrimonial ativo = repository.findById(new AtivoPatrimonialId(ativoId))
-                .orElseThrow(() -> new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId));
+                .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
         if (ativo.estaExcluido()) {
-            throw new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId);
+            throw new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId);
         }
         return ativo;
     }

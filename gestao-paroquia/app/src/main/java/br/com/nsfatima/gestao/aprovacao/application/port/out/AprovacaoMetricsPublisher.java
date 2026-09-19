@@ -4,7 +4,7 @@ import java.time.Duration;
 
 /**
  * Porta de saída (Ports &amp; Adapters) para publicação de métricas do fluxo de aprovação. Isola
- * {@code DecideSolicitacaoAprovacaoUseCase} do provedor de observabilidade concreto (ex.: Micrometer),
+ * {@code DecidirSolicitacaoAprovacaoUseCase} do provedor de observabilidade concreto (ex.: Micrometer),
  * permitindo acompanhar taxa de aprovações/rejeições/falhas e latência de execução por tipo de solicitação.
  */
 public interface AprovacaoMetricsPublisher {

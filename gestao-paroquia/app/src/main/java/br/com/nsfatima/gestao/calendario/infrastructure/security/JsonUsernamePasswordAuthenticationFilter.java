@@ -29,7 +29,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         setAuthenticationManager(authenticationManager);
-        setFilterProcessesUrl("/api/v1/auth/login");
+        setFilterProcessesUrl("/api/v1/autenticacao/login");
     }
 
     /**

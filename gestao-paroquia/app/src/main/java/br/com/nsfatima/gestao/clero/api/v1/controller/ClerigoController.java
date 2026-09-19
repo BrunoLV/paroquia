@@ -85,7 +85,7 @@ public class ClerigoController {
         return useCase.diretorio();
     }
 
-    @GetMapping("/me")
+    @GetMapping("/meu-perfil")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Obtém perfil do clérigo autenticado")
     @ApiResponses(value = {

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
-import br.com.nsfatima.gestao.calendario.domain.policy.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCriacao;
 import br.com.nsfatima.gestao.calendario.domain.policy.EventoPatchAuthorizationPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
@@ -47,7 +47,7 @@ public class EventoPatchAuthorizationService {
      */
     public void assertCanCreate(
             EventoActorContext actorContext, UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
-        resolveCreateRequestMode(actorContext, grupoParoquialResponsavelId, igrejaVinculoId);
+        resolveModoRequisicaoCriacao(actorContext, grupoParoquialResponsavelId, igrejaVinculoId);
     }
 
     /**
@@ -92,7 +92,7 @@ public class EventoPatchAuthorizationService {
      * @return modo de criação resultante (imediato ou sujeito a aprovação)
      * @throws AccessDeniedException se o ator não tiver papel ou escopo autorizado a criar o evento
      */
-    public CreateRequestMode resolveCreateRequestMode(EventoActorContext actorContext,
+    public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(EventoActorContext actorContext,
                                                       UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
 
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
@@ -111,7 +111,7 @@ public class EventoPatchAuthorizationService {
                     "Usuário não pode criar eventos fora do escopo da organização responsável");
         }
 
-        return policy.resolveCreateRequestMode(normalizedRole, normalizedOrgType);
+        return policy.resolveModoRequisicaoCriacao(normalizedRole, normalizedOrgType);
     }
 
     /**
@@ -123,14 +123,14 @@ public class EventoPatchAuthorizationService {
      * @param actorContext contexto de papel/organização do ator autenticado
      * @param eventoGrupoParoquialResponsavelId identificador da organização responsável pelo evento
      * @param eventIgrejaVinculoId identificador da igreja vinculada ao evento, ou {@code null}
-     * @throws ForbiddenOperationException se o ator não tiver papel ou escopo autorizado a editar o evento
+     * @throws OperacaoProibidaException se o ator não tiver papel ou escopo autorizado a editar o evento
      */
     public void assertCanEditGeneral(EventoActorContext actorContext,
                                      UUID eventoGrupoParoquialResponsavelId, UUID eventIgrejaVinculoId) {
 
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (!policy.isEditorRole(normalizedRole)) {
-            throw new ForbiddenOperationException("Usuário não tem permissão para esta operação de alteração");
+            throw new OperacaoProibidaException("Usuário não tem permissão para esta operação de alteração");
         }
 
         boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
@@ -139,7 +139,7 @@ public class EventoPatchAuthorizationService {
                         eventIgrejaVinculoId, policy.editorRoles());
 
         if (!escopoAutorizado) {
-            throw new ForbiddenOperationException(
+            throw new OperacaoProibidaException(
                     "Usuário não pode editar eventos fora do escopo da organização responsável");
         }
     }
@@ -152,7 +152,7 @@ public class EventoPatchAuthorizationService {
      * @param actorContext contexto de papel/organização do ator autenticado
      * @param eventoGrupoParoquialResponsavelId identificador da organização responsável pelo evento
      * @param eventIgrejaVinculoId identificador da igreja vinculada ao evento, ou {@code null}
-     * @throws ForbiddenOperationException se o ator não tiver papel ou escopo autorizado a editar o evento
+     * @throws OperacaoProibidaException se o ator não tiver papel ou escopo autorizado a editar o evento
      */
     public void assertCanManageParticipants(EventoActorContext actorContext,
                                             UUID eventoGrupoParoquialResponsavelId, UUID eventIgrejaVinculoId) {
@@ -166,7 +166,7 @@ public class EventoPatchAuthorizationService {
      * pastoral (Presidente CPC, Mesa CPP, Coordenador Global).
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @throws ForbiddenOperationException se o ator não for Pároco nem liderança de conselho pastoral autorizada
+     * @throws OperacaoProibidaException se o ator não for Pároco nem liderança de conselho pastoral autorizada
      */
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());

@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoRecorrenciaResponse;
-import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
+import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
 import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.RegraRecorrencia;
@@ -123,6 +123,6 @@ public class CriarEventoRecorrenciaUseCase {
 
     private EventoEntity validateEvent(UUID eventoId) {
         return eventRepository.findById(eventoId)
-                .orElseThrow(() -> new EventoNotFoundException(eventoId));
+                .orElseThrow(() -> new EventoNaoEncontradoException(eventoId));
     }
 }

@@ -39,7 +39,7 @@ public class ObterOrganogramaUseCase {
 
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
-    private final ListGrupoParoquialMembrosUseCase listMembrosUseCase;
+    private final ListarGrupoParoquialMembrosUseCase listMembrosUseCase;
     private final EncargoClericalJpaRepository encargoClericalRepository;
     private final ClerigoJpaRepository clerigoRepository;
     private final String paroquiaNome;
@@ -47,7 +47,7 @@ public class ObterOrganogramaUseCase {
     public ObterOrganogramaUseCase(
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
-            ListGrupoParoquialMembrosUseCase listMembrosUseCase,
+            ListarGrupoParoquialMembrosUseCase listMembrosUseCase,
             EncargoClericalJpaRepository encargoClericalRepository,
             ClerigoJpaRepository clerigoRepository,
             @Value("${app.paroquia.nome:Paróquia Nossa Senhora de Fátima}") String paroquiaNome) {

@@ -26,8 +26,8 @@ import java.util.UUID;
  * autenticado pode ver.
  */
 @RestController
-@RequestMapping("/api/v1/dashboard")
-@Tag(name = "Dashboard", description = "Endpoints para consulta de métricas e dados gerenciais")
+@RequestMapping("/api/v1/painel")
+@Tag(name = "Painel", description = "Endpoints para consulta de métricas e dados gerenciais")
 public class DashboardMetricsController {
 
     private final ObterDashboardMetricasUseCase getDashboardMetricsUseCase;
@@ -49,7 +49,7 @@ public class DashboardMetricsController {
      * @param grupoParoquialId organização a filtrar, ou ausente para o escopo do próprio ator
      * @return métricas consolidadas do dashboard
      */
-    @GetMapping("/metrics")
+    @GetMapping("/metricas")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Obtém as métricas do dashboard",
             description = "Resumo geral, distribuição por organização e status, projetos ativos, eventos órfãos e "
@@ -60,7 +60,7 @@ public class DashboardMetricsController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public DashboardMetricsDTO getMetrics(
+    public DashboardMetricsDTO obterMetricas(
             @Parameter(description = "Recorte temporal do filtro global")
             @RequestParam(defaultValue = "SEMANA") PeriodoDashboard periodo,
             @Parameter(description = "Organização a filtrar; ausente usa o escopo do ator")

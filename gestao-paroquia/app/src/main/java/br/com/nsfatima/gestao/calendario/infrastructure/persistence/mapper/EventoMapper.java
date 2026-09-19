@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusResponse;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /**
  * Converte entre {@link EventoEntity} (persistência) e os DTOs da API de eventos
- * ({@link CriarEventoRequest}, {@link UpdateEventoRequest}, {@link EventoResponse}), isolando o
+ * ({@link CriarEventoRequest}, {@link AtualizarEventoRequest}, {@link EventoResponse}), isolando o
  * restante da aplicação dos detalhes de mapeamento — incluindo a conversão tolerante de status
  * legado (via {@link EventoStatusResponse#fromStoredValue}), a resolução do nome do projeto
  * vinculado e a extração dos participantes de apoio a partir dos envolvidos do evento.
@@ -127,7 +127,7 @@ public class EventoMapper {
      *     preservam o valor atual da entidade
      * @param status status a ser definido na entidade após aplicar o patch
      */
-    public void applyPatch(EventoEntity entity, UpdateEventoRequest request, EventoStatusInput status) {
+    public void applyPatch(EventoEntity entity, AtualizarEventoRequest request, EventoStatusInput status) {
         if (request.titulo() != null) {
             entity.setTitulo(request.titulo());
         }

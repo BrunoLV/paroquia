@@ -1,12 +1,12 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoCreateRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.CriarObservacaoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.ObservacaoUpdateRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.observacao.AtualizarObservacaoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.CriarNotaObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ExcluirObservacaoUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListMinhasObservacoesUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListObservacoesUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListarMinhasObservacoesUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.ListarObservacoesUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.AtualizarObservacaoUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.ObservacaoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
@@ -46,8 +46,8 @@ import java.util.UUID;
 public class ObservacaoController {
 
     private final CriarNotaObservacaoUseCase createNotaObservacaoUseCase;
-    private final ListObservacoesUseCase listObservacoesUseCase;
-    private final ListMinhasObservacoesUseCase listMinhasObservacoesUseCase;
+    private final ListarObservacoesUseCase listObservacoesUseCase;
+    private final ListarMinhasObservacoesUseCase listMinhasObservacoesUseCase;
     private final AtualizarObservacaoUseCase updateObservacaoUseCase;
     private final ExcluirObservacaoUseCase deleteObservacaoUseCase;
     private final ObservacaoAuditPublisher observacaoAuditPublisher;
@@ -55,8 +55,8 @@ public class ObservacaoController {
 
     public ObservacaoController(
             CriarNotaObservacaoUseCase createNotaObservacaoUseCase,
-            ListObservacoesUseCase listObservacoesUseCase,
-            ListMinhasObservacoesUseCase listMinhasObservacoesUseCase,
+            ListarObservacoesUseCase listObservacoesUseCase,
+            ListarMinhasObservacoesUseCase listMinhasObservacoesUseCase,
             AtualizarObservacaoUseCase updateObservacaoUseCase,
             ExcluirObservacaoUseCase deleteObservacaoUseCase,
             ObservacaoAuditPublisher observacaoAuditPublisher,
@@ -76,7 +76,7 @@ public class ObservacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * controller.create(eventoId, new ObservacaoCreateRequest("NOTA", "Lembrar dos bancos extras"));
+     * controller.create(eventoId, new CriarObservacaoRequest("NOTA", "Lembrar dos bancos extras"));
      * }
      */
     @PostMapping
@@ -94,7 +94,7 @@ public class ObservacaoController {
     @Transactional
     public ObservacaoResponse create(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
-            @RequestBody @Valid ObservacaoCreateRequest request) {
+            @RequestBody @Valid CriarObservacaoRequest request) {
         var context = actorContextResolver.resolveRequired();
         return createNotaObservacaoUseCase.execute(
                 eventoId,
@@ -170,7 +170,7 @@ public class ObservacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * controller.update(eventoId, observacaoId, new ObservacaoUpdateRequest("Conteúdo revisado"));
+     * controller.update(eventoId, observacaoId, new AtualizarObservacaoRequest("Conteúdo revisado"));
      * }
      */
     @PatchMapping("/{observacaoId}")
@@ -188,7 +188,7 @@ public class ObservacaoController {
     public ObservacaoResponse update(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
             @Parameter(description = "ID da observação") @PathVariable UUID observacaoId,
-            @RequestBody @Valid ObservacaoUpdateRequest request) {
+            @RequestBody @Valid AtualizarObservacaoRequest request) {
         var context = actorContextResolver.resolveRequired();
         return updateObservacaoUseCase.execute(
                 eventoId,

@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
-import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegisterSystemObservacaoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegistrarObservacaoSistemaUseCase;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
@@ -26,20 +26,20 @@ public class CancelarReservaUseCase {
 
     private final ReservaRepository reservaRepository;
     private final ReservaAuthorizationService authorizationService;
-    private final RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase;
+    private final RegistrarObservacaoSistemaUseCase registerSystemObservacaoUseCase;
     private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     public CancelarReservaUseCase(
             ReservaRepository reservaRepository,
             ReservaAuthorizationService authorizationService,
-            RegisterSystemObservacaoUseCase registerSystemObservacaoUseCase,
+            RegistrarObservacaoSistemaUseCase registerSystemObservacaoUseCase,
             PublicadorReservaDeAtivo publicadorReservaDeAtivo
     ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
         this.authorizationService = Objects.requireNonNull(authorizationService,
                 "ReservaAuthorizationService é obrigatório.");
         this.registerSystemObservacaoUseCase = Objects.requireNonNull(registerSystemObservacaoUseCase,
-                "RegisterSystemObservacaoUseCase é obrigatório.");
+                "RegistrarObservacaoSistemaUseCase é obrigatório.");
         this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
                 "PublicadorReservaDeAtivo é obrigatório.");
     }
@@ -50,7 +50,7 @@ public class CancelarReservaUseCase {
         Objects.requireNonNull(operador, "Operador é obrigatório.");
 
         Reserva reserva = reservaRepository.findById(new ReservaId(reservaId))
-                .orElseThrow(() -> new ReservaNotFoundException(reservaId));
+                .orElseThrow(() -> new ReservaNaoEncontradaException(reservaId));
 
         Instant agora = Instant.now();
         authorizationService.validarAutorizacaoCancelamento(operador, reserva, agora);

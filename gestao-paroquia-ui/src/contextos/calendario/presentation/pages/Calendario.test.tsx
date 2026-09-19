@@ -47,7 +47,7 @@ const mockEvents = [
 
 const setupApiMock = (user = mockUser, approvals: any[] = []) => {
   mockedApiClient.get.mockImplementation((url) => {
-    if (url === '/auth/me') {
+    if (url === '/autenticacao/meu-perfil') {
       return Promise.resolve({ data: user });
     }
     if (url === '/organizacoes') {
@@ -191,7 +191,7 @@ test('event details modal displays Local and Supporting Organizations', async ()
   };
   
   mockedApiClient.get.mockImplementation((url) => {
-    if (url === '/auth/me') return Promise.resolve({ data: mockUser });
+    if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: mockUser });
     if (url === '/organizacoes') return Promise.resolve({ data: mockOrgs });
     if (url === '/eventos') return Promise.resolve({ data: { content: [eventWithExtraInfo] } });
     if (url === '/locais') return Promise.resolve({ data: [{ id: 'loc-1', nome: 'Salão Principal', ativo: true }] });
@@ -329,7 +329,7 @@ test('parses and renders transient events from pending creation requests', async
 
 test('shows error notification when calendar data fetch fails', async () => {
   mockedApiClient.get.mockImplementation((url) => {
-    if (url === '/auth/me') return Promise.resolve({ data: mockUser });
+    if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: mockUser });
     if (url === '/solenidades-liturgicas/ativas') return Promise.resolve({ data: [] });
     return Promise.reject(new Error('API failure'));
   });

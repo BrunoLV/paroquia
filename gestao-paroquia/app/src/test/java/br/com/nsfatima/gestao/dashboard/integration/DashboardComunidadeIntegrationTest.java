@@ -28,14 +28,14 @@ class DashboardComunidadeIntegrationTest {
     @Test
     void deveNegarAniversariantesParaNaoAutenticado() throws Exception {
         SecurityContextHolder.clearContext();
-        mockMvc.perform(get("/api/v1/dashboard/aniversariantes").header("X-Test-Anonymous", "true"))
+        mockMvc.perform(get("/api/v1/painel/aniversariantes").header("X-Test-Anonymous", "true"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveRetornarAniversariantesComoArray() throws Exception {
-        mockMvc.perform(get("/api/v1/dashboard/aniversariantes").param("janela", "MES"))
+        mockMvc.perform(get("/api/v1/painel/aniversariantes").param("janela", "MES"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -43,7 +43,7 @@ class DashboardComunidadeIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deveRetornarRetencaoDePastoraisComoArray() throws Exception {
-        mockMvc.perform(get("/api/v1/dashboard/comunidade"))
+        mockMvc.perform(get("/api/v1/painel/comunidade"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.retencaoPastorais").isArray());
     }
@@ -52,7 +52,7 @@ class DashboardComunidadeIntegrationTest {
     void deveNegarComunidadeDeOutraOrganizacaoParaNaoAdmin() throws Exception {
         MockHttpSession session = SecurityTestSupport.loginSession(mockMvc, "joao.silva", "senha123");
 
-        mockMvc.perform(get("/api/v1/dashboard/comunidade")
+        mockMvc.perform(get("/api/v1/painel/comunidade")
                         .session(session)
                         .param("grupoParoquialId", UUID.randomUUID().toString()))
                 .andExpect(status().isForbidden());

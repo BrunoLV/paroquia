@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.projeto.domain.policy;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.DisplayName;
@@ -50,12 +50,12 @@ class PadraoAutorizacaoProjetoPolicyTest {
 
         assertThatThrownBy(() -> policy.assertCanCreate(
                 PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
-                .isInstanceOf(ForbiddenOperationException.class)
+                .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("outra organização");
 
         assertThatThrownBy(() -> policy.assertCanEdit(
                 PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
-                .isInstanceOf(ForbiddenOperationException.class)
+                .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("outra organização");
     }
 
@@ -73,9 +73,9 @@ class PadraoAutorizacaoProjetoPolicyTest {
 
         assertThatThrownBy(() -> policy.assertCanStartOrConclude(
                 PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, outraOrg))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
         assertThatThrownBy(() -> policy.assertCanStartOrConclude(
                 PapelOrganizacional.MEMBRO_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 }

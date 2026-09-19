@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.ObterMembroUseCase;
-import br.com.nsfatima.gestao.membro.application.usecase.ListMembrosUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.ListarMembrosUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.PromoverACoordenadorUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.AtualizarMembroUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +51,7 @@ public class MembroController {
     private final AdicionarMembroUseCase adicionarMembroUseCase;
     private final AtualizarMembroUseCase updateMembroUseCase;
     private final ObterMembroUseCase getMembroUseCase;
-    private final ListMembrosUseCase listMembrosUseCase;
+    private final ListarMembrosUseCase listMembrosUseCase;
     private final PromoverACoordenadorUseCase promoverACoordenadorUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
@@ -59,7 +59,7 @@ public class MembroController {
             AdicionarMembroUseCase adicionarMembroUseCase,
             AtualizarMembroUseCase updateMembroUseCase,
             ObterMembroUseCase getMembroUseCase,
-            ListMembrosUseCase listMembrosUseCase,
+            ListarMembrosUseCase listMembrosUseCase,
             PromoverACoordenadorUseCase promoverACoordenadorUseCase,
             EventoActorContextResolver actorContextResolver) {
         this.adicionarMembroUseCase = adicionarMembroUseCase;
@@ -90,7 +90,7 @@ public class MembroController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public MembroResponse create(@RequestBody @Valid MembroRequest request) {
+    public MembroResponse criar(@RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
         return adicionarMembroUseCase.execute(request, context.actor());
     }
@@ -113,7 +113,7 @@ public class MembroController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public Page<MembroResponse> list(
+    public Page<MembroResponse> listar(
             @Parameter(description = "ID do grupo paroquial") @RequestParam(required = false) UUID grupoParoquialId,
             @Parameter(description = "ID do fiel") @RequestParam(required = false) UUID fielId,
             @Parameter(description = "Status ativo do vínculo") @RequestParam(required = false) Boolean ativo,
@@ -138,7 +138,7 @@ public class MembroController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Membro não encontrado")
     })
-    public MembroResponse get(
+    public MembroResponse obter(
             @Parameter(description = "Identificador único do membro") @PathVariable UUID id) {
         return getMembroUseCase.execute(id);
     }
@@ -164,7 +164,7 @@ public class MembroController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Membro não encontrado")
     })
-    public MembroResponse update(
+    public MembroResponse atualizar(
             @Parameter(description = "Identificador único do membro") @PathVariable UUID id,
             @RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
@@ -188,7 +188,7 @@ public class MembroController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Membro não encontrado")
     })
-    public void toggleStatus(
+    public void alternarStatus(
             @Parameter(description = "Identificador único do membro") @PathVariable UUID id,
             @Parameter(description = "Novo status de ativação") @RequestParam boolean ativo) {
         var context = actorContextResolver.resolveRequired();

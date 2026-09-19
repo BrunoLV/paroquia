@@ -13,8 +13,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
@@ -88,7 +88,7 @@ class EventoMutacaoContractTest {
     void deveCancelarEvento() throws Exception {
         persistEventoConfirmado();
 
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", EVENTO_ID)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", EVENTO_ID)
                         .header("X-Actor-Role", "presidente-cpc")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

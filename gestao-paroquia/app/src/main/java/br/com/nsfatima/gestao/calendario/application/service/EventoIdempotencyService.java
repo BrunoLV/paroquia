@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.domain.exception.IdempotencyConflictException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ConflitoIdempotenciaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoIdempotencyEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.mapper.EventoMapper;
@@ -54,7 +54,7 @@ public class EventoIdempotencyService {
      *                       primeira chamada para uma dada chave
      * @return resultado contendo a resposta do evento e um indicador de replay (se a
      *         resposta veio de uma execução anterior em vez de uma nova criação)
-     * @throws IdempotencyConflictException se a chave já foi usada com um payload
+     * @throws ConflitoIdempotenciaException se a chave já foi usada com um payload
      *                                        de hash diferente do atual
      */
     public IdempotencyResult execute(String idempotencyKey, CriarEventoRequest request,
@@ -65,7 +65,7 @@ public class EventoIdempotencyService {
         if (existing.isPresent()) {
             EventoIdempotencyEntity existingRecord = existing.get();
             if (!existingRecord.getRequestHash().equals(requestHash)) {
-                throw new IdempotencyConflictException(
+                throw new ConflitoIdempotenciaException(
                         "Idempotency-Key already used with a different payload");
             }
 

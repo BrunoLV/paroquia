@@ -5,13 +5,13 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEditScope;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.UpdateEventoRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.AtualizarEventoSolicitacaoAprovacaoUseCase;
-import br.com.nsfatima.gestao.calendario.domain.exception.EventoNotFoundException;
+import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
-import br.com.nsfatima.gestao.calendario.domain.policy.CreateRequestMode;
+import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCriacao;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
@@ -56,7 +56,7 @@ public class AtualizarEventoUseCase {
     private final EventoPatchAuthorizationService authorizationService;
     private final EventoActorContextResolver actorContextResolver;
     private final AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase;
-    private final ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase;
+    private final LimparEventoEnvolvidosUseCase clearEnvolvidosUseCase;
     private final ValidadorVinculoProjeto validadorVinculoProjeto;
     private final CadastroEventoMetricsPublisher metricsPublisher;
     private final AtualizarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase;
@@ -74,7 +74,7 @@ public class AtualizarEventoUseCase {
             EventoPatchAuthorizationService authorizationService,
             EventoActorContextResolver actorContextResolver,
             AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase,
-            ClearEventoEnvolvidosUseCase clearEnvolvidosUseCase,
+            LimparEventoEnvolvidosUseCase clearEnvolvidosUseCase,
             ValidadorVinculoProjeto validadorVinculoProjeto,
             CadastroEventoMetricsPublisher metricsPublisher,
             AtualizarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
@@ -105,17 +105,17 @@ public class AtualizarEventoUseCase {
      * caso aprovação seja necessária.
      * <p>
      * Exemplo de uso:
-     * useCase.execute(id, new UpdateEventoRequest("Novo Título", null, ...));
+     * useCase.execute(id, new AtualizarEventoRequest("Novo Título", null, ...));
      */
     @Transactional
-    public EventoOperationResult execute(UUID eventoId, UpdateEventoRequest request) {
+    public EventoOperationResult execute(UUID eventoId, AtualizarEventoRequest request) {
         validateRequest(request);
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
         validateAuthorization(entity, request, actorContext);
 
-        if (request.changesSensitiveFields() && requiresAprovacao(entity, actorContext)) {
+        if (request.alteraCamposSensiveis() && requiresAprovacao(entity, actorContext)) {
             return new EventoOperationResult.Pendente(aprovacaoRequestUseCase.execute(eventoId,
                     request), HttpStatus.ACCEPTED);
 
@@ -129,25 +129,25 @@ public class AtualizarEventoUseCase {
      * Executa uma atualização que já foi aprovada através do fluxo de aprovação.
      */
     @Transactional(noRollbackFor = RuntimeException.class)
-    public EventoResponse executeApprovedUpdate(UUID eventoId, UpdateEventoRequest request) {
+    public EventoResponse executeApprovedUpdate(UUID eventoId, AtualizarEventoRequest request) {
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         return performUpdate(entity, request, actorContext, "executado", true);
     }
 
-    private void validateRequest(UpdateEventoRequest request) {
-        if (request == null || request.isEmptyPayload()) {
+    private void validateRequest(AtualizarEventoRequest request) {
+        if (request == null || request.isPayloadVazio()) {
             throw new IllegalArgumentException("Corpo do PATCH não pode ser vazio");
         }
     }
 
     private EventoEntity findEntity(UUID eventoId) {
         return repository.findById(Objects.requireNonNull(eventoId))
-                .orElseThrow(() -> new EventoNotFoundException(eventoId));
+                .orElseThrow(() -> new EventoNaoEncontradoException(eventoId));
     }
 
     private void validateAuthorization(EventoEntity entity,
-                                       UpdateEventoRequest request, EventoActorContext actorContext) {
+                                       AtualizarEventoRequest request, EventoActorContext actorContext) {
 
         if (request.grupoParoquialResponsavelId() != null &&
                 !request.grupoParoquialResponsavelId().equals(entity.getGrupoParoquialResponsavelId())) {
@@ -170,14 +170,14 @@ public class AtualizarEventoUseCase {
     }
 
     private boolean requiresAprovacao(EventoEntity entity, EventoActorContext actorContext) {
-        return authorizationService.resolveCreateRequestMode(actorContext,
+        return authorizationService.resolveModoRequisicaoCriacao(actorContext,
                 entity.getGrupoParoquialResponsavelId(), entity.getIgrejaVinculoId())
 
-                == CreateRequestMode.REQUIRES_APROVACAO;
+                == ModoRequisicaoCriacao.REQUER_APROVACAO;
     }
 
     private EventoResponse performUpdate(EventoEntity entity,
-                                         UpdateEventoRequest request, EventoActorContext actorContext,
+                                         AtualizarEventoRequest request, EventoActorContext actorContext,
                                          String auditResult,
                                          boolean isAprovacaoFlow) {
 
@@ -229,11 +229,11 @@ public class AtualizarEventoUseCase {
         return mapper.toResponse(saved);
     }
 
-    private void updateAllInstances(UUID recorrenciaId, UpdateEventoRequest request, EventoStatusInput status) {
+    private void updateAllInstances(UUID recorrenciaId, AtualizarEventoRequest request, EventoStatusInput status) {
         // 1. Atualizar o evento modelo (evento base da regra de recorrência)
         recurrenceRepository.findById(recorrenciaId).flatMap(regra -> repository.findById(regra.getEventoBaseId()))
                 .ifPresent(eventoBase -> {
-                    UpdateEventoRequest templateRequest = new UpdateEventoRequest(
+                    AtualizarEventoRequest templateRequest = new AtualizarEventoRequest(
                             request.titulo(), request.descricao(), request.categoria(),
                             null, null, // Don't update template start/end times via instancia update
                             request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
@@ -253,7 +253,7 @@ public class AtualizarEventoUseCase {
         // 2. Atualizar todas as instâncias existentes
         List<EventoEntity> allInstances = repository.findByRecorrenciaId(recorrenciaId);
         for (EventoEntity instancia : allInstances) {
-            UpdateEventoRequest siblingRequest = new UpdateEventoRequest(
+            AtualizarEventoRequest siblingRequest = new AtualizarEventoRequest(
                     request.titulo(), request.descricao(), request.categoria(),
                     null, null, // Don't change time for siblings
                     request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
@@ -298,7 +298,7 @@ public class AtualizarEventoUseCase {
         });
     }
 
-    private void validateDomainRules(EventoEntity entity, UpdateEventoRequest request, EventoStatusInput status) {
+    private void validateDomainRules(EventoEntity entity, AtualizarEventoRequest request, EventoStatusInput status) {
         Instant inicio = request.inicio() != null ? request.inicio() : entity.getInicioUtc();
         Instant fim = request.fim() != null ? request.fim() : entity.getFimUtc();
         String justificativa = request.adicionadoExtraJustificativa() != null ? request.adicionadoExtraJustificativa() :
@@ -358,7 +358,7 @@ public class AtualizarEventoUseCase {
         }
     }
 
-    private void publishMetrics(EventoEntity entity, UpdateEventoRequest request) {
+    private void publishMetrics(EventoEntity entity, AtualizarEventoRequest request) {
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
         boolean cancellation = request.status() == EventoStatusInput.CANCELADO;
         boolean orgChanged = request.grupoParoquialResponsavelId() != null &&
@@ -376,7 +376,7 @@ public class AtualizarEventoUseCase {
     }
 
     private void publishAudit(EventoEntity saved,
-                              UpdateEventoRequest request, EventoActorContext actorContext, String result,
+                              AtualizarEventoRequest request, EventoActorContext actorContext, String result,
                               boolean fluxoAprovacao) {
 
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
@@ -389,7 +389,7 @@ public class AtualizarEventoUseCase {
                 "agendaAlterada", scheduleChanged,
                 "cancelamento", cancellation,
                 "grupoParoquialResponsavelAlterada", orgChanged,
-                "alteracaoSensivel", request.changesSensitiveFields(),
+                "alteracaoSensivel", request.alteraCamposSensiveis(),
                 "fluxoAprovacao", fluxoAprovacao));
     }
 
@@ -399,11 +399,11 @@ public class AtualizarEventoUseCase {
      * <p>
      * Exemplo de uso:
      * {@code
-     * UpdateEventoRequest request = useCase.restaurarDoPayloadAprovacao(payload);
+     * AtualizarEventoRequest request = useCase.restaurarDoPayloadAprovacao(payload);
      * }
      */
-    public UpdateEventoRequest restaurarDoPayloadAprovacao(AprovacaoAcaoPayload payload) {
-        return new UpdateEventoRequest(payload.titulo(),
+    public AtualizarEventoRequest restaurarDoPayloadAprovacao(AprovacaoAcaoPayload payload) {
+        return new AtualizarEventoRequest(payload.titulo(),
                 payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
 
                 payload.status(), payload.adicionadoExtraJustificativa(), payload.canceladoMotivo(),

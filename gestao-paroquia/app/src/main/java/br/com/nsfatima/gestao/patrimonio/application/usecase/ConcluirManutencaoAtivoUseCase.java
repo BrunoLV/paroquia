@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.patrimonio.api.v1.dto.AtivoPatrimonialResponse;
 import br.com.nsfatima.gestao.patrimonio.domain.event.ManutencaoAtivoConcluidaEvent;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoInvalidaException;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNotFoundException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoManutencao;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
 import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
@@ -49,7 +49,7 @@ public class ConcluirManutencaoAtivoUseCase {
     public AtivoPatrimonialResponse execute(UUID ativoId) {
         AtivoPatrimonial ativo = ativoRepository.findById(new AtivoPatrimonialId(ativoId))
                 .filter(a -> !a.estaExcluido())
-                .orElseThrow(() -> new AtivoPatrimonialNotFoundException("Ativo não encontrado: " + ativoId));
+                .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
 
         EventoActorContext actor = actorContextResolver.resolveRequired();
         authorizationService.assertPodeGerirPatrimonio(actor, ativo.getGrupoParoquialId());

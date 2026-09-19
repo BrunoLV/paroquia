@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersi
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException.ConflitoDetalhe;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaOperacaoInvalidaException;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
@@ -78,7 +78,7 @@ class ReservaExceptionHandlerTest {
     @DisplayName("handleNotFound retorna 404 com mensagem da exceção")
     void deveTratarNotFound() {
         UUID id = UUID.randomUUID();
-        ReservaNotFoundException ex = new ReservaNotFoundException(id);
+        ReservaNaoEncontradaException ex = new ReservaNaoEncontradaException(id);
 
         ResponseEntity<ValidationErrorResponse> response = handler().handleNotFound(ex);
 

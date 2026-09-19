@@ -35,8 +35,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/v1/importacao")
-@Tag(name = "File Importation", description = "Bulk file import endpoints for Members, Users, Organizations, and " +
-        "Events")
+@Tag(name = "Importação de Arquivos", description = "Endpoints de importação em lote para Membros, Usuários, Organizações e Eventos")
 public class ImportacaoController {
 
     private final ImportacaoService importacaoService;
@@ -54,17 +53,16 @@ public class ImportacaoController {
      * @param formato "CSV" ou "XLSX"; qualquer outro valor recai em CSV
      * @return arquivo binário para download, com nome e content-type apropriados ao formato
      */
-    @GetMapping("/template")
+    @GetMapping("/modelo")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Download import template", description = "Generates CSV or XLSX sample template for batch " +
-            "import")
+    @Operation(summary = "Baixa o modelo de importação", description = "Gera modelo CSV ou XLSX de exemplo para importação em lote")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Arquivo de modelo gerado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Tipo de entidade ou formato inválido"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<byte[]> downloadTemplate(
+    public ResponseEntity<byte[]> baixarModelo(
             @Parameter(description = "Tipo de entidade (MEMBRO, GRUPO_PAROQUIAL, etc.)")
             @RequestParam(defaultValue = "MEMBRO") String tipo,
             @Parameter(description = "Formato do arquivo (CSV ou XLSX)")

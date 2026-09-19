@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
-import br.com.nsfatima.gestao.calendario.domain.exception.ForbiddenOperationException;
-import br.com.nsfatima.gestao.calendario.domain.exception.ImmutableEclesialRuleException;
+import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.calendario.domain.exception.RegraEclesialImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.model.TipoCicloLiturgico;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.AnoLiturgicoRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.CicloLiturgicoRepository;
@@ -39,24 +39,24 @@ class LiturgicalGovernanceTest {
 
         // Bloqueado para outros perfis
         assertThatThrownBy(() -> service.validateManualMutationRights("SECRETARIA", "corLiturgica", "ROXO", "Ajuste"))
-                .isInstanceOf(ForbiddenOperationException.class)
+                .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("Apenas Pároco ou Vigário podem alterar cadastros litúrgicos");
 
         assertThatThrownBy(() -> service.validateManualMutationRights("COORDENADOR", "corLiturgica", "ROXO", "Ajuste"))
-                .isInstanceOf(ForbiddenOperationException.class);
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test
-    @DisplayName("Deve disparar ImmutableEclesialRuleException ao tentar alterar cicloLetra ou data da Páscoa")
+    @DisplayName("Deve disparar RegraEclesialImutavelException ao tentar alterar cicloLetra ou data da Páscoa")
     void deveDispararExcecaoParaCamposImutaveis() {
         assertThatThrownBy(() -> service.validateManualMutationRights("PAROCO", "cicloLetra", "A",
                 "Tentativa de alteração"))
-                .isInstanceOf(ImmutableEclesialRuleException.class)
+                .isInstanceOf(RegraEclesialImutavelException.class)
                 .hasMessageContaining("regras eclesiais imutáveis");
 
         assertThatThrownBy(() -> service.validateManualMutationRights("PAROCO", "PASCOA", "2026-04-10",
                 "Tentativa de alteração"))
-                .isInstanceOf(ImmutableEclesialRuleException.class)
+                .isInstanceOf(RegraEclesialImutavelException.class)
                 .hasMessageContaining("regras eclesiais imutáveis");
     }
 

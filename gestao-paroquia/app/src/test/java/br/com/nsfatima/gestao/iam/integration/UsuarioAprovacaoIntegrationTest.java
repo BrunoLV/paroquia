@@ -43,7 +43,7 @@ class UsuarioAprovacaoIntegrationTest {
         user.setFielId(FielTestFixtures.criarFiel(fielRepository));
         usuarioRepository.save(user);
 
-        mockMvc.perform(put("/api/v1/usuarios/" + user.getId() + "/approve")
+        mockMvc.perform(put("/api/v1/usuarios/" + user.getId() + "/aprovar")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -55,7 +55,7 @@ class UsuarioAprovacaoIntegrationTest {
     @Test
     @WithMockUser(roles = "USER")
     void deveNegarAprovarUsuarioQuandoNaoAutorizado() throws Exception {
-        mockMvc.perform(put("/api/v1/usuarios/" + UUID.randomUUID() + "/approve")
+        mockMvc.perform(put("/api/v1/usuarios/" + UUID.randomUUID() + "/aprovar")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }

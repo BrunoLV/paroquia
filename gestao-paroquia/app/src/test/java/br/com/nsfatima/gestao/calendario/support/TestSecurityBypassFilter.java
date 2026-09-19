@@ -91,7 +91,7 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
     }
 
     private boolean isLoginRequest(HttpServletRequest request) {
-        return "/api/v1/auth/login".equals(request.getRequestURI());
+        return "/api/v1/autenticacao/login".equals(request.getRequestURI());
     }
 
     private boolean hasSecurityContextInSession(HttpServletRequest request) {

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.usecase;
 
-import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNotFoundException;
+import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import org.springframework.stereotype.Service;
@@ -32,12 +32,12 @@ public class AtualizarUsuarioUseCase {
      * @param id       identificador do usuário
      * @param username novo username, ou {@code null} para não alterar
      * @param enabled  novo estado de habilitação, ou {@code null} para não alterar
-     * @throws UsuarioNotFoundException se não existir usuário com o id informado
+     * @throws UsuarioNaoEncontradoException se não existir usuário com o id informado
      */
     @Transactional
     public void execute(UUID id, String username, Boolean enabled) {
         UsuarioEntity entity = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException(id));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
 
         if (username != null) {
             entity.alterarUsername(username);

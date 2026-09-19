@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
@@ -50,7 +50,7 @@ class CancelEventoAuthorizationIntegrationTest {
         evento.setStatus("CONFIRMADO");
         eventoJpaRepository.save(evento);
 
-        mockMvc.perform(delete("/api/v1/eventos/{eventoId}", eventoId)
+        mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
                         .header("X-Actor-Role", role)
                         .header("X-Actor-Org-Type", orgType)
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")

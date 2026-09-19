@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
 import br.com.nsfatima.gestao.reserva.application.dto.ReservaDetalheDto;
-import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNotFoundException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
@@ -26,7 +26,7 @@ public class BuscarReservaPorIdUseCase {
     public ReservaDetalheDto executar(UUID id) {
         Objects.requireNonNull(id, "ID da reserva é obrigatório.");
         Reserva reserva = reservaRepository.findById(new ReservaId(id))
-                .orElseThrow(() -> new ReservaNotFoundException(id));
+                .orElseThrow(() -> new ReservaNaoEncontradaException(id));
         return enricherService.enriquecer(reserva);
     }
 }

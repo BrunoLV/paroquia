@@ -26,10 +26,10 @@ describe('Painel Page', () => {
 
   const renderDashboard = async (user: any) => {
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') {
+      if (url === '/autenticacao/meu-perfil') {
         return Promise.resolve({ data: user });
       }
-      if (url === '/dashboard/metrics') {
+      if (url === '/painel/metricas') {
         return Promise.resolve({
           data: {
             resumoGeral: {
@@ -52,7 +52,7 @@ describe('Painel Page', () => {
           }
         });
       }
-      if (url === '/dashboard/logistica') {
+      if (url === '/painel/logistica') {
         return Promise.resolve({
           data: {
             choquesHorario: [],
@@ -62,10 +62,10 @@ describe('Painel Page', () => {
           }
         });
       }
-      if (url === '/dashboard/aniversariantes') {
+      if (url === '/painel/aniversariantes') {
         return Promise.resolve({ data: [{ primeiroNome: 'Maria', dia: 15, mes: 6 }] });
       }
-      if (url === '/dashboard/comunidade') {
+      if (url === '/painel/comunidade') {
         return Promise.resolve({ data: { retencaoPastorais: [] } });
       }
       if (url === '/organizacoes') {
@@ -136,7 +136,7 @@ describe('Painel Page', () => {
 
   test('renders error message on fetch failure', async () => {
     mockedApiClient.get.mockImplementation((url) => {
-      if (url === '/auth/me') return Promise.resolve({ data: { id: '1', roles: ['ADMIN'], organizations: [] } });
+      if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: { id: '1', roles: ['ADMIN'], organizations: [] } });
       return Promise.reject(new Error('Network Error'));
     });
 
