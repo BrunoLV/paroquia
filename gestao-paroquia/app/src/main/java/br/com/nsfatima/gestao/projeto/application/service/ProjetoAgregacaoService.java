@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.SaudeTemporalDTO;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.StatusExecucaoDTO;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjetoEventoProvider;
+import br.com.nsfatima.gestao.projeto.domain.service.ProvedorEventoProjeto;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
@@ -27,15 +27,15 @@ import java.util.UUID;
 public class ProjetoAgregacaoService {
 
     private final ProjetoEventoJpaRepository projetoRepository;
-    private final ProjetoEventoProvider eventProvider;
+    private final ProvedorEventoProjeto provedorEventoProjeto;
     private final ProjetoAgregacaoDomainService domainService;
 
     public ProjetoAgregacaoService(
             ProjetoEventoJpaRepository projetoRepository,
-            ProjetoEventoProvider eventProvider,
+            ProvedorEventoProjeto provedorEventoProjeto,
             ProjetoAgregacaoDomainService domainService) {
         this.projetoRepository = projetoRepository;
-        this.eventProvider = eventProvider;
+        this.provedorEventoProjeto = provedorEventoProjeto;
         this.domainService = domainService;
     }
 
@@ -47,7 +47,7 @@ public class ProjetoAgregacaoService {
      * @throws ProjetoNaoEncontradoException se o projeto não for encontrado
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = CacheConfig.PROJECT_RESUMO_CACHE, key = "#projetoId")
+    @Cacheable(value = CacheConfig.PROJETO_RESUMO_CACHE, key = "#projetoId")
     public ProjetoResumoDTO obterResumo(UUID projetoId) {
         ProjetoEventoEntity projeto = projetoRepository.findById(projetoId)
                 .orElseThrow(() -> new ProjetoNaoEncontradoException(projetoId));
@@ -55,14 +55,14 @@ public class ProjetoAgregacaoService {
         Instant agora = Instant.now();
 
         // Status de Execução
-        int totalEventos = (int) eventProvider.countByProjetoId(projetoId);
-        int eventosRealizados = (int) eventProvider.countByProjetoIdAndFimUtcLessThan(projetoId, agora);
-        int eventosPendentes = (int) eventProvider.countByProjetoIdAndFimUtcGreaterThanEqual(projetoId, agora);
+        int totalEventos = (int) provedorEventoProjeto.contarPorProjetoId(projetoId);
+        int eventosRealizados = (int) provedorEventoProjeto.contarPorProjetoIdEFimUtcMenorQue(projetoId, agora);
+        int eventosPendentes = (int) provedorEventoProjeto.contarPorProjetoIdEFimUtcMaiorOuIgualA(projetoId, agora);
 
         StatusExecucaoDTO statusExecucao = new StatusExecucaoDTO(totalEventos, eventosRealizados, eventosPendentes);
 
         // Mapa de Colaboração
-        List<String> envolvidos = eventProvider.findInvolvedOrganizationNames(projetoId);
+        List<String> envolvidos = provedorEventoProjeto.buscarNomesOrganizacoesEnvolvidas(projetoId);
         MapaColaboracaoDTO mapaColaboracao = new MapaColaboracaoDTO(envolvidos);
 
         // Saúde Temporal

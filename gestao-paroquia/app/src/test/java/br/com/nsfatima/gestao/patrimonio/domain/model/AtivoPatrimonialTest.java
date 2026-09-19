@@ -15,7 +15,7 @@ class AtivoPatrimonialTest {
 
     private AtivoPatrimonial ativoDisponivel() {
         return AtivoPatrimonial.cadastrar(
-                AtivoPatrimonialId.generate(), "Projetor", CodigoTombamento.de(2026, 1), null,
+                AtivoPatrimonialId.gerar(), "Projetor", CodigoTombamento.de(2026, 1), null,
                 AtivoCategoria.ELETRONICO, LocalDate.now(), BigDecimal.valueOf(1500), UUID.randomUUID(),
                 true, UUID.randomUUID(), Instant.now());
     }

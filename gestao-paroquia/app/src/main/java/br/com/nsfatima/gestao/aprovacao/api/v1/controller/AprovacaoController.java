@@ -43,20 +43,20 @@ import java.util.UUID;
 @Tag(name = "Aprovações", description = "Endpoints para gerenciamento do fluxo de aprovação de eventos")
 public class AprovacaoController {
 
-    private final CriarSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase;
-    private final DecidirSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase;
-    private final ListarAprovacoesUseCase listAprovacoesUseCase;
+    private final CriarSolicitacaoAprovacaoUseCase criarSolicitacaoAprovacaoUseCase;
+    private final DecidirSolicitacaoAprovacaoUseCase decidirSolicitacaoAprovacaoUseCase;
+    private final ListarAprovacoesUseCase listarAprovacoesUseCase;
     private final EventoAuditPublisher eventoAuditPublisher;
 
     public AprovacaoController(
-            CriarSolicitacaoAprovacaoUseCase createSolicitacaoAprovacaoUseCase,
-            DecidirSolicitacaoAprovacaoUseCase decideSolicitacaoAprovacaoUseCase,
-            ListarAprovacoesUseCase listAprovacoesUseCase,
+            CriarSolicitacaoAprovacaoUseCase criarSolicitacaoAprovacaoUseCase,
+            DecidirSolicitacaoAprovacaoUseCase decidirSolicitacaoAprovacaoUseCase,
+            ListarAprovacoesUseCase listarAprovacoesUseCase,
             EventoAuditPublisher eventoAuditPublisher,
             EventoActorContextResolver actorContextResolver) {
-        this.createSolicitacaoAprovacaoUseCase = createSolicitacaoAprovacaoUseCase;
-        this.decideSolicitacaoAprovacaoUseCase = decideSolicitacaoAprovacaoUseCase;
-        this.listAprovacoesUseCase = listAprovacoesUseCase;
+        this.criarSolicitacaoAprovacaoUseCase = criarSolicitacaoAprovacaoUseCase;
+        this.decidirSolicitacaoAprovacaoUseCase = decidirSolicitacaoAprovacaoUseCase;
+        this.listarAprovacoesUseCase = listarAprovacoesUseCase;
         this.eventoAuditPublisher = eventoAuditPublisher;
     }
 
@@ -83,7 +83,7 @@ public class AprovacaoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public AprovacaoResponse criar(@RequestBody @Valid CriarAprovacaoRequest request) {
-        return createSolicitacaoAprovacaoUseCase.criar(
+        return criarSolicitacaoAprovacaoUseCase.criar(
                 request.eventoId(),
                 request.tipoSolicitacao());
     }
@@ -107,8 +107,8 @@ public class AprovacaoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public Page<AprovacaoResponse> listar(AprovacaoFiltroRequest filters, Pageable pageable) {
-        return listAprovacoesUseCase.execute(filters.eventoId(), filters.status(), pageable);
+    public Page<AprovacaoResponse> listar(AprovacaoFiltroRequest filtros, Pageable pageable) {
+        return listarAprovacoesUseCase.execute(filtros.eventoId(), filtros.status(), pageable);
     }
 
     /**
@@ -144,6 +144,6 @@ public class AprovacaoController {
                 "recebido",
                 Map.of("correlationId", MDC.get("correlationId") == null ? "n/a" : MDC.get("correlationId")));
 
-        return decideSolicitacaoAprovacaoUseCase.decidir(id, request);
+        return decidirSolicitacaoAprovacaoUseCase.decidir(id, request);
     }
 }

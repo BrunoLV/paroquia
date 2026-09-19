@@ -1,6 +1,6 @@
 import React from 'react';
 import {Grid, Typography} from '@mui/material';
-import ActiveProjectsProgressList from '@/contextos/painel/presentation/components/painel/ActiveProjectsProgressList';
+import ListaProgressoProjetosAtivos from '@/contextos/painel/presentation/components/painel/ListaProgressoProjetosAtivos';
 import ProjetosPorStatusCard from '@/contextos/painel/presentation/components/painel/ProjetosPorStatusCard';
 import type {DashboardMetrics} from '@/shared/domain/types/types';
 
@@ -15,7 +15,7 @@ const SecaoProjetos: React.FC<SecaoProjetosProps> = ({metrics}) => (
       <ProjetosPorStatusCard data={metrics?.projetosPorStatus} />
     </Grid>
     <Grid size={{xs: 12, md: 8}}>
-      <ActiveProjectsProgressList projects={metrics?.projetosAtivosDetalhes ?? []} />
+      <ListaProgressoProjetosAtivos projects={metrics?.projetosAtivosDetalhes ?? []} />
     </Grid>
   </>
 );

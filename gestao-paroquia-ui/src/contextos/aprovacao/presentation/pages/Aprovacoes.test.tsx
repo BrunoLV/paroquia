@@ -4,7 +4,7 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {QueryProvider} from '@/shared/presentation/context/QueryProvider';
 import Aprovacoes from './Aprovacoes';
 import {decideAprovacao, getAprovacoes} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
-import {decideAprovacaoProjeto, getAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projects';
+import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 import {MemoryRouter} from 'react-router-dom';
 import {NotificationProvider} from '@/shared/presentation/context/NotificationContext';
 
@@ -13,9 +13,9 @@ vi.mock('@/contextos/aprovacao/infrastructure/http/aprovacoes', () => ({
   decideAprovacao: jest.fn(),
 }));
 
-vi.mock('@/contextos/projeto/infrastructure/http/projects', () => ({
-  getAprovacoesProjeto: jest.fn(),
-  decideAprovacaoProjeto: jest.fn(),
+vi.mock('@/contextos/projeto/infrastructure/http/projetos', () => ({
+  obterAprovacoesProjeto: jest.fn(),
+  decidirAprovacaoProjeto: jest.fn(),
 }));
 
 vi.mock('@/shared/infrastructure/http/client', () => ({
@@ -27,8 +27,8 @@ vi.mock('@/shared/infrastructure/http/client', () => ({
 
 const mockGetAprovacoes = vi.mocked(getAprovacoes);
 const mockDecideAprovacao = vi.mocked(decideAprovacao);
-const mockGetAprovacoesProjeto = vi.mocked(getAprovacoesProjeto);
-const mockDecideAprovacaoProjeto = vi.mocked(decideAprovacaoProjeto);
+const mockObterAprovacoesProjeto = vi.mocked(obterAprovacoesProjeto);
+const mockDecidirAprovacaoProjeto = vi.mocked(decidirAprovacaoProjeto);
 
 const abrirDetalhesDaPrimeiraSolicitacao = () => {
   fireEvent.click(screen.getAllByRole('button', { name: /^Ações$/i })[0]);
@@ -302,7 +302,7 @@ describe('Aprovacoes page', () => {
       size: 10,
       number: 0,
     });
-    mockGetAprovacoesProjeto.mockResolvedValueOnce(mockAprovacoesProjeto);
+    mockObterAprovacoesProjeto.mockResolvedValueOnce(mockAprovacoesProjeto);
 
     renderPage();
 
@@ -323,8 +323,8 @@ describe('Aprovacoes page', () => {
       size: 10,
       number: 0,
     });
-    mockGetAprovacoesProjeto.mockResolvedValue(mockAprovacoesProjeto);
-    mockDecideAprovacaoProjeto.mockResolvedValueOnce({ success: true });
+    mockObterAprovacoesProjeto.mockResolvedValue(mockAprovacoesProjeto);
+    mockDecidirAprovacaoProjeto.mockResolvedValueOnce({ success: true });
 
     renderPage();
 
@@ -347,7 +347,7 @@ describe('Aprovacoes page', () => {
     fireEvent.click(approveBtn);
 
     await waitFor(() => {
-      expect(mockDecideAprovacaoProjeto).toHaveBeenCalledWith('papp-1', true, 'Aprovando criação de projeto');
+      expect(mockDecidirAprovacaoProjeto).toHaveBeenCalledWith('papp-1', true, 'Aprovando criação de projeto');
     });
   });
 });

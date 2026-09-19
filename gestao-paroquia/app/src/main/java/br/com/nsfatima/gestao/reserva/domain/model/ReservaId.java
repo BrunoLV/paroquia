@@ -14,7 +14,7 @@ public record ReservaId(UUID value) implements Serializable {
         Objects.requireNonNull(value, "O identificador da reserva não pode ser nulo.");
     }
 
-    public static ReservaId generate() {
+    public static ReservaId gerar() {
         return new ReservaId(UUID.randomUUID());
     }
 

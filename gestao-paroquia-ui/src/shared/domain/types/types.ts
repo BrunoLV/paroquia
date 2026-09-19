@@ -439,8 +439,8 @@ export interface CreateEventoPayload {
   participantes?: string[];
   adicionadoExtraJustificativa?: string | null;
   igrejaVinculoId?: string | null;
-  /** Permite ao ator ignorar/forçar a criação apesar de um conflito de agenda detectado (restrito a papéis com essa autoridade). */
-  bypassAgendaConflict?: boolean;
+  /** Permite ao ator liberar/forçar a criação apesar de um conflito de agenda detectado (restrito a papéis com essa autoridade). */
+  liberarConflitoAgenda?: boolean;
   /** IDs dos ativos patrimoniais alocados para o evento */
   ativoIds?: string[];
 }
@@ -463,11 +463,11 @@ export interface UpdateEventoPayload {
   grupoParoquialResponsavelId?: string;
   participantes?: string[];
   /** Escopo da edição quando o evento pertence a uma série recorrente: só esta ocorrência, esta e as futuras, ou toda a série. */
-  editScope?: "THIS_EVENT" | "THIS_AND_FUTURE" | "ALL_EVENTS";
+  escopoEdicao?: "SOMENTE_ESTE" | "ESTE_E_PROXIMOS" | "TODOS";
   projetoId?: string | null;
   localId?: string | null;
   igrejaVinculoId?: string | null;
-  bypassAgendaConflict?: boolean;
+  liberarConflitoAgenda?: boolean;
   /** IDs dos ativos patrimoniais alocados para o evento */
   ativoIds?: string[];
 }

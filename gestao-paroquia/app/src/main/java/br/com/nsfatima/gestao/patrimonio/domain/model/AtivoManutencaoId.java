@@ -15,7 +15,7 @@ public record AtivoManutencaoId(UUID value) implements Serializable {
         Objects.requireNonNull(value, "O identificador da manutenção não pode ser nulo.");
     }
 
-    public static AtivoManutencaoId generate() {
+    public static AtivoManutencaoId gerar() {
         return new AtivoManutencaoId(UUID.randomUUID());
     }
 

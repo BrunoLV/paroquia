@@ -49,7 +49,7 @@ class CancelarReservaUseCaseTest {
     private Reserva reserva(TipoItemReserva tipo, UUID eventoId) {
         Instant inicio = Instant.now().plus(2, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        return Reserva.criar(ReservaId.generate(), tipo, UUID.randomUUID(), intervalo, "desc",
+        return Reserva.criar(ReservaId.gerar(), tipo, UUID.randomUUID(), intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), eventoId, null, StatusReserva.CONFIRMADA, Instant.now());
     }
 

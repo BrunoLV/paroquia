@@ -15,11 +15,11 @@ import java.util.UUID;
 public class BuscarReservaPorIdUseCase {
 
     private final ReservaRepository reservaRepository;
-    private final ReservaEnricherService enricherService;
+    private final EnriquecedorReservaService enriquecedorReservaService;
 
-    public BuscarReservaPorIdUseCase(ReservaRepository reservaRepository, ReservaEnricherService enricherService) {
+    public BuscarReservaPorIdUseCase(ReservaRepository reservaRepository, EnriquecedorReservaService enriquecedorReservaService) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.enricherService = Objects.requireNonNull(enricherService, "ReservaEnricherService é obrigatório.");
+        this.enriquecedorReservaService = Objects.requireNonNull(enriquecedorReservaService, "EnriquecedorReservaService é obrigatório.");
     }
 
     @Transactional(readOnly = true)
@@ -27,6 +27,6 @@ public class BuscarReservaPorIdUseCase {
         Objects.requireNonNull(id, "ID da reserva é obrigatório.");
         Reserva reserva = reservaRepository.findById(new ReservaId(id))
                 .orElseThrow(() -> new ReservaNaoEncontradaException(id));
-        return enricherService.enriquecer(reserva);
+        return enriquecedorReservaService.enriquecer(reserva);
     }
 }

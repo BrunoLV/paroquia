@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.validation.ValidEventoDates;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.validation.ValidaDatasEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,10 +15,9 @@ import java.util.UUID;
 /**
  * Solicitação para criação de um novo evento no calendário. A criação pode ser roteada pelo fluxo
  * de aprovação em vez de ser aplicada diretamente, dependendo do papel do solicitante e da
- * organização responsável. Os dois construtores compactos legados existem para compatibilidade com
- * chamadores anteriores à introdução de {@code igrejaVinculoId} e {@code bypassAgendaConflict}.
+ * organização responsável.
  */
-@ValidEventoDates
+@ValidaDatasEvento
 @Schema(description = "Solicitação para criação de um novo evento")
 public record CriarEventoRequest(
         @Schema(description = "Título do evento", example = "Missa de Domingo")
@@ -57,8 +56,8 @@ public record CriarEventoRequest(
         @Schema(description = "Lista de IDs das organizações participantes")
         List<UUID> participantes,
 
-        @Schema(description = "Flag de bypass para liberar conflito de agenda (apenas Pároco)")
-        Boolean bypassAgendaConflict,
+        @Schema(description = "Flag para liberar conflito de agenda (apenas Pároco)")
+        Boolean liberarConflitoAgenda,
 
         @Schema(description = "Lista de IDs dos ativos patrimoniais alocados para o evento")
         List<UUID> ativoIds) {
@@ -76,16 +75,28 @@ public record CriarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             List<UUID> participantes,
-            Boolean bypassAgendaConflict) {
+            Boolean liberarConflitoAgenda) {
         this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, igrejaVinculoId,
-                inicio, fim, status, adicionadoExtraJustificativa, participantes, bypassAgendaConflict, List.of());
+                inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, List.of());
     }
 
-    /**
-     * Construtor legado sem {@code igrejaVinculoId} e sem {@code bypassAgendaConflict}, mantido para
-     * compatibilidade com chamadores anteriores à introdução desses campos. Assume que o evento não
-     * possui vínculo de igreja específico e que o conflito de agenda não deve ser ignorado.
-     */
+    public CriarEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID grupoParoquialResponsavelId,
+            UUID projetoId,
+            UUID localId,
+            UUID igrejaVinculoId,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            List<UUID> participantes) {
+        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
+                igrejaVinculoId, inicio, fim, status, adicionadoExtraJustificativa, participantes, false);
+    }
+
     public CriarEventoRequest(
             String titulo,
             String descricao,
@@ -101,30 +112,6 @@ public record CriarEventoRequest(
         this(titulo,
                 descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, null, inicio, fim, status,
                 adicionadoExtraJustificativa, participantes, false);
-
-    }
-
-    /**
-     * Construtor legado sem {@code bypassAgendaConflict}, mantido para compatibilidade com chamadores
-     * anteriores à introdução da flag de bypass. Assume que o conflito de agenda não deve ser ignorado.
-     */
-    public CriarEventoRequest(
-            String titulo,
-            String descricao,
-            CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
-            UUID projetoId,
-            UUID localId,
-            UUID igrejaVinculoId,
-            Instant inicio,
-            Instant fim,
-            EventoStatusInput status,
-            String adicionadoExtraJustificativa,
-            List<UUID> participantes) {
-        this(titulo,
-                descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
-                igrejaVinculoId, inicio, fim, status, adicionadoExtraJustificativa, participantes, false);
-
     }
 
     /**
@@ -133,18 +120,17 @@ public record CriarEventoRequest(
      *
      * @return o ID da igreja de vínculo do evento
      */
-    public UUID communityId() {
+    public UUID comunidadeId() {
         return igrejaVinculoId;
     }
 
     /**
      * Indica se o solicitante optou por ignorar a validação de conflito de agenda ao criar o evento.
-     * Esta flag só tem efeito para atores com papel de Pároco; para os demais é ignorada pela camada
-     * de domínio.
+     * Esta flag só tem efeito para atores com papel de Pároco.
      *
-     * @return {@code true} se o conflito de agenda deve ser ignorado na criação
+     * @return {@code true} se o conflito de agenda deve ser liberado na criação
      */
-    public boolean isBypassAgendaConflict() {
-        return Boolean.TRUE.equals(bypassAgendaConflict);
+    public boolean isLiberarConflitoAgenda() {
+        return Boolean.TRUE.equals(liberarConflitoAgenda);
     }
 }

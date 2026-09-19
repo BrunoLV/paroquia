@@ -14,16 +14,16 @@ import java.util.Objects;
 public class ListarReservasUseCase {
 
     private final ReservaRepository reservaRepository;
-    private final ReservaEnricherService enricherService;
+    private final EnriquecedorReservaService enriquecedorReservaService;
 
-    public ListarReservasUseCase(ReservaRepository reservaRepository, ReservaEnricherService enricherService) {
+    public ListarReservasUseCase(ReservaRepository reservaRepository, EnriquecedorReservaService enriquecedorReservaService) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.enricherService = Objects.requireNonNull(enricherService, "ReservaEnricherService é obrigatório.");
+        this.enriquecedorReservaService = Objects.requireNonNull(enriquecedorReservaService, "EnriquecedorReservaService é obrigatório.");
     }
 
     @Transactional(readOnly = true)
     public List<ReservaDetalheDto> executar(ReservaFiltro filtro) {
         List<Reserva> reservas = reservaRepository.findAll(filtro);
-        return enricherService.enriquecer(reservas);
+        return enriquecedorReservaService.enriquecer(reservas);
     }
 }

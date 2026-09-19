@@ -11,7 +11,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoAprovacaoResponse;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.CriarProjetoRequest;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResponse;
-import br.com.nsfatima.gestao.projeto.application.dto.ProjetoCreationResult;
+import br.com.nsfatima.gestao.projeto.application.dto.ResultadoCriacaoProjeto;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.projeto.domain.model.Projeto;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
@@ -155,7 +155,7 @@ public class TransicionarProjetoUseCase {
      *                                   {@code EM_ANDAMENTO}.
      */
     @Transactional
-    public ProjetoCreationResult cancelar(UUID id, boolean cancelarEventosVinculados) {
+    public ResultadoCriacaoProjeto cancelar(UUID id, boolean cancelarEventosVinculados) {
         ProjetoEventoEntity projeto = repository.findById(id)
                 .orElseThrow(() -> new ProjetoNaoEncontradoException(id));
 
@@ -186,7 +186,7 @@ public class TransicionarProjetoUseCase {
             }
             eventoRepository.saveAll(eventosVinculados);
 
-            return new ProjetoCreationResult(mapper.toResponse(projetoSalvo), null);
+            return new ResultadoCriacaoProjeto(mapper.toResponse(projetoSalvo), null);
         } else {
             // Criar uma solicitação de cancelamento pendente
             ProjetoSolicitacaoAprovacaoEntity aprovacao = new ProjetoSolicitacaoAprovacaoEntity();
@@ -201,7 +201,7 @@ public class TransicionarProjetoUseCase {
             aprovacao.setCriadoEmUtc(Instant.now());
 
             ProjetoSolicitacaoAprovacaoEntity savedAprovacao = aprovacaoRepository.save(aprovacao);
-            return new ProjetoCreationResult(null, mapper.toAprovacaoResponse(savedAprovacao));
+            return new ResultadoCriacaoProjeto(null, mapper.toAprovacaoResponse(savedAprovacao));
         }
     }
 

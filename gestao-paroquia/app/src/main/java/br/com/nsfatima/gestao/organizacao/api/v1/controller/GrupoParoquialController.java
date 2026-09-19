@@ -46,24 +46,24 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/v1/organizacoes")
-@Tag(name = "Organizations", description = "Management of parish organizations (Pastorals, Movements, etc.)")
+@Tag(name = "Organizações", description = "Gerenciamento de organizações paroquiais (Pastorais, Movimentos, etc.)")
 public class GrupoParoquialController {
 
     private final GrupoParoquialService grupoParoquialService;
-    private final ListarGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase;
-    private final ObterOrganogramaUseCase getOrganogramaUseCase;
+    private final ListarGrupoParoquialMembrosUseCase listarGrupoParoquialMembrosUseCase;
+    private final ObterOrganogramaUseCase obterOrganogramaUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final UsuarioJpaRepository usuarioRepository;
 
     public GrupoParoquialController(
             GrupoParoquialService grupoParoquialService,
-            ListarGrupoParoquialMembrosUseCase listGrupoParoquialMembrosUseCase,
-            ObterOrganogramaUseCase getOrganogramaUseCase,
+            ListarGrupoParoquialMembrosUseCase listarGrupoParoquialMembrosUseCase,
+            ObterOrganogramaUseCase obterOrganogramaUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             UsuarioJpaRepository usuarioRepository) {
         this.grupoParoquialService = grupoParoquialService;
-        this.listGrupoParoquialMembrosUseCase = listGrupoParoquialMembrosUseCase;
-        this.getOrganogramaUseCase = getOrganogramaUseCase;
+        this.listarGrupoParoquialMembrosUseCase = listarGrupoParoquialMembrosUseCase;
+        this.obterOrganogramaUseCase = obterOrganogramaUseCase;
         this.adicionarVinculoUseCase = adicionarVinculoUseCase;
         this.usuarioRepository = usuarioRepository;
     }
@@ -78,7 +78,7 @@ public class GrupoParoquialController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Create a new organization", description = "Only administrators can create organizations.")
+    @Operation(summary = "Cria uma nova organização", description = "Registra uma nova organização paroquial.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Organização criada com sucesso",
                     content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
@@ -87,7 +87,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public GrupoParoquialResponse criar(@RequestBody @Valid GrupoParoquialRequest request) {
-        GrupoParoquial org = grupoParoquialService.createOrganization(
+        GrupoParoquial org = grupoParoquialService.criar(
                 request.nome(),
                 request.tipo(),
                 request.contato(),
@@ -110,8 +110,7 @@ public class GrupoParoquialController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Update an existing organization", description = "Only administrators can update " +
-            "organizations.")
+    @Operation(summary = "Atualiza uma organização", description = "Atualiza os dados cadastrais e lideranças de uma organização.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Organização atualizada com sucesso",
                     content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
@@ -124,7 +123,7 @@ public class GrupoParoquialController {
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid GrupoParoquialRequest request) {
-        GrupoParoquial org = grupoParoquialService.updateOrganization(
+        GrupoParoquial org = grupoParoquialService.atualizar(
                 id,
                 request.nome(),
                 request.tipo(),
@@ -185,7 +184,7 @@ public class GrupoParoquialController {
         if (org.getParentId() == null) {
             return null;
         }
-        var parentOpt = grupoParoquialService.getOrganization(org.getParentId());
+        var parentOpt = grupoParoquialService.obterPorId(org.getParentId());
         if (parentOpt.isEmpty()) {
             return null;
         }
@@ -205,8 +204,7 @@ public class GrupoParoquialController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Delete an organization", description = "Only administrators can delete organizations. " +
-            "Cannot delete organizations with active dependencies.")
+    @Operation(summary = "Exclui uma organização", description = "Remove o cadastro de uma organização sem vínculos ou dependências ativas.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Organização excluída com sucesso"),
             @ApiResponse(responseCode = "400", description = "Não é possível excluir organização com dependências ativas"),
@@ -217,7 +215,7 @@ public class GrupoParoquialController {
     public void excluir(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
-        grupoParoquialService.deleteOrganization(id);
+        grupoParoquialService.excluir(id);
     }
 
     /**
@@ -229,7 +227,7 @@ public class GrupoParoquialController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get organization details")
+    @Operation(summary = "Obtém detalhes de uma organização", description = "Retorna os dados completos de uma organização pelo seu identificador.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Organização encontrada com sucesso",
                     content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
@@ -240,7 +238,7 @@ public class GrupoParoquialController {
     public ResponseEntity<GrupoParoquialResponse> obter(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
-        return grupoParoquialService.getOrganization(id)
+        return grupoParoquialService.obterPorId(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -254,7 +252,7 @@ public class GrupoParoquialController {
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "List all organizations")
+    @Operation(summary = "Lista todas as organizações", description = "Retorna a listagem de todas as organizações cadastradas na paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de organizações retornada com sucesso",
                     content = @Content(array = @ArraySchema(
@@ -263,7 +261,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public List<GrupoParoquialResponse> listar() {
-        return grupoParoquialService.listOrganizations().stream()
+        return grupoParoquialService.listar().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -289,7 +287,7 @@ public class GrupoParoquialController {
     public List<GrupoParoquialMembroResponse> listarMembros(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
-        return listGrupoParoquialMembrosUseCase.execute(id);
+        return listarGrupoParoquialMembrosUseCase.execute(id);
     }
 
     /**
@@ -307,7 +305,7 @@ public class GrupoParoquialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public OrganogramaNodeResponse obterOrganograma() {
-        return getOrganogramaUseCase.execute();
+        return obterOrganogramaUseCase.execute();
     }
 
     private GrupoParoquialResponse toResponse(GrupoParoquial domain) {

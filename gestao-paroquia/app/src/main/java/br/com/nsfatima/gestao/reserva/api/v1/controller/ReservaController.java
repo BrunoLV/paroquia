@@ -27,7 +27,7 @@ import br.com.nsfatima.gestao.reserva.application.usecase.ObterMetricasReservasU
 import br.com.nsfatima.gestao.reserva.application.usecase.RegistrarDevolucaoAtivoUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.RegistrarRetiradaAtivoUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.RejeitarReservaUseCase;
-import br.com.nsfatima.gestao.reserva.application.usecase.ReservaEnricherService;
+import br.com.nsfatima.gestao.reserva.application.usecase.EnriquecedorReservaService;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.StatusReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
@@ -44,6 +44,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -82,7 +83,7 @@ public class ReservaController {
     private final BuscarReservaPorIdUseCase buscarReservaPorIdUseCase;
     private final ObterDisponibilidadeItemUseCase obterDisponibilidadeItemUseCase;
     private final ObterMetricasReservasUseCase obterMetricasReservasUseCase;
-    private final ReservaEnricherService enricherService;
+    private final EnriquecedorReservaService enriquecedorReservaService;
     private final ReservaSecurityAdapter securityAdapter;
 
     public ReservaController(
@@ -97,7 +98,7 @@ public class ReservaController {
             BuscarReservaPorIdUseCase buscarReservaPorIdUseCase,
             ObterDisponibilidadeItemUseCase obterDisponibilidadeItemUseCase,
             ObterMetricasReservasUseCase obterMetricasReservasUseCase,
-            ReservaEnricherService enricherService,
+            EnriquecedorReservaService enriquecedorReservaService,
             ReservaSecurityAdapter securityAdapter
     ) {
         this.criarReservaUseCase = criarReservaUseCase;
@@ -111,7 +112,7 @@ public class ReservaController {
         this.buscarReservaPorIdUseCase = buscarReservaPorIdUseCase;
         this.obterDisponibilidadeItemUseCase = obterDisponibilidadeItemUseCase;
         this.obterMetricasReservasUseCase = obterMetricasReservasUseCase;
-        this.enricherService = enricherService;
+        this.enriquecedorReservaService = enriquecedorReservaService;
         this.securityAdapter = securityAdapter;
     }
 
@@ -142,7 +143,7 @@ public class ReservaController {
         );
 
         Reserva criada = criarReservaUseCase.executar(comando, ator);
-        ReservaDetalheDto enriquecida = enricherService.enriquecer(criada);
+        ReservaDetalheDto enriquecida = enriquecedorReservaService.enriquecer(criada);
         return ReservaResponse.de(enriquecida);
     }
 
@@ -170,7 +171,7 @@ public class ReservaController {
         );
 
         ResultadoRecorrencia resultado = criarReservaRecorrenteUseCase.executar(comando, ator);
-        List<ReservaDetalheDto> dtos = enricherService.enriquecer(resultado.reservasCriadas());
+        List<ReservaDetalheDto> dtos = enriquecedorReservaService.enriquecer(resultado.reservasCriadas());
         List<ReservaResponse> salvas = dtos.stream().map(ReservaResponse::de).toList();
         List<ConflitoDetalheResponse> conflitos = resultado.conflitosIdentificados().stream()
                 .map(ConflitoDetalheResponse::de)
@@ -235,7 +236,7 @@ public class ReservaController {
     public ReservaResponse aprovar(@Parameter(description = "ID único da reserva") @PathVariable UUID id) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva aprovada = aprovarReservaUseCase.executar(id, ator);
-        return ReservaResponse.de(enricherService.enriquecer(aprovada));
+        return ReservaResponse.de(enriquecedorReservaService.enriquecer(aprovada));
     }
 
     @PatchMapping("/{id}/rejeitar")
@@ -253,7 +254,7 @@ public class ReservaController {
     ) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva rejeitada = rejeitarReservaUseCase.executar(id, request.motivo(), ator);
-        return ReservaResponse.de(enricherService.enriquecer(rejeitada));
+        return ReservaResponse.de(enriquecedorReservaService.enriquecer(rejeitada));
     }
 
     @PatchMapping("/{id}/cancelar")
@@ -271,7 +272,7 @@ public class ReservaController {
     ) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva cancelada = cancelarReservaUseCase.executar(id, request.motivo(), request.itemNome(), ator);
-        return ReservaResponse.de(enricherService.enriquecer(cancelada));
+        return ReservaResponse.de(enriquecedorReservaService.enriquecer(cancelada));
     }
 
     @PatchMapping("/{id}/retirar")
@@ -287,7 +288,7 @@ public class ReservaController {
             @Parameter(description = "ID único da reserva de ativo") @PathVariable UUID id) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva retirada = registrarRetiradaAtivoUseCase.executar(id, ator);
-        return ReservaResponse.de(enricherService.enriquecer(retirada));
+        return ReservaResponse.de(enriquecedorReservaService.enriquecer(retirada));
     }
 
     @PatchMapping("/{id}/devolver")
@@ -305,7 +306,7 @@ public class ReservaController {
     ) {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva devolvida = registrarDevolucaoAtivoUseCase.executar(id, request.checkAvarias(), ator);
-        return ReservaResponse.de(enricherService.enriquecer(devolvida));
+        return ReservaResponse.de(enriquecedorReservaService.enriquecer(devolvida));
     }
 
     @GetMapping("/disponibilidade")

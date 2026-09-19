@@ -25,7 +25,7 @@ import br.com.nsfatima.gestao.reserva.application.usecase.ObterMetricasReservasU
 import br.com.nsfatima.gestao.reserva.application.usecase.RegistrarDevolucaoAtivoUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.RegistrarRetiradaAtivoUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.RejeitarReservaUseCase;
-import br.com.nsfatima.gestao.reserva.application.usecase.ReservaEnricherService;
+import br.com.nsfatima.gestao.reserva.application.usecase.EnriquecedorReservaService;
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
@@ -65,7 +65,7 @@ class ReservaControllerTest {
     @Mock private BuscarReservaPorIdUseCase buscarReservaPorIdUseCase;
     @Mock private ObterDisponibilidadeItemUseCase obterDisponibilidadeItemUseCase;
     @Mock private ObterMetricasReservasUseCase obterMetricasReservasUseCase;
-    @Mock private ReservaEnricherService enricherService;
+    @Mock private EnriquecedorReservaService enriquecedorReservaService;
     @Mock private ReservaSecurityAdapter securityAdapter;
 
     private ReservaController controller() {
@@ -73,7 +73,7 @@ class ReservaControllerTest {
                 criarReservaUseCase, criarReservaRecorrenteUseCase, aprovarReservaUseCase, rejeitarReservaUseCase,
                 cancelarReservaUseCase, registrarRetiradaAtivoUseCase, registrarDevolucaoAtivoUseCase,
                 listarReservasUseCase, buscarReservaPorIdUseCase, obterDisponibilidadeItemUseCase,
-                obterMetricasReservasUseCase, enricherService, securityAdapter);
+                obterMetricasReservasUseCase, enriquecedorReservaService, securityAdapter);
     }
 
     private UsuarioActor ator() {
@@ -83,7 +83,7 @@ class ReservaControllerTest {
     private Reserva reserva() {
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        return Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, UUID.randomUUID(), intervalo, "desc",
+        return Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, UUID.randomUUID(), intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), null, null, StatusReserva.PENDENTE, Instant.now());
     }
 
@@ -104,7 +104,7 @@ class ReservaControllerTest {
         Reserva criada = reserva();
         when(criarReservaUseCase.executar(any(), eq(ator))).thenReturn(criada);
         ReservaDetalheDto dto = dtoDe(criada);
-        when(enricherService.enriquecer(criada)).thenReturn(dto);
+        when(enriquecedorReservaService.enriquecer(criada)).thenReturn(dto);
 
         CriarReservaRequest request = new CriarReservaRequest(
                 TipoItemReserva.LOCAL, UUID.randomUUID(), "Item", Instant.now().plus(1, ChronoUnit.HOURS),
@@ -124,7 +124,7 @@ class ReservaControllerTest {
         UUID grupoId = UUID.randomUUID();
         ResultadoRecorrencia resultado = new ResultadoRecorrencia(grupoId, List.of(criada), List.of());
         when(criarReservaRecorrenteUseCase.executar(any(), eq(ator))).thenReturn(resultado);
-        when(enricherService.enriquecer(List.of(criada))).thenReturn(List.of(dtoDe(criada)));
+        when(enriquecedorReservaService.enriquecer(List.of(criada))).thenReturn(List.of(dtoDe(criada)));
 
         CriarReservaRecorrenteRequest request = new CriarReservaRecorrenteRequest(
                 TipoItemReserva.LOCAL, UUID.randomUUID(), "Item", 15, "desc", UUID.randomUUID(),
@@ -170,7 +170,7 @@ class ReservaControllerTest {
         Reserva r = reserva();
         UUID id = r.getId().value();
         when(aprovarReservaUseCase.executar(id, ator)).thenReturn(r);
-        when(enricherService.enriquecer(r)).thenReturn(dtoDe(r));
+        when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
 
         ReservaResponse response = controller().aprovar(id);
 
@@ -185,7 +185,7 @@ class ReservaControllerTest {
         Reserva r = reserva();
         UUID id = r.getId().value();
         when(rejeitarReservaUseCase.executar(id, "sem vaga", ator)).thenReturn(r);
-        when(enricherService.enriquecer(r)).thenReturn(dtoDe(r));
+        when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
 
         ReservaResponse response = controller().rejeitar(id, new RejeitarReservaRequest("sem vaga"));
 
@@ -201,7 +201,7 @@ class ReservaControllerTest {
         Reserva r = reserva();
         UUID id = r.getId().value();
         when(cancelarReservaUseCase.executar(id, "motivo", "Salão", ator)).thenReturn(r);
-        when(enricherService.enriquecer(r)).thenReturn(dtoDe(r));
+        when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
 
         ReservaResponse response = controller().cancelar(id, new CancelarReservaRequest("motivo", "Salão"));
 
@@ -216,7 +216,7 @@ class ReservaControllerTest {
         Reserva r = reserva();
         UUID id = r.getId().value();
         when(registrarRetiradaAtivoUseCase.executar(id, ator)).thenReturn(r);
-        when(enricherService.enriquecer(r)).thenReturn(dtoDe(r));
+        when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
 
         ReservaResponse response = controller().registrarRetirada(id);
 
@@ -231,7 +231,7 @@ class ReservaControllerTest {
         Reserva r = reserva();
         UUID id = r.getId().value();
         when(registrarDevolucaoAtivoUseCase.executar(id, "sem avarias", ator)).thenReturn(r);
-        when(enricherService.enriquecer(r)).thenReturn(dtoDe(r));
+        when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
 
         ReservaResponse response = controller().registrarDevolucao(id, new RegistrarDevolucaoRequest("sem avarias"));
 

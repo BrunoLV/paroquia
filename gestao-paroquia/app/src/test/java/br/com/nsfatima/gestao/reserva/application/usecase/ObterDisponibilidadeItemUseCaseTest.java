@@ -55,9 +55,9 @@ class ObterDisponibilidadeItemUseCaseTest {
         UUID itemId = UUID.randomUUID();
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        Reserva ativa = Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, itemId, intervalo, "desc",
+        Reserva ativa = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, itemId, intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), null, null, StatusReserva.CONFIRMADA, Instant.now());
-        Reserva cancelada = Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, itemId, intervalo, "desc2",
+        Reserva cancelada = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, itemId, intervalo, "desc2",
                 UUID.randomUUID(), UUID.randomUUID(), null, null, StatusReserva.PENDENTE, Instant.now());
         cancelada.cancelar(UUID.randomUUID(), "motivo qualquer suficientemente longo", false, Instant.now());
 

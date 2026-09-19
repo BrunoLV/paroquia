@@ -114,7 +114,7 @@ public class AtualizarMembroUseCase {
      * @throws IllegalArgumentException se não houver vínculo com o {@code id} informado
      */
     @Transactional
-    public void toggleAtivo(UUID id, boolean ativo, String actor) {
+    public void alternarAtivo(UUID id, boolean ativo, String actor) {
         MembroGrupoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado: " + id));
         MembroGrupo membro = membroGrupoMapper.toDomain(entity);

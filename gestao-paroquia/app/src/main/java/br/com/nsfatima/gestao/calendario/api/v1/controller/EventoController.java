@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoAprovacaoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoFiltroRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.ResultadoOperacaoEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.CancelarEventoUseCase;
@@ -51,10 +51,10 @@ import java.util.UUID;
 @PreAuthorize("isAuthenticated()")
 public class EventoController {
 
-    private final CriarEventoUseCase createEventoUseCase;
-    private final ListarEventosUseCase listEventosUseCase;
-    private final AtualizarEventoUseCase updateEventoUseCase;
-    private final CancelarEventoUseCase cancelEventoUseCase;
+    private final CriarEventoUseCase criarEventoUseCase;
+    private final ListarEventosUseCase listarEventosUseCase;
+    private final AtualizarEventoUseCase atualizarEventoUseCase;
+    private final CancelarEventoUseCase cancelarEventoUseCase;
     private final EventoService eventoService;
     private final EventoMapper eventoMapper;
     private final EventoActorContextResolver actorContextResolver;
@@ -62,19 +62,19 @@ public class EventoController {
     private final CadastroEventoMetricsPublisher cadastroEventoMetricsPublisher;
 
     public EventoController(
-            CriarEventoUseCase createEventoUseCase,
-            ListarEventosUseCase listEventosUseCase,
-            AtualizarEventoUseCase updateEventoUseCase,
-            CancelarEventoUseCase cancelEventoUseCase,
+            CriarEventoUseCase criarEventoUseCase,
+            ListarEventosUseCase listarEventosUseCase,
+            AtualizarEventoUseCase atualizarEventoUseCase,
+            CancelarEventoUseCase cancelarEventoUseCase,
             EventoService eventoService,
             EventoMapper eventoMapper,
             EventoActorContextResolver actorContextResolver,
             EventoAuditPublisher eventoAuditPublisher,
             CadastroEventoMetricsPublisher cadastroEventoMetricsPublisher) {
-        this.createEventoUseCase = createEventoUseCase;
-        this.listEventosUseCase = listEventosUseCase;
-        this.updateEventoUseCase = updateEventoUseCase;
-        this.cancelEventoUseCase = cancelEventoUseCase;
+        this.criarEventoUseCase = criarEventoUseCase;
+        this.listarEventosUseCase = listarEventosUseCase;
+        this.atualizarEventoUseCase = atualizarEventoUseCase;
+        this.cancelarEventoUseCase = cancelarEventoUseCase;
         this.eventoService = eventoService;
         this.eventoMapper = eventoMapper;
         this.actorContextResolver = actorContextResolver;
@@ -104,13 +104,13 @@ public class EventoController {
             @ApiResponse(responseCode = "409", description = "Conflito de idempotência")
     })
     @SuppressWarnings("null")
-    public ResponseEntity<Object> create(
+    public ResponseEntity<Object> criar(
             @Parameter(description = "Chave de idempotência para garantir que a operação não seja repetida " +
                     "acidentalmente")
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @RequestBody @Valid CriarEventoRequest request) {
-        EventoOperationResult result = createEventoUseCase.execute(idempotencyKey, request);
-        return ResponseEntity.status(result.status()).body(result.body());
+        ResultadoOperacaoEvento result = criarEventoUseCase.execute(idempotencyKey, request);
+        return ResponseEntity.status(result.status()).body(result.corpo());
     }
 
     /**
@@ -120,7 +120,7 @@ public class EventoController {
      * Exemplo de uso:
      * {@code
      * EventoFiltroRequest filters = new EventoFiltroRequest(null, null, "LITURGICO", null);
-     * Page<EventoResponse> page = controller.list(filters, PageRequest.of(0, 10));
+     * Page<EventoResponse> page = controller.listar(filters, PageRequest.of(0, 10));
      * }
      */
     @GetMapping
@@ -131,9 +131,9 @@ public class EventoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public Page<EventoResponse> list(EventoFiltroRequest filters, Pageable pageable) {
+    public Page<EventoResponse> listar(EventoFiltroRequest filters, Pageable pageable) {
         long startedAt = System.nanoTime();
-        Page<EventoResponse> response = listEventosUseCase.execute(filters, pageable);
+        Page<EventoResponse> response = listarEventosUseCase.execute(filters, pageable);
         cadastroEventoMetricsPublisher.publishCalendarQueryLatency(
                 "/api/v1/eventos",
                 Duration.ofNanos(System.nanoTime() - startedAt));
@@ -147,7 +147,7 @@ public class EventoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * EventoResponse response = controller.get(eventoId);
+     * EventoResponse response = controller.obter(eventoId);
      * }
      */
     @GetMapping("/{eventoId}")
@@ -157,7 +157,7 @@ public class EventoController {
             @ApiResponse(responseCode = "200", description = "Evento encontrado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
-    public EventoResponse get(@Parameter(description = "ID único do evento") @PathVariable UUID eventoId) {
+    public EventoResponse obter(@Parameter(description = "ID único do evento") @PathVariable UUID eventoId) {
         long startedAt = System.nanoTime();
         var actorContext = actorContextResolver.resolveRequired();
 
@@ -179,7 +179,7 @@ public class EventoController {
      * Exemplo de uso:
      * {@code
      * AtualizarEventoRequest request = new AtualizarEventoRequest("Nova Descrição", null, ...);
-     * ResponseEntity<Object> response = controller.patch(eventoId, request);
+     * ResponseEntity<Object> response = controller.atualizarParcial(eventoId, request);
      * }
      */
     @PatchMapping("/{eventoId}")
@@ -193,12 +193,12 @@ public class EventoController {
     })
     @Transactional
     @SuppressWarnings("null")
-    public ResponseEntity<Object> patch(
+    public ResponseEntity<Object> atualizarParcial(
             @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
             @RequestBody @Valid AtualizarEventoRequest request) {
         try {
-            EventoOperationResult result = updateEventoUseCase.execute(eventoId, request);
-            return ResponseEntity.status(result.status()).body(result.body());
+            ResultadoOperacaoEvento result = atualizarEventoUseCase.execute(eventoId, request);
+            return ResponseEntity.status(result.status()).body(result.corpo());
 
         } catch (RuntimeException ex) {
             String actor = resolverAtor();
@@ -229,8 +229,8 @@ public class EventoController {
     public ResponseEntity<Object> cancelar(
             @Parameter(description = "ID único do evento") @PathVariable UUID eventoId,
             @RequestBody @Valid CancelarEventoRequest request) {
-        EventoOperationResult result = cancelEventoUseCase.execute(eventoId, request);
-        return ResponseEntity.status(result.status()).body(result.body());
+        ResultadoOperacaoEvento result = cancelarEventoUseCase.execute(eventoId, request);
+        return ResponseEntity.status(result.status()).body(result.corpo());
     }
 
     private String resolverAtor() {

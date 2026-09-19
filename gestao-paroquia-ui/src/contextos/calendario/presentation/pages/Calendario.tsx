@@ -7,15 +7,15 @@ import EventIcon from '@mui/icons-material/Event';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import CadastroEventoModal from '@/contextos/calendario/presentation/components/CadastroEventoModal';
 import CancelarEventoDialog from '@/contextos/calendario/presentation/components/CancelarEventoDialog';
-import EditScopeDialog from '@/contextos/calendario/presentation/components/EditScopeDialog';
-import { ExportCalendarDialog } from '@/contextos/calendario/presentation/components/ExportCalendarDialog';
+import DialogEscopoEdicao from '@/contextos/calendario/presentation/components/DialogEscopoEdicao';
+import { DialogExportarCalendario } from '@/contextos/calendario/presentation/components/DialogExportarCalendario';
 import { EventoConflitoRecursoDialog } from '@/contextos/calendario/presentation/components/EventoConflitoRecursoDialog';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-import CalendarToolbar from '@/contextos/calendario/presentation/components/calendario/CalendarToolbar';
-import CalendarMonthGrid from '@/contextos/calendario/presentation/components/calendario/CalendarMonthGrid';
-import CalendarAgendaList from '@/contextos/calendario/presentation/components/calendario/CalendarAgendaList';
-import EventoDetailsDialog from '@/contextos/calendario/presentation/components/calendario/EventoDetailsDialog';
+import BarraFerramentasCalendario from '@/contextos/calendario/presentation/components/calendario/BarraFerramentasCalendario';
+import GradeMesCalendario from '@/contextos/calendario/presentation/components/calendario/GradeMesCalendario';
+import AgendaListaCalendario from '@/contextos/calendario/presentation/components/calendario/AgendaListaCalendario';
+import DialogDetalhesEvento from '@/contextos/calendario/presentation/components/calendario/DialogDetalhesEvento';
 import SolenidadesDialog from '@/contextos/calendario/presentation/components/calendario/SolenidadesDialog';
 import { useCalendarGrid } from '@/contextos/calendario/presentation/hooks/useCalendarGrid';
 import { useCalendarFilterState } from '@/contextos/calendario/presentation/hooks/useCalendarFilterState';
@@ -65,7 +65,7 @@ const Calendario = () => {
         }
       />
 
-      <CalendarToolbar
+      <BarraFerramentasCalendario
         currentMonth={grid.currentMonth}
         currentYear={grid.currentYear}
         onPrevMonth={grid.handlePrevMonth}
@@ -84,17 +84,17 @@ const Calendario = () => {
       />
 
       {grid.viewMode === 'month' ? (
-        <CalendarMonthGrid
+        <GradeMesCalendario
           calendarDays={grid.calendarDays}
           getEventsForDay={data.getEventsForDay}
           onDayClick={crud.handleOpenCreate}
           onEventClick={crud.handleOpenDetails}
         />
       ) : (
-        <CalendarAgendaList agendaEvents={data.agendaEvents} onEventClick={crud.handleOpenDetails} getOrgName={data.getOrgName} />
+        <AgendaListaCalendario agendaEvents={data.agendaEvents} onEventClick={crud.handleOpenDetails} getOrgName={data.getOrgName} />
       )}
 
-      <EventoDetailsDialog
+      <DialogDetalhesEvento
         open={crud.isDetailsOpen}
         onClose={() => crud.setIsDetailsOpen(false)}
         event={crud.selectedEvent}
@@ -131,9 +131,9 @@ const Calendario = () => {
         eventTitle={crud.cancellingEvent?.titulo}
       />
 
-      <EditScopeDialog open={crud.isEditScopeOpen} onClose={() => crud.setIsEditScopeOpen(false)} onSelect={crud.handleScopeSelect} />
+      <DialogEscopoEdicao open={crud.isEditScopeOpen} onClose={() => crud.setIsEditScopeOpen(false)} onSelect={crud.handleScopeSelect} />
 
-      <ExportCalendarDialog open={isExportOpen} onClose={() => setIsExportOpen(false)} organizations={data.organizations} />
+      <DialogExportarCalendario open={isExportOpen} onClose={() => setIsExportOpen(false)} organizations={data.organizations} />
 
       <EventoConflitoRecursoDialog
         open={crud.conflitoRecursoModalOpen}

@@ -181,7 +181,7 @@ class MembroUseCaseTest {
         UUID id = entity.getId();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        updateUseCase.toggleAtivo(id, false, "admin");
+        updateUseCase.alternarAtivo(id, false, "admin");
 
         assertFalse(entity.isAtivo());
         verify(repository).save(entity);

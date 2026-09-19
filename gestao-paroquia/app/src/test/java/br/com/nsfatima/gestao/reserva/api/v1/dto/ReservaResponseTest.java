@@ -60,7 +60,7 @@ class ReservaResponseTest {
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 10);
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(), TipoItemReserva.ATIVO, UUID.randomUUID(), intervalo, "Som",
+                ReservaId.gerar(), TipoItemReserva.ATIVO, UUID.randomUUID(), intervalo, "Som",
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), null, StatusReserva.PENDENTE, Instant.now());
 
         ReservaResponse response = ReservaResponse.de(reserva);

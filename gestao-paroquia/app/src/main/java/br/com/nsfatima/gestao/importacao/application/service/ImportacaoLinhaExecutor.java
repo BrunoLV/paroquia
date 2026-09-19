@@ -190,7 +190,7 @@ public class ImportacaoLinhaExecutor {
                         ? resolvePastoralOficialId(
                         tipoOrg, data.get("pastoralOficialId"), data.get(KEY_NOME))
                         : null;
-        grupoParoquialService.createOrganization(
+        grupoParoquialService.criar(
                 data.get(KEY_NOME),
                 tipoOrg,
                 data.get("contato"),

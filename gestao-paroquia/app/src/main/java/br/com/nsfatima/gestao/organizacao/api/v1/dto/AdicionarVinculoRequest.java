@@ -23,7 +23,7 @@ public record AdicionarVinculoRequest(
      *
      * @return o identificador da igreja/comunidade de contexto
      */
-    public UUID communityId() {
+    public UUID comunidadeId() {
         return igrejaVinculoId;
     }
 }

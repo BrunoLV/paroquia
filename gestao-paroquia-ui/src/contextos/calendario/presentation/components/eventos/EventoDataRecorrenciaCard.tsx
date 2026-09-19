@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Card, CardContent, Collapse, FormControlLabel, Grid, Stack, Switch, TextField, Typography } from '@mui/material';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import { Controller, type UseFormReturn } from 'react-hook-form';
-import RecurrenceForm from '@/contextos/calendario/presentation/components/RecurrenceForm';
+import FormularioRecorrencia from '@/contextos/calendario/presentation/components/FormularioRecorrencia';
 import { EventoFormInput } from '@/contextos/calendario/presentation/schemas/eventoSchema';
 
 interface EventoDataRecorrenciaCardProps {
@@ -60,7 +60,7 @@ const EventoDataRecorrenciaCard: React.FC<EventoDataRecorrenciaCardProps> = ({ f
                           <Controller
                             name="recurrenceRule"
                             control={control}
-                            render={({ field: ruleField }) => <RecurrenceForm rule={ruleField.value} onChange={ruleField.onChange} disabled={disabled} />}
+                            render={({ field: ruleField }) => <FormularioRecorrencia rule={ruleField.value} onChange={ruleField.onChange} disabled={disabled} />}
                           />
                         </Box>
                       </Collapse>
@@ -73,7 +73,7 @@ const EventoDataRecorrenciaCard: React.FC<EventoDataRecorrenciaCardProps> = ({ f
                 <Grid size={{ xs: 12 }}>
                   <Box sx={{ pt: 1, borderTop: '1px dashed', borderColor: 'divider' }}>
                     <Controller
-                      name="bypassAgendaConflict"
+                      name="liberarConflitoAgenda"
                       control={control}
                       render={({ field }) => (
                         <FormControlLabel

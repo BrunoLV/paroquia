@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/v1/unidades-territoriais")
-@Tag(name = "Territorial Units", description = "Management of territorial units (Clergy, Main Church, Communities)")
+@Tag(name = "Unidades Territoriais", description = "Gerenciamento de unidades territoriais (Clero, Matriz, Comunidades)")
 public class UnidadeTerritorialController {
 
     private final UnidadeTerritorialService service;
@@ -46,7 +46,7 @@ public class UnidadeTerritorialController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "List all territorial units")
+    @Operation(summary = "Lista todas as unidades territoriais", description = "Retorna a lista de todas as unidades territoriais cadastradas.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de unidades territoriais retornada com sucesso",
                     content = @Content(array = @ArraySchema(
@@ -55,14 +55,14 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public List<UnidadeTerritorialResponse> listar() {
-        return service.listAll().stream()
+        return service.listar().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get territorial unit details")
+    @Operation(summary = "Obtém detalhes de uma unidade territorial", description = "Retorna os dados cadastrais da unidade territorial pelo identificador.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Unidade territorial encontrada com sucesso",
                     content = @Content(schema = @Schema(implementation = UnidadeTerritorialResponse.class))),
@@ -73,7 +73,7 @@ public class UnidadeTerritorialController {
     public ResponseEntity<UnidadeTerritorialResponse> obter(
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id) {
-        return service.findById(id)
+        return service.obterPorId(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -82,7 +82,7 @@ public class UnidadeTerritorialController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Create a new territorial unit")
+    @Operation(summary = "Cria uma nova unidade territorial", description = "Registra uma nova unidade territorial na paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Unidade territorial criada com sucesso",
                     content = @Content(schema = @Schema(implementation = UnidadeTerritorialResponse.class))),
@@ -91,7 +91,7 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public UnidadeTerritorialResponse criar(@RequestBody @Valid UnidadeTerritorialRequest request) {
-        UnidadeTerritorialEntity entity = service.create(
+        UnidadeTerritorialEntity entity = service.criar(
                 request.nome(),
                 request.tipo(),
                 request.contato(),
@@ -103,7 +103,7 @@ public class UnidadeTerritorialController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Update an existing territorial unit")
+    @Operation(summary = "Atualiza uma unidade territorial", description = "Atualiza os dados de uma unidade territorial existente.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Unidade territorial atualizada com sucesso",
                     content = @Content(schema = @Schema(implementation = UnidadeTerritorialResponse.class))),
@@ -116,7 +116,7 @@ public class UnidadeTerritorialController {
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid UnidadeTerritorialRequest request) {
-        UnidadeTerritorialEntity entity = service.update(
+        UnidadeTerritorialEntity entity = service.atualizar(
                 id,
                 request.nome(),
                 request.tipo(),
@@ -130,7 +130,7 @@ public class UnidadeTerritorialController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Delete a territorial unit")
+    @Operation(summary = "Exclui uma unidade territorial", description = "Remove uma unidade territorial sem dependências.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Unidade territorial excluída com sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
@@ -140,7 +140,7 @@ public class UnidadeTerritorialController {
     public void excluir(
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id) {
-        service.delete(id);
+        service.excluir(id);
     }
 
     private UnidadeTerritorialResponse toResponse(UnidadeTerritorialEntity entity) {

@@ -37,8 +37,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/v1/pastorais-oficiais")
-@Tag(name = "Official Pastorals and Movements Catalog", description = "Management of official catalog of Pastorals " +
-        "and Movements")
+@Tag(name = "Catálogo Oficial de Pastorais e Movimentos", description = "Gerenciamento do catálogo oficial de Pastorais e Movimentos")
 public class PastoralMovimentoOficialController {
 
     private final PastoralMovimentoOficialService service;
@@ -56,8 +55,7 @@ public class PastoralMovimentoOficialController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new official pastoral/movement", description = "Only admins can manage the " +
-            "official catalog.")
+    @Operation(summary = "Cria uma nova pastoral ou movimento oficial", description = "Registra um novo item no catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Item criado com sucesso",
                     content = @Content(schema = @Schema(implementation = PastoralMovimentoOficialResponse.class))),
@@ -66,7 +64,7 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public PastoralMovimentoOficialResponse criar(@RequestBody @Valid PastoralMovimentoOficialRequest request) {
-        PastoralMovimentoOficial oficial = service.create(request.nome(), request.tipo());
+        PastoralMovimentoOficial oficial = service.criar(request.nome(), request.tipo());
         return toResponse(oficial);
     }
 
@@ -79,8 +77,7 @@ public class PastoralMovimentoOficialController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update an existing official pastoral/movement", description = "Only admins can manage the " +
-            "official catalog.")
+    @Operation(summary = "Atualiza uma pastoral ou movimento oficial", description = "Altera os dados de um item no catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Item atualizado com sucesso",
                     content = @Content(schema = @Schema(implementation = PastoralMovimentoOficialResponse.class))),
@@ -94,7 +91,7 @@ public class PastoralMovimentoOficialController {
             @PathVariable UUID id,
             @RequestBody @Valid PastoralMovimentoOficialRequest request) {
 
-        PastoralMovimentoOficial oficial = service.update(id, request.nome(), request.tipo());
+        PastoralMovimentoOficial oficial = service.atualizar(id, request.nome(), request.tipo());
         return toResponse(oficial);
     }
 
@@ -106,8 +103,7 @@ public class PastoralMovimentoOficialController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete an official pastoral/movement", description = "Only admins can manage the official " +
-            "catalog.")
+    @Operation(summary = "Exclui uma pastoral ou movimento oficial", description = "Remove um item do catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Item excluído com sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
@@ -117,7 +113,7 @@ public class PastoralMovimentoOficialController {
     public void excluir(
             @Parameter(description = "Identificador único do item oficial", required = true)
             @PathVariable UUID id) {
-        service.delete(id);
+        service.excluir(id);
     }
 
     /**
@@ -129,7 +125,7 @@ public class PastoralMovimentoOficialController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get official pastoral/movement by ID")
+    @Operation(summary = "Obtém detalhes de uma pastoral ou movimento oficial", description = "Retorna os dados cadastrais pelo identificador.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Item encontrado com sucesso",
                     content = @Content(schema = @Schema(implementation = PastoralMovimentoOficialResponse.class))),
@@ -140,7 +136,7 @@ public class PastoralMovimentoOficialController {
     public PastoralMovimentoOficialResponse obter(
             @Parameter(description = "Identificador único do item oficial", required = true)
             @PathVariable UUID id) {
-        PastoralMovimentoOficial oficial = service.get(id)
+        PastoralMovimentoOficial oficial = service.obterPorId(id)
                 .orElseThrow(() -> new PastoralMovimentoOficialNegocioException(
                         "Pastoral ou Movimento Oficial não encontrado com ID: " + id));
         return toResponse(oficial);
@@ -153,7 +149,7 @@ public class PastoralMovimentoOficialController {
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "List all official pastorals/movements")
+    @Operation(summary = "Lista todas as pastorais e movimentos oficiais", description = "Retorna todos os itens cadastrados no catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
                     content = @Content(array = @ArraySchema(
@@ -162,7 +158,7 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public List<PastoralMovimentoOficialResponse> listar() {
-        return service.list().stream()
+        return service.listar().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }

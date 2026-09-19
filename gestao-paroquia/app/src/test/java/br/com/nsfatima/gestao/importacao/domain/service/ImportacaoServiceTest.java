@@ -8,7 +8,7 @@ import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultado
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
-import br.com.nsfatima.gestao.importacao.application.service.ImportacaoFileParser;
+import br.com.nsfatima.gestao.importacao.application.service.LeitorArquivoImportacao;
 import br.com.nsfatima.gestao.importacao.application.service.ImportacaoService;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
@@ -82,7 +82,7 @@ class ImportacaoServiceTest {
                 grupoParoquialJpaRepository,
                 unidadeTerritorialJpaRepository,
                 pastoralOficialRepository,
-                new ImportacaoFileParser(),
+                new LeitorArquivoImportacao(),
                 null,
                 null,
                 null,
@@ -193,7 +193,7 @@ class ImportacaoServiceTest {
         );
         int countOrg = importacaoService.confirmarImportacao("GRUPO_PAROQUIAL", List.of(orgMap), "admin");
         assertEquals(1, countOrg);
-        verify(grupoParoquialService).createOrganization(eq("Pastoral da Música"),
+        verify(grupoParoquialService).criar(eq("Pastoral da Música"),
                 any(), any(), any(), any(), any(), any());
 
 
@@ -219,7 +219,7 @@ class ImportacaoServiceTest {
                 adicionarMembroUseCase, usuarioJpaRepository, grupoParoquialService,
                 eventoJpaRepository, grupoParoquialJpaRepository, unidadeTerritorialJpaRepository,
                 pastoralOficialRepository,
-                new ImportacaoFileParser(), anoRepoMock, null, null, null
+                new LeitorArquivoImportacao(), anoRepoMock, null, null, null
         );
 
         Map<String, String> eventoMap = Map.of(

@@ -1,6 +1,6 @@
 import apiClient from '@/shared/infrastructure/http/client';
 import { Evento } from '@/shared/domain/types/types';
-import { RecurrenceRule } from '@/contextos/calendario/presentation/components/RecurrenceForm';
+import { RecurrenceRule } from '@/contextos/calendario/presentation/components/FormularioRecorrencia';
 
 export interface ListEventosParams {
   dataInicio: string;

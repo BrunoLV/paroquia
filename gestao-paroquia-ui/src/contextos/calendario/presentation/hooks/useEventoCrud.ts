@@ -7,7 +7,7 @@ import apiClient from '@/shared/infrastructure/http/client';
 import { getRecorrencia } from '@/contextos/calendario/infrastructure/http/eventos';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import { Evento, ReservaConflitoDetalhe } from '@/shared/domain/types/types';
-import { EditScope } from '@/contextos/calendario/presentation/components/EditScopeDialog';
+import { EscopoEdicao } from '@/contextos/calendario/presentation/components/DialogEscopoEdicao';
 
 /**
  * Todo o fluxo de escrita de eventos do calendário: abrir/fechar os diálogos de
@@ -46,7 +46,7 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
   const [isCancelling, setIsCancelling] = useState(false);
 
   const [isEditScopeOpen, setIsEditScopeOpen] = useState(false);
-  const [selectedEditScope, setSelectedEditScope] = useState<EditScope | null>(null);
+  const [selectedEditScope, setSelectedEditScope] = useState<EscopoEdicao | null>(null);
 
   const [conflitoRecursoModalOpen, setConflitoRecursoModalOpen] = useState(false);
   const [conflitoRecursoDetalhes, setConflitoRecursoDetalhes] = useState<ReservaConflitoDetalhe[]>([]);
@@ -92,7 +92,7 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
   // é enviado ao backend quando o formulário é de fato submetido (ver
   // handleEventSubmit -> updateData.editScope), pois o backend precisa saber se a
   // alteração deve tocar apenas esta ocorrência ou toda a série recorrente.
-  const handleScopeSelect = (scope: EditScope) => {
+  const handleScopeSelect = (scope: EscopoEdicao) => {
     setSelectedEditScope(scope);
     setIsEditScopeOpen(false);
     setIsDetailsOpen(false);
@@ -136,16 +136,16 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
     try {
       if (editingEvent) {
         // UPDATE (PATCH)
-        // editScope diz ao backend o alcance da edição: ONLY_THIS altera apenas esta
+        // escopoEdicao diz ao backend o alcance da edição: SOMENTE_ESTE altera apenas esta
         // ocorrência (destacando-a da série), enquanto um escopo de série propaga a
         // mudança para as demais ocorrências futuras da recorrência. Default
-        // ONLY_THIS cobre o caso de evento não-recorrente (selectedEditScope nunca é
+        // SOMENTE_ESTE cobre o caso de evento não-recorrente (selectedEditScope nunca é
         // definido nesse caminho, ver handleOpenEdit).
         const { recurrence, ...eventBaseData } = data;
         const updateData = {
           ...eventBaseData,
           ativoIds: Array.isArray(data.ativoIds) ? data.ativoIds : [],
-          editScope: selectedEditScope || 'ONLY_THIS',
+          escopoEdicao: selectedEditScope || 'SOMENTE_ESTE',
         };
         await updateEventoMutation.mutateAsync({ id: editingEvent.id, updateData });
         showSuccess('Evento atualizado com sucesso!');

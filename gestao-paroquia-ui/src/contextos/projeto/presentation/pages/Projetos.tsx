@@ -63,7 +63,7 @@ import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/org
 import {Organizacao, Projeto} from '@/shared/domain/types/types';
 import {useNotification} from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
-import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '@/contextos/projeto/infrastructure/http/projects';
+import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 
 // DTO interfaces for project summaries
 interface StatusExecucao {

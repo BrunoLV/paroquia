@@ -146,19 +146,19 @@ class EventoDtoValidationTest {
     }
 
     @Test
-    @DisplayName("CriarEventoRequest e AtualizarEventoRequest: devem suportar campo bypassAgendaConflict")
-    void dto_BypassAgendaConflictField() {
+    @DisplayName("CriarEventoRequest e AtualizarEventoRequest: devem suportar campo liberarConflitoAgenda")
+    void dto_LiberarConflitoAgendaField() {
         CriarEventoRequest createReq = new CriarEventoRequest(
                 "Titulo", "Desc", null, UUID.randomUUID(), null, null, null,
                 Instant.now(), Instant.now().plusSeconds(3600), EventoStatusInput.RASCUNHO,
                 null, null, true
         );
-        assertTrue(createReq.isBypassAgendaConflict());
+        assertTrue(createReq.isLiberarConflitoAgenda());
 
         AtualizarEventoRequest updateReq = new AtualizarEventoRequest(
                 "Titulo", "Desc", null, Instant.now(), Instant.now().plusSeconds(3600),
                 EventoStatusInput.RASCUNHO, null, null, UUID.randomUUID(), null, null, null, null, null, true
         );
-        assertTrue(updateReq.isBypassAgendaConflict());
+        assertTrue(updateReq.isLiberarConflitoAgenda());
     }
 }

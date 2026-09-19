@@ -24,13 +24,13 @@ class CacheInfrastructureTest {
     @Test
     void deveTerConfiguredCacheia() {
         assertThat(cacheManager.getCacheNames())
-                .containsExactlyInAnyOrder(CacheConfig.PROJECT_RESUMO_CACHE, CacheConfig.ANO_PAROQUIAL_CACHE,
+                .containsExactlyInAnyOrder(CacheConfig.PROJETO_RESUMO_CACHE, CacheConfig.ANO_PAROQUIAL_CACHE,
                         CacheConfig.DASHBOARD_ANIVERSARIANTES_CACHE);
     }
 
     @Test
-    void deveStoreERecuperarDeCache() {
-        Cache cache = cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE);
+    void testProjectResumoCacheEviction() {
+        Cache cache = cacheManager.getCache(CacheConfig.PROJETO_RESUMO_CACHE);
         assertThat(cache).isNotNull();
 
         String key = "test-key";

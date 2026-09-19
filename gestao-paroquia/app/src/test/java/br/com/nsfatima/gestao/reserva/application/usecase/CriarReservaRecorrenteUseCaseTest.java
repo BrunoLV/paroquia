@@ -109,7 +109,7 @@ class CriarReservaRecorrenteUseCaseTest {
         Instant inicioChoque = Instant.now().plus(1, ChronoUnit.DAYS);
         IntervaloReserva intervaloChoque =
                 new IntervaloReserva(inicioChoque, inicioChoque.plus(1, ChronoUnit.HOURS), 0);
-        Reserva choque = Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, comando.itemId(), intervaloChoque,
+        Reserva choque = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, comando.itemId(), intervaloChoque,
                 "outra", UUID.randomUUID(), orgId, null, null, StatusReserva.CONFIRMADA, Instant.now());
 
         when(conflitoService.buscarColisoesComLock(any(), any(), any(), any())).thenReturn(List.of(choque));
@@ -133,7 +133,7 @@ class CriarReservaRecorrenteUseCaseTest {
         Instant inicioChoque = Instant.now().plus(1, ChronoUnit.DAYS);
         IntervaloReserva intervaloChoque =
                 new IntervaloReserva(inicioChoque, inicioChoque.plus(1, ChronoUnit.HOURS), 0);
-        Reserva choque = Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, itemId, intervaloChoque,
+        Reserva choque = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, itemId, intervaloChoque,
                 "outra", UUID.randomUUID(), orgId, null, null, StatusReserva.CONFIRMADA, Instant.now());
 
         when(conflitoService.buscarColisoesComLock(any(), any(), any(), any()))

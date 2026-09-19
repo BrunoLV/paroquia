@@ -61,7 +61,7 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<List<SolenidadeLiturgicaResponseDTO>> listAll() {
+    public ResponseEntity<List<SolenidadeLiturgicaResponseDTO>> listar() {
         return ResponseEntity.ok(service.findAll());
     }
 
@@ -81,7 +81,7 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<List<SolenidadeLiturgicaResponseDTO>> listAtivas() {
+    public ResponseEntity<List<SolenidadeLiturgicaResponseDTO>> listarAtivas() {
         return ResponseEntity.ok(service.findAtivas());
     }
 
@@ -102,7 +102,7 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<SolenidadeLiturgicaResponseDTO> create(
+    public ResponseEntity<SolenidadeLiturgicaResponseDTO> criar(
             @RequestBody SolenidadeLiturgicaRequestDTO request,
             @Parameter(description = "Papel do usuário requisitante") @RequestHeader(value = "X-User-Role", required = false) String userRole) {
         SolenidadeLiturgicaResponseDTO response = service.create(request, userRole);
@@ -128,7 +128,7 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Solenidade não encontrada")
     })
-    public ResponseEntity<SolenidadeLiturgicaResponseDTO> update(
+    public ResponseEntity<SolenidadeLiturgicaResponseDTO> atualizar(
             @Parameter(description = "Identificador único da solenidade") @PathVariable UUID id,
             @RequestBody SolenidadeLiturgicaRequestDTO request,
             @Parameter(description = "Papel do usuário requisitante") @RequestHeader(value = "X-User-Role", required = false) String userRole) {
@@ -153,7 +153,7 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Solenidade não encontrada")
     })
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Void> excluir(
             @Parameter(description = "Identificador único da solenidade") @PathVariable UUID id,
             @Parameter(description = "Papel do usuário requisitante") @RequestHeader(value = "X-User-Role", required = false) String userRole) {
         service.delete(id, userRole);

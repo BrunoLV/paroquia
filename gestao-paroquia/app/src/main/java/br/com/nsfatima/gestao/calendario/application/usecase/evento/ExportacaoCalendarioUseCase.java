@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.calendario.application.export.CalendarioExporter;
+import br.com.nsfatima.gestao.calendario.application.export.ExportadorCalendario;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 /**
  * Caso de uso responsável por montar e exportar o calendário de eventos em um arquivo
- * (delegando a geração binária a um {@link CalendarioExporter} escolhido por formato).
+ * (delegando a geração binária a um {@link ExportadorCalendario} escolhido por formato).
  * Resolve o período de exportação (ano, mês ou intervalo customizado, sempre convertido
  * para UTC a partir do fuso America/Sao_Paulo), busca os eventos elegíveis com os filtros
  * de organização/categoria informados e carrega os mapas auxiliares (local, organização,
@@ -37,23 +37,23 @@ import java.util.stream.Collectors;
 public class ExportacaoCalendarioUseCase {
 
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
-    private final EventoJpaRepository eventRepository;
+    private final EventoJpaRepository eventoRepository;
     private final LocalJpaRepository localRepository;
-    private final GrupoParoquialJpaRepository organizationRepository;
+    private final GrupoParoquialJpaRepository grupoParoquialRepository;
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
-    private final List<CalendarioExporter> exporters;
+    private final List<ExportadorCalendario> exportadores;
 
     public ExportacaoCalendarioUseCase(
-            EventoJpaRepository eventRepository,
+            EventoJpaRepository eventoRepository,
             LocalJpaRepository localRepository,
-            GrupoParoquialJpaRepository organizationRepository,
+            GrupoParoquialJpaRepository grupoParoquialRepository,
             ParoquiaConfiguracaoRepository paroquiaConfigRepository,
-            List<CalendarioExporter> exporters) {
-        this.eventRepository = eventRepository;
+            List<ExportadorCalendario> exportadores) {
+        this.eventoRepository = eventoRepository;
         this.localRepository = localRepository;
-        this.organizationRepository = organizationRepository;
+        this.grupoParoquialRepository = grupoParoquialRepository;
         this.paroquiaConfigRepository = paroquiaConfigRepository;
-        this.exporters = exporters;
+        this.exportadores = exportadores;
     }
 
     /**
@@ -108,7 +108,7 @@ public class ExportacaoCalendarioUseCase {
 
         List<CategoriaEvento> categoriasEnum = categorias == null ? null
                 : categorias.stream().map(CategoriaEvento::fromValue).toList();
-        List<EventoEntity> eventos = eventRepository.findAllWithFilters(
+        List<EventoEntity> eventos = eventoRepository.findAllWithFilters(
                 start,
                 true,
                 end,
@@ -130,7 +130,7 @@ public class ExportacaoCalendarioUseCase {
         Map<UUID, String> localMap = localRepository.findAll().stream()
                 .collect(Collectors.toMap(LocalEntity::getId, LocalEntity::getNome));
 
-        Map<UUID, String> orgMap = organizationRepository.findAll().stream()
+        Map<UUID, String> orgMap = grupoParoquialRepository.findAll().stream()
                 .collect(Collectors.toMap(GrupoParoquialEntity::getId, GrupoParoquialEntity::getNome));
 
         // 4. Carrega a configuração da paróquia
@@ -139,11 +139,11 @@ public class ExportacaoCalendarioUseCase {
                 .orElse(null);
 
         // 5. Executa a exportação baseada no formato desejado
-        CalendarioExporter exporter = exporters.stream()
-                .filter(e -> e.supports(formato))
+        ExportadorCalendario exportador = exportadores.stream()
+                .filter(e -> e.suporta(formato))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Formato de exportação não suportado: " + formato));
 
-        return exporter.export(eventos, localMap, orgMap, start, end, config);
+        return exportador.exportar(eventos, localMap, orgMap, start, end, config);
     }
 }

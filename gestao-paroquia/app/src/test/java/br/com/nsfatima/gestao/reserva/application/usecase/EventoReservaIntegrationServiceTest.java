@@ -45,7 +45,7 @@ class EventoReservaIntegrationServiceTest {
     private Reserva reservaExistente(TipoItemReserva tipo, UUID itemId, UUID eventoId, StatusReserva status) {
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        return Reserva.criar(ReservaId.generate(), tipo, itemId, intervalo, "desc",
+        return Reserva.criar(ReservaId.gerar(), tipo, itemId, intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), eventoId, null, status, Instant.now());
     }
 

@@ -63,7 +63,7 @@ class ConcluirManutencaoAtivoUseCaseTest {
 
     private AtivoManutencao emAberto() {
         Instant inicio = Instant.now().minus(2, ChronoUnit.DAYS);
-        return AtivoManutencao.registrar(AtivoManutencaoId.generate(), new AtivoPatrimonialId(ativoId), "reparo",
+        return AtivoManutencao.registrar(AtivoManutencaoId.gerar(), new AtivoPatrimonialId(ativoId), "reparo",
                 new PeriodoManutencao(inicio, inicio.plus(5, ChronoUnit.DAYS)), UUID.randomUUID(), inicio);
     }
 

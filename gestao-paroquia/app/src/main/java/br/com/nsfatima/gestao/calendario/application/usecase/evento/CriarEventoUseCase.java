@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.ResultadoOperacaoEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
@@ -124,12 +124,12 @@ public class CriarEventoUseCase {
      * useCase.execute("idemp-001", new CriarEventoRequest("Titulo", "Descricao", ...));
      */
     @Transactional
-    public EventoOperationResult execute(String idempotencyKey, CriarEventoRequest request) {
+    public ResultadoOperacaoEvento execute(String idempotencyKey, CriarEventoRequest request) {
         validarChaveIdempotencia(idempotencyKey);
         validarRequisicaoCriacao(request);
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        if (request.isBypassAgendaConflict()) {
+        if (request.isLiberarConflitoAgenda()) {
             authorizationService.assertCanBypassAgendaConflict(actorContext);
         }
         ModoRequisicaoCriacao mode = authorizationService.resolveModoRequisicaoCriacao(actorContext,
@@ -137,12 +137,12 @@ public class CriarEventoUseCase {
 
 
         if (mode == ModoRequisicaoCriacao.REQUER_APROVACAO) {
-            return new EventoOperationResult.Pendente(aprovacaoRequestUseCase.execute(idempotencyKey,
+            return new ResultadoOperacaoEvento.Pendente(aprovacaoRequestUseCase.execute(idempotencyKey,
                     request), HttpStatus.ACCEPTED);
 
         }
 
-        return new EventoOperationResult.Success(criarImediato(idempotencyKey,
+        return new ResultadoOperacaoEvento.Sucesso(criarImediato(idempotencyKey,
                 request, actorContext.actor()), HttpStatus.CREATED);
 
     }
@@ -176,7 +176,7 @@ public class CriarEventoUseCase {
                 request.localId(),
                 request.igrejaVinculoId(),
                 null,
-                request.isBypassAgendaConflict());
+                request.isLiberarConflitoAgenda());
         validadorPrioridadeAgendaService.processarCancelamentosAutomaticos(
                 autoCancel,
                 "Cancelado automaticamente devido a agendamento"
@@ -208,7 +208,7 @@ public class CriarEventoUseCase {
 
     private void evictCacheProjeto(UUID projetoId) {
         if (projetoId != null) {
-            Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE))
+            Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJETO_RESUMO_CACHE))
                     .ifPresent(cache -> cache.evict(projetoId));
         }
     }

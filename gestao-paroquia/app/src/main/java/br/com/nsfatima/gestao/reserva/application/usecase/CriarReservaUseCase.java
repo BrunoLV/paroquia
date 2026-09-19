@@ -97,7 +97,7 @@ public class CriarReservaUseCase {
 
         Instant agora = Instant.now();
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 comando.tipoItem(),
                 comando.itemId(),
                 intervalo,

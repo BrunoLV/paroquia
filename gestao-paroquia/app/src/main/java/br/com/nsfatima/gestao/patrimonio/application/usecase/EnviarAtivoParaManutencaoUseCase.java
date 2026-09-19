@@ -83,7 +83,7 @@ public class EnviarAtivoParaManutencaoUseCase {
         ativo.enviarParaManutencao(agora);
 
         AtivoManutencao manutencao = AtivoManutencao.registrar(
-                AtivoManutencaoId.generate(), ativo.getId(), request.descricaoReparo(), periodo,
+                AtivoManutencaoId.gerar(), ativo.getId(), request.descricaoReparo(), periodo,
                 actor.usuarioId(), agora);
         AtivoManutencao salva = manutencaoRepository.save(manutencao);
         ativoRepository.save(ativo);

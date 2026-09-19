@@ -65,7 +65,7 @@ public class DashboardComunidadeController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<AniversarianteDTO> getAniversariantes(
+    public List<AniversarianteDTO> listarAniversariantes(
             @Parameter(description = "Recorte temporal (HOJE, SEMANA ou MES)")
             @RequestParam(defaultValue = "SEMANA") PeriodoDashboard janela) {
         return listarAniversariantesUseCase.execute(janela);
@@ -88,7 +88,7 @@ public class DashboardComunidadeController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public DashboardComunidadeDTO getComunidade(
+    public DashboardComunidadeDTO obterComunidade(
             @Parameter(description = "Organização a filtrar; ausente usa o escopo do ator")
             @RequestParam(required = false) UUID grupoParoquialId) {
         var context = actorContextResolver.resolveRequired();

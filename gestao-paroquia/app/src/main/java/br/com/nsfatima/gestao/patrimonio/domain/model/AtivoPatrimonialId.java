@@ -15,7 +15,7 @@ public record AtivoPatrimonialId(UUID value) implements Serializable {
         Objects.requireNonNull(value, "O identificador do ativo patrimonial não pode ser nulo.");
     }
 
-    public static AtivoPatrimonialId generate() {
+    public static AtivoPatrimonialId gerar() {
         return new AtivoPatrimonialId(UUID.randomUUID());
     }
 

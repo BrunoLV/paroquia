@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 
 /**
  * Contador do último número de tombamento emitido para um ano-calendário, usado por
- * {@link br.com.nsfatima.gestao.patrimonio.domain.service.NumeroTombamentoGenerator} para gerar
+ * {@link br.com.nsfatima.gestao.patrimonio.application.service.GeradorNumeroTombamento} para gerar
  * números sequenciais únicos por ano.
  */
 @Entity

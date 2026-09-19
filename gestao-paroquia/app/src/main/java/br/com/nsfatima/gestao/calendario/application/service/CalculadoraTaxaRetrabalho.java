@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.IndicadorRetrabalhoResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;

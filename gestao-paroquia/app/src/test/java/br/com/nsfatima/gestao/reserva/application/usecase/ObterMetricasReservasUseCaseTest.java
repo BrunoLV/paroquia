@@ -35,7 +35,7 @@ class ObterMetricasReservasUseCaseTest {
     private Reserva reserva(StatusReserva status) {
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        Reserva r = Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, UUID.randomUUID(), intervalo, "desc",
+        Reserva r = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, UUID.randomUUID(), intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), null, null, status, Instant.now());
         return r;
     }

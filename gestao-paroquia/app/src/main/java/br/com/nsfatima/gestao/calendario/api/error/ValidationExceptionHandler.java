@@ -131,7 +131,7 @@ public class ValidationExceptionHandler extends BaseExceptionHandler {
                     rejectedValue == null ? null : String.valueOf(rejectedValue));
         }
 
-        ErrorCodes code = "ValidEventoDates".equals(error.getCode())
+        ErrorCodes code = "ValidaDatasEvento".equals(error.getCode())
                 ? ErrorCodes.DOMAIN_RULE_VIOLATION
                 : ErrorCodes.VALIDATION_FIELD_INVALID;
 

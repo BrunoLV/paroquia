@@ -1,12 +1,12 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaFiltroRequest;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.IndicadorRetrabalhoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.TaxaEventosExtraResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.AuditoriaFiltroRequest;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.AuditoriaOperacaoResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.IndicadorRetrabalhoResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.TaxaEventosExtraResponse;
 import br.com.nsfatima.gestao.calendario.application.usecase.evento.ObterTaxaEventosExtraUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ObterIndicadorRetrabalhoUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.ListarTrilhaAuditoriaUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.ObterIndicadorRetrabalhoUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.ListarTrilhaAuditoriaUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -66,7 +66,7 @@ public class AuditoriaEventoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public TaxaEventosExtraResponse getTaxaExtras(
+    public TaxaEventosExtraResponse obterTaxaExtras(
             @Parameter(description = "ID da organização") @RequestParam UUID grupoParoquialId,
             @Parameter(description = "Período de análise (ex: anual, mensal)") @RequestParam(required = false)
             String periodo,
@@ -83,7 +83,7 @@ public class AuditoriaEventoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * AuditoriaOperacaoResponse response = controller.getTrilha(new AuditoriaFiltroRequest(...));
+     * AuditoriaOperacaoResponse response = controller.obterTrilha(new AuditoriaFiltroRequest(...));
      * }
      */
     @GetMapping("/trilha")
@@ -96,7 +96,7 @@ public class AuditoriaEventoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public AuditoriaOperacaoResponse getTrilha(AuditoriaFiltroRequest filters) {
+    public AuditoriaOperacaoResponse obterTrilha(AuditoriaFiltroRequest filters) {
         return listAuditTrailUseCase.execute(
                 filters.grupoParoquialId(),
                 filters.granularidade(),
@@ -114,7 +114,7 @@ public class AuditoriaEventoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * IndicadorRetrabalhoResponse response = controller.getRetrabalho(grupoParoquialId, "mensal", null, null);
+     * IndicadorRetrabalhoResponse response = controller.obterRetrabalho(grupoParoquialId, "mensal", null, null);
      * }
      */
     @GetMapping("/retrabalho")
@@ -127,7 +127,7 @@ public class AuditoriaEventoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public IndicadorRetrabalhoResponse getRetrabalho(
+    public IndicadorRetrabalhoResponse obterRetrabalho(
             @Parameter(description = "ID da organização") @RequestParam UUID grupoParoquialId,
             @Parameter(description = "Granularidade temporal") @RequestParam(required = false) String granularidade,
             @Parameter(description = "Data de início (ISO 8601)") @RequestParam(required = false)

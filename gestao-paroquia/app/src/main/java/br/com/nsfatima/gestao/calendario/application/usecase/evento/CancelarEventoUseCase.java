@@ -9,7 +9,7 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CancelamentoPendenteResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoCanceladoResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.ResultadoOperacaoEvento;
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegistrarObservacaoSistemaUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
 import br.com.nsfatima.gestao.calendario.domain.exception.TransicaoStatusInvalidaException;
@@ -86,7 +86,7 @@ public class CancelarEventoUseCase {
      * useCase.execute(id, new CancelarEventoRequest("Personal reasons"));
      */
     @Transactional
-    public EventoOperationResult execute(UUID eventoId, CancelarEventoRequest request) {
+    public ResultadoOperacaoEvento execute(UUID eventoId, CancelarEventoRequest request) {
         EventoEntity evento = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
@@ -134,22 +134,22 @@ public class CancelarEventoUseCase {
         }
     }
 
-    private EventoOperationResult processImmediate(EventoEntity evento,
+    private ResultadoOperacaoEvento processImmediate(EventoEntity evento,
                                                    CancelarEventoRequest request, EventoActorContext actorContext) {
 
         EventoCanceladoResponse response = applyCancellation(evento,
                 request.motivo(), actorContext.actor(), actorContext.usuarioId(), "sucesso");
 
         metricsPublisher.publishCancellationFlow("IMMEDIATE", "SUCCESS");
-        return new EventoOperationResult.Success(response, HttpStatus.OK);
+        return new ResultadoOperacaoEvento.Sucesso(response, HttpStatus.OK);
     }
 
-    private EventoOperationResult processAprovacao(EventoEntity evento,
-                                                  CancelarEventoRequest request, EventoActorContext actorContext) {
+    private ResultadoOperacaoEvento processAprovacao(EventoEntity evento,
+                                                   CancelarEventoRequest request, EventoActorContext actorContext) {
 
         CancelamentoPendenteResponse response = criarAprovacaoPendente(evento, request, actorContext);
         metricsPublisher.publishCancellationFlow("PENDENTE_CREATED", "PENDENTE");
-        return new EventoOperationResult.Pendente(response, HttpStatus.ACCEPTED);
+        return new ResultadoOperacaoEvento.Pendente(response, HttpStatus.ACCEPTED);
     }
 
     private EventoCanceladoResponse applyCancellation(EventoEntity evento,
@@ -187,7 +187,7 @@ public class CancelarEventoUseCase {
 
     private void evictCacheProjeto(UUID projetoId) {
         if (projetoId != null) {
-            Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE))
+            Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJETO_RESUMO_CACHE))
                     .ifPresent(cache -> cache.evict(projetoId));
         }
     }

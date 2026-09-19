@@ -63,7 +63,7 @@ public interface LocalRepository {
 
     /**
      * Remove fisicamente o registro de um Local. Não é usada pelo fluxo padrão de negócio (que
-     * desativa logicamente via {@code LocalService.deleteLocal}) — capacidade de infraestrutura para
+     * desativa logicamente via {@code LocalService.excluir}) — capacidade de infraestrutura para
      * cenários administrativos/de dados que exigem remoção definitiva.
      *
      * @param id ID do local a ser removido

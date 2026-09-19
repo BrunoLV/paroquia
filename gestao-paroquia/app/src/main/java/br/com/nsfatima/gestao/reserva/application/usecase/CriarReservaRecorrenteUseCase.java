@@ -108,7 +108,7 @@ public class CriarReservaRecorrenteUseCase {
                 }
             } else {
                 candidatas.add(Reserva.criar(
-                        ReservaId.generate(),
+                        ReservaId.gerar(),
                         comando.tipoItem(),
                         comando.itemId(),
                         intervalo,

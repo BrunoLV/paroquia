@@ -23,7 +23,7 @@ class ReservaTest {
         UUID orgId = UUID.randomUUID();
 
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 TipoItemReserva.LOCAL,
                 itemId,
                 intervalo,
@@ -50,7 +50,7 @@ class ReservaTest {
         Instant inicio = Instant.now().plus(2, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(2, ChronoUnit.HOURS), 0);
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 TipoItemReserva.LOCAL,
                 UUID.randomUUID(),
                 intervalo,
@@ -78,7 +78,7 @@ class ReservaTest {
         Instant inicio = Instant.now().plus(2, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(2, ChronoUnit.HOURS), 0);
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 TipoItemReserva.LOCAL,
                 UUID.randomUUID(),
                 intervalo,
@@ -104,7 +104,7 @@ class ReservaTest {
         Instant inicio = Instant.now().plus(2, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(2, ChronoUnit.HOURS), 0);
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 TipoItemReserva.ATIVO,
                 UUID.randomUUID(),
                 intervalo,
@@ -132,7 +132,7 @@ class ReservaTest {
         Instant inicio = Instant.now().plus(2, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(2, ChronoUnit.HOURS), 0);
         Reserva reserva = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 TipoItemReserva.LOCAL,
                 UUID.randomUUID(),
                 intervalo,
@@ -153,7 +153,7 @@ class ReservaTest {
     private Reserva reservaPendente(TipoItemReserva tipo) {
         Instant inicio = Instant.now().plus(2, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        return Reserva.criar(ReservaId.generate(), tipo, UUID.randomUUID(), intervalo, "desc",
+        return Reserva.criar(ReservaId.gerar(), tipo, UUID.randomUUID(), intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), null, null, StatusReserva.PENDENTE, Instant.now());
     }
 
@@ -316,7 +316,7 @@ class ReservaTest {
     void naoDeveCriarComDescricaoVazia() {
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 0);
-        assertThatThrownBy(() -> Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, UUID.randomUUID(),
+        assertThatThrownBy(() -> Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, UUID.randomUUID(),
                 intervalo, "   ", UUID.randomUUID(), UUID.randomUUID(), null, null, StatusReserva.PENDENTE,
                 Instant.now()))
                 .isInstanceOf(IllegalArgumentException.class);

@@ -73,7 +73,7 @@ public class CpcDecisaoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<CpcDecisaoResponse> list(
+    public List<CpcDecisaoResponse> listar(
             @Parameter(description = "Filtro opcional por comunidade")
             @RequestParam(required = false) UUID comunidadeId,
             @Parameter(description = "Filtro opcional por status de homologação")
@@ -101,7 +101,7 @@ public class CpcDecisaoController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public CpcDecisaoResponse create(@RequestBody @Valid CriarCpcDecisaoRequest request) {
+    public CpcDecisaoResponse criar(@RequestBody @Valid CriarCpcDecisaoRequest request) {
         return createCpcDecisaoUseCase.execute(request);
     }
 

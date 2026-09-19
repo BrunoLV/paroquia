@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.projeto.application.service;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.ProjetoResumoDTO;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
-import br.com.nsfatima.gestao.projeto.domain.service.ProjetoEventoProvider;
+import br.com.nsfatima.gestao.projeto.domain.service.ProvedorEventoProjeto;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,7 @@ class ProjetoAgregacaoServiceTest {
     private ProjetoEventoJpaRepository projetoRepository;
 
     @Mock
-    private ProjetoEventoProvider eventProvider;
+    private ProvedorEventoProjeto provedorEventoProjeto;
 
     @Mock
     private ProjetoAgregacaoDomainService domainService;
@@ -57,10 +57,10 @@ class ProjetoAgregacaoServiceTest {
         projeto.setFimUtc(agora.plus(10, ChronoUnit.DAYS));
 
         when(projetoRepository.findById(projetoId)).thenReturn(Optional.of(projeto));
-        when(eventProvider.countByProjetoId(projetoId)).thenReturn(10L);
-        when(eventProvider.countByProjetoIdAndFimUtcLessThan(eq(projetoId), any(Instant.class))).thenReturn(6L);
-        when(eventProvider.countByProjetoIdAndFimUtcGreaterThanEqual(eq(projetoId), any(Instant.class))).thenReturn(4L);
-        when(eventProvider.findInvolvedOrganizationNames(projetoId)).thenReturn(List.of("Org 1", "Org 2"));
+        when(provedorEventoProjeto.contarPorProjetoId(projetoId)).thenReturn(10L);
+        when(provedorEventoProjeto.contarPorProjetoIdEFimUtcMenorQue(eq(projetoId), any(Instant.class))).thenReturn(6L);
+        when(provedorEventoProjeto.contarPorProjetoIdEFimUtcMaiorOuIgualA(eq(projetoId), any(Instant.class))).thenReturn(4L);
+        when(provedorEventoProjeto.buscarNomesOrganizacoesEnvolvidas(projetoId)).thenReturn(List.of("Org 1", "Org 2"));
 
         when(domainService.calcularPercentualTempoDecorrido(any(), any())).thenReturn(BigDecimal.valueOf(50.0));
         when(domainService.verificarSeEstaEmRisco(any(), any(), anyInt())).thenReturn(false);

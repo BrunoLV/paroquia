@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  * Value Object do código de tombamento patrimonial. É gerado exclusivamente pelo sistema no ato do
- * cadastro ({@code NumeroTombamentoGenerator}) no padrão sequencial anual {@code PAT-AAAA-NNNN} e é
+ * cadastro ({@code GeradorNumeroTombamento}) no padrão sequencial anual {@code PAT-AAAA-NNNN} e é
  * terminantemente imutável — a inserção ou edição manual é vedada tanto na interface quanto nas
  * camadas de validação. Validar o formato aqui garante que nenhum caminho de persistência aceite um
  * código fora do padrão.

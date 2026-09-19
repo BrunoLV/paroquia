@@ -40,7 +40,7 @@ public class PastoralMovimentoOficial {
      * @param nome novo nome oficial da pastoral/movimento
      * @param tipo novo tipo ({@code PASTORAL} ou {@code MOVIMENTO})
      */
-    public void update(String nome, TipoGrupo tipo) {
+    public void atualizar(String nome, TipoGrupo tipo) {
         this.nome = nome;
         this.tipo = tipo;
     }

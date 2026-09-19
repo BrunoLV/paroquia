@@ -39,7 +39,7 @@ const defaultValues: EventoFormInput = {
   endTime: '10:00',
   justification: '',
   isRecurring: false,
-  bypassAgendaConflict: false,
+  liberarConflitoAgenda: false,
   recurrenceRule: { frequencia: 'SEMANAL', intervalo: 1, diasDaSemana: [] },
 };
 
@@ -307,7 +307,7 @@ export const useCadastroEventoForm = ({
       status: isClosedYear && data.status !== 'RASCUNHO' ? 'ADICIONADO_EXTRA' : data.status,
       adicionadoExtraJustificativa: data.justification || null,
       recurrence: data.isRecurring ? data.recurrenceRule : null,
-      bypassAgendaConflict: isParoco ? data.bypassAgendaConflict : false,
+      liberarConflitoAgenda: isParoco ? data.liberarConflitoAgenda : false,
     });
   };
 

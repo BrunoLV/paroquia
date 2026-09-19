@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.Proj
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -44,7 +45,7 @@ class ProjetoAgregacaoCacheIntegrationTest {
         when(projetoRepository.findById(projetoId)).thenReturn(Optional.of(entity));
 
         // Ensure cache is clear
-        Objects.requireNonNull(cacheManager.getCache("projectResumo")).clear();
+        Objects.requireNonNull(cacheManager.getCache(CacheConfig.PROJETO_RESUMO_CACHE)).clear();
 
         // First call - should hit repository
         service.obterResumo(projetoId);

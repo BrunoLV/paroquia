@@ -59,7 +59,7 @@ public class DashboardLogisticaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public DashboardLogisticaDTO getLogistica(
+    public DashboardLogisticaDTO obterLogistica(
             @Parameter(description = "Recorte temporal do filtro global")
             @RequestParam(defaultValue = "SEMANA") PeriodoDashboard periodo,
             @Parameter(description = "Organização a filtrar; ausente usa o escopo do ator")

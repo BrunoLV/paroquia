@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.observabilidade.application.service;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.AuditoriaOperacaoResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.AuditoriaOperacaoResponse;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.entity.AuditoriaOperacaoEntity;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import org.springframework.stereotype.Service;

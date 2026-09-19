@@ -1,18 +1,18 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.CoeficienteImpactoSocialResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.ConcorrenciaInterpastoralResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.MetricasEstrategicasPainelResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.OciosidadePatrimonialResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.SazonalidadeLiturgicaResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.SlaDespachoPastoralResponse;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.TaxaConclusaoProjetosResponse;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularImpactoSocialUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularOciosidadePatrimonialUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularSazonalidadeLiturgicaUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularSlaDespachoPastoralUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.CalcularTaxaProjetosUseCase;
-import br.com.nsfatima.gestao.calendario.application.usecase.metrics.VerificarConcorrenciaInterpastoralUseCase;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.CoeficienteImpactoSocialResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.ConcorrenciaInterpastoralResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.MetricasEstrategicasPainelResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.OciosidadePatrimonialResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.SazonalidadeLiturgicaResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.SlaDespachoPastoralResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.TaxaConclusaoProjetosResponse;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.CalcularImpactoSocialUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.CalcularOciosidadePatrimonialUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.CalcularSazonalidadeLiturgicaUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.CalcularSlaDespachoPastoralUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.CalcularTaxaProjetosUseCase;
+import br.com.nsfatima.gestao.calendario.application.usecase.metricas.VerificarConcorrenciaInterpastoralUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -77,7 +77,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public MetricasEstrategicasPainelResponse getPainelConsolidado() {
+    public MetricasEstrategicasPainelResponse obterPainelConsolidado() {
         return new MetricasEstrategicasPainelResponse(
                 calcularSazonalidadeLiturgicaUseCase.execute(),
                 calcularTaxaProjetosUseCase.execute(),
@@ -103,7 +103,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<SazonalidadeLiturgicaResponse> getSazonalidadeLiturgica() {
+    public List<SazonalidadeLiturgicaResponse> obterSazonalidadeLiturgica() {
         return calcularSazonalidadeLiturgicaUseCase.execute();
     }
 
@@ -121,7 +121,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public TaxaConclusaoProjetosResponse getTaxaProjetos() {
+    public TaxaConclusaoProjetosResponse obterTaxaProjetos() {
         return calcularTaxaProjetosUseCase.execute();
     }
 
@@ -139,7 +139,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public SlaDespachoPastoralResponse getSlaDespacho() {
+    public SlaDespachoPastoralResponse obterSlaDespacho() {
         return calcularSlaDespachoPastoralUseCase.execute();
     }
 
@@ -157,7 +157,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public CoeficienteImpactoSocialResponse getImpactoSocial() {
+    public CoeficienteImpactoSocialResponse obterImpactoSocial() {
         return calcularImpactoSocialUseCase.execute();
     }
 
@@ -176,7 +176,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ConcorrenciaInterpastoralResponse getConcorrenciaInterpastoral() {
+    public ConcorrenciaInterpastoralResponse obterConcorrenciaInterpastoral() {
         return verificarConcorrenciaInterpastoralUseCase.execute();
     }
 
@@ -194,7 +194,7 @@ public class MetricaEstrategicaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public OciosidadePatrimonialResponse getOciosidadePatrimonial() {
+    public OciosidadePatrimonialResponse obterOciosidadePatrimonial() {
         return calcularOciosidadePatrimonialUseCase.execute();
     }
 }

@@ -1,4 +1,4 @@
-import { RecurrenceRule } from '@/contextos/calendario/presentation/components/RecurrenceForm';
+import { RecurrenceRule } from '@/contextos/calendario/presentation/components/FormularioRecorrencia';
 
 export const formatLocalDate = (d: Date): string => {
   const year = d.getFullYear();

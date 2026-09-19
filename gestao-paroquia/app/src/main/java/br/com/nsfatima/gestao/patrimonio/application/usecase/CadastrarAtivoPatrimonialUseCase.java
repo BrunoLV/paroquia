@@ -12,7 +12,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Unid
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.policy.PropriedadeUnidadeTerritorialPolicy;
-import br.com.nsfatima.gestao.patrimonio.application.service.NumeroTombamentoGenerator;
+import br.com.nsfatima.gestao.patrimonio.application.service.GeradorNumeroTombamento;
 import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class CadastrarAtivoPatrimonialUseCase {
     private final PatrimonioAuthorizationService authorizationService;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private final PropriedadeUnidadeTerritorialPolicy propriedadeUnidadeTerritorialPolicy;
-    private final NumeroTombamentoGenerator numeroTombamentoGenerator;
+    private final GeradorNumeroTombamento geradorNumeroTombamento;
     private final PatrimonioAuditPublisher auditPublisher;
 
     public CadastrarAtivoPatrimonialUseCase(AtivoPatrimonialRepository repository,
@@ -42,14 +42,14 @@ public class CadastrarAtivoPatrimonialUseCase {
                                             PatrimonioAuthorizationService authorizationService,
                                             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
                                             PropriedadeUnidadeTerritorialPolicy propriedadeUnidadeTerritorialPolicy,
-                                            NumeroTombamentoGenerator numeroTombamentoGenerator,
+                                            GeradorNumeroTombamento geradorNumeroTombamento,
                                             PatrimonioAuditPublisher auditPublisher) {
         this.repository = repository;
         this.actorContextResolver = actorContextResolver;
         this.authorizationService = authorizationService;
         this.unidadeTerritorialRepository = unidadeTerritorialRepository;
         this.propriedadeUnidadeTerritorialPolicy = propriedadeUnidadeTerritorialPolicy;
-        this.numeroTombamentoGenerator = numeroTombamentoGenerator;
+        this.geradorNumeroTombamento = geradorNumeroTombamento;
         this.auditPublisher = auditPublisher;
     }
 
@@ -64,10 +64,10 @@ public class CadastrarAtivoPatrimonialUseCase {
 
         Instant agora = Instant.now();
         CodigoTombamento codigo = new CodigoTombamento(
-                numeroTombamentoGenerator.generate(Year.now().getValue()));
+                geradorNumeroTombamento.gerar(Year.now().getValue()));
 
         AtivoPatrimonial ativo = AtivoPatrimonial.cadastrar(
-                AtivoPatrimonialId.generate(),
+                AtivoPatrimonialId.gerar(),
                 request.nome(),
                 codigo,
                 request.descricao(),

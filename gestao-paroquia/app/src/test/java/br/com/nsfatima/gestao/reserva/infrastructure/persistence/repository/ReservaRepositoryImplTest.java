@@ -46,7 +46,7 @@ class ReservaRepositoryImplTest {
     private Reserva reservaDominio() {
         Instant inicio = Instant.now().plus(1, ChronoUnit.HOURS);
         IntervaloReserva intervalo = new IntervaloReserva(inicio, inicio.plus(1, ChronoUnit.HOURS), 15);
-        return Reserva.criar(ReservaId.generate(), TipoItemReserva.LOCAL, UUID.randomUUID(), intervalo, "desc",
+        return Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, UUID.randomUUID(), intervalo, "desc",
                 UUID.randomUUID(), UUID.randomUUID(), null, null, StatusReserva.PENDENTE, Instant.now());
     }
 

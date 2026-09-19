@@ -4,7 +4,7 @@ package br.com.nsfatima.gestao.importacao.domain.model;
  * Tipos de entidade suportados pelo fluxo de importação em lote (template, validação e
  * confirmação). Cada valor corresponde a um conjunto próprio de colunas de arquivo, regras de
  * validação por linha e lógica de persistência em {@code ImportacaoService} e
- * {@code ImportacaoFileParser} — adicionar um novo tipo exige atualizar os `switch` de ambas as
+ * {@code LeitorArquivoImportacao} — adicionar um novo tipo exige atualizar os `switch` de ambas as
  * classes.
  */
 public enum TipoEntidadeImportacao {

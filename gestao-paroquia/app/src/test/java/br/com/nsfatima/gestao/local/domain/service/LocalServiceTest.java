@@ -35,7 +35,7 @@ class LocalServiceTest {
         UUID igrejaId = UUID.randomUUID();
         EnderecoLocal endereco = new EnderecoLocal(
                 "01001-000", "Praça da Sé", "100", null, "Centro", "São Paulo", "SP");
-        Local created = localService.createLocal("Salão São Pedro", "SALAO", endereco, 100, "Salão amplo", igrejaId);
+        Local created = localService.criar("Salão São Pedro", "SALAO", endereco, 100, "Salão amplo", igrejaId);
 
         assertNotNull(created.getId());
         assertEquals("Salão São Pedro", created.getNome());
@@ -48,7 +48,7 @@ class LocalServiceTest {
     @Test
     void deveCriarLocalSemIgreja() {
         EnderecoLocal endereco = new EnderecoLocal(null, "Rua das Rosas", "50", null, "Bairro", "Cidade", "SP");
-        Local created = localService.createLocal("Salão Geral", "SALAO", endereco, 80, null, null);
+        Local created = localService.criar("Salão Geral", "SALAO", endereco, 80, null, null);
 
         assertNotNull(created.getId());
         assertEquals("Salão Geral", created.getNome());
@@ -64,7 +64,7 @@ class LocalServiceTest {
         localRepository.save(local);
 
         EnderecoLocal enderecoNovo = new EnderecoLocal(null, "Rua Nova", "20", null, "Centro", "Cidade", "SP");
-        Local updated = localService.updateLocal(
+        Local updated = localService.atualizar(
                 local.getId(), "Novo Nome", "SALAO", enderecoNovo, 30, "Obs nova", false, igrejaId);
 
         assertEquals("Novo Nome", updated.getNome());
@@ -80,7 +80,7 @@ class LocalServiceTest {
         localRepository.save(local);
         localRepository.setFutureEvents(id, false);
 
-        localService.deleteLocal(id);
+        localService.excluir(id);
 
         Optional<Local> found = localRepository.findById(id);
         assertTrue(found.isPresent());
@@ -96,7 +96,7 @@ class LocalServiceTest {
         localRepository.save(local);
         localRepository.setFutureEvents(id, true);
 
-        LocalNegocioException ex = assertThrows(LocalNegocioException.class, () -> localService.deleteLocal(id));
+        LocalNegocioException ex = assertThrows(LocalNegocioException.class, () -> localService.excluir(id));
         assertTrue(ex.getMessage().contains("eventos futuros"));
     }
 
@@ -108,7 +108,7 @@ class LocalServiceTest {
         localRepository.setFutureEvents(id, true);
 
         LocalNegocioException ex = assertThrows(LocalNegocioException.class,
-                () -> localService.updateLocal(
+                () -> localService.atualizar(
                         id, "Salão São Pedro", "SALAO", EnderecoLocal.vazio(), 150, "Som", false, null));
         assertTrue(ex.getMessage().contains("eventos futuros"));
     }

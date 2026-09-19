@@ -89,7 +89,7 @@ class GrupoParoquialServiceTest {
 
     @Test
     void deveCriarGrupoParoquial() {
-        GrupoParoquial created = service.createOrganization("PJ",
+        GrupoParoquial created = service.criar("PJ",
                 TipoGrupo.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId,
                 movimentoOficialId);
 
@@ -112,7 +112,7 @@ class GrupoParoquialServiceTest {
 
         when(repository.findById(id)).thenReturn(Optional.of(org));
 
-        service.updateOrganization(id,
+        service.atualizar(id,
                 "PJ Novo", TipoGrupo.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false,
                 conselhoId, pastoralOficialId);
 
@@ -136,7 +136,7 @@ class GrupoParoquialServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(org));
         when(repository.hasDependencies(id)).thenReturn(true);
 
-        assertThrows(GrupoParoquialNegocioException.class, () -> service.deleteOrganization(id));
+        assertThrows(GrupoParoquialNegocioException.class, () -> service.excluir(id));
         verify(repository, never()).delete(id);
         verify(auditLogService, never()).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
@@ -151,14 +151,14 @@ class GrupoParoquialServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(org));
         when(repository.hasDependencies(id)).thenReturn(false);
 
-        service.deleteOrganization(id);
+        service.excluir(id);
         verify(repository).delete(id);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
 
     @Test
     void deveCriarGrupoParoquialComConselho() {
-        GrupoParoquial created = service.createOrganization("Conselho",
+        GrupoParoquial created = service.criar("Conselho",
                 TipoGrupo.CONSELHO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
                 matrizId, null);
 
@@ -170,12 +170,12 @@ class GrupoParoquialServiceTest {
     @Test
     void deveFalhaParaCriarConselhoSemMatrizOuComunidadePai() {
         assertThrows(GrupoParoquialNegocioException.class, () ->
-                service.createOrganization("Conselho Sem Pai",
+                service.criar("Conselho Sem Pai",
                         TipoGrupo.CONSELHO, "test@test.com", "Coord", "Vice", null, null)
 
         );
         assertThrows(GrupoParoquialNegocioException.class, () ->
-                service.createOrganization("Conselho Com Pai Incorreto",
+                service.criar("Conselho Com Pai Incorreto",
                         TipoGrupo.CONSELHO, "test@test.com", "Coord", "Vice", cleroUnidadeId, null)
 
         );
@@ -184,12 +184,12 @@ class GrupoParoquialServiceTest {
     @Test
     void deveFalhaParaCriarPastoralSemConselhoPai() {
         assertThrows(GrupoParoquialNegocioException.class, () ->
-                service.createOrganization("Pastoral Sem Pai",
+                service.criar("Pastoral Sem Pai",
                         TipoGrupo.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
 
         );
         assertThrows(GrupoParoquialNegocioException.class, () ->
-                service.createOrganization("Pastoral Com Pai Incorreto",
+                service.criar("Pastoral Com Pai Incorreto",
                         TipoGrupo.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
 
         );
@@ -205,7 +205,7 @@ class GrupoParoquialServiceTest {
         when(repository.findById(inactiveId)).thenReturn(Optional.of(inactiveParent));
 
         assertThrows(GrupoParoquialNegocioException.class, () ->
-                service.createOrganization("Pastoral Novo",
+                service.criar("Pastoral Novo",
                         TipoGrupo.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
 
         );
@@ -213,7 +213,7 @@ class GrupoParoquialServiceTest {
 
     @Test
     void devePermitirCriandoMinisterioComNuloPai() {
-        GrupoParoquial created = service.createOrganization("Ministério Novo",
+        GrupoParoquial created = service.criar("Ministério Novo",
                 TipoGrupo.MINISTERIO, "ministerio@test.com", "Coord", "Vice", null, null);
 
         assertNotNull(created.getId());

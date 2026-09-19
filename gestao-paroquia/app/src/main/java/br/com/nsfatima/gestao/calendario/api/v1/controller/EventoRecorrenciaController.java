@@ -68,7 +68,7 @@ public class EventoRecorrenciaController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
-    public ResponseEntity<EventoRecorrenciaDetalheResponse> getRecorrencia(
+    public ResponseEntity<EventoRecorrenciaDetalheResponse> obterRecorrencia(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         return getEventoRecorrenciaUseCase.execute(eventoId)
                 .map(ResponseEntity::ok)
@@ -81,7 +81,7 @@ public class EventoRecorrenciaController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * controller.createRecorrencia(eventoId, new EventoRecorrenciaRequest(Frequencia.WEEKLY, 1, ...));
+     * controller.criarRecorrencia(eventoId, new EventoRecorrenciaRequest(Frequencia.WEEKLY, 1, ...));
      * }
      */
     @PutMapping("/{eventoId}/recorrencia")
@@ -94,7 +94,7 @@ public class EventoRecorrenciaController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Evento pai não encontrado")
     })
-    public EventoRecorrenciaResponse createRecorrencia(
+    public EventoRecorrenciaResponse criarRecorrencia(
             @Parameter(description = "ID do evento pai") @PathVariable UUID eventoId,
             @RequestBody @Valid EventoRecorrenciaRequest payload) {
         var context = actorContextResolver.resolveRequired();
@@ -108,7 +108,7 @@ public class EventoRecorrenciaController {
                 payload.diaDoMes(),
                 payload.dataLimite(),
                 payload.numeroOcorrencias()));
-        auditPublisher.publish(context.actor(), "update-recurrence", eventoId.toString(), "success");
+        auditPublisher.publish(context.actor(), "atualizar-recorrencia", eventoId.toString(), "success");
         return response;
     }
 }

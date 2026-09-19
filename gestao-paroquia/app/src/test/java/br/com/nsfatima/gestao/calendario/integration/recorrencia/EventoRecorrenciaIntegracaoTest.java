@@ -89,7 +89,7 @@ class EventoRecorrenciaIntegracaoTest {
         String patchPayload = """
                 {
                     "titulo": "Missa Especial",
-                    "editScope": "ONLY_THIS"
+                    "escopoEdicao": "SOMENTE_ESTE"
                 }
                 """;
 
@@ -149,7 +149,7 @@ class EventoRecorrenciaIntegracaoTest {
         String patchPayload = """
                 {
                     "titulo": "Nova Serie",
-                    "editScope": "THIS_AND_FOLLOWING"
+                    "escopoEdicao": "ESTE_E_PROXIMOS"
                 }
                 """;
 

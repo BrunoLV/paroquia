@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     /** Nome do cache que guarda o resumo agregado de projetos. */
-    public static final String PROJECT_RESUMO_CACHE = "projectResumo";
+    public static final String PROJETO_RESUMO_CACHE = "projetoResumo";
     /** Nome do cache que guarda os dados do ano paroquial corrente. */
     public static final String ANO_PAROQUIAL_CACHE = "anoParoquial";
     /**
@@ -40,7 +40,7 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                PROJECT_RESUMO_CACHE, ANO_PAROQUIAL_CACHE, DASHBOARD_ANIVERSARIANTES_CACHE);
+                PROJETO_RESUMO_CACHE, ANO_PAROQUIAL_CACHE, DASHBOARD_ANIVERSARIANTES_CACHE);
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .initialCapacity(100)
                 .maximumSize(500)

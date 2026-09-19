@@ -37,7 +37,7 @@ public class ImportacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(ImportacaoService.class);
 
-    private final ImportacaoFileParser importacaoFileParser;
+    private final LeitorArquivoImportacao leitorArquivoImportacao;
     private final ImportacaoLinhaExecutor linhaExecutor;
 
     public ImportacaoService(AdicionarMembroUseCase adicionarMembroUseCase,
@@ -47,12 +47,12 @@ public class ImportacaoService {
                               GrupoParoquialJpaRepository grupoParoquialJpaRepository,
                               UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
-                              ImportacaoFileParser importacaoFileParser,
+                              LeitorArquivoImportacao leitorArquivoImportacao,
                               AnoParoquialJpaRepository anoParoquialJpaRepository,
                               MotorLiturgico motorLiturgico,
                               CicloLiturgicoRepository cicloLiturgicoRepository,
                               ProvisionamentoLiturgicoService provisionamentoLiturgicoService) {
-        this.importacaoFileParser = importacaoFileParser;
+        this.leitorArquivoImportacao = leitorArquivoImportacao;
         this.linhaExecutor = new ImportacaoLinhaExecutor(
                 adicionarMembroUseCase,
                 usuarioJpaRepository,
@@ -64,19 +64,20 @@ public class ImportacaoService {
                 anoParoquialJpaRepository,
                 motorLiturgico,
                 cicloLiturgicoRepository,
-                provisionamentoLiturgicoService);
+                provisionamentoLiturgicoService
+        );
     }
 
     /**
-     * Gera o arquivo modelo (CSV ou XLSX) para guia de preenchimento.
+     * Monta o arquivo modelo (cabeçalhos e exemplos) para preenchimento prévio.
      *
      * @param tipo código de {@link TipoEntidadeImportacao}
-     * @param formato "CSV" ou "XLSX"
+     * @param formato formato desejado ("CSV" ou "XLSX")
      * @return bytes do arquivo gerado
      * @throws IOException se houver falha ao montar o modelo
      */
     public byte[] gerarTemplate(String tipo, String formato) throws IOException {
-        return importacaoFileParser.gerarTemplate(tipo, formato);
+        return leitorArquivoImportacao.gerarTemplate(tipo, formato);
     }
 
     /**
@@ -88,8 +89,8 @@ public class ImportacaoService {
      * @throws IOException se o arquivo não puder ser lido
      */
     public ImportacaoValidacaoResultadoDTO validarArquivo(String tipo, MultipartFile file) throws IOException {
-        String filename = Optional.ofNullable(file.getOriginalFilename()).orElse("").toLowerCase();
-        List<Map<String, String>> rows = importacaoFileParser.parseFile(filename, file.getInputStream());
+        String nomeArquivo = Optional.ofNullable(file.getOriginalFilename()).orElse("").toLowerCase();
+        List<Map<String, String>> rows = leitorArquivoImportacao.lerArquivo(nomeArquivo, file.getInputStream());
 
         List<ImportacaoItemResultadoDTO> itens = new ArrayList<>();
         int valids = 0;

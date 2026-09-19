@@ -62,10 +62,10 @@ public class GrupoParoquialService {
      * @throws GrupoParoquialNegocioException se a hierarquia informada violar as regras de tipo/organização-mãe
      */
     @Transactional
-    public GrupoParoquial createOrganization(String nome,
-                                          TipoGrupo tipo, String contato, String coordenador,
-                                          String viceCoordenador, UUID parentId,
-                                          UUID pastoralOficialId) {
+    public GrupoParoquial criar(String nome,
+                                TipoGrupo tipo, String contato, String coordenador,
+                                String viceCoordenador, UUID parentId,
+                                UUID pastoralOficialId) {
 
         hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId);
         GrupoParoquial org = new GrupoParoquial(UUID.randomUUID(),
@@ -101,10 +101,10 @@ public class GrupoParoquialService {
      * @throws GrupoParoquialNegocioException se a organização não existir ou a nova hierarquia for inválida
      */
     @Transactional
-    public GrupoParoquial updateOrganization(UUID id,
-                                          String nome, TipoGrupo tipo, String contato, String coordenador,
-                                          String viceCoordenador,
-                                          boolean ativo, UUID parentId, UUID pastoralOficialId) {
+    public GrupoParoquial atualizar(UUID id,
+                                   String nome, TipoGrupo tipo, String contato, String coordenador,
+                                   String viceCoordenador,
+                                   boolean ativo, UUID parentId, UUID pastoralOficialId) {
 
         GrupoParoquial org = grupoParoquialRepository.findById(id)
                 .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
@@ -132,7 +132,7 @@ public class GrupoParoquialService {
      * @throws GrupoParoquialNegocioException se a organização não existir ou possuir dependências ativas
      */
     @Transactional
-    public void deleteOrganization(UUID id) {
+    public void excluir(UUID id) {
         if (grupoParoquialRepository.findById(id).isEmpty()) {
             throw GrupoParoquialNegocioException.notFound(id);
         }
@@ -158,7 +158,7 @@ public class GrupoParoquialService {
      * @return a organização encontrada, ou {@link Optional#empty()} se não existir
      */
     @Transactional(readOnly = true)
-    public Optional<GrupoParoquial> getOrganization(UUID id) {
+    public Optional<GrupoParoquial> obterPorId(UUID id) {
         return grupoParoquialRepository.findById(id);
     }
 
@@ -168,7 +168,7 @@ public class GrupoParoquialService {
      * @return lista de todas as organizações
      */
     @Transactional(readOnly = true)
-    public List<GrupoParoquial> listOrganizations() {
+    public List<GrupoParoquial> listar() {
         return grupoParoquialRepository.findAll();
     }
 }

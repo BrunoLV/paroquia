@@ -83,7 +83,7 @@ public class EventoReservaIntegrationService {
             );
 
             reservasParaSalvar.add(Reserva.criar(
-                    ReservaId.generate(),
+                    ReservaId.gerar(),
                     TipoItemReserva.LOCAL,
                     localId,
                     intervalo,
@@ -112,7 +112,7 @@ public class EventoReservaIntegrationService {
                 );
 
                 reservasParaSalvar.add(Reserva.criar(
-                        ReservaId.generate(),
+                        ReservaId.gerar(),
                         TipoItemReserva.ATIVO,
                         ativoId,
                         intervalo,
@@ -195,7 +195,7 @@ public class EventoReservaIntegrationService {
                 reservaRepository.save(reservaLocal);
             } else {
                 Reserva nova = Reserva.criar(
-                        ReservaId.generate(),
+                        ReservaId.gerar(),
                         TipoItemReserva.LOCAL,
                         localId,
                         novoIntervalo,
@@ -234,7 +234,7 @@ public class EventoReservaIntegrationService {
                     reservaRepository.save(reservaAtivo);
                 } else {
                     Reserva nova = Reserva.criar(
-                            ReservaId.generate(),
+                            ReservaId.gerar(),
                             TipoItemReserva.ATIVO,
                             ativoId,
                             novoIntervalo,

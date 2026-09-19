@@ -52,7 +52,7 @@ class ReservaConflitoServiceTest {
                 agora.plus(2, ChronoUnit.HOURS), agora.plus(4, ChronoUnit.HOURS), 15);
 
         Reserva existente = Reserva.criar(
-                ReservaId.generate(),
+                ReservaId.gerar(),
                 TipoItemReserva.LOCAL,
                 itemId,
                 new IntervaloReserva(agora.plus(3, ChronoUnit.HOURS), agora.plus(5, ChronoUnit.HOURS), 10),

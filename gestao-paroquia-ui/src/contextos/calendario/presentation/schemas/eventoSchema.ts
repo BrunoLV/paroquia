@@ -41,7 +41,7 @@ export const eventoFormSchema = z
     endTime: z.string(),
     justification: z.string(),
     isRecurring: z.boolean(),
-    bypassAgendaConflict: z.boolean(),
+    liberarConflitoAgenda: z.boolean(),
     recurrenceRule: recurrenceRuleSchema,
   })
   .superRefine((data, ctx) => {

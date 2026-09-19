@@ -41,17 +41,17 @@ public class UnidadeTerritorialService {
     }
 
     @Transactional(readOnly = true)
-    public List<UnidadeTerritorialEntity> listAll() {
+    public List<UnidadeTerritorialEntity> listar() {
         return repository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Optional<UnidadeTerritorialEntity> findById(UUID id) {
+    public Optional<UnidadeTerritorialEntity> obterPorId(UUID id) {
         return repository.findById(id);
     }
 
     @Transactional
-    public UnidadeTerritorialEntity create(
+    public UnidadeTerritorialEntity criar(
             String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
         if (parentId != null) {
             var parent = repository.findById(parentId)
@@ -83,7 +83,7 @@ public class UnidadeTerritorialService {
     }
 
     @Transactional
-    public UnidadeTerritorialEntity update(
+    public UnidadeTerritorialEntity atualizar(
             UUID id, String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
         UnidadeTerritorialEntity entity = repository.findById(id)
                 .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
@@ -118,7 +118,7 @@ public class UnidadeTerritorialService {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void excluir(UUID id) {
         UnidadeTerritorialEntity entity = repository.findById(id)
                 .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
 

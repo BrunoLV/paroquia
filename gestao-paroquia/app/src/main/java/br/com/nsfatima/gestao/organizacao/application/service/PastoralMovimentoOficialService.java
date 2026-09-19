@@ -36,7 +36,7 @@ public class PastoralMovimentoOficialService {
      * @throws PastoralMovimentoOficialNegocioException se o nome for ausente/duplicado ou o tipo inválido
      */
     @Transactional
-    public PastoralMovimentoOficial create(String nome, TipoGrupo tipo) {
+    public PastoralMovimentoOficial criar(String nome, TipoGrupo tipo) {
         validate(null, nome, tipo);
         PastoralMovimentoOficial oficial = new PastoralMovimentoOficial(UUID.randomUUID(), nome, tipo);
         repository.save(oficial);
@@ -45,7 +45,7 @@ public class PastoralMovimentoOficialService {
 
     /**
      * Atualiza nome e tipo de um item existente do catálogo oficial, revalidando as mesmas regras de
-     * {@link #create(String, TipoGrupo)} (exceto que o próprio item, se já tiver este nome, não conta
+     * {@link #criar(String, TipoGrupo)} (exceto que o próprio item, se já tiver este nome, não conta
      * como duplicidade).
      *
      * @param id identificador do item a atualizar
@@ -56,11 +56,11 @@ public class PastoralMovimentoOficialService {
      *     por outro item, ou o tipo for inválido
      */
     @Transactional
-    public PastoralMovimentoOficial update(UUID id, String nome, TipoGrupo tipo) {
+    public PastoralMovimentoOficial atualizar(UUID id, String nome, TipoGrupo tipo) {
         PastoralMovimentoOficial oficial = repository.findById(id)
                 .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
         validate(id, nome, tipo);
-        oficial.update(nome, tipo);
+        oficial.atualizar(nome, tipo);
         repository.save(oficial);
         return oficial;
     }
@@ -72,7 +72,7 @@ public class PastoralMovimentoOficialService {
      * @throws PastoralMovimentoOficialNegocioException se o item não existir
      */
     @Transactional
-    public void delete(UUID id) {
+    public void excluir(UUID id) {
         PastoralMovimentoOficial oficial = repository.findById(id)
                 .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
         repository.delete(id);
@@ -85,7 +85,7 @@ public class PastoralMovimentoOficialService {
      * @return o item encontrado, ou {@link Optional#empty()} se não existir
      */
     @Transactional(readOnly = true)
-    public Optional<PastoralMovimentoOficial> get(UUID id) {
+    public Optional<PastoralMovimentoOficial> obterPorId(UUID id) {
         return repository.findById(id);
     }
 
@@ -95,7 +95,7 @@ public class PastoralMovimentoOficialService {
      * @return lista de todos os itens cadastrados
      */
     @Transactional(readOnly = true)
-    public List<PastoralMovimentoOficial> list() {
+    public List<PastoralMovimentoOficial> listar() {
         return repository.findAll();
     }
 

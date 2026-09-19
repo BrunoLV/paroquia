@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.observability;
 
 import br.com.nsfatima.gestao.calendario.application.service.CalculadoraTaxaRetrabalho;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.PeriodoOperacionalResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.PeriodoOperacionalResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

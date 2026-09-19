@@ -17,7 +17,7 @@ class AtivoManutencaoTest {
 
     private AtivoManutencao emAberto() {
         return AtivoManutencao.registrar(
-                AtivoManutencaoId.generate(), AtivoPatrimonialId.generate(), "troca de lâmpada",
+                AtivoManutencaoId.gerar(), AtivoPatrimonialId.gerar(), "troca de lâmpada",
                 new PeriodoManutencao(inicio, fimPrevisto), UUID.randomUUID(), inicio);
     }
 

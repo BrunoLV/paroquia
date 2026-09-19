@@ -11,7 +11,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import br.com.nsfatima.gestao.patrimonio.domain.policy.PropriedadeUnidadeTerritorialPolicy;
-import br.com.nsfatima.gestao.patrimonio.application.service.NumeroTombamentoGenerator;
+import br.com.nsfatima.gestao.patrimonio.application.service.GeradorNumeroTombamento;
 import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.observability.PatrimonioAuditPublisher;
 import org.junit.jupiter.api.Test;
@@ -38,19 +38,19 @@ class CadastrarAtivoPatrimonialUseCaseTest {
     @Mock private PatrimonioAuthorizationService authorizationService;
     @Mock private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     @Mock private PropriedadeUnidadeTerritorialPolicy propriedadeUnidadeTerritorialPolicy;
-    @Mock private NumeroTombamentoGenerator numeroTombamentoGenerator;
+    @Mock private GeradorNumeroTombamento geradorNumeroTombamento;
     @Mock private PatrimonioAuditPublisher auditPublisher;
 
     @Test
     void cadastraComTombamentoGeradoEStatusDisponivel() {
         var useCase = new CadastrarAtivoPatrimonialUseCase(repository, actorContextResolver, authorizationService,
                 unidadeTerritorialRepository, propriedadeUnidadeTerritorialPolicy,
-                numeroTombamentoGenerator, auditPublisher);
+                geradorNumeroTombamento, auditPublisher);
         UUID grupo = UUID.randomUUID();
         UUID autor = UUID.randomUUID();
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("a", "admin", "CLERO", null, autor, null));
-        when(numeroTombamentoGenerator.generate(anyInt())).thenReturn("PAT-2026-0009");
+        when(geradorNumeroTombamento.gerar(anyInt())).thenReturn("PAT-2026-0009");
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         UnidadeTerritorialEntity proprietaria = new UnidadeTerritorialEntity();
         proprietaria.setTipo(TipoUnidadeTerritorial.MATRIZ);

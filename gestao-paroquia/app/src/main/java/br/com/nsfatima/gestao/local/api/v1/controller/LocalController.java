@@ -61,7 +61,7 @@ public class LocalController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Create a new location", description = "Only administrators can create locations.")
+    @Operation(summary = "Cria um novo local", description = "Registra um novo espaço físico para a paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Local criado com sucesso",
                     content = @Content(schema = @Schema(implementation = LocalResponse.class))),
@@ -70,7 +70,7 @@ public class LocalController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public LocalResponse criar(@RequestBody @Valid LocalRequest request) {
-        Local local = localService.createLocal(
+        Local local = localService.criar(
                 request.nome(),
                 request.tipo(),
                 request.toEnderecoLocal(),
@@ -90,7 +90,7 @@ public class LocalController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Update an existing location", description = "Only administrators can update locations.")
+    @Operation(summary = "Atualiza um local existente", description = "Altera os dados cadastrais e de capacidade de um local.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Local atualizado com sucesso",
                     content = @Content(schema = @Schema(implementation = LocalResponse.class))),
@@ -103,7 +103,7 @@ public class LocalController {
             @Parameter(description = "Identificador único do local", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid LocalRequest request) {
-        Local local = localService.updateLocal(
+        Local local = localService.atualizar(
                 id,
                 request.nome(),
                 request.tipo(),
@@ -124,8 +124,7 @@ public class LocalController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
-    @Operation(summary = "Delete a location", description = "Only administrators can delete locations. Cannot delete " +
-            "locations with scheduled future events.")
+    @Operation(summary = "Exclui um local", description = "Exclui logicamente um local sem eventos futuros agendados.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Local excluído com sucesso"),
             @ApiResponse(responseCode = "400", description = "Não é possível excluir local com eventos futuros"),
@@ -136,7 +135,7 @@ public class LocalController {
     public void excluir(
             @Parameter(description = "Identificador único do local", required = true)
             @PathVariable UUID id) {
-        localService.deleteLocal(id);
+        localService.excluir(id);
     }
 
     /**
@@ -147,7 +146,7 @@ public class LocalController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get location details")
+    @Operation(summary = "Obtém detalhes de um local", description = "Retorna os dados cadastrais de um local pelo seu identificador.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Local encontrado com sucesso",
                     content = @Content(schema = @Schema(implementation = LocalResponse.class))),
@@ -158,7 +157,7 @@ public class LocalController {
     public ResponseEntity<LocalResponse> obter(
             @Parameter(description = "Identificador único do local", required = true)
             @PathVariable UUID id) {
-        return localService.getLocal(id)
+        return localService.obterPorId(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -173,7 +172,7 @@ public class LocalController {
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "List all locations")
+    @Operation(summary = "Lista todos os locais", description = "Retorna a lista de locais cadastrados, com filtro opcional por organização.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de locais retornada com sucesso",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocalResponse.class)))),
@@ -186,7 +185,7 @@ public class LocalController {
             @Parameter(description = "Alias para grupoParoquialId")
             @RequestParam(required = false) UUID igrejaId) {
         UUID idFiltro = igrejaId != null ? igrejaId : grupoParoquialId;
-        return localService.listLocais(idFiltro).stream()
+        return localService.listar(idFiltro).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }

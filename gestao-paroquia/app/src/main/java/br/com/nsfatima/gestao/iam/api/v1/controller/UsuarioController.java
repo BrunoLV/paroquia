@@ -51,35 +51,35 @@ import java.util.UUID;
 @Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários e permissões (IAM)")
 public class UsuarioController {
 
-    private final ListarUsuariosUseCase listUsuariosUseCase;
-    private final ObterUsuarioUseCase getUsuarioUseCase;
-    private final CriarUsuarioUseCase createUsuarioUseCase;
-    private final AtualizarUsuarioUseCase updateUsuarioUseCase;
+    private final ListarUsuariosUseCase listarUsuariosUseCase;
+    private final ObterUsuarioUseCase obterUsuarioUseCase;
+    private final CriarUsuarioUseCase criarUsuarioUseCase;
+    private final AtualizarUsuarioUseCase atualizarUsuarioUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final RemoverVinculoUseCase removerVinculoUseCase;
     private final ListarVinculosUseCase listarVinculosUseCase;
     private final UsuarioAuthorizationService authorizationService;
-    private final AprovarUsuarioUseCase approveUsuarioUseCase;
+    private final AprovarUsuarioUseCase aprovarUsuarioUseCase;
 
     public UsuarioController(
-            ListarUsuariosUseCase listUsuariosUseCase,
-            ObterUsuarioUseCase getUsuarioUseCase,
-            CriarUsuarioUseCase createUsuarioUseCase,
-            AtualizarUsuarioUseCase updateUsuarioUseCase,
+            ListarUsuariosUseCase listarUsuariosUseCase,
+            ObterUsuarioUseCase obterUsuarioUseCase,
+            CriarUsuarioUseCase criarUsuarioUseCase,
+            AtualizarUsuarioUseCase atualizarUsuarioUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             RemoverVinculoUseCase removerVinculoUseCase,
             ListarVinculosUseCase listarVinculosUseCase,
             UsuarioAuthorizationService authorizationService,
-            AprovarUsuarioUseCase approveUsuarioUseCase) {
-        this.listUsuariosUseCase = listUsuariosUseCase;
-        this.getUsuarioUseCase = getUsuarioUseCase;
-        this.createUsuarioUseCase = createUsuarioUseCase;
-        this.updateUsuarioUseCase = updateUsuarioUseCase;
+            AprovarUsuarioUseCase aprovarUsuarioUseCase) {
+        this.listarUsuariosUseCase = listarUsuariosUseCase;
+        this.obterUsuarioUseCase = obterUsuarioUseCase;
+        this.criarUsuarioUseCase = criarUsuarioUseCase;
+        this.atualizarUsuarioUseCase = atualizarUsuarioUseCase;
         this.adicionarVinculoUseCase = adicionarVinculoUseCase;
         this.removerVinculoUseCase = removerVinculoUseCase;
         this.listarVinculosUseCase = listarVinculosUseCase;
         this.authorizationService = authorizationService;
-        this.approveUsuarioUseCase = approveUsuarioUseCase;
+        this.aprovarUsuarioUseCase = aprovarUsuarioUseCase;
     }
 
     @GetMapping
@@ -93,7 +93,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public List<UsuarioResponse> listar() {
-        return listUsuariosUseCase.execute();
+        return listarUsuariosUseCase.execute();
     }
 
     @PostMapping
@@ -109,7 +109,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "409", description = "Conflito de username ou já vinculado")
     })
     public UUID criar(@RequestBody @Valid CriarUsuarioRequest request) {
-        return createUsuarioUseCase.execute(
+        return criarUsuarioUseCase.execute(
                 request.username(),
                 request.password(),
                 request.fielId(),
@@ -129,7 +129,7 @@ public class UsuarioController {
     public UsuarioResponse obter(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id) {
         authorizationService.requireAdminOrCoordinatorOf(id);
-        return getUsuarioUseCase.execute(id);
+        return obterUsuarioUseCase.execute(id);
     }
 
     @PatchMapping("/{id}")
@@ -145,7 +145,7 @@ public class UsuarioController {
     public void atualizar(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id,
             @RequestBody UsuarioResponse request) {
-        updateUsuarioUseCase.execute(id, request.username(), request.enabled());
+        atualizarUsuarioUseCase.execute(id, request.username(), request.enabled());
     }
 
     @PutMapping("/{id}/aprovar")
@@ -162,7 +162,7 @@ public class UsuarioController {
     })
     public void aprovar(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id) {
-        approveUsuarioUseCase.execute(id);
+        aprovarUsuarioUseCase.execute(id);
     }
 
     @GetMapping("/{id}/membros")

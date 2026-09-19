@@ -49,23 +49,23 @@ import java.util.UUID;
 public class MembroController {
 
     private final AdicionarMembroUseCase adicionarMembroUseCase;
-    private final AtualizarMembroUseCase updateMembroUseCase;
-    private final ObterMembroUseCase getMembroUseCase;
-    private final ListarMembrosUseCase listMembrosUseCase;
+    private final AtualizarMembroUseCase atualizarMembroUseCase;
+    private final ObterMembroUseCase obterMembroUseCase;
+    private final ListarMembrosUseCase listarMembrosUseCase;
     private final PromoverACoordenadorUseCase promoverACoordenadorUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public MembroController(
             AdicionarMembroUseCase adicionarMembroUseCase,
-            AtualizarMembroUseCase updateMembroUseCase,
-            ObterMembroUseCase getMembroUseCase,
-            ListarMembrosUseCase listMembrosUseCase,
+            AtualizarMembroUseCase atualizarMembroUseCase,
+            ObterMembroUseCase obterMembroUseCase,
+            ListarMembrosUseCase listarMembrosUseCase,
             PromoverACoordenadorUseCase promoverACoordenadorUseCase,
             EventoActorContextResolver actorContextResolver) {
         this.adicionarMembroUseCase = adicionarMembroUseCase;
-        this.updateMembroUseCase = updateMembroUseCase;
-        this.getMembroUseCase = getMembroUseCase;
-        this.listMembrosUseCase = listMembrosUseCase;
+        this.atualizarMembroUseCase = atualizarMembroUseCase;
+        this.obterMembroUseCase = obterMembroUseCase;
+        this.listarMembrosUseCase = listarMembrosUseCase;
         this.promoverACoordenadorUseCase = promoverACoordenadorUseCase;
         this.actorContextResolver = actorContextResolver;
     }
@@ -118,7 +118,7 @@ public class MembroController {
             @Parameter(description = "ID do fiel") @RequestParam(required = false) UUID fielId,
             @Parameter(description = "Status ativo do vínculo") @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 20) Pageable pageable) {
-        return listMembrosUseCase.execute(grupoParoquialId, fielId, ativo, pageable);
+        return listarMembrosUseCase.execute(grupoParoquialId, fielId, ativo, pageable);
     }
 
     /**
@@ -140,7 +140,7 @@ public class MembroController {
     })
     public MembroResponse obter(
             @Parameter(description = "Identificador único do membro") @PathVariable UUID id) {
-        return getMembroUseCase.execute(id);
+        return obterMembroUseCase.execute(id);
     }
 
     /**
@@ -168,7 +168,7 @@ public class MembroController {
             @Parameter(description = "Identificador único do membro") @PathVariable UUID id,
             @RequestBody @Valid MembroRequest request) {
         var context = actorContextResolver.resolveRequired();
-        return updateMembroUseCase.execute(id, request, context.actor());
+        return atualizarMembroUseCase.execute(id, request, context.actor());
     }
 
     /**
@@ -192,7 +192,7 @@ public class MembroController {
             @Parameter(description = "Identificador único do membro") @PathVariable UUID id,
             @Parameter(description = "Novo status de ativação") @RequestParam boolean ativo) {
         var context = actorContextResolver.resolveRequired();
-        updateMembroUseCase.toggleAtivo(id, ativo, context.actor());
+        atualizarMembroUseCase.alternarAtivo(id, ativo, context.actor());
     }
 
     /**

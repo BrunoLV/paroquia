@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.metrics.TaxaEventosExtraResponse;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.metricas.TaxaEventosExtraResponse;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;

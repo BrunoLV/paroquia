@@ -29,7 +29,7 @@ import FactCheckIcon from '@mui/icons-material/FactCheck';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 import {decideAprovacao, getAprovacoes} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
-import {decideAprovacaoProjeto, getAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projects';
+import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '@/shared/domain/types/types';
 import {useNotification} from '@/shared/presentation/context/NotificationContext';
 import {extractErrorMessage} from '@/shared/utils/errorUtils';
@@ -120,7 +120,7 @@ const Aprovacoes = () => {
 
   const { data: projectData, isLoading: isProjectLoading, isError: isProjectError } = useQuery({
     queryKey: ['aprovacoesProjeto', getProjectStatus()],
-    queryFn: () => getAprovacoesProjeto(getProjectStatus()),
+    queryFn: () => obterAprovacoesProjeto(getProjectStatus()),
     enabled: tipoAprovacao === 'PROJETOS',
   });
 
@@ -154,7 +154,7 @@ const Aprovacoes = () => {
   // booleano `aprovado` em vez do enum de status usado para eventos).
   const projectDecisionMutation = useMutation({
     mutationFn: ({ id, aprovado, observacao }: { id: string; aprovado: boolean; observacao: string }) =>
-      decideAprovacaoProjeto(id, aprovado, observacao),
+      decidirAprovacaoProjeto(id, aprovado, observacao),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['aprovacoesProjeto'] });
       showSuccess(variables.aprovado ? 'Solicitação de projeto aprovada com sucesso!' : 'Solicitação de projeto rejeitada com sucesso!');

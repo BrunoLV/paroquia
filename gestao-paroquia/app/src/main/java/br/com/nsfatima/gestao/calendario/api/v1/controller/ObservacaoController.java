@@ -92,7 +92,7 @@ public class ObservacaoController {
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
     @Transactional
-    public ObservacaoResponse create(
+    public ObservacaoResponse criar(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
             @RequestBody @Valid CriarObservacaoRequest request) {
         var context = actorContextResolver.resolveRequired();
@@ -109,7 +109,7 @@ public class ObservacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * List<ObservacaoResponse> list = controller.list(eventoId);
+     * List<ObservacaoResponse> list = controller.listar(eventoId);
      * }
      */
     @GetMapping
@@ -123,7 +123,7 @@ public class ObservacaoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
-    public List<ObservacaoResponse> list(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
+    public List<ObservacaoResponse> listar(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         List<ObservacaoResponse> result = listObservacoesUseCase.execute(eventoId);
         observacaoAuditPublisher.publishList(
@@ -140,7 +140,7 @@ public class ObservacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * List<ObservacaoResponse> minhas = controller.listMinhas(eventoId);
+     * List<ObservacaoResponse> minhas = controller.listarMinhas(eventoId);
      * }
      */
     @GetMapping("/minhas")
@@ -154,7 +154,7 @@ public class ObservacaoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado")
     })
-    public List<ObservacaoResponse> listMinhas(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
+    public List<ObservacaoResponse> listarMinhas(@Parameter(description = "ID do evento") @PathVariable UUID eventoId) {
         var context = actorContextResolver.resolveRequired();
         List<ObservacaoResponse> result = listMinhasObservacoesUseCase.execute(eventoId, context.usuarioId());
         observacaoAuditPublisher.publishList(
@@ -170,7 +170,7 @@ public class ObservacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * controller.update(eventoId, observacaoId, new AtualizarObservacaoRequest("Conteúdo revisado"));
+     * controller.atualizar(eventoId, observacaoId, new AtualizarObservacaoRequest("Conteúdo revisado"));
      * }
      */
     @PatchMapping("/{observacaoId}")
@@ -185,7 +185,7 @@ public class ObservacaoController {
             @ApiResponse(responseCode = "404", description = "Observação ou evento não encontrado")
     })
     @Transactional
-    public ObservacaoResponse update(
+    public ObservacaoResponse atualizar(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
             @Parameter(description = "ID da observação") @PathVariable UUID observacaoId,
             @RequestBody @Valid AtualizarObservacaoRequest request) {
@@ -203,7 +203,7 @@ public class ObservacaoController {
      * <p>
      * Exemplo de uso:
      * {@code
-     * controller.delete(eventoId, observacaoId);
+     * controller.excluir(eventoId, observacaoId);
      * }
      */
     @DeleteMapping("/{observacaoId}")
@@ -216,7 +216,7 @@ public class ObservacaoController {
             @ApiResponse(responseCode = "404", description = "Observação ou evento não encontrado")
     })
     @Transactional
-    public void delete(
+    public void excluir(
             @Parameter(description = "ID do evento") @PathVariable UUID eventoId,
             @Parameter(description = "ID da observação") @PathVariable UUID observacaoId) {
         var context = actorContextResolver.resolveRequired();

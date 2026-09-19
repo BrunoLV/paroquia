@@ -30,10 +30,10 @@ import java.util.UUID;
 @Tag(name = "Exportação de Calendário", description = "Endpoints para exportar eventos do calendário")
 public class ExportacaoCalendarioController {
 
-    private final ExportacaoCalendarioUseCase exportUseCase;
+    private final ExportacaoCalendarioUseCase exportacaoCalendarioUseCase;
 
-    public ExportacaoCalendarioController(ExportacaoCalendarioUseCase exportUseCase) {
-        this.exportUseCase = exportUseCase;
+    public ExportacaoCalendarioController(ExportacaoCalendarioUseCase exportacaoCalendarioUseCase) {
+        this.exportacaoCalendarioUseCase = exportacaoCalendarioUseCase;
     }
 
     /**
@@ -77,36 +77,36 @@ public class ExportacaoCalendarioController {
             @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false)
             List<UUID> grupoParoquialIds) {
 
-        byte[] content = exportUseCase.execute(formato,
+        byte[] conteudo = exportacaoCalendarioUseCase.execute(formato,
                 opcao, ano, mes, dataInicio, dataFim, categorias, grupoParoquialIds);
 
 
-        String filename = "calendario_" + opcao.toLowerCase();
+        String nomeArquivo = "calendario_" + opcao.toLowerCase();
         if ("ANO".equalsIgnoreCase(opcao) && ano != null) {
-            filename += "_" + ano;
+            nomeArquivo += "_" + ano;
         } else if ("MES".equalsIgnoreCase(opcao) && ano != null && mes != null) {
-            filename += "_" + ano + "_" + String.format("%02d", mes);
+            nomeArquivo += "_" + ano + "_" + String.format("%02d", mes);
         }
 
-        String mediaType;
-        String extension;
+        String tipoMidia;
+        String extensao;
 
         if ("CSV".equalsIgnoreCase(formato)) {
-            mediaType = "text/csv; charset=UTF-8";
-            extension = ".csv";
+            tipoMidia = "text/csv; charset=UTF-8";
+            extensao = ".csv";
         } else if ("EXCEL".equalsIgnoreCase(formato)) {
-            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            extension = ".xlsx";
+            tipoMidia = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            extensao = ".xlsx";
         } else if ("PDF".equalsIgnoreCase(formato)) {
-            mediaType = "application/pdf";
-            extension = ".pdf";
+            tipoMidia = "application/pdf";
+            extensao = ".pdf";
         } else {
             return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + extension + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, mediaType)
-                .body(content);
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomeArquivo + extensao + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, tipoMidia)
+                .body(conteudo);
     }
 }

@@ -131,7 +131,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                   "igrejaVinculoId": "%s",
                   "inicio": "2026-08-11T10:30:00Z",
                   "fim": "2026-08-11T11:30:00Z",
-                  "bypassAgendaConflict": true
+                  "liberarConflitoAgenda": true
                 }
                 """.formatted(ORG_ID, IGREJA_ID);
 
@@ -154,7 +154,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                   "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-12T10:00:00Z",
                   "fim": "2026-08-12T11:00:00Z",
-                  "bypassAgendaConflict": true
+                  "liberarConflitoAgenda": true
                 }
                 """.formatted(ORG_ID);
 

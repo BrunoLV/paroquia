@@ -46,11 +46,11 @@ import java.util.UUID;
 public class ProjetoController {
 
     private static final String RESULT_SUCCESS = "success";
-    private final CriarProjetoUseCase createProjetoUseCase;
-    private final ListarProjetosUseCase listProjetosUseCase;
-    private final AtualizarProjetoUseCase updateProjetoUseCase;
+    private final CriarProjetoUseCase criarProjetoUseCase;
+    private final ListarProjetosUseCase listarProjetosUseCase;
+    private final AtualizarProjetoUseCase atualizarProjetoUseCase;
     private final ProjetoAgregacaoService projetoAgregacaoService;
-    private final TransicionarProjetoUseCase transitionProjetoUseCase;
+    private final TransicionarProjetoUseCase transicionarProjetoUseCase;
     private final ProjetoAuditPublisher auditPublisher;
     private final EventoActorContextResolver actorContextResolver;
     private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
@@ -60,31 +60,31 @@ public class ProjetoController {
      * Inicializa o controller de projetos com suas dependências necessárias para orquestração de casos de uso e
      * auditoria.
      *
-     * @param createProjetoUseCase     Caso de uso para criação de novos projetos
-     * @param listProjetosUseCase      Caso de uso para listagem de projetos existentes
-     * @param updateProjetoUseCase     Caso de uso para atualização de dados de projetos
-     * @param projetoAgregacaoService  Serviço para consolidação de indicadores e resumos do projeto
-     * @param transitionProjetoUseCase Caso de uso para transição e aprovação de projetos
-     * @param auditPublisher           Publicador de eventos de auditoria para rastreabilidade de ações
-     * @param actorContextResolver     Resolvedor de contexto do usuário/ator da requisição
-     * @param aprovacaoRepository       Repositório para solicitações de aprovação
-     * @param mapper                   Mapeador de projetos
+     * @param criarProjetoUseCase        Caso de uso para criação de novos projetos
+     * @param listarProjetosUseCase       Caso de uso para listagem de projetos existentes
+     * @param atualizarProjetoUseCase     Caso de uso para atualização de dados de projetos
+     * @param projetoAgregacaoService   Serviço para consolidação de indicadores e resumos do projeto
+     * @param transicionarProjetoUseCase  Caso de uso para transição e aprovação de projetos
+     * @param auditPublisher            Publicador de eventos de auditoria para rastreabilidade de ações
+     * @param actorContextResolver      Resolvedor de contexto do usuário/ator da requisição
+     * @param aprovacaoRepository        Repositório para solicitações de aprovação
+     * @param mapper                    Mapeador de projetos
      */
     public ProjetoController(
-            CriarProjetoUseCase createProjetoUseCase,
-            ListarProjetosUseCase listProjetosUseCase,
-            AtualizarProjetoUseCase updateProjetoUseCase,
+            CriarProjetoUseCase criarProjetoUseCase,
+            ListarProjetosUseCase listarProjetosUseCase,
+            AtualizarProjetoUseCase atualizarProjetoUseCase,
             ProjetoAgregacaoService projetoAgregacaoService,
-            TransicionarProjetoUseCase transitionProjetoUseCase,
+            TransicionarProjetoUseCase transicionarProjetoUseCase,
             ProjetoAuditPublisher auditPublisher,
             EventoActorContextResolver actorContextResolver,
             ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository,
             ProjetoMapper mapper) {
-        this.createProjetoUseCase = createProjetoUseCase;
-        this.listProjetosUseCase = listProjetosUseCase;
-        this.updateProjetoUseCase = updateProjetoUseCase;
+        this.criarProjetoUseCase = criarProjetoUseCase;
+        this.listarProjetosUseCase = listarProjetosUseCase;
+        this.atualizarProjetoUseCase = atualizarProjetoUseCase;
         this.projetoAgregacaoService = projetoAgregacaoService;
-        this.transitionProjetoUseCase = transitionProjetoUseCase;
+        this.transicionarProjetoUseCase = transicionarProjetoUseCase;
         this.auditPublisher = auditPublisher;
         this.actorContextResolver = actorContextResolver;
         this.aprovacaoRepository = aprovacaoRepository;
@@ -113,7 +113,7 @@ public class ProjetoController {
     })
     public ResponseEntity<?> criar(@RequestBody @Valid CriarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
-        var result = createProjetoUseCase.create(request);
+        var result = criarProjetoUseCase.criar(request);
         if (result.isPendenteAprovacao()) {
             auditPublisher.publish(context.actor(),
                     "request-create-project", result.aprovacao().id().toString(), RESULT_SUCCESS);
@@ -142,7 +142,7 @@ public class ProjetoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public List<ProjetoResponse> listar() {
-        return listProjetosUseCase.execute();
+        return listarProjetosUseCase.execute();
     }
 
     /**
@@ -170,7 +170,7 @@ public class ProjetoController {
             @Parameter(description = "ID único do projeto") @PathVariable UUID projetoId,
             @RequestBody @Valid AtualizarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
-        var response = updateProjetoUseCase.execute(projetoId, request);
+        var response = atualizarProjetoUseCase.execute(projetoId, request);
         auditPublisher.publish(context.actor(), "update-project", projetoId.toString(), RESULT_SUCCESS);
         return response;
     }
@@ -195,7 +195,7 @@ public class ProjetoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Projeto não encontrado")
     })
-    public ProjetoResumoDTO getResumo(
+    public ProjetoResumoDTO obterResumo(
             @Parameter(description = "ID único do projeto") @PathVariable UUID projetoId) {
         return projetoAgregacaoService.obterResumo(projetoId);
     }
@@ -214,7 +214,7 @@ public class ProjetoController {
     public ProjetoResponse iniciar(
             @Parameter(description = "ID único do projeto", required = true)
             @PathVariable UUID projetoId) {
-        return transitionProjetoUseCase.iniciar(projetoId);
+        return transicionarProjetoUseCase.iniciar(projetoId);
     }
 
     @PostMapping("/{projetoId}/concluir")
@@ -231,7 +231,7 @@ public class ProjetoController {
     public ProjetoResponse concluir(
             @Parameter(description = "ID único do projeto", required = true)
             @PathVariable UUID projetoId) {
-        return transitionProjetoUseCase.concluir(projetoId);
+        return transicionarProjetoUseCase.concluir(projetoId);
     }
 
     @PostMapping("/{projetoId}/cancelar")
@@ -251,7 +251,7 @@ public class ProjetoController {
             @PathVariable UUID projetoId,
             @RequestBody CancelarProjetoRequest request) {
         var context = actorContextResolver.resolveRequired();
-        var result = transitionProjetoUseCase.cancelar(projetoId, request.cancelarEventosVinculados());
+        var result = transicionarProjetoUseCase.cancelar(projetoId, request.cancelarEventosVinculados());
         if (result.isPendenteAprovacao()) {
             auditPublisher.publish(context.actor(),
                     "request-cancel-project", result.aprovacao().id().toString(), RESULT_SUCCESS);
@@ -277,7 +277,7 @@ public class ProjetoController {
             @Parameter(description = "ID único da solicitação", required = true)
             @PathVariable UUID solicitacaoId,
             @RequestBody @Valid ProjetoDecisaoRequest request) {
-        var response = transitionProjetoUseCase.decidir(solicitacaoId, request.aprovado(), request.observacao());
+        var response = transicionarProjetoUseCase.decidir(solicitacaoId, request.aprovado(), request.observacao());
         return ResponseEntity.ok(response);
     }
 

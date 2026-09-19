@@ -1,9 +1,9 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEditScope;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EscopoEdicaoEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoOperationResult;
+import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.ResultadoOperacaoEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.AtualizarEventoSolicitacaoAprovacaoUseCase;
@@ -108,7 +108,7 @@ public class AtualizarEventoUseCase {
      * useCase.execute(id, new AtualizarEventoRequest("Novo Título", null, ...));
      */
     @Transactional
-    public EventoOperationResult execute(UUID eventoId, AtualizarEventoRequest request) {
+    public ResultadoOperacaoEvento execute(UUID eventoId, AtualizarEventoRequest request) {
         validateRequest(request);
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
@@ -116,13 +116,13 @@ public class AtualizarEventoUseCase {
         validateAuthorization(entity, request, actorContext);
 
         if (request.alteraCamposSensiveis() && requiresAprovacao(entity, actorContext)) {
-            return new EventoOperationResult.Pendente(aprovacaoRequestUseCase.execute(eventoId,
+            return new ResultadoOperacaoEvento.Pendente(aprovacaoRequestUseCase.execute(eventoId,
                     request), HttpStatus.ACCEPTED);
 
         }
 
         EventoResponse response = performUpdate(entity, request, actorContext, "sucesso", false);
-        return new EventoOperationResult.Success(response, HttpStatus.OK);
+        return new ResultadoOperacaoEvento.Sucesso(response, HttpStatus.OK);
     }
 
     /**
@@ -164,7 +164,7 @@ public class AtualizarEventoUseCase {
 
         }
 
-        if (request.isBypassAgendaConflict()) {
+        if (request.isLiberarConflitoAgenda()) {
             authorizationService.assertCanBypassAgendaConflict(actorContext);
         }
     }
@@ -187,11 +187,11 @@ public class AtualizarEventoUseCase {
 
         validateDomainRules(entity, request, status);
 
-        if (request.editScope() == EventoEditScope.ONLY_THIS) {
+        if (request.escopoEdicao() == EscopoEdicaoEvento.SOMENTE_ESTE) {
             entity.setRecorrenciaId(null);
-        } else if (request.editScope() == EventoEditScope.THIS_AND_FOLLOWING && entity.getRecorrenciaId() != null) {
+        } else if (request.escopoEdicao() == EscopoEdicaoEvento.ESTE_E_PROXIMOS && entity.getRecorrenciaId() != null) {
             splitRecurrenceSeries(entity);
-        } else if (request.editScope() == EventoEditScope.EDIT_ALL && entity.getRecorrenciaId() != null) {
+        } else if (request.escopoEdicao() == EscopoEdicaoEvento.TODOS && entity.getRecorrenciaId() != null) {
             updateAllInstances(entity.getRecorrenciaId(), request, status);
         }
 
@@ -268,7 +268,7 @@ public class AtualizarEventoUseCase {
     }
 
     private void evictProjectCaches(UUID oldProjectId, UUID newProjectId) {
-        Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJECT_RESUMO_CACHE)).ifPresent(cache -> {
+        Optional.ofNullable(cacheManager.getCache(CacheConfig.PROJETO_RESUMO_CACHE)).ifPresent(cache -> {
             if (oldProjectId != null) {
                 cache.evict(oldProjectId);
             }
@@ -315,7 +315,7 @@ public class AtualizarEventoUseCase {
         domainService.validateGrupoParoquialParticipantes(org, part);
 
         UUID projetoId = request.projetoId() != null ? request.projetoId() : entity.getProjetoId();
-        boolean isRecurring = entity.getRecorrenciaId() != null && request.editScope() != EventoEditScope.ONLY_THIS;
+        boolean isRecurring = entity.getRecorrenciaId() != null && request.escopoEdicao() != EscopoEdicaoEvento.SOMENTE_ESTE;
         if (isRecurring && entity.getRecorrenciaId() != null) {
             EventoRecorrenciaEntity recurrence = recurrenceRepository.findById(entity.getRecorrenciaId())
                     .orElseThrow(() -> new IllegalStateException("Recurrence not found: " + entity.getRecorrenciaId()));
@@ -337,7 +337,7 @@ public class AtualizarEventoUseCase {
                 local,
                 igreja,
                 entity.getId(),
-                request.isBypassAgendaConflict());
+                request.isLiberarConflitoAgenda());
         validadorPrioridadeAgendaService.processarCancelamentosAutomaticos(
                 autoCancel,
                 "Cancelado automaticamente devido a agendamento"

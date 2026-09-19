@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardMetricsDTO;
+import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardMetricasDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DetalheProjetoDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.DistribuicaoEventosDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.EventoOrfaoDTO;
@@ -122,7 +122,7 @@ public class ObterDashboardMetricasUseCase {
      *     organização solicitada
      */
     @Transactional(readOnly = true)
-    public DashboardMetricsDTO execute(
+    public DashboardMetricasDTO execute(
             EventoActorContext actorContext, PeriodoDashboard periodo, UUID grupoParoquialIdSolicitado) {
         Instant agora = Instant.now();
         JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
@@ -134,7 +134,7 @@ public class ObterDashboardMetricasUseCase {
         List<ProjetoEventoEntity> projetosAtivos = filtrarProjetosAtivos(projetos, escopo);
         Map<UUID, String> nomesOrganizacoes = carregarNomesOrganizacoes();
 
-        return new DashboardMetricsDTO(
+        return new DashboardMetricasDTO(
                 resumoGeral(eventosPeriodo, projetosAtivos, agora, escopo),
                 distribuicao(eventosPeriodo, nomesOrganizacoes),
                 projetosPorStatus(projetos, escopo, agora),

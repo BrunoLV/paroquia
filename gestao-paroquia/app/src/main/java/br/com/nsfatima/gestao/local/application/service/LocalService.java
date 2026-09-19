@@ -50,12 +50,12 @@ public class LocalService {
      * @return o Local cadastrado persistido
      */
     @Transactional
-    public Local createLocal(String nome,
-                             String tipo,
-                             EnderecoLocal enderecoLocal,
-                             Integer capacidadeMaxima,
-                             String descricao,
-                             UUID igrejaId) {
+    public Local criar(String nome,
+                       String tipo,
+                       EnderecoLocal enderecoLocal,
+                       Integer capacidadeMaxima,
+                       String descricao,
+                       UUID igrejaId) {
         Instant now = Instant.now();
         Local local = new Local(
                 UUID.randomUUID(),
@@ -90,14 +90,14 @@ public class LocalService {
      * @throws LocalNegocioException se o local não existir ou possuir eventos futuros ao inativar
      */
     @Transactional
-    public Local updateLocal(UUID id,
-                             String nome,
-                             String tipo,
-                             EnderecoLocal enderecoLocal,
-                             Integer capacidadeMaxima,
-                             String descricao,
-                             boolean ativo,
-                             UUID igrejaId) {
+    public Local atualizar(UUID id,
+                          String nome,
+                          String tipo,
+                          EnderecoLocal enderecoLocal,
+                          Integer capacidadeMaxima,
+                          String descricao,
+                          boolean ativo,
+                          UUID igrejaId) {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalNegocioException.notFound(id));
 
@@ -122,7 +122,7 @@ public class LocalService {
      * @throws LocalNegocioException se não existir Local ou se possuir eventos futuros agendados
      */
     @Transactional
-    public void deleteLocal(UUID id) {
+    public void excluir(UUID id) {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalNegocioException.notFound(id));
 
@@ -141,7 +141,7 @@ public class LocalService {
      * @return o Local encontrado, ou {@link Optional#empty()} se não existir
      */
     @Transactional(readOnly = true)
-    public Optional<Local> getLocal(UUID id) {
+    public Optional<Local> obterPorId(UUID id) {
         return localRepository.findById(id);
     }
 
@@ -152,7 +152,7 @@ public class LocalService {
      * @return lista de Locais filtrada
      */
     @Transactional(readOnly = true)
-    public List<Local> listLocais(UUID grupoParoquialId) {
+    public List<Local> listar(UUID grupoParoquialId) {
         if (grupoParoquialId != null) {
             return localRepository.findByGrupoParoquialId(grupoParoquialId);
         }
