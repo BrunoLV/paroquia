@@ -17,9 +17,19 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
-  "links": [],
-  "liveNow": true,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": ["paroquia"],
+      "targetBlank": false,
+      "title": "Outros Dashboards da Paróquia",
+      "type": "dashboards"
+    }
+  ],
+
   "panels": [
     {
       "collapsed": false,

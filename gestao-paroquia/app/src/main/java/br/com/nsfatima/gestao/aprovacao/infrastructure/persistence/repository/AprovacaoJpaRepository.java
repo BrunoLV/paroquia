@@ -116,4 +116,14 @@ public interface AprovacaoJpaRepository extends JpaRepository<AprovacaoEntity, U
     @Query("SELECT a.tipoSolicitacao, count(a) FROM AprovacaoEntity a WHERE a.status = :status "
             + "GROUP BY a.tipoSolicitacao")
     List<Object[]> contarPorTipoComStatus(@Param("status") AprovacaoStatus status);
+
+    /**
+     * Conta a quantidade total de aprovações com um determinado status (ex.: PENDENTE),
+     * alimentando métricas em tempo real e gauges do Micrometer.
+     *
+     * @param status status da aprovação
+     * @return quantidade total encontrada
+     */
+    long countByStatus(AprovacaoStatus status);
 }
+

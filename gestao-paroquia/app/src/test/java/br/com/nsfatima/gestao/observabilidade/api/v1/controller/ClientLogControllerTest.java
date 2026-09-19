@@ -32,8 +32,12 @@ class ClientLogControllerTest {
     @Test
     @DisplayName("Deve aceitar lote de logs valido e retornar 202 Accepted")
     void deveAceitarLoteDeLogsValido() throws Exception {
-        ClientLogDto log1 = new ClientLogDto("INFO", "Usuário acessou a página de eventos", "/calendario", "Calendario", null, Instant.now());
-        ClientLogDto log2 = new ClientLogDto("ERROR", "Erro de renderizacao", "/fieis", "FielModal", "TypeError: null", Instant.now());
+        ClientLogDto log1 = new ClientLogDto(
+                "INFO", "Usuário acessou a página de eventos", "/calendario", "Calendario", null, Instant.now()
+        );
+        ClientLogDto log2 = new ClientLogDto(
+                "ERROR", "Erro de renderizacao", "/fieis", "FielModal", "TypeError: null", Instant.now()
+        );
         ClientLogBatchRequest request = new ClientLogBatchRequest(List.of(log1, log2));
 
         mockMvc.perform(post("/api/v1/observabilidade/logs")

@@ -18,14 +18,25 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": ["paroquia"],
+      "targetBlank": false,
+      "title": "Outros Dashboards da Paróquia",
+      "type": "dashboards"
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "Visão Geral de Operações (Aprovações, Rejeições, Deleções e Edições)",
+      "title": "KPIs de Infraestrutura e Disponibilidade da API",
       "type": "row"
     },
     {
@@ -36,41 +47,34 @@
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null }
-            ]
+            "steps": [{ "color": "green", "value": null }]
           },
-          "unit": "short"
+          "unit": "s"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
       "id": 1,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "sum(gestao_aprovacoes_total) or vector(0)",
+          "expr": "process_uptime_seconds or vector(0)",
           "instant": true,
-          "legendFormat": "Aprovações",
-          "range": false,
+          "legendFormat": "Uptime",
           "refId": "A"
         }
       ],
-      "title": "Total de Aprovações",
+      "title": "Tempo de Atividade (Uptime)",
       "type": "stat"
     },
     {
@@ -81,41 +85,34 @@
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "red", "value": null }
-            ]
+            "steps": [{ "color": "blue", "value": null }]
           },
-          "unit": "short"
+          "unit": "reqps"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
       "id": 2,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "sum(gestao_rejeicoes_total) or vector(0)",
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) or vector(0)",
           "instant": true,
-          "legendFormat": "Rejeições",
-          "range": false,
+          "legendFormat": "Req/s",
           "refId": "A"
         }
       ],
-      "title": "Total de Rejeições",
+      "title": "Vazão HTTP Total",
       "type": "stat"
     },
     {
@@ -127,40 +124,37 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "orange", "value": null }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 5 }
             ]
           },
-          "unit": "short"
+          "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
       "id": 3,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "sum(gestao_delecoes_total) or vector(0)",
+          "expr": "((sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[1m])) or vector(0)) / (sum(rate(http_server_requests_seconds_count[1m])) + 0.0001)) * 100",
           "instant": true,
-          "legendFormat": "Deleções",
-          "range": false,
+          "legendFormat": "Erro 5xx",
           "refId": "A"
         }
       ],
-      "title": "Total de Deleções / Cancelamentos",
+      "title": "Taxa de Erro HTTP 5xx",
       "type": "stat"
     },
     {
@@ -172,127 +166,128 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "blue", "value": null }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 0.3 },
+              { "color": "red", "value": 1.0 }
             ]
           },
-          "unit": "short"
+          "unit": "s"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
       "id": 4,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
-      "pluginVersion": "11.2.0",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "sum(gestao_edicoes_total) or vector(0)",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket[1m]))) or vector(0)",
           "instant": true,
-          "legendFormat": "Edições",
-          "range": false,
+          "legendFormat": "Latência P95",
           "refId": "A"
         }
       ],
-      "title": "Total de Edições / Alterações",
+      "title": "Latência HTTP (P95)",
       "type": "stat"
     },
     {
       "datasource": { "type": "prometheus", "uid": "Prometheus" },
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "showPoints": "auto"
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 75 },
+              { "color": "red", "value": 90 }
+            ]
           },
-          "unit": "ops"
-        }
+          "unit": "percent"
+        },
+        "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
       "id": 5,
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "rate(gestao_aprovacoes_total[1m])",
-          "legendFormat": "Aprovações ({{tipo}})",
+          "expr": "((sum(jvm_memory_used_bytes{area=\"heap\"}) or vector(0)) / (sum(jvm_memory_max_bytes{area=\"heap\"}) + 0.0001)) * 100",
+          "instant": true,
+          "legendFormat": "Heap Utilizada",
           "refId": "A"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "editorMode": "code",
-          "expr": "rate(gestao_rejeicoes_total[1m])",
-          "legendFormat": "Rejeições ({{tipo}})",
-          "refId": "B"
         }
       ],
-      "title": "Taxa de Aprovações vs Rejeições por Minuto",
-      "type": "timeseries"
+      "title": "Uso de Memória Heap JVM",
+      "type": "stat"
     },
     {
       "datasource": { "type": "prometheus", "uid": "Prometheus" },
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "showPoints": "auto"
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 60 },
+              { "color": "red", "value": 85 }
+            ]
           },
-          "unit": "ops"
-        }
+          "unit": "percent"
+        },
+        "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
       "id": 6,
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
-        "tooltip": { "mode": "multi" }
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "rate(gestao_delecoes_total[1m])",
-          "legendFormat": "Deleções ({{recurso}} - {{origem}})",
+          "expr": "(process_cpu_usage * 100) or vector(0)",
+          "instant": true,
+          "legendFormat": "CPU Processo",
           "refId": "A"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "editorMode": "code",
-          "expr": "rate(gestao_edicoes_total[1m])",
-          "legendFormat": "Edições ({{recurso}} - {{origem}})",
-          "refId": "B"
         }
       ],
-      "title": "Taxa de Deleções e Edições por Minuto",
-      "type": "timeseries"
+      "title": "Uso de CPU da Aplicação",
+      "type": "stat"
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 13 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 101,
-      "title": "Métricas de Tempos de Aprovações (SLAs e Latências)",
+      "title": "Camada de Rede e Requisições HTTP",
       "type": "row"
     },
     {
@@ -306,99 +301,14 @@
             "lineWidth": 2,
             "pointSize": 5,
             "showPoints": "auto"
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
-      "id": 7,
-      "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "editorMode": "code",
-          "expr": "rate(gestao_aprovacao_tempo_decisao_seconds_sum[1m]) / rate(gestao_aprovacao_tempo_decisao_seconds_count[1m])",
-          "legendFormat": "Tempo Médio de Decisão ({{tipo}} - {{status}})",
-          "refId": "A"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "editorMode": "code",
-          "expr": "gestao_aprovacao_tempo_decisao_seconds_max",
-          "legendFormat": "Tempo Máximo de Decisão ({{tipo}} - {{status}})",
-          "refId": "B"
-        }
-      ],
-      "title": "Tempo de Decisão da Aprovação (Lead Time de Decisão)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "showPoints": "auto"
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
-      "id": 8,
-      "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
-        "tooltip": { "mode": "multi" }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "editorMode": "code",
-          "expr": "rate(gestao_aprovacao_tempo_execucao_seconds_sum[1m]) / rate(gestao_aprovacao_tempo_execucao_seconds_count[1m])",
-          "legendFormat": "Latência Média de Execução ({{tipo}})",
-          "refId": "A"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "Prometheus" },
-          "editorMode": "code",
-          "expr": "rate(gestao_aprovacao_tempo_total_seconds_sum[1m]) / rate(gestao_aprovacao_tempo_total_seconds_count[1m])",
-          "legendFormat": "Tempo Total do Ciclo de Aprovação ({{tipo}})",
-          "refId": "B"
-        }
-      ],
-      "title": "Tempo de Execução e Ciclo Total de Aprovação",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 },
-      "id": 102,
-      "title": "Saúde da Aplicação e JVM",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2
           },
           "unit": "reqps"
         }
       },
-      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 23 },
-      "id": 9,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 7,
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["sum", "mean", "lastNotNull"] },
         "tooltip": { "mode": "multi" }
       },
       "targets": [
@@ -410,8 +320,48 @@
           "refId": "A"
         }
       ],
-      "title": "Taxa de Requisições HTTP por Status",
+      "title": "Taxa de Requisições por Código HTTP",
       "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 8,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "sum by (uri) (rate(http_server_requests_seconds_sum[1m]) / (rate(http_server_requests_seconds_count[1m]) + 0.0001))",
+          "legendFormat": "{{uri}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Latência Média por Endpoint HTTP",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "title": "Recursos da JVM e Garbage Collection (Java 25)",
+      "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "Prometheus" },
@@ -426,53 +376,101 @@
           "unit": "bytes"
         }
       },
-      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 23 },
-      "id": 10,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "id": 9,
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
         "tooltip": { "mode": "multi" }
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "jvm_memory_used_bytes{area=\"heap\"}",
-          "legendFormat": "JVM Heap Usada ({{id}})",
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "Heap Usada",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "jvm_memory_max_bytes{area=\"heap\"}",
-          "legendFormat": "JVM Heap Máxima ({{id}})",
+          "expr": "sum(jvm_memory_committed_bytes{area=\"heap\"})",
+          "legendFormat": "Heap Alocada (Committed)",
           "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "sum(jvm_memory_max_bytes{area=\"heap\"})",
+          "legendFormat": "Heap Máxima",
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "sum(jvm_memory_used_bytes{area=\"nonheap\"})",
+          "legendFormat": "Non-Heap (Metaspace)",
+          "refId": "D"
         }
       ],
-      "title": "Memória JVM Heap",
+      "title": "Alocação e Consumo de Memória JVM",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 10,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "jvm_threads_live_threads",
+          "legendFormat": "Threads Vivas",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "jvm_threads_peak_threads",
+          "legendFormat": "Pico de Threads",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "editorMode": "code",
+          "expr": "rate(jvm_gc_pause_seconds_count[1m])",
+          "legendFormat": "Pausas de GC / seg",
+          "refId": "C"
+        }
+      ],
+      "title": "Threads da JVM e Atividade de Garbage Collection",
       "type": "timeseries"
     }
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": ["gestao-paroquia", "metricas", "aprovacoes"],
+  "tags": ["paroquia", "infraestrutura", "jvm", "performance", "http"],
   "templating": {
     "list": []
   },
-  "time": {
-    "from": "now-1h",
-    "to": "now"
-  },
-  "timepicker": {
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m"
-    ]
-  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"] },
   "timezone": "browser",
-  "title": "Métricas do Sistema - Gestão Paroquial",
-  "uid": "gestao-paroquia-metricas",
+  "title": "Gestão Paroquial - Infraestrutura & Performance",
+  "uid": "paroquia-infraestrutura-performance",
   "version": 1
 }

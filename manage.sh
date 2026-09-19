@@ -84,6 +84,7 @@ show_endpoints() {
     echo -e "  • Loki:                ${CYAN}http://localhost:3100${NC}"
     echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.com / admin)"
     echo -e "  • PostgreSQL:          ${CYAN}localhost:5432${NC}"
+    echo -e "  • Postgres Exporter:   ${CYAN}http://localhost:9187/metrics${NC}"
     echo ""
 }
 
@@ -95,6 +96,7 @@ show_help() {
     echo "  stop     Interrompe todos os processos locais em execução e containers."
     echo "  restart  Reinicia o ambiente de desenvolvimento local completo."
     echo "  status   Exibe o status dos serviços locais e containers."
+    echo "  doctor   Diagnostica integridade do ambiente, conflitos de portas e processos zumbis."
     echo "  logs     Acompanha os logs da API ou UI local (ex: ./manage.sh logs api)."
     echo "  seed     Aplica o script seed-data.sql no banco de dados ativo."
     echo ""
@@ -114,9 +116,10 @@ show_help() {
 
 start_infra() {
     log_info "Verificando dependências de infraestrutura no Docker..."
-    ./docker-env.sh up -s db -s prometheus -s grafana -s loki -s promtail -r
+    ./docker-env.sh up -s db -s postgres-exporter -s prometheus -s grafana -s loki -s promtail -r
     wait_for_port "localhost" 5432 30 || true
 }
+
 
 cmd_dev() {
     ensure_dirs
@@ -212,6 +215,102 @@ cmd_status() {
     ./docker-env.sh status
 }
 
+cmd_doctor() {
+    echo -e "${BOLD}=== Diagnóstico do Ambiente Paróquia (Doctor) ===${NC}\n"
+
+    local has_issue=false
+
+    # 1. Ferramentas Básicas do Host
+    echo -e "${BOLD}1. Ferramentas e Runtime:${NC}"
+    if command -v java >/dev/null 2>&1; then
+        local java_version
+        java_version=$(java -version 2>&1 | head -n 1)
+        echo -e "  ${GREEN}✔${NC} Java: $java_version"
+    else
+        echo -e "  ${RED}✖${NC} Java não encontrado no PATH"
+        has_issue=true
+    fi
+
+    if command -v node >/dev/null 2>&1; then
+        local node_version
+        node_version=$(node -v)
+        echo -e "  ${GREEN}✔${NC} Node.js: $node_version"
+    else
+        echo -e "  ${RED}✖${NC} Node.js não encontrado no PATH"
+        has_issue=true
+    fi
+
+    if command -v docker >/dev/null 2>&1; then
+        local docker_version
+        docker_version=$(docker --version)
+        echo -e "  ${GREEN}✔${NC} Docker: $docker_version"
+    else
+        echo -e "  ${RED}✖${NC} Docker não encontrado no PATH"
+        has_issue=true
+    fi
+
+    # 2. Daemon do Docker
+    echo -e "\n${BOLD}2. Daemon do Docker:${NC}"
+    if docker info >/dev/null 2>&1; then
+        echo -e "  ${GREEN}✔${NC} Daemon do Docker está ativo e acessível"
+    else
+        echo -e "  ${RED}✖${NC} Daemon do Docker inacessível (verifique permissões do usuário ou status do serviço)"
+        has_issue=true
+    fi
+
+    # 3. Varredura de Portas do Ecossistema
+    echo -e "\n${BOLD}3. Varredura de Portas do Ecossistema:${NC}"
+    local -A port_map=(
+        ["3000"]="Frontend (UI)"
+        ["3001"]="Grafana"
+        ["3100"]="Loki"
+        ["5050"]="pgAdmin"
+        ["5432"]="PostgreSQL"
+        ["8080"]="Backend (API)"
+        ["9090"]="Prometheus"
+        ["9187"]="Postgres Exporter"
+    )
+
+    local zombie_detected=false
+
+    for port in "${!port_map[@]}"; do
+        local desc="${port_map[$port]}"
+        if (exec 3<>/dev/tcp/127.0.0.1/"$port") 2>/dev/null; then
+            exec 3<&-
+            exec 3>&-
+            local running_container
+            running_container=$(docker ps --filter "publish=$port" --filter "status=running" --format "{{.Names}}" 2>/dev/null || true)
+            if [ -n "$running_container" ]; then
+                echo -e "  ${GREEN}✔${NC} Porta $port ($desc): Ocupada pelo container ativo [${CYAN}$running_container${NC}]"
+            else
+                echo -e "  ${RED}✖${NC} Porta $port ($desc): OCUPADA por processo externo ou proxy zumbi!"
+                has_issue=true
+                zombie_detected=true
+            fi
+        else
+            echo -e "  ${GREEN}✔${NC} Porta $port ($desc): Livre"
+        fi
+    done
+
+    # 4. Verificação de Processos Zumbis do docker-proxy
+    if [ "$zombie_detected" = true ]; then
+        local zombie_count
+        zombie_count=$(pgrep -f "docker-proxy" | wc -l || echo "0")
+        if [ "$zombie_count" -gt 0 ]; then
+            echo -e "\n${YELLOW}[ALERTA]${NC} Foram detectados $zombie_count processos 'docker-proxy' ativos no sistema sem containers correspondentes."
+            echo -e "  Recomendação de correção imediata:"
+            echo -e "  ${BOLD}sudo systemctl restart docker${NC}  (ou ${BOLD}sudo killall docker-proxy${NC})"
+        fi
+    fi
+
+    echo ""
+    if [ "$has_issue" = true ]; then
+        log_warn "O diagnóstico encontrou inconsistências no ambiente local."
+    else
+        log_success "Todos os diagnósticos passaram. Ambiente saudável para desenvolvimento!"
+    fi
+}
+
 cmd_logs() {
     local target="${1:-api}"
     case "$target" in
@@ -305,6 +404,7 @@ case "$COMMAND" in
     stop)    cmd_stop "$@" ;;
     restart) cmd_restart "$@" ;;
     status)  cmd_status "$@" ;;
+    doctor)  cmd_doctor "$@" ;;
     logs)    cmd_logs "$@" ;;
     seed)    cmd_seed "$@" ;;
     test)    cmd_test "$@" ;;

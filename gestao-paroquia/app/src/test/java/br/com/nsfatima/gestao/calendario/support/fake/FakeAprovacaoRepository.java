@@ -65,6 +65,14 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     }
 
     @Override
+    public long countByStatus(AprovacaoStatus status) {
+        return storage.stream()
+                .filter(e -> e.getStatus() == status)
+                .count();
+    }
+
+
+    @Override
     public Page<AprovacaoEntity> findByFilter(UUID eventoId, AprovacaoStatus status, Pageable pageable) {
         List<AprovacaoEntity> filtered = storage.stream()
                 .filter(e -> (eventoId == null || e.getEventoId().equals(eventoId))

@@ -350,9 +350,39 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ----------------------------------------------------------------------------
+  # 11. PostgreSQL Exporter - Métricas Internas do Banco de Dados
+  # ----------------------------------------------------------------------------
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.16.0
+    container_name: gestao-postgres-exporter
+    restart: unless-stopped
+    networks:
+      - paroquia-net
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:password@db:5432/calendario?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 128M
+    cpus: 0.25
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 # ==============================================================================
 # Volumes Persistentes
 # ==============================================================================
+
 volumes:
   postgres_data:
     name: paroquia_postgres_data

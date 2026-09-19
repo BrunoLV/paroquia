@@ -11,3 +11,12 @@ scrape_configs:
         labels:
           application: 'gestao-paroquia-api'
           environment: 'docker-compose'
+
+  - job_name: 'postgres-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          application: 'postgresql'
+          environment: 'docker-compose'
+

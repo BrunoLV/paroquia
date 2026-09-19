@@ -130,8 +130,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/infrastructure/persistence/repository/AprovacaoJpaRepository.java": {
-    "mtime": 1788396942.9539177,
-    "ast_hash": "05d963656aff9176ca14d0b2bc22e05d",
+    "mtime": 1789785878.4483175,
+    "ast_hash": "60edbc25f6c27b5ce8320215d56c540c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/package-info.java": {
@@ -690,8 +690,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/observability/CadastroEventoMetricsPublisher.java": {
-    "mtime": 1789580578.1773298,
-    "ast_hash": "267a882929ac96cd2645dcd42a224752",
+    "mtime": 1789786462.0065396,
+    "ast_hash": "065cb47263d436a3cf284486bd025c1b",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/observability/EventoAuditPublisher.java": {
@@ -795,8 +795,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/repository/EventoEstatisticaJpaRepository.java": {
-    "mtime": 1788396942.9539177,
-    "ast_hash": "e8e17e55cd0340bdcba6655daf358506",
+    "mtime": 1789785890.228302,
+    "ast_hash": "659970f23ceaba4602abb4d0d34d22ad",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/persistence/repository/EventoIdempotencyJpaRepository.java": {
@@ -2890,13 +2890,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/support/fake/FakeAprovacaoRepository.java": {
-    "mtime": 1788396942.9556918,
-    "ast_hash": "2d6c3ad0d7a0daae542c26b3a504f76c",
+    "mtime": 1789786053.623084,
+    "ast_hash": "5f5ed85467f513926b4ef42a56a3b427",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/support/fake/FakeCadastroEventoMetricsPublisher.java": {
-    "mtime": 1789578855.7843049,
-    "ast_hash": "16c2bdd06d26922ef327ad948bc69cbf",
+    "mtime": 1789785974.7801893,
+    "ast_hash": "92ad182b97d8d3b54e93d342367b6c84",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/support/fake/FakeEventoActorContextResolver.java": {
@@ -2910,8 +2910,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/support/fake/FakeEventoRepository.java": {
-    "mtime": 1788868979.0851355,
-    "ast_hash": "3f32d874c366fe936e72e41b2e92509b",
+    "mtime": 1789786061.8920732,
+    "ast_hash": "bafb9e7398813b5ff58b46d8dca20d07",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/support/fake/FakeLegacyEnumInconsistencyPublisher.java": {
@@ -3250,8 +3250,8 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1789709574.4043467,
-    "ast_hash": "f446af86ee00f248650dc42c5fdaf569",
+    "mtime": 1789786185.693908,
+    "ast_hash": "a87beae1cfc06f5dd9c60a040c52f8e6",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/.gemini.md": {
@@ -4895,8 +4895,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/application/usecase/CriarSolicitacaoAprovacaoUseCase.java": {
-    "mtime": 1789358642.9331708,
-    "ast_hash": "65594b69635a87dae6e17cd10bfe247d",
+    "mtime": 1789785929.8062491,
+    "ast_hash": "484076f30252fec1927da4c8bdd3c362",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/application/usecase/ValidarAprovacaoUseCase.java": {
@@ -5180,8 +5180,8 @@
     "semantic_hash": ""
   },
   "docs/guide/logging-metricas.md": {
-    "mtime": 1789709768.682721,
-    "ast_hash": "a8ffc13d0b192ae0d1924684fc73d187",
+    "mtime": 1789786306.7587466,
+    "ast_hash": "61d219c5de9a847185ae289b8f21b538",
     "semantic_hash": ""
   },
   "docs/guide/padroes-projeto.md": {
@@ -5219,14 +5219,9 @@
     "ast_hash": "52f35f908fe16aeb67663fc5ad552608",
     "semantic_hash": ""
   },
-  "docker/grafana/dashboards/metricas-sistema.json": {
-    "mtime": 1789579903.6541033,
-    "ast_hash": "469746cf8c4d7a0bd441254915a2e7ea",
-    "semantic_hash": ""
-  },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/observability/CadastroEventoMetricsPublisherTest.java": {
-    "mtime": 1789579258.8818426,
-    "ast_hash": "e82a62798d96dc1569e2dc35920effd0",
+    "mtime": 1789785987.1861727,
+    "ast_hash": "e0eb186f43481bf96bf38054b02de71c",
     "semantic_hash": ""
   },
   "docker/grafana/provisioning/dashboards/dashboards.yml": {
@@ -5240,18 +5235,18 @@
     "semantic_hash": ""
   },
   "docker/prometheus/prometheus.yml": {
-    "mtime": 1789579794.3772285,
-    "ast_hash": "9798fbcea55b00befb116843b1a1fed5",
+    "mtime": 1789786193.9118972,
+    "ast_hash": "dc3799aa6a251565be3a6ed984001b44",
     "semantic_hash": ""
   },
   "docker-env.sh": {
-    "mtime": 1789709590.3356068,
-    "ast_hash": "998d207748f2f6438801e1230529a0c5",
+    "mtime": 1789787806.7799227,
+    "ast_hash": "ae8b4c0be8b60601ddf459937163d24c",
     "semantic_hash": ""
   },
   "manage.sh": {
-    "mtime": 1789709582.733474,
-    "ast_hash": "9bc326e616fed3b029c64bc51321cad1",
+    "mtime": 1789787832.8469062,
+    "ast_hash": "0db31c5188aad3be507a4d593f2f15ad",
     "semantic_hash": ""
   },
   "DOCKER.md": {
@@ -6715,8 +6710,8 @@
     "semantic_hash": ""
   },
   "docker/grafana/dashboards/logs-sistema.json": {
-    "mtime": 1789709563.5253372,
-    "ast_hash": "9f6c552d2c071cd137bf4f53f8cadbc9",
+    "mtime": 1789786284.4547763,
+    "ast_hash": "00297bd7c395ce9b7f138e4408becb7b",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/infrastructure/logging/logger.test.ts": {
@@ -6730,8 +6725,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/observabilidade/api/v1/controller/ClientLogController.java": {
-    "mtime": 1789709609.5879428,
-    "ast_hash": "d75de8e6dbdb77db5bcad3aca8f8baad",
+    "mtime": 1789786485.5465083,
+    "ast_hash": "184f21f23824a6e3697b49fef62e1db5",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/observabilidade/api/v1/dto/ClientLogBatchRequest.java": {
@@ -6740,13 +6735,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/observabilidade/api/v1/dto/ClientLogDto.java": {
-    "mtime": 1789709598.885756,
-    "ast_hash": "0bbc61a1b6c75090e11b9f135b505a24",
+    "mtime": 1789786495.8894944,
+    "ast_hash": "9dbf8a2dd5c5c9943f202e3246182e1c",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/observabilidade/api/v1/controller/ClientLogControllerTest.java": {
-    "mtime": 1789709628.6302752,
-    "ast_hash": "4135c8d34d01c9d7fb6f37db18293fab",
+    "mtime": 1789786515.6814682,
+    "ast_hash": "837d6d71eecd8f4871796cedc278ca8e",
     "semantic_hash": ""
   },
   "docker/grafana/provisioning/datasources/loki.yml": {
@@ -6762,6 +6757,36 @@
   "docker/promtail/promtail-config.yaml": {
     "mtime": 1789709550.9283261,
     "ast_hash": "09a6d2123d1a0e00dc961fd92b29e8b2",
+    "semantic_hash": ""
+  },
+  "docker/grafana/dashboards/banco-dados-postgresql.json": {
+    "mtime": 1789786273.9967904,
+    "ast_hash": "22d9f4b1f5b176336b960fab4820b591",
+    "semantic_hash": ""
+  },
+  "docker/grafana/dashboards/infraestrutura-sistema.json": {
+    "mtime": 1789786260.066809,
+    "ast_hash": "105507ce55105aeb86e519d86d0273b7",
+    "semantic_hash": ""
+  },
+  "docker/grafana/dashboards/negocio-eventos-aprovacoes.json": {
+    "mtime": 1789786246.551827,
+    "ast_hash": "e675a855e3a8e0ba083ad0320db703a2",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/observability/ParoquiaBusinessMetricsBinder.java": {
+    "mtime": 1789785965.953201,
+    "ast_hash": "56256185ad49e176fcd3e56586ac2f75",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/aprovacao/application/usecase/CriarSolicitacaoAprovacaoUseCaseTest.java": {
+    "mtime": 1789786138.3029711,
+    "ast_hash": "d306392c31eaf5c79a0ac97f3389add0",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/observability/ParoquiaBusinessMetricsBinderTest.java": {
+    "mtime": 1789785994.6451626,
+    "ast_hash": "fbf8d0220834518cbd8119b740c38f97",
     "semantic_hash": ""
   }
 }

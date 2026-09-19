@@ -42,6 +42,67 @@ check_docker() {
     fi
 }
 
+check_port_conflicts() {
+    local requested_services=("$@")
+    local -A port_map=(
+        ["db"]="5432"
+        ["postgres-exporter"]="9187"
+        ["prometheus"]="9090"
+        ["grafana"]="3001"
+        ["loki"]="3100"
+        ["pgadmin"]="5050"
+        ["api"]="8080"
+        ["ui"]="3000"
+    )
+
+    local conflicted=()
+    local check_all=false
+    if [ ${#requested_services[@]} -eq 0 ]; then
+        check_all=true
+    fi
+
+    for svc in "${!port_map[@]}"; do
+        local check_this=false
+        if [ "$check_all" = true ]; then
+            check_this=true
+        else
+            for req in "${requested_services[@]}"; do
+                if [ "$req" = "$svc" ]; then
+                    check_this=true
+                    break
+                fi
+            done
+        fi
+
+        if [ "$check_this" = true ]; then
+            local port="${port_map[$svc]}"
+            if (exec 3<>/dev/tcp/127.0.0.1/"$port") 2>/dev/null; then
+                exec 3<&-
+                exec 3>&-
+                local running_container
+                running_container=$(docker ps --filter "publish=$port" --filter "status=running" --format "{{.Names}}" 2>/dev/null || true)
+                if [ -z "$running_container" ]; then
+                    conflicted+=("Serviço '$svc' (porta $port)")
+                fi
+            fi
+        fi
+    done
+
+    if [ ${#conflicted[@]} -gt 0 ]; then
+        echo ""
+        log_error "Conflito de portas detectado antes de iniciar os containers:"
+        for item in "${conflicted[@]}"; do
+            echo -e "  ${RED}✖${NC} $item já está em uso no host!"
+        done
+        echo ""
+        log_warn "Causa provável: processos 'docker-proxy' zumbis de execuções anteriores ou serviços locais ativos."
+        log_info "Para resolver processos 'docker-proxy' zumbis, execute:"
+        echo -e "  ${BOLD}sudo systemctl restart docker${NC}  (ou ${BOLD}sudo killall docker-proxy${NC})"
+        echo ""
+        exit 1
+    fi
+}
+
 show_endpoints() {
     echo ""
     echo -e "${BOLD}Endereços dos Serviços Locais:${NC}"
@@ -55,8 +116,10 @@ show_endpoints() {
     echo -e "  • Loki:                ${CYAN}http://localhost:3100${NC}"
     echo -e "  • pgAdmin 4:           ${CYAN}http://localhost:5050${NC} (admin@paroquia.com / admin)"
     echo -e "  • PostgreSQL:          ${CYAN}localhost:5432${NC} (banco: calendario, user: postgres)"
+    echo -e "  • Postgres Exporter:   ${CYAN}http://localhost:9187/metrics${NC}"
     echo ""
 }
+
 
 show_help() {
     echo -e "${BOLD}Uso:${NC} ./docker-env.sh [COMANDO] [OPÇÕES]"
@@ -112,6 +175,7 @@ cmd_up() {
     done
 
     check_docker
+    check_port_conflicts ${services[@]+"${services[@]}"}
 
     if [ "$clean" = true ]; then
         log_warn "Executando limpeza completa de containers e volumes antes de subir..."

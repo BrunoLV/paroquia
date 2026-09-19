@@ -88,6 +88,14 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
+    public long countByStatus(String status) {
+        return storage.stream()
+                .filter(e -> e.getStatus() != null && e.getStatus().equals(status))
+                .count();
+    }
+
+
+    @Override
     public long countByGrupoParoquialAndPeriod(UUID orgId, Instant start, Instant end) {
         return storage.stream()
                 .filter(e -> e.getGrupoParoquialResponsavelId().equals(orgId) &&

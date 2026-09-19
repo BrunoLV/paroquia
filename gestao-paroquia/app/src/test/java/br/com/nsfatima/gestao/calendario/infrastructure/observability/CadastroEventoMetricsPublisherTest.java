@@ -98,4 +98,77 @@ class CadastroEventoMetricsPublisherTest {
         assertThat(edicaoDireta).isNotNull();
         assertThat(edicaoDireta.count()).isEqualTo(1.0);
     }
+
+    @Test
+    @DisplayName("Deve registrar métricas de eventos: cadastro, lead time, consultas, retrabalho e cancelamento")
+    void deveRegistrarMetricasDeEventos() {
+        publisher.publishCadastroTempo(Duration.ofMillis(120));
+        publisher.publishEventRegistrationLeadTime(Duration.ofMinutes(1440));
+        publisher.publishCalendarQueryLatency("/api/v1/eventos", Duration.ofMillis(45));
+        publisher.publishAdministrativeRework(true, false, true);
+        publisher.publishCancellationFlow("IMMEDIATE", "SUCCESS");
+        publisher.publishCreateSuccess(true, true);
+        publisher.publishCreateFailure("VALIDACAO");
+        publisher.recordSolicitacaoAberta("ALTERACAO_HORARIO", "COORDENADOR");
+
+        Timer cadastroTimer = meterRegistry.find("gestao.evento.tempo.cadastro").timer();
+        assertThat(cadastroTimer).isNotNull();
+        assertThat(cadastroTimer.count()).isEqualTo(1);
+
+        Timer leadTimeTimer = meterRegistry.find("gestao.evento.lead_time").timer();
+        assertThat(leadTimeTimer).isNotNull();
+        assertThat(leadTimeTimer.count()).isEqualTo(1);
+
+        Timer queryTimer = meterRegistry.find("gestao.evento.consulta.latencia")
+                .tag("endpoint", "/api/v1/eventos")
+                .timer();
+        assertThat(queryTimer).isNotNull();
+        assertThat(queryTimer.count()).isEqualTo(1);
+
+        Counter retrabalho = meterRegistry.find("gestao.evento.retrabalho.total")
+                .tag("horario_alterado", "true")
+                .tag("cancelamento", "false")
+                .tag("organizacao_alterada", "true")
+                .counter();
+        assertThat(retrabalho).isNotNull();
+        assertThat(retrabalho.count()).isEqualTo(1.0);
+
+        Counter cancelamento = meterRegistry.find("gestao.evento.cancelamentos.total")
+                .tag("modo", "IMMEDIATE")
+                .tag("outcome", "SUCCESS")
+                .counter();
+        assertThat(cancelamento).isNotNull();
+        assertThat(cancelamento.count()).isEqualTo(1.0);
+
+        Counter criados = meterRegistry.find("gestao.evento.criados.total")
+                .tag("conflito_pendente", "true")
+                .tag("replay", "true")
+                .counter();
+        assertThat(criados).isNotNull();
+        assertThat(criados.count()).isEqualTo(1.0);
+
+        Counter conflitos = meterRegistry.find("gestao.evento.conflitos.total")
+                .tag("tipo", "PENDENTE_APROVACAO")
+                .counter();
+        assertThat(conflitos).isNotNull();
+        assertThat(conflitos.count()).isEqualTo(1.0);
+
+        Counter replays = meterRegistry.find("gestao.evento.idempotencia.replays.total").counter();
+        assertThat(replays).isNotNull();
+        assertThat(replays.count()).isEqualTo(1.0);
+
+        Counter falhas = meterRegistry.find("gestao.evento.falhas.total")
+                .tag("categoria", "VALIDACAO")
+                .counter();
+        assertThat(falhas).isNotNull();
+        assertThat(falhas.count()).isEqualTo(1.0);
+
+        Counter solicitadas = meterRegistry.find("gestao.aprovacao.solicitadas.total")
+                .tag("tipo", "ALTERACAO_HORARIO")
+                .tag("papel_solicitante", "COORDENADOR")
+                .counter();
+        assertThat(solicitadas).isNotNull();
+        assertThat(solicitadas.count()).isEqualTo(1.0);
+    }
 }
+

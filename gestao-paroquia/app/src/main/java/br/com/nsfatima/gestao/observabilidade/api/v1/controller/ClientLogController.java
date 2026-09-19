@@ -37,16 +37,20 @@ public class ClientLogController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("br.com.nsfatima.gestao.observabilidade.ui");
 
+    private static final String LOG_FORMAT_STANDARD =
+            "[UI_CLIENT] corrId={} user={} route={} component={} msg={}";
+
     /**
-     * Ingestão em lote de registros de log emitidos pelo cliente web.
+     * Recebe um lote de logs emitidos pela aplicação cliente (React).
      *
-     * @param request payload contendo lote de registros de telemetria
-     * @return resposta HTTP 202 (Accepted) confirmando o enfileiramento dos logs
+     * @param request lote contendo os eventos de log da UI
+     * @return 202 Accepted indicando recepção do lote
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Registrar lote de logs do frontend",
-            description = "Recebe eventos de erro e logs de interface gerados pela SPA React e os encaminha para a esteira do Log4j2/Loki."
+            description = "Recebe eventos de erro e logs de interface gerados pela SPA React e os "
+                    + "encaminha para a esteira do Log4j2/Loki."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "202", description = "Lote de logs aceito para processamento assíncrono"),
@@ -76,19 +80,20 @@ public class ClientLogController {
                     idRastreio, usuarioAtor, log.rota(), log.componente(), log.mensagem(), log.detalhes()
             );
             case "WARN" -> LOGGER.warn(
-                    "[UI_CLIENT] corrId={} user={} route={} component={} msg={}",
+                    LOG_FORMAT_STANDARD,
                     idRastreio, usuarioAtor, log.rota(), log.componente(), log.mensagem()
             );
             case "DEBUG", "TRACE" -> LOGGER.debug(
-                    "[UI_CLIENT] corrId={} user={} route={} component={} msg={}",
+                    LOG_FORMAT_STANDARD,
                     idRastreio, usuarioAtor, log.rota(), log.componente(), log.mensagem()
             );
             default -> LOGGER.info(
-                    "[UI_CLIENT] corrId={} user={} route={} component={} msg={}",
+                    LOG_FORMAT_STANDARD,
                     idRastreio, usuarioAtor, log.rota(), log.componente(), log.mensagem()
             );
         }
     }
+
 
     private String resolverUsuarioAutenticado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

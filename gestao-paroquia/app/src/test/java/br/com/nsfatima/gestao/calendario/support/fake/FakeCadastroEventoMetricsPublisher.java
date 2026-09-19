@@ -58,7 +58,13 @@ public class FakeCadastroEventoMetricsPublisher extends CadastroEventoMetricsPub
         calls.add(new MetricCall("record_edicao", List.of(recurso, origem)));
     }
 
+    @Override
+    public void recordSolicitacaoAberta(String tipo, String solicitantePapel) {
+        calls.add(new MetricCall("record_solicitacao_aberta", List.of(tipo, solicitantePapel)));
+    }
+
     public List<MetricCall> getCalls() {
+
         return List.copyOf(calls);
     }
 

@@ -79,41 +79,94 @@ Sempre que for estritamente necessário registrar a ocorrência de um evento ass
 
 ---
 
-## 4. Métricas e Telemetria com Spring Boot Actuator & Prometheus
+---
 
-O sistema exporta métricas em tempo real no formato aberto do **Prometheus** através da rota protegida `/actuator/prometheus`.
+## 4. Métricas e Telemetria com Spring Boot Actuator, Micrometer & Prometheus
 
-### 4.1. Métricas Principais da Aplicação
+O sistema exporta métricas em tempo real no formato aberto do **Prometheus** através da rota `/actuator/prometheus`, além de métricas internas do PostgreSQL via **PostgreSQL Exporter** na porta `9187`.
+
+### 4.1. Catálogo de Métricas de Negócio (Eventos & Aprovações)
 
 | Nome da Métrica | Tipo | Descrição | Tags / Dimensões |
 | :--- | :--- | :--- | :--- |
-| `paroquia.eventos.criados` | Counter | Total de eventos criados no calendário | `status`, `tipo_celebracao`, `organizacao` |
-| `paroquia.eventos.conflito.detectado` | Counter | Total de tentativas bloqueadas por choque | `local_id`, `motivo` |
-| `paroquia.aprovacoes.tempo_decisao` | Timer | Tempo decorrido entre submissão e parecer | `tipo_solicitacao`, `decisao` |
-| `paroquia.ativos.alocacoes.ativas` | Gauge | Quantidade de ativos patrimoniais alocados | `categoria_ativo`, `comunidade` |
-| `paroquia.usecase.execucao` | Timer | Latência de execução dos casos de uso | `usecase_name`, `outcome` |
+| `gestao.evento.criados.total` | Counter | Total de eventos criados no calendário | `conflito_pendente`, `replay` |
+| `gestao.evento.falhas.total` | Counter | Total de falhas ou bloqueios no cadastro | `categoria` |
+| `gestao.evento.tempo.cadastro` | Timer | Tempo de processamento do cadastro de evento | - |
+| `gestao.evento.lead_time` | Timer | Lead time entre a solicitação e realização do evento | - |
+| `gestao.evento.consulta.latencia` | Timer | Latência de consultas e buscas na agenda | `endpoint` |
+| `gestao.evento.retrabalho.total` | Counter | Total de eventos de retrabalho administrativo | `horario_alterado`, `cancelamento`, `organizacao_alterada` |
+| `gestao.evento.cancelamentos.total` | Counter | Total de cancelamentos de eventos | `modo`, `outcome` |
+| `gestao.evento.conflitos.total` | Counter | Conflitos de agenda detectados | `tipo` |
+| `gestao.evento.idempotencia.replays.total` | Counter | Reenvios idempotentes repetidos | - |
+| `gestao.eventos.confirmados` | Gauge | Quantidade de eventos confirmados ativos no banco | - |
+| `gestao.eventos.rascunhos` | Gauge | Quantidade de eventos em rascunho no banco | - |
+| `gestao.aprovacao.solicitadas.total` | Counter | Total de solicitações de aprovação abertas | `tipo`, `papel_solicitante` |
+| `gestao.aprovacoes.total` | Counter | Total de solicitações deferidas | `tipo` |
+| `gestao.rejeicoes.total` | Counter | Total de solicitações indeferidas | `tipo` |
+| `gestao.aprovacao.decisoes.total` | Counter | Total de decisões de governança tomadas | `decisao`, `tipo` |
+| `gestao.aprovacao.tempo.decisao` | Timer | Tempo decorrido entre criação da solicitação e decisão | `tipo`, `status` |
+| `gestao.aprovacao.tempo.execucao` | Timer | Tempo de execução da ação após deferimento | `tipo` |
+| `gestao.aprovacao.tempo.total` | Timer | Tempo total de ponta a ponta do ciclo de aprovação | `tipo` |
+| `gestao.aprovacoes.pendentes` | Gauge | Quantidade de solicitações aguardando decisão | - |
+| `gestao.delecoes.total` | Counter | Total de exclusões/cancelamentos de recursos | `recurso`, `origem` |
+| `gestao.edicoes.total` | Counter | Total de atualizações/edições de recursos | `recurso`, `origem` |
 
-### 4.2. Healthchecks & Probes de Orquestração
+### 4.2. Telemetria de Banco de Dados & Pool de Conexões
+
+- **Pool HikariCP (`hikaricp_*`):**
+  - `hikaricp_connections_active`: conexões em uso pela aplicação.
+  - `hikaricp_connections_idle`: conexões disponíveis no pool.
+  - `hikaricp_connections_pending`: threads bloqueadas aguardando conexão.
+  - `hikaricp_connections_acquire_seconds`: latência de aquisição de conexão (P95, Max).
+  - `hikaricp_connections_usage_seconds`: tempo de retenção de conexão por transação.
+  - `hikaricp_connections_timeout_total`: falhas de esgotamento de pool.
+- **Servidor PostgreSQL (`pg_stat_*` via postgres-exporter):**
+  - `pg_stat_database_numbackends`: conexões concorrentes ativas no banco.
+  - `pg_stat_database_xact_commit` / `_rollback`: taxa de transações por segundo.
+  - `pg_stat_database_blks_hit` vs `_read`: índice de acertos no buffer de cache (Cache Hit Ratio).
+  - `pg_stat_database_tup_*`: tuplas lidas, inseridas, atualizadas e deletadas.
+  - `pg_database_size_bytes`: tamanho físico do banco de dados em disco.
+
+### 4.3. Healthchecks & Probes de Orquestração
 As rotas de saúde são configuradas para garantir integração imediata com orquestradores de contêineres (Docker / Kubernetes):
 
 - **Liveness Probe (`/actuator/health/liveness`):**
   Indica se o processo Java está vivo e respondendo. Caso falhe, o orquestrador reinicia o contêiner.
 - **Readiness Probe (`/actuator/health/readiness`):**
-  Verifica se as conexões com o PostgreSQL e migrações do Flyway estão prontas para receber tráfego de usuários. Se o banco estiver indisponível, o tráfego é temporariamente drenado.
+  Verifica se as conexões com o PostgreSQL e migrações do Flyway estão prontas para receber tráfego de usuários.
 
 ---
 
-## 5. Agregação e Centralização de Logs com Grafana Loki & Promtail
+## 5. Dashboards no Grafana
+
+O ecossistema conta com **4 dashboards modulares e especializados**, provisionados automaticamente sob a pasta *Gestão Paróquia*:
+
+1. **Gestão Paroquial - Negócio (Eventos & Aprovações):**
+   - *UID:* `paroquia-negocio-eventos-aprovacoes`
+   - *Finalidade:* Painel executivo com volume de eventos, taxas de deferimento, cancelamentos, conflitos e SLAs de decisão pastoral.
+2. **Gestão Paroquial - Infraestrutura & Performance:**
+   - *UID:* `paroquia-infraestrutura-performance`
+   - *Finalidade:* Monitoramento técnico de tráfego HTTP, latências P95 por rota, taxas de erro 5xx, memória JVM Heap/Non-Heap, Garbage Collection e threads.
+3. **Gestão Paroquial - Banco de Dados (HikariCP & PostgreSQL):**
+   - *UID:* `paroquia-banco-dados`
+   - *Finalidade:* Visão de integridade e saturação de conexões, fila de requisições pendentes, latência de aquisição, taxa de transações e cache hit ratio.
+4. **Logs do Sistema (Loki):**
+   - *UID:* `paroquia-logs`
+   - *Finalidade:* Centralização de logs do backend e frontend com suporte a filtros de severidade, contexto por `correlationId` e busca textual em tempo real.
+
+---
+
+## 6. Agregação e Centralização de Logs com Grafana Loki & Promtail
 
 O ecossistema conta com **Grafana Loki** e **Promtail** para indexação e visualização unificada de logs de infraestrutura e aplicação.
 
-### 5.1. Arquitetura de Coleta Híbrida
+### 6.1. Arquitetura de Coleta Híbrida
 - **Promtail:** Agente leve responsável pelo envio de streams de logs para a API push do Loki (`http://loki:3100/loki/api/v1/push`).
   - **Containers Docker:** Descoberta dinâmica via `/var/run/docker.sock`, etiquetando `gestao-api` com `app="backend"` e `gestao-ui` com `app="frontend"`.
   - **Desenvolvimento Local:** Monitoramento ativo dos arquivos `.run/api.log` e `.run/ui.log` gerados pelo comando `./manage.sh dev`.
   - **Extração de Severidade:** Pipeline regex que extrai os níveis `INFO`, `WARN`, `ERROR` e `DEBUG` para indexação instantânea como label.
 
-### 5.2. Telemetria de Logs da UI (Client-Side)
+### 6.2. Telemetria de Logs da UI (Client-Side)
 - O frontend React 19 conta com o módulo singleton `logger.ts` (`src/shared/infrastructure/logging/logger.ts`), que:
   - Captura erros de renderização via `AppErrorBoundary`.
   - Captura falhas de comunicação HTTP via interceptor do Axios.
@@ -121,9 +174,10 @@ O ecossistema conta com **Grafana Loki** e **Promtail** para indexação e visua
   - Enfileira eventos em buffer e descarrega em lote assíncrono para o endpoint `POST /api/v1/observabilidade/logs`.
 - O backend sanitiza o lote contra PII (LGPD PII Zero) e emite os registros via Log4j2 sob a tag `[UI_CLIENT]`, permitindo correlação ponta a ponta pelo `correlationId`.
 
-### 5.3. Consultas LogQL Úteis no Grafana
+### 6.3. Consultas LogQL Úteis no Grafana
 - **Todos os logs do backend:** `{app="backend"}`
 - **Erros no backend:** `{app="backend", level="ERROR"}`
 - **Logs do frontend / interface:** `{app="frontend"}` ou `{app="backend"} |= "[UI_CLIENT]"`
 - **Rastreamento por Correlation ID:** `{app=~"backend|frontend"} |= "corrId=c7a8b920-..."`
+
 

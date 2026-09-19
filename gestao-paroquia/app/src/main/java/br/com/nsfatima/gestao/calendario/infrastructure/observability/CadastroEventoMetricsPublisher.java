@@ -37,6 +37,8 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     private static final String TAG_RECURSO = "recurso";
     private static final String TAG_ORIGEM = "origem";
     private static final String TAG_DECISAO = "decisao";
+    private static final String VALOR_UNKNOWN = "UNKNOWN";
+
 
     private final MeterRegistry meterRegistry;
     private final AtomicLong successCount = new AtomicLong();
@@ -59,32 +61,36 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     }
 
     /**
-     * Registra, em log, o tempo total (em milissegundos) gasto para processar um cadastro de
-     * evento, usado para acompanhar a performance do fluxo de criação.
+     * Registra o tempo total gasto para processar um cadastro de evento no Micrometer e em log.
      *
      * @param duracao duração medida do processamento do cadastro
      */
     public void publishCadastroTempo(Duration duracao) {
+        Timer.builder("gestao.evento.tempo.cadastro")
+                .description("Tempo de processamento do cadastro de evento")
+                .register(meterRegistry)
+                .record(duracao);
         LOGGER.info("metric cadastro_evento_tempo_ms={}", duracao.toMillis());
     }
 
     /**
-     * Registra uma amostra do lead time (em minutos) entre a solicitação de registro de um evento
-     * e sua efetivação, acumulando a amostra para cálculo posterior do percentil 95 e permitir
-     * acompanhar o quão rápido os eventos são efetivamente registrados após solicitados.
+     * Registra o lead time entre a solicitação de registro de um evento e sua realização,
+     * alimentando percentis e Timer no Micrometer.
      *
-     * @param leadTime tempo decorrido entre solicitação e efetivação do registro do evento
+     * @param leadTime tempo decorrido entre solicitação e realização do evento
      */
     public void publishEventRegistrationLeadTime(Duration leadTime) {
         long minutes = Math.max(0L, leadTime.toMinutes());
         leadTimeMinutesSamples.add(minutes);
+        Timer.builder("gestao.evento.lead_time")
+                .description("Lead time entre a solicitação do evento e sua realização")
+                .register(meterRegistry)
+                .record(leadTime);
         LOGGER.info("metric event_registration_lead_time_minutes value={}", minutes);
     }
 
     /**
-     * Registra uma amostra de latência (em milissegundos) de uma consulta ao calendário, indicando
-     * também se ela ficou dentro da meta de 500ms, para monitorar a performance de leitura da
-     * agenda por endpoint.
+     * Registra a latência de uma consulta ao calendário por endpoint no Micrometer e em log.
      *
      * @param endpoint identificador do endpoint de consulta ao calendário
      * @param duration duração medida da consulta
@@ -92,6 +98,11 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     public void publishCalendarQueryLatency(String endpoint, Duration duration) {
         long millis = Math.max(0L, duration.toMillis());
         queryLatencyMsSamples.add(millis);
+        Timer.builder("gestao.evento.consulta.latencia")
+                .description("Latência de consultas à agenda do calendário")
+                .tag("endpoint", endpoint != null ? endpoint : "default")
+                .register(meterRegistry)
+                .record(duration);
         LOGGER.info(
                 "metric calendar_query_latency_ms endpoint={} value={} withinTarget={}",
                 endpoint,
@@ -100,10 +111,7 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     }
 
     /**
-     * Incrementa e registra o indicador de retrabalho administrativo, sinalizando se a alteração
-     * envolveu mudança de horário, cancelamento e/ou mudança da organização responsável pelo
-     * evento — usado para acompanhar o quanto do trabalho administrativo sobre eventos já
-     * cadastrados é retrabalho evitável.
+     * Incrementa e registra o indicador de retrabalho administrativo no Micrometer e em log.
      *
      * @param scheduleChanged indica se houve alteração de data/horário do evento
      * @param cancellation indica se a alteração foi um cancelamento
@@ -112,6 +120,13 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     public void publishAdministrativeRework(boolean scheduleChanged, boolean cancellation,
                                             boolean responsibleOrgChanged) {
         long count = administrativeReworkCount.incrementAndGet();
+        Counter.builder("gestao.evento.retrabalho.total")
+                .description("Total de eventos de retrabalho administrativo")
+                .tag("horario_alterado", String.valueOf(scheduleChanged))
+                .tag("cancelamento", String.valueOf(cancellation))
+                .tag("organizacao_alterada", String.valueOf(responsibleOrgChanged))
+                .register(meterRegistry)
+                .increment();
         LOGGER.info(
                 "metric administrative_rework_indicator count={} scheduleChanged={} cancellation={} " +
                         "responsibleOrgChanged={}",
@@ -122,15 +137,22 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     }
 
     /**
-     * Registra em log o modo e o desfecho de um fluxo de cancelamento de evento, para acompanhar
-     * como e com que resultado os cancelamentos estão ocorrendo.
+     * Registra no Micrometer e em log o modo e o desfecho de um fluxo de cancelamento de evento.
      *
      * @param mode modo/estratégia do cancelamento executado
      * @param outcome desfecho do cancelamento (ex.: sucesso, falha)
      */
     public void publishCancellationFlow(String mode, String outcome) {
+        Counter.builder("gestao.evento.cancelamentos.total")
+                .description("Total de cancelamentos de eventos")
+                .tag("modo", mode != null ? mode : VALOR_UNKNOWN)
+                .tag("outcome", outcome != null ? outcome : VALOR_UNKNOWN)
+                .register(meterRegistry)
+                .increment();
         LOGGER.info("metric cancellation_flow mode={} outcome={}", mode, outcome);
     }
+
+
 
     /**
      * Registra em log e no Micrometer o tipo de solicitação de aprovação e seu desfecho, para acompanhar o
@@ -280,6 +302,23 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
     }
 
     /**
+     * Incrementa o contador de solicitações de aprovação abertas no sistema.
+     *
+     * @param tipo tipo da solicitação de aprovação
+     * @param solicitantePapel papel do solicitante no ato da abertura
+     */
+    @Override
+    public void recordSolicitacaoAberta(String tipo, String solicitantePapel) {
+        Counter.builder("gestao.aprovacao.solicitadas.total")
+                .description("Total de solicitações de aprovação abertas")
+                .tags(TAG_TIPO, tipo != null ? tipo : VALOR_UNKNOWN,
+                        "papel_solicitante", solicitantePapel != null ? solicitantePapel : VALOR_UNKNOWN)
+                .register(meterRegistry)
+                .increment();
+        LOGGER.info("metric solicitacao_aprovacao_aberta tipo={} papel={}", tipo, solicitantePapel);
+    }
+
+    /**
      * Incrementa e registra o sucesso de um cadastro de evento, sinalizando também se ele
      * envolveu conflito com pendência de aprovação e/ou foi um replay (reenvio) de uma solicitação
      * já processada, para acompanhar a saúde do fluxo de criação de eventos.
@@ -291,6 +330,29 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
         long success = successCount.incrementAndGet();
         long conflict = conflictPendente ? conflictPendenteCount.incrementAndGet() : conflictPendenteCount.get();
         long replayed = replay ? replayCount.incrementAndGet() : replayCount.get();
+
+        Counter.builder("gestao.evento.criados.total")
+                .description("Total de eventos criados no calendário")
+                .tag("conflito_pendente", String.valueOf(conflictPendente))
+                .tag("replay", String.valueOf(replay))
+                .register(meterRegistry)
+                .increment();
+
+        if (conflictPendente) {
+            Counter.builder("gestao.evento.conflitos.total")
+                    .description("Total de conflitos de agenda detectados")
+                    .tag("tipo", "PENDENTE_APROVACAO")
+                    .register(meterRegistry)
+                    .increment();
+        }
+
+        if (replay) {
+            Counter.builder("gestao.evento.idempotencia.replays.total")
+                    .description("Total de reenvios idempotentes de cadastro de eventos")
+                    .register(meterRegistry)
+                    .increment();
+        }
+
         LOGGER.info(
                 "metric cadastro_evento outcome=success successCount={} conflictPendenteCount={} replayCount={}",
                 success,
@@ -306,8 +368,15 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
      */
     public void publishCreateFailure(String category) {
         long failure = failureCount.incrementAndGet();
+        Counter.builder("gestao.evento.falhas.total")
+                .description("Total de falhas ou bloqueios no cadastro de eventos")
+                .tag("categoria", category != null ? category : VALOR_UNKNOWN)
+                .register(meterRegistry)
+                .increment();
         LOGGER.info("metric cadastro_evento outcome=failure category={} failureCount={}", category, failure);
     }
+
+
 
     /**
      * Consolida um instantâneo (snapshot) das métricas acumuladas até o momento: contadores de

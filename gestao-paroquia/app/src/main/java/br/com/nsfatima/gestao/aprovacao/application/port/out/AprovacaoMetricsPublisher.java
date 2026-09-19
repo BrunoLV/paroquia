@@ -72,4 +72,13 @@ public interface AprovacaoMetricsPublisher {
      * @param origem  origem da ação (ex.: APROVACAO, DIRETA)
      */
     void recordEdicao(String recurso, String origem);
+
+    /**
+     * Registra a abertura de uma nova solicitação de aprovação pendente no sistema.
+     *
+     * @param tipo             tipo da solicitação de aprovação
+     * @param solicitantePapel papel do solicitante no ato da abertura
+     */
+    void recordSolicitacaoAberta(String tipo, String solicitantePapel);
 }
+

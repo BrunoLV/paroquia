@@ -162,4 +162,14 @@ public interface EventoEstatisticaJpaRepository {
               and e.inicioUtc >= :inicio and e.inicioUtc < :fim
             """)
     List<EventoEntity> findComLocalNoPeriodo(@Param("inicio") Instant inicio, @Param("fim") Instant fim);
+
+    /**
+     * Conta a quantidade total de eventos com um status específico (ex.: CONFIRMADO, RASCUNHO),
+     * alimentando métricas em tempo real e gauges do Micrometer.
+     *
+     * @param status status textual do evento
+     * @return quantidade total encontrada
+     */
+    long countByStatus(String status);
 }
+
