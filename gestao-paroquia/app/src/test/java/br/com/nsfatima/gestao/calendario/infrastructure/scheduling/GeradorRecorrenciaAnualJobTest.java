@@ -6,6 +6,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.Event
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.support.fake.FakeEventoRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
+import br.com.nsfatima.gestao.calendario.support.fake.FakeAprovacaoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 class GeradorRecorrenciaAnualJobTest {
 
     private EventoRecorrenciaJpaRepository recorrenciaRepository;
     private FakeEventoRepository eventoRepository;
+    private FakeAprovacaoRepository aprovacaoRepository;
     private GeradorRecorrenciaAnualJob job;
 
     @BeforeEach
@@ -32,7 +37,8 @@ class GeradorRecorrenciaAnualJobTest {
         recorrenciaRepository = mock(EventoRecorrenciaJpaRepository.class);
         JobLockJpaRepository lockRepository = mock(JobLockJpaRepository.class);
         eventoRepository = new FakeEventoRepository();
-        job = new GeradorRecorrenciaAnualJob(recorrenciaRepository, eventoRepository, lockRepository);
+        aprovacaoRepository = new FakeAprovacaoRepository();
+        job = new GeradorRecorrenciaAnualJob(recorrenciaRepository, eventoRepository, lockRepository, aprovacaoRepository);
     }
 
     @Test
@@ -73,5 +79,47 @@ class GeradorRecorrenciaAnualJobTest {
                 .findFirst();
         assertTrue(first.isPresent());
         assertEquals("Missa Dominical", first.get().getTitulo());
+    }
+
+    @Test
+    @DisplayName("Nao deve materializar ocorrencia pendente de aprovacao")
+    void naoDeveMaterializarOcorrenciaPendente() {
+        UUID baseId = UUID.randomUUID();
+        EventoEntity baseEvent = new EventoEntity();
+        baseEvent.setId(baseId);
+        baseEvent.setTitulo("Encontro Semanal");
+        baseEvent.setGrupoParoquialResponsavelId(UUID.randomUUID());
+        baseEvent.setInicioUtc(Instant.parse("2026-01-04T08:00:00Z"));
+        baseEvent.setFimUtc(Instant.parse("2026-01-04T09:00:00Z"));
+        baseEvent.setStatus("CONFIRMADO");
+        eventoRepository.save(baseEvent);
+
+        EventoRecorrenciaEntity recurrence = new EventoRecorrenciaEntity();
+        recurrence.setId(UUID.randomUUID());
+        recurrence.setEventoBaseId(baseId);
+        recurrence.setRegra(new RegraRecorrencia(
+                "SEMANAL",
+                1,
+                List.of(DayOfWeek.SUNDAY),
+                null, null, null, null,
+                null, null));
+
+        when(recorrenciaRepository.findAll()).thenReturn(List.of(recurrence));
+
+        // Registra aprovação pendente para 2026-01-11
+        AprovacaoEntity ocorrenciaPendente = new AprovacaoEntity();
+        ocorrenciaPendente.setId(UUID.randomUUID());
+        ocorrenciaPendente.setEventoId(baseId);
+        ocorrenciaPendente.setDataOcorrenciaUtc(Instant.parse("2026-01-11T08:00:00Z"));
+        ocorrenciaPendente.setStatus(AprovacaoStatus.PENDENTE);
+        aprovacaoRepository.save(ocorrenciaPendente);
+
+        job.executeForYear(2026);
+
+        // Das 52 ocorrências, 1 foi pulada pois está pendente
+        assertEquals(51, eventoRepository.count());
+        boolean gerouPendente = eventoRepository.findAll().stream()
+                .anyMatch(e -> e.getInicioUtc().equals(Instant.parse("2026-01-11T08:00:00Z")));
+        assertTrue(!gerouPendente);
     }
 }

@@ -54,7 +54,7 @@ class MotorAgendaPrioridadesIntegrationTest {
     }
 
     @Test
-    void deveRejeitarNivel4QuandoConflitoComNivel2() throws Exception {
+    void deveEncaminharParaAprovacaoNivel4QuandoConflitoComNivel2() throws Exception {
         // 1. Create Level 2 Event (LITURGICO)
         String level2Payload = """
                 {
@@ -76,7 +76,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                         .content(level2Payload))
                 .andExpect(status().isCreated());
 
-        // 2. Attempt Level 4 Event (MOVIMENTO) at same time and church
+        // 2. Attempt Level 4 Event (MOVIMENTO) at same time and church -> Encaminha para aprovação deliberativa
         String level4Payload = """
                 {
                   "titulo": "Reunião de Jovens",
@@ -93,14 +93,16 @@ class MotorAgendaPrioridadesIntegrationTest {
                         .header("X-Actor-Role", "coord_movimento")
                         .header("X-Actor-Org-Type", "MOVIMENTO")
                         .header("X-Actor-Org-Id", ORG_ID)
+                        .header("X-Actor-Igreja-Id", IGREJA_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(level4Payload))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("CONFLITO_AGENDA_ECLESIAL"));
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.status").value("PENDENTE"))
+                .andExpect(jsonPath("$.solicitacaoAprovacaoId").isNotEmpty());
     }
 
     @Test
-    void devePermitirNivel4QuandoParocoUsaIgnorar() throws Exception {
+    void devePermitirNivel4QuandoParocoUsaDecisaoPastoral() throws Exception {
         // 1. Create Level 2 Event (LITURGICO)
         String level2Payload = """
                 {
@@ -122,8 +124,8 @@ class MotorAgendaPrioridadesIntegrationTest {
                         .content(level2Payload))
                 .andExpect(status().isCreated());
 
-        // 2. Paroco creates Level 4 Event with bypass
-        String level4BypassPayload = """
+        // 2. Paroco creates Level 4 Event with decisao pastoral imediata
+        String level4PayloadComDecisaoPastoral = """
                 {
                   "titulo": "Encontro de Casais Especial",
                   "categoria": "MOVIMENTO",
@@ -141,15 +143,15 @@ class MotorAgendaPrioridadesIntegrationTest {
                         .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(level4BypassPayload))
+                        .content(level4PayloadComDecisaoPastoral))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    void deveRejeitarIgnorarQuandoUsuarioENaoParoco() throws Exception {
-        String bypassPayload = """
+    void deveRejeitarDecisaoPastoralQuandoUsuarioENaoParoco() throws Exception {
+        String payloadSemPermissao = """
                 {
-                  "titulo": "Tentativa de Bypass sem permissão",
+                  "titulo": "Tentativa de Decisão Pastoral sem permissão",
                   "categoria": "PASTORAL",
                   "grupoParoquialResponsavelId": "%s",
                   "inicio": "2026-08-12T10:00:00Z",
@@ -164,7 +166,7 @@ class MotorAgendaPrioridadesIntegrationTest {
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(bypassPayload))
+                        .content(payloadSemPermissao))
                 .andExpect(status().isForbidden());
     }
 

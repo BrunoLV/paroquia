@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
@@ -12,13 +14,18 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Entidade central do contexto de calendário: representa um evento/celebração agendado na
@@ -50,6 +57,20 @@ public class EventoEntity extends BaseAuditableEntity {
 
     @Column(name = "fim_utc", nullable = false)
     private Instant fimUtc;
+
+    /** Formato de horário do evento (Personalizado, Dia Inteiro, Madrugada, Manhã, Tarde ou Noite). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_horario", length = 32, nullable = false)
+    private TipoHorarioEvento tipoHorario = TipoHorarioEvento.PERSONALIZADO;
+
+    /** Lista de períodos/turnos selecionados quando o horário é por turnos (ex: MANHA,NOITE). */
+    @Column(name = "periodos", length = 128)
+    private String periodos;
+
+    /** Formato de realização do evento (Presencial, Online, Híbrido). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "formato", length = 32, nullable = false)
+    private FormatoEvento formato;
 
     /**
      * Status do ciclo de vida do evento (ex.: RASCUNHO, CONFIRMADO, ADICIONADO_EXTRA,
@@ -156,6 +177,15 @@ public class EventoEntity extends BaseAuditableEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "evento_id", insertable = false, updatable = false)
     private List<EventoEnvolvidoEntity> envolvidos;
+
+    /**
+     * Múltiplos espaços físicos/locais alocados para o evento;
+     * carregado antecipadamente (EAGER) e mapeado como somente leitura a partir da tabela
+     * {@code eventos_locais} (associação gerenciada via {@link EventoLocalEntity}).
+     */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "evento_id", insertable = false, updatable = false)
+    private List<EventoLocalEntity> locais = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -289,7 +319,34 @@ public class EventoEntity extends BaseAuditableEntity {
 
     /** Substitui a coleção de envolvidos carregada para montagem da resposta (não persiste). */
     public void definirEnvolvidosCarregados(List<EventoEnvolvidoEntity> envolvidos) {
-        this.envolvidos = envolvidos == null ? new ArrayList<>() : new ArrayList<>(envolvidos);
+        this.envolvidos = envolvidos == null ? List.of() : new ArrayList<>(envolvidos);
+    }
+
+    /**
+     * Múltiplos espaços físicos/locais vinculados ao evento.
+     */
+    public List<EventoLocalEntity> getLocais() {
+        return locais == null ? List.of() : Collections.unmodifiableList(locais);
+    }
+
+    /**
+     * Retorna a lista unificada de identificadores de local (UUID) alocados para o evento.
+     * Se houver registros na tabela de junção {@code eventos_locais}, retorna seus IDs;
+     * caso contrário, retorna o {@code localId} legado, se não nulo.
+     */
+    public List<UUID> getLocalIds() {
+        if (locais != null && !locais.isEmpty()) {
+            return locais.stream().map(EventoLocalEntity::getLocalId).toList();
+        }
+        return localId != null ? List.of(localId) : List.of();
+    }
+
+    /** Substitui a coleção de locais carregada para montagem da resposta (não persiste). */
+    public void definirLocaisCarregados(List<EventoLocalEntity> locais) {
+        this.locais = locais == null ? List.of() : new ArrayList<>(locais);
+        if (this.localId == null && !this.locais.isEmpty()) {
+            this.localId = this.locais.getFirst().getLocalId();
+        }
     }
 
     public UUID getIgrejaVinculoId() {
@@ -338,6 +395,73 @@ public class EventoEntity extends BaseAuditableEntity {
 
     public void setCicloLiturgicoId(UUID cicloLiturgicoId) {
         this.cicloLiturgicoId = cicloLiturgicoId;
+    }
+
+    public TipoHorarioEvento getTipoHorario() {
+        return tipoHorario;
+    }
+
+    public void setTipoHorario(TipoHorarioEvento tipoHorario) {
+        this.tipoHorario = tipoHorario != null ? tipoHorario : TipoHorarioEvento.PERSONALIZADO;
+    }
+
+    public String getPeriodos() {
+        return periodos;
+    }
+
+    public void setPeriodos(String periodos) {
+        this.periodos = periodos;
+    }
+
+    public List<TipoHorarioEvento> getPeriodosList() {
+        if (periodos == null || periodos.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(periodos.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(s -> {
+                    try {
+                        return TipoHorarioEvento.valueOf(s);
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    public void setPeriodosList(List<TipoHorarioEvento> periodosList) {
+        if (periodosList == null || periodosList.isEmpty()) {
+            this.periodos = null;
+        } else {
+            this.periodos = periodosList.stream()
+                    .filter(Objects::nonNull)
+                    .map(TipoHorarioEvento::name)
+                    .distinct()
+                    .collect(Collectors.joining(","));
+        }
+    }
+
+    public FormatoEvento getFormato() {
+        if (formato == null) {
+            return (localId != null || (locais != null && !locais.isEmpty()))
+                    ? FormatoEvento.PRESENCIAL
+                    : FormatoEvento.ONLINE;
+        }
+        return formato;
+    }
+
+    public void setFormato(FormatoEvento formato) {
+        this.formato = formato;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void ensureFormato() {
+        if (this.formato == null) {
+            this.formato = getFormato();
+        }
     }
 }
 

@@ -22,6 +22,13 @@ const PAROCO_ROLES = ['PAROCO', 'BISPO_DIOCESANO'] as const;
 const CPP_ROLES = ['MEMBRO_CPP', 'MESA_CPP', 'MESA_DIRETORA_CPP'] as const;
 const CAE_ROLES = ['MEMBRO_CAE'] as const;
 const CLERO_ROLES = ['VIGARIO', 'DIACONO', 'PADRE'] as const;
+const SECRETARIO_ROLES = ['SECRETARIO', 'SECRETARIA_PAROQUIAL', 'GLOBAL_SECRETARIA_PAROQUIAL'] as const;
+const COORDENADOR_GERAL_CONSELHO_ROLES = [
+  'COORD_PASTORAL_GLOBAL',
+  'COORDENADOR_PASTORAL_GLOBAL',
+  'MESA_CPP',
+  'MESA_DIRETORA_CPP',
+] as const;
 const COORDENADOR_ROLES = [
   'COORD_PASTORAL_GLOBAL',
   'COORD_PASTORAL_LOCAL',
@@ -110,6 +117,13 @@ export const isMembroCae = (user: User | null): boolean => hasRole(user, ...CAE_
 /** Clero paroquial (Vigário, Diácono, Padre) */
 export const isClero = (user: User | null): boolean => hasRole(user, ...CLERO_ROLES);
 
+/** Secretário com atuação global paroquial */
+export const isSecretario = (user: User | null): boolean => hasRole(user, ...SECRETARIO_ROLES);
+
+/** Coordenador Geral do Conselho Pastoral Paroquial com escopo e alçada global */
+export const isCoordenadorGeralConselho = (user: User | null): boolean =>
+  hasRole(user, ...COORDENADOR_GERAL_CONSELHO_ROLES);
+
 /** Coordenador de Pastoral ou Movimento */
 export const isCoordenador = (user: User | null): boolean => hasRole(user, ...COORDENADOR_ROLES);
 
@@ -124,9 +138,7 @@ export const canManageProjetos = (user: User | null): boolean => {
 
 /**
  * Papéis com autoridade paroquial (não apenas local/setorial): admin, pároco/bispo, CPP,
- * ou coordenador/vice-coordenador de conselho (CONSELHO_COORDENADOR, COORD_CONSELHO e variantes).
- * Diferente de `isCoordenador`, que também cobre coordenadores de pastoral/movimento restritos
- * à própria organização — aqui o escopo é sempre global, sem necessidade de checar `organizations`.
+ * coordenador geral do conselho, secretário, ou coordenador/vice-coordenador de conselho.
  */
 export const isGlobalCreator = (user: User | null): boolean => {
   if (!user) return false;
@@ -134,6 +146,8 @@ export const isGlobalCreator = (user: User | null): boolean => {
     isAdmin(user) ||
     isParoco(user) ||
     isMembroCpp(user) ||
+    isSecretario(user) ||
+    isCoordenadorGeralConselho(user) ||
     user.roles.some((r) =>
       r.includes('CONSELHO_COORDENADOR') ||
       r.includes('CONSELHO_VICE_COORDENADOR') ||
@@ -164,11 +178,12 @@ export const canTransitionProjeto = (user: User | null, projetoOrgId: string): b
 
 /**
  * Determines if a user can manage (edit or cancel) an event.
+ * Secretário possui escopo global paroquial para submeter alterações e cancelamentos (sujeitos a aprovação).
  */
-export const canManageEvento = (user: User | null, _eventoOrgId: string): boolean => {
+export const canManageEvento = (user: User | null, _eventoOrgId?: string): boolean => {
   if (!user) return false;
   if (isAdmin(user)) return true;
-  return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
+  return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user) || isSecretario(user);
 };
 
 /** Quem pode gerir o cadastro de ativos patrimoniais: admin, pároco/bispo, clero ou coordenador de pastoral/movimento */
@@ -196,9 +211,8 @@ export const canManageManutencaoAtivo = (user: User | null, grupoParoquialId: st
 export const canExcluirAtivo = canManageManutencaoAtivo;
 
 /**
- * Quem pode decidir (aprovar/rejeitar) uma solicitação de aprovação pendente: admin, pároco/bispo,
- * CPP, ou coordenador/vice-coordenador de conselho (CONSELHO_COORDENADOR, COORD_CONSELHO e
- * variantes) — as mesmas instâncias com autoridade deliberativa final sobre eventos/projetos.
+ * Quem pode decidir (aprovar/rejeitar) uma solicitação de aprovação pendente:
+ * Admin, Pároco/Bispo, CPP, Coordenador Geral do Conselho, ou coordenação de conselho.
  */
 export const canApprove = (user: User | null): boolean => {
   if (!user) return false;
@@ -206,6 +220,7 @@ export const canApprove = (user: User | null): boolean => {
     isAdmin(user) ||
     isParoco(user) ||
     isMembroCpp(user) ||
+    isCoordenadorGeralConselho(user) ||
     user.roles.some((r) =>
       r.includes('CONSELHO_COORDENADOR') ||
       r.includes('COORD_CONSELHO') ||

@@ -48,8 +48,7 @@ public class AprovacaoAcaoPayloadMapper {
         if (payloadJson == null || payloadJson.isBlank()) {
             return new AprovacaoAcaoPayload(null,
                     null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                    null, null);
-
+                    null, null, null, null);
         }
         try {
             return objectMapper.readValue(payloadJson, AprovacaoAcaoPayload.class);

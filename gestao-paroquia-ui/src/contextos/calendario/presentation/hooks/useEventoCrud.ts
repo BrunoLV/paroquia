@@ -51,6 +51,10 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
   const [conflitoRecursoModalOpen, setConflitoRecursoModalOpen] = useState(false);
   const [conflitoRecursoDetalhes, setConflitoRecursoDetalhes] = useState<ReservaConflitoDetalhe[]>([]);
   const [conflitoRecursoMensagem, setConflitoRecursoMensagem] = useState<string>('');
+  const [pendingSubmitData, setPendingSubmitData] = useState<{
+    requestData: Record<string, unknown>;
+    recurrence: unknown;
+  } | null>(null);
 
   // Permissions check (simple for now, matches backend logic)
   const canEditEvent = (event: Evento) => {
@@ -115,20 +119,20 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
           ? crypto.randomUUID()
           : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
-      const res = await apiClient.post<{ id: string }>('/eventos', requestData, {
+      const res = await apiClient.post<{ id?: string; solicitacaoAprovacaoId?: string; status?: string }>('/eventos', requestData, {
         headers: { 'Idempotency-Key': idempotencyKey },
       });
 
       if (recurrence && res.data?.id) {
         await apiClient.put(`/eventos/${res.data.id}/recorrencia`, recurrence);
       }
-      return res.data;
+      return res;
     },
   });
 
   const cancelEventoMutation = useMutation({
     mutationFn: ({ id, motivo }: { id: string; motivo: string }) =>
-      apiClient.post(`/eventos/${id}/cancelar`, { motivo }),
+      apiClient.post<{ id?: string; status?: string; solicitacaoAprovacaoId?: string }>(`/eventos/${id}/cancelar`, { motivo }),
   });
 
   const handleEventSubmit = async (data: Record<string, unknown>) => {
@@ -147,8 +151,13 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
           ativoIds: Array.isArray(data.ativoIds) ? data.ativoIds : [],
           escopoEdicao: selectedEditScope || 'SOMENTE_ESTE',
         };
-        await updateEventoMutation.mutateAsync({ id: editingEvent.id, updateData });
-        showSuccess('Evento atualizado com sucesso!');
+        const res = await updateEventoMutation.mutateAsync({ id: editingEvent.id, updateData });
+        const resData = res.data as { status?: string; solicitacaoAprovacaoId?: string } | undefined;
+        if (res.status === 202 || resData?.status === 'PENDENTE' || resData?.solicitacaoAprovacaoId) {
+          showSuccess('Alterações encaminhadas para deliberação do Conselho/Pároco.');
+        } else {
+          showSuccess('Evento atualizado com sucesso!');
+        }
         setSelectedEditScope(null);
       } else {
         // CREATE (POST)
@@ -159,23 +168,95 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
           localId: data.localId || null,
           participantes: data.participantes || [],
           ativoIds: Array.isArray(data.ativoIds) ? data.ativoIds : [],
+          regraRecorrencia: (data.isRecurring && (recurrence || data.recurrenceRule)) ? (recurrence || data.recurrenceRule) : null,
+          confirmarComConflito: false,
         };
 
-        await createEventoMutation.mutateAsync({ requestData, recurrence });
-        showSuccess('Evento criado com sucesso!');
+        // Verificação preventiva de conflito para dar feedback humanizado ao usuário antes de salvar
+        if (!data.liberarConflitoAgenda) {
+          try {
+            const checkRes = await apiClient.post<ReservaConflitoDetalhe[]>('/eventos/verificar-conflitos', requestData);
+            if (checkRes.data && checkRes.data.length > 0) {
+              setConflitoRecursoDetalhes(checkRes.data);
+              setConflitoRecursoMensagem(
+                'Identificamos conflitos com eventos ou reservas já aprovados para este espaço ou horário. Você pode ajustar os horários ou submeter para deliberação do Conselho.'
+              );
+              setPendingSubmitData({ requestData, recurrence });
+              setConflitoRecursoModalOpen(true);
+              setIsSubmitting(false);
+              return;
+            }
+          } catch {
+            // Continua com a submissão direta se falhar o check prévio
+          }
+        }
+
+        const res = await createEventoMutation.mutateAsync({ requestData, recurrence });
+        if (res.status === 202 || res.data?.status === 'PENDENTE' || res.data?.solicitacaoAprovacaoId) {
+          showSuccess('Solicitação de evento encaminhada para deliberação do Conselho/Pároco.');
+        } else {
+          showSuccess('Evento criado com sucesso!');
+        }
       }
 
       setIsCreateOpen(false);
       refetchCalendario();
     } catch (err: unknown) {
       const axiosErr = err as AxiosError<{ conflitos?: ReservaConflitoDetalhe[]; message?: string }>;
-      if (axiosErr.response?.status === 409 && axiosErr.response?.data?.conflitos) {
-        setConflitoRecursoDetalhes(axiosErr.response.data.conflitos);
-        setConflitoRecursoMensagem(axiosErr.response.data.message ?? '');
+      if (axiosErr.response?.status === 409) {
+        const conflitos = axiosErr.response?.data?.conflitos || [];
+        setConflitoRecursoDetalhes(conflitos);
+        setConflitoRecursoMensagem(
+          axiosErr.response?.data?.message ??
+            'Conflito detectado: o espaço ou recurso selecionado já possui reservas ativas no mesmo intervalo.'
+        );
+        const { recurrence, ...eventBaseData } = data;
+        setPendingSubmitData({
+          requestData: {
+            ...eventBaseData,
+            projetoId: data.projetoId || null,
+            localId: data.localId || null,
+            participantes: data.participantes || [],
+            ativoIds: Array.isArray(data.ativoIds) ? data.ativoIds : [],
+            regraRecorrencia: (data.isRecurring && (recurrence || data.recurrenceRule)) ? (recurrence || data.recurrenceRule) : null,
+          },
+          recurrence,
+        });
         setConflitoRecursoModalOpen(true);
       } else {
         showError(extractErrorMessage(err, 'Erro ao processar evento. Verifique as regras de negócio.'));
       }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleConfirmarDiscussaoConselho = async () => {
+    if (!pendingSubmitData) {
+      setConflitoRecursoModalOpen(false);
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const submitPayload = {
+        ...pendingSubmitData.requestData,
+        confirmarComConflito: true,
+      };
+      const res = await createEventoMutation.mutateAsync({
+        requestData: submitPayload,
+        recurrence: pendingSubmitData.recurrence,
+      });
+      if (res.status === 202 || res.data?.status === 'PENDENTE' || res.data?.solicitacaoAprovacaoId) {
+        showSuccess('Evento submetido para deliberação do Conselho Paroquial com os conflitos apontados.');
+      } else {
+        showSuccess('Evento criado com sucesso!');
+      }
+      setConflitoRecursoModalOpen(false);
+      setPendingSubmitData(null);
+      setIsCreateOpen(false);
+      refetchCalendario();
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao submeter evento para o Conselho.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -186,8 +267,13 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
 
     setIsCancelling(true);
     try {
-      await cancelEventoMutation.mutateAsync({ id: cancellingEvent.id, motivo: reason });
-      showSuccess('Evento cancelado com sucesso!');
+      const res = await cancelEventoMutation.mutateAsync({ id: cancellingEvent.id, motivo: reason });
+      const resData = res.data as { status?: string; solicitacaoAprovacaoId?: string } | undefined;
+      if (res.status === 202 || resData?.status === 'PENDENTE') {
+        showSuccess('Solicitação de cancelamento enviada para aprovação do Conselho/Pároco.');
+      } else {
+        showSuccess('Evento cancelado com sucesso!');
+      }
       setIsCancelOpen(false);
       setIsDetailsOpen(false);
       refetchCalendario();
@@ -225,6 +311,7 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
     handleOpenEdit,
     handleScopeSelect,
     handleEventSubmit,
+    handleConfirmarDiscussaoConselho,
     handleCancelConfirm,
   };
 };

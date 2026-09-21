@@ -1,9 +1,10 @@
 import React from 'react';
-import { Alert, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { Alert, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 import { AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto } from '@/shared/domain/types/types';
 import ActionButton from '@/shared/presentation/components/ActionButton';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import EventoDadosCard from './eventos/EventoDadosCard';
 import EventoOrganizacaoCard from './eventos/EventoOrganizacaoCard';
 import EventoLocalCard from './eventos/EventoLocalCard';
@@ -49,6 +50,7 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
     selectedYear,
     isClosedYear,
     isParoco,
+    isSecretarioUser,
     churches,
     filteredOrganizations,
     localOptions,
@@ -59,32 +61,59 @@ const CadastroEventoModal: React.FC<CadastroEventoModalProps> = ({
   } = useCadastroEventoForm({ open, onSubmit, organizations, locais, ativos, projetos, anosParoquiais, initialDate, initialEvent });
 
   return (
-    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="lg" fullWidth>
       <form onSubmit={handleFormSubmit} noValidate>
-        <DialogTitle>{initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}</DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={2.5} sx={{ mt: 0.5 }}>
-            {isClosedYear && (
-              <Alert severity="warning">
-                <strong>Ano Paroquial Fechado ({selectedYear}):</strong> Este ano administrativo está travado para auditoria. Inclusões serão registradas como <strong>ADICIONADO_EXTRA</strong> (requer justificativa obrigatória abaixo).
-              </Alert>
-            )}
-            <EventoDadosCard form={form} disabled={isSubmitting} />
-            <EventoOrganizacaoCard
-              form={form}
-              disabled={isSubmitting}
-              organizations={organizations}
-              filteredOrganizations={filteredOrganizations}
-              churches={churches}
-              projetoOptions={projetoOptions}
-              selectedProjectInfo={selectedProjectInfo}
-              projectValidationError={projectValidationError}
-            />
-            <EventoLocalCard form={form} disabled={isSubmitting} localOptions={localOptions} ativos={ativos} />
-            <EventoDataRecorrenciaCard form={form} disabled={isSubmitting} isRecurring={isRecurring} isEditing={!!initialEvent} isParoco={isParoco} />
-          </Stack>
+        <DialogTitle sx={{ py: 2.5, px: { xs: 2.5, sm: 3.5 }, fontWeight: 700 }}>
+          {initialEvent ? 'Editar Evento' : 'Criar Novo Evento'}
+        </DialogTitle>
+        <DialogContent dividers sx={{ ...DIALOG_CONTENT_SCROLL_SX, p: { xs: 2.5, sm: 3.5 } }}>
+          {(isClosedYear || isSecretarioUser) && (
+            <Stack spacing={1.5} sx={{ mb: 3 }}>
+              {isClosedYear && (
+                <Alert severity="warning">
+                  <strong>Ano Paroquial Fechado ({selectedYear}):</strong> Este ano administrativo está travado para auditoria. Inclusões serão registradas como <strong>ADICIONADO_EXTRA</strong> (requer justificativa obrigatória abaixo).
+                </Alert>
+              )}
+              {isSecretarioUser && (
+                <Alert severity="info">
+                  <strong>Perfil de Secretário(a):</strong> Você possui escopo global paroquial. Suas solicitações entram em deliberação e exigem <strong>justificativa obrigatória</strong>.
+                </Alert>
+              )}
+            </Stack>
+          )}
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Stack spacing={3}>
+                <EventoDadosCard form={form} disabled={isSubmitting} />
+                <EventoOrganizacaoCard
+                  form={form}
+                  disabled={isSubmitting}
+                  organizations={organizations}
+                  filteredOrganizations={filteredOrganizations}
+                  churches={churches}
+                  projetoOptions={projetoOptions}
+                  selectedProjectInfo={selectedProjectInfo}
+                  projectValidationError={projectValidationError}
+                />
+              </Stack>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Stack spacing={3}>
+                <EventoLocalCard form={form} disabled={isSubmitting} localOptions={localOptions} ativos={ativos} />
+                <EventoDataRecorrenciaCard
+                  form={form}
+                  disabled={isSubmitting}
+                  isRecurring={isRecurring}
+                  isEditing={!!initialEvent}
+                  isParoco={isParoco}
+                  isSecretario={isSecretarioUser}
+                  isClosedYear={isClosedYear}
+                />
+              </Stack>
+            </Grid>
+          </Grid>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: { xs: 2, sm: 2.5 }, gap: 1 }}>
           <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={onClose} disabled={isSubmitting} color="secondary" />
           <ActionButton
             title={initialEvent ? 'Salvar Alterações' : 'Salvar Evento'}

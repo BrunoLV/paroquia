@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusResponse;
+import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 
 import java.time.Instant;
@@ -36,6 +38,7 @@ public record EventoResponse(
         Instant fim,
         EventoStatusResponse status,
         UUID localId,
+        List<UUID> localIds,
         UUID igrejaVinculoId,
         List<UUID> participantes,
         UUID recorrenciaId,
@@ -44,5 +47,110 @@ public record EventoResponse(
         String adicionadoExtraJustificativa,
         Integer nivelPrioridade,
         Boolean autorizadoPeloCpp,
-        SetorPastoral setorPastoral) {
+        SetorPastoral setorPastoral,
+        TipoHorarioEvento tipoHorario,
+        FormatoEvento formato,
+        List<TipoHorarioEvento> periodos) {
+
+    public EventoResponse {
+        if (localIds == null || localIds.isEmpty()) {
+            localIds = localId != null ? List.of(localId) : List.of();
+        } else if (localId == null) {
+            localId = localIds.getFirst();
+        }
+        if (tipoHorario == null) {
+            tipoHorario = TipoHorarioEvento.PERSONALIZADO;
+        }
+        if (formato == null) {
+            formato = FormatoEvento.PRESENCIAL;
+        }
+        if (periodos == null) {
+            periodos = List.of();
+        }
+    }
+
+    public EventoResponse(
+            UUID id,
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID grupoParoquialResponsavelId,
+            UUID projetoId,
+            String nomeProjeto,
+            Instant inicio,
+            Instant fim,
+            EventoStatusResponse status,
+            UUID localId,
+            List<UUID> localIds,
+            UUID igrejaVinculoId,
+            List<UUID> participantes,
+            UUID recorrenciaId,
+            String estadoConflito,
+            String motivoConflito,
+            String adicionadoExtraJustificativa,
+            Integer nivelPrioridade,
+            Boolean autorizadoPeloCpp,
+            SetorPastoral setorPastoral,
+            TipoHorarioEvento tipoHorario,
+            FormatoEvento formato) {
+        this(id, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, nomeProjeto, inicio, fim,
+                status, localId, localIds, igrejaVinculoId, participantes, recorrenciaId, estadoConflito,
+                motivoConflito, adicionadoExtraJustificativa, nivelPrioridade, autorizadoPeloCpp,
+                setorPastoral, tipoHorario, formato, List.of());
+    }
+
+    public EventoResponse(
+            UUID id,
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID grupoParoquialResponsavelId,
+            UUID projetoId,
+            String nomeProjeto,
+            Instant inicio,
+            Instant fim,
+            EventoStatusResponse status,
+            UUID localId,
+            UUID igrejaVinculoId,
+            List<UUID> participantes,
+            UUID recorrenciaId,
+            String estadoConflito,
+            String motivoConflito,
+            String adicionadoExtraJustificativa,
+            Integer nivelPrioridade,
+            Boolean autorizadoPeloCpp,
+            SetorPastoral setorPastoral,
+            TipoHorarioEvento tipoHorario) {
+        this(id, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, nomeProjeto, inicio, fim,
+                status, localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, participantes,
+                recorrenciaId, estadoConflito, motivoConflito, adicionadoExtraJustificativa, nivelPrioridade,
+                autorizadoPeloCpp, setorPastoral, tipoHorario, FormatoEvento.PRESENCIAL);
+    }
+
+    public EventoResponse(
+            UUID id,
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            UUID grupoParoquialResponsavelId,
+            UUID projetoId,
+            String nomeProjeto,
+            Instant inicio,
+            Instant fim,
+            EventoStatusResponse status,
+            UUID localId,
+            UUID igrejaVinculoId,
+            List<UUID> participantes,
+            UUID recorrenciaId,
+            String estadoConflito,
+            String motivoConflito,
+            String adicionadoExtraJustificativa,
+            Integer nivelPrioridade,
+            Boolean autorizadoPeloCpp,
+            SetorPastoral setorPastoral) {
+        this(id, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, nomeProjeto, inicio, fim,
+                status, localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, participantes,
+                recorrenciaId, estadoConflito, motivoConflito, adicionadoExtraJustificativa, nivelPrioridade,
+                autorizadoPeloCpp, setorPastoral, TipoHorarioEvento.PERSONALIZADO, FormatoEvento.PRESENCIAL);
+    }
 }

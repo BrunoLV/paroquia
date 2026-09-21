@@ -10,14 +10,19 @@ import br.com.nsfatima.gestao.aprovacao.application.usecase.strategy.EstrategiaE
 import br.com.nsfatima.gestao.aprovacao.domain.event.AprovacaoDecisaoEvent;
 import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoExecucaoFalhouException;
 import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoNaoEncontradaException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.aprovacao.domain.model.Aprovacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.aprovacao.application.service.AprovacaoRecalculoConflitoService;
+import br.com.nsfatima.gestao.calendario.application.dto.ConflitoEventoItemDto;
+import br.com.nsfatima.gestao.calendario.application.service.DetectorConflitoEventoService;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +57,34 @@ public class DecidirSolicitacaoAprovacaoUseCase {
     private final AprovacaoMetricsPublisher metricsPublisher;
     private final List<EstrategiaExecucaoAprovacao> strategies;
     private final ApplicationEventPublisher eventPublisher;
+    private final DetectorConflitoEventoService detectorConflitoEventoService;
+    private final AprovacaoRecalculoConflitoService recalculoConflitoService;
+
+    @Autowired
+    public DecidirSolicitacaoAprovacaoUseCase(
+            AprovacaoJpaRepository aprovacaoJpaRepository,
+            AprovacaoMapper aprovacaoMapper,
+            EventoActorContextResolver actorContextResolver,
+            ValidarAprovacaoUseCase validarAprovacaoUseCase,
+            AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper,
+            AprovacaoAuditPublisher auditPublisher,
+            AprovacaoMetricsPublisher metricsPublisher,
+            List<EstrategiaExecucaoAprovacao> strategies,
+            ApplicationEventPublisher eventPublisher,
+            @Autowired(required = false) DetectorConflitoEventoService detectorConflitoEventoService,
+            @Autowired(required = false) AprovacaoRecalculoConflitoService recalculoConflitoService) {
+        this.aprovacaoJpaRepository = aprovacaoJpaRepository;
+        this.aprovacaoMapper = aprovacaoMapper;
+        this.actorContextResolver = actorContextResolver;
+        this.validarAprovacaoUseCase = validarAprovacaoUseCase;
+        this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
+        this.auditPublisher = auditPublisher;
+        this.metricsPublisher = metricsPublisher;
+        this.strategies = strategies;
+        this.eventPublisher = eventPublisher;
+        this.detectorConflitoEventoService = detectorConflitoEventoService;
+        this.recalculoConflitoService = recalculoConflitoService;
+    }
 
     public DecidirSolicitacaoAprovacaoUseCase(
             AprovacaoJpaRepository aprovacaoJpaRepository,
@@ -63,15 +96,8 @@ public class DecidirSolicitacaoAprovacaoUseCase {
             AprovacaoMetricsPublisher metricsPublisher,
             List<EstrategiaExecucaoAprovacao> strategies,
             ApplicationEventPublisher eventPublisher) {
-        this.aprovacaoJpaRepository = aprovacaoJpaRepository;
-        this.aprovacaoMapper = aprovacaoMapper;
-        this.actorContextResolver = actorContextResolver;
-        this.validarAprovacaoUseCase = validarAprovacaoUseCase;
-        this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
-        this.auditPublisher = auditPublisher;
-        this.metricsPublisher = metricsPublisher;
-        this.strategies = strategies;
-        this.eventPublisher = eventPublisher;
+        this(aprovacaoJpaRepository, aprovacaoMapper, actorContextResolver, validarAprovacaoUseCase,
+                aprovacaoAcaoPayloadMapper, auditPublisher, metricsPublisher, strategies, eventPublisher, null, null);
     }
 
     @Transactional(noRollbackFor = AprovacaoExecucaoFalhouException.class)
@@ -85,6 +111,26 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         validarAprovacaoUseCase.validarPapelDecisaoAprovacao(actorContext.role(), actorContext.organizationType());
 
         String aprovadorId = actorContext.usuarioId() != null ? actorContext.usuarioId().toString() : "system";
+
+        boolean isMasterRecorrente = entity.getAprovacaoPaiId() == null
+                && aprovacaoJpaRepository.countByAprovacaoPaiId(entity.getId()) > 0;
+
+        if (request.status() == AprovacaoStatus.APROVADA) {
+            if (isMasterRecorrente) {
+                List<AprovacaoEntity> filhasPendentes = aprovacaoJpaRepository.findByAprovacaoPaiIdAndStatus(
+                        entity.getId(), AprovacaoStatus.PENDENTE);
+                for (AprovacaoEntity filha : filhasPendentes) {
+                    enriquecerPayloadFilhaComDadosPaiSeNecessario(filha);
+                    validarAusenciaConflitoRecursosAprovados(filha);
+                }
+            } else {
+                if (entity.getAprovacaoPaiId() != null) {
+                    enriquecerPayloadFilhaComDadosPaiSeNecessario(entity);
+                }
+                validarAusenciaConflitoRecursosAprovados(entity);
+            }
+        }
+
         if (request.status() == AprovacaoStatus.REPROVADA) {
             aprovacao.reprovar(aprovadorId, actorContext.role(), request.observacao(), Instant.now());
         } else {
@@ -92,13 +138,164 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         }
         aprovacaoMapper.aplicar(aprovacao, entity);
 
-        if (request.status() == AprovacaoStatus.REPROVADA) {
-            return processRejection(aprovacao, entity, actorContext);
+        if (isMasterRecorrente) {
+            List<AprovacaoEntity> filhasPendentes = aprovacaoJpaRepository.findByAprovacaoPaiIdAndStatus(
+                    entity.getId(), AprovacaoStatus.PENDENTE);
+            if (filhasPendentes.isEmpty()) {
+                throw new ViolacaoRegraNegocioException(
+                        "Todas as ocorrências filhas desta série recorrente já foram deliberadas individualmente.");
+            }
+            cascatearDecisaoFilhas(entity.getId(), request.status(), aprovadorId, actorContext, request.observacao());
+            if (request.status() == AprovacaoStatus.REPROVADA) {
+                return processRejection(aprovacao, entity, actorContext);
+            }
+            // Agregadora mestre consolida aprovação sem criar evento unitário próprio
+            aprovacao.registrarExecucaoConcluida(Instant.now());
+            aprovacaoMapper.aplicar(aprovacao, entity);
+            aprovacaoJpaRepository.save(entity);
+            publishDecisionEvent(entity, null);
+            if (recalculoConflitoService != null) {
+                recalculoConflitoService.recalcularConflitosPendentes(entity.getId());
+            }
+            return new DecisaoAprovacaoResponse(aprovacao.getId(), aprovacao.getStatus().name(),
+                    new DecisaoAprovacaoResponse.ActionExecution("EXECUTED", null, null, null));
         }
-        return processAprovacao(aprovacao, entity, actorContext);
+
+        // Se for ocorrência filha pontual sendo decidida
+        if (entity.getAprovacaoPaiId() != null) {
+            enriquecerPayloadFilhaComDadosPaiSeNecessario(entity);
+        }
+
+        DecisaoAprovacaoResponse response;
+        if (request.status() == AprovacaoStatus.REPROVADA) {
+            response = processRejection(aprovacao, entity, actorContext);
+        } else {
+            response = processAprovacao(aprovacao, entity, actorContext);
+        }
+
+        // Se uma filha pontual foi decidida, verifica se todas as irmãs foram decididas para consolidar o pai
+        if (entity.getAprovacaoPaiId() != null) {
+            consolidarStatusPaiSeTodasFilhasDecididas(entity.getAprovacaoPaiId(), aprovadorId, actorContext);
+        }
+
+        return response;
+    }
+
+    private void enriquecerPayloadFilhaComDadosPaiSeNecessario(AprovacaoEntity filha) {
+        AprovacaoEntity pai = aprovacaoJpaRepository.findById(filha.getAprovacaoPaiId()).orElse(null);
+        if (pai == null || pai.getActionPayloadJson() == null) {
+            return;
+        }
+        try {
+            AprovacaoAcaoPayload payloadFilha = aprovacaoAcaoPayloadMapper.toPayload(filha.getActionPayloadJson());
+            AprovacaoAcaoPayload payloadPai = aprovacaoAcaoPayloadMapper.toPayload(pai.getActionPayloadJson());
+            if (payloadFilha != null && payloadPai != null) {
+                UUID grupoId = payloadFilha.grupoParoquialResponsavelId() != null
+                        ? payloadFilha.grupoParoquialResponsavelId()
+                        : payloadPai.grupoParoquialResponsavelId();
+                var categoria = payloadFilha.categoria() != null
+                        ? payloadFilha.categoria()
+                        : payloadPai.categoria();
+                var status = payloadFilha.status() != null
+                        ? payloadFilha.status()
+                        : payloadPai.status();
+                AprovacaoAcaoPayload enriched = new AprovacaoAcaoPayload(
+                        payloadFilha.idempotencyKey(),
+                        payloadFilha.eventoId(),
+                        payloadFilha.titulo(),
+                        payloadFilha.descricao(),
+                        categoria,
+                        grupoId,
+                        payloadFilha.projetoId() != null ? payloadFilha.projetoId() : payloadPai.projetoId(),
+                        payloadFilha.inicio(),
+                        payloadFilha.fim(),
+                        status,
+                        payloadFilha.adicionadoExtraJustificativa(),
+                        payloadFilha.canceladoMotivo(),
+                        payloadFilha.motivo(),
+                        payloadFilha.participantes(),
+                        payloadFilha.localId() != null ? payloadFilha.localId() : payloadPai.localId(),
+                        payloadFilha.igrejaVinculoId() != null ? payloadFilha.igrejaVinculoId() : payloadPai.igrejaVinculoId(),
+                        payloadFilha.ativoId(),
+                        payloadFilha.ativoNome(),
+                        payloadFilha.ativoIds(),
+                        payloadFilha.justificativa()
+                );
+                filha.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(enriched));
+            }
+        } catch (RuntimeException ignored) {
+        }
+    }
+
+    private void consolidarStatusPaiSeTodasFilhasDecididas(UUID paiId, String aprovadorId, EventoActorContext actorContext) {
+        List<AprovacaoEntity> filhas = aprovacaoJpaRepository.findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(paiId);
+        boolean hasPendentes = filhas.stream().anyMatch(f -> f.getStatus() == AprovacaoStatus.PENDENTE);
+        if (hasPendentes) {
+            return;
+        }
+        AprovacaoEntity pai = aprovacaoJpaRepository.findById(paiId).orElse(null);
+        if (pai == null || pai.getStatus() != AprovacaoStatus.PENDENTE) {
+            return;
+        }
+        boolean hasAprovada = filhas.stream().anyMatch(f -> f.getStatus() == AprovacaoStatus.APROVADA);
+        Aprovacao paiDominio = aprovacaoMapper.toDomain(pai);
+        if (hasAprovada) {
+            paiDominio.aprovar(aprovadorId, actorContext.role(),
+                    "Consolidação automática: série concluída com ocorrências autorizadas", Instant.now());
+            paiDominio.registrarExecucaoConcluida(Instant.now());
+        } else {
+            paiDominio.reprovar(aprovadorId, actorContext.role(),
+                    "Consolidação automática: todas as ocorrências da série foram reprovadas", Instant.now());
+        }
+        aprovacaoMapper.aplicar(paiDominio, pai);
+        aprovacaoJpaRepository.save(pai);
+        publishDecisionEvent(pai, null);
+    }
+
+    private void cascatearDecisaoFilhas(
+            UUID masterId,
+            AprovacaoStatus status,
+            String aprovadorId,
+            EventoActorContext actorContext,
+            String observacao) {
+        List<AprovacaoEntity> filhas = aprovacaoJpaRepository.findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(masterId);
+        for (AprovacaoEntity filha : filhas) {
+            if (filha.getStatus() == AprovacaoStatus.PENDENTE) {
+                Aprovacao filhaDominio = aprovacaoMapper.toDomain(filha);
+                if (status == AprovacaoStatus.REPROVADA) {
+                    filhaDominio.reprovar(aprovadorId, actorContext.role(), observacao, Instant.now());
+                    aprovacaoMapper.aplicar(filhaDominio, filha);
+                    aprovacaoJpaRepository.save(filha);
+                    publishDecisionEvent(filha, null);
+                } else if (status == AprovacaoStatus.APROVADA) {
+                    enriquecerPayloadFilhaComDadosPaiSeNecessario(filha);
+                    filhaDominio.aprovar(aprovadorId, actorContext.role(), observacao, Instant.now());
+                    TipoSolicitacaoInput tipoFilha = TipoSolicitacaoInput.fromJson(filha.getTipoSolicitacao());
+                    EstrategiaExecucaoAprovacao stratFilha = strategies.stream()
+                            .filter(s -> s.supports(tipoFilha))
+                            .findFirst()
+                            .orElse(null);
+                    if (stratFilha != null) {
+                        try {
+                            stratFilha.execute(filha, actorContext);
+                            filhaDominio.registrarExecucaoConcluida(Instant.now());
+                        } catch (RuntimeException ex) {
+                            filhaDominio.registrarFalhaExecucao(ex.getMessage());
+                            publishDecisionEvent(filha, ex.getMessage());
+                        }
+                    }
+                    aprovacaoMapper.aplicar(filhaDominio, filha);
+                    aprovacaoJpaRepository.save(filha);
+                    publishDecisionEvent(filha, null);
+                }
+            }
+        }
     }
 
     private Instant inicioAcao(AprovacaoEntity entity) {
+        if (entity.getAprovacaoPaiId() == null && aprovacaoJpaRepository.countByAprovacaoPaiId(entity.getId()) > 0) {
+            return null;
+        }
         try {
             AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(entity.getActionPayloadJson());
             return payload == null ? null : payload.inicio();
@@ -210,6 +407,43 @@ public class DecidirSolicitacaoAprovacaoUseCase {
             }
         }
         publishDecisionEvent(entity, null);
+        if (recalculoConflitoService != null) {
+            recalculoConflitoService.recalcularConflitosPendentes(entity.getId());
+        }
+    }
+
+    private void validarAusenciaConflitoRecursosAprovados(AprovacaoEntity entity) {
+        if (detectorConflitoEventoService == null || entity.getActionPayloadJson() == null || entity.getActionPayloadJson().isBlank()) {
+            return;
+        }
+        try {
+            AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(entity.getActionPayloadJson());
+            if (payload == null || payload.inicio() == null || payload.fim() == null) {
+                return;
+            }
+            List<ConflitoEventoItemDto> conflitos = detectorConflitoEventoService.detectarConflitos(
+                    payload.inicio(),
+                    payload.fim(),
+                    payload.localId(),
+                    payload.localIds(),
+                    payload.ativoIds(),
+                    payload.categoria(),
+                    payload.eventoId(),
+                    payload.tipoHorario(),
+                    payload.igrejaVinculoId(),
+                    payload.periodos()
+            );
+            boolean temConflitoRecurso = conflitos.stream().anyMatch(c ->
+                    "LOCAL".equalsIgnoreCase(c.tipoConflito()) || "ATIVO".equalsIgnoreCase(c.tipoConflito()));
+            if (temConflitoRecurso) {
+                throw new ViolacaoRegraNegocioException(
+                        "Não é permitido aprovar solicitação com conflito de espaço físico ou ativo patrimonial já reservado por outro evento aprovado.");
+            }
+        } catch (ViolacaoRegraNegocioException ex) {
+            throw ex;
+        } catch (RuntimeException ex) {
+            // Se falhar a interpretação de payload de outro domínio, permite prosseguir
+        }
     }
 
     private void handleExecutionFailure(Aprovacao aprovacao, AprovacaoEntity entity, RuntimeException ex,

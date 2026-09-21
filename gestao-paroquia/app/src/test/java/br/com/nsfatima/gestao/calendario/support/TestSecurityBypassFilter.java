@@ -54,6 +54,7 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
         String role = headerOrDefault(request, "X-Actor-Role", "coordenador-pastoral-local");
         String organizationType = headerOrDefault(request, "X-Actor-Org-Type", "PASTORAL");
         UUID organizationId = resolveOrganizationId(request.getHeader("X-Actor-Org-Id"));
+        UUID igrejaVinculoId = resolveOrganizationId(request.getHeader("X-Actor-Igreja-Id"));
 
         UsuarioDetails principal = new UsuarioDetails(
                 resolveUserId(role, organizationType),
@@ -61,7 +62,16 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
                 "{noop}senha123",
                 true,
                 null,
-                List.of(new LeitorVinculoExterno.Vinculo(organizationId, organizationType, role)));
+                List.of(new LeitorVinculoExterno.Vinculo(
+                        organizationId,
+                        "GrupoParoquial",
+                        organizationType,
+                        null,
+                        null,
+                        null,
+                        true,
+                        role,
+                        igrejaVinculoId)));
 
         UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.authenticated(
                 principal,

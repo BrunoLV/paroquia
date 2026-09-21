@@ -189,7 +189,8 @@ VALUES
     ('1f000000-0000-0000-0000-000000000023', 'Teresa Social Santo Agostinho', '00000000023', 'f23hash000000000000000000000000000000000000000000000000000000009', '1981-08-30', 'teresa.social@example.com', '11988880023', 'Rua Santo Agostinho', '215', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '232323234', 'FEMININO', 'Assistente Social', '11988880023', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Cestas Básicas e Vicentinos', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000024', 'Lucas Fiel São José', '00000000024', 'f24hash000000000000000000000000000000000000000000000000000000010', '1995-10-10', 'lucas.saojose@example.com', '11988880024', 'Av. São José', '300', 'São José Allamano', 'São Paulo', 'SP', '08000-003', '242424245', 'MASCULINO', 'Técnico em TI', '11988880024', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Vicentinos, Acolhida', TRUE, TRUE, TRUE),
     ('1f000000-0000-0000-0000-000000000025', 'Clara Fiel Santo Agostinho', '00000000025', 'f25hash000000000000000000000000000000000000000000000000000000011', '1993-05-14', 'clara.santoagostinho@example.com', '11988880025', 'Rua Santo Agostinho', '310', 'Santo Agostinho', 'São Paulo', 'SP', '08000-002', '252525256', 'FEMININO', 'Bióloga', '11988880025', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Decoração e Liturgia', TRUE, TRUE, TRUE),
-    ('1f000000-0000-0000-0000-000000000026', 'Joaquim Falecido da Silva', '00000000028', 'f26hash000000000000000000000000000000000000000000000000000000012', '1935-08-10', 'joaquim.falecido@example.com', '11988880028', 'Rua da Paz', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '282828282', 'MASCULINO', 'Aposentado', '11988880028', 'EMAIL', 'VIUVO', 'LEIGO', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Oração', TRUE, FALSE, FALSE)
+    ('1f000000-0000-0000-0000-000000000026', 'Joaquim Falecido da Silva', '00000000028', 'f26hash000000000000000000000000000000000000000000000000000000012', '1935-08-10', 'joaquim.falecido@example.com', '11988880028', 'Rua da Paz', '12', 'Centro', 'São Paulo', 'SP', '08000-000', '282828282', 'MASCULINO', 'Aposentado', '11988880028', 'EMAIL', 'VIUVO', 'LEIGO', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Oração', TRUE, FALSE, FALSE),
+    ('1f000000-0000-0000-0000-000000000027', 'Francisca Secretária', '00000000027', 'f27hash000000000000000000000000000000000000000000000000000000013', '1986-04-15', 'secretaria@nsfatima.com', '11988880027', 'Praça da Matriz', '10', 'Centro', 'São Paulo', 'SP', '08000-000', '272727272', 'FEMININO', 'Secretária Paroquial', '11988880027', 'WHATSAPP', 'SOLTEIRO', 'LEIGO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 'Atendimento Paroquial, Documentação', TRUE, TRUE, TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 -- Tabela de Dependentes / Filhos do Fiel
@@ -217,7 +218,8 @@ VALUES
     ('10000000-0000-0000-0000-000000000091', 'pedro.financas', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000012', NULL),
     ('10000000-0000-0000-0000-000000000092', 'ana.administracao', '{noop}senha123', TRUE, 'MEMBRO_CAE', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000013', NULL),
     ('10000000-0000-0000-0000-000000000013', 'lucia.presidentecpc', '{noop}senha123', TRUE, 'PRESIDENTE_CPC', '00000000-0000-0000-0000-000000000300', 0, '1f000000-0000-0000-0000-000000000014', NULL),
-    ('10000000-0000-0000-0000-000000000026', 'diacono.francisco', '{noop}senha123', TRUE, 'ROLE_CLERO_DIACONO', '00000000-0000-0000-0000-000000000200', 0, NULL, '1c000000-0000-0000-0000-000000000007')
+    ('10000000-0000-0000-0000-000000000026', 'diacono.francisco', '{noop}senha123', TRUE, 'ROLE_CLERO_DIACONO', '00000000-0000-0000-0000-000000000200', 0, NULL, '1c000000-0000-0000-0000-000000000007'),
+    ('10000000-0000-0000-0000-000000000027', 'secretaria.paroquial', '{noop}senha123', TRUE, 'SECRETARIO', '00000000-0000-0000-0000-000000000100', 0, '1f000000-0000-0000-0000-000000000027', NULL)
 ON CONFLICT (username) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
     enabled = EXCLUDED.enabled,
@@ -297,48 +299,79 @@ VALUES
     ('30000000-0000-0000-0000-000000000006', 'Show de Prêmios Beneficente (Cancelado)', 'Evento cancelado por deliberação do conselho', 'CANCELADO', '00000000-0000-0000-0000-000000000099', '2026-03-01T00:00:00Z', '2026-03-02T23:59:59Z', 0);
 
 -- Events (Eventos)
-INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, version, tipo_horario, formato)
 VALUES 
-    ('40000000-0000-0000-0000-000000000001', 'Missa de Abertura da Catequese', 'Missa com pais e alunos', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-09-07T18:00:00Z', '2026-09-07T19:30:00Z', '30000000-0000-0000-0000-000000000001', 0),
-    ('40000000-0000-0000-0000-000000000003', 'Encontro de Formação - Catequistas', 'Formação litúrgica', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'CONFIRMADO', '2026-06-10T19:30:00Z', '2026-06-10T21:00:00Z', '30000000-0000-0000-0000-000000000001', 0),
-    ('40000000-0000-0000-0000-000000000004', 'Missa de Corpus Christi', 'Celebração solene e procissão', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-04T08:00:00Z', '2026-06-04T10:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000005', 'Inauguração da Pintura', 'Evento de entrega das obras', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'SOCIAL', 'CONFIRMADO', '2026-06-18T19:00:00Z', '2026-06-18T21:00:00Z', '30000000-0000-0000-0000-000000000003', 0),
-    ('40000000-0000-0000-0000-000000000006', 'Missa da Padroeira', 'Missa festiva de Nossa Senhora de Fátima', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-13T18:00:00Z', '2026-06-13T19:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000007', 'Encontro de Casais', 'Formação com famílias', '00000000-0000-0000-0000-0000000000ff', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'CONFIRMADO', '2026-06-14T08:00:00Z', '2026-06-14T12:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000008', 'Reunião Ordinária do CPP', 'Planejamento pastoral', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-06-10T20:00:00Z', '2026-06-10T21:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000009', 'Live de Pentecostes', 'Transmissão ao vivo', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000001', 'SOCIAL', 'CONFIRMADO', '2026-06-05T19:00:00Z', '2026-06-05T20:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000010', 'Grupo de Jovens Sentinelas', 'Momento de partilha e oração', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-06-06T17:00:00Z', '2026-06-06T18:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000011', 'Missa dos Catequistas', 'Celebração com benção dos catequistas', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-07T10:00:00Z', '2026-06-07T11:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000012', 'Missa Dominical de Julho', 'Missa com a comunidade paroquial', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-26T18:00:00Z', '2026-07-26T19:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000013', 'Reunião de Planejamento Pastoral', 'Avaliando o semestre', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-07-28T19:30:00Z', '2026-07-28T21:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000014', 'Missa de São Pedro e São Paulo', 'Celebração solene', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-30T19:00:00Z', '2026-07-30T20:30:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000015', 'Encontro de Jovens de Férias', 'Momento de oração e lazer', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'SOCIAL', 'CONFIRMADO', '2026-07-31T17:00:00Z', '2026-07-31T19:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000016', 'Missa da Família - Agosto', 'Abertura da semana da família', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-08-02T10:00:00Z', '2026-08-02T11:30:00Z', NULL, 0),
+    ('40000000-0000-0000-0000-000000000001', 'Missa de Abertura da Catequese', 'Missa com pais e alunos', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-09-07T18:00:00Z', '2026-09-07T19:30:00Z', '30000000-0000-0000-0000-000000000001', 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000003', 'Encontro de Formação - Catequistas', 'Formação litúrgica', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'CONFIRMADO', '2026-06-10T19:30:00Z', '2026-06-10T21:00:00Z', '30000000-0000-0000-0000-000000000001', 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000004', 'Missa de Corpus Christi', 'Celebração solene e procissão', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-04T08:00:00Z', '2026-06-04T10:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000005', 'Inauguração da Pintura', 'Evento de entrega das obras', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'SOCIAL', 'CONFIRMADO', '2026-06-18T19:00:00Z', '2026-06-18T21:00:00Z', '30000000-0000-0000-0000-000000000003', 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000006', 'Missa da Padroeira', 'Missa festiva de Nossa Senhora de Fátima', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-13T18:00:00Z', '2026-06-13T19:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000007', 'Encontro de Casais', 'Formação com famílias', '00000000-0000-0000-0000-0000000000ff', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'CONFIRMADO', '2026-06-14T08:00:00Z', '2026-06-14T12:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000008', 'Reunião Ordinária do CPP', 'Planejamento pastoral', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-06-10T20:00:00Z', '2026-06-10T21:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000009', 'Live de Pentecostes', 'Transmissão ao vivo direto do estúdio paroquial', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000001', 'SOCIAL', 'CONFIRMADO', '2026-06-05T19:00:00Z', '2026-06-05T20:30:00Z', NULL, 0, 'PERSONALIZADO', 'ONLINE'),
+    ('40000000-0000-0000-0000-000000000010', 'Grupo de Jovens Sentinelas', 'Momento de partilha e oração', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-06-06T17:00:00Z', '2026-06-06T18:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000011', 'Missa dos Catequistas', 'Celebração com benção dos catequistas', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-06-07T10:00:00Z', '2026-06-07T11:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000012', 'Missa Dominical de Julho', 'Missa com a comunidade paroquial', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-26T18:00:00Z', '2026-07-26T19:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000013', 'Reunião de Planejamento Pastoral', 'Avaliando o semestre', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-07-28T19:30:00Z', '2026-07-28T21:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000014', 'Missa de São Pedro e São Paulo', 'Celebração solene', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-07-30T19:00:00Z', '2026-07-30T20:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000015', 'Encontro de Jovens de Férias', 'Momento de oração e lazer', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000003', 'SOCIAL', 'CONFIRMADO', '2026-07-31T17:00:00Z', '2026-07-31T19:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000016', 'Missa da Família - Agosto', 'Abertura da semana da família', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-08-02T10:00:00Z', '2026-08-02T11:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
     -- Eventos em locais comunitários (fora da Matriz) — usados para testar alocação/empréstimo de ativos patrimoniais
-    ('40000000-0000-0000-0000-000000000201', 'Festa Junina Comunitária - São José', 'Arraiá da comunidade com quermesse', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-07-10T18:00:00Z', '2026-07-15T22:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000202', 'Reunião do Conselho - Santo Agostinho', 'Planejamento pastoral comunitário', '00000000-0000-0000-0000-0000000003c0', '00000000-0000-0000-0000-000000000006', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-08-12T19:30:00Z', '2026-08-12T21:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000203', 'Retiro Paroquial de Agosto', 'Retiro espiritual aberto a todas as comunidades', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'FORMATIVO', 'CONFIRMADO', '2026-08-20T08:00:00Z', '2026-08-20T18:00:00Z', NULL, 0),
-    ('40000000-0000-0000-0000-000000000204', 'Encontro Comunitário de Agosto - São José', 'Encontro mensal da comunidade', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-08-25T18:00:00Z', '2026-08-26T22:00:00Z', NULL, 0);
+    ('40000000-0000-0000-0000-000000000201', 'Festa Junina Comunitária - São José', 'Arraiá da comunidade com quermesse', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-07-10T18:00:00Z', '2026-07-15T22:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000202', 'Reunião do Conselho - Santo Agostinho', 'Planejamento pastoral comunitário', '00000000-0000-0000-0000-0000000003c0', '00000000-0000-0000-0000-000000000006', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-08-12T19:30:00Z', '2026-08-12T21:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000203', 'Retiro Paroquial de Agosto', 'Retiro espiritual aberto a todas as comunidades', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'FORMATIVO', 'CONFIRMADO', '2026-08-20T08:00:00Z', '2026-08-20T18:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000204', 'Encontro Comunitário de Agosto - São José', 'Encontro mensal da comunidade', '00000000-0000-0000-0000-0000000002c0', '00000000-0000-0000-0000-000000000005', 'SOCIAL', 'CONFIRMADO', '2026-08-25T18:00:00Z', '2026-08-26T22:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    -- Eventos com novos cenários de teste: Falha de Execução e Conflito Deliberativo
+    ('40000000-0000-0000-0000-000000000301', 'Encontro Diocesano de Lideranças', 'Tentativa de reserva automática falhou por colisão impeditiva.', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'FALHA_EXECUCAO', '2026-10-18T08:00:00Z', '2026-10-18T17:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000302', 'Vigília Jovem com Show Musical', 'Vigília paroquial com momentos de louvor e adoração.', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000002', 'SOCIAL', 'CONFIRMADO', '2026-10-12T19:00:00Z', '2026-10-12T22:30:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000303', 'Missa Solene da Padroeira do Brasil', 'Celebração com procissão e coroação.', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000002', 'LITURGICO', 'CONFIRMADO', '2026-10-12T18:00:00Z', '2026-10-12T21:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    -- Novos Cenários: Dia Inteiro e Períodos (Madrugada, Manhã, Tarde, Noite)
+    ('40000000-0000-0000-0000-000000000401', 'Festa da Padroeira - Dia Festivo Paroquial', 'Celebração de Dia Inteiro com quermesse e programação contínua.', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000002', 'LITURGICO', 'CONFIRMADO', '2026-10-15T03:00:00Z', '2026-10-16T02:59:59Z', NULL, 0, 'DIA_INTEIRO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000402', 'Vigília Eucarística da Madrugada', 'Adoração ao Santíssimo na madrugada.', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'LITURGICO', 'CONFIRMADO', '2026-10-16T03:00:00Z', '2026-10-16T08:59:59Z', NULL, 0, 'MADRUGADA', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000403', 'Círculo Bíblico Matutino', 'Estudo bíblico na Sala de Reunião 2 durante o período matutino.', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000003', 'PASTORAL', 'CONFIRMADO', '2026-10-17T09:00:00Z', '2026-10-17T14:59:59Z', NULL, 0, 'MANHA', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000404', 'Encontro Pastoral da Criança', 'Atividades pastorais na Sala de Reunião 2 à tarde sem choque com o turno matutino.', '00000000-0000-0000-0000-0000000000ff', '00000000-0000-0000-0000-000000000003', 'PASTORAL', 'CONFIRMADO', '2026-10-17T15:00:00Z', '2026-10-17T20:59:59Z', NULL, 0, 'TARDE', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000405', 'Terço dos Homens e Partilha Noturna', 'Oração e partilha no período noturno.', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000001', 'PASTORAL', 'CONFIRMADO', '2026-10-17T21:00:00Z', '2026-10-18T02:59:59Z', NULL, 0, 'NOITE', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000406', 'Almoço Beneficente dos Jovens', 'Almoço que colide com o evento de Dia Inteiro no Salão Paroquial.', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000002', 'SOCIAL', 'CONFIRMADO', '2026-10-15T15:00:00Z', '2026-10-15T18:00:00Z', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    -- Eventos de Teste com Novos Formatos (Online e Híbrido)
+    ('40000000-0000-0000-0000-000000000701', 'Webinar Teológico Paroquial', 'Seminário 100% online por videoconferência com palestrante transmitindo da sala com notebook.', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-11-25T19:30:00Z', '2026-11-25T21:30:00Z', NULL, 0, 'PERSONALIZADO', 'ONLINE'),
+    ('40000000-0000-0000-0000-000000000702', 'Assembleia Paroquial Híbrida 2026', 'Assembleia com participantes presenciais no Salão Paroquial e transmissão simultânea online.', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-11-28T09:00:00Z', '2026-11-28T12:00:00Z', NULL, 0, 'PERSONALIZADO', 'HIBRIDO');
+
+-- Atualiza evento com conflito deliberativo pendente
+UPDATE calendario.eventos 
+SET conflict_state = 'PENDENTE',
+    conflict_reason = 'Conflito detectado no Salão Paroquial e Projetor com a Missa Solene da Padroeira do Brasil'
+WHERE id = '40000000-0000-0000-0000-000000000302';
+
+UPDATE calendario.eventos 
+SET conflict_state = 'PENDENTE',
+    conflict_reason = 'Conflito detectado no Salão Paroquial com o evento de Dia Inteiro Festa da Padroeira'
+WHERE id = '40000000-0000-0000-0000-000000000406';
 
 -- Event with Extra Status
-INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, adicionado_extra_justificativa, version, tipo_horario, formato)
 VALUES 
-    ('40000000-0000-0000-0000-000000000002', 'Reunião Extraordinária Pascom', 'Urgência na cobertura do evento x', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000003', 'ADMINISTRATIVO', 'ADICIONADO_EXTRA', '2026-09-10T20:00:00Z', '2026-09-10T21:00:00Z', 'Necessidade de planejar live de última hora', 0);
+    ('40000000-0000-0000-0000-000000000002', 'Reunião Extraordinária Pascom', 'Urgência na cobertura do evento x', '00000000-0000-0000-0000-0000000000aa', '00000000-0000-0000-0000-000000000003', 'ADMINISTRATIVO', 'ADICIONADO_EXTRA', '2026-09-10T20:00:00Z', '2026-09-10T21:00:00Z', 'Necessidade de planejar live de última hora', 0, 'PERSONALIZADO', 'PRESENCIAL');
 
 -- Recurring Events instances (Insert base event instance first with NULL recorrencia_id to satisfy FK)
-INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version, tipo_horario, formato)
 VALUES 
-    ('40000000-0000-0000-0000-000000000101', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-12T09:00:00Z', '2026-09-12T10:30:00Z', '30000000-0000-0000-0000-000000000001', NULL, 0);
+    ('40000000-0000-0000-0000-000000000101', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-12T09:00:00Z', '2026-09-12T10:30:00Z', '30000000-0000-0000-0000-000000000001', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000501', 'Formação Teológica de Sábado - Manhã', 'Formação matutina em série semanal', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-10-10T09:00:00Z', '2026-10-10T14:59:59Z', NULL, NULL, 0, 'MANHA', 'PRESENCIAL');
 
 -- Recurring Event stub (now can reference '40000000-0000-0000-0000-000000000101' as evento_base_id)
 INSERT INTO calendario.eventos_recorrencia (id, evento_base_id, frequencia, intervalo, regra_json, data_fim_utc, version)
 VALUES 
-    ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000101', 'SEMANAL', 1, '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"], "dataLimite": "2026-11-28"}', '2026-11-28T23:59:59Z', 0);
+    ('50000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000101', 'SEMANAL', 1, '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"], "dataLimite": "2026-11-28"}', '2026-11-28T23:59:59Z', 0),
+    ('50000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000501', 'SEMANAL', 1, '{"frequencia": "SEMANAL", "intervalo": 1, "diasDaSemana": ["SATURDAY"], "dataLimite": "2026-11-28"}', '2026-11-28T23:59:59Z', 0);
 
 -- Update base event instance to link to its recurrence
 UPDATE calendario.eventos 
 SET recorrencia_id = '50000000-0000-0000-0000-000000000001'
 WHERE id = '40000000-0000-0000-0000-000000000101';
+
+UPDATE calendario.eventos 
+SET recorrencia_id = '50000000-0000-0000-0000-000000000002'
+WHERE id = '40000000-0000-0000-0000-000000000501';
 
 -- Chave idempotente já processada para exercitar a proteção contra duplicidade de comandos.
 INSERT INTO calendario.evento_idempotency (idempotency_key, request_hash, evento_id, response_status)
@@ -351,45 +384,160 @@ VALUES (
 ON CONFLICT (idempotency_key) DO NOTHING;
 
 -- Insert remaining recurring instances referencing recorrencia_id
-INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version)
+INSERT INTO calendario.eventos (id, titulo, descricao, grupo_paroquial_responsavel_id, local_id, categoria, status, inicio_utc, fim_utc, projeto_id, recorrencia_id, version, tipo_horario, formato)
 VALUES 
-    ('40000000-0000-0000-0000-000000000102', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-19T09:00:00Z', '2026-09-19T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0);
+    ('40000000-0000-0000-0000-000000000102', 'Catequese Infantil - Turma A', 'Encontro semanal', '00000000-0000-0000-0000-0000000000ee', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-09-19T09:00:00Z', '2026-09-19T10:30:00Z', '30000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000502', 'Formação Teológica de Sábado - Manhã', 'Formação matutina em série semanal', '00000000-0000-0000-0000-0000000000dd', '00000000-0000-0000-0000-000000000003', 'FORMATIVO', 'CONFIRMADO', '2026-10-17T09:00:00Z', '2026-10-17T14:59:59Z', NULL, '50000000-0000-0000-0000-000000000002', 0, 'MANHA', 'PRESENCIAL'),
+    -- Eventos com Múltiplas Localidades Simultâneas (Cenários ricos de teste)
+    ('40000000-0000-0000-0000-000000000601', 'Retiro Paroquial de Jovens e Lideranças', 'Retiro intensivo utilizando Salão Paroquial, Sala de Catequese e Igreja Matriz.', '00000000-0000-0000-0000-0000000000bb', '00000000-0000-0000-0000-000000000002', 'FORMATIVO', 'CONFIRMADO', '2026-11-14T08:00:00Z', '2026-11-15T18:00:00Z', '30000000-0000-0000-0000-000000000004', NULL, 0, 'PERSONALIZADO', 'PRESENCIAL'),
+    ('40000000-0000-0000-0000-000000000602', 'Assembleia Pastoral e Almoço Comunitário', 'Assembleia deliberativa e confraternização utilizando Salão Paroquial e Cozinha.', '00000000-0000-0000-0000-0000000000cc', '00000000-0000-0000-0000-000000000002', 'ADMINISTRATIVO', 'CONFIRMADO', '2026-11-21T09:00:00Z', '2026-11-21T15:00:00Z', NULL, NULL, 0, 'PERSONALIZADO', 'PRESENCIAL');
+
+-- Vínculo de Localidades aos Eventos (calendario.eventos_locais)
+-- 1. População base de compatibilidade de todos os eventos
+INSERT INTO calendario.eventos_locais (evento_id, local_id, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por)
+SELECT id, local_id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+FROM calendario.eventos
+WHERE local_id IS NOT NULL
+ON CONFLICT (evento_id, local_id) DO NOTHING;
+
+-- 2. Localidades adicionais simultâneas para eventos com múltiplos locais
+INSERT INTO calendario.eventos_locais (evento_id, local_id, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por)
+VALUES
+    -- Retiro Paroquial: Salão Paroquial (já herdado acima), Igreja Matriz e Sala de Catequese 1
+    ('40000000-0000-0000-0000-000000000601', '00000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
+    ('40000000-0000-0000-0000-000000000601', '00000000-0000-0000-0000-000000000003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
+    -- Assembleia Pastoral: Salão Paroquial (já herdado) e Cozinha Paroquial
+    ('40000000-0000-0000-0000-000000000602', '00000000-0000-0000-0000-000000000004', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
+ON CONFLICT (evento_id, local_id) DO NOTHING;
 
 -- Approvals
 INSERT INTO calendario.aprovacoes (
     id, evento_id, tipo_solicitacao, aprovador_papel, status, criado_em_utc, 
     decidido_em_utc, solicitante_id, aprovador_id, decision_observacao, 
-    action_payload_json, mensagem_erro_execucao, version
+    action_payload_json, mensagem_erro_execucao, aprovacao_pai_id, conflitos_json,
+    data_ocorrencia_utc, justificativa, version
 ) VALUES 
     (
         '60000000-0000-0000-0000-000000000001', NULL, 'CRIACAO_EVENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T12:00:00Z', 
         NULL, 'maria.catequese', NULL, NULL, 
-        '{"idempotencyKey": "idemp-0000-000000000001", "titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-09-15T08:00:00Z", "fim": "2026-09-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade.", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', NULL, 0
+        '{"idempotencyKey": "idemp-0000-000000000001", "titulo": "Retiro Geral de Catequistas 2026", "inicio": "2026-09-15T08:00:00Z", "fim": "2026-09-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "descricao": "Encontro anual de planejamento e espiritualidade.", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', NULL,
+        NULL, NULL, NULL, NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001', 'EDICAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-05-25T13:00:00Z', 
         NULL, 'joao.liturgia', NULL, NULL, 
-        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-09-07T17:00:00Z", "fim": "2026-09-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
+        '{"titulo": "Missa de Abertura da Catequese (Novo Horário)", "inicio": "2026-09-07T17:00:00Z", "fim": "2026-09-07T18:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL,
+        NULL, NULL, NULL, NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000101', 'CANCELAMENTO', 'CONSELHO_COORDENADOR', 'PENDENTE', '2026-05-25T14:00:00Z', 
         NULL, 'maria.catequese', NULL, NULL, 
-        '{"motivo": "Falta de energia no Salão Paroquial"}', NULL, 0
+        '{"motivo": "Falta de energia no Salão Paroquial"}', NULL,
+        NULL, NULL, NULL, NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000001', 'CRIACAO_EVENTO', 'PAROCO', 'APROVADA', '2026-01-15T08:00:00Z', 
         '2026-01-16T09:00:00Z', 'padre.pedro', '10000000-0000-0000-0000-000000000001', 'Missa importante, autorizada.', 
-        '{"idempotencyKey": "idemp-0000-000000000004", "titulo": "Missa de Abertura da Catequese", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', NULL, 0
+        '{"idempotencyKey": "idemp-0000-000000000004", "titulo": "Missa de Abertura da Catequese", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', NULL,
+        NULL, NULL, NULL, 'Abertura oficial do ano catequético paroquial.', 0
     ),
     (
         '60000000-0000-0000-0000-000000000005', NULL, 'EDICAO_EVENTO', 'PAROCO', 'REPROVADA', '2026-02-09T10:00:00Z', 
         '2026-02-10T11:00:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Horário conflita com casamento agendado.', 
-        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-09-07T19:00:00Z", "fim": "2026-09-07T20:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL, 0
+        '{"titulo": "Missa de Abertura (Horário Conflitante)", "inicio": "2026-09-07T19:00:00Z", "fim": "2026-09-07T20:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', NULL,
+        NULL, NULL, NULL, NULL, 0
     ),
     (
         '60000000-0000-0000-0000-000000000006', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'FALHA_EXECUCAO', '2026-02-07T10:00:00Z', 
         '2026-02-07T10:05:00Z', 'joao.liturgia', '10000000-0000-0000-0000-000000000001', 'Tentativa de aprovação automática falhou.', 
-        '{"idempotencyKey": "idemp-0000-000000000006", "titulo": "Missa Festiva Pascom", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', 'Conflito de horário detectado no local Igreja Principal.', 0
+        '{"idempotencyKey": "idemp-0000-000000000006", "titulo": "Missa Festiva Pascom", "inicio": "2026-09-07T18:00:00Z", "fim": "2026-09-07T19:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO", "status": "CONFIRMADO"}', 'Conflito de horário detectado no local Igreja Principal.',
+        NULL, NULL, NULL, NULL, 0
+    ),
+    -- Novos Cenários:
+    -- 1. Conflito Deliberativo Analítico (Local e Ativo Patrimonial)
+    (
+        '60000000-0000-0000-0000-000000000010', '40000000-0000-0000-0000-000000000302', 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-10T11:00:00Z', 
+        NULL, 'pedro.liturgia', NULL, NULL, 
+        '{"titulo": "Vigília Jovem com Show Musical", "inicio": "2026-10-12T19:00:00Z", "fim": "2026-10-12T22:30:00Z", "localId": "00000000-0000-0000-0000-000000000002", "ativoIds": ["80000000-0000-0000-0000-000000000001"]}', 
+        NULL, NULL, 
+        '[{"tipo": "LOCAL", "itemNome": "Salão Paroquial", "eventoConflitanteTitulo": "Missa Solene da Padroeira do Brasil", "solicitanteNome": "Padre Pedro", "inicioOcupadoUtc": "2026-10-12T18:00:00Z", "fimOcupadoUtc": "2026-10-12T21:00:00Z", "detalhe": "Sobreposição de 2 horas no Salão Paroquial"}, {"tipo": "ATIVO", "itemNome": "Projetor Epson PowerLite", "eventoConflitanteTitulo": "Missa Solene da Padroeira do Brasil", "solicitanteNome": "Padre Pedro", "inicioOcupadoUtc": "2026-10-12T18:00:00Z", "fimOcupadoUtc": "2026-10-12T21:00:00Z", "detalhe": "Ativo patrimonial já reservado para transmissão da celebração"}]', 
+        '2026-10-12T19:00:00Z', 
+        'Solicitação de uso do Salão Paroquial e Projetor para a Vigília Anual da Juventude.', 0
+    ),
+    -- Cenário Multi-Local: Solicitação com múltiplos locais (Salão Paroquial + Sala de Catequese 1 + Igreja Matriz)
+    (
+        '60000000-0000-0000-0000-000000000008', '40000000-0000-0000-0000-000000000601', 'EDICAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-11T14:00:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"titulo": "Retiro Paroquial de Jovens e Lideranças (Ajuste de Locais)", "inicio": "2026-11-14T08:00:00Z", "fim": "2026-11-15T18:00:00Z", "localId": "00000000-0000-0000-0000-000000000002", "localIds": ["00000000-0000-0000-0000-000000000002", "00000000-0000-0000-0000-000000000003", "00000000-0000-0000-0000-000000000001"], "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb", "categoria": "FORMATIVO"}', NULL,
+        NULL, NULL, NULL, 'Solicitação para inclusão formal de múltiplos espaços paroquiais simultâneos.', 0
+    ),
+    -- 2. Recorrência Mestre-Detalhe (Série Formativa de 4 semanas)
+    (
+        '60000000-0000-0000-0000-000000000020', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-01T10:00:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"titulo": "Ciclo Bíblico Paroquial 2026", "categoria": "FORMATIVO", "localId": "00000000-0000-0000-0000-000000000003", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee"}', 
+        NULL, NULL, NULL, NULL, 
+        'Ciclo Bíblico Paroquial: formação contínua de 4 semanas aprovada em planejamento pastoral.', 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000021', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'APROVADA', '2026-09-01T10:00:00Z', 
+        '2026-09-02T14:00:00Z', 'maria.catequese', '10000000-0000-0000-0000-000000000001', 'Ocorrência pontual autorizada.', 
+        '{"titulo": "Ciclo Bíblico - Semana 1", "inicio": "2026-10-06T19:30:00Z", "fim": "2026-10-06T21:00:00Z", "localId": "00000000-0000-0000-0000-000000000003", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', 
+        NULL, '60000000-0000-0000-0000-000000000020', NULL, '2026-10-06T19:30:00Z', 
+        'Ciclo Bíblico Paroquial - Encontro 1', 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000022', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-01T10:00:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"titulo": "Ciclo Bíblico - Semana 2", "inicio": "2026-10-13T19:30:00Z", "fim": "2026-10-13T21:00:00Z", "localId": "00000000-0000-0000-0000-000000000003", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', 
+        NULL, '60000000-0000-0000-0000-000000000020', 
+        '[{"tipo": "LOCAL", "itemNome": "Sala de Catequese 01", "eventoConflitanteTitulo": "Encontro de Pais da Juventude", "solicitanteNome": "Pedro Junior", "inicioOcupadoUtc": "2026-10-13T19:00:00Z", "fimOcupadoUtc": "2026-10-13T21:00:00Z", "detalhe": "Sala reservada pela Pastoral da Juventude no mesmo horário"}]', 
+        '2026-10-13T19:30:00Z', 
+        'Ciclo Bíblico Paroquial - Encontro 2', 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000023', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-01T10:00:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"titulo": "Ciclo Bíblico - Semana 3", "inicio": "2026-10-20T19:30:00Z", "fim": "2026-10-20T21:00:00Z", "localId": "00000000-0000-0000-0000-000000000003", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', 
+        NULL, '60000000-0000-0000-0000-000000000020', NULL, '2026-10-20T19:30:00Z', 
+        'Ciclo Bíblico Paroquial - Encontro 3', 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000024', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'REPROVADA', '2026-09-01T10:00:00Z', 
+        '2026-09-03T16:00:00Z', 'maria.catequese', '10000000-0000-0000-0000-000000000005', 'Data coincide com a Assembleia Geral do Povo de Deus.', 
+        '{"titulo": "Ciclo Bíblico - Semana 4", "inicio": "2026-10-27T19:30:00Z", "fim": "2026-10-27T21:00:00Z", "localId": "00000000-0000-0000-0000-000000000003", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO", "status": "CONFIRMADO"}', 
+        NULL, '60000000-0000-0000-0000-000000000020', NULL, '2026-10-27T19:30:00Z', 
+        'Ciclo Bíblico Paroquial - Encontro 4', 0
+    ),
+    -- 3. Ações do Secretário com Justificativa Mandatória e Deliberação do Conselho
+    (
+        '60000000-0000-0000-0000-000000000030', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-12T14:00:00Z', 
+        NULL, 'secretaria.paroquial', NULL, NULL, 
+        '{"titulo": "Casamento Comunitário - Ensaio Geral", "inicio": "2026-11-05T19:00:00Z", "fim": "2026-11-05T20:30:00Z", "localId": "00000000-0000-0000-0000-000000000001", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000dd", "categoria": "LITURGICO"}', 
+        NULL, NULL, NULL, '2026-11-05T19:00:00Z', 
+        'Atendimento presencial no balcão da secretaria: agendamento solicitado pelos noivos para celebração comunitária externa.', 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000031', '40000000-0000-0000-0000-000000000005', 'CANCELAMENTO', 'PAROCO', 'APROVADA', '2026-09-14T09:00:00Z', 
+        '2026-09-14T11:00:00Z', 'secretaria.paroquial', '10000000-0000-0000-0000-000000000005', 'Cancelamento homologado em alçada global pela Mesa Diretora do CPP.', 
+        '{"motivo": "Cancelamento emergencial a pedido do pregador visitante por motivos de saúde."}', 
+        NULL, NULL, NULL, '2026-06-18T19:00:00Z', 
+        'Cancelamento emergencial solicitado presencialmente na secretaria com atestado médico anexado.', 0
+    ),
+    -- 4. Cenários de Formatos: Evento Online puro e Evento Online com Ativo em deliberação
+    (
+        '60000000-0000-0000-0000-000000000040', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-15T08:30:00Z', 
+        NULL, 'maria.catequese', NULL, NULL, 
+        '{"titulo": "Formação Bíblica Remota (100% Online)", "inicio": "2026-11-20T20:00:00Z", "fim": "2026-11-20T21:30:00Z", "formato": "ONLINE", "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "FORMATIVO"}', 
+        NULL, NULL, NULL, '2026-11-20T20:00:00Z', 
+        'Formação 100% remota via videoconferência para catequistas que residem em áreas rurais.', 0
+    ),
+    (
+        '60000000-0000-0000-0000-000000000041', NULL, 'CRIACAO_EVENTO', 'PAROCO', 'PENDENTE', '2026-09-15T09:00:00Z', 
+        NULL, 'joao.liturgia', NULL, NULL, 
+        '{"titulo": "Terço Paroquial Transmitido", "inicio": "2026-11-21T18:00:00Z", "fim": "2026-11-21T19:00:00Z", "formato": "ONLINE", "ativoIds": ["80000000-0000-0000-0000-000000000001"], "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000ee", "categoria": "LITURGICO"}', 
+        NULL, NULL, NULL, '2026-11-21T18:00:00Z', 
+        'Transmissão online pelas redes sociais da paróquia com utilização do Notebook paroquial.', 0
     );
 
 -- Observations
@@ -719,7 +867,8 @@ INSERT INTO calendario.papel_global (
     id, fiel_id, papel, ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
 ) VALUES
     ('61000000-0000-0000-0000-000000000001', '1f000000-0000-0000-0000-000000000002', 'COORDENADOR_PASTORAL_GLOBAL', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
-    ('61000000-0000-0000-0000-000000000002', '1f000000-0000-0000-0000-000000000005', 'MESA_DIRETORA_CPP', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
+    ('61000000-0000-0000-0000-000000000002', '1f000000-0000-0000-0000-000000000005', 'MESA_DIRETORA_CPP', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'),
+    ('61000000-0000-0000-0000-000000000003', '1f000000-0000-0000-0000-000000000027', 'SECRETARIO', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
@@ -793,6 +942,64 @@ INSERT INTO calendario.reservas (
         'FINALIZADA', '10000000-0000-0000-0000-000000000001', '2026-07-05T11:00:00Z',
         NULL, NULL, 'Devolvido sem avarias, cabos completos e funcionais.',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 7. Reserva LOCAL de Dia Inteiro (buffer 0 embutido)
+    (
+        '83000000-0000-0000-0000-000000000011', 'LOCAL', '00000000-0000-0000-0000-000000000002',
+        '2026-10-15T03:00:00Z', '2026-10-16T02:59:59Z', 0,
+        'Reserva de Dia Inteiro do Salão Paroquial para Festa da Padroeira',
+        '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000cc',
+        '40000000-0000-0000-0000-000000000401', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-06-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 8. Reserva LOCAL Período da Manhã (Sala de Reunião 2 - buffer 0 embutido)
+    (
+        '83000000-0000-0000-0000-000000000012', 'LOCAL', '00000000-0000-0000-0000-000000000003',
+        '2026-10-17T09:00:00Z', '2026-10-17T14:59:59Z', 0,
+        'Reserva do Turno da Manhã para Círculo Bíblico',
+        '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000cc',
+        '40000000-0000-0000-0000-000000000403', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-06-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 9. Reserva LOCAL Período da Tarde (Mesma Sala de Reunião 2 sem conflito de turno - buffer 0)
+    (
+        '83000000-0000-0000-0000-000000000013', 'LOCAL', '00000000-0000-0000-0000-000000000003',
+        '2026-10-17T15:00:00Z', '2026-10-17T20:59:59Z', 0,
+        'Reserva do Turno da Tarde para Encontro Pastoral da Criança',
+        '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000ff',
+        '40000000-0000-0000-0000-000000000404', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-06-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    -- 10. Reservas de Múltiplos Locais para Retiro Paroquial
+    (
+        '83000000-0000-0000-0000-000000000021', 'LOCAL', '00000000-0000-0000-0000-000000000002',
+        '2026-11-14T08:00:00Z', '2026-11-15T18:00:00Z', 30,
+        'Reserva automática do Salão Paroquial vinculada ao evento: Retiro Paroquial de Jovens e Lideranças',
+        '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000bb',
+        '40000000-0000-0000-0000-000000000601', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-09-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    (
+        '83000000-0000-0000-0000-000000000022', 'LOCAL', '00000000-0000-0000-0000-000000000001',
+        '2026-11-14T08:00:00Z', '2026-11-15T18:00:00Z', 30,
+        'Reserva automática da Igreja Matriz vinculada ao evento: Retiro Paroquial de Jovens e Lideranças',
+        '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000bb',
+        '40000000-0000-0000-0000-000000000601', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-09-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
+    ),
+    (
+        '83000000-0000-0000-0000-000000000023', 'LOCAL', '00000000-0000-0000-0000-000000000003',
+        '2026-11-14T08:00:00Z', '2026-11-15T18:00:00Z', 30,
+        'Reserva automática da Sala de Catequese vinculada ao evento: Retiro Paroquial de Jovens e Lideranças',
+        '10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-0000000000bb',
+        '40000000-0000-0000-0000-000000000601', NULL,
+        'CONFIRMADA', '10000000-0000-0000-0000-000000000001', '2026-09-01T10:00:00Z',
+        NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 0
     )
 ON CONFLICT (id) DO NOTHING;
 

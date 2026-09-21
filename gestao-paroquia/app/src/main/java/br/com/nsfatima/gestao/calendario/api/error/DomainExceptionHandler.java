@@ -9,6 +9,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoAutorInvalid
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoNaoEncontradaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.exception.ObservacaoTipoManualInvalidoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.projeto.domain.exception.ProjetoNaoEncontradoException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
@@ -180,18 +181,29 @@ public class DomainExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
+    @ExceptionHandler(ViolacaoRegraNegocioException.class)
+    public ResponseEntity<ValidationErrorResponse> handleViolacaoRegraNegocio(ViolacaoRegraNegocioException ex) {
+        return buildValidation(
+                HttpStatus.BAD_REQUEST,
+                ErrorCodes.DOMAIN_RULE_VIOLATION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(),
+                        "justificativa",
+                        ex.getMessage(),
+                        null)));
+    }
+
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ResponseEntity<ValidationErrorResponse> handleOptimisticLock(ObjectOptimisticLockingFailureException ex) {
         return buildValidation(
                 HttpStatus.CONFLICT,
                 ErrorCodes.CONFLICT,
-                ("Concurrent update conflict: Object of class [%s] with identifier [%s] was updated by another " +
-                        "transaction")
-                        .formatted(ex.getPersistentClassName(), ex.getIdentifier()),
+                "Conflito de concorrência: o registro foi modificado por outro usuário durante a operação.",
                 List.of(new ValidationErrorItem(
                         ErrorCodes.CONFLICT.name(),
                         "version",
-                        "Optimistic locking failed",
+                        "Falha de concorrência otimista ao persistir alterações",
                         ex.getIdentifier() == null ? null : String.valueOf(ex.getIdentifier()))));
     }
 

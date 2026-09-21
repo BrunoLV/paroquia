@@ -52,8 +52,42 @@ public class ReservaConflitoService {
                 ));
             }
             throw new ReservaConflitoException(
-                    "Conflito de agenda ou margem de buffer detectado para o recurso.", detalhes);
+                    "Identificado conflito de agenda ou período de preparação e desocupação para o recurso.", detalhes);
         }
+    }
+
+    /**
+     * Identifica e compila as colisões para deliberação administrativa e pastoral, sem interromper
+     * o fluxo com exceção impeditiva (409).
+     */
+    public List<ConflitoDetalhe> detectarConflitos(
+            TipoItemReserva tipoItem,
+            UUID itemId,
+            String itemNome,
+            IntervaloReserva intervaloDesejado,
+            UUID ignorarReservaId
+    ) {
+        if (itemId == null || intervaloDesejado == null) {
+            return List.of();
+        }
+        List<Reserva> conflitos = buscarColisoesComLock(tipoItem, itemId, intervaloDesejado, ignorarReservaId);
+        if (conflitos.isEmpty()) {
+            return List.of();
+        }
+        List<ConflitoDetalhe> detalhes = new ArrayList<>();
+        for (Reserva existente : conflitos) {
+            detalhes.add(new ConflitoDetalhe(
+                    itemId,
+                    itemNome != null ? itemNome : (tipoItem == TipoItemReserva.LOCAL ? "Local " : "Ativo ") + itemId,
+                    tipoItem,
+                    existente.getIntervalo().dataHoraInicio(),
+                    existente.getIntervalo().fimComBuffer(),
+                    existente.getSolicitanteId(),
+                    "Responsável da reserva",
+                    existente.getDescricao()
+            ));
+        }
+        return detalhes;
     }
 
     /**

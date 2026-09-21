@@ -31,8 +31,15 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
             UUID atorOrgId,
             UUID eventoOrgId) {
 
-        if (isConselhoLeadership(papel, tipoGrupo) || papel == PapelOrganizacional.PAROCO) {
+        if (isConselhoLeadership(papel, tipoGrupo)
+                || papel == PapelOrganizacional.PAROCO
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.MESA_CPP) {
             return ModoRequisicaoCancelamento.IMEDIATO;
+        }
+
+        if (papel == PapelOrganizacional.SECRETARIO) {
+            return ModoRequisicaoCancelamento.REQUER_APROVACAO;
         }
 
         if (papel == PapelOrganizacional.VIGARIO) {
@@ -55,7 +62,11 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
 
     @Override
     public void assertCanDecideAprovacao(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
-        if (papel == PapelOrganizacional.PAROCO || isConselhoLeadership(papel, tipoGrupo)) {
+        if (papel == PapelOrganizacional.PAROCO
+                || papel == PapelOrganizacional.ADMIN
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.MESA_CPP
+                || isConselhoLeadership(papel, tipoGrupo)) {
             return;
         }
         throw new OperacaoProibidaException("Usuário não tem permissão para decidir aprovações de evento");

@@ -18,6 +18,20 @@ vi.mock('@/contextos/projeto/infrastructure/http/projetos', () => ({
   decidirAprovacaoProjeto: jest.fn(),
 }));
 
+vi.mock('@/contextos/local/infrastructure/http/locais', () => ({
+  getLocais: jest.fn(() => Promise.resolve([
+    { id: 'loc-1', nome: 'Salão Paroquial', capacidade: 100, ativo: true },
+    { id: 'loc-2', nome: 'Igreja Matriz', capacidade: 500, ativo: true },
+  ])),
+}));
+
+vi.mock('@/contextos/patrimonio/infrastructure/http/ativos', () => ({
+  getAtivos: jest.fn(() => Promise.resolve([
+    { id: 'at-1', nome: 'Projetor Epson', tombamento: 'PAT-001', estadoConservacao: 'BOM', status: 'DISPONIVEL', organizacaoId: 'org-1' },
+    { id: 'at-2', nome: 'Microfone sem Fio', tombamento: 'PAT-002', estadoConservacao: 'BOM', status: 'DISPONIVEL', organizacaoId: 'org-1' },
+  ])),
+}));
+
 vi.mock('@/shared/infrastructure/http/client', () => ({
   __esModule: true,
   default: {
@@ -348,6 +362,152 @@ describe('Aprovacoes page', () => {
 
     await waitFor(() => {
       expect(mockDecidirAprovacaoProjeto).toHaveBeenCalledWith('papp-1', true, 'Aprovando criação de projeto');
+    });
+  });
+
+  it('deve desabilitar botão de aprovação quando solicitação contiver conflito de local ou ativo', async () => {
+    const mockAprovacaoComConflito = [
+      {
+        ...mockAprovacoes[0],
+        id: 'app-conflito-1',
+        conflitosJson: JSON.stringify([
+          {
+            tipo: 'LOCAL',
+            itemNome: 'Salão Paroquial',
+            eventoConflitanteTitulo: 'Missa Solene',
+            solicitanteNome: 'Padre Pedro',
+          },
+        ]),
+      },
+    ];
+
+    mockGetAprovacoes.mockResolvedValue({
+      content: mockAprovacaoComConflito,
+      totalElements: 1,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    abrirDetalhesDaPrimeiraSolicitacao();
+
+    await waitFor(() => {
+      expect(screen.getByText(/CONFLITOS IDENTIFICADOS/i)).toBeInTheDocument();
+    });
+
+    const approveBtn = screen.getByRole('button', { name: /Aprovação Bloqueada/i });
+    expect(approveBtn).toBeDisabled();
+  });
+
+  it('deve exibir o nome do local em vez do ID nos detalhes da solicitação', async () => {
+    const mockAprovacaoComLocal = [
+      {
+        ...mockAprovacoes[0],
+        id: 'app-local-1',
+        actionPayloadJson: JSON.stringify({
+          titulo: 'Missa no Salão Paroquial',
+          localIds: ['loc-1', 'loc-2'],
+        }),
+      },
+    ];
+
+    mockGetAprovacoes.mockResolvedValue({
+      content: mockAprovacaoComLocal,
+      totalElements: 1,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa no Salão Paroquial')).toBeInTheDocument();
+    });
+
+    abrirDetalhesDaPrimeiraSolicitacao();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Locais Solicitados:/i)).toBeInTheDocument();
+      expect(screen.getByText('Salão Paroquial')).toBeInTheDocument();
+      expect(screen.getByText('Igreja Matriz')).toBeInTheDocument();
+    });
+  });
+
+  it('deve exibir o nome dos ativos solicitados em vez do ID nos detalhes da solicitação de evento', async () => {
+    const mockAprovacaoComAtivo = [
+      {
+        ...mockAprovacoes[0],
+        id: 'app-ativo-1',
+        actionPayloadJson: JSON.stringify({
+          titulo: 'Formação com Projetor',
+          localId: 'loc-1',
+          ativoIds: ['at-1', 'at-2'],
+        }),
+      },
+    ];
+
+    mockGetAprovacoes.mockResolvedValue({
+      content: mockAprovacaoComAtivo,
+      totalElements: 1,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Formação com Projetor')).toBeInTheDocument();
+    });
+
+    abrirDetalhesDaPrimeiraSolicitacao();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Ativos Solicitados:/i)).toBeInTheDocument();
+      expect(screen.getByText('Projetor Epson')).toBeInTheDocument();
+      expect(screen.getByText('Microfone sem Fio')).toBeInTheDocument();
+    });
+  });
+
+  it('deve resolver o nome do ativo a partir do ativoId em solicitações de empréstimo de ativo', async () => {
+    const mockAprovacaoEmprestimo = [
+      {
+        ...mockAprovacoes[0],
+        id: 'app-emp-1',
+        tipoSolicitacao: 'ALOCACAO_ATIVO_EMPRESTIMO',
+        actionPayloadJson: JSON.stringify({
+          ativoId: 'at-1',
+          motivo: 'Uso na reunião do conselho',
+        }),
+      },
+    ];
+
+    mockGetAprovacoes.mockResolvedValue({
+      content: mockAprovacaoEmprestimo,
+      totalElements: 1,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /^Ações$/i })[0]).toBeInTheDocument();
+    });
+
+    abrirDetalhesDaPrimeiraSolicitacao();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Solicitação de Empréstimo de Ativo/i)).toBeInTheDocument();
+      expect(screen.getByText(/Projetor Epson/i)).toBeInTheDocument();
     });
   });
 });

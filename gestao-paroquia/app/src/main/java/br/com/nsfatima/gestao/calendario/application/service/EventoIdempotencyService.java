@@ -57,11 +57,21 @@ public class EventoIdempotencyService {
      * @throws ConflitoIdempotenciaException se a chave já foi usada com um payload
      *                                        de hash diferente do atual
      */
-    public IdempotencyResult execute(String idempotencyKey, CriarEventoRequest request,
-                                     Supplier<EventoResponse> createAction) {
-        String key = Objects.requireNonNull(idempotencyKey);
+    /**
+     * Verifica previamente se a requisição já foi executada para a mesma {@code Idempotency-Key}.
+     * Se existir com payload idêntico, retorna o resultado salvo para replay; se o payload divergir,
+     * lança {@link ConflitoIdempotenciaException}.
+     *
+     * @param idempotencyKey chave de idempotência fornecida pelo cliente
+     * @param request payload da requisição de criação
+     * @return {@link Optional} com o resultado pré-existente ou vazio se for a primeira submissão
+     */
+    public Optional<IdempotencyResult> findExisting(String idempotencyKey, CriarEventoRequest request) {
+        if (idempotencyKey == null || idempotencyKey.isBlank() || request == null) {
+            return Optional.empty();
+        }
         String requestHash = hashRequest(request);
-        Optional<EventoIdempotencyEntity> existing = idempotencyRepository.findById(key);
+        Optional<EventoIdempotencyEntity> existing = idempotencyRepository.findById(idempotencyKey);
         if (existing.isPresent()) {
             EventoIdempotencyEntity existingRecord = existing.get();
             if (!existingRecord.getRequestHash().equals(requestHash)) {
@@ -71,9 +81,20 @@ public class EventoIdempotencyService {
 
             EventoEntity evento = eventoRepository.findById(Objects.requireNonNull(existingRecord.getEventoId()))
                     .orElseThrow(() -> new IllegalStateException("Idempotent event not found"));
-            return new IdempotencyResult(eventoMapper.toResponse(evento), true);
+            return Optional.of(new IdempotencyResult(eventoMapper.toResponse(evento), true));
+        }
+        return Optional.empty();
+    }
+
+    public IdempotencyResult execute(String idempotencyKey, CriarEventoRequest request,
+                                     Supplier<EventoResponse> createAction) {
+        String key = Objects.requireNonNull(idempotencyKey);
+        Optional<IdempotencyResult> existing = findExisting(key, request);
+        if (existing.isPresent()) {
+            return existing.get();
         }
 
+        String requestHash = hashRequest(request);
         EventoResponse created = createAction.get();
 
         EventoIdempotencyEntity record = new EventoIdempotencyEntity();

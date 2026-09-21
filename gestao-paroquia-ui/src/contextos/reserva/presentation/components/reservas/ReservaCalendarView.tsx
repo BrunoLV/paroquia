@@ -134,16 +134,23 @@ export const ReservaCalendarView: React.FC<ReservaCalendarViewProps> = ({
                       minute: '2-digit',
                     });
 
+                    let turnoLabel = '';
+                    if (r.descricao?.includes('(Manhã)')) turnoLabel = 'Manhã';
+                    else if (r.descricao?.includes('(Tarde)')) turnoLabel = 'Tarde';
+                    else if (r.descricao?.includes('(Noite)')) turnoLabel = 'Noite';
+                    else if (r.descricao?.includes('(Madrugada)')) turnoLabel = 'Madrugada';
+                    else if (r.descricao?.includes('(Dia Inteiro)')) turnoLabel = 'Dia Inteiro';
+
                     return (
                       <Tooltip
                         key={r.id}
-                        title={`${horaInicio} - ${r.itemNome} (${r.descricao}) [Buffer: ${r.bufferMinutos}m]`}
+                        title={`${turnoLabel ? `[${turnoLabel}] ` : ''}${horaInicio} - ${r.itemNome} (${r.descricao}) [Buffer: ${r.bufferMinutos}m]`}
                       >
                         <Box
                           onClick={() => onSelectReserva(r)}
                           sx={{
-                            p: 0.4,
-                            borderRadius: 0.5,
+                            p: 0.5,
+                            borderRadius: 1,
                             bgcolor: r.tipoItem === 'LOCAL' ? 'primary.lighter' : 'secondary.lighter',
                             borderLeft: '3px solid',
                             borderLeftColor: r.tipoItem === 'LOCAL' ? 'primary.main' : 'secondary.main',
@@ -153,12 +160,12 @@ export const ReservaCalendarView: React.FC<ReservaCalendarViewProps> = ({
                         >
                           <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
                             {r.tipoItem === 'LOCAL' ? (
-                              <MeetingRoomIcon sx={{ fontSize: 12, color: 'primary.main' }} />
+                              <MeetingRoomIcon sx={{ fontSize: 13, color: 'primary.main' }} />
                             ) : (
-                              <BuildIcon sx={{ fontSize: 12, color: 'secondary.main' }} />
+                              <BuildIcon sx={{ fontSize: 13, color: 'secondary.main' }} />
                             )}
-                            <Typography variant="caption" noWrap sx={{ fontSize: '0.7rem', fontWeight: 600 }}>
-                              {horaInicio} {r.itemNome}
+                            <Typography variant="caption" noWrap sx={{ fontSize: '0.72rem', fontWeight: 600 }}>
+                              {turnoLabel ? `[${turnoLabel}] ` : `${horaInicio} `}{r.itemNome}
                             </Typography>
                           </Stack>
                         </Box>

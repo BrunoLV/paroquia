@@ -52,3 +52,14 @@ export const decideAprovacao = async (
   const response = await apiClient.patch<AprovacaoDecisionResponse>(`/aprovacoes/${id}`, request);
   return response.data;
 };
+
+/**
+ * Busca as solicitações filhas (ocorrências programadas de série recorrente) vinculadas
+ * à solicitação de aprovação mestre informada.
+ * @param id Identificador da aprovação pai (mestre).
+ * @returns Lista de ocorrências filhas ordenadas cronologicamente.
+ */
+export const getAprovacaoOcorrencias = async (id: string): Promise<AprovacaoResponse[]> => {
+  const response = await apiClient.get<AprovacaoResponse[]>(`/aprovacoes/${id}/ocorrencias`);
+  return response.data;
+};

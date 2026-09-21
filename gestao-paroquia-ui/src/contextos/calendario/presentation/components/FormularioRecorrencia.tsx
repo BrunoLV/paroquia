@@ -20,6 +20,7 @@ import {
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';
 export type FrequenciaRecorrencia = Frequency;
 type TipoTermino = 'NEVER' | 'DATE' | 'COUNT';
+export type TerminationType = TipoTermino;
 
 /**
  * Regra de recorrência enviada ao backend para gerar as ocorrências do evento (ver

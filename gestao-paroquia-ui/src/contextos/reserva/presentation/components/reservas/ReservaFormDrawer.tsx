@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
   Box,
+  Chip,
   CircularProgress,
   Divider,
   Drawer,
@@ -96,6 +98,36 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
     }
   }, [selectedTipo, selectedItemId, locais, setValue]);
 
+  const aplicarTurno = (turno: 'MANHA' | 'TARDE' | 'NOITE' | 'MADRUGADA' | 'DIA_INTEIRO') => {
+    const inicioAtual = watch('dataHoraInicio');
+    const baseDate = inicioAtual && inicioAtual.includes('T')
+      ? inicioAtual.slice(0, 10)
+      : new Date().toISOString().slice(0, 10);
+
+    switch (turno) {
+      case 'MANHA':
+        setValue('dataHoraInicio', `${baseDate}T06:00`, { shouldDirty: true, shouldValidate: true });
+        setValue('dataHoraFim', `${baseDate}T12:00`, { shouldDirty: true, shouldValidate: true });
+        break;
+      case 'TARDE':
+        setValue('dataHoraInicio', `${baseDate}T12:00`, { shouldDirty: true, shouldValidate: true });
+        setValue('dataHoraFim', `${baseDate}T18:00`, { shouldDirty: true, shouldValidate: true });
+        break;
+      case 'NOITE':
+        setValue('dataHoraInicio', `${baseDate}T18:00`, { shouldDirty: true, shouldValidate: true });
+        setValue('dataHoraFim', `${baseDate}T23:59`, { shouldDirty: true, shouldValidate: true });
+        break;
+      case 'MADRUGADA':
+        setValue('dataHoraInicio', `${baseDate}T00:00`, { shouldDirty: true, shouldValidate: true });
+        setValue('dataHoraFim', `${baseDate}T06:00`, { shouldDirty: true, shouldValidate: true });
+        break;
+      case 'DIA_INTEIRO':
+        setValue('dataHoraInicio', `${baseDate}T06:00`, { shouldDirty: true, shouldValidate: true });
+        setValue('dataHoraFim', `${baseDate}T23:59`, { shouldDirty: true, shouldValidate: true });
+        break;
+    }
+  };
+
   const handleClose = () => confirmDiscard(isDirty, onClose);
 
   return (
@@ -104,7 +136,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
       open={open}
       onClose={handleClose}
       slotProps={{
-        paper: { sx: { width: { xs: '100%', sm: 480 }, p: 3 } },
+        paper: { sx: { width: { xs: '100%', sm: 560, md: 640 }, p: { xs: 2.5, sm: 3.5 } } },
       }}
     >
       <Stack spacing={2} sx={{ height: '100%', justifyContent: 'space-between' }}>
@@ -163,6 +195,19 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                   </FormControl>
                 )}
               />
+
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, display: 'block', mb: 1 }}>
+                  Definição Rápida de Turno / Período:
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  <Chip label="Manhã (06h–12h)" size="small" variant="outlined" clickable onClick={() => aplicarTurno('MANHA')} />
+                  <Chip label="Tarde (12h–18h)" size="small" variant="outlined" clickable onClick={() => aplicarTurno('TARDE')} />
+                  <Chip label="Noite (18h–23h59)" size="small" variant="outlined" clickable onClick={() => aplicarTurno('NOITE')} />
+                  <Chip label="Madrugada (00h–06h)" size="small" variant="outlined" clickable onClick={() => aplicarTurno('MADRUGADA')} />
+                  <Chip label="Dia Inteiro (06h–23h59)" size="small" variant="outlined" clickable onClick={() => aplicarTurno('DIA_INTEIRO')} />
+                </Box>
+              </Box>
 
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <Controller
@@ -294,7 +339,8 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
               />
 
               {isRecorrente && (
-                <Stack direction="row" spacing={2}>
+                <>
+                  <Stack direction="row" spacing={2}>
                   <Controller
                     name="tipoRecorrencia"
                     control={control}
@@ -326,7 +372,11 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                     )}
                   />
                 </Stack>
-              )}
+                <Alert severity="info" sx={{ borderRadius: 2 }}>
+                  Esta reserva será programada {watch('tipoRecorrencia') === 'SEMANAL' ? 'a cada semana' : watch('tipoRecorrencia') === 'QUINZENAL' ? 'a cada 15 dias' : 'a cada mês'}, gerando {watch('quantidadeOcorrencias') || 1} reservas sequenciais na agenda.
+                </Alert>
+              </>
+            )}
             </Stack>
           </form>
         </Box>

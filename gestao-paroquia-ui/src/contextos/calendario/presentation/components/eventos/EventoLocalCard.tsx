@@ -19,25 +19,54 @@ const EventoLocalCard: React.FC<EventoLocalCardProps> = ({ form, disabled, local
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+      <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mb: 2.5 }}>
           <LocationOnIcon color="primary" fontSize="small" />
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main' }}>
             Local e recursos
           </Typography>
         </Stack>
-        <Grid container spacing={2}>
+        <Grid container spacing={2.5}>
           <Grid size={{ xs: 12 }}>
             <Controller
-              name="localId"
+              name="localIds"
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="new-local-label">Local</InputLabel>
-                  <Select {...field} labelId="new-local-label" label="Local" disabled={disabled}>
-                    <MenuItem value="">
-                      <em>Nenhum</em>
-                    </MenuItem>
+                  <InputLabel id="new-locais-label">Local / Espaços Físicos</InputLabel>
+                  <Select
+                    {...field}
+                    labelId="new-locais-label"
+                    label="Local / Espaços Físicos"
+                    multiple
+                    disabled={disabled}
+                    value={Array.isArray(field.value) ? field.value : []}
+                    onChange={(e) => {
+                      const val = typeof e.target.value === 'string' ? e.target.value.split(',') : (e.target.value as string[]);
+                      field.onChange(val);
+                      form.setValue('localId', val.length > 0 ? val[0] : '');
+                    }}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {(selected as string[]).map((id) => {
+                          const local = localOptions.find((l) => l.id === id);
+                          return (
+                            <Chip
+                              key={id}
+                              label={local ? local.nome : id}
+                              size="small"
+                              onDelete={disabled ? undefined : () => {
+                                const next = (selected as string[]).filter((x) => x !== id);
+                                field.onChange(next);
+                                form.setValue('localId', next.length > 0 ? next[0] : '');
+                              }}
+                              onMouseDown={(e) => e.stopPropagation()}
+                            />
+                          );
+                        })}
+                      </Box>
+                    )}
+                  >
                     {localOptions.map((l) => (
                       <MenuItem key={l.id} value={l.id}>
                         {l.nome}
@@ -65,7 +94,7 @@ const EventoLocalCard: React.FC<EventoLocalCardProps> = ({ form, disabled, local
                       disabled={disabled}
                       onChange={(e) => field.onChange(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
                       renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                           {(selected as string[]).map((id) => {
                             const ativo = ativos.find((a) => a.id === id);
                             return <Chip key={id} label={ativo ? `${ativo.nome} (${ativo.categoria})` : id} size="small" />;

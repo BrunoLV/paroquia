@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
@@ -193,5 +194,35 @@ class EventoReservaIntegrationServiceTest {
         assertThat(ativa.getStatus()).isEqualTo(StatusReserva.CANCELADA);
         verify(reservaRepository, times(1)).save(ativa);
         verify(reservaRepository, never()).save(jaCancelada);
+    }
+
+    @Test
+    @DisplayName("criarReservasEvento com múltiplos períodos gera reservas com sufixo de turno na descrição")
+    void criarReservasEventoComMultiplosPeriodosGeraDescricoesComTurno() {
+        UUID eventoId = UUID.randomUUID();
+        UUID localId = UUID.randomUUID();
+        Instant inicio = Instant.parse("2026-10-15T06:00:00Z");
+        Instant fim = Instant.parse("2026-10-15T23:59:00Z");
+
+        ArgumentCaptor<List<Reserva>> captor = ArgumentCaptor.forClass(List.class);
+        when(reservaRepository.saveAll(captor.capture())).thenAnswer(inv -> inv.getArgument(0));
+
+        service().criarReservasEvento(
+                eventoId,
+                "Retiro Espiritual",
+                localId,
+                List.of(localId),
+                List.of(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                inicio,
+                fim,
+                List.of(TipoHorarioEvento.MANHA, TipoHorarioEvento.NOITE)
+        );
+
+        List<Reserva> reservasCriadas = captor.getValue();
+        assertThat(reservasCriadas).hasSize(2);
+        assertThat(reservasCriadas.get(0).getDescricao()).contains("Manhã");
+        assertThat(reservasCriadas.get(1).getDescricao()).contains("Noite");
     }
 }

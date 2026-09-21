@@ -14,7 +14,11 @@ public record ConflitoDetalheResponse(
         Instant fimOcupadoComBuffer,
         UUID solicitanteId,
         String solicitanteNome,
-        String descricaoReserva
+        String descricaoReserva,
+        Instant dataHoraInicio,
+        Instant fimComBuffer,
+        String responsavelNome,
+        String motivo
 ) {
     public static ConflitoDetalheResponse de(ConflitoDetalhe d) {
         return new ConflitoDetalheResponse(
@@ -24,6 +28,10 @@ public record ConflitoDetalheResponse(
                 d.inicioOcupado(),
                 d.fimOcupadoComBuffer(),
                 d.solicitanteId(),
+                d.solicitanteNome(),
+                d.descricaoReserva(),
+                d.inicioOcupado(),
+                d.fimOcupadoComBuffer(),
                 d.solicitanteNome(),
                 d.descricaoReserva()
         );

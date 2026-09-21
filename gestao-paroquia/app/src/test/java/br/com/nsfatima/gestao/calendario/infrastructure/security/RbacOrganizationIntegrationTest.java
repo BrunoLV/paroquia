@@ -81,6 +81,7 @@ class RbacOrganizationIntegrationTest {
                   "inicio": "2026-08-20T10:00:00Z",
                   "fim": "2026-08-20T11:00:00Z",
                   "status": "rascunho",
+                  "adicionadoExtraJustificativa": "Justificativa teste RBAC",
                   "participantes": []
                 }
                 """.formatted(grupoParoquialResponsavelId);

@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -37,7 +39,12 @@ public interface EventoValidacaoJpaRepository {
      * @param localId identificador do local
      * @return {@code true} caso exista ao menos um evento vinculado ao local, {@code false} caso contrário
      */
-    boolean existsByLocalId(UUID localId);
+    @Query("""
+            select (count(e) > 0) from EventoEntity e
+            left join e.locais el
+            where e.localId = :localId or el.localId = :localId
+            """)
+    boolean existsByLocalId(@Param("localId") UUID localId);
 
     /**
      * Verifica se existe algum evento futuro vinculado a um determinado local com status diferente do
@@ -48,7 +55,17 @@ public interface EventoValidacaoJpaRepository {
      * @param status status a ser desconsiderado (ex.: "CANCELADO")
      * @return {@code true} se houver eventos futuros agendados ativos
      */
-    boolean existsByLocalIdAndFimUtcGreaterThanAndStatusNot(UUID localId, Instant fimUtc, String status);
+    @Query("""
+            select (count(e) > 0) from EventoEntity e
+            left join e.locais el
+            where (e.localId = :localId or el.localId = :localId)
+              and e.fimUtc > :fimUtc
+              and e.status != :status
+            """)
+    boolean existsByLocalIdAndFimUtcGreaterThanAndStatusNot(
+            @Param("localId") UUID localId,
+            @Param("fimUtc") Instant fimUtc,
+            @Param("status") String status);
 
     /**
      * Verifica se existe algum evento vinculado a uma determinada organização como responsável,

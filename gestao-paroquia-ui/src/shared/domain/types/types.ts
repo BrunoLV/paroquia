@@ -361,6 +361,22 @@ export type CategoriaEvento =
   | "ASSISTENCIAL"
   | "MOVIMENTO";
 
+export type TipoHorarioEvento =
+  | 'PERSONALIZADO'
+  | 'DIA_INTEIRO'
+  | 'MADRUGADA'
+  | 'MANHA'
+  | 'TARDE'
+  | 'NOITE';
+
+export type FormatoEvento = 'PRESENCIAL' | 'ONLINE' | 'HIBRIDO';
+
+export const FORMATO_EVENTO_LABELS: Record<FormatoEvento, string> = {
+  PRESENCIAL: 'Presencial',
+  ONLINE: 'Online / Remoto',
+  HIBRIDO: 'Híbrido',
+};
+
 /**
  * Evento de calendário — a entidade mais conectada do domínio. Além dos dados básicos
  * de agendamento, carrega sinais opcionais de conflito de agenda (`estadoConflito`/
@@ -378,9 +394,17 @@ export interface Evento {
   projetoId: string | null;
   nomeProjeto: string | null;
   localId: string | null;
+  /** IDs de todos os espaços físicos vinculados ao evento (permite múltiplos locais). */
+  localIds?: string[];
   inicio: string;
   fim: string;
   status: string;
+  /** Formato de realização (Presencial, Online, Híbrido). */
+  formato?: FormatoEvento;
+  /** Formato de horário (Personalizado, Dia Inteiro, Madrugada, Manhã, Tarde, Noite). */
+  tipoHorario?: TipoHorarioEvento;
+  /** Turnos múltiplos selecionados para o evento (ex: Manhã e Noite). */
+  periodos?: TipoHorarioEvento[];
   /** IDs dos membros/participantes convidados/vinculados ao evento. */
   participantes?: string[];
   /**
@@ -433,8 +457,13 @@ export interface CreateEventoPayload {
   grupoParoquialResponsavelId: string;
   projetoId?: string | null;
   localId?: string | null;
+  /** Lista de múltiplos locais/espaços físicos alocados simultaneamente */
+  localIds?: string[];
   inicio: string;
   fim: string;
+  formato?: FormatoEvento;
+  tipoHorario?: TipoHorarioEvento;
+  periodos?: TipoHorarioEvento[];
   status?: string;
   participantes?: string[];
   adicionadoExtraJustificativa?: string | null;
@@ -456,6 +485,9 @@ export interface UpdateEventoPayload {
   categoria?: string;
   inicio?: string;
   fim?: string;
+  formato?: FormatoEvento;
+  tipoHorario?: TipoHorarioEvento;
+  periodos?: TipoHorarioEvento[];
   status?: string;
   adicionadoExtraJustificativa?: string | null;
   /** Motivo textual exigido ao transicionar `status` para cancelado. */
@@ -466,6 +498,8 @@ export interface UpdateEventoPayload {
   escopoEdicao?: "SOMENTE_ESTE" | "ESTE_E_PROXIMOS" | "TODOS";
   projetoId?: string | null;
   localId?: string | null;
+  /** Lista de múltiplos locais/espaços físicos alocados simultaneamente */
+  localIds?: string[];
   igrejaVinculoId?: string | null;
   liberarConflitoAgenda?: boolean;
   /** IDs dos ativos patrimoniais alocados para o evento */
@@ -501,6 +535,30 @@ export interface AprovacaoResponse {
   mensagemErroExecucao: string | null;
   /** Payload JSON serializado com os dados da ação original (ex: campos do evento a criar/editar), reidratado na aprovação. */
   actionPayloadJson: string | null;
+  /** Identificador da aprovação mestre agregadora em caso de série recorrente desmembrada */
+  aprovacaoPaiId?: string | null;
+  /** Compilação analítica de conflitos de local, ativos e agenda eclesial em JSON */
+  conflitosJson?: string | null;
+  /** Data da ocorrência no caso de item granular de recorrência */
+  dataOcorrenciaUtc?: string | null;
+  /** Justificativa formal do solicitante (mandatória para Secretário e ano fechado) */
+  justificativa?: string | null;
+  /** Total de ocorrências filhas vinculadas à solicitação mestre */
+  totalOcorrenciasFilhas?: number | null;
+}
+
+export interface ConflitoEventoItem {
+  tipo: 'LOCAL' | 'ATIVO' | 'AGENDA_ECLESIAL' | string;
+  itemId?: string | null;
+  itemNome?: string | null;
+  eventoConflitanteId?: string | null;
+  eventoConflitanteTitulo?: string | null;
+  inicioOcupadoUtc?: string | null;
+  fimOcupadoUtc?: string | null;
+  solicitanteNome?: string | null;
+  prioridadeExistente?: number | null;
+  prioridadeSolicitada?: number | null;
+  detalhe?: string | null;
 }
 
 /** Requisição para decidir (aprovar/reprovar) uma solicitação de aprovação pendente. */
@@ -941,14 +999,31 @@ export interface DevolverAtivoPayload {
 }
 
 export interface ReservaConflitoDetalhe {
-  itemId: string;
-  itemNome: string;
-  tipoItem: TipoItemReserva;
-  dataHoraInicio: string;
-  fimComBuffer: string;
-  responsavelId: string;
-  responsavelNome: string;
-  motivo: string;
+  itemId?: string;
+  itemNome?: string;
+  tipoItem?: TipoItemReserva | string;
+  dataHoraInicio?: string;
+  fimComBuffer?: string;
+  responsavelId?: string;
+  responsavelNome?: string;
+  motivo?: string;
+  // Propriedades adicionais retornadas pelo backend
+  tipoConflito?: string;
+  recursoId?: string;
+  recursoNome?: string;
+  eventoConcorrenteId?: string;
+  eventoConcorrenteTitulo?: string;
+  inicioUtc?: string;
+  fimUtc?: string;
+  solicitanteOuResponsavel?: string;
+  prioridadeConcorrente?: number;
+  prioridadeSolicitada?: number;
+  detalhe?: string;
+  inicioOcupado?: string;
+  fimOcupadoComBuffer?: string;
+  solicitanteId?: string;
+  solicitanteNome?: string;
+  descricaoReserva?: string;
 }
 
 export interface ReservaMetricas {

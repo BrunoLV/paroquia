@@ -2,11 +2,14 @@ import { Box, Card, Paper, Typography } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import CalendarIcon from '@mui/icons-material/CalendarMonth';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { getEventoStatusMeta } from '@/shared/utils/statusMeta/eventoStatus';
 import { getCategoriaEventoMeta } from '@/shared/utils/statusMeta/categoriaEventoStatus';
 import { getCategoryColor, MONTH_NAMES } from '@/shared/utils/calendarHelpers';
 import { Evento } from '@/shared/domain/types/types';
+import { formatarHorarioEvento } from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
+import { getFormatoEventoIcon, getFormatoEventoLabel } from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
 
 export interface AgendaListaCalendarioProps {
   agendaEvents: Evento[];
@@ -37,6 +40,27 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
         const start = new Date(evt.inicio);
         const end = new Date(evt.fim);
         const isCancelado = evt.status?.toUpperCase() === 'CANCELADO';
+        const isFalhaExecucao = evt.status?.toUpperCase() === 'FALHA_EXECUCAO';
+        const isConflito = evt.estadoConflito?.toUpperCase() === 'PENDENTE';
+        const isPendenteAprovacao = Boolean(evt.aprovacaoPendenteId);
+
+        let prefix = '';
+        if (isFalhaExecucao) {
+          prefix = '[Falha de Execução] ';
+        } else if (isConflito) {
+          prefix = '[Conflito] ';
+        } else if (isPendenteAprovacao) {
+          prefix = '[Pendente] ';
+        }
+
+        const displayTitle = `${prefix}${evt.titulo}`;
+
+        let borderLeftColor = styleColors.border;
+        if (isCancelado || isFalhaExecucao) {
+          borderLeftColor = 'error.main';
+        } else if (isConflito) {
+          borderLeftColor = 'warning.main';
+        }
 
         return (
           <Box
@@ -51,8 +75,8 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
               borderBottom: idx < agendaEvents.length - 1 ? '1px solid' : 'none',
               borderColor: 'divider',
               borderLeft: '4px solid',
-              borderLeftColor: isCancelado ? 'error.main' : styleColors.border,
-              opacity: evt.aprovacaoPendenteId ? 0.6 : (isCancelado ? 0.8 : 1),
+              borderLeftColor: borderLeftColor,
+              opacity: isPendenteAprovacao ? 0.6 : (isCancelado ? 0.8 : 1),
               '&:hover': { bgcolor: 'action.hover' },
             }}
           >
@@ -85,16 +109,22 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
                 variant="body2"
                 sx={{
                   fontWeight: 700,
-                  color: isCancelado ? 'error.dark' : 'text.primary',
+                  color: isCancelado || isFalhaExecucao ? 'error.dark' : isConflito ? 'warning.dark' : 'text.primary',
                   textDecoration: isCancelado ? 'line-through' : 'none',
                 }}
               >
-                {evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                {displayTitle}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 0.5 }}>
                 {evt.descricao || 'Sem descrição.'}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+                <StatusIcon
+                  label={getFormatoEventoLabel(evt.formato)}
+                  color="default"
+                  icon={getFormatoEventoIcon(evt.formato, 'small')}
+                  tooltip={`Formato de realização: ${getFormatoEventoLabel(evt.formato)}`}
+                />
                 <StatusIcon {...getCategoriaEventoMeta(evt.categoria)} />
                 <StatusIcon
                   label={getOrgName(evt.grupoParoquialResponsavelId, evt.igrejaVinculoId)}
@@ -103,6 +133,14 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
                   tooltip="Organização responsável pelo evento"
                 />
                 <StatusIcon {...getEventoStatusMeta(evt.status)} />
+                {isConflito && (
+                  <StatusIcon
+                    label="Conflito Pendente"
+                    color="warning"
+                    icon={<WarningAmberIcon />}
+                    tooltip={evt.motivoConflito || 'Conflito de agenda ou recursos pendente de deliberação'}
+                  />
+                )}
               </Box>
             </Box>
 
@@ -110,8 +148,7 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', flexShrink: 0 }}>
               <ScheduleIcon sx={{ fontSize: 18 }} />
               <Typography variant="body2" sx={{ fontWeight: 500, whiteSpace: 'nowrap' }}>
-                {start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} -{' '}
-                {end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                {formatarHorarioEvento(evt)}
               </Typography>
             </Box>
           </Box>

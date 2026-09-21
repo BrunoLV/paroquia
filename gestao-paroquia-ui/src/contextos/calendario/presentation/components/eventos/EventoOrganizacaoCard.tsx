@@ -34,14 +34,14 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+      <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mb: 2.5 }}>
           <GroupsIcon color="primary" fontSize="small" />
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main' }}>
             Organização e vínculos
           </Typography>
         </Stack>
-        <Grid container spacing={2}>
+        <Grid container spacing={2.5}>
           <Grid size={{ xs: 12 }}>
             <Controller
               name="grupoParoquialResponsavelId"
@@ -81,7 +81,7 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
               )}
             />
           </Grid>
-          <Grid size={{ xs: 6 }}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Controller
               name="projetoId"
               control={control}
@@ -107,7 +107,7 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
               )}
             />
           </Grid>
-          <Grid size={{ xs: 6 }}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <EventoApoioSelect control={control} disabled={disabled} organizations={organizations} orgId={orgId} />
           </Grid>
         </Grid>

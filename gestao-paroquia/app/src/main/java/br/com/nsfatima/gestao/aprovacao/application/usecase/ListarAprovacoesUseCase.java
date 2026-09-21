@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -40,6 +41,22 @@ public class ListarAprovacoesUseCase {
     @Transactional(readOnly = true)
     public Page<AprovacaoResponse> execute(UUID eventoId, String status, Pageable pageable) {
         return repository.findByFilter(eventoId, AprovacaoStatus.fromJson(status), pageable)
-                .map(mapper::toResponse);
+                .map(entity -> {
+                    long count = repository.countByAprovacaoPaiId(entity.getId());
+                    return mapper.toResponse(entity, count > 0 ? (int) count : null);
+                });
+    }
+
+    /**
+     * Lista todas as ocorrências filhas associadas a uma aprovação mestre.
+     *
+     * @param aprovacaoPaiId ID da aprovação mestre
+     * @return lista de respostas de aprovação filhas ordenadas pela data da ocorrência
+     */
+    @Transactional(readOnly = true)
+    public List<AprovacaoResponse> listarOcorrencias(UUID aprovacaoPaiId) {
+        return repository.findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(aprovacaoPaiId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }

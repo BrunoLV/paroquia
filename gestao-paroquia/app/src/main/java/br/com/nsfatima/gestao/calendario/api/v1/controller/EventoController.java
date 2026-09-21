@@ -38,7 +38,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.nsfatima.gestao.calendario.application.dto.ConflitoEventoItemDto;
+
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -111,6 +114,23 @@ public class EventoController {
             @RequestBody @Valid CriarEventoRequest request) {
         ResultadoOperacaoEvento result = criarEventoUseCase.execute(idempotencyKey, request);
         return ResponseEntity.status(result.status()).body(result.corpo());
+    }
+
+    /**
+     * Permite à interface verificar preventivamente colisões de agenda física ou eclesial antes
+     * de efetivar o cadastro, possibilitando decisões prévias de ajuste ou deliberação em conselho.
+     */
+    @PostMapping("/verificar-conflitos")
+    @Operation(summary = "Verifica conflitos de agenda e recursos antes da criação",
+            description = "Retorna lista de conflitos com eventos e reservas já aprovados sem persistir alterações.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de conflitos potenciais (vazia se nenhum conflito)"),
+            @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos")
+    })
+    public ResponseEntity<List<ConflitoEventoItemDto>> verificarConflitos(
+            @RequestBody @Valid CriarEventoRequest request) {
+        List<ConflitoEventoItemDto> conflitos = criarEventoUseCase.detectarConflitos(request);
+        return ResponseEntity.ok(conflitos);
     }
 
     /**

@@ -51,20 +51,20 @@ public class EventoPatchAuthorizationService {
     }
 
     /**
-     * Garante que o ator tem permissão para utilizar o bypass de conflito de
-     * agenda eclesial ao criar/editar um evento — restrito a Pároco/Admin,
+     * Garante que o ator possui autoridade pastoral para efetivar o agendamento
+     * imediato de eventos sem submissão prévia ao Conselho Paroquial — restrito a Pároco/Admin,
      * verificado tanto pelo contexto de ator quanto pelas autoridades de segurança
      * do usuário autenticado.
      *
      * @param actorContext contexto de papel/organização do ator autenticado, ou {@code null}
-     * @throws AccessDeniedException se o ator não for Pároco nem Admin
+     * @throws AccessDeniedException se o ator não tiver autoridade para decisão pastoral imediata
      */
-    public void assertCanBypassAgendaConflict(EventoActorContext actorContext) {
+    public void assertCanLiberarConflitoAgenda(EventoActorContext actorContext) {
         PapelOrganizacional normalizedRole = actorContext != null
                 ? PapelOrganizacional.fromStoredValue(actorContext.role())
                 : null;
 
-        boolean isAuthorized = policy.isBypassAllowed(normalizedRole);
+        boolean isAuthorized = policy.isLiberacaoConflitoPermitida(normalizedRole);
 
         if (!isAuthorized) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -75,7 +75,7 @@ public class EventoPatchAuthorizationService {
 
         if (!isAuthorized) {
             throw new AccessDeniedException(
-                    "Apenas o Pároco possui permissão para utilizar o bypass de conflito de agenda eclesial");
+                    "Apenas o Pároco possui autoridade para efetivar agendamento imediato por decisão pastoral.");
         }
     }
 

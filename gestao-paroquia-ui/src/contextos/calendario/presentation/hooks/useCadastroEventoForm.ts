@@ -3,13 +3,14 @@ import { useForm, useWatch, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { isGlobalCreator } from '@/contextos/iam/presentation/auth/permissions';
+import { isGlobalCreator, isSecretario } from '@/contextos/iam/presentation/auth/permissions';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { listarReservas } from '@/contextos/reserva/infrastructure/http/reservas';
 import { getRecorrencia } from '@/contextos/calendario/infrastructure/http/eventos';
 import { AnoParoquial, AtivoPatrimonial, Evento, Local, Organizacao, Projeto } from '@/shared/domain/types/types';
 import { formatIsoToLocal, formatLocalDate, getRecurrenceDates } from '@/shared/utils/recurrenceUtils';
 import { eventoFormSchema, EventoFormInput } from '@/contextos/calendario/presentation/schemas/eventoSchema';
+import { calcularLimitesHorario, calcularLimitesMultiplosPeriodos } from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
 
 interface UseCadastroEventoFormParams {
   open: boolean;
@@ -31,12 +32,19 @@ const defaultValues: EventoFormInput = {
   grupoParoquialResponsavelId: '',
   igrejaVinculoId: '',
   localId: '',
+  localIds: [],
   projetoId: '',
   participantes: [],
   selectedAtivoIds: [],
+  formato: 'PRESENCIAL',
+  tipoHorario: 'PERSONALIZADO',
+  periodos: [],
+  eventDate: '',
   startDate: '',
   endDate: '',
   endTime: '10:00',
+  duracaoHoras: 1,
+  duracaoMinutos: 0,
   justification: '',
   isRecurring: false,
   liberarConflitoAgenda: false,
@@ -70,9 +78,9 @@ export const useCadastroEventoForm = ({
   });
   const { control, handleSubmit, reset, setValue } = form;
 
-  const [startDate, orgId, igrejaVinculoId, localId, projetoId, isRecurring, recurrenceRule] = useWatch({
+  const [startDate, orgId, igrejaVinculoId, localId, localIds, projetoId, isRecurring, recurrenceRule] = useWatch({
     control,
-    name: ['startDate', 'grupoParoquialResponsavelId', 'igrejaVinculoId', 'localId', 'projetoId', 'isRecurring', 'recurrenceRule'],
+    name: ['startDate', 'grupoParoquialResponsavelId', 'igrejaVinculoId', 'localId', 'localIds', 'projetoId', 'isRecurring', 'recurrenceRule'],
   });
   const endDate = useWatch({ control, name: 'endDate' });
 
@@ -111,7 +119,11 @@ export const useCadastroEventoForm = ({
     return grupoParoquialOptions.filter((org) => userOrgIds.includes(org.id) || org.id === orgId);
   }, [user, grupoParoquialOptions, orgId]);
 
-  const localOptions = useMemo(() => locais.filter((l) => l.ativo || l.id === localId), [locais, localId]);
+  const selectedLocalIds = Array.isArray(localIds) ? localIds : [];
+  const localOptions = useMemo(
+    () => locais.filter((l) => l.ativo || l.id === localId || selectedLocalIds.includes(l.id)),
+    [locais, localId, selectedLocalIds]
+  );
   const projetoOptions = useMemo(() => projetos.filter((p) => p.status === 'ABERTO' || p.status === 'EM_ANDAMENTO' || p.id === projetoId), [projetos, projetoId]);
   const selectedProject = useMemo(() => (projetoId ? projetos.find((p) => p.id === projetoId) || null : null), [projetoId, projetos]);
 
@@ -195,6 +207,24 @@ export const useCadastroEventoForm = ({
     if (!open) return;
     if (initialEvent) {
       const end = initialEvent.fim ? new Date(initialEvent.fim) : null;
+      const startStr = formatIsoToLocal(initialEvent.inicio);
+      const endStr = formatIsoToLocal(initialEvent.fim);
+      const eventDateStr = startStr ? startStr.split('T')[0] : '';
+      const tipoHorario = initialEvent.tipoHorario || 'PERSONALIZADO';
+
+      let diffHoras = 1;
+      let diffMinutos = 0;
+      if (initialEvent.inicio && initialEvent.fim) {
+        const diffMs = Math.max(0, new Date(initialEvent.fim).getTime() - new Date(initialEvent.inicio).getTime());
+        const totalMinutos = Math.round(diffMs / 60000);
+        diffHoras = Math.floor(totalMinutos / 60);
+        diffMinutos = totalMinutos % 60;
+      }
+
+      const periodosIniciais = initialEvent.periodos && initialEvent.periodos.length > 0
+        ? initialEvent.periodos
+        : (['MADRUGADA', 'MANHA', 'TARDE', 'NOITE'].includes(tipoHorario) ? [tipoHorario] : []);
+
       reset({
         ...defaultValues,
         titulo: initialEvent.titulo || '',
@@ -202,10 +232,17 @@ export const useCadastroEventoForm = ({
         categoria: initialEvent.categoria || 'PASTORAL',
         grupoParoquialResponsavelId: initialEvent.grupoParoquialResponsavelId || '',
         igrejaVinculoId: initialEvent.igrejaVinculoId || '',
-        localId: initialEvent.localId || '',
+        localId: initialEvent.localId || (initialEvent.localIds && initialEvent.localIds.length > 0 ? initialEvent.localIds[0] : ''),
+        localIds: initialEvent.localIds && initialEvent.localIds.length > 0 ? initialEvent.localIds : (initialEvent.localId ? [initialEvent.localId] : []),
         projetoId: initialEvent.projetoId || '',
-        startDate: formatIsoToLocal(initialEvent.inicio),
-        endDate: formatIsoToLocal(initialEvent.fim),
+        formato: initialEvent.formato || 'PRESENCIAL',
+        tipoHorario,
+        periodos: periodosIniciais,
+        eventDate: eventDateStr,
+        startDate: startStr,
+        endDate: endStr,
+        duracaoHoras: diffHoras,
+        duracaoMinutos: diffMinutos,
         // ativoIds real vem de ativosAlocadosQuery (efeito abaixo) — o backend não devolve
         // esse campo em Evento, só aceita no payload de create/update.
         endTime: end ? `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}` : '10:00',
@@ -221,7 +258,18 @@ export const useCadastroEventoForm = ({
       start.setHours(9, 0, 0, 0);
       const end = new Date(start);
       end.setHours(10, 0, 0, 0);
-      reset({ ...defaultValues, startDate: formatLocalDate(start), endDate: formatLocalDate(end) });
+      const startLocal = formatLocalDate(start);
+      const endLocal = formatLocalDate(end);
+      const eventDateLocal = startLocal ? startLocal.split('T')[0] : '';
+      reset({
+        ...defaultValues,
+        tipoHorario: 'PERSONALIZADO',
+        eventDate: eventDateLocal,
+        startDate: startLocal,
+        endDate: endLocal,
+        duracaoHoras: 1,
+        duracaoMinutos: 0,
+      });
     }
     // Não inclui filteredOrganizations/churches nas deps: esses arrays são recriados a
     // cada render do pai (Calendario.tsx faz `.filter()` inline, sem memo), e reagir a eles
@@ -230,13 +278,17 @@ export const useCadastroEventoForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialDate, initialEvent, reset]);
 
-  // Seleciona organização/igreja padrão só quando a lista chega e o campo ainda está
+  // Seleciona organização/igreja/local padrão só quando a lista chega e o campo ainda está
   // vazio; roda isolado do reset acima para não ser afetado pela recriação de array.
   useEffect(() => {
     if (!open || initialEvent) return;
     if (filteredOrganizations.length > 0 && !orgId) setValue('grupoParoquialResponsavelId', filteredOrganizations[0].id);
     if (churches.length > 0 && !igrejaVinculoId) setValue('igrejaVinculoId', churches[0].id);
-  }, [open, initialEvent, filteredOrganizations, churches, orgId, igrejaVinculoId, setValue]);
+    if (localOptions.length > 0 && (!localIds || localIds.length === 0) && !localId) {
+      setValue('localId', localOptions[0].id);
+      setValue('localIds', [localOptions[0].id]);
+    }
+  }, [open, initialEvent, filteredOrganizations, churches, localOptions, orgId, igrejaVinculoId, localId, localIds, setValue]);
 
   // Hidrata os ativos já alocados ao editar, a partir das reservas ainda ocupando agenda
   // (PENDENTE/CONFIRMADA/RETIRADO) — ver comentário de ativosAlocadosQuery acima.
@@ -261,7 +313,15 @@ export const useCadastroEventoForm = ({
   // Prioridade de exibição de erro estrutural (um toast por vez, igual ao comportamento
   // original de validação sequencial em cascata).
   const onInvalid = (errors: FieldErrors<EventoFormInput>) => {
-    const priority: (keyof EventoFormInput)[] = ['titulo', 'grupoParoquialResponsavelId', 'startDate', 'endTime', 'endDate', 'justification'];
+    const priority: (keyof EventoFormInput)[] = [
+      'titulo',
+      'grupoParoquialResponsavelId',
+      'eventDate',
+      'startDate',
+      'endTime',
+      'endDate',
+      'justification',
+    ];
     for (const key of priority) {
       const message = errors[key]?.message;
       if (message) {
@@ -284,26 +344,60 @@ export const useCadastroEventoForm = ({
       showError(`A justificativa é obrigatória pois o Ano Paroquial de ${selectedYear} está FECHADO.`);
       return;
     }
-
-    // Determina a data final real conforme o modo (recorrência usa o mesmo dia + hora separada)
-    let finalEndDate = data.endDate;
-    if (data.isRecurring && data.startDate) {
-      const datePart = data.startDate.split('T')[0];
-      finalEndDate = `${datePart}T${data.endTime}`;
+    if (isSecretario(user) && !data.justification.trim()) {
+      showError('A justificativa é obrigatória para operações submetidas pelo Secretário.');
+      return;
     }
+
+    let inicioIso = '';
+    let fimIso = '';
+    const tipoHorario = data.tipoHorario || 'PERSONALIZADO';
+    const periodosValidos = (data.periodos || []).filter(
+      (p) => p && p !== 'PERSONALIZADO' && p !== 'DIA_INTEIRO'
+    );
+
+    if (tipoHorario === 'PERSONALIZADO') {
+      let finalEndDate = data.endDate;
+      if (data.isRecurring && data.startDate) {
+        const datePart = data.startDate.split('T')[0];
+        finalEndDate = `${datePart}T${data.endTime}`;
+      }
+      inicioIso = data.startDate ? new Date(data.startDate).toISOString() : '';
+      fimIso = finalEndDate ? new Date(finalEndDate).toISOString() : '';
+    } else if (tipoHorario === 'DIA_INTEIRO') {
+      const dateBase = data.eventDate || (data.startDate ? data.startDate.split('T')[0] : '');
+      const limites = calcularLimitesHorario('DIA_INTEIRO', dateBase);
+      inicioIso = limites.inicioIso;
+      fimIso = limites.fimIso;
+    } else {
+      const dateBase = data.eventDate || (data.startDate ? data.startDate.split('T')[0] : '');
+      const listaPeriodos = periodosValidos.length > 0 ? periodosValidos : [tipoHorario];
+      const limites = calcularLimitesMultiplosPeriodos(listaPeriodos, dateBase);
+      inicioIso = limites.inicioIso;
+      fimIso = limites.fimIso;
+    }
+
+    const finalLocalIds = Array.isArray(data.localIds) && data.localIds.length > 0
+      ? data.localIds
+      : (data.localId ? [data.localId] : []);
+    const primaryLocalId = finalLocalIds.length > 0 ? finalLocalIds[0] : null;
 
     onSubmit({
       titulo: data.titulo,
       descricao: data.descricao,
       categoria: data.categoria,
+      formato: data.formato,
       grupoParoquialResponsavelId: data.grupoParoquialResponsavelId,
       igrejaVinculoId: data.igrejaVinculoId || null,
-      localId: data.localId || null,
+      localId: primaryLocalId,
+      localIds: finalLocalIds,
       projetoId: data.projetoId || null,
       participantes: data.participantes,
       ativoIds: data.selectedAtivoIds,
-      inicio: data.startDate ? new Date(data.startDate).toISOString() : '',
-      fim: finalEndDate ? new Date(finalEndDate).toISOString() : '',
+      tipoHorario: periodosValidos.length > 0 ? periodosValidos[0] : tipoHorario,
+      periodos: periodosValidos,
+      inicio: inicioIso,
+      fim: fimIso,
       status: isClosedYear && data.status !== 'RASCUNHO' ? 'ADICIONADO_EXTRA' : data.status,
       adicionadoExtraJustificativa: data.justification || null,
       recurrence: data.isRecurring ? data.recurrenceRule : null,
@@ -311,12 +405,15 @@ export const useCadastroEventoForm = ({
     });
   };
 
+  const isSecretarioUser = useMemo(() => isSecretario(user), [user]);
+
   return {
     form,
     handleFormSubmit: handleSubmit(onValid, onInvalid),
     selectedYear,
     isClosedYear,
     isParoco,
+    isSecretarioUser,
     churches,
     filteredOrganizations,
     localOptions,

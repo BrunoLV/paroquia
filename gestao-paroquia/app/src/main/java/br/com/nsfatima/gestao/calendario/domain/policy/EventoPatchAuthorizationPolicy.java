@@ -27,8 +27,8 @@ public interface EventoPatchAuthorizationPolicy {
     /** {@code true} se o papel for isento da restrição de escopo de organização/igreja (o Pároco). */
     boolean isScopeExempt(PapelOrganizacional papel);
 
-    /** {@code true} se o papel, por si só (sem checagem adicional de acesso global), pode usar o bypass. */
-    boolean isBypassAllowed(PapelOrganizacional papel);
+    /** {@code true} se o papel possui prerrogativa de efetivar agendamento imediato por decisão pastoral. */
+    boolean isLiberacaoConflitoPermitida(PapelOrganizacional papel);
 
     /**
      * Determina se a criação resultante deve ser aplicada imediatamente ou requer aprovação.

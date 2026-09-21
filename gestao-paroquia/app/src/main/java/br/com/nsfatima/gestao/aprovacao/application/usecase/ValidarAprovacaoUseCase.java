@@ -63,13 +63,14 @@ public class ValidarAprovacaoUseCase {
     public void validarPapelDecisaoAprovacao(String role, String organizationType) {
         PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(organizationType);
-        if (normalizedRole == PapelOrganizacional.PAROCO || normalizedRole == PapelOrganizacional.ADMIN) {
+        if (normalizedRole == PapelOrganizacional.PAROCO
+                || normalizedRole == PapelOrganizacional.ADMIN
+                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || normalizedRole == PapelOrganizacional.MESA_CPP) {
             return;
         }
         if (normalizedOrgType == TipoGrupo.CONSELHO
                 && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.MESA_CPP
-                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
                 || normalizedRole == PapelOrganizacional.COORD_PASTORAL)) {
             return;

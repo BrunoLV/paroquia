@@ -77,6 +77,18 @@ public class AprovacaoEntity extends BaseAuditableEntity {
     @Column(name = "mensagem_erro_execucao", length = 2000)
     private String mensagemErroExecucao;
 
+    @Column(name = "aprovacao_pai_id")
+    private UUID aprovacaoPaiId;
+
+    @Column(name = "conflitos_json", columnDefinition = "text")
+    private String conflitosJson;
+
+    @Column(name = "data_ocorrencia_utc")
+    private Instant dataOcorrenciaUtc;
+
+    @Column(name = "justificativa", length = 2000)
+    private String justificativa;
+
     public UUID getId() {
         return id;
     }
@@ -211,5 +223,37 @@ public class AprovacaoEntity extends BaseAuditableEntity {
 
     public void setMensagemErroExecucao(String mensagemErroExecucao) {
         this.mensagemErroExecucao = mensagemErroExecucao;
+    }
+
+    public UUID getAprovacaoPaiId() {
+        return aprovacaoPaiId;
+    }
+
+    public void setAprovacaoPaiId(UUID aprovacaoPaiId) {
+        this.aprovacaoPaiId = aprovacaoPaiId;
+    }
+
+    public String getConflitosJson() {
+        return conflitosJson;
+    }
+
+    public void setConflitosJson(String conflitosJson) {
+        this.conflitosJson = conflitosJson;
+    }
+
+    public Instant getDataOcorrenciaUtc() {
+        return dataOcorrenciaUtc;
+    }
+
+    public void setDataOcorrenciaUtc(Instant dataOcorrenciaUtc) {
+        this.dataOcorrenciaUtc = dataOcorrenciaUtc;
+    }
+
+    public String getJustificativa() {
+        return justificativa;
+    }
+
+    public void setJustificativa(String justificativa) {
+        this.justificativa = justificativa;
     }
 }

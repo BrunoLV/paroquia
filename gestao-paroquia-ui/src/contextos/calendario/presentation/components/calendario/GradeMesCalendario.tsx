@@ -1,9 +1,11 @@
-import { alpha, Box, Card, Grid, Typography } from '@mui/material';
+import { alpha, Box, Card, Grid, Stack, Typography, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { CalendarDay } from '@/contextos/calendario/presentation/hooks/useCalendarGrid';
 import { getCategoryColor } from '@/shared/utils/calendarHelpers';
 import { getLiturgicalSeason, getLiturgicalSeasonStyle } from '@/shared/utils/liturgicalCalendar';
 import { Evento } from '@/shared/domain/types/types';
+import { formatarHorarioEvento } from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
+import { getFormatoEventoIcon } from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -20,7 +22,9 @@ export type CalendarMonthGridProps = GradeMesCalendarioProps;
  * pílulas de evento coloridas por categoria. Clicar num dia vazio abre a criação de evento
  * pré-preenchida com a data; clicar num evento abre os detalhes (propagação interrompida para
  * não também abrir a criação). */
-const GradeMesCalendario = ({ calendarDays, getEventsForDay, onDayClick, onEventClick }: GradeMesCalendarioProps) => (
+const GradeMesCalendario = ({ calendarDays, getEventsForDay, onDayClick, onEventClick }: GradeMesCalendarioProps) => {
+  const theme = useTheme();
+  return (
   <Card sx={{ overflow: 'hidden' }}>
     {/* Days of week header */}
     <Grid container columns={7} sx={{ bgcolor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider', textAlign: 'center', py: 1.5 }}>
@@ -119,6 +123,40 @@ const GradeMesCalendario = ({ calendarDays, getEventsForDay, onDayClick, onEvent
             <Box sx={{ height: 90, overflowY: 'auto', pr: 0.5 }}>
               {dayEvents.map((evt) => {
                 const styleColors = getCategoryColor(evt.categoria);
+                const isCancelado = evt.status?.toUpperCase() === 'CANCELADO';
+                const isFalhaExecucao = evt.status?.toUpperCase() === 'FALHA_EXECUCAO';
+                const isConflito = evt.estadoConflito?.toUpperCase() === 'PENDENTE';
+                const isPendenteAprovacao = Boolean(evt.aprovacaoPendenteId);
+
+                let prefix = '';
+                if (isFalhaExecucao) {
+                  prefix = '[Falha de Execução] ';
+                } else if (isConflito) {
+                  prefix = '[Conflito] ';
+                } else if (isPendenteAprovacao) {
+                  prefix = '[Pendente] ';
+                }
+
+                const displayTitle = `${prefix}${evt.titulo}`;
+
+                let bgColor = styleColors.bg;
+                let textColor = styleColors.text;
+                let borderColor = styleColors.border;
+
+                if (isFalhaExecucao) {
+                  bgColor = alpha(theme.palette.error.main, 0.16);
+                  textColor = 'error.dark';
+                  borderColor = 'error.main';
+                } else if (isConflito) {
+                  bgColor = alpha(theme.palette.warning.main, 0.16);
+                  textColor = 'warning.dark';
+                  borderColor = 'warning.main';
+                } else if (isCancelado) {
+                  bgColor = alpha(theme.palette.error.main, 0.12);
+                  textColor = 'error.dark';
+                  borderColor = 'error.main';
+                }
+
                 return (
                   <Box
                     key={evt.id}
@@ -127,11 +165,10 @@ const GradeMesCalendario = ({ calendarDays, getEventsForDay, onDayClick, onEvent
                       onEventClick(evt);
                     }}
                     sx={{
-                      bgcolor: evt.status?.toUpperCase() === 'CANCELADO'
-                        ? (theme) => alpha(theme.palette.error.main, 0.12)
-                        : styleColors.bg,
-                      color: evt.status?.toUpperCase() === 'CANCELADO' ? 'error.dark' : styleColors.text,
-                      borderLeft: `3px solid ${evt.status?.toUpperCase() === 'CANCELADO' ? 'error.main' : styleColors.border}`,
+                      bgcolor: bgColor,
+                      color: textColor,
+                      borderLeft: '3px solid',
+                      borderLeftColor: borderColor,
                       px: 1,
                       py: 0.5,
                       mb: 0.5,
@@ -141,16 +178,26 @@ const GradeMesCalendario = ({ calendarDays, getEventsForDay, onDayClick, onEvent
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       transition: 'all 0.2s',
-                      textDecoration: evt.status?.toUpperCase() === 'CANCELADO' ? 'line-through' : 'none',
-                      opacity: evt.aprovacaoPendenteId ? 0.6 : (evt.status?.toUpperCase() === 'CANCELADO' ? 0.75 : 1),
+                      textDecoration: isCancelado ? 'line-through' : 'none',
+                      opacity: isPendenteAprovacao ? 0.6 : (isCancelado ? 0.75 : 1),
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
                       '&:hover': {
                         filter: 'brightness(0.93)',
                         transform: 'translateX(2px)',
                       },
+                      '& svg': {
+                        fontSize: '0.85rem',
+                        flexShrink: 0,
+                      },
                     }}
-                    title={evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                    title={`${displayTitle} (${formatarHorarioEvento(evt)})`}
                   >
-                    {evt.aprovacaoPendenteId ? `[Pendente] ${evt.titulo}` : evt.titulo}
+                    {getFormatoEventoIcon(evt.formato, 'inherit')}
+                    <Box component="span" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {displayTitle}
+                    </Box>
                   </Box>
                 );
               })}
@@ -160,7 +207,8 @@ const GradeMesCalendario = ({ calendarDays, getEventsForDay, onDayClick, onEvent
       })}
     </Grid>
   </Card>
-);
+  );
+};
 
 export const CalendarMonthGrid = GradeMesCalendario;
 export default GradeMesCalendario;

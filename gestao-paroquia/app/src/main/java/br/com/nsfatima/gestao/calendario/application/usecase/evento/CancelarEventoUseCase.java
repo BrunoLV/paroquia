@@ -13,10 +13,12 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.ResultadoOperacaoEven
 import br.com.nsfatima.gestao.calendario.application.usecase.observacao.RegistrarObservacaoSistemaUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
 import br.com.nsfatima.gestao.calendario.domain.exception.TransicaoStatusInvalidaException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.calendario.application.service.EventoCancelamentoAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCancelamento;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
@@ -90,6 +92,13 @@ public class CancelarEventoUseCase {
         EventoEntity evento = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
+        PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
+        if (atorPapel == PapelOrganizacional.SECRETARIO) {
+            if (request.motivo() == null || request.motivo().isBlank()) {
+                throw new ViolacaoRegraNegocioException("Justificativa é obrigatória para operações submetidas pelo Secretário");
+            }
+        }
+
         validateCancellableStatus(evento);
 
         ModoRequisicaoCancelamento mode = authorizationService.resolveRequestMode(actorContext,
@@ -127,10 +136,10 @@ public class CancelarEventoUseCase {
     }
 
     private void validateCancellableStatus(EventoEntity evento) {
-        if (EventoStatusInput.valueOf(evento.getStatus()) != EventoStatusInput.CONFIRMADO) {
+        EventoStatusInput currentStatus = EventoStatusInput.valueOf(evento.getStatus());
+        if (currentStatus != EventoStatusInput.CONFIRMADO && currentStatus != EventoStatusInput.ADICIONADO_EXTRA) {
             throw new TransicaoStatusInvalidaException(evento.getStatus(),
-                    EventoStatusInput.CANCELADO.name(), "Only CONFIRMADO events can be cancelled");
-
+                    EventoStatusInput.CANCELADO.name(), "Only active events (CONFIRMADO or ADICIONADO_EXTRA) can be cancelled");
         }
     }
 

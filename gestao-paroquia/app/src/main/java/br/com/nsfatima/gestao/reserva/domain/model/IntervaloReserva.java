@@ -33,6 +33,10 @@ public record IntervaloReserva(
         return new IntervaloReserva(inicio, fim, BUFFER_PADRAO_MINUTOS);
     }
 
+    public static IntervaloReserva de(Instant inicio, Instant fim, int bufferMinutos) {
+        return new IntervaloReserva(inicio, fim, bufferMinutos);
+    }
+
     /**
      * Calcula o limite superior do intervalo ocupado real, incluindo o tempo de carência para organização/limpeza.
      */

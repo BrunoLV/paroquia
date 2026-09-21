@@ -40,6 +40,49 @@ public class Aprovacao {
     private String aprovadorId;
     private String decisionObservacao;
     private String mensagemErroExecucao;
+    private final UUID aprovacaoPaiId;
+    private final String conflitosJson;
+    private final Instant dataOcorrenciaUtc;
+    private final String justificativa;
+
+    public Aprovacao(
+            UUID id,
+            UUID eventoId,
+            String tipoSolicitacao,
+            String aprovadorPapel,
+            AprovacaoStatus status,
+            Instant criadoEmUtc,
+            Instant decididoEmUtc,
+            Instant executadoEmUtc,
+            String solicitanteId,
+            String aprovadorId,
+            String decisionObservacao,
+            String actionPayloadJson,
+            String correlationId,
+            String mensagemErroExecucao,
+            UUID aprovacaoPaiId,
+            String conflitosJson,
+            Instant dataOcorrenciaUtc,
+            String justificativa) {
+        this.id = Objects.requireNonNull(id, "ID da aprovação é obrigatório.");
+        this.eventoId = eventoId;
+        this.tipoSolicitacao = Objects.requireNonNull(tipoSolicitacao, "Tipo de solicitação é obrigatório.");
+        this.aprovadorPapel = aprovadorPapel;
+        this.status = Objects.requireNonNull(status, "Status da aprovação é obrigatório.");
+        this.criadoEmUtc = criadoEmUtc != null ? criadoEmUtc : Instant.now();
+        this.decididoEmUtc = decididoEmUtc;
+        this.executadoEmUtc = executadoEmUtc;
+        this.solicitanteId = solicitanteId;
+        this.aprovadorId = aprovadorId;
+        this.decisionObservacao = decisionObservacao;
+        this.actionPayloadJson = actionPayloadJson;
+        this.correlationId = correlationId;
+        this.mensagemErroExecucao = mensagemErroExecucao;
+        this.aprovacaoPaiId = aprovacaoPaiId;
+        this.conflitosJson = conflitosJson;
+        this.dataOcorrenciaUtc = dataOcorrenciaUtc;
+        this.justificativa = justificativa;
+    }
 
     public Aprovacao(
             UUID id,
@@ -56,20 +99,9 @@ public class Aprovacao {
             String actionPayloadJson,
             String correlationId,
             String mensagemErroExecucao) {
-        this.id = Objects.requireNonNull(id, "ID da aprovação é obrigatório.");
-        this.eventoId = eventoId;
-        this.tipoSolicitacao = Objects.requireNonNull(tipoSolicitacao, "Tipo de solicitação é obrigatório.");
-        this.aprovadorPapel = aprovadorPapel;
-        this.status = Objects.requireNonNull(status, "Status da aprovação é obrigatório.");
-        this.criadoEmUtc = criadoEmUtc != null ? criadoEmUtc : Instant.now();
-        this.decididoEmUtc = decididoEmUtc;
-        this.executadoEmUtc = executadoEmUtc;
-        this.solicitanteId = solicitanteId;
-        this.aprovadorId = aprovadorId;
-        this.decisionObservacao = decisionObservacao;
-        this.actionPayloadJson = actionPayloadJson;
-        this.correlationId = correlationId;
-        this.mensagemErroExecucao = mensagemErroExecucao;
+        this(id, eventoId, tipoSolicitacao, aprovadorPapel, status, criadoEmUtc, decididoEmUtc, executadoEmUtc,
+                solicitanteId, aprovadorId, decisionObservacao, actionPayloadJson, correlationId,
+                mensagemErroExecucao, null, null, null, null);
     }
 
     /** Abre uma nova solicitação em estado PENDENTE. */
@@ -83,6 +115,24 @@ public class Aprovacao {
             Instant agora) {
         return new Aprovacao(id, eventoId, tipoSolicitacao, aprovadorPapel, AprovacaoStatus.PENDENTE,
                 agora, null, null, solicitanteId, null, null, actionPayloadJson, null, null);
+    }
+
+    /** Abre uma nova solicitação com suporte a mestre-detalhe e conflitos. */
+    public static Aprovacao solicitar(
+            UUID id,
+            UUID eventoId,
+            String tipoSolicitacao,
+            String aprovadorPapel,
+            String solicitanteId,
+            String actionPayloadJson,
+            String conflitosJson,
+            String justificativa,
+            UUID aprovacaoPaiId,
+            Instant dataOcorrenciaUtc,
+            Instant agora) {
+        return new Aprovacao(id, eventoId, tipoSolicitacao, aprovadorPapel, AprovacaoStatus.PENDENTE,
+                agora, null, null, solicitanteId, null, null, actionPayloadJson, null, null,
+                aprovacaoPaiId, conflitosJson, dataOcorrenciaUtc, justificativa);
     }
 
     /**
@@ -195,5 +245,21 @@ public class Aprovacao {
 
     public String getMensagemErroExecucao() {
         return mensagemErroExecucao;
+    }
+
+    public UUID getAprovacaoPaiId() {
+        return aprovacaoPaiId;
+    }
+
+    public String getConflitosJson() {
+        return conflitosJson;
+    }
+
+    public Instant getDataOcorrenciaUtc() {
+        return dataOcorrenciaUtc;
+    }
+
+    public String getJustificativa() {
+        return justificativa;
     }
 }

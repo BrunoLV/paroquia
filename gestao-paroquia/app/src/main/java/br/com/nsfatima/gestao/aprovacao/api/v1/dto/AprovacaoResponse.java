@@ -43,5 +43,37 @@ public record AprovacaoResponse(
         String mensagemErroExecucao,
 
         @Schema(description = "Payload detalhado em formato JSON com os dados do evento")
-        String actionPayloadJson) {
+        String actionPayloadJson,
+
+        @Schema(description = "ID da aprovação mestre caso seja ocorrência filha")
+        UUID aprovacaoPaiId,
+
+        @Schema(description = "JSON com detalhes dos conflitos detectados")
+        String conflitosJson,
+
+        @Schema(description = "Data e hora programada da ocorrência")
+        Instant dataOcorrenciaUtc,
+
+        @Schema(description = "Justificativa informada na submissão")
+        String justificativa,
+
+        @Schema(description = "Total de ocorrências filhas associadas a esta aprovação mestre")
+        Integer totalOcorrenciasFilhas) {
+
+    public AprovacaoResponse(
+            UUID id,
+            UUID eventoId,
+            TipoSolicitacaoResponse tipoSolicitacao,
+            String status,
+            String aprovadorPapel,
+            Instant criadoEmUtc,
+            Instant decididoEmUtc,
+            String solicitanteId,
+            String aprovadorId,
+            String mensagemErroExecucao,
+            String actionPayloadJson) {
+        this(id, eventoId, tipoSolicitacao, status, aprovadorPapel, criadoEmUtc, decididoEmUtc,
+                solicitanteId, aprovadorId, mensagemErroExecucao, actionPayloadJson,
+                null, null, null, null, null);
+    }
 }

@@ -23,7 +23,7 @@ class ConflitoAgendaEclesialExceptionTest {
         ConflitoAgendaEclesialException exception = new ConflitoAgendaEclesialException("Conflito de Agenda Eclesial");
         ResponseEntity<ValidationErrorResponse> response = handler.handleConflitoAgendaEclesial(exception);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(ErrorCodes.CONFLITO_AGENDA_ECLESIAL.name(), response.getBody().errorCode());
         assertEquals("Conflito de Agenda Eclesial", response.getBody().message());

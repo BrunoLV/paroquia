@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -145,5 +146,25 @@ public class AprovacaoController {
                 Map.of("correlationId", MDC.get("correlationId") == null ? "n/a" : MDC.get("correlationId")));
 
         return decidirSolicitacaoAprovacaoUseCase.decidir(id, request);
+    }
+
+    /**
+     * Lista todas as ocorrências filhas programadas de uma aprovação mestre recorrente.
+     *
+     * @param id ID da aprovação mestre
+     * @return lista de aprovações das ocorrências
+     */
+    @GetMapping("/{id}/ocorrencias")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Lista ocorrências de aprovação recorrente",
+            description = "Retorna todas as solicitações de ocorrências filhas vinculadas à aprovação mestre informada.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ocorrências listadas com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public List<AprovacaoResponse> listarOcorrencias(
+            @Parameter(description = "ID único da aprovação mestre", required = true) @PathVariable UUID id) {
+        return listarAprovacoesUseCase.listarOcorrencias(id);
     }
 }

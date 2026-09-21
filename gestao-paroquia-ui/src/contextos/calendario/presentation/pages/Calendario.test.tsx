@@ -57,7 +57,7 @@ const setupApiMock = (user = mockUser, approvals: any[] = []) => {
       return Promise.resolve({ data: { content: mockEvents } });
     }
     if (url === '/locais') {
-      return Promise.resolve({ data: [] });
+      return Promise.resolve({ data: [{ id: 'loc-1', nome: 'Salão Paroquial', ativo: true }] });
     }
     if (url === '/projetos') {
       return Promise.resolve({ data: [] });

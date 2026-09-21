@@ -98,6 +98,7 @@ public interface AprovacaoJpaRepository extends JpaRepository<AprovacaoEntity, U
      * @return página de aprovações que satisfazem os filtros informados
      */
     @Query("SELECT a FROM AprovacaoEntity a WHERE " +
+            "a.aprovacaoPaiId IS NULL AND " +
             "(:eventoId IS NULL OR a.eventoId = :eventoId) AND " +
             "(:status IS NULL OR a.status = :status)")
     Page<AprovacaoEntity> findByFilter(
@@ -125,5 +126,38 @@ public interface AprovacaoJpaRepository extends JpaRepository<AprovacaoEntity, U
      * @return quantidade total encontrada
      */
     long countByStatus(AprovacaoStatus status);
+
+    /**
+     * Lista todas as ocorrências filhas de uma aprovação mestre ordenadas pela data da ocorrência.
+     *
+     * @param aprovacaoPaiId ID da aprovação mestre
+     * @return lista de ocorrências filhas
+     */
+    List<AprovacaoEntity> findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(UUID aprovacaoPaiId);
+
+    /**
+     * Lista as ocorrências filhas de uma aprovação mestre filtradas por status.
+     *
+     * @param aprovacaoPaiId ID da aprovação mestre
+     * @param status status da aprovação filha
+     * @return lista de ocorrências filhas correspondentes
+     */
+    List<AprovacaoEntity> findByAprovacaoPaiIdAndStatus(UUID aprovacaoPaiId, AprovacaoStatus status);
+
+    /**
+     * Conta a quantidade total de ocorrências filhas vinculadas a uma aprovação mestre.
+     *
+     * @param aprovacaoPaiId ID da aprovação mestre
+     * @return total de ocorrências filhas
+     */
+    long countByAprovacaoPaiId(UUID aprovacaoPaiId);
+
+    /**
+     * Lista todas as aprovações associadas a um determinado evento.
+     *
+     * @param eventoId ID do evento
+     * @return lista de aprovações
+     */
+    List<AprovacaoEntity> findByEventoId(UUID eventoId);
 }
 

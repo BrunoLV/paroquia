@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.calendario.api.v1.dto.evento;
 
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -54,8 +56,11 @@ public record AtualizarEventoRequest(
         @Schema(description = "ID do projeto ao qual o evento pertence")
         UUID projetoId,
 
-        @Schema(description = "ID do local onde o evento ocorrerá")
+        @Schema(description = "ID do local onde o evento ocorrerá (legado/compatibilidade)")
         UUID localId,
+
+        @Schema(description = "Lista de IDs das localidades onde o evento ocorrerá")
+        List<UUID> localIds,
 
         @Schema(description = "ID da igreja de vínculo (Matriz ou Comunidade) se houver")
         UUID igrejaVinculoId,
@@ -64,7 +69,126 @@ public record AtualizarEventoRequest(
         Boolean liberarConflitoAgenda,
 
         @Schema(description = "Lista de IDs dos ativos patrimoniais alocados para o evento")
-        List<UUID> ativoIds) {
+        List<UUID> ativoIds,
+
+        @Schema(description = "Formato de horário do evento")
+        TipoHorarioEvento tipoHorario,
+
+        @Schema(description = "Formato de realização do evento (PRESENCIAL, ONLINE, HIBRIDO)")
+        FormatoEvento formato,
+
+        @Schema(description = "Lista de períodos do dia selecionados quando o horário for por turnos (ex: MANHA, NOITE)")
+        List<TipoHorarioEvento> periodos) {
+
+    public AtualizarEventoRequest {
+        if (localIds == null || localIds.isEmpty()) {
+            if (localId != null) {
+                localIds = List.of(localId);
+            }
+        } else if (localId == null) {
+            localId = localIds.getFirst();
+        }
+        if (periodos == null) {
+            periodos = List.of();
+        }
+    }
+
+    public AtualizarEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID grupoParoquialResponsavelId,
+            List<UUID> participantes,
+            EscopoEdicaoEvento escopoEdicao,
+            UUID projetoId,
+            UUID localId,
+            List<UUID> localIds,
+            UUID igrejaVinculoId,
+            Boolean liberarConflitoAgenda,
+            List<UUID> ativoIds,
+            TipoHorarioEvento tipoHorario,
+            FormatoEvento formato) {
+        this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
+                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                localIds, igrejaVinculoId, liberarConflitoAgenda, ativoIds, tipoHorario, formato, List.of());
+    }
+
+    public AtualizarEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID grupoParoquialResponsavelId,
+            List<UUID> participantes,
+            EscopoEdicaoEvento escopoEdicao,
+            UUID projetoId,
+            UUID localId,
+            List<UUID> localIds,
+            UUID igrejaVinculoId,
+            Boolean liberarConflitoAgenda,
+            List<UUID> ativoIds,
+            TipoHorarioEvento tipoHorario) {
+        this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
+                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                localIds, igrejaVinculoId,
+                liberarConflitoAgenda, ativoIds, tipoHorario, null);
+    }
+
+    public AtualizarEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID grupoParoquialResponsavelId,
+            List<UUID> participantes,
+            EscopoEdicaoEvento escopoEdicao,
+            UUID projetoId,
+            UUID localId,
+            UUID igrejaVinculoId,
+            Boolean liberarConflitoAgenda,
+            List<UUID> ativoIds) {
+        this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
+                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                localId != null ? List.of(localId) : null, igrejaVinculoId,
+                liberarConflitoAgenda, ativoIds, null);
+    }
+
+    public AtualizarEventoRequest(
+            String titulo,
+            String descricao,
+            CategoriaEvento categoria,
+            Instant inicio,
+            Instant fim,
+            EventoStatusInput status,
+            String adicionadoExtraJustificativa,
+            String canceladoMotivo,
+            UUID grupoParoquialResponsavelId,
+            List<UUID> participantes,
+            EscopoEdicaoEvento escopoEdicao,
+            UUID projetoId,
+            UUID localId,
+            List<UUID> localIds,
+            UUID igrejaVinculoId,
+            Boolean liberarConflitoAgenda,
+            List<UUID> ativoIds) {
+        this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
+                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                localIds, igrejaVinculoId,
+                liberarConflitoAgenda, ativoIds, null);
+    }
 
     public AtualizarEventoRequest(
             String titulo,
@@ -83,8 +207,9 @@ public record AtualizarEventoRequest(
             UUID igrejaVinculoId,
             Boolean liberarConflitoAgenda) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId, igrejaVinculoId,
-                liberarConflitoAgenda, null);
+                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                localId != null ? List.of(localId) : null, igrejaVinculoId,
+                liberarConflitoAgenda, null, null);
     }
 
     public AtualizarEventoRequest(
@@ -143,6 +268,7 @@ public record AtualizarEventoRequest(
                 && participantes == null
                 && projetoId == null
                 && localId == null
+                && (localIds == null || localIds.isEmpty())
                 && igrejaVinculoId == null
                 && liberarConflitoAgenda == null;
     }
@@ -156,7 +282,7 @@ public record AtualizarEventoRequest(
      */
     public boolean alteraCamposSensiveis() {
         return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO ||
-                projetoId != null || localId != null || igrejaVinculoId != null;
+                projetoId != null || localId != null || (localIds != null && !localIds.isEmpty()) || igrejaVinculoId != null;
     }
 
     /**

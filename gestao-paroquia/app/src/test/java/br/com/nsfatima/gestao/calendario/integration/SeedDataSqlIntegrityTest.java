@@ -57,7 +57,7 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(15, flyway.info().applied().length,
+        assertEquals(20, flyway.info().applied().length,
                 "O baseline deve manter uma migração Flyway por contexto com persistência");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");
@@ -103,6 +103,32 @@ public class SeedDataSqlIntegrityTest {
                 "SELECT COUNT(DISTINCT status) FROM calendario.reservas", Integer.class);
         Integer statusAprovacoesCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(DISTINCT status) FROM calendario.aprovacoes", Integer.class);
+        Integer aprovacoesFilhasCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.aprovacoes WHERE aprovacao_pai_id IS NOT NULL", Integer.class);
+        Integer aprovacoesConflitosCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.aprovacoes WHERE conflitos_json IS NOT NULL", Integer.class);
+        Integer aprovacoesJustificativasCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.aprovacoes WHERE justificativa IS NOT NULL", Integer.class);
+        Integer secretarioUsuariosCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.usuarios WHERE roles LIKE '%SECRETARIO%'", Integer.class);
+        Integer eventosFalhaExecucaoCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE status = 'FALHA_EXECUCAO'", Integer.class);
+        Integer eventosConflitoPendenteCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE conflict_state = 'PENDENTE'", Integer.class);
+        Integer eventosDiaInteiroCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE tipo_horario = 'DIA_INTEIRO'", Integer.class);
+        Integer eventosMadrugadaCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE tipo_horario = 'MADRUGADA'", Integer.class);
+        Integer eventosManhaCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE tipo_horario = 'MANHA'", Integer.class);
+        Integer eventosTardeCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE tipo_horario = 'TARDE'", Integer.class);
+        Integer eventosNoiteCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE tipo_horario = 'NOITE'", Integer.class);
+        Integer eventosOnlineCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE formato = 'ONLINE'", Integer.class);
+        Integer eventosHibridoCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.eventos WHERE formato = 'HIBRIDO'", Integer.class);
 
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
         assertTrue(unidadesCount != null && unidadesCount > 0, "UnidadeTerritorial should be populated");
@@ -130,6 +156,32 @@ public class SeedDataSqlIntegrityTest {
                 "Seed deve incluir reservas em múltiplos estados operacionais");
         assertTrue(statusAprovacoesCount != null && statusAprovacoesCount >= 4,
                 "Seed deve incluir decisões pendentes, aprovadas, reprovadas e com falha");
+        assertTrue(aprovacoesFilhasCount != null && aprovacoesFilhasCount >= 4,
+                "Seed deve incluir ocorrências filhas de aprovação de série recorrente");
+        assertTrue(aprovacoesConflitosCount != null && aprovacoesConflitosCount >= 2,
+                "Seed deve incluir aprovações com detalhamento analítico de conflitos");
+        assertTrue(aprovacoesJustificativasCount != null && aprovacoesJustificativasCount >= 3,
+                "Seed deve incluir aprovações com justificativa mandatória");
+        assertTrue(secretarioUsuariosCount != null && secretarioUsuariosCount >= 1,
+                "Seed deve incluir usuário com papel de Secretário");
+        assertTrue(eventosFalhaExecucaoCount != null && eventosFalhaExecucaoCount >= 1,
+                "Seed deve incluir eventos com status FALHA_EXECUCAO para validação visual");
+        assertTrue(eventosConflitoPendenteCount != null && eventosConflitoPendenteCount >= 1,
+                "Seed deve incluir eventos com estado de conflito PENDENTE");
+        assertTrue(eventosDiaInteiroCount != null && eventosDiaInteiroCount >= 1,
+                "Seed deve incluir eventos no formato DIA_INTEIRO");
+        assertTrue(eventosMadrugadaCount != null && eventosMadrugadaCount >= 1,
+                "Seed deve incluir eventos no período MADRUGADA");
+        assertTrue(eventosManhaCount != null && eventosManhaCount >= 1,
+                "Seed deve incluir eventos no período MANHA");
+        assertTrue(eventosTardeCount != null && eventosTardeCount >= 1,
+                "Seed deve incluir eventos no período TARDE");
+        assertTrue(eventosNoiteCount != null && eventosNoiteCount >= 1,
+                "Seed deve incluir eventos no período NOITE");
+        assertTrue(eventosOnlineCount != null && eventosOnlineCount >= 1,
+                "Seed deve incluir eventos no formato ONLINE");
+        assertTrue(eventosHibridoCount != null && eventosHibridoCount >= 1,
+                "Seed deve incluir eventos no formato HIBRIDO");
     }
 
     /**

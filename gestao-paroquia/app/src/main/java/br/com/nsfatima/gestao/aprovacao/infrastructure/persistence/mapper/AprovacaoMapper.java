@@ -28,6 +28,18 @@ public class AprovacaoMapper {
      * @return DTO de resposta correspondente, ou {@code null} se a entidade for {@code null}
      */
     public AprovacaoResponse toResponse(AprovacaoEntity entity) {
+        return toResponse(entity, null);
+    }
+
+    /**
+     * Converte a entidade de aprovação persistida em seu DTO de resposta para a API, incluindo a contagem
+     * de ocorrências filhas.
+     *
+     * @param entity entidade de aprovação; pode ser {@code null}
+     * @param totalOcorrenciasFilhas total de ocorrências filhas quando for mestre
+     * @return DTO de resposta correspondente, ou {@code null} se a entidade for {@code null}
+     */
+    public AprovacaoResponse toResponse(AprovacaoEntity entity, Integer totalOcorrenciasFilhas) {
         if (entity == null) {
             return null;
         }
@@ -46,7 +58,12 @@ public class AprovacaoMapper {
                 entity.getSolicitanteId(),
                 entity.getAprovadorId(),
                 entity.getMensagemErroExecucao(),
-                entity.getActionPayloadJson());
+                entity.getActionPayloadJson(),
+                entity.getAprovacaoPaiId(),
+                entity.getConflitosJson(),
+                entity.getDataOcorrenciaUtc(),
+                entity.getJustificativa(),
+                totalOcorrenciasFilhas);
     }
 
     /**
@@ -70,7 +87,11 @@ public class AprovacaoMapper {
                 entity.getDecisionObservacao(),
                 entity.getActionPayloadJson(),
                 entity.getCorrelationId(),
-                entity.getMensagemErroExecucao());
+                entity.getMensagemErroExecucao(),
+                entity.getAprovacaoPaiId(),
+                entity.getConflitosJson(),
+                entity.getDataOcorrenciaUtc(),
+                entity.getJustificativa());
     }
 
     /**
@@ -102,6 +123,10 @@ public class AprovacaoMapper {
         entity.setSolicitanteId(dominio.getSolicitanteId());
         entity.setActionPayloadJson(dominio.getActionPayloadJson());
         entity.setCorrelationId(dominio.getCorrelationId());
+        entity.setAprovacaoPaiId(dominio.getAprovacaoPaiId());
+        entity.setConflitosJson(dominio.getConflitosJson());
+        entity.setDataOcorrenciaUtc(dominio.getDataOcorrenciaUtc());
+        entity.setJustificativa(dominio.getJustificativa());
         return entity;
     }
 }

@@ -75,7 +75,8 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     @Override
     public Page<AprovacaoEntity> findByFilter(UUID eventoId, AprovacaoStatus status, Pageable pageable) {
         List<AprovacaoEntity> filtered = storage.stream()
-                .filter(e -> (eventoId == null || e.getEventoId().equals(eventoId))
+                .filter(e -> e.getAprovacaoPaiId() == null
+                        && (eventoId == null || e.getEventoId().equals(eventoId))
                         && (status == null || e.getStatus() == status))
                 .toList();
         return new PageImpl<>(filtered, pageable, filtered.size());
@@ -98,6 +99,35 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
                         && e.getTipoSolicitacao().equals(tipo)
                         && e.getStatus() == status)
                 .max(Comparator.comparing(AprovacaoEntity::getCriadoEmUtc));
+    }
+
+    @Override
+    public List<AprovacaoEntity> findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(UUID aprovacaoPaiId) {
+        return storage.stream()
+                .filter(e -> Objects.equals(e.getAprovacaoPaiId(), aprovacaoPaiId))
+                .sorted(Comparator.comparing(AprovacaoEntity::getDataOcorrenciaUtc, Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+    }
+
+    @Override
+    public List<AprovacaoEntity> findByAprovacaoPaiIdAndStatus(UUID aprovacaoPaiId, AprovacaoStatus status) {
+        return storage.stream()
+                .filter(e -> Objects.equals(e.getAprovacaoPaiId(), aprovacaoPaiId) && e.getStatus() == status)
+                .toList();
+    }
+
+    @Override
+    public long countByAprovacaoPaiId(UUID aprovacaoPaiId) {
+        return storage.stream()
+                .filter(e -> Objects.equals(e.getAprovacaoPaiId(), aprovacaoPaiId))
+                .count();
+    }
+
+    @Override
+    public List<AprovacaoEntity> findByEventoId(UUID eventoId) {
+        return storage.stream()
+                .filter(e -> Objects.equals(e.getEventoId(), eventoId))
+                .toList();
     }
 
     // Default JPA methods (simplified)

@@ -52,7 +52,11 @@ public class EventoMapper {
         entity.setDescricao(request.descricao());
         entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
         entity.setProjetoId(request.projetoId());
-        entity.setLocalId(request.localId());
+        UUID primaryLocalId = request.localId();
+        if (primaryLocalId == null && request.localIds() != null && !request.localIds().isEmpty()) {
+            primaryLocalId = request.localIds().getFirst();
+        }
+        entity.setLocalId(primaryLocalId);
         entity.setIgrejaVinculoId(request.igrejaVinculoId());
         if (request.categoria() != null) {
             entity.setCategoria(request.categoria());
@@ -61,6 +65,15 @@ public class EventoMapper {
         entity.setFimUtc(request.fim());
         entity.setStatus(status.name());
         entity.setAdicionadoExtraJustificativa(request.adicionadoExtraJustificativa());
+        if (request.tipoHorario() != null) {
+            entity.setTipoHorario(request.tipoHorario());
+        }
+        if (request.periodos() != null) {
+            entity.setPeriodosList(request.periodos());
+        }
+        if (request.formato() != null) {
+            entity.setFormato(request.formato());
+        }
         return entity;
     }
 
@@ -106,6 +119,7 @@ public class EventoMapper {
                 entity.getFimUtc(),
                 status,
                 entity.getLocalId(),
+                entity.getLocalIds(),
                 entity.getIgrejaVinculoId(),
                 participantes,
                 entity.getRecorrenciaId(),
@@ -114,7 +128,10 @@ public class EventoMapper {
                 entity.getAdicionadoExtraJustificativa(),
                 entity.getNivelPrioridade(),
                 entity.getAutorizadoPeloCpp(),
-                entity.getSetorPastoral());
+                entity.getSetorPastoral(),
+                entity.getTipoHorario(),
+                entity.getFormato(),
+                entity.getPeriodosList());
     }
 
     /**
@@ -128,6 +145,15 @@ public class EventoMapper {
      * @param status status a ser definido na entidade após aplicar o patch
      */
     public void applyPatch(EventoEntity entity, AtualizarEventoRequest request, EventoStatusInput status) {
+        if (request.tipoHorario() != null) {
+            entity.setTipoHorario(request.tipoHorario());
+        }
+        if (request.periodos() != null) {
+            entity.setPeriodosList(request.periodos());
+        }
+        if (request.formato() != null) {
+            entity.setFormato(request.formato());
+        }
         if (request.titulo() != null) {
             entity.setTitulo(request.titulo());
         }
@@ -152,7 +178,9 @@ public class EventoMapper {
         if (request.projetoId() != null) {
             entity.setProjetoId(request.projetoId());
         }
-        if (request.localId() != null) {
+        if (request.localIds() != null && !request.localIds().isEmpty()) {
+            entity.setLocalId(request.localIds().getFirst());
+        } else if (request.localId() != null) {
             entity.setLocalId(request.localId());
         }
         if (request.igrejaVinculoId() != null) {

@@ -140,6 +140,8 @@ const Calendario = () => {
         onClose={() => crud.setConflitoRecursoModalOpen(false)}
         detalhes={crud.conflitoRecursoDetalhes}
         mensagem={crud.conflitoRecursoMensagem}
+        onConfirmarDiscussao={crud.handleConfirmarDiscussaoConselho}
+        isSubmitting={crud.isSubmitting}
       />
 
       <SolenidadesDialog

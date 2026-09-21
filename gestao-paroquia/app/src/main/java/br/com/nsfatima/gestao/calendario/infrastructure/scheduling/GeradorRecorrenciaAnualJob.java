@@ -1,12 +1,19 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.scheduling;
 
+import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
+import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoRecorrenciaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoLocalEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoLocalJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,19 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Job agendado que roda todo dia 1º de janeiro para materializar, a partir das regras de
- * recorrência já cadastradas ({@link EventoRecorrenciaEntity}), as instâncias de
- * {@link EventoEntity} correspondentes às ocorrências do evento recorrente ao longo do ano
- * corrente. Eventos recorrentes precisam ter suas ocorrências futuras materializadas
- * antecipadamente (em vez de calculadas sob demanda) para que consultas de agenda, conflitos de
- * horário e o fluxo de aprovação operem sobre instâncias concretas de evento como qualquer outro
- * evento do calendário. Usa um lock distribuído ({@code JobLockJpaRepository}) para evitar
- * execução concorrente por múltiplas instâncias da aplicação.
+ * Job agendado que gera proativamente todas as instâncias de eventos recorrentes para o ano civil
+ * completo (365/366 dias), materializando as linhas correspondentes na tabela de eventos.
  */
 @Component
 public class GeradorRecorrenciaAnualJob {
@@ -36,14 +39,29 @@ public class GeradorRecorrenciaAnualJob {
     private final EventoRecorrenciaJpaRepository recorrenciaRepository;
     private final EventoJpaRepository eventoRepository;
     private final JobLockJpaRepository lockRepository;
+    private final AprovacaoJpaRepository aprovacaoRepository;
+    private final EventoLocalJpaRepository eventoLocalJpaRepository;
 
     public GeradorRecorrenciaAnualJob(
             EventoRecorrenciaJpaRepository recorrenciaRepository,
             EventoJpaRepository eventoRepository,
-            JobLockJpaRepository lockRepository) {
+            JobLockJpaRepository lockRepository,
+            AprovacaoJpaRepository aprovacaoRepository) {
+        this(recorrenciaRepository, eventoRepository, lockRepository, aprovacaoRepository, null);
+    }
+
+    @Autowired
+    public GeradorRecorrenciaAnualJob(
+            EventoRecorrenciaJpaRepository recorrenciaRepository,
+            EventoJpaRepository eventoRepository,
+            JobLockJpaRepository lockRepository,
+            AprovacaoJpaRepository aprovacaoRepository,
+            @Autowired(required = false) EventoLocalJpaRepository eventoLocalJpaRepository) {
         this.recorrenciaRepository = recorrenciaRepository;
         this.eventoRepository = eventoRepository;
         this.lockRepository = lockRepository;
+        this.aprovacaoRepository = aprovacaoRepository;
+        this.eventoLocalJpaRepository = eventoLocalJpaRepository;
     }
 
     /**
@@ -111,22 +129,47 @@ public class GeradorRecorrenciaAnualJob {
     }
 
     private void generateInstance(EventoEntity baseEvent, LocalDate date, EventoRecorrenciaEntity ruleEntity) {
-        Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
-
-        // Map date to original time
-        Instant baseDateStart =
-                baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
-        Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
-
-        Instant startUtc = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
-        Instant endUtc = startUtc.plus(duration);
+        Instant startUtc;
+        Instant endUtc;
+        if (baseEvent.getTipoHorario() != null && baseEvent.getTipoHorario().isPredefinido()) {
+            var faixa = baseEvent.getTipoHorario().calcularIntervalo(date, ZoneId.of("America/Sao_Paulo"));
+            startUtc = faixa.inicioUtc();
+            endUtc = faixa.fimUtc();
+        } else {
+            Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
+            Instant baseDateStart =
+                    baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+            Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
+            startUtc = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
+            endUtc = startUtc.plus(duration);
+        }
 
         // Robust de-duplication check: same series and same start time
         if (eventoRepository.existsByRecorrenciaIdAndInicioUtc(ruleEntity.getId(), startUtc)) {
             LOGGER.debug("Instance for {} at {} already exists in series {}, skipping",
                     baseEvent.getTitulo(), startUtc, ruleEntity.getId());
-
             return;
+        }
+
+        // Verifica se há aprovação para esta ocorrência específica ou se o evento base está pendente
+        if (aprovacaoRepository != null) {
+            List<AprovacaoEntity> aprovacoesOcorrencia = aprovacaoRepository.findByEventoId(baseEvent.getId());
+            boolean ocorrenciaNaoAprovada = aprovacoesOcorrencia.stream()
+                    .filter(a -> startUtc.equals(a.getDataOcorrenciaUtc()))
+                    .anyMatch(a -> a.getStatus() != AprovacaoStatus.APROVADA);
+            if (ocorrenciaNaoAprovada) {
+                LOGGER.debug("Ocorrência em {} não aprovada (pendente ou reprovada), pulando materialização", startUtc);
+                return;
+            }
+
+            boolean basePendente = aprovacoesOcorrencia.stream()
+                    .anyMatch(a -> a.getAprovacaoPaiId() == null
+                            && TipoSolicitacaoInput.CRIACAO_EVENTO.name().equals(a.getTipoSolicitacao())
+                            && a.getStatus() == AprovacaoStatus.PENDENTE);
+            if (basePendente) {
+                LOGGER.debug("Evento base {} com aprovação pendente, pulando materialização de ocorrências", baseEvent.getId());
+                return;
+            }
         }
 
         EventoEntity instance = new EventoEntity();
@@ -141,7 +184,28 @@ public class GeradorRecorrenciaAnualJob {
         instance.setInicioUtc(startUtc);
         instance.setFimUtc(endUtc);
         instance.setRecorrenciaId(ruleEntity.getId());
+        instance.setTipoHorario(baseEvent.getTipoHorario());
+        instance.setFormato(baseEvent.getFormato());
 
-        eventoRepository.save(instance);
+        EventoEntity savedInstance = eventoRepository.save(instance);
+        if (eventoLocalJpaRepository != null) {
+            List<UUID> localIds = baseEvent.getLocalIds();
+            if (localIds == null || localIds.isEmpty()) {
+                localIds = eventoLocalJpaRepository.findByEventoId(baseEvent.getId())
+                        .stream()
+                        .map(EventoLocalEntity::getLocalId)
+                        .toList();
+            }
+            if (!localIds.isEmpty()) {
+                List<EventoLocalEntity> novosLocais = localIds.stream()
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .map(locId -> new EventoLocalEntity(savedInstance.getId(), locId))
+                        .toList();
+                eventoLocalJpaRepository.saveAll(novosLocais);
+            } else if (savedInstance.getLocalId() != null) {
+                eventoLocalJpaRepository.save(new EventoLocalEntity(savedInstance.getId(), savedInstance.getLocalId()));
+            }
+        }
     }
 }

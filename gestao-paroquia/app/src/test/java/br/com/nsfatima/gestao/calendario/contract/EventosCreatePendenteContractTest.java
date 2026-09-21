@@ -23,7 +23,8 @@ class EventosCreatePendenteContractTest extends AprovacaoPendenteContractSupport
                   "titulo": "Contrato pendente aprovacao",
                   "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicio": "2027-07-15T10:00:00Z",
-                  "fim": "2027-07-15T11:00:00Z"
+                  "fim": "2027-07-15T11:00:00Z",
+                  "adicionadoExtraJustificativa": "Justificativa formal do secretario"
                 }
                 """;
 

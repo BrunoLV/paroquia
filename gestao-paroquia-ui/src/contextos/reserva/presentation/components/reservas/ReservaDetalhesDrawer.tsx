@@ -1,6 +1,8 @@
 import React from 'react';
 import {
+  Alert,
   Box,
+  Chip,
   Divider,
   Drawer,
   Grid,
@@ -18,6 +20,7 @@ import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RepeatIcon from '@mui/icons-material/Repeat';
 import { ReservaDetalhe } from '@/shared/domain/types/types';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { InfoField } from '@/contextos/fiel/presentation/components/fieis/fielConstants';
@@ -37,6 +40,35 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
   if (!reserva) return null;
 
   const statusMeta = getReservaStatusMeta(reserva.status);
+
+  const identificarTurno = (inicioIso?: string, fimIso?: string, descricao?: string): string | null => {
+    if (descricao) {
+      if (descricao.includes('(Manhã)')) return 'Manhã';
+      if (descricao.includes('(Tarde)')) return 'Tarde';
+      if (descricao.includes('(Noite)')) return 'Noite';
+      if (descricao.includes('(Madrugada)')) return 'Madrugada';
+      if (descricao.includes('(Dia Inteiro)')) return 'Dia Inteiro';
+    }
+    if (!inicioIso || !fimIso) return null;
+    try {
+      const dInicio = new Date(inicioIso);
+      const dFim = new Date(fimIso);
+      const horaInicio = dInicio.getHours();
+      const horaFim = dFim.getHours();
+      const minFim = dFim.getMinutes();
+
+      if (horaInicio === 6 && (horaFim === 11 || (horaFim === 12 && minFim === 0))) return 'Manhã';
+      if (horaInicio === 12 && (horaFim === 17 || (horaFim === 18 && minFim === 0))) return 'Tarde';
+      if (horaInicio === 18 && (horaFim === 23 || (horaFim === 0 && minFim === 0))) return 'Noite';
+      if (horaInicio === 0 && (horaFim === 5 || (horaFim === 6 && minFim === 0))) return 'Madrugada';
+      if (horaInicio === 6 && horaFim === 23 && minFim >= 59) return 'Dia Inteiro';
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const turno = identificarTurno(reserva.dataHoraInicio, reserva.dataHoraFim, reserva.descricao);
 
   const formatarData = (iso?: string | null) => {
     if (!iso) return '-';
@@ -59,10 +91,10 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
       open={open}
       onClose={onClose}
       slotProps={{
-        paper: { sx: { width: { xs: '100%', sm: 480 }, p: 3 } },
+        paper: { sx: { width: { xs: '100%', sm: 560, md: 640 }, p: { xs: 2.5, sm: 3.5 } } },
       }}
     >
-      <Stack spacing={2.5}>
+      <Stack spacing={3}>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Detalhes da Reserva
@@ -70,11 +102,17 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
           <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
         </Stack>
 
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+        {reserva.grupoRecorrenciaId && (
+          <Alert severity="info" icon={<RepeatIcon />} sx={{ borderRadius: 2 }}>
+            Esta reserva faz parte de uma série programada recorrente.
+          </Alert>
+        )}
+
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           {reserva.tipoItem === 'LOCAL' ? (
-            <MeetingRoomIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+            <MeetingRoomIcon sx={{ fontSize: 36, color: 'primary.main' }} />
           ) : (
-            <BuildIcon sx={{ fontSize: 32, color: 'secondary.main' }} />
+            <BuildIcon sx={{ fontSize: 36, color: 'secondary.main' }} />
           )}
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -86,13 +124,22 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
           </Box>
         </Stack>
 
-        <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
           <StatusIcon {...statusMeta} size="medium" />
+          {turno && (
+            <Chip
+              label={`Turno: ${turno}`}
+              color="primary"
+              variant="outlined"
+              size="small"
+              sx={{ fontWeight: 600 }}
+            />
+          )}
         </Box>
 
         <Divider />
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2.5}>
           <Grid size={{ xs: 12 }}>
             <InfoField label="Finalidade / Descrição" icon={<DescriptionIcon fontSize="inherit" />} value={reserva.descricao} />
           </Grid>
@@ -109,8 +156,8 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
             <Grid size={{ xs: 12 }}>
               <Box
                 sx={{
-                  p: 1.5,
-                  borderRadius: 1,
+                  p: 2,
+                  borderRadius: 2,
                   bgcolor: 'action.hover',
                   borderLeft: '4px solid',
                   borderLeftColor: 'primary.main',
@@ -119,7 +166,7 @@ export const ReservaDetalhesDrawer: React.FC<ReservaDetalhesDrawerProps> = ({
                 <Typography variant="caption" sx={{ fontWeight: 600, color: 'primary.main' }}>
                   Margem de Carência / Buffer Logístico: {reserva.bufferMinutos} minutos
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem', mt: 0.5 }}>
                   Recurso bloqueado até {formatarData(reserva.fimComBuffer)} para higienização e organização.
                 </Typography>
               </Box>

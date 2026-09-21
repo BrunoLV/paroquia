@@ -111,23 +111,23 @@ class EventoPatchAuthorizationServiceTest {
     }
 
     @Test
-    void devePermitirIgnorarQuandoUsuarioEParoco() {
+    void devePermitirDecisaoPastoralImediataQuandoUsuarioEParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.PAROCO.storedValue(), "CLERO", UUID.randomUUID(), usuarioId,
                         null);
 
-        assertDoesNotThrow(() -> service.assertCanBypassAgendaConflict(actorContext));
+        assertDoesNotThrow(() -> service.assertCanLiberarConflitoAgenda(actorContext));
     }
 
     @Test
-    void deveNegarIgnorarQuandoUsuarioENaoParoco() {
+    void deveNegarDecisaoPastoralImediataQuandoUsuarioENaoParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
                 PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(),
                         UUID.randomUUID(), usuarioId, null);
 
-        assertThrows(AccessDeniedException.class, () -> service.assertCanBypassAgendaConflict(actorContext));
+        assertThrows(AccessDeniedException.class, () -> service.assertCanLiberarConflitoAgenda(actorContext));
     }
 
     @Test

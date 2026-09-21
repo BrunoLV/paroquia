@@ -35,7 +35,7 @@ public class GlobalExceptionHandler extends BaseExceptionHandler {
             ConflitoAgendaEclesialException ex) {
         String msg = ex.getMessage() != null ? ex.getMessage() : "Conflito de Agenda Eclesial";
         return buildValidation(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.CONFLICT,
                 ErrorCodes.CONFLITO_AGENDA_ECLESIAL,
                 msg,
                 List.of(new ValidationErrorItem(

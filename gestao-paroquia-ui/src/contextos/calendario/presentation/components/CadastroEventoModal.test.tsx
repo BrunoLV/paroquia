@@ -437,21 +437,21 @@ describe('CadastroEventoModal', () => {
     expect(submitButton).toBeInTheDocument();
   });
 
-  it('renders bypass conflict switch when user is PAROCO', () => {
+  it('renders decisao pastoral switch when user is PAROCO', () => {
     mockedUseAuth.mockReturnValue({
       user: { id: '1', name: 'Paroco User', roles: ['PAROCO', 'ROLE_CLERO_PAROCO'], organizations: [] }
     });
 
     render(<CadastroEventoModal {...defaultProps} />);
-    expect(screen.getByText(/Ignorar Conflitos de Agenda/i)).toBeInTheDocument();
+    expect(screen.getByText(/Agendar Imediatamente por Decisão Pastoral/i)).toBeInTheDocument();
   });
 
-  it('does not render bypass conflict switch when user is NOT PAROCO', () => {
+  it('does not render decisao pastoral switch when user is NOT PAROCO', () => {
     mockedUseAuth.mockReturnValue({
       user: { id: '2', name: 'Pastoral User', roles: ['COORD_PASTORAL_LOCAL'], organizations: [] }
     });
 
     render(<CadastroEventoModal {...defaultProps} />);
-    expect(screen.queryByText(/Ignorar Conflitos de Agenda/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Agendar Imediatamente por Decisão Pastoral/i)).not.toBeInTheDocument();
   });
 });

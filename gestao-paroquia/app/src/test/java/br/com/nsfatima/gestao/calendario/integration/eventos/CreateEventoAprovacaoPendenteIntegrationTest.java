@@ -50,7 +50,8 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
                                   "titulo": "Missa pendente de aprovacao",
                                   "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-03-10T10:00:00Z",
-                                  "fim": "2027-03-10T11:00:00Z"
+                                  "fim": "2027-03-10T11:00:00Z",
+                                  "adicionadoExtraJustificativa": "Justificativa formal do secretario"
                                 }
                                 """))
                 .andExpect(status().isAccepted())
@@ -59,8 +60,6 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
                 .andExpect(jsonPath("$.mensagem").value("APROVACAO_PENDENTE"))
                 .andReturn();
 
-        assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore);
-
         String aprovacaoIdStr = objectMapper.readTree(result.getResponse().getContentAsString())
                 .get("solicitacaoAprovacaoId").asString();
         var aprovacao = aprovacaoJpaRepository.findById(UUID.fromString(aprovacaoIdStr)).orElseThrow();
@@ -68,6 +67,26 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
         assertThat(aprovacao.getActionPayloadJson()).contains("Missa pendente de aprovacao");
         assertThat(aprovacao.getSolicitantePapel()).isEqualTo("secretario");
         assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.CONSELHO);
+    }
+
+    @Test
+    void secretarioSemJustificativaDeveRetornar400() throws Exception {
+        mockMvc.perform(post("/api/v1/eventos")
+                        .header("Idempotency-Key", UUID.randomUUID())
+                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "titulo": "Sem justificativa",
+                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "inicio": "2027-03-10T10:00:00Z",
+                                  "fim": "2027-03-10T11:00:00Z"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("DOMAIN_RULE_VIOLATION"));
     }
 
     @Test

@@ -19,6 +19,7 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
             PapelOrganizacional.COORD_PASTORAL,
             PapelOrganizacional.PRESIDENTE_CPC,
             PapelOrganizacional.MESA_CPP,
+            PapelOrganizacional.SECRETARIO,
             PapelOrganizacional.PAROCO,
             PapelOrganizacional.VIGARIO,
             PapelOrganizacional.PADRE);
@@ -63,17 +64,28 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
 
     @Override
     public boolean isScopeExempt(PapelOrganizacional papel) {
-        return papel == PapelOrganizacional.PAROCO;
+        return papel == PapelOrganizacional.PAROCO
+                || papel == PapelOrganizacional.SECRETARIO
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.MESA_CPP;
     }
 
     @Override
-    public boolean isBypassAllowed(PapelOrganizacional papel) {
-        return papel == PapelOrganizacional.PAROCO || papel == PapelOrganizacional.ADMIN;
+    public boolean isLiberacaoConflitoPermitida(PapelOrganizacional papel) {
+        return papel == PapelOrganizacional.PAROCO
+                || papel == PapelOrganizacional.ADMIN
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.MESA_CPP;
     }
 
     @Override
     public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
+        if (papel == PapelOrganizacional.SECRETARIO) {
+            return ModoRequisicaoCriacao.REQUER_APROVACAO;
+        }
         if (papel == PapelOrganizacional.PAROCO
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.MESA_CPP
                 || (tipoGrupo == TipoGrupo.CONSELHO && CONSELHO_CRIACAO_IMEDIATA.contains(papel))) {
             return ModoRequisicaoCriacao.IMEDIATO;
         }
@@ -82,7 +94,9 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
 
     @Override
     public void assertCanChangeResponsibleOrganization(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
-        boolean conselhoCoordinator = tipoGrupo == TipoGrupo.CONSELHO && CONSELHO_CRIACAO_IMEDIATA.contains(papel);
+        boolean conselhoCoordinator = (tipoGrupo == TipoGrupo.CONSELHO && CONSELHO_CRIACAO_IMEDIATA.contains(papel))
+                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || papel == PapelOrganizacional.MESA_CPP;
         boolean paroco = papel == PapelOrganizacional.PAROCO;
 
         if (!conselhoCoordinator && !paroco) {

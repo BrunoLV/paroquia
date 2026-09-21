@@ -41,7 +41,8 @@ class AprovacoesDecisionExecutionContractTest {
                                   "titulo": "Contrato decisao aprovada",
                                   "grupoParoquialResponsavelId": "%s",
                                   "inicio": "2027-07-10T10:00:00Z",
-                                  "fim": "2027-07-10T11:00:00Z"
+                                  "fim": "2027-07-10T11:00:00Z",
+                                  "adicionadoExtraJustificativa": "Justificativa formal do secretario"
                                 }
                                 """, CONSELHO_ORG_ID)))
                 .andExpect(status().isAccepted())
@@ -81,7 +82,8 @@ class AprovacoesDecisionExecutionContractTest {
                                   "titulo": "Contrato decisao rejeitada",
                                   "grupoParoquialResponsavelId": "%s",
                                   "inicio": "2027-07-11T10:00:00Z",
-                                  "fim": "2027-07-11T11:00:00Z"
+                                  "fim": "2027-07-11T11:00:00Z",
+                                  "adicionadoExtraJustificativa": "Justificativa formal do secretario"
                                 }
                                 """, CONSELHO_ORG_ID)))
                 .andExpect(status().isAccepted())

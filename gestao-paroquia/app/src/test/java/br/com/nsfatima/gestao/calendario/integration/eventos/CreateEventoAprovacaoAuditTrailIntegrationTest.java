@@ -50,7 +50,8 @@ class CreateEventoAprovacaoAuditTrailIntegrationTest {
                                   "titulo": "Evento trilha create",
                                   "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000cc",
                                   "inicio": "2027-03-20T10:00:00Z",
-                                  "fim": "2027-03-20T11:00:00Z"
+                                  "fim": "2027-03-20T11:00:00Z",
+                                  "adicionadoExtraJustificativa": "Justificativa formal do secretario"
                                 }
                                 """))
                 .andExpect(status().isAccepted())

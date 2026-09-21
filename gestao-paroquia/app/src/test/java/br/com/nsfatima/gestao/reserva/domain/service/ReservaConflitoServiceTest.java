@@ -71,6 +71,6 @@ class ReservaConflitoServiceTest {
         assertThatThrownBy(() -> service.validarDisponibilidadeComLock(
                 TipoItemReserva.LOCAL, itemId, "Sala 1", intervalo, null))
                 .isInstanceOf(ReservaConflitoException.class)
-                .hasMessageContaining("Conflito de agenda ou margem de buffer detectado");
+                .hasMessageContaining("Identificado conflito de agenda ou período de preparação e desocupação para o recurso.");
     }
 }

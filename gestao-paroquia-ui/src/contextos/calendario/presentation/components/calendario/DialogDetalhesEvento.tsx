@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   CardContent,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -29,12 +30,16 @@ import RepeatIcon from '@mui/icons-material/Repeat';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import ObservacoesEvento from '@/contextos/calendario/presentation/components/ObservacoesEvento';
 import AtivosAlocadosSection from '@/contextos/patrimonio/presentation/components/AtivosAlocadosSection';
 import { getEventoStatusMeta } from '@/shared/utils/statusMeta/eventoStatus';
 import { getCategoriaEventoMeta } from '@/shared/utils/statusMeta/categoriaEventoStatus';
-import { DAYS_OF_WEEK, RecurrenceRule } from '@/contextos/calendario/presentation/components/FormularioRecorrencia';
+import { RecurrenceRule } from '@/contextos/calendario/presentation/components/FormularioRecorrencia';
 import { Evento, SetorPastoral } from '@/shared/domain/types/types';
+import { formatarHorarioEvento } from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
+import { getFormatoEventoIcon, getFormatoEventoLabel } from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
+import { formatarResumoRecorrencia } from '@/contextos/calendario/presentation/utils/recorrenciaFormatUtils';
 
 /** 1=Solenidade, 2=Preceito, 3=Pastoral, 4=Movimento — ver `Evento.nivelPrioridade` em api/types.ts. */
 const NIVEL_PRIORIDADE_LABELS: Record<number, string> = {
@@ -50,26 +55,6 @@ const SETOR_PASTORAL_LABELS: Record<SetorPastoral, string> = {
   SOCIAL_CARIDADE: 'Social / Caridade',
 };
 
-/** Resumo textual de uma regra de recorrência (mesmos campos editados em `RecurrenceForm`). */
-const formatRecurrenceSummary = (rule: RecurrenceRule): string => {
-  const freqLabel = rule.frequencia === 'DIARIA' ? 'dia(s)' : rule.frequencia === 'SEMANAL' ? 'semana(s)' : 'mês(es)';
-  const partes = [`A cada ${rule.intervalo} ${freqLabel}`];
-
-  if (rule.diasDaSemana?.length) {
-    const dias = rule.diasDaSemana
-      .map((d) => DAYS_OF_WEEK.find((dw) => dw.value === d)?.label || d)
-      .join(', ');
-    const posicaoLabels: Record<string, string> = { PRIMEIRO: '1ª', SEGUNDO: '2ª', TERCEIRO: '3ª', QUARTO: '4ª', ULTIMO: 'última' };
-    partes.push(rule.posicaoNoMes ? `${posicaoLabels[rule.posicaoNoMes] || rule.posicaoNoMes} ${dias}` : `nas: ${dias}`);
-  }
-  if (rule.dataLimite) {
-    partes.push(`até ${new Date(rule.dataLimite + 'T00:00:00').toLocaleDateString('pt-BR')}`);
-  } else if (rule.numeroOcorrencias) {
-    partes.push(`por ${rule.numeroOcorrencias} ocorrência(s)`);
-  }
-  return partes.join(' · ');
-};
-
 /**
  * Campo de exibição rotulado usado na ficha de detalhes do evento — mesmo padrão visual
  * de `InfoField` em `fieis/fielConstants.tsx` (label + ícone + valor em Paper outlined),
@@ -78,15 +63,23 @@ const formatRecurrenceSummary = (rule: RecurrenceRule): string => {
 const InfoField = ({ label, value, icon }: { label: string; value?: React.ReactNode; icon?: React.ReactNode }) => (
   <Paper
     variant="outlined"
-    sx={{ p: 1.5, borderRadius: 1.5, bgcolor: 'background.paper', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+    sx={{
+      p: 2,
+      borderRadius: 2,
+      bgcolor: 'background.paper',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    }}
   >
-    <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', mb: 0.5 }}>
-      {icon && <Box sx={{ color: 'primary.main', display: 'flex', fontSize: 16 }}>{icon}</Box>}
+    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 0.75 }}>
+      {icon && <Box sx={{ color: 'primary.main', display: 'flex', fontSize: 18 }}>{icon}</Box>}
       <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
         {label}
       </Typography>
     </Stack>
-    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+    <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.4 }}>
       {value ?? '-'}
     </Typography>
   </Paper>
@@ -124,19 +117,19 @@ const DialogDetalhesEvento = ({
   getOrgName,
   getLocalName,
 }: EventoDetailsDialogProps) => (
-  <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+  <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
     {event && (
       <>
-        <DialogTitle>
+        <DialogTitle sx={{ py: 2.5, px: { xs: 2.5, sm: 3.5 }, fontWeight: 700 }}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h6" component="div">
+            <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
               Detalhes do evento
             </Typography>
             <StatusIcon {...getEventoStatusMeta(event.status)} />
           </Stack>
         </DialogTitle>
-        <DialogContent dividers sx={{ maxHeight: 'calc(100vh - 220px)' }}>
-          <Stack spacing={2.5}>
+        <DialogContent dividers sx={{ ...DIALOG_CONTENT_SCROLL_SX, p: { xs: 2.5, sm: 3.5 } }}>
+          <Stack spacing={3.5}>
             {/* Quando este evento tem uma solicitação de aprovação em aberto
                 (ver merge em useCalendarData/combinedEvents), avisamos qual tipo de mudança está
                 pendente — o conteúdo abaixo ainda reflete o estado atual/salvo do
@@ -181,6 +174,12 @@ const DialogDetalhesEvento = ({
                   {getOrgName(event.grupoParoquialResponsavelId, event.igrejaVinculoId)}
                 </Typography>
                 <Stack direction="row" spacing={1.5} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
+                  <StatusIcon
+                    label={getFormatoEventoLabel(event.formato)}
+                    color="default"
+                    icon={getFormatoEventoIcon(event.formato, 'small')}
+                    tooltip={`Formato de realização: ${getFormatoEventoLabel(event.formato)}`}
+                  />
                   <StatusIcon {...getCategoriaEventoMeta(event.categoria)} />
                   {event.recorrenciaId && (
                     <StatusIcon
@@ -196,26 +195,43 @@ const DialogDetalhesEvento = ({
 
             {/* Agenda */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
                   <ScheduleIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
                     Agenda
                   </Typography>
                 </Stack>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid container spacing={2.5}>
+                  <Grid size={{ xs: 12, sm: 3 }}>
+                    <InfoField
+                      label="Formato"
+                      icon={getFormatoEventoIcon(event.formato, 'inherit')}
+                      value={getFormatoEventoLabel(event.formato)}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <InfoField
                       label="Horário"
                       icon={<ScheduleIcon fontSize="inherit" />}
-                      value={`${new Date(event.inicio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} às ${new Date(event.fim).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`}
+                      value={formatarHorarioEvento(event)}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Grid size={{ xs: 12, sm: 5 }}>
                     <InfoField
-                      label="Local"
+                      label={event.localIds && event.localIds.length > 1 ? 'Locais' : 'Local'}
                       icon={<LocationIcon fontSize="inherit" />}
-                      value={getLocalName(event.localId) || 'Não especificado'}
+                      value={
+                        event.localIds && event.localIds.length > 0 ? (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.5 }}>
+                            {event.localIds.map((id) => (
+                              <Chip key={id} label={getLocalName(id) || id} size="small" variant="outlined" />
+                            ))}
+                          </Box>
+                        ) : (
+                          getLocalName(event.localId) || 'Não especificado'
+                        )
+                      }
                     />
                   </Grid>
                 </Grid>
@@ -224,14 +240,14 @@ const DialogDetalhesEvento = ({
 
             {/* Organização e vínculos */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
                   <BusinessIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
                     Organização e vínculos
                   </Typography>
                 </Stack>
-                <Grid container spacing={2}>
+                <Grid container spacing={2.5}>
                   <Grid size={{ xs: 12, sm: event.nomeProjeto ? 6 : 12 }}>
                     <InfoField
                       label="Organização responsável"
@@ -245,8 +261,8 @@ const DialogDetalhesEvento = ({
                     </Grid>
                   )}
                   <Grid size={{ xs: 12 }}>
-                    <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 1.5 }}>
-                      <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', mb: 1 }}>
+                    <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                      <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', mb: 1.25 }}>
                         <PeopleIcon fontSize="small" sx={{ color: 'primary.main' }} />
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
                           Organizações de apoio
@@ -272,27 +288,27 @@ const DialogDetalhesEvento = ({
 
             {/* Classificação e prioridade */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
                   <PriorityHighIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
                     Classificação e prioridade
                   </Typography>
                 </Stack>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid container spacing={2.5}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <InfoField
                       label="Prioridade da agenda"
                       value={event.nivelPrioridade ? NIVEL_PRIORIDADE_LABELS[event.nivelPrioridade] : '-'}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <InfoField
                       label="Setor pastoral"
                       value={event.setorPastoral ? SETOR_PASTORAL_LABELS[event.setorPastoral] : '-'}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12 }}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <InfoField
                       label="Autorizado pelo CPP"
                       value={
@@ -312,7 +328,7 @@ const DialogDetalhesEvento = ({
             {/* Recorrência — só aparece quando o evento pertence a uma série */}
             {event.recorrenciaId && (
               <Card variant="outlined" sx={{ borderRadius: 2 }}>
-                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1.5 }}>
                     <RepeatIcon color="primary" fontSize="small" />
                     <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
@@ -320,7 +336,7 @@ const DialogDetalhesEvento = ({
                     </Typography>
                   </Stack>
                   <Typography variant="body2" color="text.secondary">
-                    {recorrencia ? formatRecurrenceSummary(recorrencia) : 'Carregando regra de recorrência...'}
+                    {recorrencia ? formatarResumoRecorrencia(recorrencia, event.inicio) : 'Carregando regra de recorrência...'}
                   </Typography>
                 </CardContent>
               </Card>
@@ -328,7 +344,7 @@ const DialogDetalhesEvento = ({
 
             {/* Descrição */}
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1.5 }}>
                   <DescriptionIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
@@ -345,7 +361,7 @@ const DialogDetalhesEvento = ({
             <ObservacoesEvento eventoId={event.id} />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ flexWrap: 'wrap', gap: 1 }}>
+        <DialogActions sx={{ px: { xs: 2.5, sm: 3.5 }, py: 2, flexWrap: 'wrap', gap: 1.25 }}>
           <ActionButton title="Fechar" icon={<CloseIcon />} onClick={onClose} color="secondary" />
           {event.status !== 'CANCELADO' && !event.aprovacaoPendenteId && canEdit && (
             <>

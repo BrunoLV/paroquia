@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Box,
+  Chip,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -27,6 +28,33 @@ import BuildIcon from '@mui/icons-material/Build';
 import { ReservaDetalhe } from '@/shared/domain/types/types';
 import { getReservaStatusMeta } from '@/shared/utils/statusMeta/reservaStatus';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
+
+const identificarTurno = (inicioIso?: string, fimIso?: string, descricao?: string): string | null => {
+  if (descricao) {
+    if (descricao.includes('(Manhã)')) return 'Manhã';
+    if (descricao.includes('(Tarde)')) return 'Tarde';
+    if (descricao.includes('(Noite)')) return 'Noite';
+    if (descricao.includes('(Madrugada)')) return 'Madrugada';
+    if (descricao.includes('(Dia Inteiro)')) return 'Dia Inteiro';
+  }
+  if (!inicioIso || !fimIso) return null;
+  try {
+    const dInicio = new Date(inicioIso);
+    const dFim = new Date(fimIso);
+    const horaInicio = dInicio.getHours();
+    const horaFim = dFim.getHours();
+    const minFim = dFim.getMinutes();
+
+    if (horaInicio === 6 && (horaFim === 11 || (horaFim === 12 && minFim === 0))) return 'Manhã';
+    if (horaInicio === 12 && (horaFim === 17 || (horaFim === 18 && minFim === 0))) return 'Tarde';
+    if (horaInicio === 18 && (horaFim === 23 || (horaFim === 0 && minFim === 0))) return 'Noite';
+    if (horaInicio === 0 && (horaFim === 5 || (horaFim === 6 && minFim === 0))) return 'Madrugada';
+    if (horaInicio === 6 && horaFim === 23 && minFim >= 59) return 'Dia Inteiro';
+    return null;
+  } catch {
+    return null;
+  }
+};
 
 interface ReservasTableProps {
   reservas: ReservaDetalhe[];
@@ -131,14 +159,26 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">
-                        {formatarDataHora(r.dataHoraInicio)} até {formatarDataHora(r.dataHoraFim)}
-                      </Typography>
-                      {r.bufferMinutos > 0 && (
-                        <Typography variant="caption" color="text.secondary">
-                          + {r.bufferMinutos} min margem logística (limite: {formatarDataHora(r.fimComBuffer)})
-                        </Typography>
-                      )}
+                      {(() => {
+                        const turno = identificarTurno(r.dataHoraInicio, r.dataHoraFim, r.descricao);
+                        return (
+                          <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                {formatarDataHora(r.dataHoraInicio)} até {formatarDataHora(r.dataHoraFim)}
+                              </Typography>
+                              {turno && (
+                                <Chip label={turno} size="small" variant="outlined" color="primary" sx={{ height: 20, fontSize: '0.725rem' }} />
+                              )}
+                            </Box>
+                            {r.bufferMinutos > 0 && (
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                + {r.bufferMinutos} min margem logística (limite: {formatarDataHora(r.fimComBuffer)})
+                              </Typography>
+                            )}
+                          </Box>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" sx={{ maxWidth: 220 }} noWrap title={r.descricao}>

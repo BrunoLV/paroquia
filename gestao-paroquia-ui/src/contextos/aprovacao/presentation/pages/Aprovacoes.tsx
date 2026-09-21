@@ -18,7 +18,9 @@ import {
     TableRow,
     Tabs,
     TextField,
+    Tooltip,
     Typography,
+    Chip,
     useTheme,
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -28,9 +30,16 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
-import {decideAprovacao, getAprovacoes} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
+import PainelConflitosAprovacao from '@/contextos/aprovacao/presentation/components/PainelConflitosAprovacao';
+import OcorrenciasRecorrenciaAprovacao from '@/contextos/aprovacao/presentation/components/OcorrenciasRecorrenciaAprovacao';
+import {decideAprovacao, getAprovacoes, getAprovacaoOcorrencias} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
+import {getLocais} from '@/contextos/local/infrastructure/http/locais';
+import {getAtivos} from '@/contextos/patrimonio/infrastructure/http/ativos';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '@/shared/domain/types/types';
+import {getFormatoEventoLabel, getFormatoEventoIcon} from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
+import {formatarHorarioEvento, obterLabelTurno, METADADOS_TIPO_HORARIO} from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
+import {formatarResumoRecorrencia} from '@/contextos/calendario/presentation/utils/recorrenciaFormatUtils';
 import {useNotification} from '@/shared/presentation/context/NotificationContext';
 import {extractErrorMessage} from '@/shared/utils/errorUtils';
 import apiClient from '@/shared/infrastructure/http/client';
@@ -124,6 +133,63 @@ const Aprovacoes = () => {
     enabled: tipoAprovacao === 'PROJETOS',
   });
 
+  const { data: ocorrenciasFilhas } = useQuery<AprovacaoResponse[]>({
+    queryKey: ['aprovacao-ocorrencias', aprovacaoSelecionada?.id],
+    queryFn: () => getAprovacaoOcorrencias(aprovacaoSelecionada!.id),
+    enabled: Boolean(aprovacaoSelecionada?.id && aprovacaoSelecionada?.totalOcorrenciasFilhas && aprovacaoSelecionada.totalOcorrenciasFilhas > 0),
+  });
+
+  const todasFilhasDecididas = Boolean(
+    aprovacaoSelecionada?.totalOcorrenciasFilhas &&
+    aprovacaoSelecionada.totalOcorrenciasFilhas > 0 &&
+    ocorrenciasFilhas &&
+    ocorrenciasFilhas.length > 0 &&
+    ocorrenciasFilhas.every((item: AprovacaoResponse) => item.status !== 'PENDENTE')
+  );
+
+  const { data: locaisList = [] } = useQuery({
+    queryKey: ['locais'],
+    queryFn: getLocais,
+  });
+
+  const { data: ativosList = [] } = useQuery({
+    queryKey: ['ativos'],
+    queryFn: getAtivos,
+  });
+
+  const locaisMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    if (Array.isArray(locaisList)) {
+      locaisList.forEach((loc) => map.set(loc.id, loc.nome));
+    }
+    return map;
+  }, [locaisList]);
+
+  const ativosMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    if (Array.isArray(ativosList)) {
+      ativosList.forEach((at) => map.set(at.id, at.nome));
+    }
+    return map;
+  }, [ativosList]);
+
+  const obterNomeLocal = (id: string): string => locaisMap.get(id) || id;
+  const obterNomeAtivo = (id: string): string => ativosMap.get(id) || id;
+
+  const temConflitoRecurso = React.useMemo(() => {
+    if (!aprovacaoSelecionada?.conflitosJson) return false;
+    try {
+      const list = JSON.parse(aprovacaoSelecionada.conflitosJson);
+      if (!Array.isArray(list)) return false;
+      return list.some((c: any) => {
+        const t = (c.tipo || c.tipoConflito || '').toUpperCase();
+        return t === 'LOCAL' || t === 'ATIVO';
+      });
+    } catch {
+      return false;
+    }
+  }, [aprovacaoSelecionada]);
+
   const queryClient = useQueryClient();
   const [observacao, setObservacao] = useState('');
 
@@ -139,12 +205,26 @@ const Aprovacoes = () => {
       decideAprovacao(id, { status, observacao }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['aprovacoes'] });
+      queryClient.invalidateQueries({ queryKey: ['aprovacao-ocorrencias'] });
       showSuccess(variables.status === 'APROVADA' ? 'Solicitação aprovada com sucesso!' : 'Solicitação rejeitada com sucesso!');
-      setAprovacaoSelecionada(null);
+      setAprovacaoSelecionada((prev) => (prev ? { ...prev, status: variables.status } : null));
       setObservacao('');
     },
     onError: (error: unknown) => {
       showError(extractErrorMessage(error, 'Erro ao registrar decisão.'));
+    },
+  });
+
+  const decidirOcorrenciaMutation = useMutation({
+    mutationFn: ({ id, status, observacao }: { id: string; status: 'APROVADA' | 'REPROVADA'; observacao: string }) =>
+      decideAprovacao(id, { status, observacao }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['aprovacao-ocorrencias'] });
+      queryClient.invalidateQueries({ queryKey: ['aprovacoes'] });
+      showSuccess(variables.status === 'APROVADA' ? 'Ocorrência aprovada com sucesso!' : 'Ocorrência rejeitada com sucesso!');
+    },
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao registrar decisão da ocorrência.'));
     },
   });
 
@@ -298,7 +378,7 @@ const Aprovacoes = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {data.content.map((approval) => (
+                      {data.content.filter((approval) => !approval.aprovacaoPaiId).map((approval) => (
                         <TableRow key={approval.id} hover>
                           <TableCell sx={{ fontWeight: 500 }}>
                             <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
@@ -313,6 +393,14 @@ const Aprovacoes = () => {
                                 {getAprovacaoDetalhe(approval)}
                               </Typography>
                             )}
+                            <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5 }}>
+                              {approval.conflitosJson && approval.conflitosJson !== '[]' && (
+                                <Chip label="Com Conflitos" size="small" color="warning" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
+                              )}
+                              {Boolean(approval.totalOcorrenciasFilhas && approval.totalOcorrenciasFilhas > 0) && (
+                                <Chip label={`Série (${approval.totalOcorrenciasFilhas})`} size="small" color="info" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
+                              )}
+                            </Box>
                           </TableCell>
                           <TableCell>{approval.solicitanteId}</TableCell>
                           <TableCell>
@@ -437,7 +525,7 @@ const Aprovacoes = () => {
         onClose={() => setAprovacaoSelecionada(null)}
         slotProps={{
           paper: {
-            sx: { width: { xs: '100%', sm: 480, md: 540 }, p: 3 }
+            sx: { width: { xs: '100%', sm: 580, md: 680 }, p: { xs: 2.5, sm: 3.5 }, overflowY: 'auto' }
           }
         }}
       >
@@ -451,26 +539,49 @@ const Aprovacoes = () => {
             </Box>
             <Divider sx={{ mb: 3 }} />
 
-            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+            {aprovacaoSelecionada.aprovacaoPaiId && (
+              <Alert severity="info" sx={{ mb: 2.5, borderRadius: 2 }}>
+                Esta solicitação é uma ocorrência individual vinculada a uma série recorrente.
+              </Alert>
+            )}
+
+            {Boolean(aprovacaoSelecionada.totalOcorrenciasFilhas && aprovacaoSelecionada.totalOcorrenciasFilhas > 0) && (
+              <Alert severity="info" sx={{ mb: 2.5, borderRadius: 2 }}>
+                <strong>Série Recorrente:</strong> Esta solicitação agregadora abrange {aprovacaoSelecionada.totalOcorrenciasFilhas} ocorrências programadas.
+              </Alert>
+            )}
+
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ fontWeight: 700 }}>
               INFORMAÇÕES GERAIS
             </Typography>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2"><strong>Solicitante:</strong> {aprovacaoSelecionada.solicitanteId}</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+              <Typography variant="body2" sx={{ mb: 0.75 }}><strong>Solicitante:</strong> {aprovacaoSelecionada.solicitanteId}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
                 <Typography variant="body2"><strong>Tipo:</strong></Typography>
                 <StatusIcon {...getAprovacaoTipoMeta(aprovacaoSelecionada.tipoSolicitacao)} />
               </Box>
-              <Typography variant="body2"><strong>Criado em:</strong> {new Date(aprovacaoSelecionada.criadoEmUtc).toLocaleString()}</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+              <Typography variant="body2" sx={{ mb: 0.75 }}><strong>Criado em:</strong> {new Date(aprovacaoSelecionada.criadoEmUtc).toLocaleString('pt-BR')}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.75 }}>
                 <Typography variant="body2"><strong>Status:</strong></Typography>
                 <StatusIcon {...getAprovacaoStatusMeta(aprovacaoSelecionada.status)} />
               </Box>
             </Box>
 
-            <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2 }}>
+            {aprovacaoSelecionada.justificativa && (
+              <Box sx={{ mb: 2.5, p: 2, bgcolor: 'action.hover', borderRadius: 2, borderLeft: '4px solid', borderColor: 'primary.main' }}>
+                <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.main', textTransform: 'uppercase' }}>
+                  Justificativa Formal do Solicitante
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
+                  "{aprovacaoSelecionada.justificativa}"
+                </Typography>
+              </Box>
+            )}
+
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom sx={{ mt: 2, fontWeight: 700 }}>
               DETALHES DA PROPOSTA
             </Typography>
-            <Box sx={{ mb: 3, p: 2, bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
+            <Box sx={{ mb: 3, p: 2.5, borderRadius: 2, bgcolor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
               {aprovacaoSelecionada.tipoSolicitacao === 'CANCELAMENTO' ? (
                 <>
                   <Typography variant="body2" color="error" sx={{ fontWeight: 600, mb: 1 }}>
@@ -486,7 +597,11 @@ const Aprovacoes = () => {
                     Solicitação de Empréstimo de Ativo
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Ativo:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.ativoNome || 'Não informado'}
+                    <strong>Ativo:</strong>{' '}
+                    {(() => {
+                      const payload = parsePayload(aprovacaoSelecionada.actionPayloadJson);
+                      return payload?.ativoNome || (payload?.ativoId ? obterNomeAtivo(payload.ativoId) : 'Não informado');
+                    })()}
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 1 }}>
                     <strong>Organização dona:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.grupoParoquialResponsavelId || 'Não informado'}
@@ -497,29 +612,139 @@ const Aprovacoes = () => {
                 </>
               ) : (
                 <>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
+                  <Typography variant="body2" sx={{ mb: 1.25 }}>
                     <strong>Título do Evento:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.titulo || 'Sem título'}
                   </Typography>
-                  {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.inicio && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Início:</strong> {new Date(parsePayload(aprovacaoSelecionada.actionPayloadJson).inicio).toLocaleString()}
-                    </Typography>
+                  {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.formato && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1.25 }}>
+                      <Typography variant="body2" component="span">
+                        <strong>Formato:</strong> {getFormatoEventoLabel(parsePayload(aprovacaoSelecionada.actionPayloadJson).formato)}
+                      </Typography>
+                      {getFormatoEventoIcon(parsePayload(aprovacaoSelecionada.actionPayloadJson).formato, 'small')}
+                    </Box>
                   )}
-                  {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.fim && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Fim:</strong> {new Date(parsePayload(aprovacaoSelecionada.actionPayloadJson).fim).toLocaleString()}
-                    </Typography>
-                  )}
+                  {/* Data, Horário e Recorrência da Proposta */}
+                  {(() => {
+                    const payload = parsePayload(aprovacaoSelecionada.actionPayloadJson);
+                    if (!payload) return null;
+
+                    const rawData = payload.inicio || payload.startDate || payload.dataInicio || aprovacaoSelecionada.dataOcorrenciaUtc;
+                    let dataFormatada: string | null = null;
+                    if (rawData) {
+                      const dt = new Date(rawData);
+                      if (!isNaN(dt.getTime())) {
+                        const rawStr = dt.toLocaleDateString('pt-BR', {
+                          weekday: 'long',
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric',
+                        });
+                        dataFormatada = rawStr.charAt(0).toUpperCase() + rawStr.slice(1);
+                      }
+                    }
+
+                    const regraRecorrencia = payload.regraRecorrencia || payload.recurrence;
+                    const textoRecorrencia = regraRecorrencia
+                      ? formatarResumoRecorrencia(regraRecorrencia, rawData)
+                      : null;
+
+                    return (
+                      <Box sx={{ mb: 1.5 }}>
+                        {dataFormatada && (
+                          <Typography variant="body2" sx={{ mb: 0.75 }}>
+                            <strong>Data do Evento:</strong> {dataFormatada}
+                          </Typography>
+                        )}
+                        <Typography variant="body2" sx={{ mb: 0.5 }}>
+                          <strong>Horário e Período(s):</strong> {formatarHorarioEvento(payload, aprovacaoSelecionada.dataOcorrenciaUtc)}
+                        </Typography>
+                        {Array.isArray(payload.periodos) && payload.periodos.length > 0 && (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.75, mb: 1 }}>
+                            {payload.periodos.map((p: any) => (
+                              <Chip
+                                key={p}
+                                label={obterLabelTurno(p)}
+                                size="small"
+                                color="primary"
+                                variant="outlined"
+                              />
+                            ))}
+                          </Box>
+                        )}
+                        {textoRecorrencia && (
+                          <Typography variant="body2" sx={{ mt: 0.75, mb: 0.5 }}>
+                            <strong>Recorrência:</strong> {textoRecorrencia}
+                          </Typography>
+                        )}
+                      </Box>
+                    );
+                  })()}
                   {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.descricao && (
-                    <Typography variant="body2" sx={{ mb: 1 }}>
+                    <Typography variant="body2" sx={{ mb: 1.5 }}>
                       <strong>Descrição:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson).descricao}
                     </Typography>
                   )}
+                  {(() => {
+                    const payload = parsePayload(aprovacaoSelecionada.actionPayloadJson);
+                    const locaisList = Array.isArray(payload?.localIds) && payload.localIds.length > 0
+                      ? payload.localIds
+                      : (payload?.localId ? [payload.localId] : []);
+                    if (locaisList.length === 0) return null;
+                    return (
+                      <Box sx={{ mt: 1.5, mb: 1.5 }}>
+                        <Typography variant="body2" sx={{ mb: 0.75 }}>
+                          <strong>{locaisList.length > 1 ? 'Locais Solicitados:' : 'Local Solicitado:'}</strong>
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {locaisList.map((locId: string) => (
+                            <Chip key={locId} label={obterNomeLocal(locId)} size="small" variant="outlined" />
+                          ))}
+                        </Box>
+                      </Box>
+                    );
+                  })()}
+                  {(() => {
+                    const payload = parsePayload(aprovacaoSelecionada.actionPayloadJson);
+                    const ativosList = Array.isArray(payload?.ativoIds) && payload.ativoIds.length > 0
+                      ? payload.ativoIds
+                      : (payload?.ativoId ? [payload.ativoId] : []);
+                    if (ativosList.length === 0) return null;
+                    return (
+                      <Box sx={{ mt: 1.5, mb: 1 }}>
+                        <Typography variant="body2" sx={{ mb: 0.75 }}>
+                          <strong>{ativosList.length > 1 ? 'Ativos Solicitados:' : 'Ativo Solicitado:'}</strong>
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {ativosList.map((atId: string) => (
+                            <Chip key={atId} label={obterNomeAtivo(atId)} size="small" variant="outlined" />
+                          ))}
+                        </Box>
+                      </Box>
+                    );
+                  })()}
                 </>
               )}
             </Box>
 
-            {aprovacaoSelecionada.status === 'PENDENTE' && (
+            <PainelConflitosAprovacao conflitosJson={aprovacaoSelecionada.conflitosJson} />
+
+            {Boolean(aprovacaoSelecionada.totalOcorrenciasFilhas && aprovacaoSelecionada.totalOcorrenciasFilhas > 0) && (
+              <OcorrenciasRecorrenciaAprovacao
+                aprovacaoPaiId={aprovacaoSelecionada.id}
+                totalOcorrencias={aprovacaoSelecionada.totalOcorrenciasFilhas}
+                statusPai={aprovacaoSelecionada.status}
+                onDecidirOcorrencia={(id, status) =>
+                  decidirOcorrenciaMutation.mutate({
+                    id,
+                    status,
+                    observacao: observacao || 'Decisão pontual da ocorrência da série',
+                  })
+                }
+                disabled={decidirOcorrenciaMutation.isPending || decisionMutation.isPending}
+              />
+            )}
+
+            {aprovacaoSelecionada.status === 'PENDENTE' && !todasFilhasDecididas && (
               <Box sx={{ mt: 4 }}>
                 <Divider sx={{ mb: 3 }} />
                 <Typography variant="subtitle2" color="textSecondary" gutterBottom>
@@ -538,23 +763,42 @@ const Aprovacoes = () => {
                   helperText={`${observacao.length}/2000 caracteres`}
                 />
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <ActionButton
-                    title="Aprovar solicitação"
-                    icon={<CheckCircleIcon />}
-                    color="success"
-                    onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'APROVADA', observacao })}
-                    disabled={decisionMutation.isPending}
-                    sx={{ border: '1px solid', borderColor: 'success.main' }}
-                  />
+                  <Tooltip
+                    title={
+                      temConflitoRecurso
+                        ? 'Não é permitido aprovar: existe conflito de espaço físico ou ativo patrimonial já reservado por outro evento aprovado.'
+                        : ''
+                    }
+                  >
+                    <span>
+                      <ActionButton
+                        title={temConflitoRecurso ? 'Aprovação Bloqueada' : 'Aprovar solicitação'}
+                        icon={<CheckCircleIcon />}
+                        color="success"
+                        onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'APROVADA', observacao })}
+                        disabled={decisionMutation.isPending || decidirOcorrenciaMutation.isPending || temConflitoRecurso}
+                        sx={{ border: '1px solid', borderColor: 'success.main' }}
+                      />
+                    </span>
+                  </Tooltip>
                   <ActionButton
                     title="Rejeitar solicitação"
                     icon={<CancelIcon />}
                     color="error"
                     onClick={() => decisionMutation.mutate({ id: aprovacaoSelecionada.id, status: 'REPROVADA', observacao })}
-                    disabled={decisionMutation.isPending}
+                    disabled={decisionMutation.isPending || decidirOcorrenciaMutation.isPending}
                     sx={{ border: '1px solid', borderColor: 'error.main' }}
                   />
                 </Box>
+              </Box>
+            )}
+
+            {aprovacaoSelecionada.status === 'PENDENTE' && todasFilhasDecididas && (
+              <Box sx={{ mt: 3 }}>
+                <Divider sx={{ mb: 2 }} />
+                <Alert severity="info">
+                  Todas as ocorrências filhas desta série recorrente já foram deliberadas individualmente. A solicitação agregadora não requer decisão manual adicional.
+                </Alert>
               </Box>
             )}
           </Box>
@@ -569,7 +813,7 @@ const Aprovacoes = () => {
         onClose={() => setAprovacaoProjetoSelecionada(null)}
         slotProps={{
           paper: {
-            sx: { width: { xs: '100%', sm: 480, md: 540 }, p: 3 }
+            sx: { width: { xs: '100%', sm: 580, md: 680 }, p: { xs: 2.5, sm: 3.5 } }
           }
         }}
       >

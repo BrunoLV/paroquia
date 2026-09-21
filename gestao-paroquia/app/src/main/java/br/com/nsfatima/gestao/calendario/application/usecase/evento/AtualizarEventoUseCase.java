@@ -8,13 +8,16 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.AtualizarEventoSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.calendario.domain.exception.EventoNaoEncontradoException;
+import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridadeAgenda;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCriacao;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -29,6 +32,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
 import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoLocalEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoLocalJpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -64,6 +70,7 @@ public class AtualizarEventoUseCase {
     private final ValidadorPrioridadeAgenda validadorPrioridadeAgendaService;
     private final CacheManager cacheManager;
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
+    private final EventoLocalJpaRepository eventoLocalJpaRepository;
 
     public AtualizarEventoUseCase(
             EventoDomainService domainService,
@@ -82,6 +89,31 @@ public class AtualizarEventoUseCase {
             ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
             CacheManager cacheManager,
             EventoReservaIntegrationService eventoReservaIntegrationService) {
+        this(domainService, repository, recurrenceRepository, envolvimentoRepository, mapper,
+                authorizationService, actorContextResolver, updateEnvolvidosUseCase, clearEnvolvidosUseCase,
+                validadorVinculoProjeto, metricsPublisher, aprovacaoRequestUseCase, auditPublisher,
+                validadorPrioridadeAgendaService, cacheManager, eventoReservaIntegrationService, null);
+    }
+
+    @Autowired
+    public AtualizarEventoUseCase(
+            EventoDomainService domainService,
+            EventoJpaRepository repository,
+            EventoRecorrenciaJpaRepository recurrenceRepository,
+            EventoEnvolvidoJpaRepository envolvimentoRepository,
+            EventoMapper mapper,
+            EventoPatchAuthorizationService authorizationService,
+            EventoActorContextResolver actorContextResolver,
+            AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase,
+            LimparEventoEnvolvidosUseCase clearEnvolvidosUseCase,
+            ValidadorVinculoProjeto validadorVinculoProjeto,
+            CadastroEventoMetricsPublisher metricsPublisher,
+            AtualizarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
+            EventoAuditPublisher auditPublisher,
+            ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
+            CacheManager cacheManager,
+            EventoReservaIntegrationService eventoReservaIntegrationService,
+            @Autowired(required = false) EventoLocalJpaRepository eventoLocalJpaRepository) {
         this.domainService = domainService;
         this.repository = repository;
         this.recurrenceRepository = recurrenceRepository;
@@ -98,6 +130,7 @@ public class AtualizarEventoUseCase {
         this.validadorPrioridadeAgendaService = validadorPrioridadeAgendaService;
         this.cacheManager = cacheManager;
         this.eventoReservaIntegrationService = eventoReservaIntegrationService;
+        this.eventoLocalJpaRepository = eventoLocalJpaRepository;
     }
 
     /**
@@ -112,6 +145,15 @@ public class AtualizarEventoUseCase {
         validateRequest(request);
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
+
+        PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
+        if (atorPapel == PapelOrganizacional.SECRETARIO) {
+            boolean hasJustificativa = (request.adicionadoExtraJustificativa() != null && !request.adicionadoExtraJustificativa().isBlank())
+                    || (request.canceladoMotivo() != null && !request.canceladoMotivo().isBlank());
+            if (!hasJustificativa) {
+                throw new ViolacaoRegraNegocioException("Justificativa é obrigatória para operações submetidas pelo Secretário");
+            }
+        }
 
         validateAuthorization(entity, request, actorContext);
 
@@ -165,7 +207,7 @@ public class AtualizarEventoUseCase {
         }
 
         if (request.isLiberarConflitoAgenda()) {
-            authorizationService.assertCanBypassAgendaConflict(actorContext);
+            authorizationService.assertCanLiberarConflitoAgenda(actorContext);
         }
     }
 
@@ -201,16 +243,38 @@ public class AtualizarEventoUseCase {
         }
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
+        if (eventoLocalJpaRepository != null && request.localIds() != null) {
+            eventoLocalJpaRepository.deleteByEventoId(saved.getId());
+            if (!request.localIds().isEmpty()) {
+                List<EventoLocalEntity> novosLocais = request.localIds().stream()
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .map(locId -> new EventoLocalEntity(saved.getId(), locId))
+                        .toList();
+                eventoLocalJpaRepository.saveAll(novosLocais);
+            }
+            saved.definirLocaisCarregados(eventoLocalJpaRepository.findByEventoId(saved.getId()));
+        } else if (saved.getLocalId() != null && eventoLocalJpaRepository != null) {
+            List<EventoLocalEntity> existentes = eventoLocalJpaRepository.findByEventoId(saved.getId());
+            if (existentes.isEmpty()) {
+                eventoLocalJpaRepository.save(new EventoLocalEntity(saved.getId(), saved.getLocalId()));
+                existentes = eventoLocalJpaRepository.findByEventoId(saved.getId());
+            }
+            saved.definirLocaisCarregados(existentes);
+        }
+
         if (eventoReservaIntegrationService != null) {
             eventoReservaIntegrationService.atualizarReservasEvento(
                     saved.getId(),
                     saved.getTitulo(),
                     saved.getLocalId(),
+                    request.localIds(),
                     request.ativoIds(),
                     actorContext.usuarioId(),
                     saved.getGrupoParoquialResponsavelId(),
                     saved.getInicioUtc(),
-                    saved.getFimUtc()
+                    saved.getFimUtc(),
+                    saved.getPeriodosList()
             );
         }
 
@@ -299,6 +363,22 @@ public class AtualizarEventoUseCase {
     }
 
     private void validateDomainRules(EventoEntity entity, AtualizarEventoRequest request, EventoStatusInput status) {
+        FormatoEvento formato = request.formato() != null ? request.formato() : entity.getFormato();
+        if (formato == FormatoEvento.PRESENCIAL || formato == FormatoEvento.HIBRIDO) {
+            boolean hasLocais;
+            if (request.localIds() != null) {
+                hasLocais = !request.localIds().isEmpty();
+            } else if (request.localId() != null) {
+                hasLocais = true;
+            } else {
+                hasLocais = entity.getLocalId() != null
+                        || (entity.getLocais() != null && !entity.getLocais().isEmpty());
+            }
+            if (!hasLocais) {
+                throw new ViolacaoRegraNegocioException("Ao menos um local deve ser informado para eventos presenciais ou híbridos.");
+            }
+        }
+
         Instant inicio = request.inicio() != null ? request.inicio() : entity.getInicioUtc();
         Instant fim = request.fim() != null ? request.fim() : entity.getFimUtc();
         String justificativa = request.adicionadoExtraJustificativa() != null ? request.adicionadoExtraJustificativa() :
@@ -403,13 +483,26 @@ public class AtualizarEventoUseCase {
      * }
      */
     public AtualizarEventoRequest restaurarDoPayloadAprovacao(AprovacaoAcaoPayload payload) {
-        return new AtualizarEventoRequest(payload.titulo(),
-                payload.descricao(), payload.categoria(), payload.inicio(), payload.fim(),
-
-                payload.status(), payload.adicionadoExtraJustificativa(), payload.canceladoMotivo(),
+        return new AtualizarEventoRequest(
+                payload.titulo(),
+                payload.descricao(),
+                payload.categoria(),
+                payload.inicio(),
+                payload.fim(),
+                payload.status(),
+                payload.adicionadoExtraJustificativa(),
+                payload.canceladoMotivo(),
                 payload.grupoParoquialResponsavelId(),
-                payload.participantes(), null, payload.projetoId(), payload.localId(),
-                payload.igrejaVinculoId());
-
+                payload.participantes(),
+                null,
+                payload.projetoId(),
+                payload.localId(),
+                payload.localIds(),
+                payload.igrejaVinculoId(),
+                false,
+                payload.ativoIds(),
+                payload.tipoHorario(),
+                payload.formato(),
+                payload.periodos());
     }
 }

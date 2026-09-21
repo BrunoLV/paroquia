@@ -17,14 +17,14 @@ const EventoDadosCard: React.FC<EventoDadosCardProps> = ({ form, disabled }) => 
   const { register, control } = form;
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+      <CardContent sx={{ p: { xs: 2.5, sm: 3 }, '&:last-child': { pb: { xs: 2.5, sm: 3 } } }}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mb: 2.5 }}>
           <EventIcon color="primary" fontSize="small" />
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main' }}>
             Dados do evento
           </Typography>
         </Stack>
-        <Grid container spacing={2}>
+        <Grid container spacing={2.5}>
           <Grid size={{ xs: 12 }}>
             <TextField
               label="Título do evento"
@@ -48,7 +48,23 @@ const EventoDadosCard: React.FC<EventoDadosCardProps> = ({ form, disabled }) => 
               {...register('descricao')}
             />
           </Grid>
-          <Grid size={{ xs: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Controller
+              name="formato"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth size="small">
+                  <InputLabel id="new-formato-label">Formato</InputLabel>
+                  <Select {...field} labelId="new-formato-label" label="Formato" disabled={disabled}>
+                    <MenuItem value="PRESENCIAL">Presencial</MenuItem>
+                    <MenuItem value="ONLINE">Online / Remoto</MenuItem>
+                    <MenuItem value="HIBRIDO">Híbrido</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Controller
               name="categoria"
               control={control}
@@ -66,7 +82,7 @@ const EventoDadosCard: React.FC<EventoDadosCardProps> = ({ form, disabled }) => 
               )}
             />
           </Grid>
-          <Grid size={{ xs: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Controller
               name="status"
               control={control}

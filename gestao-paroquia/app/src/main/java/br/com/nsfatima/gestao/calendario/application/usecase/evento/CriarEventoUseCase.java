@@ -5,6 +5,9 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoEnvolvidoInput;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.ResultadoOperacaoEvento;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.EventoResponse;
+import br.com.nsfatima.gestao.calendario.application.dto.ConflitoEventoItemDto;
+import br.com.nsfatima.gestao.calendario.application.service.DetectorConflitoEventoService;
+import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.calendario.domain.model.EstadoConflitoAgenda;
 import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
 import br.com.nsfatima.gestao.calendario.application.usecase.aprovacao.CriarEventoSolicitacaoAprovacaoUseCase;
@@ -17,7 +20,9 @@ import br.com.nsfatima.gestao.calendario.application.service.MotorLiturgico;
 import br.com.nsfatima.gestao.calendario.application.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
@@ -32,7 +37,10 @@ import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.A
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoLocalEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoLocalJpaRepository;
 import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,6 +50,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,8 +80,10 @@ public class CriarEventoUseCase {
     private final MotorLiturgico motorLiturgico;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final ProvisionamentoLiturgicoService provisionamentoLiturgicoService;
-
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
+    private final DetectorConflitoEventoService detectorConflitoEventoService;
+    private final CriarEventoRecorrenciaUseCase criarEventoRecorrenciaUseCase;
+    private final EventoLocalJpaRepository eventoLocalJpaRepository;
 
     public CriarEventoUseCase(
             EventoDomainService domainService,
@@ -94,7 +105,40 @@ public class CriarEventoUseCase {
             MotorLiturgico motorLiturgico,
             CicloLiturgicoRepository cicloLiturgicoRepository,
             ProvisionamentoLiturgicoService provisionamentoLiturgicoService,
-            EventoReservaIntegrationService eventoReservaIntegrationService) {
+            EventoReservaIntegrationService eventoReservaIntegrationService,
+            DetectorConflitoEventoService detectorConflitoEventoService) {
+        this(domainService, repository, envolvimentoRepository, mapper, idempotencyService, auditPublisher,
+                metricsPublisher, authorizationService, actorContextResolver, aprovacaoRequestUseCase,
+                updateEnvolvidosUseCase, validadorVinculoProjeto, bloqueioAnoParoquialPolicy, anoParoquialRepository,
+                validadorPrioridadeAgendaService, cacheManager, motorLiturgico, cicloLiturgicoRepository,
+                provisionamentoLiturgicoService, eventoReservaIntegrationService, detectorConflitoEventoService, null, null);
+    }
+
+    @Autowired
+    public CriarEventoUseCase(
+            EventoDomainService domainService,
+            EventoJpaRepository repository,
+            EventoEnvolvidoJpaRepository envolvimentoRepository,
+            EventoMapper mapper,
+            EventoIdempotencyService idempotencyService,
+            EventoAuditPublisher auditPublisher,
+            CadastroEventoMetricsPublisher metricsPublisher,
+            EventoPatchAuthorizationService authorizationService,
+            EventoActorContextResolver actorContextResolver,
+            CriarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
+            AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase,
+            ValidadorVinculoProjeto validadorVinculoProjeto,
+            BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy,
+            AnoParoquialJpaRepository anoParoquialRepository,
+            ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
+            CacheManager cacheManager,
+            MotorLiturgico motorLiturgico,
+            CicloLiturgicoRepository cicloLiturgicoRepository,
+            ProvisionamentoLiturgicoService provisionamentoLiturgicoService,
+            EventoReservaIntegrationService eventoReservaIntegrationService,
+            DetectorConflitoEventoService detectorConflitoEventoService,
+            @Autowired(required = false) CriarEventoRecorrenciaUseCase criarEventoRecorrenciaUseCase,
+            @Autowired(required = false) EventoLocalJpaRepository eventoLocalJpaRepository) {
         this.domainService = domainService;
         this.repository = repository;
         this.envolvimentoRepository = envolvimentoRepository;
@@ -115,6 +159,43 @@ public class CriarEventoUseCase {
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.provisionamentoLiturgicoService = provisionamentoLiturgicoService;
         this.eventoReservaIntegrationService = eventoReservaIntegrationService;
+        this.detectorConflitoEventoService = detectorConflitoEventoService;
+        this.criarEventoRecorrenciaUseCase = criarEventoRecorrenciaUseCase;
+        this.eventoLocalJpaRepository = eventoLocalJpaRepository;
+    }
+
+    /**
+     * Mapeia antecipadamente conflitos de espaços físicos, ativos patrimoniais e agenda eclesial.
+     */
+    @Transactional(readOnly = true)
+    public List<ConflitoEventoItemDto> detectarConflitos(CriarEventoRequest request) {
+        if (detectorConflitoEventoService == null || request == null) {
+            return List.of();
+        }
+        if (request.regraRecorrencia() != null) {
+            return detectorConflitoEventoService.detectarConflitosRecorrencia(
+                    request.inicio(),
+                    request.fim(),
+                    request.localId(),
+                    request.localIds(),
+                    request.ativoIds(),
+                    request.categoria(),
+                    request.regraRecorrencia(),
+                    request.tipoHorario(),
+                    request.igrejaVinculoId(),
+                    request.periodos());
+        }
+        return detectorConflitoEventoService.detectarConflitos(
+                request.inicio(),
+                request.fim(),
+                request.localId(),
+                request.localIds(),
+                request.ativoIds(),
+                request.categoria(),
+                null,
+                request.tipoHorario(),
+                request.igrejaVinculoId(),
+                request.periodos());
     }
 
     /**
@@ -126,25 +207,56 @@ public class CriarEventoUseCase {
     @Transactional
     public ResultadoOperacaoEvento execute(String idempotencyKey, CriarEventoRequest request) {
         validarChaveIdempotencia(idempotencyKey);
-        validarRequisicaoCriacao(request);
+        Optional<EventoIdempotencyService.IdempotencyResult> existingResult =
+                idempotencyService.findExisting(idempotencyKey, request);
+        if (existingResult.isPresent()) {
+            return new ResultadoOperacaoEvento.Sucesso(existingResult.get().response(), HttpStatus.CREATED);
+        }
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        if (request.isLiberarConflitoAgenda()) {
-            authorizationService.assertCanBypassAgendaConflict(actorContext);
+
+        PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
+        if (atorPapel == PapelOrganizacional.SECRETARIO) {
+            if (request.adicionadoExtraJustificativa() == null || request.adicionadoExtraJustificativa().isBlank()) {
+                throw new ViolacaoRegraNegocioException("Justificativa é obrigatória para operações submetidas pelo Secretário");
+            }
         }
+
+        validarEstruturaRequisicao(request);
+
+        boolean decisaoPastoralImediata = false;
+        if (request.isLiberarConflitoAgenda()) {
+            authorizationService.assertCanLiberarConflitoAgenda(actorContext);
+            decisaoPastoralImediata = true;
+        }
+
+        List<ConflitoEventoItemDto> conflitos = detectarConflitos(request);
+
         ModoRequisicaoCriacao mode = authorizationService.resolveModoRequisicaoCriacao(actorContext,
                 request.grupoParoquialResponsavelId(), request.igrejaVinculoId());
 
+        boolean isParocoOuLiderancaGlobal = atorPapel == PapelOrganizacional.PAROCO
+                || atorPapel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
+                || atorPapel == PapelOrganizacional.MESA_CPP;
 
-        if (mode == ModoRequisicaoCriacao.REQUER_APROVACAO) {
-            return new ResultadoOperacaoEvento.Pendente(aprovacaoRequestUseCase.execute(idempotencyKey,
-                    request), HttpStatus.ACCEPTED);
-
+        if (!conflitos.isEmpty() && !decisaoPastoralImediata && !isParocoOuLiderancaGlobal) {
+            mode = ModoRequisicaoCriacao.REQUER_APROVACAO;
         }
 
-        return new ResultadoOperacaoEvento.Sucesso(criarImediato(idempotencyKey,
-                request, actorContext.actor()), HttpStatus.CREATED);
+        if (mode == ModoRequisicaoCriacao.REQUER_APROVACAO) {
+            return new ResultadoOperacaoEvento.Pendente(
+                    aprovacaoRequestUseCase.execute(idempotencyKey, request, conflitos, request.adicionadoExtraJustificativa()),
+                    HttpStatus.ACCEPTED);
+        }
 
+        processarCancelamentosPrioridade(request);
+
+        EventoResponse response = criarImediato(idempotencyKey, request, actorContext.actor());
+        if (request.regraRecorrencia() != null && criarEventoRecorrenciaUseCase != null) {
+            criarEventoRecorrenciaUseCase.execute(response.id(), request.regraRecorrencia());
+        }
+
+        return new ResultadoOperacaoEvento.Sucesso(response, HttpStatus.CREATED);
     }
 
     /**
@@ -152,6 +264,7 @@ public class CriarEventoUseCase {
      */
     @Transactional
     public EventoResponse executeApprovedCreation(CriarEventoRequest request, String idempotencyKey) {
+        processarCancelamentosPrioridade(request);
         return criarImediato(idempotencyKey, request, "fluxo-aprovacao");
     }
 
@@ -161,14 +274,23 @@ public class CriarEventoUseCase {
         }
     }
 
-    private void validarRequisicaoCriacao(CriarEventoRequest request) {
+    private void validarEstruturaRequisicao(CriarEventoRequest request) {
+        if (request.formato() == FormatoEvento.PRESENCIAL || request.formato() == FormatoEvento.HIBRIDO) {
+            boolean hasLocais = (request.localIds() != null && !request.localIds().isEmpty())
+                    || request.localId() != null;
+            if (!hasLocais) {
+                throw new ViolacaoRegraNegocioException("Ao menos um local deve ser informado para eventos presenciais ou híbridos.");
+            }
+        }
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
         validarBloqueioAnoParoquial(request.inicio(), status);
         domainService.validateGrupoParoquialParticipantes(
                 request.grupoParoquialResponsavelId(), request.participantes());
         validadorVinculoProjeto.validarEvento(request.projetoId(), request.inicio(), request.fim());
+    }
 
+    private void processarCancelamentosPrioridade(CriarEventoRequest request) {
         List<EventoEntity> autoCancel = validadorPrioridadeAgendaService.validarPrioridadeEConflitos(
                 request.categoria(),
                 request.inicio(),
@@ -192,7 +314,7 @@ public class CriarEventoUseCase {
     }
 
     private EventoResponse criarImediato(String idempotencyKey, CriarEventoRequest request, String actor) {
-        validarRequisicaoCriacao(request);
+        validarEstruturaRequisicao(request);
         try {
             EventoIdempotencyService.IdempotencyResult result = idempotencyService.execute(idempotencyKey,
                     request, () -> persistirNovoEvento(request));
@@ -235,17 +357,32 @@ public class CriarEventoUseCase {
 
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
+        if (eventoLocalJpaRepository != null && request.localIds() != null && !request.localIds().isEmpty()) {
+            List<EventoLocalEntity> locais = request.localIds().stream()
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .map(locId -> new EventoLocalEntity(saved.getId(), locId))
+                    .toList();
+            eventoLocalJpaRepository.saveAll(locais);
+            saved.definirLocaisCarregados(eventoLocalJpaRepository.findByEventoId(saved.getId()));
+        } else if (saved.getLocalId() != null && eventoLocalJpaRepository != null) {
+            eventoLocalJpaRepository.save(new EventoLocalEntity(saved.getId(), saved.getLocalId()));
+            saved.definirLocaisCarregados(eventoLocalJpaRepository.findByEventoId(saved.getId()));
+        }
+
         if (eventoReservaIntegrationService != null) {
             UUID solicitanteId = actorContextResolver.resolveRequired().usuarioId();
             eventoReservaIntegrationService.criarReservasEvento(
                     saved.getId(),
                     saved.getTitulo(),
                     saved.getLocalId(),
+                    request.localIds(),
                     request.ativoIds(),
                     solicitanteId,
                     saved.getGrupoParoquialResponsavelId(),
                     saved.getInicioUtc(),
-                    saved.getFimUtc()
+                    saved.getFimUtc(),
+                    saved.getPeriodosList()
             );
         }
 
@@ -296,13 +433,26 @@ public class CriarEventoUseCase {
         Objects.requireNonNull(payload.inicio(), "inicio é obrigatório");
         Objects.requireNonNull(payload.fim(), "fim é obrigatório");
 
-        return new CriarEventoRequest(payload.titulo(),
-                payload.descricao(), payload.categoria(), payload.grupoParoquialResponsavelId(),
-
+        return new CriarEventoRequest(
+                payload.titulo(),
+                payload.descricao(),
+                payload.categoria(),
+                payload.grupoParoquialResponsavelId(),
                 payload.projetoId(),
-                payload.localId(), payload.igrejaVinculoId(), payload.inicio(), payload.fim(),
-                payload.status(), payload.adicionadoExtraJustificativa(),
-
-                payload.participantes());
+                payload.localId(),
+                payload.localIds(),
+                payload.igrejaVinculoId(),
+                payload.inicio(),
+                payload.fim(),
+                payload.status(),
+                payload.adicionadoExtraJustificativa(),
+                payload.participantes(),
+                false,
+                payload.ativoIds(),
+                null,
+                false,
+                payload.tipoHorario(),
+                payload.formato(),
+                payload.periodos());
     }
 }
