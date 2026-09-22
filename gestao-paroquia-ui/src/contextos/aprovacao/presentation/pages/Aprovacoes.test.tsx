@@ -3,7 +3,7 @@ import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {QueryProvider} from '@/shared/presentation/context/QueryProvider';
 import Aprovacoes from './Aprovacoes';
-import {decideAprovacao, getAprovacoes} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
+import {decideAprovacao, getAprovacoes, reexecutarAprovacao} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 import {MemoryRouter} from 'react-router-dom';
 import {NotificationProvider} from '@/shared/presentation/context/NotificationContext';
@@ -11,6 +11,8 @@ import {NotificationProvider} from '@/shared/presentation/context/NotificationCo
 vi.mock('@/contextos/aprovacao/infrastructure/http/aprovacoes', () => ({
   getAprovacoes: jest.fn(),
   decideAprovacao: jest.fn(),
+  getAprovacaoOcorrencias: jest.fn(() => Promise.resolve([])),
+  reexecutarAprovacao: jest.fn(),
 }));
 
 vi.mock('@/contextos/projeto/infrastructure/http/projetos', () => ({
@@ -41,6 +43,7 @@ vi.mock('@/shared/infrastructure/http/client', () => ({
 
 const mockGetAprovacoes = vi.mocked(getAprovacoes);
 const mockDecideAprovacao = vi.mocked(decideAprovacao);
+const mockReexecutarAprovacao = vi.mocked(reexecutarAprovacao);
 const mockObterAprovacoesProjeto = vi.mocked(obterAprovacoesProjeto);
 const mockDecidirAprovacaoProjeto = vi.mocked(decidirAprovacaoProjeto);
 
@@ -508,6 +511,94 @@ describe('Aprovacoes page', () => {
     await waitFor(() => {
       expect(screen.getByText(/Solicitação de Empréstimo de Ativo/i)).toBeInTheDocument();
       expect(screen.getByText(/Projetor Epson/i)).toBeInTheDocument();
+    });
+  });
+
+  it('deve exibir alerta de falha cadastral e permitir recadastro quando tipoFalhaExecucao for NEGOCIO_CADASTRAL', async () => {
+    const mockAprovacaoFalhaCadastral = [
+      {
+        ...mockAprovacoes[0],
+        id: 'app-falha-negocio-1',
+        status: 'FALHA_EXECUCAO',
+        tipoFalhaExecucao: 'NEGOCIO_CADASTRAL',
+        mensagemErroExecucao: 'Conflito de espaço físico já reservado por outro evento aprovado.',
+      },
+    ];
+
+    mockGetAprovacoes.mockResolvedValue({
+      content: mockAprovacaoFalhaCadastral,
+      totalElements: 1,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+
+    renderPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: /Falhas/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    abrirDetalhesDaPrimeiraSolicitacao();
+
+    await waitFor(() => {
+      expect(screen.getByText('Falha de Negócio / Conflito Cadastral')).toBeInTheDocument();
+      expect(screen.getByText(/Conflito de espaço físico já reservado/i)).toBeInTheDocument();
+    });
+
+    const recadastrarBtn = screen.getByRole('button', { name: /Recadastrar com Dados Desta Proposta/i });
+    fireEvent.click(recadastrarBtn);
+
+    await waitFor(() => {
+      expect(JSON.parse(sessionStorage.getItem('recadastro_evento_payload') || '{}')).toMatchObject({
+        titulo: 'Missa Especial de Pentecostes',
+      });
+    });
+  });
+
+  it('deve exibir alerta de falha sistêmica com detalhe técnico e reexecutar a aprovação', async () => {
+    const mockAprovacaoFalhaSistemica = [
+      {
+        ...mockAprovacoes[0],
+        id: 'app-falha-sistemica-1',
+        status: 'FALHA_EXECUCAO',
+        tipoFalhaExecucao: 'SISTEMICA_APLICACAO',
+        mensagemErroExecucao: 'Timeout ao conectar no banco de dados.',
+        detalheErroExecucao: 'java.sql.SQLTimeoutException: Connection refused',
+      },
+    ];
+
+    mockGetAprovacoes.mockResolvedValue({
+      content: mockAprovacaoFalhaSistemica,
+      totalElements: 1,
+      totalPages: 1,
+      size: 10,
+      number: 0,
+    });
+    mockReexecutarAprovacao.mockResolvedValueOnce({ success: true });
+
+    renderPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: /Falhas/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Missa Especial de Pentecostes')).toBeInTheDocument();
+    });
+
+    abrirDetalhesDaPrimeiraSolicitacao();
+
+    await waitFor(() => {
+      expect(screen.getByText('Falha Sistêmica / de Aplicação')).toBeInTheDocument();
+      expect(screen.getByText(/Connection refused/i)).toBeInTheDocument();
+    });
+
+    const reexecutarBtn = screen.getByRole('button', { name: /Reexecutar Aprovação/i });
+    fireEvent.click(reexecutarBtn);
+
+    await waitFor(() => {
+      expect(mockReexecutarAprovacao).toHaveBeenCalledWith('app-falha-sistemica-1');
     });
   });
 });

@@ -105,7 +105,8 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     public List<AprovacaoEntity> findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(UUID aprovacaoPaiId) {
         return storage.stream()
                 .filter(e -> Objects.equals(e.getAprovacaoPaiId(), aprovacaoPaiId))
-                .sorted(Comparator.comparing(AprovacaoEntity::getDataOcorrenciaUtc, Comparator.nullsLast(Comparator.naturalOrder())))
+                .sorted(Comparator.comparing(
+                        AprovacaoEntity::getDataOcorrenciaUtc, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
     }
 

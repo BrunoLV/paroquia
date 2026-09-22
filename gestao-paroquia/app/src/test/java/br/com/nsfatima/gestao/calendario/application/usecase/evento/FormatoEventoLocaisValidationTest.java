@@ -1,11 +1,9 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.AtualizarEventoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
 import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
@@ -22,7 +20,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -57,7 +54,8 @@ class FormatoEventoLocaisValidationTest {
                 bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
         );
 
-        when(actorContextResolver.resolveRequired()).thenReturn(new EventoActorContext("admin", "PAROCO", "PAROQUIA", null, null, null));
+        when(actorContextResolver.resolveRequired())
+                .thenReturn(new EventoActorContext("admin", "PAROCO", "PAROQUIA", null, null, null));
         when(idempotencyService.findExisting(any(), any())).thenReturn(java.util.Optional.empty());
 
         CriarEventoRequest request = new CriarEventoRequest(
@@ -96,7 +94,8 @@ class FormatoEventoLocaisValidationTest {
                 bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
         );
 
-        when(actorContextResolver.resolveRequired()).thenReturn(new EventoActorContext("admin", "PAROCO", "PAROQUIA", null, null, null));
+        when(actorContextResolver.resolveRequired())
+                .thenReturn(new EventoActorContext("admin", "PAROCO", "PAROQUIA", null, null, null));
         when(idempotencyService.findExisting(any(), any())).thenReturn(java.util.Optional.empty());
 
         CriarEventoRequest request = new CriarEventoRequest(

@@ -33,7 +33,7 @@ public class AprovacaoMapper {
 
     /**
      * Converte a entidade de aprovação persistida em seu DTO de resposta para a API, incluindo a contagem
-     * de ocorrências filhas.
+     * de ocorrências filhas e os detalhes de falha de execução.
      *
      * @param entity entidade de aprovação; pode ser {@code null}
      * @param totalOcorrenciasFilhas total de ocorrências filhas quando for mestre
@@ -58,6 +58,8 @@ public class AprovacaoMapper {
                 entity.getSolicitanteId(),
                 entity.getAprovadorId(),
                 entity.getMensagemErroExecucao(),
+                entity.getTipoFalhaExecucao() != null ? entity.getTipoFalhaExecucao().name() : null,
+                entity.getDetalheErroExecucao(),
                 entity.getActionPayloadJson(),
                 entity.getAprovacaoPaiId(),
                 entity.getConflitosJson(),
@@ -88,6 +90,8 @@ public class AprovacaoMapper {
                 entity.getActionPayloadJson(),
                 entity.getCorrelationId(),
                 entity.getMensagemErroExecucao(),
+                entity.getTipoFalhaExecucao(),
+                entity.getDetalheErroExecucao(),
                 entity.getAprovacaoPaiId(),
                 entity.getConflitosJson(),
                 entity.getDataOcorrenciaUtc(),
@@ -106,6 +110,8 @@ public class AprovacaoMapper {
         entity.setDecididoEmUtc(dominio.getDecididoEmUtc());
         entity.setExecutadoEmUtc(dominio.getExecutadoEmUtc());
         entity.setMensagemErroExecucao(dominio.getMensagemErroExecucao());
+        entity.setTipoFalhaExecucao(dominio.getTipoFalhaExecucao());
+        entity.setDetalheErroExecucao(dominio.getDetalheErroExecucao());
     }
 
     /**
@@ -127,6 +133,8 @@ public class AprovacaoMapper {
         entity.setConflitosJson(dominio.getConflitosJson());
         entity.setDataOcorrenciaUtc(dominio.getDataOcorrenciaUtc());
         entity.setJustificativa(dominio.getJustificativa());
+        entity.setTipoFalhaExecucao(dominio.getTipoFalhaExecucao());
+        entity.setDetalheErroExecucao(dominio.getDetalheErroExecucao());
         return entity;
     }
 }

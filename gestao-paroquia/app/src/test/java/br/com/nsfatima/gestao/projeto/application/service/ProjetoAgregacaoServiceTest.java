@@ -59,7 +59,8 @@ class ProjetoAgregacaoServiceTest {
         when(projetoRepository.findById(projetoId)).thenReturn(Optional.of(projeto));
         when(provedorEventoProjeto.contarPorProjetoId(projetoId)).thenReturn(10L);
         when(provedorEventoProjeto.contarPorProjetoIdEFimUtcMenorQue(eq(projetoId), any(Instant.class))).thenReturn(6L);
-        when(provedorEventoProjeto.contarPorProjetoIdEFimUtcMaiorOuIgualA(eq(projetoId), any(Instant.class))).thenReturn(4L);
+        when(provedorEventoProjeto.contarPorProjetoIdEFimUtcMaiorOuIgualA(eq(projetoId), any(Instant.class)))
+                .thenReturn(4L);
         when(provedorEventoProjeto.buscarNomesOrganizacoesEnvolvidas(projetoId)).thenReturn(List.of("Org 1", "Org 2"));
 
         when(domainService.calcularPercentualTempoDecorrido(any(), any())).thenReturn(BigDecimal.valueOf(50.0));

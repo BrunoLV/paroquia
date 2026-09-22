@@ -11,8 +11,8 @@ import java.util.UUID;
  * Agregado Raiz de Solicitação de Aprovação.
  *
  * <p>Concentra a máquina de estados {@code PENDENTE -> APROVADA | REPROVADA} e o pós-processamento
- * da execução ({@code APROVADA -> FALHA_EXECUCAO} ou registro de conclusão) que antes viviam
- * espalhados em {@code DecidirSolicitacaoAprovacaoUseCase} como sequências de setters coordenados.</p>
+ * da execução ({@code APROVADA -> FALHA_EXECUCAO} ou registro de conclusão) com suporte a categorização
+ * de falhas (negócio/cadastral vs. sistêmica/aplicação) e reexecução controlada.</p>
  *
  * <p>Invariantes:</p>
  * <ul>
@@ -21,6 +21,8 @@ import java.util.UUID;
  *   <li>Uma solicitação cuja ação já deveria ter começado (evento no passado) não pode ser decidida
  *   — {@link AprovacaoExecucaoFalhouException}.</li>
  *   <li>A conclusão/falha de execução só se registra sobre uma solicitação {@code APROVADA}.</li>
+ *   <li>A reexecução só é admitida para solicitações em {@code FALHA_EXECUCAO} de natureza {@code SISTEMICA_APLICACAO}.
+ *   Falhas cadastrais/de negócio são imutáveis e exigem novo cadastro com parâmetros corrigidos.</li>
  * </ul>
  */
 public class Aprovacao {
@@ -40,6 +42,8 @@ public class Aprovacao {
     private String aprovadorId;
     private String decisionObservacao;
     private String mensagemErroExecucao;
+    private TipoFalhaAprovacao tipoFalhaExecucao;
+    private String detalheErroExecucao;
     private final UUID aprovacaoPaiId;
     private final String conflitosJson;
     private final Instant dataOcorrenciaUtc;
@@ -60,6 +64,8 @@ public class Aprovacao {
             String actionPayloadJson,
             String correlationId,
             String mensagemErroExecucao,
+            TipoFalhaAprovacao tipoFalhaExecucao,
+            String detalheErroExecucao,
             UUID aprovacaoPaiId,
             String conflitosJson,
             Instant dataOcorrenciaUtc,
@@ -78,6 +84,8 @@ public class Aprovacao {
         this.actionPayloadJson = actionPayloadJson;
         this.correlationId = correlationId;
         this.mensagemErroExecucao = mensagemErroExecucao;
+        this.tipoFalhaExecucao = tipoFalhaExecucao;
+        this.detalheErroExecucao = detalheErroExecucao;
         this.aprovacaoPaiId = aprovacaoPaiId;
         this.conflitosJson = conflitosJson;
         this.dataOcorrenciaUtc = dataOcorrenciaUtc;
@@ -98,10 +106,34 @@ public class Aprovacao {
             String decisionObservacao,
             String actionPayloadJson,
             String correlationId,
+            String mensagemErroExecucao,
+            UUID aprovacaoPaiId,
+            String conflitosJson,
+            Instant dataOcorrenciaUtc,
+            String justificativa) {
+        this(id, eventoId, tipoSolicitacao, aprovadorPapel, status, criadoEmUtc, decididoEmUtc, executadoEmUtc,
+                solicitanteId, aprovadorId, decisionObservacao, actionPayloadJson, correlationId,
+                mensagemErroExecucao, null, null, aprovacaoPaiId, conflitosJson, dataOcorrenciaUtc, justificativa);
+    }
+
+    public Aprovacao(
+            UUID id,
+            UUID eventoId,
+            String tipoSolicitacao,
+            String aprovadorPapel,
+            AprovacaoStatus status,
+            Instant criadoEmUtc,
+            Instant decididoEmUtc,
+            Instant executadoEmUtc,
+            String solicitanteId,
+            String aprovadorId,
+            String decisionObservacao,
+            String actionPayloadJson,
+            String correlationId,
             String mensagemErroExecucao) {
         this(id, eventoId, tipoSolicitacao, aprovadorPapel, status, criadoEmUtc, decididoEmUtc, executadoEmUtc,
                 solicitanteId, aprovadorId, decisionObservacao, actionPayloadJson, correlationId,
-                mensagemErroExecucao, null, null, null, null);
+                mensagemErroExecucao, null, null, null, null, null, null);
     }
 
     /** Abre uma nova solicitação em estado PENDENTE. */
@@ -132,7 +164,7 @@ public class Aprovacao {
             Instant agora) {
         return new Aprovacao(id, eventoId, tipoSolicitacao, aprovadorPapel, AprovacaoStatus.PENDENTE,
                 agora, null, null, solicitanteId, null, null, actionPayloadJson, null, null,
-                aprovacaoPaiId, conflitosJson, dataOcorrenciaUtc, justificativa);
+                null, null, aprovacaoPaiId, conflitosJson, dataOcorrenciaUtc, justificativa);
     }
 
     /**
@@ -175,13 +207,44 @@ public class Aprovacao {
     public void registrarExecucaoConcluida(Instant agora) {
         assegurarAprovada();
         this.executadoEmUtc = agora != null ? agora : Instant.now();
+        this.mensagemErroExecucao = null;
+        this.tipoFalhaExecucao = null;
+        this.detalheErroExecucao = null;
     }
 
-    /** Registra que a ação de negócio aprovada falhou ao ser efetivada. */
-    public void registrarFalhaExecucao(String mensagemErro) {
+    /** Registra que a ação de negócio aprovada falhou com classificação de tipo e detalhe analítico. */
+    public void registrarFalhaExecucao(TipoFalhaAprovacao tipoFalha, String mensagemErro, String detalheErro) {
         assegurarAprovada();
         this.status = AprovacaoStatus.FALHA_EXECUCAO;
+        this.tipoFalhaExecucao = tipoFalha != null ? tipoFalha : TipoFalhaAprovacao.SISTEMICA_APLICACAO;
         this.mensagemErroExecucao = mensagemErro;
+        this.detalheErroExecucao = detalheErro;
+    }
+
+    /** Registra que a ação de negócio aprovada falhou ao ser efetivada (fallback padrão sistêmico). */
+    public void registrarFalhaExecucao(String mensagemErro) {
+        registrarFalhaExecucao(TipoFalhaAprovacao.SISTEMICA_APLICACAO, mensagemErro, null);
+    }
+
+    /**
+     * Prepara a aprovação para reexecução. Apenas solicitações com falha sistêmica admitem reexecução.
+     *
+     * @param agora instante corrente da tentativa de reexecução
+     */
+    public void reexecutar(Instant agora) {
+        if (this.status != AprovacaoStatus.FALHA_EXECUCAO) {
+            throw new IllegalStateException(
+                    "Apenas solicitações com falha de execução podem ser reexecutadas. Status atual: " + this.status);
+        }
+        if (this.tipoFalhaExecucao == TipoFalhaAprovacao.NEGOCIO_CADASTRAL) {
+            throw new IllegalStateException(
+                    "Solicitações com falha cadastral ou de negócio são imutáveis e não admitem reexecução "
+                            + "direta; realize um novo cadastro.");
+        }
+        this.status = AprovacaoStatus.APROVADA;
+        this.mensagemErroExecucao = null;
+        this.tipoFalhaExecucao = null;
+        this.detalheErroExecucao = null;
     }
 
     private void assegurarAprovada() {
@@ -245,6 +308,14 @@ public class Aprovacao {
 
     public String getMensagemErroExecucao() {
         return mensagemErroExecucao;
+    }
+
+    public TipoFalhaAprovacao getTipoFalhaExecucao() {
+        return tipoFalhaExecucao;
+    }
+
+    public String getDetalheErroExecucao() {
+        return detalheErroExecucao;
     }
 
     public UUID getAprovacaoPaiId() {

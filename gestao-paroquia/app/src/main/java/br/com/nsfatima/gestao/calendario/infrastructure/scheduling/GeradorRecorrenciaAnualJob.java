@@ -137,8 +137,8 @@ public class GeradorRecorrenciaAnualJob {
             endUtc = faixa.fimUtc();
         } else {
             Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
-            Instant baseDateStart =
-                    baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+            Instant baseDateStart = baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate()
+                    .atStartOfDay().toInstant(ZoneOffset.UTC);
             Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
             startUtc = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
             endUtc = startUtc.plus(duration);
@@ -167,7 +167,8 @@ public class GeradorRecorrenciaAnualJob {
                             && TipoSolicitacaoInput.CRIACAO_EVENTO.name().equals(a.getTipoSolicitacao())
                             && a.getStatus() == AprovacaoStatus.PENDENTE);
             if (basePendente) {
-                LOGGER.debug("Evento base {} com aprovação pendente, pulando materialização de ocorrências", baseEvent.getId());
+                LOGGER.debug("Evento base {} com aprovação pendente, pulando materialização de ocorrências",
+                        baseEvent.getId());
                 return;
             }
         }

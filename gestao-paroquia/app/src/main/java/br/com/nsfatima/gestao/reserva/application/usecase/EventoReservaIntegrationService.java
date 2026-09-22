@@ -36,6 +36,8 @@ import java.util.UUID;
 @Service
 public class EventoReservaIntegrationService {
 
+    private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
+
     private final ReservaRepository reservaRepository;
     private final ReservaConflitoService conflitoService;
     private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
@@ -75,7 +77,9 @@ public class EventoReservaIntegrationService {
 
     private String resolverNomeAtivo(UUID ativoId) {
         if (ativoRepository != null && ativoId != null) {
-            return ativoRepository.findById(new AtivoPatrimonialId(ativoId)).map(AtivoPatrimonial::getNome).orElse("Ativo Patrimonial");
+            return ativoRepository.findById(new AtivoPatrimonialId(ativoId))
+                    .map(AtivoPatrimonial::getNome)
+                    .orElse("Ativo Patrimonial");
         }
         return "Ativo Patrimonial";
     }
@@ -122,10 +126,10 @@ public class EventoReservaIntegrationService {
                     .distinct()
                     .toList();
             if (!turnos.isEmpty()) {
-                LocalDate data = inicio.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate();
+                LocalDate data = inicio.atZone(BR_ZONE).toLocalDate();
                 List<IntervaloReserva> intervalos = new ArrayList<>();
                 for (TipoHorarioEvento turno : turnos) {
-                    var faixa = turno.calcularIntervalo(data, ZoneId.of("America/Sao_Paulo"));
+                    var faixa = turno.calcularIntervalo(data, BR_ZONE);
                     intervalos.add(IntervaloReserva.de(faixa.inicioUtc(), faixa.fimUtc()));
                 }
                 return intervalos;
@@ -140,8 +144,9 @@ public class EventoReservaIntegrationService {
         }
         for (TipoHorarioEvento turno : periodos) {
             if (turno != null && turno.isPredefinido()) {
-                var faixa = turno.calcularIntervalo(data, ZoneId.of("America/Sao_Paulo"));
-                if (faixa.inicioUtc().equals(intervalo.dataHoraInicio()) && faixa.fimUtc().equals(intervalo.dataHoraFim())) {
+                var faixa = turno.calcularIntervalo(data, BR_ZONE);
+                if (faixa.inicioUtc().equals(intervalo.dataHoraInicio())
+                        && faixa.fimUtc().equals(intervalo.dataHoraFim())) {
                     return " (" + turno.getDescricao() + ")";
                 }
             }
@@ -161,7 +166,8 @@ public class EventoReservaIntegrationService {
             Instant inicio,
             Instant fim
     ) {
-        return criarReservasEvento(eventoId, eventoTitulo, localId, localIds, ativoIds, solicitanteId, pastoralId, inicio, fim, null);
+        return criarReservasEvento(
+                eventoId, eventoTitulo, localId, localIds, ativoIds, solicitanteId, pastoralId, inicio, fim, null);
     }
 
     @Transactional
@@ -193,7 +199,7 @@ public class EventoReservaIntegrationService {
             todosLocais.add(localId);
         }
 
-        LocalDate dataEvento = inicio.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate();
+        LocalDate dataEvento = inicio.atZone(BR_ZONE).toLocalDate();
 
         for (IntervaloReserva intervalo : intervalos) {
             String sufixoTurno = extrairSufixoTurno(intervalo, periodos, dataEvento);
@@ -293,7 +299,8 @@ public class EventoReservaIntegrationService {
             Instant inicio,
             Instant fim
     ) {
-        atualizarReservasEvento(eventoId, eventoTitulo, localId, localIds, ativoIds, operadorId, pastoralId, inicio, fim, null);
+        atualizarReservasEvento(
+                eventoId, eventoTitulo, localId, localIds, ativoIds, operadorId, pastoralId, inicio, fim, null);
     }
 
     @Transactional
@@ -346,7 +353,7 @@ public class EventoReservaIntegrationService {
             }
         }
 
-        LocalDate dataEvento = inicio.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate();
+        LocalDate dataEvento = inicio.atZone(BR_ZONE).toLocalDate();
 
         // Alinhar reservas de locais com os novos intervalos
         for (UUID locId : todosLocais) {

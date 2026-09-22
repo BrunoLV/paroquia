@@ -148,10 +148,12 @@ public class AtualizarEventoUseCase {
 
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (atorPapel == PapelOrganizacional.SECRETARIO) {
-            boolean hasJustificativa = (request.adicionadoExtraJustificativa() != null && !request.adicionadoExtraJustificativa().isBlank())
+            boolean hasJustificativa = (request.adicionadoExtraJustificativa() != null
+                    && !request.adicionadoExtraJustificativa().isBlank())
                     || (request.canceladoMotivo() != null && !request.canceladoMotivo().isBlank());
             if (!hasJustificativa) {
-                throw new ViolacaoRegraNegocioException("Justificativa é obrigatória para operações submetidas pelo Secretário");
+                throw new ViolacaoRegraNegocioException(
+                        "Justificativa é obrigatória para operações submetidas pelo Secretário");
             }
         }
 
@@ -375,7 +377,8 @@ public class AtualizarEventoUseCase {
                         || (entity.getLocais() != null && !entity.getLocais().isEmpty());
             }
             if (!hasLocais) {
-                throw new ViolacaoRegraNegocioException("Ao menos um local deve ser informado para eventos presenciais ou híbridos.");
+                throw new ViolacaoRegraNegocioException(
+                        "Ao menos um local deve ser informado para eventos presenciais ou híbridos.");
             }
         }
 
@@ -395,7 +398,8 @@ public class AtualizarEventoUseCase {
         domainService.validateGrupoParoquialParticipantes(org, part);
 
         UUID projetoId = request.projetoId() != null ? request.projetoId() : entity.getProjetoId();
-        boolean isRecurring = entity.getRecorrenciaId() != null && request.escopoEdicao() != EscopoEdicaoEvento.SOMENTE_ESTE;
+        boolean isRecurring = entity.getRecorrenciaId() != null
+                && request.escopoEdicao() != EscopoEdicaoEvento.SOMENTE_ESTE;
         if (isRecurring && entity.getRecorrenciaId() != null) {
             EventoRecorrenciaEntity recurrence = recurrenceRepository.findById(entity.getRecorrenciaId())
                     .orElseThrow(() -> new IllegalStateException("Recurrence not found: " + entity.getRecorrenciaId()));

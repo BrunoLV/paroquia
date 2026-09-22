@@ -55,8 +55,12 @@ public class EventoLocalEntity extends BaseAuditableEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         EventoLocalEntity that = (EventoLocalEntity) o;
         return Objects.equals(eventoId, that.eventoId) && Objects.equals(localId, that.localId);
     }
@@ -99,8 +103,12 @@ public class EventoLocalEntity extends BaseAuditableEntity {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Key key = (Key) o;
             return Objects.equals(eventoId, key.eventoId) && Objects.equals(localId, key.localId);
         }

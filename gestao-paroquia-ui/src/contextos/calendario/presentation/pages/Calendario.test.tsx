@@ -396,3 +396,79 @@ test('opens solemnities dialog when clicking Solenidades & Santoral button', asy
   expect(screen.getByText(/Santa Maria, Mãe de Deus/i)).toBeInTheDocument();
   expect(screen.getByText(/Natal do Senhor/i)).toBeInTheDocument();
 });
+
+test('toggles to DIA (daily) view and displays daily banner and timeline', async () => {
+  await renderCalendar();
+
+  const diaBtn = screen.getByRole('button', { name: /^Dia$/i });
+  await act(async () => {
+    fireEvent.click(diaBtn);
+  });
+
+  // Verify daily banner elements
+  expect(screen.getByRole('button', { name: /Novo Evento neste Dia/i })).toBeInTheDocument();
+  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+
+  // Verify timeline mode switch buttons
+  const timelineBtn = screen.getByRole('button', { name: /Exibir Linha do Tempo/i });
+  const listaBtn = screen.getByRole('button', { name: /Exibir Lista de Cartões/i });
+  expect(timelineBtn).toBeInTheDocument();
+  expect(listaBtn).toBeInTheDocument();
+
+  // Switch to Lista mode
+  await act(async () => {
+    fireEvent.click(listaBtn);
+  });
+  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+});
+
+test('toggles to SEMANA (weekly) view and displays 7 days columns', async () => {
+  await renderCalendar();
+
+  const semanaBtn = screen.getByRole('button', { name: /^Semana$/i });
+  await act(async () => {
+    fireEvent.click(semanaBtn);
+  });
+
+  // Verify weekday headers (Dom, Seg, Ter, Qua, Qui, Sex, Sáb)
+  expect(screen.getByText('Dom')).toBeInTheDocument();
+  expect(screen.getByText('Seg')).toBeInTheDocument();
+  expect(screen.getByText('Ter')).toBeInTheDocument();
+  expect(screen.getByText('Qua')).toBeInTheDocument();
+  expect(screen.getByText('Qui')).toBeInTheDocument();
+  expect(screen.getByText('Sex')).toBeInTheDocument();
+  expect(screen.getByText('Sáb')).toBeInTheDocument();
+  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+});
+
+test('toggles to ANO (annual) view and displays 12 months overview', async () => {
+  await renderCalendar();
+
+  const anoBtn = screen.getByRole('button', { name: /^Ano$/i });
+  await act(async () => {
+    fireEvent.click(anoBtn);
+  });
+
+  // Verify annual overview card and months
+  expect(screen.getByText(new RegExp(`Visão Geral do Ano ${new Date().getFullYear()}`, 'i'))).toBeInTheDocument();
+  expect(screen.getByText('Janeiro')).toBeInTheDocument();
+  expect(screen.getByText('Dezembro')).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: /Ver Mês/i }).length).toBe(12);
+});
+
+test('toggles to DIAS ESPECÍFICOS view and displays date inputs and shortcuts', async () => {
+  await renderCalendar();
+
+  const diasEspBtn = screen.getByRole('button', { name: /Dias Específicos/i });
+  await act(async () => {
+    fireEvent.click(diasEspBtn);
+  });
+
+  // Verify inputs and shortcut buttons
+  expect(screen.getByLabelText(/Data Inicial/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Data Final/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /7 dias/i })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /15 dias/i })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /30 dias/i })).toBeInTheDocument();
+  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+});

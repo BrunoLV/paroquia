@@ -73,5 +73,50 @@ class AprovacaoTest {
         a.registrarFalhaExecucao("conflito de agenda");
         assertThat(a.getStatus()).isEqualTo(AprovacaoStatus.FALHA_EXECUCAO);
         assertThat(a.getMensagemErroExecucao()).isEqualTo("conflito de agenda");
+        assertThat(a.getTipoFalhaExecucao()).isEqualTo(TipoFalhaAprovacao.SISTEMICA_APLICACAO);
+    }
+
+    @Test
+    void falhaExecucaoRegistraTipoEDetalhe() {
+        Aprovacao a = pendente();
+        a.aprovar("d", "PAROCO", null, AGORA);
+        a.registrarFalhaExecucao(TipoFalhaAprovacao.NEGOCIO_CADASTRAL, "Conflito de local", "Salão São José ocupado");
+        assertThat(a.getStatus()).isEqualTo(AprovacaoStatus.FALHA_EXECUCAO);
+        assertThat(a.getTipoFalhaExecucao()).isEqualTo(TipoFalhaAprovacao.NEGOCIO_CADASTRAL);
+        assertThat(a.getMensagemErroExecucao()).isEqualTo("Conflito de local");
+        assertThat(a.getDetalheErroExecucao()).isEqualTo("Salão São José ocupado");
+    }
+
+    @Test
+    void reexecutarPermitidoParaFalhaSistemica() {
+        Aprovacao a = pendente();
+        a.aprovar("d", "PAROCO", null, AGORA);
+        a.registrarFalhaExecucao(TipoFalhaAprovacao.SISTEMICA_APLICACAO, "Timeout de banco", "Connection refused");
+
+        a.reexecutar(AGORA);
+        assertThat(a.getStatus()).isEqualTo(AprovacaoStatus.APROVADA);
+        assertThat(a.getMensagemErroExecucao()).isNull();
+        assertThat(a.getTipoFalhaExecucao()).isNull();
+        assertThat(a.getDetalheErroExecucao()).isNull();
+    }
+
+    @Test
+    void reexecutarBloqueadoParaFalhaCadastral() {
+        Aprovacao a = pendente();
+        a.aprovar("d", "PAROCO", null, AGORA);
+        a.registrarFalhaExecucao(TipoFalhaAprovacao.NEGOCIO_CADASTRAL, "Conflito", "Espaço ocupado");
+
+        assertThatThrownBy(() -> a.reexecutar(AGORA))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining(
+                        "Solicitações com falha cadastral ou de negócio são imutáveis e não admitem reexecução direta");
+    }
+
+    @Test
+    void reexecutarBloqueadoSeNaoEstiverEmFalhaExecucao() {
+        Aprovacao a = pendente();
+        assertThatThrownBy(() -> a.reexecutar(AGORA))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Apenas solicitações com falha de execução podem ser reexecutadas");
     }
 }

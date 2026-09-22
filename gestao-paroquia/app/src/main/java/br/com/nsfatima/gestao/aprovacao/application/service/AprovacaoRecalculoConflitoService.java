@@ -42,9 +42,12 @@ public class AprovacaoRecalculoConflitoService {
             DetectorConflitoEventoService detectorConflitoEventoService,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper,
             ObjectMapper objectMapper) {
-        this.aprovacaoJpaRepository = Objects.requireNonNull(aprovacaoJpaRepository, "AprovacaoJpaRepository é obrigatório");
-        this.detectorConflitoEventoService = Objects.requireNonNull(detectorConflitoEventoService, "DetectorConflitoEventoService é obrigatório");
-        this.aprovacaoAcaoPayloadMapper = Objects.requireNonNull(aprovacaoAcaoPayloadMapper, "AprovacaoAcaoPayloadMapper é obrigatório");
+        this.aprovacaoJpaRepository =
+                Objects.requireNonNull(aprovacaoJpaRepository, "AprovacaoJpaRepository é obrigatório");
+        this.detectorConflitoEventoService =
+                Objects.requireNonNull(detectorConflitoEventoService, "DetectorConflitoEventoService é obrigatório");
+        this.aprovacaoAcaoPayloadMapper =
+                Objects.requireNonNull(aprovacaoAcaoPayloadMapper, "AprovacaoAcaoPayloadMapper é obrigatório");
         this.objectMapper = Objects.requireNonNull(objectMapper, "ObjectMapper é obrigatório");
     }
 
@@ -55,7 +58,8 @@ public class AprovacaoRecalculoConflitoService {
      */
     @Transactional
     public void recalcularConflitosPendentes(UUID aprovacaoAprovadaId) {
-        List<AprovacaoEntity> pendentes = aprovacaoJpaRepository.findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE);
+        List<AprovacaoEntity> pendentes =
+                aprovacaoJpaRepository.findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE);
 
         for (AprovacaoEntity pendente : pendentes) {
             if (aprovacaoAprovadaId != null && aprovacaoAprovadaId.equals(pendente.getId())) {

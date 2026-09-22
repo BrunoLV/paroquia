@@ -18,6 +18,7 @@ import java.util.UUID;
 /** Persistência do cadastro pessoal e canônico de um clérigo. */
 @Entity
 @Table(name = "clerigos", schema = "calendario")
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public class ClerigoEntity extends BaseAuditableEntity {
     @Id
     private UUID id;

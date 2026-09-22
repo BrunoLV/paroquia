@@ -160,7 +160,7 @@ public class FielEntity extends BaseAuditableEntity {
     }
 
     public void setRg(String value) {
-        rg = digitos(value);
+        rg = value == null ? null : value.trim();
     }
 
     public String getDocumentoEstrangeiroTipo() {

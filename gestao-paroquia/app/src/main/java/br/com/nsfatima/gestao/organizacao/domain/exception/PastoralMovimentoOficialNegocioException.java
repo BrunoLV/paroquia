@@ -19,6 +19,7 @@ public class PastoralMovimentoOficialNegocioException extends RuntimeException {
      * @return exceção pronta para ser lançada
      */
     public static PastoralMovimentoOficialNegocioException notFound(UUID id) {
-        return new PastoralMovimentoOficialNegocioException("Pastoral ou Movimento Oficial não encontrado com ID: " + id);
+        return new PastoralMovimentoOficialNegocioException(
+                "Pastoral ou Movimento Oficial não encontrado com ID: " + id);
     }
 }

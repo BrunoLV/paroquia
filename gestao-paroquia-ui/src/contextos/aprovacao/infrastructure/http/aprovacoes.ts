@@ -63,3 +63,13 @@ export const getAprovacaoOcorrencias = async (id: string): Promise<AprovacaoResp
   const response = await apiClient.get<AprovacaoResponse[]>(`/aprovacoes/${id}/ocorrencias`);
   return response.data;
 };
+
+/**
+ * Reexecuta a ação de negócio de uma solicitação com status FALHA_EXECUCAO de natureza SISTEMICA_APLICACAO.
+ * @param id Identificador da solicitação de aprovação com falha.
+ * @returns O resultado da decisão atualizado.
+ */
+export const reexecutarAprovacao = async (id: string): Promise<AprovacaoDecisionResponse> => {
+  const response = await apiClient.post<AprovacaoDecisionResponse>(`/aprovacoes/${id}/reexecutar`);
+  return response.data;
+};

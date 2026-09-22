@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.domain.model.TipoFalhaAprovacao;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoGrupoAttributeConverter;
@@ -25,6 +26,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "aprovacoes", schema = "calendario")
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public class AprovacaoEntity extends BaseAuditableEntity {
 
     @Id
@@ -76,6 +78,13 @@ public class AprovacaoEntity extends BaseAuditableEntity {
 
     @Column(name = "mensagem_erro_execucao", length = 2000)
     private String mensagemErroExecucao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_falha_execucao", length = 32)
+    private TipoFalhaAprovacao tipoFalhaExecucao;
+
+    @Column(name = "detalhe_erro_execucao", columnDefinition = "text")
+    private String detalheErroExecucao;
 
     @Column(name = "aprovacao_pai_id")
     private UUID aprovacaoPaiId;
@@ -255,5 +264,21 @@ public class AprovacaoEntity extends BaseAuditableEntity {
 
     public void setJustificativa(String justificativa) {
         this.justificativa = justificativa;
+    }
+
+    public TipoFalhaAprovacao getTipoFalhaExecucao() {
+        return tipoFalhaExecucao;
+    }
+
+    public void setTipoFalhaExecucao(TipoFalhaAprovacao tipoFalhaExecucao) {
+        this.tipoFalhaExecucao = tipoFalhaExecucao;
+    }
+
+    public String getDetalheErroExecucao() {
+        return detalheErroExecucao;
+    }
+
+    public void setDetalheErroExecucao(String detalheErroExecucao) {
+        this.detalheErroExecucao = detalheErroExecucao;
     }
 }

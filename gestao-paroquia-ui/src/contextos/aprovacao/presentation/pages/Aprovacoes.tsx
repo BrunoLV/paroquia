@@ -23,6 +23,7 @@ import {
     Chip,
     useTheme,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,9 +31,13 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import ReplayIcon from '@mui/icons-material/Replay';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import PainelConflitosAprovacao from '@/contextos/aprovacao/presentation/components/PainelConflitosAprovacao';
 import OcorrenciasRecorrenciaAprovacao from '@/contextos/aprovacao/presentation/components/OcorrenciasRecorrenciaAprovacao';
-import {decideAprovacao, getAprovacoes, getAprovacaoOcorrencias} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
+import {decideAprovacao, getAprovacoes, getAprovacaoOcorrencias, reexecutarAprovacao} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
 import {getLocais} from '@/contextos/local/infrastructure/http/locais';
 import {getAtivos} from '@/contextos/patrimonio/infrastructure/http/ativos';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
@@ -62,6 +67,7 @@ import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from 
  */
 const Aprovacoes = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const { showError, showSuccess } = useNotification();
   // tipoAprovacao alterna a fonte de dados exibida (eventos x projetos); tabValue
   // filtra por status dentro dessa fonte (ver array `statuses`).
@@ -245,6 +251,38 @@ const Aprovacoes = () => {
       showError(extractErrorMessage(error, 'Erro ao registrar decisão.'));
     },
   });
+
+  const reexecutarMutation = useMutation({
+    mutationFn: (id: string) => reexecutarAprovacao(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aprovacoes'] });
+      showSuccess('Solicitação reexecutada e aprovada com sucesso!');
+      setAprovacaoSelecionada((prev) => (prev ? {
+        ...prev,
+        status: 'APROVADA',
+        mensagemErroExecucao: null,
+        tipoFalhaExecucao: null,
+        detalheErroExecucao: null,
+      } : null));
+    },
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Falha ao reexecutar aprovação.'));
+      queryClient.invalidateQueries({ queryKey: ['aprovacoes'] });
+    },
+  });
+
+  const handleRecadastrar = () => {
+    if (!aprovacaoSelecionada) return;
+    const payload = parsePayload(aprovacaoSelecionada.actionPayloadJson);
+    if (payload) {
+      try {
+        sessionStorage.setItem('recadastro_evento_payload', JSON.stringify(payload));
+      } catch {
+      }
+    }
+    showSuccess('Dados da proposta carregados para recadastro. Redirecionando para o calendário...');
+    navigate('/calendario');
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -790,6 +828,57 @@ const Aprovacoes = () => {
                     sx={{ border: '1px solid', borderColor: 'error.main' }}
                   />
                 </Box>
+              </Box>
+            )}
+
+            {aprovacaoSelecionada.status === 'FALHA_EXECUCAO' && aprovacaoSelecionada.tipoFalhaExecucao === 'NEGOCIO_CADASTRAL' && (
+              <Box sx={{ mt: 4 }}>
+                <Divider sx={{ mb: 3 }} />
+                <Alert severity="warning" icon={<WarningAmberIcon />} sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    Falha de Negócio / Conflito Cadastral
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 0.5 }}>
+                    <strong>Causa:</strong> {aprovacaoSelecionada.mensagemErroExecucao || 'Conflito de espaço físico ou ativo patrimonial já reservado.'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
+                    Conflitos de agenda e regras de negócio são irremediáveis nesta solicitação. É necessário realizar um novo cadastro.
+                  </Typography>
+                </Alert>
+                <ActionButton
+                  title="Recadastrar com Dados Desta Proposta"
+                  icon={<AddCircleOutlineIcon />}
+                  color="warning"
+                  onClick={handleRecadastrar}
+                  sx={{ border: '1px solid', borderColor: 'warning.main' }}
+                />
+              </Box>
+            )}
+
+            {aprovacaoSelecionada.status === 'FALHA_EXECUCAO' && aprovacaoSelecionada.tipoFalhaExecucao === 'SISTEMICA_APLICACAO' && (
+              <Box sx={{ mt: 4 }}>
+                <Divider sx={{ mb: 3 }} />
+                <Alert severity="error" icon={<ErrorOutlineIcon />} sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    Falha Sistêmica / de Aplicação
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 0.5 }}>
+                    <strong>Mensagem:</strong> {aprovacaoSelecionada.mensagemErroExecucao || 'Erro inesperado durante a execução.'}
+                  </Typography>
+                  {aprovacaoSelecionada.detalheErroExecucao && (
+                    <Typography variant="body2" sx={{ mt: 1, fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'pre-wrap' }}>
+                      <strong>Detalhes Técnicos:</strong> {aprovacaoSelecionada.detalheErroExecucao}
+                    </Typography>
+                  )}
+                </Alert>
+                <ActionButton
+                  title="Reexecutar Aprovação"
+                  icon={<ReplayIcon />}
+                  color="primary"
+                  onClick={() => reexecutarMutation.mutate(aprovacaoSelecionada.id)}
+                  disabled={reexecutarMutation.isPending}
+                  sx={{ border: '1px solid', borderColor: 'primary.main' }}
+                />
               </Box>
             )}
 

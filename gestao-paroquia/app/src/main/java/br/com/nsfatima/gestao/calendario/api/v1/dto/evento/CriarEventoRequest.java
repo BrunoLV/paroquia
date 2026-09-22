@@ -191,7 +191,8 @@ public record CriarEventoRequest(
             List<UUID> ativoIds) {
         this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
                 localId != null ? List.of(localId) : List.of(), igrejaVinculoId,
-                inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, ativoIds, null, false, TipoHorarioEvento.PERSONALIZADO);
+                inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, ativoIds,
+                null, false, TipoHorarioEvento.PERSONALIZADO);
     }
 
     public CriarEventoRequest(
@@ -209,7 +210,8 @@ public record CriarEventoRequest(
             List<UUID> participantes,
             Boolean liberarConflitoAgenda) {
         this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, igrejaVinculoId,
-                inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, List.of(), null, false);
+                inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda,
+                List.of(), null, false);
     }
 
     public CriarEventoRequest(

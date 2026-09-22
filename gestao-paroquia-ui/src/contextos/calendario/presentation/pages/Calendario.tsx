@@ -14,7 +14,10 @@ import PageHeader from '@/shared/presentation/components/PageHeader';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import BarraFerramentasCalendario from '@/contextos/calendario/presentation/components/calendario/BarraFerramentasCalendario';
 import GradeMesCalendario from '@/contextos/calendario/presentation/components/calendario/GradeMesCalendario';
-import AgendaListaCalendario from '@/contextos/calendario/presentation/components/calendario/AgendaListaCalendario';
+import VisualizacaoHojeCalendario from '@/contextos/calendario/presentation/components/calendario/VisualizacaoHojeCalendario';
+import VisualizacaoSemanaCalendario from '@/contextos/calendario/presentation/components/calendario/VisualizacaoSemanaCalendario';
+import VisualizacaoAnoCalendario from '@/contextos/calendario/presentation/components/calendario/VisualizacaoAnoCalendario';
+import VisualizacaoDiasEspecificosCalendario from '@/contextos/calendario/presentation/components/calendario/VisualizacaoDiasEspecificosCalendario';
 import DialogDetalhesEvento from '@/contextos/calendario/presentation/components/calendario/DialogDetalhesEvento';
 import SolenidadesDialog from '@/contextos/calendario/presentation/components/calendario/SolenidadesDialog';
 import { useCalendarGrid } from '@/contextos/calendario/presentation/hooks/useCalendarGrid';
@@ -23,11 +26,9 @@ import { useCalendarData } from '@/contextos/calendario/presentation/hooks/useCa
 import { useEventoCrud } from '@/contextos/calendario/presentation/hooks/useEventoCrud';
 
 /**
- * Página do Calendário Paroquial — orquestrador fino que compõe os hooks de estado/dados
- * (`useCalendarGrid`, `useCalendarFilterState`, `useCalendarData`, `useEventoCrud`) com os
- * subcomponentes de apresentação (`components/calendar/*`). Toda a lógica de negócio (fetch,
- * merge de eventos pendentes, mutações de evento, permissões) vive nos hooks — este arquivo só
- * conecta estado a JSX.
+ * Página do Calendário Paroquial — orquestrador que compõe os hooks de estado/dados
+ * (`useCalendarGrid`, `useCalendarFilterState`, `useCalendarData`, `useEventoCrud`) com as
+ * 5 modalidades de visualização (HOJE, SEMANA, MÊS, ANO, DIAS ESPECÍFICOS).
  */
 const Calendario = () => {
   useAuth(); // mantém o contexto de auth montado para os hooks filhos que o consultam
@@ -37,8 +38,20 @@ const Calendario = () => {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isSolemnitiesOpen, setIsSolemnitiesOpen] = useState(false);
 
-  const startOfGrid = grid.calendarDays[0].date;
-  const endOfGrid = grid.calendarDays[grid.calendarDays.length - 1].date;
+  const monthGridStart = grid.calendarDays[0].date;
+  const monthGridEnd = grid.calendarDays[grid.calendarDays.length - 1].date;
+
+  const startOfGrid = grid.viewMode === 'ANO'
+    ? new Date(grid.currentYear, 0, 1, 0, 0, 0)
+    : grid.viewMode === 'DIAS_ESPECIFICOS'
+    ? (grid.customStartDate < monthGridStart ? grid.customStartDate : monthGridStart)
+    : monthGridStart;
+
+  const endOfGrid = grid.viewMode === 'ANO'
+    ? new Date(grid.currentYear, 11, 31, 23, 59, 59)
+    : grid.viewMode === 'DIAS_ESPECIFICOS'
+    ? (grid.customEndDate > monthGridEnd ? grid.customEndDate : monthGridEnd)
+    : monthGridEnd;
 
   const data = useCalendarData({
     startOfGrid,
@@ -58,9 +71,24 @@ const Calendario = () => {
         subtitle="Agendamento de eventos, celebrações e atividades pastorais da paróquia."
         actions={
           <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
-            <ActionButton title="Solenidades & Santoral" icon={<EventIcon />} color="secondary" onClick={() => setIsSolemnitiesOpen(true)} />
-            <ActionButton title="Exportar" icon={<DownloadIcon />} color="info" onClick={() => setIsExportOpen(true)} />
-            <ActionButton title="Novo Evento" icon={<AddIcon />} color="primary" onClick={() => crud.handleOpenCreate()} />
+            <ActionButton
+              title="Solenidades & Santoral"
+              icon={<EventIcon />}
+              color="secondary"
+              onClick={() => setIsSolemnitiesOpen(true)}
+            />
+            <ActionButton
+              title="Exportar"
+              icon={<DownloadIcon />}
+              color="info"
+              onClick={() => setIsExportOpen(true)}
+            />
+            <ActionButton
+              title="Novo Evento"
+              icon={<AddIcon />}
+              color="primary"
+              onClick={() => crud.handleOpenCreate()}
+            />
           </Box>
         }
       />
@@ -68,8 +96,9 @@ const Calendario = () => {
       <BarraFerramentasCalendario
         currentMonth={grid.currentMonth}
         currentYear={grid.currentYear}
-        onPrevMonth={grid.handlePrevMonth}
-        onNextMonth={grid.handleNextMonth}
+        currentDate={grid.currentDate}
+        onPrevMonth={grid.handlePrev}
+        onNextMonth={grid.handleNext}
         onToday={grid.handleToday}
         liturgicalInfo={data.liturgicalInfo}
         viewMode={grid.viewMode}
@@ -81,17 +110,76 @@ const Calendario = () => {
         filteredOrganizations={data.filteredOrganizations}
         isLoading={data.isLoading}
         onRefetch={data.refetchCalendario}
+        customStartDate={grid.customStartDate}
+        customEndDate={grid.customEndDate}
+        onCustomRangeChange={grid.setCustomRange}
       />
 
-      {grid.viewMode === 'month' ? (
+      {/* Renderização Condicional da Modalidade Ativa */}
+      {(grid.viewMode === 'DIA' || grid.viewMode === 'HOJE') && (
+        <VisualizacaoHojeCalendario
+          currentDate={grid.currentDate}
+          events={data.getEventsForDay(grid.currentDate)}
+          onDayClick={crud.handleOpenCreate}
+          onEventClick={crud.handleOpenDetails}
+          getOrgName={data.getOrgName}
+          getLocalName={data.getLocalName}
+        />
+      )}
+
+      {grid.viewMode === 'SEMANA' && (
+        <VisualizacaoSemanaCalendario
+          weekDays={grid.weekDays}
+          getEventsForDay={data.getEventsForDay}
+          onDayClick={crud.handleOpenCreate}
+          onDaySelect={(date) => {
+            grid.setCurrentDate(date);
+            grid.setViewMode('DIA');
+          }}
+          onEventClick={crud.handleOpenDetails}
+        />
+      )}
+
+      {grid.viewMode === 'MES' && (
         <GradeMesCalendario
           calendarDays={grid.calendarDays}
           getEventsForDay={data.getEventsForDay}
           onDayClick={crud.handleOpenCreate}
+          onDaySelect={(date) => {
+            grid.setCurrentDate(date);
+            grid.setViewMode('DIA');
+          }}
           onEventClick={crud.handleOpenDetails}
         />
-      ) : (
-        <AgendaListaCalendario agendaEvents={data.agendaEvents} onEventClick={crud.handleOpenDetails} getOrgName={data.getOrgName} />
+      )}
+
+      {grid.viewMode === 'ANO' && (
+        <VisualizacaoAnoCalendario
+          currentYear={grid.currentYear}
+          getEventsForDay={data.getEventsForDay}
+          combinedEvents={data.combinedEvents}
+          onDayClick={(date) => {
+            grid.setCurrentDate(date);
+            grid.setViewMode('DIA');
+          }}
+          onEventClick={crud.handleOpenDetails}
+          onMonthSelect={(monthIndex) => {
+            grid.setCurrentDate(new Date(grid.currentYear, monthIndex, 1));
+            grid.setViewMode('MES');
+          }}
+        />
+      )}
+
+      {grid.viewMode === 'DIAS_ESPECIFICOS' && (
+        <VisualizacaoDiasEspecificosCalendario
+          startDate={grid.customStartDate}
+          endDate={grid.customEndDate}
+          agendaEvents={data.agendaEvents}
+          onEventClick={crud.handleOpenDetails}
+          onDayClick={crud.handleOpenCreate}
+          getOrgName={data.getOrgName}
+          getLocalName={data.getLocalName}
+        />
       )}
 
       <DialogDetalhesEvento
@@ -106,10 +194,6 @@ const Calendario = () => {
         getLocalName={data.getLocalName}
       />
 
-      {/* Create/Edit Dialog Modal Component.
-          Listas completas (sem filtrar ativo/status/DISPONIVEL): o modal já inclui o valor
-          atual do evento mesmo fora do subconjunto "ativo/aberto", senão o Select aparenta
-          vazio ao editar um evento vinculado a algo desativado/concluído. */}
       <CadastroEventoModal
         open={crud.isCreateOpen}
         onClose={() => crud.setIsCreateOpen(false)}
@@ -131,9 +215,17 @@ const Calendario = () => {
         eventTitle={crud.cancellingEvent?.titulo}
       />
 
-      <DialogEscopoEdicao open={crud.isEditScopeOpen} onClose={() => crud.setIsEditScopeOpen(false)} onSelect={crud.handleScopeSelect} />
+      <DialogEscopoEdicao
+        open={crud.isEditScopeOpen}
+        onClose={() => crud.setIsEditScopeOpen(false)}
+        onSelect={crud.handleScopeSelect}
+      />
 
-      <DialogExportarCalendario open={isExportOpen} onClose={() => setIsExportOpen(false)} organizations={data.organizations} />
+      <DialogExportarCalendario
+        open={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        organizations={data.organizations}
+      />
 
       <EventoConflitoRecursoDialog
         open={crud.conflitoRecursoModalOpen}

@@ -39,6 +39,8 @@ import java.util.UUID;
 @Service
 public class DetectorConflitoEventoService {
 
+    private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
+
     private final ReservaConflitoService reservaConflitoService;
     private final EventoJpaRepository eventoJpaRepository;
     private final LocalRepository localRepository;
@@ -56,8 +58,10 @@ public class DetectorConflitoEventoService {
             EventoJpaRepository eventoJpaRepository,
             @Autowired(required = false) LocalRepository localRepository,
             @Autowired(required = false) AtivoPatrimonialRepository ativoRepository) {
-        this.reservaConflitoService = Objects.requireNonNull(reservaConflitoService, "ReservaConflitoService é obrigatório");
-        this.eventoJpaRepository = Objects.requireNonNull(eventoJpaRepository, "EventoJpaRepository é obrigatório");
+        this.reservaConflitoService = Objects.requireNonNull(
+                reservaConflitoService, "ReservaConflitoService é obrigatório");
+        this.eventoJpaRepository = Objects.requireNonNull(
+                eventoJpaRepository, "EventoJpaRepository é obrigatório");
         this.localRepository = localRepository;
         this.ativoRepository = ativoRepository;
     }
@@ -73,7 +77,8 @@ public class DetectorConflitoEventoService {
             List<UUID> ativoIds,
             CategoriaEvento categoria,
             UUID eventoAtualId) {
-        return detectarConflitos(inicioUtc, fimUtc, localId, ativoIds, categoria, eventoAtualId, TipoHorarioEvento.PERSONALIZADO);
+        return detectarConflitos(
+                inicioUtc, fimUtc, localId, ativoIds, categoria, eventoAtualId, TipoHorarioEvento.PERSONALIZADO);
     }
 
     /**
@@ -124,11 +129,13 @@ public class DetectorConflitoEventoService {
             UUID eventoAtualId,
             TipoHorarioEvento tipoHorario,
             UUID igrejaVinculoId) {
-        return detectarConflitos(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, eventoAtualId, tipoHorario, igrejaVinculoId, null);
+        return detectarConflitos(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, eventoAtualId,
+                tipoHorario, igrejaVinculoId, null);
     }
 
     /**
-     * Mapeia exaustivamente conflitos de múltiplos locais, ativos e agenda eclesial considerando turnos múltiplos (períodos).
+     * Mapeia exaustivamente conflitos de múltiplos locais, ativos e agenda eclesial considerando turnos
+     * múltiplos (períodos).
      */
     @Transactional(readOnly = true)
     public List<ConflitoEventoItemDto> detectarConflitos(
@@ -154,10 +161,10 @@ public class DetectorConflitoEventoService {
                     .distinct()
                     .toList();
             if (!turnos.isEmpty()) {
-                LocalDate data = inicioUtc.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDate();
+                LocalDate data = inicioUtc.atZone(BR_ZONE).toLocalDate();
                 List<ConflitoEventoItemDto> todosConflitos = new ArrayList<>();
                 for (TipoHorarioEvento turno : turnos) {
-                    var faixa = turno.calcularIntervalo(data, ZoneId.of("America/Sao_Paulo"));
+                    var faixa = turno.calcularIntervalo(data, BR_ZONE);
                     List<ConflitoEventoItemDto> parciais = detectarConflitosSimples(
                             faixa.inicioUtc(),
                             faixa.fimUtc(),
@@ -184,7 +191,8 @@ public class DetectorConflitoEventoService {
             }
         }
 
-        return detectarConflitosSimples(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, eventoAtualId, tipoHorario, igrejaVinculoId);
+        return detectarConflitosSimples(
+                inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, eventoAtualId, tipoHorario, igrejaVinculoId);
     }
 
     private List<ConflitoEventoItemDto> detectarConflitosSimples(
@@ -250,7 +258,9 @@ public class DetectorConflitoEventoService {
                     continue;
                 }
                 String nomeAtivo = ativoRepository != null
-                        ? ativoRepository.findById(new AtivoPatrimonialId(ativoId)).map(AtivoPatrimonial::getNome).orElse("Ativo Patrimonial")
+                        ? ativoRepository.findById(new AtivoPatrimonialId(ativoId))
+                                .map(AtivoPatrimonial::getNome)
+                                .orElse("Ativo Patrimonial")
                         : "Ativo Patrimonial";
                 List<ConflitoDetalhe> choquesAtivo = reservaConflitoService.detectarConflitos(
                     TipoItemReserva.ATIVO,
@@ -280,9 +290,11 @@ public class DetectorConflitoEventoService {
         // 3. Conflitos de Agenda Eclesial e Prioridades
         List<EventoEntity> sobrepostos = eventoJpaRepository.findOverlappingEvents(inicioUtc, fimUtc, eventoAtualId);
         for (EventoEntity existente : sobrepostos) {
-            int prioridadeExistente = existente.getCategoria() == null ? 4 : existente.getCategoria().getNivelPrioridade();
+            int prioridadeExistente = existente.getCategoria() == null
+                    ? 4 : existente.getCategoria().getNivelPrioridade();
             boolean mesmoEspaco = (!todosLocais.isEmpty() && (todosLocais.contains(existente.getLocalId())
-                    || (existente.getLocalIds() != null && existente.getLocalIds().stream().anyMatch(todosLocais::contains))))
+                    || (existente.getLocalIds() != null
+                            && existente.getLocalIds().stream().anyMatch(todosLocais::contains))))
                     || (igrejaVinculoId != null && Objects.equals(igrejaVinculoId, existente.getIgrejaVinculoId()));
             boolean isSolenidadeGlobal = prioridadeExistente == 1;
 
@@ -319,7 +331,8 @@ public class DetectorConflitoEventoService {
             List<UUID> ativoIds,
             CategoriaEvento categoria,
             RegraRecorrencia regra) {
-        return detectarConflitosRecorrencia(inicioUtc, fimUtc, localId, ativoIds, categoria, regra, TipoHorarioEvento.PERSONALIZADO, null);
+        return detectarConflitosRecorrencia(
+                inicioUtc, fimUtc, localId, ativoIds, categoria, regra, TipoHorarioEvento.PERSONALIZADO, null);
     }
 
     /**
@@ -371,11 +384,13 @@ public class DetectorConflitoEventoService {
             RegraRecorrencia regra,
             TipoHorarioEvento tipoHorario,
             UUID igrejaVinculoId) {
-        return detectarConflitosRecorrencia(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, regra, tipoHorario, igrejaVinculoId, null);
+        return detectarConflitosRecorrencia(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, regra,
+                tipoHorario, igrejaVinculoId, null);
     }
 
     /**
-     * Mapeia exaustivamente conflitos para todas as ocorrências de uma série de recorrência com múltiplos períodos até o fim do ano.
+     * Mapeia exaustivamente conflitos para todas as ocorrências de uma série de recorrência com múltiplos
+     * períodos até o fim do ano.
      */
     @Transactional(readOnly = true)
     public List<ConflitoEventoItemDto> detectarConflitosRecorrencia(
@@ -390,7 +405,8 @@ public class DetectorConflitoEventoService {
             UUID igrejaVinculoId,
             List<TipoHorarioEvento> periodos) {
         if (inicioUtc == null || fimUtc == null || regra == null) {
-            return detectarConflitos(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, null, tipoHorario, igrejaVinculoId, periodos);
+            return detectarConflitos(inicioUtc, fimUtc, localId, localIds, ativoIds, categoria, null,
+                    tipoHorario, igrejaVinculoId, periodos);
         }
 
         LocalDate startOfSeries = inicioUtc.atZone(ZoneOffset.UTC).toLocalDate();
@@ -407,7 +423,7 @@ public class DetectorConflitoEventoService {
             Instant occStart;
             Instant occEnd;
             if (tipoHorario != null && tipoHorario.isPredefinido()) {
-                var faixa = tipoHorario.calcularIntervalo(date, ZoneId.of("America/Sao_Paulo"));
+                var faixa = tipoHorario.calcularIntervalo(date, BR_ZONE);
                 occStart = faixa.inicioUtc();
                 occEnd = faixa.fimUtc();
             } else {
@@ -415,7 +431,8 @@ public class DetectorConflitoEventoService {
                 occEnd = occStart.plus(duration);
             }
             List<ConflitoEventoItemDto> choquesOcorrencia = detectarConflitos(
-                    occStart, occEnd, localId, localIds, ativoIds, categoria, null, tipoHorario, igrejaVinculoId, periodos);
+                    occStart, occEnd, localId, localIds, ativoIds, categoria, null,
+                    tipoHorario, igrejaVinculoId, periodos);
             todosConflitos.addAll(choquesOcorrencia);
         }
         return todosConflitos;

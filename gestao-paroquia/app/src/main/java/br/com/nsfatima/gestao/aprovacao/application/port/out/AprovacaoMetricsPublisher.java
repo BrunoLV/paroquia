@@ -80,5 +80,14 @@ public interface AprovacaoMetricsPublisher {
      * @param solicitantePapel papel do solicitante no ato da abertura
      */
     void recordSolicitacaoAberta(String tipo, String solicitantePapel);
+
+    /**
+     * Registra a ocorrência de uma falha de execução categorizada (negócio/cadastral vs sistêmica).
+     *
+     * @param tipo      tipo da solicitação de aprovação
+     * @param tipoFalha natureza da falha (ex.: NEGOCIO_CADASTRAL, SISTEMICA_APLICACAO)
+     */
+    default void recordFalhaExecucao(String tipo, String tipoFalha) {
+    }
 }
 

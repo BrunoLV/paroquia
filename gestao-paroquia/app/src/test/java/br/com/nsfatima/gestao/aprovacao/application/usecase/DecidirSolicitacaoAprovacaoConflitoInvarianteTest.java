@@ -18,6 +18,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioEx
 import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
+import br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -83,7 +85,7 @@ class DecidirSolicitacaoAprovacaoConflitoInvarianteTest {
 
     @BeforeEach
     void setUp() {
-        aprovacaoMapper = new AprovacaoMapper(org.mockito.Mockito.mock(br.com.nsfatima.gestao.calendario.infrastructure.observability.LegacyEnumInconsistencyPublisher.class));
+        aprovacaoMapper = new AprovacaoMapper(Mockito.mock(LegacyEnumInconsistencyPublisher.class));
 
         useCase = new DecidirSolicitacaoAprovacaoUseCase(
                 aprovacaoJpaRepository,
@@ -135,7 +137,8 @@ class DecidirSolicitacaoAprovacaoConflitoInvarianteTest {
         );
 
         when(aprovacaoJpaRepository.findById(aprovacaoId)).thenReturn(Optional.of(entity));
-        when(actorContextResolver.resolveRequired()).thenReturn(new EventoActorContext("admin", "admin", "admin", null, null, null));
+        when(actorContextResolver.resolveRequired())
+                .thenReturn(new EventoActorContext("admin", "admin", "admin", null, null, null));
     }
 
     @Test
@@ -164,7 +167,8 @@ class DecidirSolicitacaoAprovacaoConflitoInvarianteTest {
 
         assertThatThrownBy(() -> useCase.decidir(aprovacaoId, request))
                 .isInstanceOf(ViolacaoRegraNegocioException.class)
-                .hasMessageContaining("Não é permitido aprovar solicitação com conflito de espaço físico ou ativo patrimonial já reservado");
+                .hasMessageContaining("Não é permitido aprovar solicitação com conflito de espaço "
+                        + "físico ou ativo patrimonial já reservado");
 
         verify(strategy, never()).execute(any(), any());
         verify(recalculoConflitoService, never()).recalcularConflitosPendentes(any());
@@ -196,7 +200,8 @@ class DecidirSolicitacaoAprovacaoConflitoInvarianteTest {
 
         assertThatThrownBy(() -> useCase.decidir(aprovacaoId, request))
                 .isInstanceOf(ViolacaoRegraNegocioException.class)
-                .hasMessageContaining("Não é permitido aprovar solicitação com conflito de espaço físico ou ativo patrimonial já reservado");
+                .hasMessageContaining("Não é permitido aprovar solicitação com conflito de espaço "
+                        + "físico ou ativo patrimonial já reservado");
 
         verify(strategy, never()).execute(any(), any());
         verify(recalculoConflitoService, never()).recalcularConflitosPendentes(any());
@@ -214,7 +219,8 @@ class DecidirSolicitacaoAprovacaoConflitoInvarianteTest {
         when(strategy.execute(any(), any())).thenReturn(
                 new DecisaoAprovacaoResponse.ActionExecution("EXECUTED", UUID.randomUUID(), "CONFIRMADO", null));
 
-        DecidirAprovacaoRequest request = new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "Autorizado pelo conselho");
+        DecidirAprovacaoRequest request =
+                new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "Autorizado pelo conselho");
 
         DecisaoAprovacaoResponse response = useCase.decidir(aprovacaoId, request);
 

@@ -95,7 +95,8 @@ public class CancelarEventoUseCase {
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (atorPapel == PapelOrganizacional.SECRETARIO) {
             if (request.motivo() == null || request.motivo().isBlank()) {
-                throw new ViolacaoRegraNegocioException("Justificativa é obrigatória para operações submetidas pelo Secretário");
+                throw new ViolacaoRegraNegocioException(
+                        "Justificativa é obrigatória para operações submetidas pelo Secretário");
             }
         }
 
@@ -139,7 +140,8 @@ public class CancelarEventoUseCase {
         EventoStatusInput currentStatus = EventoStatusInput.valueOf(evento.getStatus());
         if (currentStatus != EventoStatusInput.CONFIRMADO && currentStatus != EventoStatusInput.ADICIONADO_EXTRA) {
             throw new TransicaoStatusInvalidaException(evento.getStatus(),
-                    EventoStatusInput.CANCELADO.name(), "Only active events (CONFIRMADO or ADICIONADO_EXTRA) can be cancelled");
+                    EventoStatusInput.CANCELADO.name(),
+                    "Only active events (CONFIRMADO or ADICIONADO_EXTRA) can be cancelled");
         }
     }
 

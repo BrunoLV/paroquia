@@ -281,8 +281,9 @@ public record AtualizarEventoRequest(
      *     CANCELADO, projeto, local ou igreja de vínculo
      */
     public boolean alteraCamposSensiveis() {
-        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO ||
-                projetoId != null || localId != null || (localIds != null && !localIds.isEmpty()) || igrejaVinculoId != null;
+        return inicio != null || fim != null || canceladoMotivo != null || status == EventoStatusInput.CANCELADO
+                || projetoId != null || localId != null
+                || (localIds != null && !localIds.isEmpty()) || igrejaVinculoId != null;
     }
 
     /**

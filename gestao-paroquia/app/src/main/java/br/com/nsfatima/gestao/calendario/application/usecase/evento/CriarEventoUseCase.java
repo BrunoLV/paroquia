@@ -50,7 +50,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -111,7 +110,8 @@ public class CriarEventoUseCase {
                 metricsPublisher, authorizationService, actorContextResolver, aprovacaoRequestUseCase,
                 updateEnvolvidosUseCase, validadorVinculoProjeto, bloqueioAnoParoquialPolicy, anoParoquialRepository,
                 validadorPrioridadeAgendaService, cacheManager, motorLiturgico, cicloLiturgicoRepository,
-                provisionamentoLiturgicoService, eventoReservaIntegrationService, detectorConflitoEventoService, null, null);
+                provisionamentoLiturgicoService, eventoReservaIntegrationService, detectorConflitoEventoService,
+                null, null);
     }
 
     @Autowired
@@ -218,7 +218,8 @@ public class CriarEventoUseCase {
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
         if (atorPapel == PapelOrganizacional.SECRETARIO) {
             if (request.adicionadoExtraJustificativa() == null || request.adicionadoExtraJustificativa().isBlank()) {
-                throw new ViolacaoRegraNegocioException("Justificativa é obrigatória para operações submetidas pelo Secretário");
+                throw new ViolacaoRegraNegocioException(
+                        "Justificativa é obrigatória para operações submetidas pelo Secretário");
             }
         }
 
@@ -245,7 +246,8 @@ public class CriarEventoUseCase {
 
         if (mode == ModoRequisicaoCriacao.REQUER_APROVACAO) {
             return new ResultadoOperacaoEvento.Pendente(
-                    aprovacaoRequestUseCase.execute(idempotencyKey, request, conflitos, request.adicionadoExtraJustificativa()),
+                    aprovacaoRequestUseCase.execute(
+                            idempotencyKey, request, conflitos, request.adicionadoExtraJustificativa()),
                     HttpStatus.ACCEPTED);
         }
 
@@ -279,7 +281,8 @@ public class CriarEventoUseCase {
             boolean hasLocais = (request.localIds() != null && !request.localIds().isEmpty())
                     || request.localId() != null;
             if (!hasLocais) {
-                throw new ViolacaoRegraNegocioException("Ao menos um local deve ser informado para eventos presenciais ou híbridos.");
+                throw new ViolacaoRegraNegocioException(
+                        "Ao menos um local deve ser informado para eventos presenciais ou híbridos.");
             }
         }
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();

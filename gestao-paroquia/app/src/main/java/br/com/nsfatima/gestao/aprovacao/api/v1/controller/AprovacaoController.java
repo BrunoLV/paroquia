@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.aprovacao.api.v1.dto.AprovacaoResponse;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.CriarSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.DecidirSolicitacaoAprovacaoUseCase;
 import br.com.nsfatima.gestao.aprovacao.application.usecase.ListarAprovacoesUseCase;
+import br.com.nsfatima.gestao.aprovacao.application.usecase.ReexecutarAprovacaoUseCase;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.EventoAuditPublisher;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,17 +48,20 @@ public class AprovacaoController {
     private final CriarSolicitacaoAprovacaoUseCase criarSolicitacaoAprovacaoUseCase;
     private final DecidirSolicitacaoAprovacaoUseCase decidirSolicitacaoAprovacaoUseCase;
     private final ListarAprovacoesUseCase listarAprovacoesUseCase;
+    private final ReexecutarAprovacaoUseCase reexecutarAprovacaoUseCase;
     private final EventoAuditPublisher eventoAuditPublisher;
 
     public AprovacaoController(
             CriarSolicitacaoAprovacaoUseCase criarSolicitacaoAprovacaoUseCase,
             DecidirSolicitacaoAprovacaoUseCase decidirSolicitacaoAprovacaoUseCase,
             ListarAprovacoesUseCase listarAprovacoesUseCase,
+            ReexecutarAprovacaoUseCase reexecutarAprovacaoUseCase,
             EventoAuditPublisher eventoAuditPublisher,
             EventoActorContextResolver actorContextResolver) {
         this.criarSolicitacaoAprovacaoUseCase = criarSolicitacaoAprovacaoUseCase;
         this.decidirSolicitacaoAprovacaoUseCase = decidirSolicitacaoAprovacaoUseCase;
         this.listarAprovacoesUseCase = listarAprovacoesUseCase;
+        this.reexecutarAprovacaoUseCase = reexecutarAprovacaoUseCase;
         this.eventoAuditPublisher = eventoAuditPublisher;
     }
 
@@ -157,7 +161,8 @@ public class AprovacaoController {
     @GetMapping("/{id}/ocorrencias")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Lista ocorrências de aprovação recorrente",
-            description = "Retorna todas as solicitações de ocorrências filhas vinculadas à aprovação mestre informada.")
+            description = "Retorna todas as solicitações de ocorrências filhas vinculadas à aprovação "
+                    + "mestre informada.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ocorrências listadas com sucesso"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
@@ -166,5 +171,37 @@ public class AprovacaoController {
     public List<AprovacaoResponse> listarOcorrencias(
             @Parameter(description = "ID único da aprovação mestre", required = true) @PathVariable UUID id) {
         return listarAprovacoesUseCase.listarOcorrencias(id);
+    }
+
+    /**
+     * Reexecuta a ação de negócio de uma solicitação com falha sistêmica de aplicação.
+     *
+     * @param id ID único da aprovação
+     * @return veredito e execução atualizados
+     */
+    @PostMapping("/{id}/reexecutar")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Reexecuta uma solicitação com falha sistêmica",
+            description = "Tenta reexecutar a ação de negócio de uma solicitação com status FALHA_EXECUCAO "
+                    + "de natureza SISTEMICA_APLICACAO.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reexecução concluída com sucesso",
+                    content = @Content(schema = @Schema(implementation = DecisaoAprovacaoResponse.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Solicitação não admite reexecução direta (falha cadastral/negócio)"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
+    })
+    public DecisaoAprovacaoResponse reexecutar(
+            @Parameter(description = "ID único da aprovação", required = true) @PathVariable UUID id) {
+        eventoAuditPublisher.publish(
+                "system",
+                "aprovacao-reexecucao-solicitacao",
+                id.toString(),
+                "recebido",
+                Map.of("correlationId", MDC.get("correlationId") == null ? "n/a" : MDC.get("correlationId")));
+
+        return reexecutarAprovacaoUseCase.reexecutar(id);
     }
 }

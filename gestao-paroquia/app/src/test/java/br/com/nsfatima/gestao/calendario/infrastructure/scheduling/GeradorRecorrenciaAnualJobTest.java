@@ -38,7 +38,8 @@ class GeradorRecorrenciaAnualJobTest {
         JobLockJpaRepository lockRepository = mock(JobLockJpaRepository.class);
         eventoRepository = new FakeEventoRepository();
         aprovacaoRepository = new FakeAprovacaoRepository();
-        job = new GeradorRecorrenciaAnualJob(recorrenciaRepository, eventoRepository, lockRepository, aprovacaoRepository);
+        job = new GeradorRecorrenciaAnualJob(
+                recorrenciaRepository, eventoRepository, lockRepository, aprovacaoRepository);
     }
 
     @Test

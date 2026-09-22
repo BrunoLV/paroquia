@@ -149,7 +149,22 @@ Antes de iniciar qualquer intervenção, o agente DEVE consultar e respeitar os 
 * **Services:** `*Service` não contém Strategy disfarçada por `if/else` ou `switch/case`; Application Services orquestram portas e Domain Services apenas coordenam conceitos de domínio sem variação algorítmica.
 * **Tell, Don't Ask:** Policy retorna uma decisão/VO; a entidade ou agregado executa sua própria mutação por método da Linguagem Ubíqua. Policies não recebem JPA entities, repositórios, DTOs REST, `SecurityContext` ou anotações Spring.
 
-* **Zero Warnings:** O código entregue deve compilar e passar com zero avisos nas ferramentas de verificação estática (`./gradlew check`).
+* **Zero Warnings — Gates Mandatórios e Não-Ignoráveis:** `checkstyleMain`/`checkstyleTest`, `pmdMain`/`pmdTest`, `spotbugsMain`/`spotbugsTest` e `jacocoTestCoverageVerification` (via `./gradlew check` ou `./gradlew build`) são gates de qualidade obrigatórios, não avisos opcionais.
+  * **PROIBIDO** declarar uma tarefa concluída com qualquer uma dessas tarefas falhando, pulada ou não executada. Rode `./gradlew build` (ou, no mínimo, `check`) antes de reportar a tarefa como pronta.
+  * **PROIBIDO** contornar uma violação via `--exclude-task`, `-x checkstyleMain`, `isIgnoreFailures = true`, remoção/enfraquecimento de regra em `config/checkstyle/checkstyle.xml` ou `config/pmd/pmd.xml`, ou abaixamento do `minimum` de cobertura em `jacocoTestCoverageVerification` — a correção é sempre no código, nunca na ferramenta.
+  * Toda violação real deve ser corrigida na origem (linha longa quebrada, import não usado removido, `NeedBraces` etc.). `@SuppressWarnings("PMD.<Regra>")` só é aceitável quando a violação é um falso positivo arquitetural já documentado neste projeto (ex.: `PMD.ExcessivePublicCount` em entidades JPA com muitos getters/setters, seguindo o padrão de `FielEntity.java`) — nunca para silenciar uma violação genuína ou desconhecida sem justificativa explícita no código.
+  * Exceção já registrada e deliberada do projeto: `spotbugs { ignoreFailures.set(true) }` em `app/build.gradle.kts` é uma decisão de arquitetura existente (trade-off do padrão DDD "Always-Valid Entity", que gera achados `CT_CONSTRUCTOR_THROW` aceitos) — não é um convite para introduzir novos achados SpotBugs sem necessidade; achados novos e evitáveis ainda devem ser corrigidos, não apenas tolerados pela flag.
+  * Se uma alteração de escopo (ex.: nova classe/branch) reduzir a cobertura do `jacocoTestCoverageVerification` abaixo do mínimo configurado, a correção é escrever testes que fechem o gap, não reduzir o `minimum`.
+
+### 6.2. Teste Falhando Não É o Alvo do Ajuste
+
+* Um teste unitário falhando é sinal de investigação, nunca um obstáculo a remover para o build ficar verde. Antes de tocar no teste, determine a causa raiz:
+  1. **Bug real no código de produção** → corrija o código de produção; o teste permanece como está.
+  2. **A regra de negócio/contrato mudou de propósito nesta própria tarefa** → só então ajuste o teste, e apenas a asserção/fixture que reflete essa mudança real, deixando claro (na mensagem de commit ou comentário) por que ela mudou.
+* **PROIBIDO** enfraquecer asserção, remover `verify`/`assertThat`, trocar o valor esperado, apagar um caso de teste, usar `@Disabled`/`@Ignore`, ou reescrever o teste para "encaixar" no comportamento atual do código só para fazer a implementação (ou o CI) passar, sem uma mudança de regra real que justifique.
+* Vale tanto para testes pré-existentes quanto para testes escritos pelo próprio agente na mesma sessão: mesmo um teste recém-criado só deve ser reajustado se a mudança de produção que motivou a falha for legítima, nunca para camuflar um bug introduzido pelo próprio agente.
+* Na dúvida se a mudança de comportamento é intencional, pergunte ao usuário antes de alterar o teste — nunca assuma silenciosamente que o teste está errado.
+
 * **Higiene de Importações:**
   * Proibido o uso de caracteres coringa (*wildcards* / `import java.util.*`).
   * **PROIBIDO USO DE IMPORTS INLINE OU NOMES TOTALMENTE QUALIFICADOS (FQCNs):** Todo tipo utilizado no corpo da classe (atributos, parâmetros, variáveis, retornos, chamadas estáticas, casts, exceções em `catch` ou anotações como `@ExceptionHandler`) **DEVE** ser importado explicitamente no cabeçalho do arquivo via `import`. Nunca use referências como `java.util.UUID`, `java.util.stream.Collectors` ou pacotes internos inline no código.

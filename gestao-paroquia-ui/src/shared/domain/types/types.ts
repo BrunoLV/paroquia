@@ -533,6 +533,10 @@ export interface AprovacaoResponse {
   aprovadorId: string | null;
   /** Mensagem de erro quando a execução automática da ação aprovada falhou (`status` = `FALHA_EXECUCAO`). */
   mensagemErroExecucao: string | null;
+  /** Natureza da falha de execução: 'NEGOCIO_CADASTRAL' (imutável, exige recadastro) ou 'SISTEMICA_APLICACAO' (permite reexecução). */
+  tipoFalhaExecucao?: 'NEGOCIO_CADASTRAL' | 'SISTEMICA_APLICACAO' | null;
+  /** Detalhe técnico da falha para troubleshooting e suporte. */
+  detalheErroExecucao?: string | null;
   /** Payload JSON serializado com os dados da ação original (ex: campos do evento a criar/editar), reidratado na aprovação. */
   actionPayloadJson: string | null;
   /** Identificador da aprovação mestre agregadora em caso de série recorrente desmembrada */

@@ -16,9 +16,11 @@ public class ListarReservasUseCase {
     private final ReservaRepository reservaRepository;
     private final EnriquecedorReservaService enriquecedorReservaService;
 
-    public ListarReservasUseCase(ReservaRepository reservaRepository, EnriquecedorReservaService enriquecedorReservaService) {
+    public ListarReservasUseCase(
+            ReservaRepository reservaRepository, EnriquecedorReservaService enriquecedorReservaService) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.enriquecedorReservaService = Objects.requireNonNull(enriquecedorReservaService, "EnriquecedorReservaService é obrigatório.");
+        this.enriquecedorReservaService = Objects.requireNonNull(
+                enriquecedorReservaService, "EnriquecedorReservaService é obrigatório.");
     }
 
     @Transactional(readOnly = true)

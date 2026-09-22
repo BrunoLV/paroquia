@@ -9,18 +9,25 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  TextField,
   Typography,
 } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import CalendarIcon from '@mui/icons-material/CalendarMonth';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import ChevronRight from '@mui/icons-material/ChevronRight';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TodayIcon from '@mui/icons-material/Today';
+import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { CALENDAR_CATEGORIES } from '@/contextos/calendario/presentation/hooks/useCalendarFilterState';
+import {
+  CalendarViewMode,
+  ModoVisualizacaoCalendario,
+} from '@/contextos/calendario/presentation/hooks/useCalendarGrid';
 import { MONTH_NAMES } from '@/shared/utils/calendarHelpers';
 import { Organizacao } from '@/shared/domain/types/types';
 
@@ -32,12 +39,13 @@ interface LiturgicalInfo {
 export interface BarraFerramentasCalendarioProps {
   currentMonth: number;
   currentYear: number;
+  currentDate?: Date;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onToday: () => void;
   liturgicalInfo: LiturgicalInfo;
-  viewMode: 'month' | 'agenda';
-  onViewModeChange: (mode: 'month' | 'agenda') => void;
+  viewMode: CalendarViewMode;
+  onViewModeChange: (mode: ModoVisualizacaoCalendario) => void;
   selectedOrgFilter: string;
   onSelectedOrgFilterChange: (value: string) => void;
   selectedCategoryFilter: string;
@@ -45,18 +53,22 @@ export interface BarraFerramentasCalendarioProps {
   filteredOrganizations: Organizacao[];
   isLoading: boolean;
   onRefetch: () => void;
+  customStartDate?: Date;
+  customEndDate?: Date;
+  onCustomRangeChange?: (start: Date, end: Date) => void;
 }
 
 export type CalendarToolbarProps = BarraFerramentasCalendarioProps;
 
 /**
- * Barra de navegação de mês, indicadores do ano litúrgico, alternância de visualização
- * (grade/agenda) e filtros de organização/categoria do calendário. Puramente apresentacional —
- * todo o estado vem de `useCalendarGrid`/`useCalendarFilterState`/`useCalendarData` no `Calendario.tsx`.
+ * Barra de navegação temporal, alternância entre as 5 modalidades de visualização
+ * (HOJE, SEMANA, MÊS, ANO, DIAS ESPECÍFICOS), controles de período customizado,
+ * indicadores litúrgicos e filtros organizacionais/temáticos.
  */
-const BarraFerramentasCalendario = ({
+export const BarraFerramentasCalendario = ({
   currentMonth,
   currentYear,
+  currentDate,
   onPrevMonth,
   onNextMonth,
   onToday,
@@ -70,109 +82,374 @@ const BarraFerramentasCalendario = ({
   filteredOrganizations,
   isLoading,
   onRefetch,
-}: CalendarToolbarProps) => (
-  <Card
-    elevation={0}
-    sx={{
-      p: 1,
-      mb: 3,
-      border: '1px solid',
-      borderColor: 'divider',
-      backgroundColor: 'action.hover',
-      overflow: 'visible',
-    }}
-  >
-    <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-      <Grid container spacing={2} sx={{ alignItems: 'center' }}>
-        {/* Top Line: Month Navigation (Left) & Action Buttons (Right) */}
-        <Grid size={{ xs: 12, lg: 8 }} sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
-          <ActionButton label="Anterior" title="Mês anterior" icon={<ChevronLeft />} onClick={onPrevMonth} color="primary" />
-          <Typography variant="h5" sx={{ minWidth: 130, textAlign: 'center', fontWeight: 600, color: 'text.primary' }}>
-            {MONTH_NAMES[currentMonth]} {currentYear}
-          </Typography>
-          <ActionButton label="Próximo" title="Próximo mês" icon={<ChevronRight />} onClick={onNextMonth} color="primary" />
-          <ActionButton label="Hoje" title="Ir para Mês Atual" icon={<TodayIcon />} onClick={onToday} color="primary" />
-          <StatusIcon label={`Ano Litúrgico: ${liturgicalInfo.cycle}`} color="primary" icon={<CalendarIcon />} tooltip="Ciclo litúrgico corrente" />
-          {liturgicalInfo.isClosed && (
-            <StatusIcon label="ANO FECHADO" color="error" icon={<BlockIcon />} tooltip="Ano paroquial fechado para auditoria" />
-          )}
-        </Grid>
+  customStartDate,
+  customEndDate,
+  onCustomRangeChange,
+}: CalendarToolbarProps) => {
+  // Normalização do modo atual para destacar a opção correta
+  const activeMode: ModoVisualizacaoCalendario =
+    viewMode === 'month' ? 'MES' : viewMode === 'agenda' ? 'DIAS_ESPECIFICOS' : viewMode === 'HOJE' ? 'DIA' : viewMode;
 
-        <Grid size={{ xs: 12, lg: 4 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', lg: 'flex-end' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-          <Box sx={{ border: '1px solid', borderColor: 'divider', overflow: 'hidden', display: 'flex' }}>
+  // Título dinâmico de acordo com o modo de visualização
+  const renderTituloNavegacao = () => {
+    switch (activeMode) {
+      case 'DIA':
+        return currentDate
+          ? `${currentDate.getDate()} de ${MONTH_NAMES[currentDate.getMonth()]}, ${currentDate.getFullYear()}`
+          : `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+      case 'SEMANA':
+        return `Semana • ${MONTH_NAMES[currentMonth]} ${currentYear}`;
+      case 'MES':
+        return `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+      case 'ANO':
+        return `Ano ${currentYear}`;
+      case 'DIAS_ESPECIFICOS':
+        return customStartDate && customEndDate
+          ? `${customStartDate.toLocaleDateString('pt-BR')} a ${customEndDate.toLocaleDateString('pt-BR')}`
+          : `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+    }
+  };
+
+  const handleStartDateChange = (val: string) => {
+    if (!val || !onCustomRangeChange || !customEndDate) return;
+    const [y, m, d] = val.split('-').map(Number);
+    const newStart = new Date(y, m - 1, d, 0, 0, 0);
+    if (newStart <= customEndDate) {
+      onCustomRangeChange(newStart, customEndDate);
+    }
+  };
+
+  const handleEndDateChange = (val: string) => {
+    if (!val || !onCustomRangeChange || !customStartDate) return;
+    const [y, m, d] = val.split('-').map(Number);
+    const newEnd = new Date(y, m - 1, d, 23, 59, 59);
+    if (newEnd >= customStartDate) {
+      onCustomRangeChange(customStartDate, newEnd);
+    }
+  };
+
+  const handlePresetDays = (days: number) => {
+    if (!onCustomRangeChange) return;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + days - 1);
+    end.setHours(23, 59, 59, 999);
+    onCustomRangeChange(start, end);
+  };
+
+  const formatInputDate = (date?: Date) => {
+    if (!date) return '';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  return (
+    <Card
+      elevation={0}
+      sx={{
+        p: 1,
+        mb: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        backgroundColor: 'action.hover',
+        overflow: 'visible',
+      }}
+    >
+      <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+          {/* Linha Superior Esquerda: Controles de Navegação Temporal */}
+          <Grid size={{ xs: 12, xl: 7 }} sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
             <ActionButton
-              label="Grade"
-              title="Visualização em grade"
-              ariaLabel="Mês"
+              label="Anterior"
+              title="Período anterior"
+              icon={<ChevronLeft />}
+              onClick={onPrevMonth}
+              color="primary"
+            />
+
+            <Typography
+              variant="h5"
+              component="h2"
+              sx={{ minWidth: 160, textAlign: 'center', fontWeight: 700, color: 'text.primary', px: 1 }}
+            >
+              {renderTituloNavegacao()}
+            </Typography>
+
+            <ActionButton
+              label="Próximo"
+              title="Próximo período"
+              icon={<ChevronRight />}
+              onClick={onNextMonth}
+              color="primary"
+            />
+
+            <ActionButton
+              label="Hoje"
+              title="Ir para Mês Atual"
+              ariaLabel="Ir para Mês Atual"
+              icon={<TodayIcon />}
+              onClick={onToday}
+              color="primary"
+            />
+
+            <StatusIcon
+              label={`Ano Litúrgico: ${liturgicalInfo.cycle}`}
+              color="primary"
               icon={<CalendarIcon />}
-              color="primary"
-              variant="text"
-              onClick={() => onViewModeChange('month')}
-              sx={{ border: 'none', bgcolor: viewMode === 'month' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
+              tooltip="Ciclo litúrgico corrente"
             />
+
+            {liturgicalInfo.isClosed && (
+              <StatusIcon
+                label="ANO FECHADO"
+                color="error"
+                icon={<BlockIcon />}
+                tooltip="Ano paroquial fechado para auditoria"
+              />
+            )}
+          </Grid>
+
+          {/* Linha Superior Direita: Seletor das 5 Formas de Visualização */}
+          <Grid
+            size={{ xs: 12, xl: 5 }}
+            sx={{
+              display: 'flex',
+              justifyContent: { xs: 'flex-start', xl: 'flex-end' },
+              alignItems: 'center',
+              gap: 0.5,
+              flexWrap: 'wrap',
+            }}
+          >
+            <Box
+              sx={{
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                overflow: 'hidden',
+                display: 'flex',
+                flexWrap: 'wrap',
+                bgcolor: 'background.paper',
+              }}
+            >
+              <ActionButton
+                label="Dia"
+                title="Visualização diária (Timeline)"
+                ariaLabel="Dia"
+                icon={<TodayIcon sx={{ fontSize: 18 }} />}
+                color="primary"
+                variant="text"
+                onClick={() => onViewModeChange('DIA')}
+                sx={{
+                  border: 'none',
+                  borderRadius: 0,
+                  bgcolor: activeMode === 'DIA' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  fontWeight: activeMode === 'DIA' ? 700 : 500,
+                }}
+              />
+
+              <ActionButton
+                label="Semana"
+                title="Visualização semanal"
+                ariaLabel="Semana"
+                icon={<ViewWeekIcon sx={{ fontSize: 18 }} />}
+                color="primary"
+                variant="text"
+                onClick={() => onViewModeChange('SEMANA')}
+                sx={{
+                  border: 'none',
+                  borderRadius: 0,
+                  bgcolor: activeMode === 'SEMANA' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  fontWeight: activeMode === 'SEMANA' ? 700 : 500,
+                }}
+              />
+
+              <ActionButton
+                label="Mês"
+                title="Visualização em grade (Mês)"
+                ariaLabel="Mês"
+                icon={<CalendarIcon sx={{ fontSize: 18 }} />}
+                color="primary"
+                variant="text"
+                onClick={() => onViewModeChange('MES')}
+                sx={{
+                  border: 'none',
+                  borderRadius: 0,
+                  bgcolor: activeMode === 'MES' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  fontWeight: activeMode === 'MES' ? 700 : 500,
+                }}
+              />
+
+              <ActionButton
+                label="Ano"
+                title="Visualização anual"
+                ariaLabel="Ano"
+                icon={<DateRangeIcon sx={{ fontSize: 18 }} />}
+                color="primary"
+                variant="text"
+                onClick={() => onViewModeChange('ANO')}
+                sx={{
+                  border: 'none',
+                  borderRadius: 0,
+                  bgcolor: activeMode === 'ANO' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  fontWeight: activeMode === 'ANO' ? 700 : 500,
+                }}
+              />
+
+              <ActionButton
+                label="Dias Específicos"
+                title="Visualização em agenda de dias específicos"
+                ariaLabel="Dias Específicos (Visualização em Agenda)"
+                icon={<ListIcon sx={{ fontSize: 18 }} />}
+                color="primary"
+                variant="text"
+                onClick={() => onViewModeChange('DIAS_ESPECIFICOS')}
+                sx={{
+                  border: 'none',
+                  borderRadius: 0,
+                  bgcolor:
+                    activeMode === 'DIAS_ESPECIFICOS'
+                      ? (theme) => alpha(theme.palette.primary.main, 0.12)
+                      : 'transparent',
+                  fontWeight: activeMode === 'DIAS_ESPECIFICOS' ? 700 : 500,
+                }}
+              />
+            </Box>
+          </Grid>
+
+          {/* Linha Intermediária: Controles de Intervalo Personalizado (exibida apenas no modo DIAS_ESPECIFICOS) */}
+          {activeMode === 'DIAS_ESPECIFICOS' && (
+            <Grid
+              size={{ xs: 12 }}
+              sx={{
+                display: 'flex',
+                gap: 1.5,
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                pt: 1,
+                borderTop: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <TextField
+                size="small"
+                type="date"
+                label="Data Inicial"
+                value={formatInputDate(customStartDate)}
+                onChange={(e) => handleStartDateChange(e.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+                sx={{ minWidth: 160 }}
+              />
+
+              <TextField
+                size="small"
+                type="date"
+                label="Data Final"
+                value={formatInputDate(customEndDate)}
+                onChange={(e) => handleEndDateChange(e.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+                sx={{ minWidth: 160 }}
+              />
+
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                  Atalhos:
+                </Typography>
+                <ActionButton
+                  label="7 dias"
+                  title="Selecionar próximos 7 dias"
+                  icon={<DateRangeIcon sx={{ fontSize: 16 }} />}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handlePresetDays(7)}
+                />
+                <ActionButton
+                  label="15 dias"
+                  title="Selecionar próximos 15 dias"
+                  icon={<DateRangeIcon sx={{ fontSize: 16 }} />}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handlePresetDays(15)}
+                />
+                <ActionButton
+                  label="30 dias"
+                  title="Selecionar próximos 30 dias"
+                  icon={<DateRangeIcon sx={{ fontSize: 16 }} />}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handlePresetDays(30)}
+                />
+              </Box>
+            </Grid>
+          )}
+
+          {/* Linha Inferior: Filtros de Organização e Categoria */}
+          <Grid
+            size={{ xs: 12 }}
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              mt: 0.5,
+              pt: 1,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <FormControl size="small" sx={{ minWidth: 200, maxWidth: 300, flexGrow: 1 }}>
+              <InputLabel id="org-filter-label">Organização</InputLabel>
+              <Select
+                labelId="org-filter-label"
+                value={selectedOrgFilter}
+                label="Organização"
+                onChange={(e) => onSelectedOrgFilterChange(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>Todas</em>
+                </MenuItem>
+                {filteredOrganizations.map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 180, maxWidth: 260, flexGrow: 1 }}>
+              <InputLabel id="cat-filter-label">Categoria</InputLabel>
+              <Select
+                labelId="cat-filter-label"
+                value={selectedCategoryFilter}
+                label="Categoria"
+                onChange={(e) => onSelectedCategoryFilterChange(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>Todas</em>
+                </MenuItem>
+                {CALENDAR_CATEGORIES.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    {cat}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <ActionButton
-              label="Agenda"
-              title="Visualização em agenda"
-              icon={<ListIcon />}
-              color="primary"
-              variant="text"
-              onClick={() => onViewModeChange('agenda')}
-              sx={{ border: 'none', bgcolor: viewMode === 'agenda' ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent' }}
+              title="Recarregar dados do calendário"
+              icon={isLoading ? <CircularProgress size={24} /> : <RefreshIcon />}
+              onClick={onRefetch}
+              disabled={isLoading}
             />
-          </Box>
+          </Grid>
         </Grid>
-
-        {/* Line Below: Filtering Controls */}
-        <Grid size={{ xs: 12 }} sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
-          <FormControl size="small" sx={{ minWidth: 200, maxWidth: 300, flexGrow: 1 }}>
-            <InputLabel id="org-filter-label">Organização</InputLabel>
-            <Select
-              labelId="org-filter-label"
-              value={selectedOrgFilter}
-              label="Organização"
-              onChange={(e) => onSelectedOrgFilterChange(e.target.value)}
-            >
-              <MenuItem value="">
-                <em>Todas</em>
-              </MenuItem>
-              {filteredOrganizations.map((org) => (
-                <MenuItem key={org.id} value={org.id}>
-                  {org.nome}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 180, maxWidth: 260, flexGrow: 1 }}>
-            <InputLabel id="cat-filter-label">Categoria</InputLabel>
-            <Select
-              labelId="cat-filter-label"
-              value={selectedCategoryFilter}
-              label="Categoria"
-              onChange={(e) => onSelectedCategoryFilterChange(e.target.value)}
-            >
-              <MenuItem value="">
-                <em>Todas</em>
-              </MenuItem>
-              {CALENDAR_CATEGORIES.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <ActionButton
-            title="Recarregar dados do calendário"
-            icon={isLoading ? <CircularProgress size={24} /> : <RefreshIcon />}
-            onClick={onRefetch}
-            disabled={isLoading}
-          />
-        </Grid>
-      </Grid>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
 
 export const CalendarToolbar = BarraFerramentasCalendario;
 export default BarraFerramentasCalendario;

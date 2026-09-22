@@ -400,6 +400,16 @@ public class CadastroEventoMetricsPublisher implements AprovacaoMetricsPublisher
         return snapshot;
     }
 
+    @Override
+    public void recordFalhaExecucao(String tipo, String tipoFalha) {
+        Counter.builder("aprovacao.falhas.execucao")
+                .tag(TAG_TIPO, tipo != null ? tipo : VALOR_UNKNOWN)
+                .tag("tipo_falha", tipoFalha != null ? tipoFalha : VALOR_UNKNOWN)
+                .description("Total de falhas de execução de aprovação categorizadas por tipo e natureza da falha")
+                .register(meterRegistry)
+                .increment();
+    }
+
     private long percentile95(List<Long> samples) {
         if (samples.isEmpty()) {
             return 0L;

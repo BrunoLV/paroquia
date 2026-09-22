@@ -100,10 +100,11 @@ export const useCalendarData = ({
   const eventosQuery = useQuery({
     queryKey: ['eventos-calendario', startOfGrid.toISOString(), endOfGrid.toISOString(), selectedOrgFilter, selectedCategoryFilter, userOrgIds.join(','), user ? isGlobalCreator(user) : null],
     queryFn: async () => {
+      const isLargeRange = (endOfGrid.getTime() - startOfGrid.getTime()) > 60 * 24 * 3600 * 1000;
       const params: Record<string, unknown> = {
         dataInicio: startOfGrid.toISOString(),
         dataFim: endOfGrid.toISOString(),
-        size: 200, // retrieve up to 200 events for full grid density
+        size: isLargeRange ? 1000 : 200,
       };
       if (selectedOrgFilter) {
         params.organizacaoIds = [selectedOrgFilter];
@@ -234,9 +235,13 @@ export const useCalendarData = ({
 
   const agendaEvents = useMemo(() => {
     return [...combinedEvents]
-      .filter((e) => new Date(e.inicio) >= startOfGrid)
+      .filter((e) => {
+        const start = new Date(e.inicio);
+        const end = new Date(e.fim);
+        return end >= startOfGrid && start <= endOfGrid;
+      })
       .sort((a, b) => new Date(a.inicio).getTime() - new Date(b.inicio).getTime());
-  }, [combinedEvents, startOfGrid]);
+  }, [combinedEvents, startOfGrid, endOfGrid]);
 
   const getOrgName = (orgId: string, igrejaVinculoId?: string | null) => {
     const org = organizations.find((o) => o.id === orgId);

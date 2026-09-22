@@ -13,6 +13,9 @@ import br.com.nsfatima.gestao.aprovacao.domain.exception.AprovacaoNaoEncontradaE
 import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.aprovacao.domain.model.Aprovacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
+import br.com.nsfatima.gestao.aprovacao.domain.model.TipoFalhaAprovacao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.mapper.AprovacaoMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -45,6 +48,7 @@ import java.util.UUID;
 @Service
 public class DecidirSolicitacaoAprovacaoUseCase {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DecidirSolicitacaoAprovacaoUseCase.class);
     private static final String KEY_DECISION_STATUS = "statusDecisao";
     private static final String KEY_GRUPO_PAROQUIAL_ID = "grupoParoquialId";
 
@@ -161,8 +165,9 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                     new DecisaoAprovacaoResponse.ActionExecution("EXECUTED", null, null, null));
         }
 
-        // Se for ocorrência filha pontual sendo decidida
-        if (entity.getAprovacaoPaiId() != null) {
+        // Se for ocorrência filha pontual sendo decidida (já enriquecida acima quando APROVADA, antes da
+        // checagem de conflito em linha 134; refazer aqui só é necessário no caminho de reprovação)
+        if (entity.getAprovacaoPaiId() != null && request.status() != AprovacaoStatus.APROVADA) {
             enriquecerPayloadFilhaComDadosPaiSeNecessario(entity);
         }
 
@@ -215,7 +220,8 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                         payloadFilha.motivo(),
                         payloadFilha.participantes(),
                         payloadFilha.localId() != null ? payloadFilha.localId() : payloadPai.localId(),
-                        payloadFilha.igrejaVinculoId() != null ? payloadFilha.igrejaVinculoId() : payloadPai.igrejaVinculoId(),
+                        payloadFilha.igrejaVinculoId() != null
+                                ? payloadFilha.igrejaVinculoId() : payloadPai.igrejaVinculoId(),
                         payloadFilha.ativoId(),
                         payloadFilha.ativoNome(),
                         payloadFilha.ativoIds(),
@@ -227,7 +233,8 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         }
     }
 
-    private void consolidarStatusPaiSeTodasFilhasDecididas(UUID paiId, String aprovadorId, EventoActorContext actorContext) {
+    private void consolidarStatusPaiSeTodasFilhasDecididas(
+            UUID paiId, String aprovadorId, EventoActorContext actorContext) {
         List<AprovacaoEntity> filhas = aprovacaoJpaRepository.findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(paiId);
         boolean hasPendentes = filhas.stream().anyMatch(f -> f.getStatus() == AprovacaoStatus.PENDENTE);
         if (hasPendentes) {
@@ -280,7 +287,17 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                             stratFilha.execute(filha, actorContext);
                             filhaDominio.registrarExecucaoConcluida(Instant.now());
                         } catch (RuntimeException ex) {
-                            filhaDominio.registrarFalhaExecucao(ex.getMessage());
+                            boolean isNeg = isFalhaNegocio(ex);
+                            TipoFalhaAprovacao tf = isNeg
+                                    ? TipoFalhaAprovacao.NEGOCIO_CADASTRAL : TipoFalhaAprovacao.SISTEMICA_APLICACAO;
+                            if (isNeg) {
+                                LOGGER.warn("Ocorrência filha id={} falhou por regra cadastral/de negócio: {}",
+                                        filha.getId(), ex.getMessage());
+                            } else {
+                                LOGGER.error("Falha sistêmica na ocorrência filha id={}, tipo={}",
+                                        filha.getId(), tipoFilha, ex);
+                            }
+                            filhaDominio.registrarFalhaExecucao(tf, ex.getMessage(), extrairDetalheErro(ex));
                             publishDecisionEvent(filha, ex.getMessage());
                         }
                     }
@@ -413,15 +430,31 @@ public class DecidirSolicitacaoAprovacaoUseCase {
     }
 
     private void validarAusenciaConflitoRecursosAprovados(AprovacaoEntity entity) {
-        if (detectorConflitoEventoService == null || entity.getActionPayloadJson() == null || entity.getActionPayloadJson().isBlank()) {
+        if (detectorConflitoEventoService == null
+                || entity.getActionPayloadJson() == null
+                || entity.getActionPayloadJson().isBlank()) {
             return;
         }
+        boolean temConflitoRecurso = detectarConflitosDeRecursos(entity).stream().anyMatch(c ->
+                "LOCAL".equalsIgnoreCase(c.tipoConflito()) || "ATIVO".equalsIgnoreCase(c.tipoConflito()));
+        if (temConflitoRecurso) {
+            throw new ViolacaoRegraNegocioException(
+                    "Não é permitido aprovar solicitação com conflito de espaço físico ou ativo "
+                            + "patrimonial já reservado por outro evento aprovado.");
+        }
+    }
+
+    /**
+     * Isola a interpretação do payload de outro domínio (que pode falhar por formato inesperado) da regra de
+     * negócio em si, evitando capturar-e-relançar {@link ViolacaoRegraNegocioException} sobre a checagem acima.
+     */
+    private List<ConflitoEventoItemDto> detectarConflitosDeRecursos(AprovacaoEntity entity) {
         try {
             AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(entity.getActionPayloadJson());
             if (payload == null || payload.inicio() == null || payload.fim() == null) {
-                return;
+                return List.of();
             }
-            List<ConflitoEventoItemDto> conflitos = detectorConflitoEventoService.detectarConflitos(
+            return detectorConflitoEventoService.detectarConflitos(
                     payload.inicio(),
                     payload.fim(),
                     payload.localId(),
@@ -433,27 +466,34 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                     payload.igrejaVinculoId(),
                     payload.periodos()
             );
-            boolean temConflitoRecurso = conflitos.stream().anyMatch(c ->
-                    "LOCAL".equalsIgnoreCase(c.tipoConflito()) || "ATIVO".equalsIgnoreCase(c.tipoConflito()));
-            if (temConflitoRecurso) {
-                throw new ViolacaoRegraNegocioException(
-                        "Não é permitido aprovar solicitação com conflito de espaço físico ou ativo patrimonial já reservado por outro evento aprovado.");
-            }
-        } catch (ViolacaoRegraNegocioException ex) {
-            throw ex;
         } catch (RuntimeException ex) {
             // Se falhar a interpretação de payload de outro domínio, permite prosseguir
+            return List.of();
         }
     }
 
     private void handleExecutionFailure(Aprovacao aprovacao, AprovacaoEntity entity, RuntimeException ex,
                                         EventoActorContext actorContext, TipoSolicitacaoInput tipo) {
-        aprovacao.registrarFalhaExecucao(ex.getMessage());
+        boolean isNegocio = isFalhaNegocio(ex);
+        TipoFalhaAprovacao tipoFalha =
+                isNegocio ? TipoFalhaAprovacao.NEGOCIO_CADASTRAL : TipoFalhaAprovacao.SISTEMICA_APLICACAO;
+        String detalheErro = extrairDetalheErro(ex);
+
+        if (isNegocio) {
+            LOGGER.warn("Aprovação id={} falhou por regra cadastral/de negócio: {}",
+                    entity.getId(), ex.getMessage());
+        } else {
+            LOGGER.error("Falha sistêmica ao executar aprovação id={}, tipoSolicitacao={}",
+                    entity.getId(), tipo, ex);
+        }
+
+        aprovacao.registrarFalhaExecucao(tipoFalha, ex.getMessage(), detalheErro);
         aprovacaoMapper.aplicar(aprovacao, entity);
         aprovacaoJpaRepository.save(entity);
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("error", ex.getClass().getSimpleName());
+        metadata.put("tipoFalha", tipoFalha.name());
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
             metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
@@ -464,8 +504,32 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         }
         if (metricsPublisher != null) {
             metricsPublisher.publishAprovacaoFlow(tipo.name(), "FAILED");
+            metricsPublisher.recordFalhaExecucao(tipo.name(), tipoFalha.name());
         }
         publishDecisionEvent(entity, ex.getMessage());
+    }
+
+    private boolean isFalhaNegocio(RuntimeException ex) {
+        if (ex instanceof ViolacaoRegraNegocioException) {
+            return true;
+        }
+        String className = ex.getClass().getSimpleName();
+        if (className.contains("Conflito") || className.contains("Negocio") || className.contains("Invalido")) {
+            return true;
+        }
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        return msg.contains("conflito") || msg.contains("expirad")
+                || msg.contains("inválid") || msg.contains("invalido");
+    }
+
+    private String extrairDetalheErro(RuntimeException ex) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ex.getClass().getName()).append(": ").append(ex.getMessage());
+        if (ex.getCause() != null) {
+            sb.append(" | Causa: ").append(ex.getCause().getClass().getName())
+                    .append(": ").append(ex.getCause().getMessage());
+        }
+        return sb.toString();
     }
 
     private void publishDecisionEvent(AprovacaoEntity entity, String errorMessage) {

@@ -55,12 +55,14 @@ class DetectorConflitoEventoServiceTest {
 
         when(reservaConflitoService.detectarConflitos(eq(TipoItemReserva.LOCAL), eq(localId), any(), any(), any()))
                 .thenReturn(List.of(new ConflitoDetalhe(
-                        localId, "Salão Paroquial", TipoItemReserva.LOCAL, inicio, fim, UUID.randomUUID(), "João", "Reunião"
+                        localId, "Salão Paroquial", TipoItemReserva.LOCAL, inicio, fim,
+                        UUID.randomUUID(), "João", "Reunião"
                 )));
 
         when(reservaConflitoService.detectarConflitos(eq(TipoItemReserva.ATIVO), eq(ativoId), any(), any(), any()))
                 .thenReturn(List.of(new ConflitoDetalhe(
-                        ativoId, "Projetor HDMI", TipoItemReserva.ATIVO, inicio, fim, UUID.randomUUID(), "Maria", "Palestra"
+                        ativoId, "Projetor HDMI", TipoItemReserva.ATIVO, inicio, fim,
+                        UUID.randomUUID(), "Maria", "Palestra"
                 )));
 
         EventoEntity existente = new EventoEntity();
@@ -91,10 +93,12 @@ class DetectorConflitoEventoServiceTest {
         UUID localId = UUID.randomUUID();
 
         ArgumentCaptor<IntervaloReserva> captor = ArgumentCaptor.forClass(IntervaloReserva.class);
-        when(reservaConflitoService.detectarConflitos(eq(TipoItemReserva.LOCAL), eq(localId), any(), captor.capture(), any()))
+        when(reservaConflitoService.detectarConflitos(
+                eq(TipoItemReserva.LOCAL), eq(localId), any(), captor.capture(), any()))
                 .thenReturn(List.of());
 
-        detector.detectarConflitos(inicio, fim, localId, List.of(), CategoriaEvento.PASTORAL, null, TipoHorarioEvento.MANHA);
+        detector.detectarConflitos(
+                inicio, fim, localId, List.of(), CategoriaEvento.PASTORAL, null, TipoHorarioEvento.MANHA);
 
         assertThat(captor.getValue().bufferMinutos()).isZero();
     }
@@ -107,10 +111,12 @@ class DetectorConflitoEventoServiceTest {
         UUID localId = UUID.randomUUID();
 
         ArgumentCaptor<IntervaloReserva> captor = ArgumentCaptor.forClass(IntervaloReserva.class);
-        when(reservaConflitoService.detectarConflitos(eq(TipoItemReserva.LOCAL), eq(localId), any(), captor.capture(), any()))
+        when(reservaConflitoService.detectarConflitos(
+                eq(TipoItemReserva.LOCAL), eq(localId), any(), captor.capture(), any()))
                 .thenReturn(List.of());
 
-        detector.detectarConflitos(inicio, fim, localId, List.of(), CategoriaEvento.PASTORAL, null, TipoHorarioEvento.PERSONALIZADO);
+        detector.detectarConflitos(
+                inicio, fim, localId, List.of(), CategoriaEvento.PASTORAL, null, TipoHorarioEvento.PERSONALIZADO);
 
         assertThat(captor.getValue().bufferMinutos()).isEqualTo(30);
     }

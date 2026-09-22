@@ -171,7 +171,8 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
                     request.formato(),
                     request.periodos()
             );
-            AprovacaoAcaoPayload occPayload = buildPayload(idempotencyKey + "-occ-" + occStart.toEpochMilli(), occRequest);
+            AprovacaoAcaoPayload occPayload = buildPayload(
+                    idempotencyKey + "-occ-" + occStart.toEpochMilli(), occRequest);
             filha.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(occPayload));
 
             aprovacaoRepository.save(filha);

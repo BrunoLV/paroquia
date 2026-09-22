@@ -112,28 +112,45 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
                 "APROVACAO_PENDENTE");
     }
 
-    private AprovacaoAcaoPayload buildPayload(UUID eventoId, AtualizarEventoRequest request, EventoEntity eventoExistente) {
-        String titulo = request.titulo() != null ? request.titulo() : (eventoExistente != null ? eventoExistente.getTitulo() : null);
-        String descricao = request.descricao() != null ? request.descricao() : (eventoExistente != null ? eventoExistente.getDescricao() : null);
-        CategoriaEvento categoria = request.categoria() != null ? request.categoria() : (eventoExistente != null ? eventoExistente.getCategoria() : null);
-        UUID grupoId = request.grupoParoquialResponsavelId() != null ? request.grupoParoquialResponsavelId() : (eventoExistente != null ? eventoExistente.getGrupoParoquialResponsavelId() : null);
-        UUID projetoId = request.projetoId() != null ? request.projetoId() : (eventoExistente != null ? eventoExistente.getProjetoId() : null);
-        Instant inicio = request.inicio() != null ? request.inicio() : (eventoExistente != null ? eventoExistente.getInicioUtc() : null);
-        Instant fim = request.fim() != null ? request.fim() : (eventoExistente != null ? eventoExistente.getFimUtc() : null);
-        TipoHorarioEvento tipoHorario = request.tipoHorario() != null ? request.tipoHorario() : (eventoExistente != null ? eventoExistente.getTipoHorario() : null);
-        FormatoEvento formato = request.formato() != null ? request.formato() : (eventoExistente != null ? eventoExistente.getFormato() : null);
+    private AprovacaoAcaoPayload buildPayload(
+            UUID eventoId, AtualizarEventoRequest request, EventoEntity eventoExistente) {
+        String titulo = request.titulo() != null
+                ? request.titulo() : (eventoExistente != null ? eventoExistente.getTitulo() : null);
+        String descricao = request.descricao() != null
+                ? request.descricao() : (eventoExistente != null ? eventoExistente.getDescricao() : null);
+        CategoriaEvento categoria = request.categoria() != null
+                ? request.categoria() : (eventoExistente != null ? eventoExistente.getCategoria() : null);
+        UUID grupoId = request.grupoParoquialResponsavelId() != null
+                ? request.grupoParoquialResponsavelId()
+                : (eventoExistente != null ? eventoExistente.getGrupoParoquialResponsavelId() : null);
+        UUID projetoId = request.projetoId() != null
+                ? request.projetoId() : (eventoExistente != null ? eventoExistente.getProjetoId() : null);
+        Instant inicio = request.inicio() != null
+                ? request.inicio() : (eventoExistente != null ? eventoExistente.getInicioUtc() : null);
+        Instant fim = request.fim() != null
+                ? request.fim() : (eventoExistente != null ? eventoExistente.getFimUtc() : null);
+        TipoHorarioEvento tipoHorario = request.tipoHorario() != null
+                ? request.tipoHorario() : (eventoExistente != null ? eventoExistente.getTipoHorario() : null);
+        FormatoEvento formato = request.formato() != null
+                ? request.formato() : (eventoExistente != null ? eventoExistente.getFormato() : null);
         List<TipoHorarioEvento> periodos = request.periodos() != null && !request.periodos().isEmpty()
                 ? request.periodos()
                 : (eventoExistente != null ? eventoExistente.getPeriodosList() : List.of());
 
         List<UUID> localIds = request.localIds() != null && !request.localIds().isEmpty()
                 ? request.localIds()
-                : (eventoExistente != null ? eventoExistente.getLocalIds() : (request.localId() != null ? List.of(request.localId()) : List.of()));
+                : (eventoExistente != null
+                        ? eventoExistente.getLocalIds()
+                        : (request.localId() != null ? List.of(request.localId()) : List.of()));
         UUID localId = request.localId() != null
                 ? request.localId()
-                : (!localIds.isEmpty() ? localIds.getFirst() : (eventoExistente != null ? eventoExistente.getLocalId() : null));
+                : (!localIds.isEmpty()
+                        ? localIds.getFirst()
+                        : (eventoExistente != null ? eventoExistente.getLocalId() : null));
 
-        UUID igrejaVinculoId = request.igrejaVinculoId() != null ? request.igrejaVinculoId() : (eventoExistente != null ? eventoExistente.getIgrejaVinculoId() : null);
+        UUID igrejaVinculoId = request.igrejaVinculoId() != null
+                ? request.igrejaVinculoId()
+                : (eventoExistente != null ? eventoExistente.getIgrejaVinculoId() : null);
         List<UUID> ativoIds = request.ativoIds() != null ? request.ativoIds() : List.of();
 
         return new AprovacaoAcaoPayload(

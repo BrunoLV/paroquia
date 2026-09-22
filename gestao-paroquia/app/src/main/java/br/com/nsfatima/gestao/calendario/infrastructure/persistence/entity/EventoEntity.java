@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "eventos", schema = "calendario")
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public class EventoEntity extends BaseAuditableEntity {
 
     @Id

@@ -112,7 +112,8 @@ public record AprovacaoAcaoPayload(
             String justificativa) {
         this(idempotencyKey, eventoId, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId,
                 inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes,
-                localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, ativoId, ativoNome, ativoIds, justificativa, TipoHorarioEvento.PERSONALIZADO, null);
+                localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, ativoId, ativoNome,
+                ativoIds, justificativa, TipoHorarioEvento.PERSONALIZADO, null);
     }
 
     public AprovacaoAcaoPayload(
