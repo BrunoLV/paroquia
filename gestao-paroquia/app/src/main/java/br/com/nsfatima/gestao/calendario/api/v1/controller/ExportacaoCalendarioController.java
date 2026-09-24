@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Expõe a exportação do calendário de eventos em formatos de arquivo (PDF, Excel, CSV) para apoiar
+ * Expõe a exportação do calendário de eventos em formatos de arquivo (PDF, Excel, CSV, PowerPoint) para apoiar
  * a divulgação e o arquivamento externo da agenda paroquial, aplicando os mesmos filtros de período
  * e organização usados na listagem de eventos.
  */
@@ -41,7 +41,7 @@ public class ExportacaoCalendarioController {
      * O arquivo é enviado diretamente no corpo da resposta com o header {@code Content-Disposition}
      * para download.
      *
-     * @param formato formato de saída (PDF, EXCEL ou CSV); padrão PDF
+     * @param formato formato de saída (PDF, EXCEL, CSV ou POWERPOINT); padrão PDF
      * @param opcao recorte temporal (MES, ANO ou CUSTOMIZADO); padrão MES
      * @param ano ano de referência para recortes MES e ANO
      * @param mes mês de referência (1-12) para recorte MES
@@ -49,11 +49,12 @@ public class ExportacaoCalendarioController {
      * @param dataFim fim do período para recorte CUSTOMIZADO (ISO-8601)
      * @param categorias lista opcional de categorias para filtrar
      * @param grupoParoquialIds lista opcional de organizações para filtrar
+     * @param visualizacao modo de apresentação (AGENDA ou GRADE); só afeta PDF/POWERPOINT
      * @return arquivo gerado para download
      */
     @GetMapping("/exportar")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Exporta o calendário de eventos em arquivo (PDF, Excel ou CSV)")
+    @Operation(summary = "Exporta o calendário de eventos em arquivo (PDF, Excel, CSV ou PowerPoint)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Arquivo exportado com sucesso",
                     content = @Content(schema = @Schema(type = "string", format = "binary"))),
@@ -62,7 +63,7 @@ public class ExportacaoCalendarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public ResponseEntity<byte[]> exportar(
-            @Parameter(description = "Formato do arquivo (PDF, EXCEL ou CSV)") @RequestParam(defaultValue = "PDF")
+            @Parameter(description = "Formato do arquivo (PDF, EXCEL, CSV ou POWERPOINT)") @RequestParam(defaultValue = "PDF")
             String formato,
             @Parameter(description = "Tipo de período (MES, ANO ou CUSTOMIZADO)") @RequestParam(defaultValue = "MES")
             String opcao,
@@ -75,10 +76,12 @@ public class ExportacaoCalendarioController {
             @Parameter(description = "Filtrar por múltiplas categorias") @RequestParam(required = false)
             List<String> categorias,
             @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false)
-            List<UUID> grupoParoquialIds) {
+            List<UUID> grupoParoquialIds,
+            @Parameter(description = "Visualização (AGENDA ou GRADE); só se aplica a PDF/POWERPOINT")
+            @RequestParam(defaultValue = "AGENDA") String visualizacao) {
 
         byte[] conteudo = exportacaoCalendarioUseCase.execute(formato,
-                opcao, ano, mes, dataInicio, dataFim, categorias, grupoParoquialIds);
+                opcao, ano, mes, dataInicio, dataFim, categorias, grupoParoquialIds, visualizacao);
 
 
         String nomeArquivo = "calendario_" + opcao.toLowerCase();
@@ -100,6 +103,9 @@ public class ExportacaoCalendarioController {
         } else if ("PDF".equalsIgnoreCase(formato)) {
             tipoMidia = "application/pdf";
             extensao = ".pdf";
+        } else if ("POWERPOINT".equalsIgnoreCase(formato)) {
+            tipoMidia = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            extensao = ".pptx";
         } else {
             return ResponseEntity.badRequest().build();
         }

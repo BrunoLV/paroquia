@@ -23,6 +23,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import {DIALOG_CONTENT_SCROLL_SX} from '@/shared/presentation/theme/dialogStyles';
 import {Organizacao} from '@/shared/domain/types/types';
 import ActionButton from '@/shared/presentation/components/ActionButton';
+import {CALENDAR_CATEGORIES} from '@/contextos/calendario/presentation/hooks/useCalendarFilterState';
 
 export interface DialogExportarCalendarioProps {
   open: boolean;
@@ -32,27 +33,21 @@ export interface DialogExportarCalendarioProps {
 
 export type ExportCalendarDialogProps = DialogExportarCalendarioProps;
 
-type FormatoExportacao = 'PDF' | 'EXCEL' | 'CSV';
+type FormatoExportacao = 'PDF' | 'EXCEL' | 'CSV' | 'POWERPOINT';
 type OpcaoPeriodo = 'ANO' | 'MES' | 'PERIODO';
+type Visualizacao = 'AGENDA' | 'GRADE';
 
-const isFormatoExportacao = (value: string): value is FormatoExportacao => ['PDF', 'EXCEL', 'CSV'].includes(value);
+const isFormatoExportacao = (value: string): value is FormatoExportacao =>
+  ['PDF', 'EXCEL', 'CSV', 'POWERPOINT'].includes(value);
 const isOpcaoPeriodo = (value: string): value is OpcaoPeriodo => ['ANO', 'MES', 'PERIODO'].includes(value);
-
-const CATEGORIES = [
-  'PASTORAL',
-  'SOCIAL',
-  'LITURGICO',
-  'ADMINISTRATIVO',
-  'SACRAMENTAL',
-  'FORMATIVO',
-  'OUTRO',
-];
+const isVisualizacao = (value: string): value is Visualizacao => ['AGENDA', 'GRADE'].includes(value);
 
 export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> = ({ open, onClose, organizations }) => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
   const [formato, setFormato] = useState<FormatoExportacao>('PDF');
+  const [visualizacao, setVisualizacao] = useState<Visualizacao>('AGENDA');
   const [opcao, setOpcao] = useState<OpcaoPeriodo>('MES');
   const [ano, setAno] = useState<number>(currentYear);
   const [mes, setMes] = useState<number>(currentMonth);
@@ -64,6 +59,10 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
   const handleExport = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
     let url = `${API_URL}/eventos/exportar?formato=${formato}&opcao=${opcao}`;
+
+    if (formato === 'PDF' || formato === 'POWERPOINT') {
+      url += `&visualizacao=${visualizacao}`;
+    }
 
     if (opcao === 'ANO') {
       url += `&ano=${ano}`;
@@ -100,8 +99,23 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
               <FormControlLabel value="PDF" control={<Radio size="small" />} label="PDF" />
               <FormControlLabel value="EXCEL" control={<Radio size="small" />} label="Excel" />
               <FormControlLabel value="CSV" control={<Radio size="small" />} label="CSV" />
+              <FormControlLabel value="POWERPOINT" control={<Radio size="small" />} label="PowerPoint" />
             </RadioGroup>
           </FormControl>
+
+          {(formato === 'PDF' || formato === 'POWERPOINT') && (
+            <FormControl>
+              <FormLabel sx={{ fontWeight: 600, fontSize: '0.75rem', mb: 0.5 }}>Visualização:</FormLabel>
+              <RadioGroup
+                row
+                value={visualizacao}
+                onChange={(e) => isVisualizacao(e.target.value) && setVisualizacao(e.target.value)}
+              >
+                <FormControlLabel value="AGENDA" control={<Radio size="small" />} label="Agenda (cartões)" />
+                <FormControlLabel value="GRADE" control={<Radio size="small" />} label="Grade (calendário)" />
+              </RadioGroup>
+            </FormControl>
+          )}
 
           <FormControl>
             <FormLabel sx={{ fontWeight: 600, fontSize: '0.75rem', mb: 0.5 }}>Filtrar Período por:</FormLabel>
@@ -224,7 +238,7 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
                 <MenuItem value="">
                   <em>Todas as categorias</em>
                 </MenuItem>
-                {CATEGORIES.map((cat) => (
+                {CALENDAR_CATEGORIES.map((cat) => (
                   <MenuItem key={cat} value={cat}>
                     {cat}
                   </MenuItem>

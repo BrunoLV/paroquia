@@ -2,14 +2,15 @@ import {
   alpha,
   Box,
   Card,
+  Chip,
   Grid,
-  IconButton,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import IconActionButton from '@/shared/presentation/components/IconActionButton';
 import { CalendarDay } from '@/contextos/calendario/presentation/hooks/useCalendarGrid';
 import { Evento } from '@/shared/domain/types/types';
 import { getCategoryColor } from '@/shared/utils/calendarHelpers';
@@ -46,12 +47,12 @@ export const VisualizacaoSemanaCalendario = ({
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 2,
-        overflow: 'hidden',
+        p: 1.5,
       }}
     >
       <Box sx={{ overflowX: 'auto', minWidth: 800 }}>
         {/* Cabeçalho dos 7 dias da semana */}
-        <Grid container columns={7} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Grid container columns={7} spacing={1} sx={{ mb: 1 }}>
           {weekDays.map(({ date, isToday }, idx) => {
             const season = getLiturgicalSeason(date);
             const seasonStyle = getLiturgicalSeasonStyle(season);
@@ -64,8 +65,9 @@ export const VisualizacaoSemanaCalendario = ({
                   p: 1.5,
                   textAlign: 'center',
                   bgcolor: isToday ? (theme) => alpha(theme.palette.primary.main, 0.08) : 'action.hover',
-                  borderRight: idx < 6 ? '1px solid' : 'none',
-                  borderColor: 'divider',
+                  border: '1px solid',
+                  borderColor: isToday ? 'primary.main' : 'divider',
+                  borderRadius: 1.5,
                   position: 'relative',
                   '&:hover .add-week-btn': { opacity: 1 },
                 }}
@@ -118,35 +120,38 @@ export const VisualizacaoSemanaCalendario = ({
                   {seasonStyle.label}
                 </Typography>
 
-                <Tooltip title="Agendar evento neste dia" arrow>
-                  <IconButton
+                <Box
+                  className="add-week-btn"
+                  sx={{
+                    position: 'absolute',
+                    top: 4,
+                    right: 4,
+                    opacity: 0,
+                    transition: 'opacity 0.15s ease',
+                  }}
+                >
+                  <IconActionButton
+                    title="Agendar evento neste dia"
                     size="small"
-                    className="add-week-btn"
+                    icon={<AddIcon sx={{ fontSize: 16 }} />}
                     onClick={(e) => {
                       e.stopPropagation();
                       onDayClick(date);
                     }}
                     sx={{
-                      position: 'absolute',
-                      top: 4,
-                      right: 4,
-                      opacity: 0,
-                      transition: 'opacity 0.15s ease',
                       bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
                       p: 0.5,
                       '&:hover': { bgcolor: 'primary.main', color: 'primary.contrastText' },
                     }}
-                  >
-                    <AddIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
-                </Tooltip>
+                  />
+                </Box>
               </Grid>
             );
           })}
         </Grid>
 
         {/* Colunas dos 7 dias com eventos */}
-        <Grid container columns={7}>
+        <Grid container columns={7} spacing={1}>
           {weekDays.map(({ date, isToday }, idx) => {
             const dayEvents = getEventsForDay(date);
             const season = getLiturgicalSeason(date);
@@ -160,14 +165,17 @@ export const VisualizacaoSemanaCalendario = ({
                 sx={{
                   minHeight: 520,
                   p: 1.25,
-                  borderRight: idx < 6 ? '1px solid' : 'none',
-                  borderColor: 'divider',
+                  border: '1px solid',
+                  borderColor: isToday ? 'primary.main' : 'divider',
+                  borderRadius: 1.5,
                   bgcolor: isToday
                     ? (theme) => alpha(theme.palette.primary.main, 0.04)
                     : seasonStyle.backgroundColor,
                   cursor: 'pointer',
-                  transition: 'background-color 0.15s ease',
+                  transition: 'all 0.15s ease',
                   '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: (theme) => theme.shadows[1],
                     bgcolor: (theme) => alpha(theme.palette.action.selected, 0.08),
                   },
                 }}
@@ -205,7 +213,7 @@ export const VisualizacaoSemanaCalendario = ({
                           borderColor: 'divider',
                           borderLeft: '4px solid',
                           borderLeftColor: borderLeftColor,
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                          boxShadow: (theme) => theme.shadows[1],
                           opacity: isPendenteAprovacao ? 0.75 : isCancelado ? 0.75 : 1,
                           transition: 'all 0.15s ease',
                           cursor: 'pointer',
@@ -248,22 +256,20 @@ export const VisualizacaoSemanaCalendario = ({
 
                         {/* Badges de Conflito / Categoria */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.75, flexWrap: 'wrap' }}>
-                          <Box
+                          <Chip
+                            label={evt.categoria}
+                            size="small"
                             sx={{
-                              px: 0.75,
-                              py: 0.15,
-                              borderRadius: 0.5,
+                              height: 18,
                               bgcolor: styleColors.bg,
                               color: styleColors.text,
                               fontSize: '0.62rem',
                               fontWeight: 700,
-                              lineHeight: 1.2,
                               border: '1px solid',
                               borderColor: styleColors.border,
+                              '& .MuiChip-label': { px: 0.75 },
                             }}
-                          >
-                            {evt.categoria}
-                          </Box>
+                          />
 
                           {isConflito && (
                             <Tooltip title="Conflito de recursos" arrow>

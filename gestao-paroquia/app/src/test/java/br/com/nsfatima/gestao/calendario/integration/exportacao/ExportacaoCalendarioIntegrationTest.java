@@ -62,7 +62,7 @@ class ExportacaoCalendarioIntegrationTest {
                         containsString("attachment; filename=\"calendario_mes_2026_05.csv\"")))
 
                 .andExpect(content().string(containsString("Missa de Domingo Teste")))
-                .andExpect(content().string(containsString("Título;Descrição;Categoria;")));
+                .andExpect(content().string(containsString("Título;Descrição;Categoria;Formato;Turno/Horário;")));
     }
 
     @Test
@@ -112,6 +112,52 @@ class ExportacaoCalendarioIntegrationTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
                         containsString("attachment; filename=\"calendario_periodo.pdf\"")));
 
+    }
+
+    @Test
+    @DisplayName("Should export calendar events to PDF in GRADE mode successfully")
+    void deveExportarParaPdfEmModoGrade() throws Exception {
+        EventoEntity event = new EventoEntity();
+        event.setId(UUID.randomUUID());
+        event.setTitulo("Festa da Padroeira");
+        event.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
+        event.setStatus("CONFIRMADO");
+        event.setInicioUtc(Instant.parse("2026-05-31T09:00:00Z"));
+        event.setFimUtc(Instant.parse("2026-05-31T22:00:00Z"));
+        eventRepository.save(event);
+
+        mockMvc.perform(get("/api/v1/eventos/exportar")
+                        .param("formato", "PDF")
+                        .param("opcao", "MES")
+                        .param("ano", "2026")
+                        .param("mes", "5")
+                        .param("visualizacao", "GRADE"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/pdf"));
+    }
+
+    @Test
+    @DisplayName("Should export calendar events to PowerPoint successfully")
+    void deveExportarParaPowerPoint() throws Exception {
+        EventoEntity event = new EventoEntity();
+        event.setId(UUID.randomUUID());
+        event.setTitulo("Retiro Espiritual");
+        event.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
+        event.setStatus("CONFIRMADO");
+        event.setInicioUtc(Instant.parse("2026-07-10T09:00:00Z"));
+        event.setFimUtc(Instant.parse("2026-07-10T18:00:00Z"));
+        eventRepository.save(event);
+
+        mockMvc.perform(get("/api/v1/eventos/exportar")
+                        .param("formato", "POWERPOINT")
+                        .param("opcao", "MES")
+                        .param("ano", "2026")
+                        .param("mes", "7"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE,
+                        "application/vnd.openxmlformats-officedocument.presentationml.presentation"))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                        containsString("attachment; filename=\"calendario_mes_2026_07.pptx\"")));
     }
 
     @Test

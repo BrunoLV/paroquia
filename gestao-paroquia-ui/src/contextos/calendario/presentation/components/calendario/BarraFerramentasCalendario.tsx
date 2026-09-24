@@ -1,5 +1,4 @@
 import {
-  alpha,
   Box,
   Card,
   CardContent,
@@ -151,7 +150,6 @@ export const BarraFerramentasCalendario = ({
       elevation={0}
       sx={{
         p: 1,
-        mb: 3,
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 2,
@@ -246,7 +244,7 @@ export const BarraFerramentasCalendario = ({
                 sx={{
                   border: 'none',
                   borderRadius: 0,
-                  bgcolor: activeMode === 'DIA' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  bgcolor: activeMode === 'DIA' ? (theme) => theme.custom.navigationSelectedBg : 'transparent',
                   fontWeight: activeMode === 'DIA' ? 700 : 500,
                 }}
               />
@@ -262,7 +260,7 @@ export const BarraFerramentasCalendario = ({
                 sx={{
                   border: 'none',
                   borderRadius: 0,
-                  bgcolor: activeMode === 'SEMANA' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  bgcolor: activeMode === 'SEMANA' ? (theme) => theme.custom.navigationSelectedBg : 'transparent',
                   fontWeight: activeMode === 'SEMANA' ? 700 : 500,
                 }}
               />
@@ -278,7 +276,7 @@ export const BarraFerramentasCalendario = ({
                 sx={{
                   border: 'none',
                   borderRadius: 0,
-                  bgcolor: activeMode === 'MES' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  bgcolor: activeMode === 'MES' ? (theme) => theme.custom.navigationSelectedBg : 'transparent',
                   fontWeight: activeMode === 'MES' ? 700 : 500,
                 }}
               />
@@ -294,7 +292,7 @@ export const BarraFerramentasCalendario = ({
                 sx={{
                   border: 'none',
                   borderRadius: 0,
-                  bgcolor: activeMode === 'ANO' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                  bgcolor: activeMode === 'ANO' ? (theme) => theme.custom.navigationSelectedBg : 'transparent',
                   fontWeight: activeMode === 'ANO' ? 700 : 500,
                 }}
               />
@@ -312,7 +310,7 @@ export const BarraFerramentasCalendario = ({
                   borderRadius: 0,
                   bgcolor:
                     activeMode === 'DIAS_ESPECIFICOS'
-                      ? (theme) => alpha(theme.palette.primary.main, 0.12)
+                      ? (theme) => theme.custom.navigationSelectedBg
                       : 'transparent',
                   fontWeight: activeMode === 'DIAS_ESPECIFICOS' ? 700 : 500,
                 }}

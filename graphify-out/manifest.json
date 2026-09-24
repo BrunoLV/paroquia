@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/ExportacaoCalendarioController.java": {
-    "mtime": 1789829054.3963273,
-    "ast_hash": "aaa11548170a558b01ae7087cfd0fbeb",
+    "mtime": 1790125990.6876988,
+    "ast_hash": "481ebb949ebdc2ae8ccc070eee990ad0",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/api/v1/controller/MetricaEstrategicaController.java": {
@@ -260,8 +260,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/evento/ExportacaoCalendarioUseCase.java": {
-    "mtime": 1789831147.6975148,
-    "ast_hash": "298abb69a639f152903d2a1c1f513d9c",
+    "mtime": 1790125980.142509,
+    "ast_hash": "b056ce963bc7b23b53d3ad461420d083",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/domain/exception/AprovacaoObrigatoriaException.java": {
@@ -2270,8 +2270,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/exportacao/ExportacaoCalendarioIntegrationTest.java": {
-    "mtime": 1786036367.3017025,
-    "ast_hash": "d354c0fe466b3458f4cfeffa459c91b4",
+    "mtime": 1790126297.7846873,
+    "ast_hash": "82c45e5465d82000a0b67865593b24b6",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/exportacao/ParoquiaConfiguracaoInitializerIntegrationTest.java": {
@@ -2830,8 +2830,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/AGENTS.md": {
-    "mtime": 1789588649.1658301,
-    "ast_hash": "991750588cc15757197e69e437e43686",
+    "mtime": 1790094214.3421185,
+    "ast_hash": "e5c0a9919371f8badf0f032b1a79cdb6",
     "semantic_hash": ""
   },
   "gestao-paroquia/CLAUDE.md": {
@@ -4880,8 +4880,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/SolenidadesDialog.tsx": {
-    "mtime": 1789610328.6422257,
-    "ast_hash": "2b1ec009e65c15e7f903c79cc1f91713",
+    "mtime": 1790121351.0637877,
+    "ast_hash": "db0ca3862494010a15e4400b9d5d33c3",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/eventos/EventoApoioSelect.tsx": {
@@ -4895,8 +4895,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/eventos/EventoDataRecorrenciaCard.tsx": {
-    "mtime": 1789954338.6320827,
-    "ast_hash": "52162bd2cfea0bb028fa3c3c83a0ba4f",
+    "mtime": 1790119776.7292502,
+    "ast_hash": "b0fcfe1ce5e74f76826b8d2b7522d510",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/eventos/EventoLocalCard.tsx": {
@@ -4940,8 +4940,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/pages/Calendario.tsx": {
-    "mtime": 1790083076.3721445,
-    "ast_hash": "5c63e4e05e33192c98aa03d297a2ca12",
+    "mtime": 1790119285.9987783,
+    "ast_hash": "1056979439aabf46f19a930924fc94e1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/schemas/eventoSchema.ts": {
@@ -5925,8 +5925,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/liturgicalCalendar.ts": {
-    "mtime": 1789610328.6542296,
-    "ast_hash": "05a6be551422d4f6f25cece295a93155",
+    "mtime": 1790121333.8597853,
+    "ast_hash": "25274835aad0d1768a3ab2380aca41a7",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/masks.test.ts": {
@@ -6535,8 +6535,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/DialogExportarCalendario.tsx": {
-    "mtime": 1789848701.2034972,
-    "ast_hash": "83dc811202d92decd9c91194b3f3c42d",
+    "mtime": 1790126428.9984038,
+    "ast_hash": "26a0169d828604862b0bcab48fc1030e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/FormularioRecorrencia.test.tsx": {
@@ -6550,13 +6550,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/AgendaListaCalendario.tsx": {
-    "mtime": 1789938999.6681073,
-    "ast_hash": "39c1681cd67f827a995c90430d490325",
+    "mtime": 1790119178.4672718,
+    "ast_hash": "e97f883c04aed4b0149bbe8a23483477",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/BarraFerramentasCalendario.tsx": {
-    "mtime": 1790083076.371358,
-    "ast_hash": "afd5243d54932af941d28d3796230eec",
+    "mtime": 1790119279.1638098,
+    "ast_hash": "1a6eee8ada3e1280d95099b72139fd78",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/DialogDetalhesEvento.tsx": {
@@ -6565,8 +6565,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/GradeMesCalendario.tsx": {
-    "mtime": 1790083076.3715286,
-    "ast_hash": "d966e7ef35a2c171946b70811d49a468",
+    "mtime": 1790120582.3814762,
+    "ast_hash": "6160c8ce5bbae3c124bbe750cf10b6b5",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ListaProgressoProjetosAtivos.tsx": {
@@ -6655,8 +6655,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/export/ExportadorCalendario.java": {
-    "mtime": 1789831054.371409,
-    "ast_hash": "f0efaea7d87c57b16491dcbc664a284f",
+    "mtime": 1790125969.2204974,
+    "ast_hash": "eb4cf6cd9b97d1bb04cc0a2aac093793",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/application/usecase/metricas/CalcularImpactoSocialUseCase.java": {
@@ -6700,18 +6700,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioCsv.java": {
-    "mtime": 1789831102.1534631,
-    "ast_hash": "dbbf7c1e27ad8cbeaa314df92e4007ec",
+    "mtime": 1790126007.1990573,
+    "ast_hash": "2bd369114d3c03182c8eeeea85532b04",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioExcel.java": {
-    "mtime": 1789831122.9194865,
-    "ast_hash": "311d08e3dedda46ef32e6e846a7d3136",
+    "mtime": 1790126007.1989365,
+    "ast_hash": "105617e5aa911a834ddd9d554f6d4f36",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioPdf.java": {
-    "mtime": 1789831131.6544964,
-    "ast_hash": "817506e55d63a096dab2c3d663b4755f",
+    "mtime": 1790126324.090602,
+    "ast_hash": "e9c2b10845b854556a3fa18c4f442d74",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/external/ProvedorEventoProjetoCalendario.java": {
@@ -6760,18 +6760,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioCsvTest.java": {
-    "mtime": 1789831153.7115214,
-    "ast_hash": "ce9ca3fee64d620ab8de1e6a82aa6df8",
+    "mtime": 1790126242.4489326,
+    "ast_hash": "2e09a580c228c27590c9228e7dca0685",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioExcelTest.java": {
-    "mtime": 1789831159.3431885,
-    "ast_hash": "ddfd8784bcd7d77c75e0ec428a9c660b",
+    "mtime": 1790126242.4490106,
+    "ast_hash": "ba5cac0a41200b58aac555aeff8375d6",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioPdfTest.java": {
-    "mtime": 1789831164.0735335,
-    "ast_hash": "3d40de79c4e957cae5e21cec654746da",
+    "mtime": 1790126271.003413,
+    "ast_hash": "ef1e4deea584d7854f52b2ed84f5c618",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/integration/eventos/AtualizarTodosEventosRecorrentesIntegrationTest.java": {
@@ -6925,23 +6925,23 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/VisualizacaoAnoCalendario.tsx": {
-    "mtime": 1790083076.4252875,
-    "ast_hash": "1da8c7bdff53458492c6752fcc33eb77",
+    "mtime": 1790119191.2252133,
+    "ast_hash": "f21383fd2311d84a16625fa2e897fcb3",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/VisualizacaoDiasEspecificosCalendario.tsx": {
-    "mtime": 1790083076.425406,
-    "ast_hash": "c7d6b0045065237bf5c76e92f43c1cf1",
+    "mtime": 1790119264.600844,
+    "ast_hash": "ba181c319a582d0ba6a6b4aebaa4a0b1",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/VisualizacaoHojeCalendario.tsx": {
-    "mtime": 1790083076.4255033,
-    "ast_hash": "470700df2e20a01002d5d48748820fd8",
+    "mtime": 1790119264.6006985,
+    "ast_hash": "33cc68ce7ddd4ac317bf03a129893a2a",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/VisualizacaoSemanaCalendario.tsx": {
-    "mtime": 1790083076.4256094,
-    "ast_hash": "28bf615548a362ddcf7078270cb5a652",
+    "mtime": 1790120766.1312995,
+    "ast_hash": "e11f819b1f145db245b6e356f1f7cb66",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/CartaoEventoCalendario.tsx": {
@@ -6955,8 +6955,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/TimelineDiaCalendario.tsx": {
-    "mtime": 1790083076.4251692,
-    "ast_hash": "4b7ff70df12c2e28aee0b0b6797b0505",
+    "mtime": 1790119296.4757304,
+    "ast_hash": "0c74abcaf92bb77192e266e89abd8795",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/application/usecase/ReexecutarAprovacaoUseCase.java": {
@@ -7007,6 +7007,31 @@
   "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/importacao/application/service/ImportacaoLinhaExecutorTest.java": {
     "mtime": 1790084412.7419982,
     "ast_hash": "126cb15dd7bda5ba250a009da89347ad",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/export/CorCategoriaEventoResolver.java": {
+    "mtime": 1790123504.3532834,
+    "ast_hash": "093407ee2c925181a57245403b7ffed4",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioPptx.java": {
+    "mtime": 1790126333.3298864,
+    "ast_hash": "be32581b194244f6f166475ea878c7de",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/export/ExportadorCalendarioPptxTest.java": {
+    "mtime": 1790126256.9689903,
+    "ast_hash": "8e5b58b803b3e9a7148aa5a5b26f63e1",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/calendario/infrastructure/export/GradeMensalCalculator.java": {
+    "mtime": 1790125959.7963698,
+    "ast_hash": "4bad9156afe1e7c204201a26275a4f93",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia/app/src/test/java/br/com/nsfatima/gestao/calendario/infrastructure/export/GradeMensalCalculatorTest.java": {
+    "mtime": 1790126351.1089056,
+    "ast_hash": "4307cdf8d62b4afaf68bacdc264ed711",
     "semantic_hash": ""
   }
 }

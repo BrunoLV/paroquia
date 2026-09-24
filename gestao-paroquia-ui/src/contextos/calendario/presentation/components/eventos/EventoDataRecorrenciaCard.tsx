@@ -109,6 +109,32 @@ const EventoDataRecorrenciaCard: React.FC<EventoDataRecorrenciaCardProps> = ({
     [startDate, isRecurring, setValue]
   );
 
+  // Sincroniza o término (endDate ↔ endTime) ao alternar recorrência no modo Personalizado
+  const sincronizarTerminoAoAlternarRecorrencia = useCallback(
+    (novoIsRecurring: boolean) => {
+      if (tipoHorario !== 'PERSONALIZADO' || !startDate) return;
+      const start = new Date(startDate);
+      if (isNaN(start.getTime())) return;
+
+      if (novoIsRecurring) {
+        if (!endDate) return;
+        const end = new Date(endDate);
+        if (isNaN(end.getTime())) return;
+        setValue(
+          'endTime',
+          `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}`
+        );
+      } else {
+        if (!endTime) return;
+        const [h, m] = endTime.split(':').map(Number);
+        const end = new Date(start);
+        end.setHours(h, m, 0, 0);
+        setValue('endDate', formatLocalDate(end));
+      }
+    },
+    [tipoHorario, startDate, endDate, endTime, setValue]
+  );
+
   // Manipula a troca de modo de horário com migração coerente de datas
   const handleTrocaModoHorario = (novoModo: 'PERSONALIZADO' | 'DIA_INTEIRO' | 'PERIODO') => {
     if (novoModo === 'PERSONALIZADO') {
@@ -523,7 +549,16 @@ const EventoDataRecorrenciaCard: React.FC<EventoDataRecorrenciaCardProps> = ({
                   render={({ field }) => (
                     <>
                       <FormControlLabel
-                        control={<Switch checked={field.value} onChange={(e) => field.onChange(e.target.checked)} disabled={disabled} />}
+                        control={
+                          <Switch
+                            checked={field.value}
+                            onChange={(e) => {
+                              sincronizarTerminoAoAlternarRecorrencia(e.target.checked);
+                              field.onChange(e.target.checked);
+                            }}
+                            disabled={disabled}
+                          />
+                        }
                         label="Evento Recorrente"
                         sx={{ mb: 0.5 }}
                       />

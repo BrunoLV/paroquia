@@ -10,6 +10,8 @@ import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntit
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -40,6 +42,7 @@ public class ExportacaoCalendarioUseCase {
     private final EventoJpaRepository eventoRepository;
     private final LocalJpaRepository localRepository;
     private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final ProjetoEventoJpaRepository projetoEventoRepository;
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
     private final List<ExportadorCalendario> exportadores;
 
@@ -47,11 +50,13 @@ public class ExportacaoCalendarioUseCase {
             EventoJpaRepository eventoRepository,
             LocalJpaRepository localRepository,
             GrupoParoquialJpaRepository grupoParoquialRepository,
+            ProjetoEventoJpaRepository projetoEventoRepository,
             ParoquiaConfiguracaoRepository paroquiaConfigRepository,
             List<ExportadorCalendario> exportadores) {
         this.eventoRepository = eventoRepository;
         this.localRepository = localRepository;
         this.grupoParoquialRepository = grupoParoquialRepository;
+        this.projetoEventoRepository = projetoEventoRepository;
         this.paroquiaConfigRepository = paroquiaConfigRepository;
         this.exportadores = exportadores;
     }
@@ -71,13 +76,14 @@ public class ExportacaoCalendarioUseCase {
      * @param dataFim fim do intervalo quando {@code opcao} é "PERIODO"
      * @param categorias categorias de evento usadas para filtrar o conjunto exportado
      * @param grupoParoquialIds organizações usadas para filtrar o conjunto exportado
+     * @param visualizacao modo de apresentação visual ("AGENDA" ou "GRADE"), repassado ao exportador
      * @return conteúdo binário do calendário exportado no formato solicitado
      * @throws IllegalArgumentException se {@code opcao} for inválida ou se nenhum
      *                                    exportador suportar o {@code formato} informado
      */
     @Transactional(readOnly = true)
     public byte[] execute(String formato, String opcao, Integer ano, Integer mes, Instant dataInicio, Instant dataFim,
-                          List<String> categorias, List<UUID> grupoParoquialIds) {
+                          List<String> categorias, List<UUID> grupoParoquialIds, String visualizacao) {
         // 1. Determina o período de tempo (UTC)
         Instant start;
         Instant end;
@@ -133,6 +139,9 @@ public class ExportacaoCalendarioUseCase {
         Map<UUID, String> orgMap = grupoParoquialRepository.findAll().stream()
                 .collect(Collectors.toMap(GrupoParoquialEntity::getId, GrupoParoquialEntity::getNome));
 
+        Map<UUID, String> projetoMap = projetoEventoRepository.findAll().stream()
+                .collect(Collectors.toMap(ProjetoEventoEntity::getId, ProjetoEventoEntity::getNome));
+
         // 4. Carrega a configuração da paróquia
         ParoquiaConfiguracaoEntity config = paroquiaConfigRepository.findAll().stream()
                 .findFirst()
@@ -144,6 +153,6 @@ public class ExportacaoCalendarioUseCase {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Formato de exportação não suportado: " + formato));
 
-        return exportador.exportar(eventos, localMap, orgMap, start, end, config);
+        return exportador.exportar(eventos, localMap, orgMap, projetoMap, start, end, config, visualizacao);
     }
 }

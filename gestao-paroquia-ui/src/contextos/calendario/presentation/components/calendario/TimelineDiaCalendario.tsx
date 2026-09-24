@@ -297,7 +297,7 @@ export const TimelineDiaCalendario = ({
                           justifyContent: 'flex-start',
                           px: 1,
                           cursor: 'pointer',
-                          borderRadius: 1,
+                          borderRadius: 1.5,
                           transition: 'background-color 0.15s',
                           '&:hover': {
                             bgcolor: 'action.hover',

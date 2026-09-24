@@ -33,15 +33,20 @@ public interface ExportadorCalendario {
      * @param eventos eventos já filtrados pelo período e critérios da exportação
      * @param localMap mapa de id de local para nome, usado para resolução de exibição
      * @param orgMap mapa de id de organização para nome, usado para resolução de exibição
+     * @param projetoMap mapa de id de projeto vinculado para nome, usado para resolução de exibição
      * @param start início do período coberto pela exportação
      * @param end fim do período coberto pela exportação
      * @param config configuração da paróquia usada para personalizar o documento gerado
+     * @param visualizacao modo de apresentação visual ({@code "AGENDA"} — cartões por evento,
+     *     padrão — ou {@code "GRADE"} — grade mensal); exportadores tabulares (Excel, CSV) ignoram
      * @return conteúdo binário do arquivo exportado no formato suportado
      */
     byte[] exportar(List<EventoEntity> eventos,
                     Map<UUID, String> localMap,
                     Map<UUID, String> orgMap,
+                    Map<UUID, String> projetoMap,
                     Instant start,
                     Instant end,
-                    ParoquiaConfiguracaoEntity config);
+                    ParoquiaConfiguracaoEntity config,
+                    String visualizacao);
 }

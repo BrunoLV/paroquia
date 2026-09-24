@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CalendarIcon from '@mui/icons-material/CalendarMonth';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -64,7 +64,7 @@ const Calendario = () => {
   const crud = useEventoCrud(data.refetchCalendario);
 
   return (
-    <Box>
+    <Stack spacing={2.5}>
       <PageHeader
         icon={<CalendarIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Calendário Paroquial"
@@ -243,7 +243,7 @@ const Calendario = () => {
         liturgicalCycle={data.liturgicalInfo.cycle}
         solemnities={data.solemnities}
       />
-    </Box>
+    </Stack>
   );
 };
 

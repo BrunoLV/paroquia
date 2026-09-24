@@ -35,9 +35,11 @@ class ExportadorCalendarioExcelTest {
                 List.of(event),
                 Collections.emptyMap(),
                 Collections.emptyMap(),
+                Collections.emptyMap(),
                 Instant.parse("2026-05-01T00:00:00Z"),
                 Instant.parse("2026-05-31T23:59:59Z"),
-                config
+                config,
+                "AGENDA"
         );
 
         assertNotNull(result);

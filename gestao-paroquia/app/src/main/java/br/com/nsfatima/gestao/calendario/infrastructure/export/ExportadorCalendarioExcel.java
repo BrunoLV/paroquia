@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.export;
 
 import br.com.nsfatima.gestao.calendario.application.export.ExportadorCalendario;
+import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import org.apache.poi.ss.usermodel.Cell;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Exporta uma lista de eventos do calendário para uma planilha Excel (.xlsx) usando Apache POI,
@@ -35,6 +37,7 @@ import java.util.UUID;
 public class ExportadorCalendarioExcel implements ExportadorCalendario {
 
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
+    private static final String NA = "N/A";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     /**
@@ -56,9 +59,11 @@ public class ExportadorCalendarioExcel implements ExportadorCalendario {
      * @param eventos eventos a serem exportados
      * @param localMap mapa de ID de local para nome de exibição
      * @param orgMap mapa de ID de organização para nome de exibição
+     * @param projetoMap mapa de ID de projeto vinculado para nome de exibição
      * @param start início do período exibido no subtítulo do relatório
      * @param end fim do período exibido no subtítulo do relatório
      * @param config configuração da paróquia, usada para nome e logo da paróquia
+     * @param visualizacao modo de apresentação (ignorado por este exportador tabular)
      * @return bytes do arquivo .xlsx gerado
      * @throws RuntimeException se ocorrer erro de E/S na serialização do workbook
      */
@@ -66,9 +71,11 @@ public class ExportadorCalendarioExcel implements ExportadorCalendario {
     public byte[] exportar(List<EventoEntity> eventos,
                            Map<UUID, String> localMap,
                            Map<UUID, String> orgMap,
+                           Map<UUID, String> projetoMap,
                            Instant start,
                            Instant end,
-                           ParoquiaConfiguracaoEntity config) {
+                           ParoquiaConfiguracaoEntity config,
+                           String visualizacao) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Calendário");
 
@@ -123,8 +130,8 @@ public class ExportadorCalendarioExcel implements ExportadorCalendario {
 
             // Cabeçalho na linha 4
             Row headerRow = sheet.createRow(4);
-            String[] columns = {"Título",
-                    "Descrição", "Categoria", "Início", "Fim", "Local", "Organização Responsável", "Status"};
+            String[] columns = {"Título", "Descrição", "Categoria", "Formato", "Turno/Horário", "Início", "Fim",
+                    "Recorrente", "Local(is)", "Organização Responsável", "Projeto Vinculado", "Status", "Conflito"};
 
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -139,11 +146,17 @@ public class ExportadorCalendarioExcel implements ExportadorCalendario {
                 row.createCell(0).setCellValue(e.getTitulo());
                 row.createCell(1).setCellValue(e.getDescricao() != null ? e.getDescricao() : "");
                 row.createCell(2).setCellValue(e.getCategoria() != null ? e.getCategoria().name() : "");
-                row.createCell(3).setCellValue(formatInstant(e.getInicioUtc()));
-                row.createCell(4).setCellValue(formatInstant(e.getFimUtc()));
-                row.createCell(5).setCellValue(localMap.getOrDefault(e.getLocalId(), "N/A"));
-                row.createCell(6).setCellValue(orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), "N/A"));
-                row.createCell(7).setCellValue(e.getStatus());
+                row.createCell(3).setCellValue(e.getFormato().getDescricao());
+                row.createCell(4).setCellValue(turnoLabel(e));
+                row.createCell(5).setCellValue(formatInstant(e.getInicioUtc()));
+                row.createCell(6).setCellValue(formatInstant(e.getFimUtc()));
+                row.createCell(7).setCellValue(e.getRecorrenciaId() != null ? "Sim" : "Não");
+                row.createCell(8).setCellValue(localLabel(e, localMap));
+                row.createCell(9).setCellValue(orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), NA));
+                row.createCell(10).setCellValue(
+                        e.getProjetoId() != null ? projetoMap.getOrDefault(e.getProjetoId(), "") : "");
+                row.createCell(11).setCellValue(e.getStatus());
+                row.createCell(12).setCellValue(e.getEstadoConflito() != null ? e.getEstadoConflito().name() : "");
             }
 
             // Redimensiona colunas
@@ -190,5 +203,37 @@ public class ExportadorCalendarioExcel implements ExportadorCalendario {
             return "";
         }
         return ZonedDateTime.ofInstant(instant, BR_ZONE).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    /**
+     * Rótulo amigável do turno/horário do evento: descrição do {@code tipoHorario} predefinido,
+     * ou a lista de turnos selecionados quando houver mais de um.
+     *
+     * @param e evento a descrever
+     * @return rótulo pronto para exibição
+     */
+    private String turnoLabel(EventoEntity e) {
+        List<TipoHorarioEvento> periodos = e.getPeriodosList();
+        if (periodos.size() > 1) {
+            return periodos.stream().map(TipoHorarioEvento::getDescricao).collect(Collectors.joining(", "));
+        }
+        return e.getTipoHorario() != null
+                ? e.getTipoHorario().getDescricao()
+                : TipoHorarioEvento.PERSONALIZADO.getDescricao();
+    }
+
+    /**
+     * Rótulo com os nomes de todos os locais alocados ao evento, separados por vírgula.
+     *
+     * @param e evento a descrever
+     * @param localMap mapa de ID de local para nome de exibição
+     * @return rótulo pronto para exibição, ou {@code "N/A"} se nenhum local estiver definido
+     */
+    private String localLabel(EventoEntity e, Map<UUID, String> localMap) {
+        List<UUID> ids = e.getLocalIds();
+        if (ids.isEmpty()) {
+            return NA;
+        }
+        return ids.stream().map(id -> localMap.getOrDefault(id, NA)).collect(Collectors.joining(", "));
     }
 }

@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import {
   alpha,
   Box,
-  Button,
   Card,
   CardContent,
   Grid,
@@ -12,6 +11,7 @@ import {
 } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventIcon from '@mui/icons-material/Event';
+import ActionButton from '@/shared/presentation/components/ActionButton';
 import { Evento } from '@/shared/domain/types/types';
 import { isSameDay, MONTH_NAMES } from '@/shared/utils/calendarHelpers';
 import { CALENDAR_CATEGORIES } from '@/contextos/calendario/presentation/hooks/useCalendarFilterState';
@@ -158,15 +158,14 @@ export const VisualizacaoAnoCalendario = ({
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
                   {monthName}
                 </Typography>
-                <Button
+                <ActionButton
+                  title="Ver Mês"
                   size="small"
                   variant="text"
-                  endIcon={<CalendarMonthIcon sx={{ fontSize: '1rem !important' }} />}
+                  icon={<CalendarMonthIcon sx={{ fontSize: '1rem !important' }} />}
                   onClick={() => onMonthSelect(monthIndex)}
                   sx={{ fontSize: '0.72rem', py: 0.25, px: 0.75 }}
-                >
-                  Ver Mês
-                </Button>
+                />
               </Box>
 
               {/* Tabela do Mini-Mês */}

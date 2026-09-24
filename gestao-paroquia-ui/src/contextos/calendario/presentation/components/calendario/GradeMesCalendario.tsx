@@ -8,6 +8,7 @@ import { formatarHorarioEvento } from '@/contextos/calendario/presentation/utils
 import { getFormatoEventoIcon } from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MAX_EVENTOS_VISIVEIS = 3;
 
 export interface GradeMesCalendarioProps {
   calendarDays: CalendarDay[];
@@ -38,7 +39,7 @@ export const GradeMesCalendario = ({
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 2,
-        overflow: 'hidden',
+        p: 1.5,
       }}
     >
       {/* Cabeçalho dos dias da semana */}
@@ -47,10 +48,10 @@ export const GradeMesCalendario = ({
         columns={7}
         sx={{
           bgcolor: 'action.hover',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
+          borderRadius: 1.5,
           textAlign: 'center',
           py: 1.5,
+          mb: 1,
         }}
       >
         {WEEKDAY_LABELS.map((day) => (
@@ -71,7 +72,7 @@ export const GradeMesCalendario = ({
       </Grid>
 
       {/* Células da Grade Mensal */}
-      <Grid container columns={7}>
+      <Grid container columns={7} spacing={1}>
         {calendarDays.map(({ date, isCurrentMonth, isToday }, idx) => {
           const dayEvents = getEventsForDay(date);
           const season = getLiturgicalSeason(date);
@@ -83,10 +84,12 @@ export const GradeMesCalendario = ({
               key={idx}
               onClick={() => (onDaySelect ? onDaySelect(date) : onDayClick(date))}
               sx={{
-                minHeight: 130,
-                borderRight: (idx + 1) % 7 === 0 ? 'none' : '1px solid',
-                borderBottom: idx < 35 ? '1px solid' : 'none',
-                borderColor: 'divider',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: { xs: 96, sm: 120, md: 140 },
+                border: '1px solid',
+                borderColor: isToday ? 'primary.main' : 'divider',
+                borderRadius: 1.5,
                 bgcolor: isToday
                   ? (theme) => alpha(theme.palette.primary.main, 0.05)
                   : isCurrentMonth
@@ -97,6 +100,8 @@ export const GradeMesCalendario = ({
                 transition: 'all 0.15s ease',
                 position: 'relative',
                 '&:hover': {
+                  borderColor: 'primary.main',
+                  boxShadow: (theme) => theme.shadows[1],
                   bgcolor: isToday
                     ? (theme) => alpha(theme.palette.primary.main, 0.12)
                     : (theme) => alpha(theme.palette.action.selected, 0.1),
@@ -105,7 +110,7 @@ export const GradeMesCalendario = ({
               }}
             >
               {/* Número do dia e rótulo litúrgico */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5, flexShrink: 0 }}>
                 <Typography
                   variant="body2"
                   sx={{
@@ -113,8 +118,8 @@ export const GradeMesCalendario = ({
                     color: isToday ? 'primary.contrastText' : isCurrentMonth ? 'text.primary' : 'text.disabled',
                     bgcolor: isToday ? 'primary.main' : 'transparent',
                     borderRadius: '50%',
-                    width: 28,
-                    height: 28,
+                    width: 30,
+                    height: 30,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -159,9 +164,9 @@ export const GradeMesCalendario = ({
                 />
               </Box>
 
-              {/* Lista de Eventos na Célula */}
-              <Box sx={{ height: 90, overflowY: 'auto', pr: 0.5 }}>
-                {dayEvents.map((evt) => {
+              {/* Lista de Eventos na Célula (máx. 3 visíveis + resumo "+N mais") */}
+              <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                {dayEvents.slice(0, MAX_EVENTOS_VISIVEIS).map((evt) => {
                   const styleColors = getCategoryColor(evt.categoria);
                   const isCancelado = evt.status?.toUpperCase() === 'CANCELADO';
                   const isFalhaExecucao = evt.status?.toUpperCase() === 'FALHA_EXECUCAO';
@@ -216,10 +221,10 @@ export const GradeMesCalendario = ({
                         opacity: isPendenteAprovacao ? 0.75 : isCancelado ? 0.75 : 1,
                         cursor: 'pointer',
                         transition: 'all 0.12s ease',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                        boxShadow: (theme) => theme.shadows[1],
                         '&:hover': {
                           bgcolor: 'action.hover',
-                          boxShadow: (theme) => theme.shadows[1],
+                          boxShadow: (theme) => theme.shadows[2],
                         },
                       }}
                     >
@@ -252,6 +257,26 @@ export const GradeMesCalendario = ({
                     </Box>
                   );
                 })}
+                {dayEvents.length > MAX_EVENTOS_VISIVEIS && (
+                  <Typography
+                    variant="caption"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDaySelect ? onDaySelect(date) : onDayClick(date);
+                    }}
+                    sx={{
+                      display: 'block',
+                      px: 0.75,
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      color: 'primary.main',
+                      cursor: 'pointer',
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    +{dayEvents.length - MAX_EVENTOS_VISIVEIS} mais
+                  </Typography>
+                )}
               </Box>
             </Grid>
           );

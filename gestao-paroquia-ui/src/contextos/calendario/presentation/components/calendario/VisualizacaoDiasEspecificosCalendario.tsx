@@ -148,7 +148,7 @@ export const VisualizacaoDiasEspecificosCalendario = ({
                   sx={{
                     border: 'none',
                     borderRadius: 0,
-                    bgcolor: modoExibicao === 'TIMELINE' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                    bgcolor: modoExibicao === 'TIMELINE' ? (theme) => theme.custom.navigationSelectedBg : 'transparent',
                     fontWeight: modoExibicao === 'TIMELINE' ? 700 : 500,
                   }}
                 />
@@ -165,7 +165,7 @@ export const VisualizacaoDiasEspecificosCalendario = ({
                   sx={{
                     border: 'none',
                     borderRadius: 0,
-                    bgcolor: modoExibicao === 'LISTA' ? (theme) => alpha(theme.palette.primary.main, 0.12) : 'transparent',
+                    bgcolor: modoExibicao === 'LISTA' ? (theme) => theme.custom.navigationSelectedBg : 'transparent',
                     fontWeight: modoExibicao === 'LISTA' ? 700 : 500,
                   }}
                 />

@@ -200,6 +200,19 @@ export interface SolemnityInfo {
   tipo: 'FIXA' | 'MOVEL';
 }
 
+/** Tom hexadecimal representativo de cada cor litúrgica, mesma paleta usada em `getLiturgicalSeasonStyle`
+ * (BRANCO usa o dourado festivo já adotado para Natal/Páscoa — branco puro não é legível em ambos os temas). */
+const CORES_LITURGICAS_HEX: Record<SolemnityInfo['corLiturgica'], string> = {
+  ROXO: '#7b1fa2',
+  VERMELHO: '#c62828',
+  VERDE: '#2e7d32',
+  BRANCO: '#b78103',
+};
+
+export function getCorLiturgicaHex(cor: SolemnityInfo['corLiturgica']): string {
+  return CORES_LITURGICAS_HEX[cor];
+}
+
 export interface ApiSolenidadeDTO {
   id: string;
   chave: string;

@@ -32,13 +32,16 @@ class ExportadorCalendarioCsvTest {
                 List.of(event),
                 Collections.emptyMap(),
                 Collections.emptyMap(),
+                Collections.emptyMap(),
                 Instant.parse("2026-05-01T00:00:00Z"),
                 Instant.parse("2026-05-31T23:59:59Z"),
-                config
+                config,
+                "AGENDA"
         );
 
         String csv = new String(result);
         assertTrue(exportador.suporta("CSV"));
         assertTrue(csv.contains("Missa de Teste"));
+        assertTrue(csv.contains("Título;Descrição;Categoria;Formato;Turno/Horário;Início;Fim;Recorrente;"));
     }
 }

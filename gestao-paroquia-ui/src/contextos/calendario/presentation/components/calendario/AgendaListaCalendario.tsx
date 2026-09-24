@@ -1,4 +1,4 @@
-import { Box, Card, Paper, Typography } from '@mui/material';
+import { Box, Card, Typography } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import CalendarIcon from '@mui/icons-material/CalendarMonth';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -34,7 +34,7 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
   }
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+    <Card elevation={0} sx={{ borderRadius: 2, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
       {agendaEvents.map((evt, idx) => {
         const styleColors = getCategoryColor(evt.categoria);
         const start = new Date(evt.inicio);
@@ -154,7 +154,7 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
           </Box>
         );
       })}
-    </Paper>
+    </Card>
   );
 };
 

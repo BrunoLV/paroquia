@@ -1,10 +1,25 @@
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import CloseIcon from '@mui/icons-material/Close';
 import EventIcon from '@mui/icons-material/Event';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
-import { SolemnityInfo } from '@/shared/utils/liturgicalCalendar';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
+import { getCorLiturgicaHex, SolemnityInfo } from '@/shared/utils/liturgicalCalendar';
 
 interface SolenidadesDialogProps {
   open: boolean;
@@ -16,71 +31,67 @@ interface SolenidadesDialogProps {
 
 /** Catálogo de solenidades/santoral do ano corrente: datas fixas e móveis (via algoritmo de
  * Meeus/Jones/Butcher), com cor litúrgica e fator de demanda de cada data — ver `useCalendarData`. */
-const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemnities }: SolenidadesDialogProps) => {
-  const theme = useTheme();
-  return (
+const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemnities }: SolenidadesDialogProps) => (
   <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-    <DialogTitle sx={{ color: 'primary.main' }}>
-      <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
-        Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalCycle})
-      </Typography>
+    <DialogTitle sx={{ color: 'primary.main', fontWeight: 600 }}>
+      Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalCycle})
     </DialogTitle>
-    <DialogContent sx={{ pt: 3 }}>
+    <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Solenidades fixas (Santoral) e datas móveis derivadas via algoritmo de Meeus/Jones/Butcher.
       </Typography>
-      <Box sx={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
-          <thead>
-            <tr style={{ borderBottom: `2px solid ${theme.palette.divider}`, backgroundColor: theme.custom.surfaceMuted }}>
-              <th style={{ padding: '8px 12px' }}>Data</th>
-              <th style={{ padding: '8px 12px' }}>Solenidade / Marco</th>
-              <th style={{ padding: '8px 12px' }}>Tipo</th>
-              <th style={{ padding: '8px 12px' }}>Cor Litúrgica</th>
-              <th style={{ padding: '8px 12px' }}>Fator Demanda</th>
-            </tr>
-          </thead>
-          <tbody>
+      <TableContainer component={Paper} variant="outlined">
+        <Table size="small">
+          <TableHead sx={{ bgcolor: 'action.hover' }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>Data</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Solenidade / Marco</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Cor Litúrgica</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {solemnities.map((sol) => (
-              <tr key={sol.chave} style={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
-                <td style={{ padding: '8px 12px', fontWeight: 600 }}>
-                  {sol.date.toLocaleDateString('pt-BR')}
-                </td>
-                <td style={{ padding: '8px 12px' }}>{sol.nome}</td>
-                <td style={{ padding: '8px 12px' }}>
+              <TableRow key={sol.chave} hover>
+                <TableCell sx={{ fontWeight: 600 }}>{sol.date.toLocaleDateString('pt-BR')}</TableCell>
+                <TableCell>{sol.nome}</TableCell>
+                <TableCell>
                   <StatusIcon
                     label={sol.tipo === 'FIXA' ? 'Santoral (Fixa)' : 'Móvel'}
                     color={sol.tipo === 'FIXA' ? 'info' : 'secondary'}
                     icon={<EventIcon />}
                     tooltip={sol.tipo === 'FIXA' ? 'Data fixa no calendário' : 'Data móvel, calculada a partir da Páscoa'}
                   />
-                </td>
-                <td style={{ padding: '8px 12px' }}>
-                  <StatusIcon
-                    label={sol.corLiturgica}
-                    color={
-                      sol.corLiturgica === 'ROXO' ? 'secondary' :
-                      sol.corLiturgica === 'VERMELHO' ? 'error' :
-                      sol.corLiturgica === 'VERDE' ? 'success' : 'warning'
-                    }
-                    icon={<CircleIcon />}
-                    tooltip="Cor litúrgica do dia"
-                  />
-                </td>
-                <td style={{ padding: '8px 12px', fontWeight: 600 }}>
-                  {sol.fatorDemanda.toFixed(2)}
-                </td>
-              </tr>
+                </TableCell>
+                <TableCell>
+                  <Box
+                    component="span"
+                    title="Cor litúrgica do dia"
+                    sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: getCorLiturgicaHex(sol.corLiturgica) }}
+                  >
+                    <CircleIcon fontSize="small" sx={{ color: 'inherit' }} />
+                    <Typography component="span" variant="caption" sx={{ fontWeight: 600, color: 'inherit' }}>
+                      {sol.corLiturgica}
+                    </Typography>
+                  </Box>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </Box>
+            {solemnities.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 2, color: 'text.secondary' }}>
+                  Nenhuma solenidade encontrada para o ano corrente.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </DialogContent>
     <DialogActions>
-      <ActionButton title="Fechar" icon={<CloseIcon />} onClick={onClose} color="primary" />
+      <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
     </DialogActions>
   </Dialog>
-  );
-};
+);
 
 export default SolenidadesDialog;
