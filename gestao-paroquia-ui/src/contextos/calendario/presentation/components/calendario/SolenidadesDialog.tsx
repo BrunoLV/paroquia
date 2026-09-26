@@ -31,11 +31,19 @@ interface SolenidadesDialogProps {
 
 /** Catálogo de solenidades/santoral do ano corrente: datas fixas e móveis (via algoritmo de
  * Meeus/Jones/Butcher), com cor litúrgica e fator de demanda de cada data — ver `useCalendarData`. */
-const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemnities }: SolenidadesDialogProps) => (
-  <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-    <DialogTitle sx={{ color: 'primary.main', fontWeight: 600 }}>
-      Catálogo Litúrgico & Solenidades — {currentYear} ({liturgicalCycle})
-    </DialogTitle>
+const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemnities }: SolenidadesDialogProps) => {
+  // Normaliza o ciclo litúrgico para extrair a designação do ciclo sem repetição redundante de ano
+  const cicloLimpo = liturgicalCycle
+    ? liturgicalCycle.replace(/\s*\(\d+\)/, '').trim()
+    : 'Ano A';
+  const cicloFormatado = cicloLimpo.startsWith('Ano') ? cicloLimpo : `Ano ${cicloLimpo}`;
+  const tituloModal = `Catálogo Litúrgico & Solenidades - ${cicloFormatado} - ${currentYear}`;
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle sx={{ color: 'primary.main', fontWeight: 600 }}>
+        {tituloModal}
+      </DialogTitle>
     <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Solenidades fixas (Santoral) e datas móveis derivadas via algoritmo de Meeus/Jones/Butcher.
@@ -92,6 +100,7 @@ const SolenidadesDialog = ({ open, onClose, currentYear, liturgicalCycle, solemn
       <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
     </DialogActions>
   </Dialog>
-);
+  );
+};
 
 export default SolenidadesDialog;

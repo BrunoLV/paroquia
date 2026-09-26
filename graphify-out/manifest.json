@@ -4880,8 +4880,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/SolenidadesDialog.tsx": {
-    "mtime": 1790121351.0637877,
-    "ast_hash": "db0ca3862494010a15e4400b9d5d33c3",
+    "mtime": 1790429062.511793,
+    "ast_hash": "c5a881a745364cf2335ea70fa0e47521",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/eventos/EventoApoioSelect.tsx": {
@@ -7222,6 +7222,11 @@
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ProjetosPorStatusCard.test.tsx": {
     "mtime": 1790398078.1040924,
     "ast_hash": "e3e7100b41bdd3948afbdd6cd3ab347a",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/SolenidadesDialog.test.tsx": {
+    "mtime": 1790429071.343784,
+    "ast_hash": "4bdc9c37b1b3748959016208c2d91879",
     "semantic_hash": ""
   }
 }
