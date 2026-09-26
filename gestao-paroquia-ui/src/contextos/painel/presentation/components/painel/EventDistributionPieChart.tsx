@@ -1,5 +1,4 @@
-import React from 'react';
-import {Box, Paper, Typography, useTheme} from '@mui/material';
+import { Box, Paper, Stack, Typography, useTheme } from '@mui/material';
 import PieChartOutlineIcon from '@mui/icons-material/PieChartOutlineOutlined';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {EventDistribution} from '@/shared/domain/types/types';
@@ -62,15 +61,21 @@ const EventDistributionPieChart: React.FC<EventDistributionPieChartProps> = ({ d
         p: 3,
         border: '1px solid',
         borderColor: 'divider',
+        borderRadius: 2,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-        Distribuição de Eventos
-      </Typography>
-      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <PieChartOutlineIcon color="primary" fontSize="small" />
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            Distribuição de Eventos
+          </Typography>
+        </Stack>
+      </Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Proporção de eventos agendados por organização responsável
       </Typography>
 

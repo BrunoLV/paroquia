@@ -25,7 +25,7 @@ describe('PainelResumoPeriodo', () => {
     expect(screen.getByText('Eventos no período')).toBeInTheDocument();
     expect(screen.getByText('Projetos ativos')).toBeInTheDocument();
     expect(screen.getByText('Aprovações pendentes')).toBeInTheDocument();
-    expect(screen.getByText('Engajamento pastoral')).toBeInTheDocument();
-    expect(screen.getByText('25 de 40 fiéis vinculados')).toBeInTheDocument();
+    expect(screen.getByText('Fiéis ativos')).toBeInTheDocument();
+    expect(screen.getByText('+3 novos no mês')).toBeInTheDocument();
   });
 });

@@ -1,85 +1,139 @@
+import React from 'react';
 import { Box, Chip, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { getAprovacoes } from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-import { getAprovacaoDetalhe, getAprovacaoTipoMeta } from '@/shared/utils/statusMeta/aprovacaoStatus';
+import { getAprovacaoTipoMeta, type AprovacaoTipoSolicitacao } from '@/shared/utils/statusMeta/aprovacaoStatus';
 
-const formatTempoPendente = (isoDate: string): string => {
-  const minutos = Math.max(0, Math.floor((Date.now() - new Date(isoDate).getTime()) / 60000));
-  if (minutos < 60) return `há ${minutos || 1} min`;
-  const horas = Math.floor(minutos / 60);
-  if (horas < 24) return `há ${horas}h`;
-  const dias = Math.floor(horas / 24);
-  return `há ${dias} dia${dias > 1 ? 's' : ''}`;
-};
-
-const AprovacoesPendentes = () => {
+/**
+ * Quadro sintético de aprovações pendentes exibindo apenas quantidades por tipo
+ * e botão de redirecionamento para o módulo completo de aprovações.
+ */
+const AprovacoesPendentes: React.FC = () => {
   const navigate = useNavigate();
   const { data, isLoading } = useQuery({
     queryKey: ['aprovacoesPendentes', 'dashboard'],
-    queryFn: () => getAprovacoes('PENDENTE', 0, 5),
+    queryFn: () => getAprovacoes('PENDENTE', 0, 100),
   });
 
   const pendentes = data?.content ?? [];
-  const total = data?.totalElements ?? 0;
+  const total = data?.totalElements ?? pendentes.length;
+
+  // Agrupamento estrito por tipo de solicitação
+  const contagemPorTipo = React.useMemo(() => {
+    return pendentes.reduce((acc, item) => {
+      const tipo = item.tipoSolicitacao || 'OUTRO';
+      acc[tipo] = (acc[tipo] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [pendentes]);
+
+  const tiposOrdenados = React.useMemo(() => {
+    return Object.entries(contagemPorTipo).sort((a, b) => b[1] - a[1]);
+  }, [contagemPorTipo]);
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <PendingActionsIcon sx={{ color: 'warning.main', fontSize: 20 }} />
-          <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
             Aprovações Pendentes
           </Typography>
-        </Box>
+        </Stack>
         {total > 0 && <Chip label={total} size="small" color="warning" sx={{ fontWeight: 700 }} />}
       </Box>
 
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
+        Solicitações aguardando decisão agrupadas por tipo
+      </Typography>
+
       {isLoading ? (
-        <Stack spacing={1.5}>
+        <Stack spacing={1.5} sx={{ flexGrow: 1, mb: 2.5 }}>
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} variant="rounded" height={40} />
+            <Skeleton key={i} variant="rounded" height={42} />
           ))}
         </Stack>
-      ) : pendentes.length > 0 ? (
-        <Stack spacing={0.5}>
-          {pendentes.map((aprovacao) => {
-            const meta = getAprovacaoTipoMeta(aprovacao.tipoSolicitacao);
-            return (
-              <Box key={aprovacao.id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1 }}>
-                <StatusIcon {...meta} size="small" />
-                <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                  <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
-                    {getAprovacaoDetalhe(aprovacao)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {meta.label} · {formatTempoPendente(aprovacao.criadoEmUtc)}
-                  </Typography>
+      ) : tiposOrdenados.length > 0 ? (
+        <>
+          <Stack spacing={1.25} sx={{ flexGrow: 1, mb: 2.5 }}>
+            {tiposOrdenados.map(([tipo, count]) => {
+              const meta = getAprovacaoTipoMeta(tipo as AprovacaoTipoSolicitacao);
+              return (
+                <Box
+                  key={tipo}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    p: 1.25,
+                    px: 1.5,
+                    borderRadius: 1.5,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    bgcolor: 'action.hover',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
+                    <StatusIcon {...meta} size="small" />
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                      {meta.label}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={count}
+                    size="small"
+                    color={meta.color}
+                    sx={{ fontWeight: 700, minWidth: 32 }}
+                  />
                 </Box>
-              </Box>
-            );
-          })}
+              );
+            })}
+          </Stack>
 
           <ActionButton
-            title="Ir para a tela de Aprovações"
-            label="Ver Aprovações"
-            icon={<PendingActionsIcon />}
-            variant="text"
+            fullWidth
+            title="Acessar Módulo de Aprovações"
+            label="Acessar Módulo de Aprovações"
+            icon={<ArrowForwardIcon />}
+            color="primary"
+            variant="contained"
+            onClick={() => navigate('/aprovacoes')}
+            sx={{ mt: 'auto' }}
+          />
+        </>
+      ) : (
+        <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, flexGrow: 1, justifyContent: 'center' }}>
+          <TaskAltIcon sx={{ fontSize: 40, color: 'success.main' }} />
+          <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
+            Nenhuma aprovação pendente no momento.
+          </Typography>
+          <ActionButton
+            title="Ver Histórico de Aprovações"
+            label="Ver Histórico de Aprovações"
+            icon={<ArrowForwardIcon />}
+            color="primary"
+            variant="outlined"
             size="small"
             onClick={() => navigate('/aprovacoes')}
-            sx={{ mt: 1, alignSelf: 'flex-start' }}
+            sx={{ mt: 1 }}
           />
-        </Stack>
-      ) : (
-        <Box sx={{ py: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-          <TaskAltIcon sx={{ fontSize: 36, color: 'success.main' }} />
-          <Typography color="text.secondary" variant="body2">
-            Nenhuma aprovação pendente.
-          </Typography>
         </Box>
       )}
     </Paper>

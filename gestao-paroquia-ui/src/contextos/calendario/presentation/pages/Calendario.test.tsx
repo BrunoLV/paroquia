@@ -347,7 +347,9 @@ test('toggles calendar view between Grid and List mode', async () => {
     fireEvent.click(listBtn);
   });
 
-  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+  });
 
   const gridBtn = screen.getByRole('button', { name: /^Mês$/i });
   await act(async () => {
@@ -470,5 +472,7 @@ test('toggles to DIAS ESPECÍFICOS view and displays date inputs and shortcuts',
   expect(screen.getByRole('button', { name: /7 dias/i })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /15 dias/i })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /30 dias/i })).toBeInTheDocument();
-  expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('Missa Paroquial')).toBeInTheDocument();
+  });
 });

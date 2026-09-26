@@ -4935,8 +4935,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/pages/Calendario.test.tsx": {
-    "mtime": 1790083076.3719878,
-    "ast_hash": "295d470904e1f5780b05297ca1c40fea",
+    "mtime": 1790398378.157836,
+    "ast_hash": "f19ec58dc9a4ce228905f8d2e63567cf",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/presentation/pages/Calendario.tsx": {
@@ -5375,8 +5375,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/AprovacoesPendentes.tsx": {
-    "mtime": 1789610328.6465616,
-    "ast_hash": "acc261061168168d15aa2e6bfea4ca0d",
+    "mtime": 1790398183.9350019,
+    "ast_hash": "474da510b51cc4de1e043bef344e49bd",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ChoqueHorarioAlert.tsx": {
@@ -5390,8 +5390,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ConteudoDashboard.tsx": {
-    "mtime": 1789610328.6472194,
-    "ast_hash": "5e4671ff923f5286ec08ee5dd8f1090d",
+    "mtime": 1790397977.1731787,
+    "ast_hash": "c0c15892ea06d2a027528b82d2be4552",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/DashboardFilterBar.tsx": {
@@ -5405,8 +5405,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/EventDistributionPieChart.tsx": {
-    "mtime": 1789610328.6471574,
-    "ast_hash": "906940404cdaecbab537cbb8e78d27d5",
+    "mtime": 1790398002.7611568,
+    "ast_hash": "4d29eee756746e2c617b25f4e24a6495",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/EventosOrfaosCard.tsx": {
@@ -5440,23 +5440,23 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/PainelResumoPeriodo.test.tsx": {
-    "mtime": 1789610328.646644,
-    "ast_hash": "c234a9eb05349b52f19829e00eeb149f",
+    "mtime": 1790397821.511312,
+    "ast_hash": "3aaae7eaa991e851e87c79b0c2381251",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/PainelResumoPeriodo.tsx": {
-    "mtime": 1789610328.6468341,
-    "ast_hash": "95e23ee205fb65eadf3ec7be4e486e41",
+    "mtime": 1790398028.8021345,
+    "ast_hash": "2bc3d4360fb14854c8d9a575d6679c8b",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ProjetosPorStatusCard.tsx": {
-    "mtime": 1789610328.6462612,
-    "ast_hash": "09eab85b76863c5ddeecf1c2ef2cdeb3",
+    "mtime": 1790397855.6562827,
+    "ast_hash": "7298be58b3bf1b62c7602ba69350e4fa",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/QuickActions.tsx": {
-    "mtime": 1789610328.6466815,
-    "ast_hash": "7722e51bfa6efeb2538e7ff54b80009c",
+    "mtime": 1790397798.6013315,
+    "ast_hash": "45a78a3dc4fd110e621ca8353a83221d",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/RetencaoPastoraisCard.tsx": {
@@ -5470,13 +5470,13 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/UpcomingEvents.tsx": {
-    "mtime": 1789610328.6470695,
-    "ast_hash": "4a7546baab577cfdab6f42644d518641",
+    "mtime": 1790397898.7662458,
+    "ast_hash": "dd5cfabead9b389567257ec0f5b3c496",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/WeeklyTimeline.tsx": {
-    "mtime": 1789610328.6469762,
-    "ast_hash": "8bf7edc2e943dc0e08d023f7db42e4bc",
+    "mtime": 1790397912.1162345,
+    "ast_hash": "d1c0fae802bf0efd1ee8c3ab3a71f8eb",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/Widgets.test.tsx": {
@@ -6570,8 +6570,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ListaProgressoProjetosAtivos.tsx": {
-    "mtime": 1789848977.3152618,
-    "ast_hash": "46072fe305d09f9e72d4e7e45ff24053",
+    "mtime": 1790398143.2510366,
+    "ast_hash": "33eecd868114f811330344172865c5b5",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/projeto/infrastructure/http/projetos.ts": {
@@ -7207,6 +7207,21 @@
   "gestao-paroquia-ui/src/contextos/clero/presentation/components/governoEclesiastico/GovernoEclesiasticoModal.test.tsx": {
     "mtime": 1790390621.3140502,
     "ast_hash": "0da2a493c601cbbb62761141e4d991dc",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/AprovacoesPendentes.test.tsx": {
+    "mtime": 1790398189.559997,
+    "ast_hash": "1c857c405261206d3a8c5350e4e48b1b",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ListaProgressoProjetosAtivos.test.tsx": {
+    "mtime": 1790398088.7170835,
+    "ast_hash": "be9c64dbd6e3865d1d52ce9dc64b73c1",
+    "semantic_hash": ""
+  },
+  "gestao-paroquia-ui/src/contextos/painel/presentation/components/painel/ProjetosPorStatusCard.test.tsx": {
+    "mtime": 1790398078.1040924,
+    "ast_hash": "e3e7100b41bdd3948afbdd6cd3ab347a",
     "semantic_hash": ""
   }
 }

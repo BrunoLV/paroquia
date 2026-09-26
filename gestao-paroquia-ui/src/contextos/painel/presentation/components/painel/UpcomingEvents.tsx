@@ -1,6 +1,7 @@
 import React from 'react';
-import {Box, Paper, Skeleton, Stack, Typography} from '@mui/material';
+import { Box, Chip, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useNavigate } from 'react-router-dom';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { getCategoriaEventoMeta } from '@/shared/utils/statusMeta/categoriaEventoStatus';
@@ -21,9 +22,32 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events, isLoading }) =>
   const navigate = useNavigate();
 
   return (
-    <Paper elevation={0} sx={{ p: 3, minHeight: 400, border: '1px solid', borderColor: 'divider' }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-        Próximos Eventos
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <CalendarMonthIcon color="primary" fontSize="small" />
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            Próximos Eventos
+          </Typography>
+        </Stack>
+        {events && events.length > 0 && (
+          <Chip label={`${events.length}`} size="small" variant="outlined" sx={{ fontWeight: 600 }} />
+        )}
+      </Box>
+
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Celebrações e compromissos confirmados
       </Typography>
 
       {isLoading ? (

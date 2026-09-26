@@ -1,7 +1,8 @@
 import React from 'react';
-import {Box, Paper, Stack, Typography} from '@mui/material';
+import { Box, Chip, Paper, Stack, Typography } from '@mui/material';
 import OrgIcon from '@mui/icons-material/Business';
 import PlaceIcon from '@mui/icons-material/Place';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 import {WeeklyEvent} from '@/shared/domain/types/types';
 
 interface WeeklyTimelineProps {
@@ -33,15 +34,24 @@ const WeeklyTimeline: React.FC<WeeklyTimelineProps> = ({ events }) => {
         p: 3,
         border: '1px solid',
         borderColor: 'divider',
+        borderRadius: 2,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-        Agenda da Semana
-      </Typography>
-      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <EventNoteIcon color="primary" fontSize="small" />
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            Agenda da Semana
+          </Typography>
+        </Stack>
+        {events.length > 0 && (
+          <Chip label={`${events.length}`} size="small" variant="outlined" sx={{ fontWeight: 600 }} />
+        )}
+      </Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Eventos e celebrações agendados para os próximos dias
       </Typography>
 
