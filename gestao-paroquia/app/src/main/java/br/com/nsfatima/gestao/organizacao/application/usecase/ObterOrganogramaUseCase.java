@@ -76,11 +76,6 @@ public class ObterOrganogramaUseCase {
                 .filter(u -> u.getParentId() == null)
                 .toList();
 
-        UnidadeTerritorialEntity rootClero = unidadesRaiz.stream()
-                .filter(u -> u.getTipo() == TipoUnidadeTerritorial.CLERO)
-                .findFirst()
-                .orElse(null);
-
         Map<UUID, List<UnidadeTerritorialEntity>> unidadesFilhasPorPaiId = todasUnidades.stream()
                 .filter(UnidadeTerritorialEntity::isAtivo)
                 .filter(u -> u.getParentId() != null)
@@ -98,11 +93,9 @@ public class ObterOrganogramaUseCase {
                 .filter(org -> org.getParentId() == null)
                 .toList();
 
-        if (rootClero != null) {
-            return buildUnidadeNodeRecursively(rootClero, unidadesFilhasPorPaiId, gruposPorPaiId);
-        }
+        String parocoNome = findClerigoNomePorFuncao(FuncaoEclesiastica.PAROCO);
+        String vigarioNome = findClerigoNomePorFuncao(FuncaoEclesiastica.VIGARIO_PAROQUIAL);
 
-        // Fallback caso não haja unidade territorial do clero raiz
         List<OrganogramaNodeResponse> rootChildren = new ArrayList<>();
         unidadesRaiz.forEach(u -> rootChildren.add(
                 buildUnidadeNodeRecursively(u, unidadesFilhasPorPaiId, gruposPorPaiId)));
@@ -112,10 +105,10 @@ public class ObterOrganogramaUseCase {
                 "root",
                 paroquiaNome,
                 "PAROQUIA",
-                "ROOT",
-                null,
-                null,
-                null,
+                "GOVERNO_ECLESIASTICO",
+                parocoNome,
+                "PÁROCO",
+                vigarioNome,
                 rootChildren
         );
     }
@@ -133,10 +126,18 @@ public class ObterOrganogramaUseCase {
         List<GrupoParoquialEntity> gruposFilhos = gruposPorPaiId.getOrDefault(unidade.getId(), List.of());
         gruposFilhos.forEach(org -> nosFilhos.add(buildOrgNodeRecursively(org, gruposPorPaiId)));
 
-        boolean isClero = unidade.getTipo() == TipoUnidadeTerritorial.CLERO;
-        String responsavelPapel = isClero ? "PÁROCO" : null;
-        String responsavelNome = isClero ? findClerigoNomePorFuncao(FuncaoEclesiastica.PAROCO) : null;
-        String viceResponsavelNome = isClero ? findClerigoNomePorFuncao(FuncaoEclesiastica.VIGARIO_PAROQUIAL) : null;
+        boolean isMatriz = unidade.getTipo() == TipoUnidadeTerritorial.MATRIZ;
+        String responsavelPapel = isMatriz ? "PÁROCO" : "RESPONSÁVEL PASTORAL";
+        String responsavelNome = null;
+        if (unidade.getClerigoResponsavelId() != null) {
+            responsavelNome = clerigoRepository.findById(unidade.getClerigoResponsavelId())
+                    .filter(c -> c.isAtivo())
+                    .map(c -> c.getNomeEclesiastico())
+                    .orElse(null);
+        } else if (isMatriz) {
+            responsavelNome = findClerigoNomePorFuncao(FuncaoEclesiastica.PAROCO);
+        }
+        String viceResponsavelNome = isMatriz ? findClerigoNomePorFuncao(FuncaoEclesiastica.VIGARIO_PAROQUIAL) : null;
 
         return new OrganogramaNodeResponse(
                 unidade.getId().toString(),

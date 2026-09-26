@@ -81,7 +81,7 @@ public class UnidadeTerritorialController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
     @Operation(summary = "Cria uma nova unidade territorial", description = "Registra uma nova unidade territorial na paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Unidade territorial criada com sucesso",
@@ -91,18 +91,12 @@ public class UnidadeTerritorialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public UnidadeTerritorialResponse criar(@RequestBody @Valid UnidadeTerritorialRequest request) {
-        UnidadeTerritorialEntity entity = service.criar(
-                request.nome(),
-                request.tipo(),
-                request.contato(),
-                request.ativo(),
-                request.parentId()
-        );
+        UnidadeTerritorialEntity entity = service.criar(request);
         return toResponse(entity);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
     @Operation(summary = "Atualiza uma unidade territorial", description = "Atualiza os dados de uma unidade territorial existente.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Unidade territorial atualizada com sucesso",
@@ -116,20 +110,13 @@ public class UnidadeTerritorialController {
             @Parameter(description = "Identificador único da unidade territorial", required = true)
             @PathVariable UUID id,
             @RequestBody @Valid UnidadeTerritorialRequest request) {
-        UnidadeTerritorialEntity entity = service.atualizar(
-                id,
-                request.nome(),
-                request.tipo(),
-                request.contato(),
-                request.ativo(),
-                request.parentId()
-        );
+        UnidadeTerritorialEntity entity = service.atualizar(id, request);
         return toResponse(entity);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
     @Operation(summary = "Exclui uma unidade territorial", description = "Remove uma unidade territorial sem dependências.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Unidade territorial excluída com sucesso"),
@@ -150,7 +137,47 @@ public class UnidadeTerritorialController {
                 entity.getTipo(),
                 entity.getContato(),
                 entity.isAtivo(),
-                entity.getParentId()
+                entity.getParentId(),
+
+                // Canônicos
+                entity.getPadroeiro(),
+                entity.getDataFestaPadroeira(),
+                entity.getDataDedicacaoAltar(),
+                entity.isPossuiSacrario(),
+                entity.isPossuiPiaBatismal(),
+                entity.getClerigoResponsavelId(),
+                null,
+
+                // Fiscais e Jurídicos
+                entity.getCnpj(),
+                entity.getInscricaoMunicipal(),
+                entity.getInscricaoImobiliariaIptu(),
+                entity.getProcessoImunidadeIptu(),
+
+                // Registro de Imóveis (RGI)
+                entity.getCartorioRgi(),
+                entity.getMatriculaImovel(),
+                entity.getTipoAquisicao(),
+                entity.getAreaTerrenoM2(),
+                entity.getAreaConstruidaM2(),
+
+                // Segurança e Concessionárias
+                entity.getAvcbNumero(),
+                entity.getAvcbValidade(),
+                entity.getLotacaoMaximaBombeiros(),
+                entity.getCodigoConsumidorEnergia(),
+                entity.getCodigoConsumidorAgua(),
+
+                // Contato e Endereço Estruturado
+                entity.getTelefone(),
+                entity.getEmail(),
+                entity.getEnderecoCep(),
+                entity.getEnderecoLogradouro(),
+                entity.getEnderecoNumero(),
+                entity.getEnderecoComplemento(),
+                entity.getEnderecoBairro(),
+                entity.getEnderecoCidade(),
+                entity.getEnderecoUf()
         );
     }
 }

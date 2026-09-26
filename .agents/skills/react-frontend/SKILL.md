@@ -187,6 +187,14 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 </Card>
 ```
 
+* **Invariantes e Anti-patterns Mandatórios de Diálogos:**
+  * `<DialogTitle>` simples: apenas string pura, proibido `<Typography>` aninhada.
+  * Tag `<form>` sempre com `noValidate`.
+  * `size="small"` mandatório em todos os campos (`TextField`, `Select`, `FormControl`).
+  * `dividers` e `sx={DIALOG_CONTENT_SCROLL_SX}` obrigatórios em `DialogContent`.
+  * Botões de ação via `<ActionButton>` (Cancelar = secondary com CloseIcon, Salvar = primary com SaveIcon).
+  * Um único botão de fechar (no rodapé, nunca duplicar com 'X' no header).
+
 ### 5.6. Exibição Somente Leitura e Indicadores Categóricos
 
 * Utilize o padrão `InfoField` (rótulo em `Typography variant="caption"` cinza + valor em `Typography variant="body2"` com `fontWeight: 500/600`).

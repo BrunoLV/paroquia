@@ -283,6 +283,15 @@ export const canManageOrganizacoes = (user: User | null): boolean => {
 };
 
 /**
+ * Quem pode gerir Unidades Territoriais (Matriz, Comunidades) e Governo Eclesiástico:
+ * Estritamente restrito a ADMIN e Pároco conforme o Direito Canônico e diretrizes do sistema.
+ */
+export const canManageUnidadesTerritoriais = (user: User | null): boolean => {
+  if (!user) return false;
+  return isAdmin(user) || isParoco(user);
+};
+
+/**
  * Quem pode adicionar uma observação a um registro: qualquer usuário que tenha ao menos um
  * papel além de "membro comum" (verificado remapeando cada papel individualmente por
  * `isMembro`) pode observar em qualquer organização. Um usuário cujos papéis são

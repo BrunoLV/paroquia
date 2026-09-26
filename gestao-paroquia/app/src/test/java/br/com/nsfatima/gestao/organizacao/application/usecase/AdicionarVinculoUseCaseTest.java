@@ -202,7 +202,7 @@ class AdicionarVinculoUseCaseTest {
 
         var invalidIgreja = new UnidadeTerritorialEntity();
         invalidIgreja.setId(igrejaId);
-        invalidIgreja.setTipo(TipoUnidadeTerritorial.CLERO);
+        invalidIgreja.setTipo(null);
         when(unidadeTerritorialRepository.findById(igrejaId)).thenReturn(Optional.of(invalidIgreja));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->

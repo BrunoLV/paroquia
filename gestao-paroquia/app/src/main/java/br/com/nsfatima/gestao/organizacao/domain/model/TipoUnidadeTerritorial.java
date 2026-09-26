@@ -1,12 +1,11 @@
 package br.com.nsfatima.gestao.organizacao.domain.model;
 
 /**
- * Classifica um nó da hierarquia territorial/estrutural da paróquia — {@code CLERO} (raiz) →
- * {@code MATRIZ}/{@code COMUNIDADE}. Diferente de {@link TipoGrupo}, não representa um agrupamento de
- * fiéis, e sim a estrutura territorial que hospeda os grupos paroquiais.
+ * Classifica um nó da hierarquia territorial e predial da paróquia:
+ * {@code MATRIZ} (sede paroquial física) ou {@code COMUNIDADE} (capela/comunidade filial).
+ * O Governo Eclesiástico (Clero e Diocese) não é uma unidade territorial, e sim a autoridade pastoral e canônica.
  */
 public enum TipoUnidadeTerritorial {
-    CLERO,
     MATRIZ,
     COMUNIDADE
 }

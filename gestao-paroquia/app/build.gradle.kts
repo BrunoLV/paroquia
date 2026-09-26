@@ -93,6 +93,7 @@ tasks.withType<JavaCompile> {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    maxHeapSize = "2048m"
     finalizedBy("jacocoTestReport")
 }
 

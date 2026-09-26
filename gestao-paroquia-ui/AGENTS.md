@@ -35,6 +35,15 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 
 Resumo do que ele cobre: layout de página (`PageHeader`, `Stack spacing={3}`), busca (`SearchField`), botões (`ActionButton`/`IconActionButton` + semântica de cor — nunca `ActionButton` sem `label` como controle só-ícone), estrutura de diálogos (`Card`+`Grid2`+`DIALOG_CONTENT_SCROLL_SX`, um único controle de fechar por Dialog/Drawer), espaçamento fixo de campos (`Stack spacing={2.5}`/`Grid spacing={2}`, nunca `Box`+`gap`), tríade de estados assíncronos, `StatusIcon`, `InfoField` com ícone obrigatório em toda tela de detalhe, tabelas e modo escuro (`useTheme()`, nunca import estático de tema). É especificação global: aplica-se a toda tela/módulo, novo ou existente, sem exceções por página.
 
+### 3.1. Invariantes e Anti-patterns Mandatórios de Modais e Diálogos (`Dialog`)
+* **`<DialogTitle>` Limpo:** Sempre string pura (`<DialogTitle>Título</DialogTitle>`). É **TERMINANTEMENTE PROIBIDO** colocar `<Typography>` dentro de `<DialogTitle>`.
+* **`<form noValidate>` Obrigatório:** Toda tag `<form>` em modais deve conter `noValidate` para impedir balões HTML5 nativos que quebram o design system.
+* **`size="small"` em TODOS os Inputs:** É **EXPRESSAMENTE PROIBIDO** gerar `<TextField>`, `<Select>` ou `<FormControl>` sem `size="small"`. O padrão corporativo exige 40px de altura para campos de entrada.
+* **`dividers` + `sx={DIALOG_CONTENT_SCROLL_SX}`:** Obrigatórios em `<DialogContent>`.
+* **Campos em `<Card variant="outlined" sx={{ borderRadius: 2 }}>`:** Proibido campo solto direto no `DialogContent`. Todo agrupamento tem cabeçalho com ícone e `Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}`.
+* **Controle Único de Fechar:** O botão canônico é `ActionButton` "Cancelar" no `DialogActions`. Proibido ícone "X" no cabeçalho quando houver rodapé com ações.
+* **Consulte a regra permanente:** [`.agents/rules/frontend-design-system.md`](../.agents/rules/frontend-design-system.md).
+
 ---
 
 ## 4. Arquitetura de Componentes e Código TypeScript

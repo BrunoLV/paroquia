@@ -44,7 +44,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, isUnlinkedUser } from '@/contextos/iam/presentation/auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, canManageUnidadesTerritoriais, isUnlinkedUser } from '@/contextos/iam/presentation/auth/permissions';
 import { useThemeMode } from '@/shared/presentation/context/ThemeModeContext';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import IconActionButton from './IconActionButton';
@@ -130,6 +130,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       : []),
     ...(canManageLocais(user)
       ? [{ label: 'Locais', path: '/locais', icon: <LocationIcon sx={{ fontSize: '1.25rem' }} /> }]
+      : []),
+    ...(canManageUnidadesTerritoriais(user)
+      ? [{ label: 'Governo & Território', path: '/governo-territorio', icon: <ChurchIcon sx={{ fontSize: '1.25rem' }} /> }]
       : []),
     { label: 'Organograma', path: '/organograma', icon: <AccountTreeIcon sx={{ fontSize: '1.25rem' }} /> },
     { label: 'Patrimônio', path: '/ativos', icon: <InventoryIcon sx={{ fontSize: '1.25rem' }} /> },

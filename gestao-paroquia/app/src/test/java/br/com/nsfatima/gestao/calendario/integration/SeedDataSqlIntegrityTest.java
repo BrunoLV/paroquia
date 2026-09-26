@@ -57,7 +57,7 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(21, flyway.info().applied().length,
+        assertEquals(22, flyway.info().applied().length,
                 "O baseline deve manter uma migração Flyway por contexto com persistência");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");
@@ -75,8 +75,16 @@ public class SeedDataSqlIntegrityTest {
 
         Integer organizacoesCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.grupo_paroquial", Integer.class);
+        Integer diocesesCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.dioceses", Integer.class);
+        Integer governoEclesiasticoCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.governo_eclesiastico", Integer.class);
         Integer unidadesCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.unidade_territorial", Integer.class);
+        Integer unidadesComPadroeiroCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.unidade_territorial WHERE padroeiro IS NOT NULL", Integer.class);
+        Integer unidadesComAvcbCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM calendario.unidade_territorial WHERE avcb_numero IS NOT NULL", Integer.class);
         Integer locaisCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.locais", Integer.class);
         Integer eventosCount = jdbcTemplate.queryForObject(
@@ -131,7 +139,11 @@ public class SeedDataSqlIntegrityTest {
                 "SELECT COUNT(*) FROM calendario.eventos WHERE formato = 'HIBRIDO'", Integer.class);
 
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
+        assertTrue(diocesesCount != null && diocesesCount > 0, "Seed deve incluir dioceses cadastradas");
+        assertTrue(governoEclesiasticoCount != null && governoEclesiasticoCount > 0, "Seed deve incluir governo eclesiástico configurado");
         assertTrue(unidadesCount != null && unidadesCount > 0, "UnidadeTerritorial should be populated");
+        assertTrue(unidadesComPadroeiroCount != null && unidadesComPadroeiroCount >= 4, "Unidades territoriais devem possuir padroeiros configurados");
+        assertTrue(unidadesComAvcbCount != null && unidadesComAvcbCount >= 3, "Unidades territoriais devem possuir dados de bombeiros/AVCB");
         assertTrue(locaisCount != null && locaisCount > 0, "Locais should be populated");
         assertTrue(eventosCount != null && eventosCount > 0, "Eventos should be populated");
         assertTrue(fieisAtivosCount != null && fieisAtivosCount > 0,

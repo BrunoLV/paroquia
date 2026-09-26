@@ -43,23 +43,13 @@ class PastoralMovimentoOficialApiIntegrationTest {
         UUID matrizId = UUID.fromString("00000000-0000-0000-0000-000000000100");
         conselhoId = UUID.fromString("00000000-0000-0000-0000-0000000000cc");
 
-        // Clero (UnidadeTerritorial)
-        UnidadeTerritorialEntity clero = unidadeTerritorialRepository.findById(cleroId)
-                .orElseGet(UnidadeTerritorialEntity::new);
-        clero.setId(cleroId);
-        clero.setNome("Clero Paroquial Teste");
-        clero.setTipo(TipoUnidadeTerritorial.CLERO);
-        clero.setAtivo(true);
-        clero.setParentId(null);
-        unidadeTerritorialRepository.save(clero);
-
         // Matriz (UnidadeTerritorial)
         UnidadeTerritorialEntity matriz = unidadeTerritorialRepository.findById(matrizId)
                 .orElseGet(UnidadeTerritorialEntity::new);
         matriz.setId(matrizId);
         matriz.setNome("Igreja Matriz Teste");
         matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
-        matriz.setParentId(cleroId);
+        matriz.setParentId(null);
         matriz.setAtivo(true);
         unidadeTerritorialRepository.save(matriz);
 

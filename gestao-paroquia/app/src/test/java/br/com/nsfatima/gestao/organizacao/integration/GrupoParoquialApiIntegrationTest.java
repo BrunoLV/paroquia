@@ -58,23 +58,13 @@ class GrupoParoquialApiIntegrationTest {
         oficial.setTipo(TipoGrupo.PASTORAL);
         pastoralOficialRepository.save(oficial);
 
-        // 1. Clero (UnidadeTerritorial, track linguagem_ubiqua_dominio)
-        UnidadeTerritorialEntity clero = unidadeTerritorialRepository.findById(cleroId)
-                .orElseGet(UnidadeTerritorialEntity::new);
-        clero.setId(cleroId);
-        clero.setNome("Clero Paroquial");
-        clero.setTipo(TipoUnidadeTerritorial.CLERO);
-        clero.setAtivo(true);
-        clero.setParentId(null);
-        unidadeTerritorialRepository.save(clero);
-
-        // 2. Matriz (UnidadeTerritorial)
+        // 1. Matriz (UnidadeTerritorial)
         UnidadeTerritorialEntity matriz = unidadeTerritorialRepository.findById(matrizId)
                 .orElseGet(UnidadeTerritorialEntity::new);
         matriz.setId(matrizId);
         matriz.setNome("Igreja Matriz");
         matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
-        matriz.setParentId(cleroId);
+        matriz.setParentId(null);
         matriz.setAtivo(true);
         unidadeTerritorialRepository.save(matriz);
 
@@ -185,8 +175,8 @@ class GrupoParoquialApiIntegrationTest {
         mockMvc.perform(get("/api/v1/organizacoes/organograma")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.label").value("Clero Paroquial"))
-                .andExpect(jsonPath("$.subtype").value("CLERO"))
+                .andExpect(jsonPath("$.label").value("Paróquia Nossa Senhora de Fátima"))
+                .andExpect(jsonPath("$.subtype").value("GOVERNO_ECLESIASTICO"))
                 .andExpect(jsonPath("$.children").isArray());
     }
 }

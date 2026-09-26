@@ -280,6 +280,82 @@ export interface Organizacao {
   setorPastoral?: SetorPastoral | null;
 }
 
+export type TipoUnidadeTerritorial = 'MATRIZ' | 'COMUNIDADE';
+
+export interface UnidadeTerritorial {
+  id: string;
+  nome: string;
+  tipo: TipoUnidadeTerritorial;
+  contato: string | null;
+  ativo: boolean;
+  parentId?: string | null;
+
+  // Canônicos
+  padroeiro?: string | null;
+  dataFestaPadroeira?: string | null;
+  dataDedicacaoAltar?: string | null;
+  possuiSacrario: boolean;
+  possuiPiaBatismal: boolean;
+  clerigoResponsavelId?: string | null;
+  clerigoResponsavelNome?: string | null;
+
+  // Fiscais e Jurídicos
+  cnpj?: string | null;
+  inscricaoMunicipal?: string | null;
+  inscricaoImobiliariaIptu?: string | null;
+  processoImunidadeIptu?: string | null;
+
+  // Registro de Imóveis (RGI)
+  cartorioRgi?: string | null;
+  matriculaImovel?: string | null;
+  tipoAquisicao?: string | null;
+  areaTerrenoM2?: number | null;
+  areaConstruidaM2?: number | null;
+
+  // Segurança e Concessionárias
+  avcbNumero?: string | null;
+  avcbValidade?: string | null;
+  lotacaoMaximaBombeiros?: number | null;
+  codigoConsumidorEnergia?: string | null;
+  codigoConsumidorAgua?: string | null;
+
+  // Contato e Endereço Estruturado (LGPD Criptografado no Backend)
+  telefone?: string | null;
+  email?: string | null;
+  enderecoCep?: string | null;
+  enderecoLogradouro?: string | null;
+  enderecoNumero?: string | null;
+  enderecoComplemento?: string | null;
+  enderecoBairro?: string | null;
+  enderecoCidade?: string | null;
+  enderecoUf?: string | null;
+}
+
+export interface Diocese {
+  id: string;
+  nome: string;
+  bispoDiocesano: string;
+  cnpjMitra?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  contato?: string | null;
+  ativo: boolean;
+}
+
+export interface GovernoEclesiastico {
+  id: string;
+  dioceseId: string;
+  dioceseNome?: string | null;
+  bispoDiocesano?: string | null;
+  parocoId?: string | null;
+  parocoNome?: string | null;
+  parocoNomeEclesiastico?: string | null;
+  dataPosseParoco?: string | null;
+  decretoErecaoParoquia?: string | null;
+  dataInstalacaoParoquia?: string | null;
+  livroTomboNumero?: string | null;
+}
+
 /**
  * Cadastro oficial de uma Pastoral ou Movimento, referenciado por `Organizacao.pastoralOficialId`
  * para distinguir o registro "oficial" (nome canônico) das organizações que o representam localmente.

@@ -67,15 +67,153 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 
--- Hierarquia territorial (UnidadeTerritorial): Clero -> Matriz/Comunidades. Desde a track
--- linguagem_ubiqua_dominio, CLERO/MATRIZ/COMUNIDADE não são mais GrupoParoquial.
-INSERT INTO calendario.unidade_territorial (id, nome, tipo, contato, ativo, parent_id, version)
-VALUES
-    ('00000000-0000-0000-0000-0000000000dd', 'Clero Paroquial', 'CLERO', 'clero@nsfatima.com', TRUE, NULL, 0),
-    ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
-    ('00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0),
-    ('00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000dd', 0)
-ON CONFLICT (id) DO NOTHING;
+-- ============================================================================
+-- 1. ESTRUTURA CANÔNICA, CLERO & UNIDADES TERRITORIAIS
+-- ============================================================================
+
+-- Circunscrições Eclesiásticas (Dioceses / Cúrias)
+INSERT INTO calendario.dioceses (
+    id, nome, bispo_diocesano, cnpj_mitra, cidade, uf, contato, ativo, version,
+    criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES (
+    '1d000000-0000-0000-0000-000000000001',
+    'Diocese de Campo Limpo',
+    'Dom Valdir José de Castro, SSP',
+    '61.378.766/0001-45',
+    'São Paulo',
+    'SP',
+    'curia@diocesedecampolimpo.org.br',
+    TRUE,
+    0,
+    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+) ON CONFLICT (id) DO UPDATE SET
+    nome = EXCLUDED.nome,
+    bispo_diocesano = EXCLUDED.bispo_diocesano,
+    cnpj_mitra = EXCLUDED.cnpj_mitra,
+    cidade = EXCLUDED.cidade,
+    uf = EXCLUDED.uf,
+    contato = EXCLUDED.contato,
+    ativo = EXCLUDED.ativo;
+
+-- Clérigos (Ministros Ordenados / Membros do Clero)
+INSERT INTO calendario.clerigos (
+    id, nome_civil, nome_eclesiastico, data_nascimento, pais_origem, cpf, rg, documento_estrangeiro,
+    email, celular, telefone_fixo, whatsapp, endereco, grau_ordem, diocese_incardinacao,
+    data_ordenacao_diaconal, data_ordenacao_presbiteral, data_ordenacao_episcopal,
+    ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por, version
+) VALUES
+    ('1c000000-0000-0000-0000-000000000001', 'Pedro da Silva', 'Pe. Pedro da Silva', '1980-01-01', 'BRA', '00000000001', '111111111', NULL, 'padre.pedro@example.com', '11999990001', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2009-12-08', '2010-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
+    ('1c000000-0000-0000-0000-000000000006', 'João Batista', 'Pe. João Batista', '1985-06-24', 'BRA', '00000000006', '666666666', NULL, 'padre.joao@example.com', '11999990007', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2014-12-08', '2015-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
+    ('1c000000-0000-0000-0000-000000000007', 'Francisco de Assis Costa', 'Diác. Francisco de Assis', '1976-10-04', 'BRA', '00000000026', '262626262', NULL, 'diacono.francisco@example.com', '11999990026', '1133332211', TRUE, 'Av. São José, 180, São José Allamano, São Paulo - SP', 'DIACONO_PERMANENTE', 'Diocese de Campo Limpo', '2018-05-13', NULL, NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
+    ('1c000000-0000-0000-0000-000000000008', 'Antônio Bento de Souza', 'Pe. Emérito Antônio Bento', '1945-02-15', 'BRA', '00000000027', '272727272', NULL, 'padre.antonio.emerito@example.com', '11999990027', NULL, FALSE, 'Rua da Paz, 50, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '1970-12-08', '1971-12-08', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0)
+ON CONFLICT (id) DO UPDATE SET
+    grau_ordem = EXCLUDED.grau_ordem,
+    ativo = EXCLUDED.ativo;
+
+-- Governo Eclesiástico Paroquial
+INSERT INTO calendario.governo_eclesiastico (
+    id, diocese_id, paroco_id, data_posse_paroco, decreto_erecao_paroquia,
+    data_instalacao_paroquia, livro_tombo_numero, version,
+    criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES (
+    '2d000000-0000-0000-0000-000000000001',
+    '1d000000-0000-0000-0000-000000000001',
+    '1c000000-0000-0000-0000-000000000001',
+    '2018-02-10',
+    'Decreto Episcopal nº 12/1985',
+    '1985-05-13',
+    'Livro 01, fls. 12-14',
+    0,
+    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+) ON CONFLICT (id) DO UPDATE SET
+    diocese_id = EXCLUDED.diocese_id,
+    paroco_id = EXCLUDED.paroco_id,
+    data_posse_paroco = EXCLUDED.data_posse_paroco,
+    decreto_erecao_paroquia = EXCLUDED.decreto_erecao_paroquia,
+    data_instalacao_paroquia = EXCLUDED.data_instalacao_paroquia,
+    livro_tombo_numero = EXCLUDED.livro_tombo_numero;
+
+-- Hierarquia territorial (UnidadeTerritorial): Matriz -> Comunidades.
+INSERT INTO calendario.unidade_territorial (
+    id, nome, tipo, contato, ativo, parent_id,
+    padroeiro, data_festa_padroeira, data_dedicacao_altar, possui_sacrario, possui_pia_batismal, clerigo_responsavel_id,
+    cnpj, inscricao_municipal, inscricao_imobiliaria_iptu, processo_imunidade_iptu,
+    cartorio_rgi, matricula_imovel, tipo_aquisicao, area_terreno_m2, area_construida_m2,
+    avcb_numero, avcb_validade, lotacao_maxima_bombeiros, codigo_consumidor_energia, codigo_consumidor_agua,
+    telefone, email, endereco_cep, endereco_logradouro, endereco_numero, endereco_complemento, endereco_bairro, endereco_cidade, endereco_uf,
+    version, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    (
+        '00000000-0000-0000-0000-000000000100', 'Igreja Matriz Nossa Senhora de Fátima', 'MATRIZ', 'matriz@nsfatima.com', TRUE, NULL,
+        'Nossa Senhora de Fátima', '05-13', '1986-10-12', TRUE, TRUE, '1c000000-0000-0000-0000-000000000001',
+        '61.378.766/0002-26', '1.234.567-8', '098.765.4321-0', 'Proc. 2015-0.123.456-7 (Deferido Art. 150 CF)',
+        '11º Oficial de Registro de Imóveis da Comarca da Capital', 'Matrícula nº 45.892', 'DOACAO', 1500.00, 1100.00,
+        'AVCB-2024-SP-789012', '2027-12-31', 650, '003456789-01 (Enel)', '09876543/21 (Sabesp)',
+        '11988887777', 'matriz@nsfatima.org.br', '08000-000', 'Praça da Matriz', '100', NULL, 'Centro', 'São Paulo', 'SP',
+        0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000200', 'Comunidade São José Allamano', 'COMUNIDADE', 'saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100',
+        'São José Allamano', '02-16', NULL, TRUE, FALSE, '1c000000-0000-0000-0000-000000000006',
+        '61.378.766/0002-26', '1.234.567-8', '098.765.4322-9', 'Proc. Mun. 2017-0.987.654-1 (Deferido)',
+        '11º Oficial de Registro de Imóveis da Comarca da Capital', 'Matrícula nº 62.104', 'COMPRA_E_VENDA', 800.00, 450.00,
+        'AVCB-2023-SP-345678', '2026-11-30', 250, '003456789-02', '09876543/22',
+        '11988887702', 'saojose@nsfatima.org.br', '08000-003', 'Av. São José', '180', NULL, 'São José Allamano', 'São Paulo', 'SP',
+        0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000300', 'Comunidade Santo Agostinho', 'COMUNIDADE', 'santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100',
+        'Santo Agostinho', '08-28', NULL, TRUE, FALSE, '1c000000-0000-0000-0000-000000000007',
+        '61.378.766/0002-26', '1.234.567-8', '098.765.4323-7', 'Proc. Mun. 2019-0.555.444-3 (Deferido)',
+        '11º Oficial de Registro de Imóveis da Comarca da Capital', 'Matrícula nº 78.331', 'DOACAO', 600.00, 380.00,
+        'AVCB-2022-SP-112233', '2025-05-15', 180, '003456789-03', '09876543/23',
+        '11988887703', 'santoagostinho@nsfatima.org.br', '08000-002', 'Rua Santo Agostinho', '80', NULL, 'Santo Agostinho', 'São Paulo', 'SP',
+        0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+    ),
+    (
+        '00000000-0000-0000-0000-0000000000dd', 'Comunidade Santana', 'COMUNIDADE', 'santana@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100',
+        'Santana', '07-26', NULL, TRUE, FALSE, '1c000000-0000-0000-0000-000000000001',
+        NULL, NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL,
+        '11988887704', 'santana@nsfatima.org.br', '08000-004', 'Rua Santana', '20', NULL, 'Santana', 'São Paulo', 'SP',
+        0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed'
+    )
+ON CONFLICT (id) DO UPDATE SET
+    nome = EXCLUDED.nome,
+    tipo = EXCLUDED.tipo,
+    contato = EXCLUDED.contato,
+    ativo = EXCLUDED.ativo,
+    parent_id = EXCLUDED.parent_id,
+    padroeiro = EXCLUDED.padroeiro,
+    data_festa_padroeira = EXCLUDED.data_festa_padroeira,
+    data_dedicacao_altar = EXCLUDED.data_dedicacao_altar,
+    possui_sacrario = EXCLUDED.possui_sacrario,
+    possui_pia_batismal = EXCLUDED.possui_pia_batismal,
+    clerigo_responsavel_id = EXCLUDED.clerigo_responsavel_id,
+    cnpj = EXCLUDED.cnpj,
+    inscricao_municipal = EXCLUDED.inscricao_municipal,
+    inscricao_imobiliaria_iptu = EXCLUDED.inscricao_imobiliaria_iptu,
+    processo_imunidade_iptu = EXCLUDED.processo_imunidade_iptu,
+    cartorio_rgi = EXCLUDED.cartorio_rgi,
+    matricula_imovel = EXCLUDED.matricula_imovel,
+    tipo_aquisicao = EXCLUDED.tipo_aquisicao,
+    area_terreno_m2 = EXCLUDED.area_terreno_m2,
+    area_construida_m2 = EXCLUDED.area_construida_m2,
+    avcb_numero = EXCLUDED.avcb_numero,
+    avcb_validade = EXCLUDED.avcb_validade,
+    lotacao_maxima_bombeiros = EXCLUDED.lotacao_maxima_bombeiros,
+    codigo_consumidor_energia = EXCLUDED.codigo_consumidor_energia,
+    codigo_consumidor_agua = EXCLUDED.codigo_consumidor_agua,
+    telefone = EXCLUDED.telefone,
+    email = EXCLUDED.email,
+    endereco_cep = EXCLUDED.endereco_cep,
+    endereco_logradouro = EXCLUDED.endereco_logradouro,
+    endereco_numero = EXCLUDED.endereco_numero,
+    endereco_complemento = EXCLUDED.endereco_complemento,
+    endereco_bairro = EXCLUDED.endereco_bairro,
+    endereco_cidade = EXCLUDED.endereco_cidade,
+    endereco_uf = EXCLUDED.endereco_uf;
 
 -- Grupos Paroquiais (Conselhos/Pastorais/Movimentos). Conselhos têm organização-mãe diretamente na
 -- UnidadeTerritorial (Matriz/Comunidade). Pastorais têm organização-mãe um Conselho. Os antigos 4 tipos de
@@ -129,20 +267,6 @@ ON CONFLICT (id) DO UPDATE SET
     ativo = EXCLUDED.ativo;
 
 -- Users (Usuarios)
--- Clérigos (Ministros Ordenados / Membros do Clero)
-INSERT INTO calendario.clerigos (
-    id, nome_civil, nome_eclesiastico, data_nascimento, pais_origem, cpf, rg, documento_estrangeiro,
-    email, celular, telefone_fixo, whatsapp, endereco, grau_ordem, diocese_incardinacao,
-    data_ordenacao_diaconal, data_ordenacao_presbiteral, data_ordenacao_episcopal,
-    ativo, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por, version
-) VALUES
-    ('1c000000-0000-0000-0000-000000000001', 'Pedro da Silva', 'Pe. Pedro da Silva', '1980-01-01', 'BRA', '00000000001', '111111111', NULL, 'padre.pedro@example.com', '11999990001', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2009-12-08', '2010-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
-    ('1c000000-0000-0000-0000-000000000006', 'João Batista', 'Pe. João Batista', '1985-06-24', 'BRA', '00000000006', '666666666', NULL, 'padre.joao@example.com', '11999990007', NULL, TRUE, 'Rua da Matriz, 10, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '2014-12-08', '2015-12-08', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
-    ('1c000000-0000-0000-0000-000000000007', 'Francisco de Assis Costa', 'Diác. Francisco de Assis', '1976-10-04', 'BRA', '00000000026', '262626262', NULL, 'diacono.francisco@example.com', '11999990026', '1133332211', TRUE, 'Av. São José, 180, São José Allamano, São Paulo - SP', 'DIACONO_PERMANENTE', 'Diocese de Campo Limpo', '2018-05-13', NULL, NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0),
-    ('1c000000-0000-0000-0000-000000000008', 'Antônio Bento de Souza', 'Pe. Emérito Antônio Bento', '1945-02-15', 'BRA', '00000000027', '272727272', NULL, 'padre.antonio.emerito@example.com', '11999990027', NULL, FALSE, 'Rua da Paz, 50, Centro, São Paulo - SP', 'PADRE_DIOCESANO', 'Diocese de Campo Limpo', '1970-12-08', '1971-12-08', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'seed', 'seed', 0)
-ON CONFLICT (id) DO UPDATE SET
-    grau_ordem = EXCLUDED.grau_ordem,
-    ativo = EXCLUDED.ativo;
 
 -- Encargos Clericais (Posições institucionais do Clero)
 INSERT INTO calendario.encargos_clericais (

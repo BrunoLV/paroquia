@@ -1,4 +1,4 @@
-import { formatCep, formatCpf, formatDateBr, formatPhone, formatRg, maskRgPartial } from './masks';
+import { formatCep, formatCnpj, formatCpf, formatDateBr, formatPhone, formatRg, maskRgPartial } from './masks';
 
 describe('masks utility', () => {
   describe('formatCpf', () => {
@@ -19,6 +19,27 @@ describe('masks utility', () => {
       expect(formatCpf('123456')).toBe('123.456');
       expect(formatCpf('123456789')).toBe('123.456.789');
       expect(formatCpf('1234567890')).toBe('123.456.789-0');
+    });
+  });
+
+  describe('formatCnpj', () => {
+    it('returns empty string for null/undefined/empty', () => {
+      expect(formatCnpj(null)).toBe('');
+      expect(formatCnpj(undefined)).toBe('');
+      expect(formatCnpj('')).toBe('');
+    });
+
+    it('formats 14 digit CNPJ correctly', () => {
+      expect(formatCnpj('61378766000226')).toBe('61.378.766/0002-26');
+      expect(formatCnpj('61.378.766/0002-26')).toBe('61.378.766/0002-26');
+    });
+
+    it('formats partial CNPJ progressively', () => {
+      expect(formatCnpj('61')).toBe('61');
+      expect(formatCnpj('61378')).toBe('61.378');
+      expect(formatCnpj('61378766')).toBe('61.378.766');
+      expect(formatCnpj('613787660002')).toBe('61.378.766/0002');
+      expect(formatCnpj('61378766000226')).toBe('61.378.766/0002-26');
     });
   });
   describe('formatRg', () => {

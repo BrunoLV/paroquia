@@ -97,6 +97,9 @@ Regras:
   - Wizards/Steppers (`ImportModal.tsx`): cada step é `Stack spacing={2.5}` flat, sem Card.
   - Modais de tabela/gestão de lista (`OrganizacaoMembrosModal.tsx`): tabela + toolbar inline, sem Card/Grid.
 - **Um único controle de fechar por Dialog/Drawer.** O botão canônico é o `ActionButton` "Cancelar"/"Fechar" no `DialogActions`/rodapé. Proibido adicionar também um "X" no cabeçalho/título chamando o mesmo `onClose` — isso duplica a mesma ação. Se o cabeçalho precisar de um controle de fechar (ex.: `Drawer` sem `DialogActions`), esse É o único controle: não replicar embaixo.
+- **`<DialogTitle>` simples:** Sempre string pura diretamente no nó (`<DialogTitle>Título do Modal</DialogTitle>`). É **expressamente proibido** aninhar `<Typography>` dentro de `<DialogTitle>`.
+- **`size="small"` mandatório em todos os inputs:** Todo `<TextField>`, `<Select>` e `<FormControl>` dentro de diálogos DEVE usar `size="small"` (40px). Proibido input medium (56px).
+- **`noValidate` na tag `<form>`:** Obrigatório para desabilitar balões nativos do browser e delegar erros ao Zod + React Hook Form.
 
 ## 4.1. Espaçamento de Campos
 

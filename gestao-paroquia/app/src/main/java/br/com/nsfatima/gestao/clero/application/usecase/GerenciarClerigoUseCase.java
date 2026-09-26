@@ -17,6 +17,7 @@ import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.Encarg
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import java.time.Instant;
 import java.util.List;
@@ -186,14 +187,15 @@ public class GerenciarClerigoUseCase {
             e.setAtual(false);
             e.setEncerradoEmUtc(agora);
         });
-        UUID unidadeClero = unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.CLERO).stream()
+        UUID unidadeSede = unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.MATRIZ).stream()
                 .findFirst()
-                .map(u -> u.getId())
-                .orElseThrow(() -> new IllegalStateException("A unidade territorial CLERO é obrigatória."));
+                .map(UnidadeTerritorialEntity::getId)
+                .or(() -> unidades.findAll().stream().filter(UnidadeTerritorialEntity::isAtivo).map(UnidadeTerritorialEntity::getId).findFirst())
+                .orElseThrow(() -> new IllegalStateException("A unidade territorial sede (MATRIZ) é obrigatória para atribuição de encargo."));
         EncargoClericalEntity encargo = new EncargoClericalEntity();
         encargo.setId(UUID.randomUUID());
         encargo.setClerigoId(clerigoId);
-        encargo.setUnidadeTerritorialId(unidadeClero);
+        encargo.setUnidadeTerritorialId(unidadeSede);
         encargo.setFuncao(funcao);
         encargo.setAtual(true);
         encargo.setCriadoEmUtc(agora);

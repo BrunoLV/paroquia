@@ -54,8 +54,8 @@ class GerenciarClerigoUseCaseTest {
         UUID unidadeId = UUID.randomUUID();
         UnidadeTerritorialEntity unidade = new UnidadeTerritorialEntity();
         unidade.setId(unidadeId);
-        unidade.setTipo(TipoUnidadeTerritorial.CLERO);
-        when(unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.CLERO)).thenReturn(List.of(unidade));
+        unidade.setTipo(TipoUnidadeTerritorial.MATRIZ);
+        when(unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.MATRIZ)).thenReturn(List.of(unidade));
 
         ClerigoRequest request = new ClerigoRequest(
                 "João da Silva",

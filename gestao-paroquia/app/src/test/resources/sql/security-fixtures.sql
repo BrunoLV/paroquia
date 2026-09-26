@@ -33,7 +33,7 @@ RESTART IDENTITY CASCADE;
 
 -- Clero D (dd) e Matriz (01/100) são UnidadesTerritoriais (track linguagem_ubiqua_dominio)
 INSERT INTO calendario.unidade_territorial (id, nome, tipo)
-VALUES ('00000000-0000-0000-0000-0000000000dd', 'Clero D', 'CLERO'),
+VALUES ('00000000-0000-0000-0000-0000000000dd', 'Clero D', 'COMUNIDADE'),
        ('00000000-0000-0000-0000-000000000001', 'Igreja Default', 'MATRIZ'),
        ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz', 'MATRIZ');
 

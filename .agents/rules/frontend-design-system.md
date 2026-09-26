@@ -1,0 +1,79 @@
+# Regras Mandatórias de Engenharia Frontend & Design System (`gestao-paroquia-ui`)
+
+Esta regra é ALWAYS-ON e DEVE ser rigorosamente cumprida por qualquer agente de IA ao criar, refatorar ou revisar arquivos do frontend (`gestao-paroquia-ui/`). Nenhuma exceção ou atalho é permitido.
+
+---
+
+## 1. Modais e Diálogos (`Dialog`) — Invariantes Não Negociáveis
+
+Todo componente de modal/diálogo (`*Modal.tsx`, `*Dialog.tsx`) DEVE seguir estritamente o layout canônico abaixo:
+
+```tsx
+<Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+  <DialogTitle>{isEditing ? 'Editar registro' : 'Novo registro'}</DialogTitle>
+  <form onSubmit={handleSubmit(onSubmit)} noValidate>
+    <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+      <Stack spacing={2.5}>
+        <Card variant="outlined" sx={{ borderRadius: 2 }}>
+          <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+              <Icon color="primary" fontSize="small" />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                Nome da Seção
+              </Typography>
+            </Stack>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Campo"
+                  required
+                  error={Boolean(errors.campo)}
+                  helperText={errors.campo?.message}
+                  {...register('campo')}
+                />
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Stack>
+    </DialogContent>
+    <DialogActions>
+      <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={handleClose} />
+      <ActionButton title="Salvar" icon={<SaveIcon />} color="primary" type="submit" disabled={isPending} />
+    </DialogActions>
+  </form>
+</Dialog>
+```
+
+### 1.1. Anti-patterns Terminantemente Proibidos em Modais
+1. **PROIBIDO `<Typography>` aninhada dentro de `<DialogTitle>`:** `<DialogTitle>` já é um elemento tipográfico padronizado do MUI com variante h6. Passe apenas a string direta.
+2. **PROIBIDO omitir `size="small"` em campos de formulário:** TODOS os inputs (`TextField`, `Select`, `FormControl`) DEVEM ter `size="small"`. Inputs no tamanho default (56px) quebram a harmonia visual corporativa do sistema.
+3. **PROIBIDO omitir `noValidate` na tag `<form>`:** O controle de validação é de responsabilidade exclusiva do Zod + React Hook Form. O balão nativo do navegador nunca deve ser exibido.
+4. **PROIBIDO omitir `dividers` e `sx={DIALOG_CONTENT_SCROLL_SX}` em `<DialogContent>`:** Obrigatórios para garantir rolagem segura em telas menores e viewport de baixa resolução.
+5. **PROIBIDO campos soltos fora de `<Card variant="outlined">`:** Todo grupo de campos deve viver dentro de um Card delineado com `CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}` e cabeçalho com ícone e `Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}`.
+6. **PROIBIDO controle de fechar duplicado:** Não adicione "X" no cabeçalho se já existir o botão canônico "Cancelar" no `DialogActions`.
+7. **PROIBIDO overrides arbitrários de padding em `<DialogActions>`:** Use `<DialogActions>` limpo com espaçamento padrão do tema.
+8. **PROIBIDO `<Button>` ou `<IconButton>` crus:** Use exclusivamente `<ActionButton>` e `<IconActionButton>`.
+
+---
+
+## 2. Formulários, Validação e Máscaras
+
+1. **Zod + React Hook Form:** Obrigatórios para qualquer formulário. Nunca use múltiplos `useState` para inputs.
+2. **Máscaras Obrigatórias:**
+   * CPF: `formatCpf`
+   * CNPJ: `formatCnpj`
+   * Telefone/Celular: `formatPhone`
+   * CEP: `formatCep`
+   * UF: Sempre 2 caracteres e convertido para maiúsculas (`.toUpperCase()`).
+3. **Confirmação de Descarte:** Modais de edição/criação devem chamar `confirmDiscard(isDirty, onClose)` ao fechar.
+
+---
+
+## 3. Código como Documentação Viva (*Living Documentation*)
+
+Todo modal e componente de tela DEVE conter bloco JSDoc especificando:
+- A regra de negócio ou canônica atendida.
+- A justificativa da decisão de UX (ex.: tamanho de modal, agrupamento de seções, acessibilidade).

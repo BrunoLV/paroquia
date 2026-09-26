@@ -53,20 +53,13 @@ class GrupoParoquialServiceTest {
 
         // Setup mock unidades territoriais (Clero/Matriz não são mais GrupoParoquial, track
         // linguagem_ubiqua_dominio)
-        UnidadeTerritorialEntity cleroUnidade = new UnidadeTerritorialEntity();
-        cleroUnidade.setId(cleroUnidadeId);
-        cleroUnidade.setNome("Clero");
-        cleroUnidade.setTipo(TipoUnidadeTerritorial.CLERO);
-        cleroUnidade.setAtivo(true);
-
         UnidadeTerritorialEntity matrizUnidade = new UnidadeTerritorialEntity();
         matrizUnidade.setId(matrizId);
         matrizUnidade.setNome("Matriz");
         matrizUnidade.setTipo(TipoUnidadeTerritorial.MATRIZ);
-        matrizUnidade.setParentId(cleroUnidadeId);
+        matrizUnidade.setParentId(null);
         matrizUnidade.setAtivo(true);
 
-        when(unidadeTerritorialRepository.findById(cleroUnidadeId)).thenReturn(Optional.of(cleroUnidade));
         when(unidadeTerritorialRepository.findById(matrizId)).thenReturn(Optional.of(matrizUnidade));
 
         // Setup mock parent

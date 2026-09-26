@@ -47,23 +47,15 @@ class ObterOrganogramaUseCaseTest {
 
     @Test
     void deveConstruirCompletoOrganogramaArvore() {
-        UUID cleroId = UUID.randomUUID();
-        UnidadeTerritorialEntity clero = new UnidadeTerritorialEntity();
-        clero.setId(cleroId);
-        clero.setNome("Clero Paroquial");
-        clero.setTipo(TipoUnidadeTerritorial.CLERO);
-        clero.setParentId(null);
-        clero.setAtivo(true);
-
         UUID matrizId = UUID.randomUUID();
         UnidadeTerritorialEntity matriz = new UnidadeTerritorialEntity();
         matriz.setId(matrizId);
         matriz.setNome("Igreja Matriz");
         matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
-        matriz.setParentId(cleroId);
+        matriz.setParentId(null);
         matriz.setAtivo(true);
 
-        when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(clero, matriz));
+        when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(matriz));
 
         UUID conselhoId = UUID.randomUUID();
         GrupoParoquialEntity conselho = new GrupoParoquialEntity();
@@ -101,13 +93,13 @@ class ObterOrganogramaUseCaseTest {
         // Execute Use Case
         OrganogramaNodeResponse root = getOrganogramaUseCase.execute();
 
-        // Verify root node (Clero, agora uma UnidadeTerritorial)
-        assertThat(root.label()).isEqualTo("Clero Paroquial");
-        assertThat(root.type()).isEqualTo("UNIDADE_TERRITORIAL");
-        assertThat(root.subtype()).isEqualTo("CLERO");
+        // Verify root node (Paróquia / Governo Eclesiástico)
+        assertThat(root.label()).isEqualTo("Paróquia Teste");
+        assertThat(root.type()).isEqualTo("PAROQUIA");
+        assertThat(root.subtype()).isEqualTo("GOVERNO_ECLESIASTICO");
         assertThat(root.children()).hasSize(1); // Only Igreja Matriz
 
-        // Verify Igreja Matriz (child of Clero)
+        // Verify Igreja Matriz (child of Root)
         OrganogramaNodeResponse matrizNode = root.children().getFirst();
         assertThat(matrizNode.label()).isEqualTo("Igreja Matriz");
         assertThat(matrizNode.type()).isEqualTo("UNIDADE_TERRITORIAL");
@@ -138,15 +130,15 @@ class ObterOrganogramaUseCaseTest {
 
     @Test
     void deveResolverParocoEVigarioDoCleroViaEncargoClerical() {
-        UUID cleroId = UUID.randomUUID();
-        UnidadeTerritorialEntity clero = new UnidadeTerritorialEntity();
-        clero.setId(cleroId);
-        clero.setNome("Clero Paroquial");
-        clero.setTipo(TipoUnidadeTerritorial.CLERO);
-        clero.setParentId(null);
-        clero.setAtivo(true);
+        UUID matrizId = UUID.randomUUID();
+        UnidadeTerritorialEntity matriz = new UnidadeTerritorialEntity();
+        matriz.setId(matrizId);
+        matriz.setNome("Igreja Matriz");
+        matriz.setTipo(TipoUnidadeTerritorial.MATRIZ);
+        matriz.setParentId(null);
+        matriz.setAtivo(true);
 
-        when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(clero));
+        when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(matriz));
         when(grupoParoquialRepository.findAll()).thenReturn(List.of());
 
         UUID parocoId = UUID.randomUUID();
@@ -173,7 +165,7 @@ class ObterOrganogramaUseCaseTest {
 
         OrganogramaNodeResponse root = getOrganogramaUseCase.execute();
 
-        assertThat(root.subtype()).isEqualTo("CLERO");
+        assertThat(root.subtype()).isEqualTo("GOVERNO_ECLESIASTICO");
         assertThat(root.responsavelNome()).isEqualTo("Padre Pedro da Silva");
         assertThat(root.responsavelPapel()).isEqualTo("PÁROCO");
         assertThat(root.viceResponsavelNome()).isEqualTo("Padre João Batista");

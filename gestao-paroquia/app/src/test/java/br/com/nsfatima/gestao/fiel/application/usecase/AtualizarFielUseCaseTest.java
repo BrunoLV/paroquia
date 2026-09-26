@@ -200,9 +200,9 @@ class AtualizarFielUseCaseTest {
     }
 
     @Test
-    void execute_deveLancarQuandoUnidadeEhClero() {
+    void execute_deveLancarQuandoUnidadeTipoInvalido() {
         UUID unidadeId = UUID.randomUUID();
-        UnidadeTerritorialEntity unidade = unidadeAtiva(TipoUnidadeTerritorial.CLERO);
+        UnidadeTerritorialEntity unidade = unidadeAtiva(null);
         when(repository.findById(fielId)).thenReturn(Optional.of(fielExistente()));
         when(unidades.findById(unidadeId)).thenReturn(Optional.of(unidade));
         AtualizarFielRequest request = requestComUnidade(unidadeId);

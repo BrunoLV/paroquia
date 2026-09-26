@@ -27,12 +27,12 @@ class MatrizOuComunidadePropriedadePolicyTest {
     }
 
     /**
-     * RN-PAT-01: clero não representa uma unidade proprietária de patrimônio paroquial.
+     * RN-PAT-01: tipo territorial nulo ou inválido é rejeitado.
      */
     @Test
-    @DisplayName("rejeita tipo territorial inelegível")
-    void rejeitaTipoTerritorialInelegivel() {
-        assertThatThrownBy(() -> policy.assertPermitida(TipoUnidadeTerritorial.CLERO))
+    @DisplayName("rejeita tipo territorial nulo")
+    void rejeitaTipoTerritorialNulo() {
+        assertThatThrownBy(() -> policy.assertPermitida(null))
                 .isInstanceOf(AtivoGrupoParoquialInvalidaException.class);
     }
 }

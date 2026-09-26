@@ -140,6 +140,54 @@ describe('Layout component link visibility', () => {
     expect(screen.queryByText('Configurações')).not.toBeInTheDocument();
   });
 
+  test('renders "Governo & Território" link for users with territorial management permissions', () => {
+    mockUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
+      logout: vi.fn(),
+      isLoading: false,
+      isAuthenticated: true,
+      token: 'fake',
+      login: vi.fn(),
+      setParoquiaAtiva: vi.fn(),
+    });
+
+    render(
+      <QueryProvider>
+        <MemoryRouter>
+          <Layout>
+            <div>Content</div>
+          </Layout>
+        </MemoryRouter>
+      </QueryProvider>
+    );
+
+    expect(screen.getByText('Governo & Território')).toBeInTheDocument();
+  });
+
+  test('does not render "Governo & Território" link for users without territorial management permissions', () => {
+    mockUseAuth.mockReturnValue({
+      user: { id: '2', name: 'Membro', roles: ['ROLE_PASTORAL_MEMBRO'] },
+      logout: vi.fn(),
+      isLoading: false,
+      isAuthenticated: true,
+      token: 'fake',
+      login: vi.fn(),
+      setParoquiaAtiva: vi.fn(),
+    });
+
+    render(
+      <QueryProvider>
+        <MemoryRouter>
+          <Layout>
+            <div>Content</div>
+          </Layout>
+        </MemoryRouter>
+      </QueryProvider>
+    );
+
+    expect(screen.queryByText('Governo & Território')).not.toBeInTheDocument();
+  });
+
   test('renders menu items in alphabetical order within each category', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
@@ -186,6 +234,7 @@ describe('Layout component link visibility', () => {
       'Ajustes cadastrais',
       'Aprovações',
       'Configurações',
+      'Governo & Território',
       'Locais',
       'Organograma',
       'Patrimônio',

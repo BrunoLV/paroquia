@@ -24,6 +24,7 @@ const Organizacoes = lazy(() => import('@/contextos/organizacao/presentation/pag
 const Notificacoes = lazy(() => import('@/contextos/iam/presentation/pages/Notificacoes'));
 const AjustesCadastrais = lazy(() => import('@/contextos/governanca/presentation/pages/AjustesCadastrais'));
 const Reservas = lazy(() => import('@/contextos/reserva/presentation/pages/Reservas'));
+const UnidadesTerritoriais = lazy(() => import('@/contextos/organizacao/presentation/pages/UnidadesTerritoriais'));
 
 const RouteFallback = () => (
   <Box sx={{p: 4}}>
@@ -101,6 +102,8 @@ const AppRoutes = () => {
                 <Route path="ativos" element={<Ativos />} />
                 <Route path="locais" element={<CadastroRoute tipo="locais"><Locais /></CadastroRoute>} />
                 <Route path="organizacoes" element={<CadastroRoute tipo="organizacoes"><Organizacoes /></CadastroRoute>} />
+                <Route path="governo-territorio" element={<UnidadesTerritoriais />} />
+                <Route path="unidades-territoriais" element={<Navigate to="/governo-territorio" replace />} />
                 <Route path="cadastros" element={<Navigate to="/fieis" replace />} />
                 <Route path="cadastros/fieis" element={<Navigate to="/fieis" replace />} />
                 <Route path="cadastros/locais" element={<Navigate to="/locais" replace />} />
