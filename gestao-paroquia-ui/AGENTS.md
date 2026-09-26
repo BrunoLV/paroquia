@@ -11,6 +11,10 @@ Este documento define as regras Mandatórias, Invariantes e Diretrizes Técnicas
 * **Código como Documentação Viva (*Living Documentation*):**
   * Componentes de tela, modais, painéis e hooks customizados **DEVEM** conter JSDoc contextualizando a regra de negócio/canônica atendida e a decisão ergonômica de UX adotada.
   * Justifique no código contenções de propagação (`stopPropagation`), aprisionamentos de foco (*focus traps*) e escolhas semânticas de ARIA. Comentários triviais (`// renderiza botão`, `// hook`) são proibidos.
+* **Fluxo de Desenvolvimento Mandatório (`fluxo-desenvolvimento`):**
+  * Toda intervenção deve seguir o GitHub Flow (branch a partir de `master` atualizada).
+  * Obrigatório atualizar o arquivo do módulo correspondente em `docs/business-rules/<modulo>.md` com as novas regras ou alterações.
+  * Questionar sobre fechamento de versão ao término e atualizar `CHANGELOG.md` e `package.json`.
 
 ---
 
@@ -20,6 +24,7 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 
 | Escopo da Tarefa no Frontend | Skills Mandatórias | Invariantes Críticas |
 | :--- | :--- | :--- |
+| **Workflow e Ciclo de Vida (ALWAYS-ON)** | [`fluxo-desenvolvimento`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/fluxo-desenvolvimento/SKILL.md) | • GitHub Flow obrigatório (branch semântica saindo de `master` atualizada).<br>• Consulta e atualização de `docs/business-rules/<modulo>.md`.<br>• Pergunta sobre versão e atualização de `CHANGELOG.md`.<br>• Conventional Commits e submissão via Pull Request para `master`. |
 | **Componentes, Páginas, Telas & Layout** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md)<br>[`DESIGN_SYSTEM.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/DESIGN_SYSTEM.md) | • Leitura de `DESIGN_SYSTEM.md` **obrigatória** antes de tocar em qualquer tela/modal/formulário — é a fonte única do padrão visual (botões, busca, diálogos, tabelas, estados assíncronos).<br>• Semântica MUI 9 pura: **PROIBIDAS** tags HTML cruas (`div`, `span`, `p`) para layout/texto.<br>• Uso exclusivo do novo `<Grid2 container spacing={2}>` e `<Grid2 size={{ xs: 12, ... }}>`.<br>• Limites de linhas: componentes puros (10–60 linhas); formulários densos (máximo 120 linhas).<br>• Cantos arredondados padronizados pelo tema (`shape.borderRadius: 12`). |
 | **Formulários & Entradas de Dados** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Schema Zod obrigatório em `src/contextos/<contexto>/presentation/schemas/`.<br>• Integração mandatória via `react-hook-form` + `@hookform/resolvers/zod`.<br>• Proibida proliferação de `useState` para múltiplos inputs.<br>• Máscaras e formatadores em `src/shared/utils/`. |
 | **Server State & Integração com API** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • TanStack Query v5 exclusivo em `contextos/<contexto>/presentation/hooks/`.<br>• Chaves centralizadas no contexto proprietário.<br>• Adapters HTTP em `infrastructure/http/` implementam portas de `application`.<br>• Proibidas chamadas diretas de `fetch`/`axios` em componentes ou hooks de apresentação. |

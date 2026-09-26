@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/app/build.gradle.kts": {
-    "mtime": 1790313304.3569677,
-    "ast_hash": "5e5c90327bf66397066246943197a26f",
+    "mtime": 1790435432.8193305,
+    "ast_hash": "862dbd1117eba9956fc85b01f5924fd4",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/GestaoParoquiaApplication.java": {
@@ -2765,13 +2765,13 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1790390322.730944,
-    "ast_hash": "05960e80fe7e223e478bcba9583e3d7c",
+    "mtime": 1790435350.4750092,
+    "ast_hash": "2781055dae68803523d4268acc86feb7",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1786036484.2835133,
-    "ast_hash": "03c04f9fadf1acfa05105d6c1c82f941",
+    "mtime": 1790435387.9757276,
+    "ast_hash": "ff2eb4dd84df2bb70e3ce721470e2aac",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2795,8 +2795,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/AGENTS.md": {
-    "mtime": 1790390334.0009432,
-    "ast_hash": "d4d4f874b56d2f7b36b0c16b9418a96b",
+    "mtime": 1790435373.8179197,
+    "ast_hash": "7f2b87af309c0b0518bf22f54fc9979e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/CLAUDE.md": {
@@ -2830,8 +2830,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia/AGENTS.md": {
-    "mtime": 1790094214.3421185,
-    "ast_hash": "e5c0a9919371f8badf0f032b1a79cdb6",
+    "mtime": 1790435360.5208313,
+    "ast_hash": "7314ae0e2e30a831b905ecf4115c2f74",
     "semantic_hash": ""
   },
   "gestao-paroquia/CLAUDE.md": {
@@ -4620,8 +4620,8 @@
     "semantic_hash": ""
   },
   ".gemini.md": {
-    "mtime": 1789440638.0593066,
-    "ast_hash": "df2a087c4bb666f8785f1151cbf23121",
+    "mtime": 1790435394.476278,
+    "ast_hash": "b8d81404f599cf60f780bad383d0efe1",
     "semantic_hash": ""
   },
   "docs/guide/README.md": {
@@ -7227,6 +7227,96 @@
   "gestao-paroquia-ui/src/contextos/calendario/presentation/components/calendario/SolenidadesDialog.test.tsx": {
     "mtime": 1790429071.343784,
     "ast_hash": "4bdc9c37b1b3748959016208c2d91879",
+    "semantic_hash": ""
+  },
+  ".github/pull-request.instructions.md": {
+    "mtime": 1790435306.6513746,
+    "ast_hash": "4831e70ced59e571fdddfec86dac7eaf",
+    "semantic_hash": ""
+  },
+  "CHANGELOG.md": {
+    "mtime": 1790435298.4534135,
+    "ast_hash": "307ecc280b1296bd8a971987e3fef82b",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/README.md": {
+    "mtime": 1790435792.576338,
+    "ast_hash": "7194a5fc0dac1b35ac39e362a2cf90a1",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/aprovacao.md": {
+    "mtime": 1790435179.9918637,
+    "ast_hash": "31910914837490de6af3046e7eca1b35",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/calendario.md": {
+    "mtime": 1790435778.1242144,
+    "ast_hash": "531da26c0c1c8ed7281a44ebcc95c4d9",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/clero.md": {
+    "mtime": 1790435231.654366,
+    "ast_hash": "51108f1d2eb7a66ea7c995e1be9ba3a1",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/conselho.md": {
+    "mtime": 1790435204.736085,
+    "ast_hash": "f211ad50a19ca4c24defdccf61c15d52",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/fiel.md": {
+    "mtime": 1790435222.5392706,
+    "ast_hash": "8358261373c9216e61a279ec8007dd9f",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/governanca.md": {
+    "mtime": 1790435261.52658,
+    "ast_hash": "d67468ba4a9c09283b0bd03fc92db608",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/iam.md": {
+    "mtime": 1790435252.8935149,
+    "ast_hash": "6daca9115d85e629bd01b7f216882243",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/importacao.md": {
+    "mtime": 1790435268.5422585,
+    "ast_hash": "b45163124bb91c7f9b059df256b69d9e",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/local.md": {
+    "mtime": 1790435189.7799287,
+    "ast_hash": "5c31a31286d50154174e3e25f7ae5b0e",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/membro.md": {
+    "mtime": 1790435238.850441,
+    "ast_hash": "9654c043cc957f167d5aca7f127446e9",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/organizacao.md": {
+    "mtime": 1790435214.4771867,
+    "ast_hash": "2b2030219420e2a5a71e7c8a2bb6db8b",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/painel.md": {
+    "mtime": 1790435767.7251253,
+    "ast_hash": "df2aa2e2a68933099017595741844e07",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/patrimonio.md": {
+    "mtime": 1790435197.5860102,
+    "ast_hash": "e162794d377024b1ddc40b7dcee175b5",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/projeto.md": {
+    "mtime": 1790435245.074506,
+    "ast_hash": "c3556f8ead5c50bfa3db8bae8d8cfb36",
+    "semantic_hash": ""
+  },
+  "docs/business-rules/reserva.md": {
+    "mtime": 1790435289.4562614,
+    "ast_hash": "13f8dedf9431cd42687c0fc229bf3ced",
     "semantic_hash": ""
   }
 }

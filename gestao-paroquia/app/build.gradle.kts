@@ -9,6 +9,10 @@ plugins {
     alias(libs.plugins.flyway)
 }
 
+group = "br.com.nsfatima"
+version = "0.1.0"
+
+
 checkstyle {
     toolVersion = libs.versions.checkstyle.tool.get()
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
