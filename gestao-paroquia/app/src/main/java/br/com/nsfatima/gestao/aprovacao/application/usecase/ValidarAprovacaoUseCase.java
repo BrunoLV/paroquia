@@ -6,23 +6,20 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.domain.exception.AprovacaoObrigatoriaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * Executa regras de validação prévia de autoridade antes do despacho de aprovações.
+ * Na governança canônica, o Pároco detém alçada exclusiva para decisão final.
  */
 @Service
 public class ValidarAprovacaoUseCase {
 
-    private static final Set<AprovadorPapel> ALLOWED_APPROVER_ROLES = Set.of(
-            AprovadorPapel.PAROCO,
-            AprovadorPapel.COORD_CONSELHO,
-            AprovadorPapel.VICE_COORD_CONSELHO);
+    private static final Set<AprovadorPapel> ALLOWED_APPROVER_ROLES = Set.of(AprovadorPapel.PAROCO);
     private static final String ERROR_MSG = "Aprovacao is required for date change or cancellation";
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
 
@@ -46,35 +43,24 @@ public class ValidarAprovacaoUseCase {
 
         AprovadorPapel role = aprovacao.getAprovadorPapelEnum();
         if (!ALLOWED_APPROVER_ROLES.contains(role)) {
-            throw new AprovacaoObrigatoriaException(
-                    "É necessária a aprovação do coordenador do conselho, vice-coordenador do conselho ou do pároco");
+            throw new AprovacaoObrigatoriaException("É necessária a aprovação exclusiva do pároco");
         }
     }
 
     /**
-     * Reforça a hierarquia organizacional, restringindo o poder de decisão a papéis específicos dentro do
-     * Conselho ou ao Pároco.
-     * <p>
-     * Exemplo de uso:
-     * {@code
-     * useCase.validarPapelDecisaoAprovacao("COORDENADOR", "CONSELHO");
-     * }
+     * Valida se o papel do ator confere alçada canônica para decidir aprovações.
+     * Exclusivo para Pároco (ou Bispo Diocesano). Conselhos e coordenações não decidem.
+     *
+     * @param role papel informado
+     * @param organizationType tipo de organização informado
      */
     public void validarPapelDecisaoAprovacao(String role, String organizationType) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(role);
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(organizationType);
-        if (normalizedRole == PapelOrganizacional.PAROCO
-                || normalizedRole == PapelOrganizacional.ADMIN
-                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || normalizedRole == PapelOrganizacional.MESA_CPP) {
-            return;
+        if (role != null) {
+            String normalized = role.trim().toLowerCase(Locale.ROOT).replace("_", "-");
+            if ("paroco".equals(normalized) || "bispo-diocesano".equals(normalized)) {
+                return;
+            }
         }
-        if (normalizedOrgType == TipoGrupo.CONSELHO
-                && (normalizedRole == PapelOrganizacional.PRESIDENTE_CPC
-                || normalizedRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                || normalizedRole == PapelOrganizacional.COORD_PASTORAL)) {
-            return;
-        }
-        throw new OperacaoProibidaException("Usuário não tem permissão para decidir aprovações de eventos");
+        throw new OperacaoProibidaException("Apenas o Pároco tem autoridade canônica para decidir aprovações");
     }
 }

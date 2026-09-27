@@ -117,9 +117,13 @@ public class PromoverACoordenadorUseCase {
             throw new AccessDeniedException("Não autenticado");
         }
 
-        boolean mesaCppOuAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_CPP_MESA_CPP".equals(a.getAuthority()) || "ROLE_ADMIN".equals(a.getAuthority()));
-        if (mesaCppOuAdmin) {
+        boolean autorizado = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_GLOBAL_PAROCO".equals(a.getAuthority())
+                        || "ROLE_CLERO_PAROCO".equals(a.getAuthority())
+                        || "ROLE_PAROCO".equals(a.getAuthority())
+                        || "ROLE_ADMIN".equals(a.getAuthority())
+                        || "ROLE_CPP_MESA_CPP".equals(a.getAuthority()));
+        if (autorizado) {
             return;
         }
 

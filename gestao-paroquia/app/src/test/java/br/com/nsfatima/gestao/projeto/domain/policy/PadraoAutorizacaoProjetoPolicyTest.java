@@ -1,8 +1,6 @@
 package br.com.nsfatima.gestao.projeto.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +17,11 @@ class PadraoAutorizacaoProjetoPolicyTest {
     @Test
     @DisplayName("Pároco e Admin são sempre considerados atores de alto nível")
     void deveReconhecerAltoNivelParaParocoEAdmin() {
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PAROCO, TipoGrupo.PASTORAL)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.ADMIN, null)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.PASTORAL)).isFalse();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MEMBRO_PASTORAL, TipoGrupo.PASTORAL)).isFalse();
+        assertThat(policy.isAtorDeAltoNivel("paroco", "PASTORAL")).isTrue();
+        assertThat(policy.isAtorDeAltoNivel("admin", null)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel("bispo-diocesano", null)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel("coordenador", "PASTORAL")).isFalse();
+        assertThat(policy.isAtorDeAltoNivel("membro-ativo", "PASTORAL")).isFalse();
     }
 
     @Test
@@ -32,9 +30,9 @@ class PadraoAutorizacaoProjetoPolicyTest {
         UUID atorOrg = UUID.randomUUID();
         UUID outraOrg = UUID.randomUUID();
 
-        assertThatCode(() -> policy.assertCanCreate(PapelOrganizacional.PAROCO, TipoGrupo.PASTORAL, atorOrg, outraOrg))
+        assertThatCode(() -> policy.assertCanCreate("paroco", "PASTORAL", atorOrg, outraOrg))
                 .doesNotThrowAnyException();
-        assertThatCode(() -> policy.assertCanEdit(PapelOrganizacional.ADMIN, null, atorOrg, outraOrg))
+        assertThatCode(() -> policy.assertCanEdit("admin", null, atorOrg, outraOrg))
                 .doesNotThrowAnyException();
     }
 
@@ -45,16 +43,16 @@ class PadraoAutorizacaoProjetoPolicyTest {
         UUID outraOrg = UUID.randomUUID();
 
         assertThatCode(() -> policy.assertCanCreate(
-                PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, atorOrg))
+                "coordenador", "PASTORAL", atorOrg, atorOrg))
                 .doesNotThrowAnyException();
 
         assertThatThrownBy(() -> policy.assertCanCreate(
-                PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
+                "coordenador", "PASTORAL", atorOrg, outraOrg))
                 .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("outra organização");
 
         assertThatThrownBy(() -> policy.assertCanEdit(
-                PapelOrganizacional.COORD_PASTORAL, TipoGrupo.PASTORAL, atorOrg, outraOrg))
+                "coordenador", "PASTORAL", atorOrg, outraOrg))
                 .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("outra organização");
     }
@@ -65,17 +63,17 @@ class PadraoAutorizacaoProjetoPolicyTest {
         UUID atorOrg = UUID.randomUUID();
         UUID outraOrg = UUID.randomUUID();
 
-        assertThatCode(() -> policy.assertCanStartOrConclude(PapelOrganizacional.PAROCO, null, atorOrg, outraOrg))
+        assertThatCode(() -> policy.assertCanStartOrConclude("paroco", null, atorOrg, outraOrg))
                 .doesNotThrowAnyException();
         assertThatCode(() -> policy.assertCanStartOrConclude(
-                PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
+                "coordenador", "MOVIMENTO", atorOrg, atorOrg))
                 .doesNotThrowAnyException();
 
         assertThatThrownBy(() -> policy.assertCanStartOrConclude(
-                PapelOrganizacional.COORD_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, outraOrg))
+                "coordenador", "MOVIMENTO", atorOrg, outraOrg))
                 .isInstanceOf(OperacaoProibidaException.class);
         assertThatThrownBy(() -> policy.assertCanStartOrConclude(
-                PapelOrganizacional.MEMBRO_MOVIMENTO, TipoGrupo.MOVIMENTO, atorOrg, atorOrg))
+                "membro-ativo", "MOVIMENTO", atorOrg, atorOrg))
                 .isInstanceOf(OperacaoProibidaException.class);
     }
 }

@@ -65,8 +65,8 @@ class AprovacaoFlowRegressionTest {
                 .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", createAprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -97,7 +97,7 @@ class AprovacaoFlowRegressionTest {
                 .get("id").asString());
 
         MvcResult updatePendente = mockMvc.perform(patch("/api/v1/eventos/{id}", eventId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000dd")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -115,8 +115,8 @@ class AprovacaoFlowRegressionTest {
                 .get("solicitacaoAprovacaoId").asString());
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", updateAprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -130,8 +130,8 @@ class AprovacaoFlowRegressionTest {
         assertThat(unchanged.getInicioUtc().toString()).contains("2027-08-10");
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", createAprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

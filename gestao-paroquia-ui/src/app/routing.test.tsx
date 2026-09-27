@@ -85,7 +85,7 @@ describe('Routing', () => {
   });
 
   test('authenticated user with approval role can access /approvals', async () => {
-    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_CONSELHO_COORDENADOR'] };
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PAROCO'] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
     await renderWithProviders('/aprovacoes');
@@ -94,7 +94,7 @@ describe('Routing', () => {
   });
 
   test('authenticated user without approval role is redirected to dashboard when trying to access /approvals', async () => {
-    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'], organizations: [{ id: 'org-1', nome: 'Pastoral', tipo: 'PASTORAL', contato: null, ativo: true }] };
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_MEMBRO_ATIVO'], organizations: [{ id: 'org-1', nome: 'Pastoral', tipo: 'PASTORAL', contato: null, ativo: true }] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
     await renderWithProviders('/aprovacoes');
@@ -104,7 +104,7 @@ describe('Routing', () => {
   });
 
   test('authenticated user with management role can access /configuracoes', async () => {
-    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_CONSELHO_COORDENADOR'] };
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_ADMIN'] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
     await renderWithProviders('/configuracoes');
@@ -113,7 +113,7 @@ describe('Routing', () => {
   });
 
   test('authenticated user without management role is redirected to dashboard when trying to access /configuracoes', async () => {
-    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_PASTORAL_MEMBRO'], organizations: [{ id: 'org-1', nome: 'Pastoral', tipo: 'PASTORAL', contato: null, ativo: true }] };
+    const mockUser = { id: '1', name: 'Test User', roles: ['ROLE_MEMBRO_ATIVO'], organizations: [{ id: 'org-1', nome: 'Pastoral', tipo: 'PASTORAL', contato: null, ativo: true }] };
     mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
     await renderWithProviders('/configuracoes');

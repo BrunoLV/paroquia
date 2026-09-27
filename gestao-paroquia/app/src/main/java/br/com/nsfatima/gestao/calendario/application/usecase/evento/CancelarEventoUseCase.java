@@ -93,7 +93,7 @@ public class CancelarEventoUseCase {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (atorPapel == PapelOrganizacional.SECRETARIO) {
+        if (atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
             if (request.motivo() == null || request.motivo().isBlank()) {
                 throw new ViolacaoRegraNegocioException(
                         "Justificativa é obrigatória para operações submetidas pelo Secretário");
@@ -211,7 +211,7 @@ public class CancelarEventoUseCase {
         aprovacao.setId(UUID.randomUUID());
         aprovacao.setEventoId(evento.getId());
         aprovacao.setTipoSolicitacao(TipoSolicitacaoInput.CANCELAMENTO.name());
-        aprovacao.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO);
+        aprovacao.setAprovadorPapel(AprovadorPapel.PAROCO);
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId().toString());

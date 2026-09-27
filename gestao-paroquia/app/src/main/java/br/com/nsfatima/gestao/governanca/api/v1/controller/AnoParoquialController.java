@@ -11,8 +11,6 @@ import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.domain.policy.AutorizacaoAnoParoquialPolicy;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -159,9 +157,7 @@ public class AnoParoquialController {
             @Valid @RequestBody AtualizarAnoParoquialRequest request) {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        autorizacaoPolicy.assertPodeGerir(
-                PapelOrganizacional.fromStoredValue(actorContext.role()),
-                TipoGrupo.fromStoredValue(actorContext.organizationType()));
+        autorizacaoPolicy.assertPodeGerir(actorContext.role(), actorContext.organizationType());
 
         AnoParoquialStatus alvo = AnoParoquialStatus.fromJson(request.status());
         AnoParoquial anoParoquial = alterarStatusUseCase.alterarStatus(ano, alvo);

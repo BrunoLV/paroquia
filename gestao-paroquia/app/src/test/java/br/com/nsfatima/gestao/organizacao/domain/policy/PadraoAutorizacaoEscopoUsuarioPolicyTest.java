@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.organizacao.domain.policy;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +18,13 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
     @DisplayName("Admin, Pároco e Vigário possuem acesso amplo de gestão")
     void devePermitirAcessoAmploParaCleroEAdmin() {
         assertThat(policy.canManageOrganizationData(
-                PapelOrganizacional.ADMIN, TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
+                "admin", TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
         assertThat(policy.canManageOrganizationData(
-                PapelOrganizacional.PAROCO, TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
+                "paroco", TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
         assertThat(policy.canManageOrganizationData(
-                PapelOrganizacional.VIGARIO, TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
+                "vigario", TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
-        assertThat(policy.canApproveEvents(PapelOrganizacional.PAROCO, TipoGrupo.CONSELHO, null, matrizId)).isTrue();
+        assertThat(policy.canApproveEvents("paroco", TipoGrupo.CONSELHO, null, matrizId)).isTrue();
     }
 
     @Test
@@ -35,16 +34,16 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
         UUID outraOrgId = UUID.randomUUID();
 
         assertThat(policy.canManageOrganizationData(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, orgId, orgId, matrizId)).isTrue();
+                "coordenador", TipoGrupo.PASTORAL, orgId, orgId, matrizId)).isTrue();
         assertThat(policy.canManageOrganizationData(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, orgId, outraOrgId, matrizId)).isFalse();
+                "coordenador", TipoGrupo.PASTORAL, orgId, outraOrgId, matrizId)).isFalse();
     }
 
     @Test
     @DisplayName("Membros simples não podem visualizar eventos pendentes")
     void deveBloquearEventosPendentesParaMembros() {
-        assertThat(policy.canViewPendenteEvents(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL)).isFalse();
-        assertThat(policy.canViewPendenteEvents(PapelOrganizacional.MEMBRO_PASTORAL)).isFalse();
-        assertThat(policy.canViewPendenteEvents(PapelOrganizacional.COORD_PASTORAL_LOCAL)).isTrue();
+        assertThat(policy.canViewPendenteEvents("voluntario")).isFalse();
+        assertThat(policy.canViewPendenteEvents("membro-ativo")).isFalse();
+        assertThat(policy.canViewPendenteEvents("coordenador")).isTrue();
     }
 }

@@ -39,8 +39,8 @@ class CancelEventoStatusEligibilityIntegrationTest {
         eventoJpaRepository.save(entity);
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -65,8 +65,8 @@ class CancelEventoStatusEligibilityIntegrationTest {
         eventoJpaRepository.save(entity);
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

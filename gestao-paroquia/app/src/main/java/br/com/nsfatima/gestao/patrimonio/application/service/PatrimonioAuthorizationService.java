@@ -27,8 +27,7 @@ public class PatrimonioAuthorizationService {
      * @param grupoParoquialId ID da unidade territorial
      */
     public void assertPodeGerirPatrimonio(EventoActorContext actorContext, UUID grupoParoquialId) {
-        PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        policy.assertPodeGerirPatrimonio(papel, actorContext.organizationId(), grupoParoquialId);
+        policy.assertPodeGerirPatrimonio(actorContext.role(), actorContext.organizationId(), grupoParoquialId);
     }
 
     /**
@@ -38,7 +37,6 @@ public class PatrimonioAuthorizationService {
      * @return true se for alto nível
      */
     public boolean isAtorDeAltoNivel(EventoActorContext actorContext) {
-        PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        return policy.isAtorDeAltoNivel(papel);
+        return policy.isAtorDeAltoNivel(actorContext.role());
     }
 }

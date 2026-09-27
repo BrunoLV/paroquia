@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.domain.policy;
 
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
@@ -13,30 +14,28 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
 
     @Override
     public boolean canManageOrganizationData(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             UUID targetCommunityId) {
-        if (userRole == null) {
+        if (userRole == null || userRole.isBlank()) {
             return false;
         }
 
-        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO
-                || userRole == PapelOrganizacional.VIGARIO) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(userRole);
+        if (papelGlobal == PapelGlobal.ADMIN || papelGlobal == PapelGlobal.PAROCO
+                || papelGlobal == PapelGlobal.VIGARIO || papelGlobal == PapelGlobal.SECRETARIA_PAROQUIAL) {
             return true;
         }
 
-        if (userRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || userRole == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                || userRole == PapelOrganizacional.COORD_MOVIMENTO
-                || userRole == PapelOrganizacional.COORD_PASTORAL) {
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(userRole);
+        if (papelOrg == PapelOrganizacional.COORDENADOR || papelOrg == PapelOrganizacional.SECRETARIO_GRUPO) {
             return Objects.equals(userOrgId, targetOrgId);
         }
 
-        if (userRole == PapelOrganizacional.PRESIDENTE_CPC
-                || userRole == PapelOrganizacional.MESA_CPP
-                || userRole == PapelOrganizacional.MEMBRO_CPP) {
+        if (papelOrg == PapelOrganizacional.SECRETARIO_CONSELHO
+                || papelOrg == PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL) {
             return Objects.equals(userOrgId, targetOrgId) || Objects.equals(userOrgId, targetCommunityId);
         }
 
@@ -45,45 +44,31 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
 
     @Override
     public boolean canApproveEvents(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId) {
-        if (userRole == null) {
+        if (userRole == null || userRole.isBlank()) {
             return false;
         }
 
-        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO
-                || userRole == PapelOrganizacional.VIGARIO) {
-            return true;
-        }
-
-        if (userRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || userRole == PapelOrganizacional.MESA_CPP) {
-            return Objects.equals(userOrgId, targetOrgId);
-        }
-
-        if (userRole == PapelOrganizacional.PRESIDENTE_CPC && userOrgType == TipoGrupo.CONSELHO) {
-            return Objects.equals(userOrgId, targetOrgId);
-        }
-
-        return false;
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(userRole);
+        return papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO;
     }
 
     @Override
     public boolean canAddObservation(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             boolean isParticipant) {
-        if (userRole == null) {
+        if (userRole == null || userRole.isBlank()) {
             return false;
         }
 
-        if (userRole == PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
-                || userRole == PapelOrganizacional.MEMBRO_PASTORAL
-                || userRole == PapelOrganizacional.MEMBRO_MOVIMENTO) {
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(userRole);
+        if (papelOrg == PapelOrganizacional.VOLUNTARIO || papelOrg == PapelOrganizacional.MEMBRO_ATIVO) {
             return Objects.equals(userOrgId, targetOrgId) || isParticipant;
         }
 
@@ -91,28 +76,27 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
     }
 
     @Override
-    public boolean canViewPendenteEvents(PapelOrganizacional userRole) {
-        if (userRole == null) {
+    public boolean canViewPendenteEvents(String userRole) {
+        if (userRole == null || userRole.isBlank()) {
             return false;
         }
-        return userRole != PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL
-                && userRole != PapelOrganizacional.MEMBRO_PASTORAL
-                && userRole != PapelOrganizacional.MEMBRO_MOVIMENTO;
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(userRole);
+        return papelOrg != PapelOrganizacional.VOLUNTARIO && papelOrg != PapelOrganizacional.MEMBRO_ATIVO;
     }
 
     @Override
     public boolean hasTerritorialAccess(
-            PapelOrganizacional userRole,
+            String userRole,
             UUID userCommunityId,
             UUID targetCommunityId) {
-        if (userRole == null) {
+        if (userRole == null || userRole.isBlank()) {
             return false;
         }
 
-        if (userRole == PapelOrganizacional.ADMIN || userRole == PapelOrganizacional.PAROCO
-                || userRole == PapelOrganizacional.VIGARIO || userRole == PapelOrganizacional.BISPO_DIOCESANO
-                || userRole == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || userRole == PapelOrganizacional.COORD_MOVIMENTO) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(userRole);
+        if (papelGlobal == PapelGlobal.ADMIN || papelGlobal == PapelGlobal.PAROCO
+                || papelGlobal == PapelGlobal.VIGARIO || papelGlobal == PapelGlobal.BISPO_DIOCESANO
+                || papelGlobal == PapelGlobal.SECRETARIA_PAROQUIAL) {
             return true;
         }
 

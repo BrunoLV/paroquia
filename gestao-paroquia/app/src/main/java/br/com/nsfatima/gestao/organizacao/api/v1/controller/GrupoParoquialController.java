@@ -77,7 +77,7 @@ public class GrupoParoquialController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR')")
     @Operation(summary = "Cria uma nova organização", description = "Registra uma nova organização paroquial.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Organização criada com sucesso",
@@ -109,7 +109,7 @@ public class GrupoParoquialController {
      * @return a organização atualizada
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR')")
     @Operation(summary = "Atualiza uma organização", description = "Atualiza os dados cadastrais e lideranças de uma organização.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Organização atualizada com sucesso",
@@ -140,9 +140,7 @@ public class GrupoParoquialController {
 
     private void syncCoordinatorVinculos(GrupoParoquial org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
-        PapelOrganizacional papel = org.getTipo() == TipoGrupo.MOVIMENTO
-                ? PapelOrganizacional.COORD_MOVIMENTO
-                : PapelOrganizacional.COORD_PASTORAL_LOCAL;
+        PapelOrganizacional papel = PapelOrganizacional.COORDENADOR;
 
         syncSingleRole(org, coordName, papel, igrejaId);
         syncSingleRole(org, viceCoordName, papel, igrejaId);
@@ -203,7 +201,7 @@ public class GrupoParoquialController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR')")
     @Operation(summary = "Exclui uma organização", description = "Remove o cadastro de uma organização sem vínculos ou dependências ativas.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Organização excluída com sucesso"),

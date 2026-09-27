@@ -130,8 +130,8 @@ class EventoIntegrationTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
